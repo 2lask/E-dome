@@ -2,7 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { Home as HomeIcon, Users, Handshake } from "lucide-react";
-import AnimatedShaderHero from "@/components/ui/animated-shader-hero";
+import HeroSection from "@/components/sections/HeroSection";
+import CyberneticGridShader from "@/components/ui/cybernetic-grid-shader";
 import ProblemSection from "@/components/sections/ProblemSection";
 import SolutionSection from "@/components/sections/SolutionSection";
 import ProfilesSection from "@/components/sections/ProfilesSection";
@@ -40,17 +41,11 @@ const apporteurCards = [
 export default function Home() {
   return (
     <main className="bg-[#111111]">
+      {/* ── GLOBAL BACKGROUND SHADER ── */}
+      <CyberneticGridShader />
+
       {/* ── 1. HERO ── */}
-      <AnimatedShaderHero
-        badge="Plateforme Immobilière Nouvelle Génération"
-        headline={{
-          line1: "L'écosystème qui connecte",
-          line2: "l'immobilier mondial.",
-        }}
-        subtitle="Marketplace · Réseau social · Apporteurs d'affaires · Formations · Services — réunis pour la première fois."
-        primaryCta={{ text: "Devenir Membre Fondateur", href: "#qualification" }}
-        secondaryCta={{ text: "Découvrir le projet", href: "#problem" }}
-      />
+      <HeroSection />
 
       <SectionTransition variant="architectural-horizon" />
 
