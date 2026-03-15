@@ -105,7 +105,7 @@ export default function QualificationSection() {
             <motion.span
               custom={0}
               variants={revealVariant}
-              className="mb-6 inline-flex self-start items-center rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-5 py-2 text-sm font-semibold text-[#ffe0c2]"
+              className="mb-6 inline-flex self-start items-center rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-4 py-1.5 text-sm font-medium text-[#ffe0c2]"
             >
               <span className="mr-2 inline-block h-2 w-2 rounded-full bg-[#ffe0c2] animate-pulse" />
               Programme Membres Fondateurs
@@ -115,7 +115,7 @@ export default function QualificationSection() {
             <motion.h2
               custom={1}
               variants={revealVariant}
-              className="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight"
+              className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6"
             >
               Construisez{" "}
               <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
@@ -127,7 +127,7 @@ export default function QualificationSection() {
             <motion.p
               custom={2}
               variants={revealVariant}
-              className="text-white/50 text-lg md:text-xl max-w-xl leading-relaxed mb-10"
+              className="text-white/60 text-base md:text-lg max-w-xl leading-relaxed mb-10"
             >
               100 fondateurs s&eacute;lectionn&eacute;s construisent la plateforme
               de l&apos;int&eacute;rieur. Acc&egrave;s anticip&eacute;, conditions pr&eacute;f&eacute;rentielles permanentes.

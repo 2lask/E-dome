@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import dynamic from "next/dynamic";
 import { Home as HomeIcon, Users, Handshake } from "lucide-react";
 import AnimatedShaderHero from "@/components/ui/animated-shader-hero";
@@ -140,7 +139,7 @@ export default function Home() {
         </div>
       </ScrollReveal>
 
-      <DispersingBuilding className="w-full py-16" />
+      <DispersingBuilding className="w-full py-24" />
       <SectionTransition variant="dot-grid" />
 
       {/* ── 8. APPORTEURS ── */}

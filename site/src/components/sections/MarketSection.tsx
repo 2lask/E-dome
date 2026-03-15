@@ -163,7 +163,7 @@ export default function MarketSection() {
             transition={{ duration: 0.8, ease }}
           >
             {/* Badge */}
-            <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-4 py-1.5 text-sm text-[#ffe0c2]">
+            <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-4 py-1.5 text-sm font-medium text-[#ffe0c2]">
               <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#ffe0c2]" />
               Opportunit\u00e9 de March\u00e9
             </span>
