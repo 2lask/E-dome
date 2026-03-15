@@ -124,7 +124,7 @@ export default function Home() {
 
       {/* ── CRM Demo Section (composant featured) ── */}
       <ScrollReveal>
-        <div className="py-16 px-6 md:px-12">
+        <div className="py-24 px-6 md:px-12">
           <FeaturedCrmDemoSection />
         </div>
       </ScrollReveal>
@@ -141,7 +141,7 @@ export default function Home() {
 
       {/* ── Glare Cards — visuels interactifs ── */}
       <ScrollReveal>
-        <div className="py-16 px-6 md:px-12">
+        <div className="py-24 px-6 md:px-12">
           <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-8">
             <GlareCard className="flex flex-col items-center justify-center p-8">
               <p className="text-2xl font-bold text-white mb-2">Marketplace</p>
@@ -184,7 +184,7 @@ export default function Home() {
 
       {/* ── Dashboard mockup ── */}
       <ScrollReveal>
-        <div className="py-16 px-6 md:px-12">
+        <div className="py-24 px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
             <p className="text-center text-xs font-semibold uppercase tracking-widest text-white/30 mb-8">
               Aper&ccedil;u du tableau de bord E-Dome

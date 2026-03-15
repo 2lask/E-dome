@@ -107,7 +107,7 @@ export default function FAQSection() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-flex items-center gap-2 text-xs font-medium tracking-widest uppercase text-[#ffe0c2] border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 rounded-full px-4 py-1.5 mb-6">
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-[#ffe0c2] border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 rounded-full px-4 py-1.5 mb-6">
             <MessageCircle className="w-3.5 h-3.5" />
             FAQ
           </span>
