@@ -35,6 +35,31 @@ const faqs: FAQItemData[] = [
     answer:
       "C'est très simple. Chaque utilisateur peut activer un rôle d'apporteur depuis son tableau de bord et générer des liens de partage traçables. Lorsqu'un lien aboutit à une transaction, la commission est calculée et versée automatiquement via la plateforme — sans frais supplémentaires pour l'hôte ni pour le client.",
   },
+  {
+    question: "Combien coûte l'utilisation d'E-Dome ?",
+    answer:
+      "L'inscription est gratuite. E-Dome se rémunère via des commissions sur les transactions (10-15% vs 18-25% chez Airbnb/Booking, soit 40-60% moins cher), des commissions sur les services additionnels (10-20%), et des abonnements premium optionnels pour les agences (99-299 CHF/mois). Les membres fondateurs bénéficient de conditions préférentielles permanentes.",
+  },
+  {
+    question: "Quelle est la différence avec Airbnb ou Booking ?",
+    answer:
+      "Airbnb et Booking se limitent à la réservation de logements avec des commissions élevées (14-25%). E-Dome est un écosystème complet : réseau social professionnel, marketplace multi-services (location CT, LT et vente), système d'apporteurs rémunérés, formations intégrées et services additionnels. Tout cela avec des commissions 40-60% inférieures.",
+  },
+  {
+    question: "Comment devenir membre fondateur ?",
+    answer:
+      "Remplissez le formulaire de manifestation d'intérêt. Notre équipe analyse votre profil et vous contacte pour un échange. Les membres sélectionnés reçoivent un badge fondateur permanent, un accès bêta anticipé, des formations offertes et des conditions préférentielles sur les commissions dès le lancement.",
+  },
+  {
+    question: "Quand le lancement est-il prévu ?",
+    answer:
+      "Le lancement officiel est prévu pour le second semestre 2025. Les membres fondateurs auront un accès bêta exclusif plusieurs semaines avant l'ouverture publique pour configurer leur profil et commencer à bâtir leur réseau.",
+  },
+  {
+    question: "Mes données sont-elles protégées ?",
+    answer:
+      "Absolument. E-Dome est conforme au RGPD européen et à la LPD suisse. Vos données ne sont jamais vendues. Les paiements transitent par Stripe (certifié PCI-DSS). Une vérification KYC est requise pour les professionnels, conformément à la législation suisse anti-blanchiment.",
+  },
 ];
 
 function FAQItem({
@@ -125,6 +150,14 @@ export default function FAQSection() {
             <FAQItem key={faq.question} item={faq} index={i} />
           ))}
         </div>
+
+        {/* CTA */}
+        <motion.div className="mt-12 text-center" initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.5,delay:0.2}}>
+          <p className="text-white/40 text-sm mb-4">Vous avez d&apos;autres questions ?</p>
+          <a href="#qualification" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-[#ffe0c2]/30 text-[#ffe0c2] text-sm font-medium hover:bg-[#ffe0c2]/5 transition-colors duration-300">
+            Contactez-nous
+          </a>
+        </motion.div>
       </div>
     </section>
   );

@@ -7,38 +7,37 @@ import { PlayCircle } from "lucide-react";
 
 export default function FeaturedCrmDemoSection() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const crmFeatures = [
+  const features = [
     {
-      title: "Sales Pipeline Tracking",
+      title: "Marketplace intégrée",
       subtitle:
-        "Easily monitor every lead from first contact to final closure with a simple, visual pipeline that keeps your entire sales process clear and on track."
+        "Location courte et longue durée, vente — tout dans un parcours unique avec des commissions 40-60% inférieures aux plateformes traditionnelles."
     },
     {
-      title: "Automated Follow-ups",
+      title: "Réseau social immobilier",
       subtitle:
-        "Use AI-powered reminders to send timely, personalized messages, helping you maintain momentum with leads and ensure no opportunity is ever lost."
+        "Publiez des reels, stories et contenus pour bâtir votre audience. Visibilité organique gratuite, sans budget publicitaire."
     },
     {
-      title: "Custom Reports",
+      title: "Système d'apporteurs",
       subtitle:
-        "Quickly generate tailored, data-rich reports to measure results, uncover new opportunities, and guide your business decisions with precision and clarity."
+        "Liens traçables, commissions automatiques, dashboard en temps réel. Le bouche-à-oreille devient mesurable et rémunéré."
     },
     {
-      title: "Team Collaboration",
+      title: "Formations & services",
       subtitle:
-        "Share updates instantly, assign tasks efficiently, and align your entire team's efforts so you can close deals faster and deliver consistent results."
+        "Catalogue de formations, webinars d'experts, et services additionnels intégrés directement à chaque bien."
     }
   ];
-
 
   return (
     <div className="max-w-7xl mx-auto bg-[#111111] text-white">
       {/* Header */}
       <header className="text-left py-12">
         <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
-          Empowering developers  <br />
+          Des outils pensés pour l&apos;immobilier.  <br />
           <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
-            with AI-driven solutions.
+            de nouvelle génération.
           </span>
         </h2>
       </header>
@@ -63,7 +62,7 @@ export default function FeaturedCrmDemoSection() {
                   width={500}
                   height={500}
                   src="https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev/crm-featured.png"
-                  alt="CRM Thumbnail"
+                  alt="E-Dome plateforme immobilière"
                   className="w-full h-full object-cover rounded-lg"
                 />
 
@@ -81,7 +80,7 @@ export default function FeaturedCrmDemoSection() {
 
         {/* Feature cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 h-full">
-          {crmFeatures.map((feature, i) => (
+          {features.map((feature, i) => (
             <div
               key={i}
               className="flex flex-col border border-[#201e18] rounded-xl p-2 hover:border-[#ffe0c2]/20 cursor-pointer transition-colors duration-300"
@@ -103,17 +102,16 @@ export default function FeaturedCrmDemoSection() {
         </div>
       </section>
 
-
       <section className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-1 text-sm">
         {[
-          { name: "Salesforce", subtitle: "Enterprise CRM platform", domain: "salesforce.com" },
-          { name: "HubSpot CRM", subtitle: "Inbound marketing & sales", domain: "hubspot.com" },
-          { name: "Zoho CRM", subtitle: "Affordable CRM solution", domain: "zoho.com" },
-          { name: "Pipedrive", subtitle: "Sales pipeline management", domain: "pipedrive.com" },
-          { name: "Freshsales", subtitle: "Freshworks sales CRM", domain: "freshworks.com" },
-          { name: "Microsoft Dynamics 365", subtitle: "Microsoft business suite", domain: "dynamics.com" },
-          { name: "Copper CRM", subtitle: "Google Workspace CRM", domain: "copper.com" },
-          { name: "Insightly", subtitle: "Project & CRM management", domain: "insightly.com" },
+          { name: "Stripe", subtitle: "Paiements sécurisés", domain: "stripe.com" },
+          { name: "Twilio", subtitle: "Communications", domain: "twilio.com" },
+          { name: "Google Maps", subtitle: "Géolocalisation", domain: "google.com" },
+          { name: "Cloudinary", subtitle: "Médias optimisés", domain: "cloudinary.com" },
+          { name: "Veriff", subtitle: "Vérification KYC", domain: "veriff.com" },
+          { name: "SendGrid", subtitle: "Notifications email", domain: "sendgrid.com" },
+          { name: "Intercom", subtitle: "Support client", domain: "intercom.com" },
+          { name: "Mixpanel", subtitle: "Analytics avancées", domain: "mixpanel.com" },
         ].map((integration) => (
           <div
             key={integration.name}

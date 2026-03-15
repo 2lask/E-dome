@@ -22,12 +22,11 @@ import { ReferralTrackingMockup } from "@/components/ui/platform-visuals";
 import { ReferralLinksMockup } from "@/components/ui/referral-links-mockup";
 import { DashboardMockup } from "@/components/ui/dashboard-mockup";
 import DispersingBuilding from "@/components/ui/dispersing-building";
-import { LampContainer } from "@/components/ui/lamp";
+
 import { GlareCard } from "@/components/ui/glare-card";
 import { PulseBeams } from "@/components/ui/pulse-beams";
 import FeaturedCrmDemoSection from "@/components/ui/featured-crm-demo-section";
 import {
-  LuxuryVillaIllustration,
   CitySkylinesIllustration,
 } from "@/components/ui/architectural-illustrations";
 import {
@@ -164,14 +163,6 @@ export default function Home() {
         <CityBlockPlanScene className="py-10" />
       </ScaleReveal>
 
-      {/* ── particle field ── */}
-      <ParticleFieldTransition />
-
-      {/* ── villa illustration ── */}
-      <ScrollReveal>
-        <LuxuryVillaIllustration className="py-8 px-6 max-w-5xl mx-auto" />
-      </ScrollReveal>
-
       {/* ── transition ── */}
       <SectionTransition variant="glass-divider" />
 
@@ -196,9 +187,6 @@ export default function Home() {
 
       {/* ── dispersing building ── */}
       <DispersingBuilding className="w-full py-16" />
-
-      {/* ── blueprint transition ── */}
-      <ArchitecturalBlueprintTransition />
 
       {/* ── transition ── */}
       <SectionTransition variant="dot-grid" />
@@ -307,11 +295,6 @@ export default function Home() {
 
       {/* ── transition ── */}
       <SectionTransition variant="architectural-horizon" />
-
-      {/* ── lamp glow above Qualification ── */}
-      <LampContainer>
-        <div />
-      </LampContainer>
 
       {/* ================================================================
        * 7. PROGRAMME FONDATEURS

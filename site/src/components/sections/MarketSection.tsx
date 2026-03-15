@@ -7,10 +7,8 @@ import {
   Globe,
   Home,
   Monitor,
-  Smartphone,
   TrendingUp,
   Link2,
-  BookOpen,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -74,6 +72,9 @@ function StatCounter({
         return `$${Math.round(value)}T`;
       }
     }
+    if (displayFinal.endsWith("Mds")) {
+      return `${Math.round(value)} Mds`;
+    }
     if (displayFinal.endsWith("%")) {
       return `${Math.round(value)}%`;
     }
@@ -107,37 +108,37 @@ const stats = [
   {
     display: "$32.8B",
     numericTarget: 32.8,
-    label: "March\u00e9 immobilier digital mondial d\u2019ici 2030",
-    source: "Grand View Research, 2023",
+    label: "Marché immobilier digital mondial d\u2019ici 2030",
+    source: "Grand View Research, TCAC 13.7%",
     icon: Globe,
   },
   {
     display: "$193B",
     numericTarget: 193,
-    label: "March\u00e9 location courte dur\u00e9e en 2029",
+    label: "Marché location courte durée en 2029",
     source: "Statista, 2024",
     icon: Home,
   },
   {
-    display: "78%",
-    numericTarget: 78,
-    label: "Des transactions commencent en ligne",
-    source: "NAR Report, 2024",
+    display: "15 Mds",
+    numericTarget: 15,
+    label: "Transactions immobilières Suisse par an (TAM)",
+    source: "Office fédéral statistique",
     icon: Monitor,
   },
   {
-    display: "64%",
-    numericTarget: 64,
-    label: "Des acheteurs d\u00e9couvrent via r\u00e9seaux sociaux",
-    source: "RE Technology, 2024",
-    icon: Smartphone,
+    display: "85%",
+    numericTarget: 85,
+    label: "Taux de validation du problème (interviews terrain)",
+    source: "50+ interviews E-Dome, 2025",
+    icon: TrendingUp,
   },
 ];
 
 const trendChips = [
-  { label: "Social commerce immobilier\u00a0: $2.9T d\u2019ici 2030", icon: TrendingUp },
-  { label: "Affiliation immobili\u00e8re\u00a0: +34%/an", icon: Link2 },
-  { label: "E-learning immobilier\u00a0: $5.8B d\u2019ici 2030", icon: BookOpen },
+  { label: "Social commerce\u00a0: $992 Mds \u2192 $2.9T en 2030", icon: TrendingUp },
+  { label: "Marketing d\u2019affiliation\u00a0: $17 Mds \u2192 $27.8 Mds en 2030", icon: Link2 },
+  { label: "250\u2019000+ biens location CT en Suisse (+25% depuis 2020)", icon: Home },
 ];
 
 export default function MarketSection() {
@@ -207,9 +208,9 @@ export default function MarketSection() {
               className="mt-10 rounded-xl border border-[#ffe0c2]/20 bg-[#191919] p-6"
             >
               <p className="text-lg font-semibold leading-relaxed text-white/80 md:text-xl">
-                Aucune plateforme existante ne combine ces 5 march\u00e9s.{" "}
+                Aucune plateforme ne combine marketplace, réseau social, apporteurs, formations et services.{" "}
                 <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
-                  E-Dome est le premier \u00e0 le faire.
+                  E-Dome est le premier à unifier ces 5 marchés.
                 </span>
               </p>
             </motion.div>

@@ -38,7 +38,7 @@ export default function FooterSection() {
         <div className="relative mt-12 pt-8">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           <p className="text-white/30 text-sm text-center">
-            &copy; 2024–2025 E-Dome — Tous droits r&eacute;serv&eacute;s
+            &copy; 2024–2026 E-Dome — Tous droits r&eacute;serv&eacute;s
           </p>
         </div>
       </div>
