@@ -39,35 +39,35 @@ const pillars: {
     icon: Users,
     title: "R\u00e9seau social immobilier",
     description:
-      "Publiez des reels, stories et contenus immobiliers pour b\u00e2tir votre audience. Attirez des prospects qualifi\u00e9s de mani\u00e8re organique, sans d\u00e9penser un centime en publicit\u00e9.",
+      "Publiez reels et stories pour b\u00e2tir votre audience. Attirez des prospects qualifi\u00e9s sans d\u00e9penser un centime en pub.",
     impact: "Visibilit\u00e9 organique, sans budget pub.",
   },
   {
     icon: Store,
     title: "Marketplace transactionnelle",
     description:
-      "Location courte dur\u00e9e, longue dur\u00e9e et vente r\u00e9unies dans un parcours unique, fluide et s\u00e9curis\u00e9. G\u00e9rez l\u2019int\u00e9gralit\u00e9 de vos op\u00e9rations depuis une seule interface.",
+      "Location CT, LT et vente r\u00e9unies. Commissions 10-15% vs 18-25% ailleurs. Une seule interface pour tout g\u00e9rer.",
     impact: "Un seul outil pour toutes vos transactions.",
   },
   {
     icon: Link2,
     title: "Syst\u00e8me d\u2019apporteurs",
     description:
-      "Activez des liens tra\u00e7ables, partagez des opportunit\u00e9s et touchez automatiquement votre commission. Le bouche-\u00e0-oreille devient enfin mesurable, transparent et r\u00e9mun\u00e9r\u00e9.",
+      "Lien unique, tracking transparent, commissions automatiques. Le bouche-\u00e0-oreille devient mesurable et r\u00e9mun\u00e9r\u00e9.",
     impact: "Le bouche-\u00e0-oreille devient mesurable et r\u00e9mun\u00e9r\u00e9.",
   },
   {
     icon: Settings,
     title: "Services additionnels",
     description:
-      "Proposez et r\u00e9servez des prestations compl\u00e9mentaires directement depuis chaque bien : conciergerie, transport, exp\u00e9riences locales. Chaque r\u00e9servation ouvre de nouveaux revenus.",
+      "Conciergerie, transport, exp\u00e9riences locales : r\u00e9servez directement depuis chaque bien. Chaque service g\u00e9n\u00e8re des revenus.",
     impact: "Chaque r\u00e9servation g\u00e9n\u00e8re des revenus suppl\u00e9mentaires.",
   },
   {
     icon: BookOpen,
     title: "Formations & communaut\u00e9",
     description:
-      "Acc\u00e9dez \u00e0 un catalogue de formations, lives et webinars anim\u00e9s par des experts du secteur. Rejoignez une communaut\u00e9 de professionnels qualifi\u00e9s qui partagent les m\u00eames ambitions.",
+      "Formations, lives et webinars par des experts. Rejoignez une communaut\u00e9 de professionnels qui partagent vos ambitions.",
     impact: "La mont\u00e9e en comp\u00e9tence int\u00e9gr\u00e9e \u00e0 la plateforme.",
   },
 ];
@@ -172,12 +172,9 @@ export default function SolutionSection() {
               </span>
             </h2>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
-              E-Dome combine ce qu&apos;aucune plateforme n&apos;a jamais
-              r\u00e9uni&nbsp;: un r\u00e9seau social immobilier, une marketplace
-              transactionnelle, un syst\u00e8me d&apos;apporteurs automatis\u00e9, des
-              services \u00e0 la carte et des formations professionnelles &mdash; dans un
-              seul compte, accessible \u00e0 tous les acteurs du secteur, partout
-              dans le monde.
+              Un seul compte pour tout g&eacute;rer : transactions, visibilit&eacute;,
+              commissions, formations et services. Accessible &agrave; tous les
+              acteurs du secteur, partout dans le monde.
             </p>
             <motion.div
               initial={{ opacity: 0, y: 15 }}

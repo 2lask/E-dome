@@ -44,21 +44,21 @@ const slideFromRight = {
 
 const problems = [
   {
-    title: "Coûts invisibles",
+    title: "Commissions prohibitives",
     description:
-      "Entre les commissions des OTA, les frais de gestion et les abonnements multiples, jusqu'à 25 % du chiffre d'affaires s'évapore — sans aucun outil pour identifier où ni comment reprendre le contrôle.",
+      "Airbnb pr\u00e9l\u00e8ve 14-18%, Booking 15-25%. Ajoutez les frais de gestion et la pub obligatoire (700-2\u2019800 CHF/mois) : jusqu\u2019\u00e0 25% de votre CA dispara\u00eet.",
     icon: DollarSign,
   },
   {
-    title: "Dépendance aux plateformes",
+    title: "D\u00e9pendance totale",
     description:
-      "Votre visibilité dépend d'un budget publicitaire croissant. Vos avis, votre clientèle, vos données : tout appartient à des tiers. Vous louez votre propre audience.",
+      "Z\u00e9ro contr\u00f4le sur la relation client. Algorithmes opaques, risque de suspension. Vos avis, votre client\u00e8le, vos donn\u00e9es : tout appartient \u00e0 des tiers.",
     icon: Lock,
   },
   {
-    title: "Silos professionnels",
+    title: "March\u00e9 fragment\u00e9",
     description:
-      "Agences, hôtes, apporteurs d'affaires, prestataires de services — tous travaillent sur le même marché mais avec des outils différents et aucune passerelle entre eux.",
+      "5\u2019000+ agences, 150\u2019000+ propri\u00e9taires, 250\u2019000+ biens en Suisse \u2014 tous sur des outils diff\u00e9rents, sans passerelle ni vision d\u2019ensemble.",
     icon: Layers,
   },
 ];

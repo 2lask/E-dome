@@ -129,8 +129,8 @@ export default function QualificationSection() {
               variants={revealVariant}
               className="text-white/50 text-lg md:text-xl max-w-xl leading-relaxed mb-10"
             >
-              Les premiers membres fondateurs construisent la plateforme de
-              l&apos;intérieur. Sélection sur dossier.
+              100 fondateurs s&eacute;lectionn&eacute;s construisent la plateforme
+              de l&apos;int&eacute;rieur. Acc&egrave;s anticip&eacute;, conditions pr&eacute;f&eacute;rentielles permanentes.
             </motion.p>
 
             {/* 7 Benefit cards — 2-column grid */}
