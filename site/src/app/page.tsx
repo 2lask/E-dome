@@ -19,8 +19,23 @@ import {
 } from "@/components/ui/large-architectural-scenes";
 import { CityPanorama } from "@/components/ui/architectural-separators";
 import { ReferralTrackingMockup } from "@/components/ui/platform-visuals";
+import { ReferralLinksMockup } from "@/components/ui/referral-links-mockup";
+import { DashboardMockup } from "@/components/ui/dashboard-mockup";
 import DispersingBuilding from "@/components/ui/dispersing-building";
 import { LampContainer } from "@/components/ui/lamp";
+import { GlareCard } from "@/components/ui/glare-card";
+import { PulseBeams } from "@/components/ui/pulse-beams";
+import FeaturedCrmDemoSection from "@/components/ui/featured-crm-demo-section";
+import {
+  LuxuryVillaIllustration,
+  CitySkylinesIllustration,
+} from "@/components/ui/architectural-illustrations";
+import {
+  WaveTransition,
+  DiagonalWipeTransition,
+  ParticleFieldTransition,
+  ArchitecturalBlueprintTransition,
+} from "@/components/ui/dramatic-transitions";
 
 /* 3D building — lazy-loaded */
 const Building3DScene = dynamic(
@@ -32,6 +47,36 @@ const apporteurCards = [
   { icon: HomeIcon, title: "Apporter un bien ou mandat", desc: "Partagez des opportunit\u00e9s immobili\u00e8res depuis votre r\u00e9seau" },
   { icon: Users, title: "Amener un client qualifi\u00e9", desc: "Recommandez des acheteurs, vendeurs ou locataires" },
   { icon: Handshake, title: "Proposer un partenariat local", desc: "Connectez des professionnels compl\u00e9mentaires" },
+];
+
+const pulseBeamsData = [
+  {
+    path: "M269 220.5H16.5C10.9772 220.5 6.5 224.977 6.5 230.5V398.5",
+    gradientConfig: {
+      initial: { x1: "0%", x2: "0%", y1: "80%", y2: "100%" },
+      animate: { x1: ["0%", "0%", "200%"], x2: ["0%", "0%", "180%"], y1: ["80%", "0%", "0%"], y2: ["100%", "20%", "20%"] },
+      transition: { duration: 2, repeat: Infinity, repeatType: "loop" as const, ease: "linear", repeatDelay: 2, delay: 0.5 },
+    },
+    connectionPoints: [{ cx: 6.5, cy: 398.5, r: 6 }, { cx: 269, cy: 220.5, r: 6 }],
+  },
+  {
+    path: "M568 200H841C846.523 200 851 195.523 851 190V40",
+    gradientConfig: {
+      initial: { x1: "0%", x2: "0%", y1: "80%", y2: "100%" },
+      animate: { x1: ["20%", "100%", "100%"], x2: ["0%", "90%", "90%"], y1: ["80%", "80%", "-20%"], y2: ["100%", "100%", "0%"] },
+      transition: { duration: 2, repeat: Infinity, repeatType: "loop" as const, ease: "linear", repeatDelay: 2, delay: 1 },
+    },
+    connectionPoints: [{ cx: 851, cy: 34, r: 6.5 }, { cx: 568, cy: 200, r: 6 }],
+  },
+  {
+    path: "M425.5 274V333C425.5 338.523 421.023 343 415.5 343H152C146.477 343 142 347.477 142 353V426.5",
+    gradientConfig: {
+      initial: { x1: "0%", x2: "0%", y1: "80%", y2: "100%" },
+      animate: { x1: ["20%", "100%", "100%"], x2: ["0%", "90%", "90%"], y1: ["80%", "80%", "-20%"], y2: ["100%", "100%", "0%"] },
+      transition: { duration: 2, repeat: Infinity, repeatType: "loop" as const, ease: "linear", repeatDelay: 2, delay: 1.5 },
+    },
+    connectionPoints: [{ cx: 142, cy: 427, r: 6.5 }, { cx: 425.5, cy: 274, r: 6 }],
+  },
 ];
 
 export default function Home() {
@@ -57,8 +102,8 @@ export default function Home() {
         <VillaElevationScene className="py-10" />
       </ScaleReveal>
 
-      {/* ── transition ── */}
-      <SectionTransition variant="fade-line" />
+      {/* ── wave transition ── */}
+      <WaveTransition />
 
       {/* ================================================================
        * 3. LA SOLUTION
@@ -67,10 +112,20 @@ export default function Home() {
         <SolutionSection />
       </ScrollReveal>
 
-      {/* ── 3D Building (prominent placement) ── */}
+      {/* ── 3D Building ── */}
       <ScrollReveal>
         <div className="relative py-12">
           <Building3DScene className="mx-auto max-w-5xl" />
+        </div>
+      </ScrollReveal>
+
+      {/* ── diagonal transition ── */}
+      <DiagonalWipeTransition direction="left-to-right" />
+
+      {/* ── CRM Demo Section (composant featured) ── */}
+      <ScrollReveal>
+        <div className="py-16 px-6 md:px-12">
+          <FeaturedCrmDemoSection />
         </div>
       </ScrollReveal>
 
@@ -84,29 +139,72 @@ export default function Home() {
         <ProfilesSection />
       </ScrollReveal>
 
+      {/* ── Glare Cards — visuels interactifs ── */}
+      <ScrollReveal>
+        <div className="py-16 px-6 md:px-12">
+          <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-8">
+            <GlareCard className="flex flex-col items-center justify-center p-8">
+              <p className="text-2xl font-bold text-white mb-2">Marketplace</p>
+              <p className="text-sm text-white/50 text-center">Achetez, vendez et louez en toute confiance</p>
+            </GlareCard>
+            <GlareCard className="flex flex-col items-center justify-center p-8">
+              <p className="text-2xl font-bold text-white mb-2">R&eacute;seau Social</p>
+              <p className="text-sm text-white/50 text-center">Connectez-vous avec tous les acteurs</p>
+            </GlareCard>
+            <GlareCard className="flex flex-col items-center justify-center p-8">
+              <p className="text-2xl font-bold text-white mb-2">Formations</p>
+              <p className="text-sm text-white/50 text-center">Montez en comp&eacute;tences avec les experts</p>
+            </GlareCard>
+          </div>
+        </div>
+      </ScrollReveal>
+
       {/* ── architectural scene ── */}
       <ScaleReveal>
         <CityBlockPlanScene className="py-10" />
       </ScaleReveal>
 
+      {/* ── particle field ── */}
+      <ParticleFieldTransition />
+
+      {/* ── villa illustration ── */}
+      <ScrollReveal>
+        <LuxuryVillaIllustration className="py-8 px-6 max-w-5xl mx-auto" />
+      </ScrollReveal>
+
       {/* ── transition ── */}
       <SectionTransition variant="glass-divider" />
 
       {/* ================================================================
-       * 5. VALIDATION MARCHÉ
+       * 5. VALIDATION MARCH&Eacute;
        * ================================================================*/}
       <ScrollReveal>
         <MarketSection />
       </ScrollReveal>
 
+      {/* ── Dashboard mockup ── */}
+      <ScrollReveal>
+        <div className="py-16 px-6 md:px-12">
+          <div className="max-w-7xl mx-auto">
+            <p className="text-center text-xs font-semibold uppercase tracking-widest text-white/30 mb-8">
+              Aper&ccedil;u du tableau de bord E-Dome
+            </p>
+            <DashboardMockup />
+          </div>
+        </div>
+      </ScrollReveal>
+
       {/* ── dispersing building ── */}
       <DispersingBuilding className="w-full py-16" />
+
+      {/* ── blueprint transition ── */}
+      <ArchitecturalBlueprintTransition />
 
       {/* ── transition ── */}
       <SectionTransition variant="dot-grid" />
 
       {/* ================================================================
-       * 6. APPORTEURS — split layout: texte gauche / cards droite
+       * 6. APPORTEURS
        * ================================================================*/}
       <ScrollReveal>
         <section id="apporteurs" className="py-32 px-6 md:px-12">
@@ -150,12 +248,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right — referral tracking mockup + cards */}
-            <div className="grid grid-cols-1 gap-4">
-              {/* Referral tracking visual */}
+            {/* Right — referral mockups + liens + cards */}
+            <div className="grid grid-cols-1 gap-6">
               <ReferralTrackingMockup />
-
-              {/* Apporteur cards */}
+              <ReferralLinksMockup />
               {apporteurCards.map((card) => {
                 const Icon = card.icon;
                 return (
@@ -175,13 +271,39 @@ export default function Home() {
         </section>
       </ScrollReveal>
 
-      {/* ── transition ── */}
-      <SectionTransition variant="fade-line" />
+      {/* ── diagonal transition (reverse) ── */}
+      <DiagonalWipeTransition direction="right-to-left" />
+
+      {/* ── city skyline illustration ── */}
+      <ScrollReveal>
+        <CitySkylinesIllustration className="py-8 px-6 max-w-6xl mx-auto" />
+      </ScrollReveal>
 
       {/* ── city panorama ── */}
       <ScrollReveal>
         <CityPanorama />
       </ScrollReveal>
+
+      {/* ── Pulse Beams — connexion visuelle ── */}
+      <PulseBeams
+        beams={pulseBeamsData}
+        gradientColors={{ start: "#ffe0c2", middle: "#ffdfb5", end: "#ffe0c2" }}
+        className="!h-[500px] bg-[#111111]"
+        baseColor="#201e18"
+        accentColor="#ffe0c2"
+      >
+        <div className="text-center">
+          <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Un &eacute;cosyst&egrave;me{" "}
+            <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
+              connect&eacute;.
+            </span>
+          </h3>
+          <p className="text-white/50 max-w-md mx-auto">
+            Chaque acteur est reli&eacute; aux autres. Chaque action cr&eacute;e de la valeur.
+          </p>
+        </div>
+      </PulseBeams>
 
       {/* ── transition ── */}
       <SectionTransition variant="architectural-horizon" />
@@ -198,6 +320,9 @@ export default function Home() {
         <QualificationSection />
       </ScrollReveal>
 
+      {/* ── particle field ── */}
+      <ParticleFieldTransition count={40} />
+
       {/* ── transition ── */}
       <SectionTransition variant="perspective-lines" />
 
@@ -208,8 +333,8 @@ export default function Home() {
         <FAQSection />
       </ScrollReveal>
 
-      {/* ── transition ── */}
-      <SectionTransition variant="glass-divider" />
+      {/* ── blueprint transition ── */}
+      <ArchitecturalBlueprintTransition />
 
       {/* ================================================================
        * 9. FOOTER
