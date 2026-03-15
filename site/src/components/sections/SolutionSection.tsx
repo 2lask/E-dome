@@ -46,7 +46,7 @@ const pillars: {
     icon: Store,
     title: "Marketplace transactionnelle",
     description:
-      "Location CT, LT et vente r\u00e9unies. Commissions 10-15% vs 18-25% ailleurs. Une seule interface pour tout g\u00e9rer.",
+      "Location CT, LT et vente r\u00e9unies. Des commissions nettement inf\u00e9rieures au march\u00e9. Une seule interface pour tout g\u00e9rer.",
     impact: "Un seul outil pour toutes vos transactions.",
   },
   {

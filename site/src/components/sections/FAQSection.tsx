@@ -38,12 +38,12 @@ const faqs: FAQItemData[] = [
   {
     question: "Combien coûte l'utilisation d'E-Dome ?",
     answer:
-      "L'inscription est gratuite. E-Dome se rémunère via des commissions sur les transactions (10-15% vs 18-25% chez Airbnb/Booking, soit 40-60% moins cher), des commissions sur les services additionnels (10-20%), et des abonnements premium optionnels pour les agences (99-299 CHF/mois). Les membres fondateurs bénéficient de conditions préférentielles permanentes.",
+      "L'inscription est gratuite. E-Dome se r\u00e9mun\u00e8re via des commissions sur les transactions, nettement inf\u00e9rieures aux plateformes traditionnelles, des commissions sur les services additionnels, et des abonnements premium optionnels pour les agences. Les membres fondateurs b\u00e9n\u00e9ficient de conditions pr\u00e9f\u00e9rentielles permanentes.",
   },
   {
     question: "Quelle est la différence avec Airbnb ou Booking ?",
     answer:
-      "Airbnb et Booking se limitent à la réservation de logements avec des commissions élevées (14-25%). E-Dome est un écosystème complet : réseau social professionnel, marketplace multi-services (location CT, LT et vente), système d'apporteurs rémunérés, formations intégrées et services additionnels. Tout cela avec des commissions 40-60% inférieures.",
+      "Airbnb et Booking se limitent \u00e0 la r\u00e9servation de logements avec des commissions \u00e9lev\u00e9es. E-Dome est un \u00e9cosyst\u00e8me complet : r\u00e9seau social professionnel, marketplace multi-services (location CT, LT et vente), syst\u00e8me d\u2019apporteurs r\u00e9mun\u00e9r\u00e9s, formations int\u00e9gr\u00e9es et services additionnels. Le tout avec des commissions significativement inf\u00e9rieures.",
   },
   {
     question: "Comment devenir membre fondateur ?",

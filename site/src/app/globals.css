@@ -96,8 +96,9 @@
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-radius: var(--radius);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-dm-sans);
+  --font-mono: var(--font-jetbrains);
 }
 
 /* ===== Base Elements ===== */
@@ -116,7 +117,7 @@ body {
   background-color: #111111;
   background-attachment: fixed;
   color: var(--text-primary);
-  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -506,9 +507,33 @@ body {
   right: 0;
   z-index: 50;
   background: linear-gradient(135deg, #ffe0c2 0%, #ffdfb5 100%);
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 -4px 24px rgba(255, 224, 194, 0.2);
+  gap: 1rem;
+  box-shadow: 0 -8px 32px rgba(255, 224, 194, 0.25);
+}
+
+/* ===== Heading font ===== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-dm-sans), var(--font-inter), system-ui, sans-serif;
+}
+
+/* ===== Monospace labels ===== */
+
+.font-mono, code, pre, [class*="font-mono"] {
+  font-family: var(--font-jetbrains), 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ===== Pulse animation for CTA ===== */
+
+@keyframes cta-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 224, 194, 0.4); }
+  50% { box-shadow: 0 0 20px 8px rgba(255, 224, 194, 0.15); }
+}
+
+.animate-cta-pulse {
+  animation: cta-pulse 2s ease-in-out infinite;
 }

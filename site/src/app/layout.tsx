@@ -1,21 +1,28 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
-  title: "E-Dome | Écosystème Immobilier Intelligent",
+  title: "E-Dome | \u00c9cosyst\u00e8me Immobilier Intelligent",
   description:
-    "E-Dome — la plateforme immobilière tout-en-un qui réunit marketplace, réseau social professionnel, système d'apporteurs d'affaires, services et formations dans un écosystème unifié.",
+    "E-Dome \u2014 la plateforme immobili\u00e8re tout-en-un qui r\u00e9unit marketplace, r\u00e9seau social professionnel, syst\u00e8me d\u2019apporteurs d\u2019affaires, services et formations dans un \u00e9cosyst\u00e8me unifi\u00e9.",
   icons: { icon: "/favicon.ico" },
   other: { "theme-color": "#111111" },
 };
@@ -28,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-[#111111] text-white antialiased`}
+        className={`${inter.variable} ${dmSans.variable} ${jetbrainsMono.variable} bg-[#111111] text-white antialiased`}
       >
         {children}
       </body>

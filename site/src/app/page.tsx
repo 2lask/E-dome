@@ -99,7 +99,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-8">
             <GlareCard className="flex flex-col items-center justify-center p-8">
               <p className="text-2xl font-bold text-white mb-2">Marketplace</p>
-              <p className="text-sm text-white/50 text-center">Commissions 40-60% inf&eacute;rieures</p>
+              <p className="text-sm text-white/50 text-center">Achetez, vendez et louez en confiance</p>
             </GlareCard>
             <GlareCard className="flex flex-col items-center justify-center p-8">
               <p className="text-2xl font-bold text-white mb-2">R&eacute;seau Social</p>
@@ -219,6 +219,19 @@ export default function Home() {
 
       {/* ── FOOTER ── */}
       <FooterSection />
+
+      {/* ── STICKY CTA BAR ── */}
+      <div className="sticky-cta-bar">
+        <span className="text-[#111111] text-sm font-semibold hidden sm:inline">
+          Rejoignez les 100 premiers fondateurs
+        </span>
+        <a
+          href="#qualification"
+          className="animate-cta-pulse inline-flex items-center px-6 py-2.5 bg-[#111111] text-[#ffe0c2] text-sm font-semibold rounded-full hover:bg-[#191919] transition-colors"
+        >
+          Manifester mon int&eacute;r&ecirc;t
+        </a>
+      </div>
     </main>
   );
 }

@@ -127,10 +127,10 @@ const stats = [
     icon: Monitor,
   },
   {
-    display: "85%",
-    numericTarget: 85,
-    label: "Taux de validation du problème (interviews terrain)",
-    source: "50+ interviews E-Dome, 2025",
+    display: "60%",
+    numericTarget: 60,
+    label: "De la population suisse est locataire — record europ\u00e9en",
+    source: "Office f\u00e9d\u00e9ral statistique, 2023",
     icon: TrendingUp,
   },
 ];

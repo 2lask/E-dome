@@ -44,9 +44,9 @@ const slideFromRight = {
 
 const problems = [
   {
-    title: "Commissions prohibitives",
+    title: "Commissions \u00e9lev\u00e9es",
     description:
-      "Airbnb pr\u00e9l\u00e8ve 14-18%, Booking 15-25%. Ajoutez les frais de gestion et la pub obligatoire (700-2\u2019800 CHF/mois) : jusqu\u2019\u00e0 25% de votre CA dispara\u00eet.",
+      "Les plateformes traditionnelles pr\u00e9l\u00e8vent des commissions significatives sur chaque transaction. Ajoutez la publicit\u00e9 obligatoire : une part majeure de votre CA dispara\u00eet.",
     icon: DollarSign,
   },
   {
