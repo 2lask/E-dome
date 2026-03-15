@@ -41,7 +41,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#111111]">
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#111111]/80">
       {/* Thin vertical lines with measurement ticks on both sides */}
       <div className="pointer-events-none absolute inset-0 hidden lg:block">
         {/* Left vertical line */}

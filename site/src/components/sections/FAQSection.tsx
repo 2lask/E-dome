@@ -122,7 +122,7 @@ function FAQItem({
 
 export default function FAQSection() {
   return (
-    <section id="faq" className="relative py-32 px-6 md:px-12 bg-[#111111] arch-bg-grid arch-bg-dots">
+    <section id="faq" className="relative py-32 px-6 md:px-12 bg-[#111111]/85 arch-bg-grid arch-bg-dots">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <motion.div

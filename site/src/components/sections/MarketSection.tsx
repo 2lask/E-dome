@@ -145,7 +145,7 @@ export default function MarketSection() {
   return (
     <section
       id="market"
-      className="relative overflow-hidden bg-[#111111] py-32 px-6 md:px-12 arch-bg-grid"
+      className="relative overflow-hidden bg-[#111111]/85 py-32 px-6 md:px-12 arch-bg-grid"
     >
       {/* Background glow */}
       <div className="pointer-events-none absolute inset-0">

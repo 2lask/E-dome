@@ -3,6 +3,10 @@
 import dynamic from "next/dynamic";
 import { Home as HomeIcon, Users, Handshake } from "lucide-react";
 import HeroSection from "@/components/sections/HeroSection";
+const CrystalShader = dynamic(
+  () => import("@/components/ui/crystal-shader"),
+  { ssr: false }
+);
 import ProblemSection from "@/components/sections/ProblemSection";
 import SolutionSection from "@/components/sections/SolutionSection";
 import ProfilesSection from "@/components/sections/ProfilesSection";
@@ -39,7 +43,9 @@ const apporteurCards = [
 
 export default function Home() {
   return (
-    <main className="bg-[#111111]">
+    <main className="bg-[#111111]/90 relative z-0">
+      <CrystalShader cellDensity={6} animationSpeed={0.15} warpFactor={0.4} mouseInfluence={0.1} />
+
       {/* ── 1. HERO ── */}
       <HeroSection />
 
