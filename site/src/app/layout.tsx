@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "./architectural-bg.css";
+import { LenisProvider } from "@/components/ui/lenis-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -39,7 +40,7 @@ export default function RootLayout({
         className={`${inter.variable} ${dmSans.variable} ${jetbrainsMono.variable} bg-[#111111] text-white antialiased`}
         style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
       >
-        {children}
+        <LenisProvider>{children}</LenisProvider>
       </body>
     </html>
   );

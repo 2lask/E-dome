@@ -134,7 +134,7 @@ export default function QualificationSection() {
             </motion.p>
 
             {/* 7 Benefit cards — 2-column grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {benefits.map((b, i) => {
                 const Icon = b.icon;
                 return (
@@ -145,21 +145,17 @@ export default function QualificationSection() {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-60px" }}
-                    className="group rounded-xl border border-[#201e18] bg-[#191919] p-5 transition-all duration-300 hover:border-[#ffe0c2]/20 hover:shadow-[0_0_24px_-8px_rgba(255,224,194,0.12)]"
+                    className="group rounded-xl border border-[#201e18] bg-[#191919] p-6 transition-all duration-300 hover:border-[#ffe0c2]/20 hover:shadow-[0_0_24px_-8px_rgba(255,224,194,0.12)]"
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="rounded-lg bg-[#ffe0c2]/10 p-2.5 shrink-0">
-                        <Icon className="h-5 w-5 text-[#ffe0c2]" />
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-bold text-white leading-snug">
-                          {b.title}
-                        </h4>
-                        <p className="text-xs text-white/50 mt-1 leading-relaxed">
-                          {b.line}
-                        </p>
-                      </div>
+                    <div className="mb-4 rounded-xl bg-gradient-to-br from-[#ffe0c2]/10 to-[#ffdfb5]/5 p-3 w-fit">
+                      <Icon className="h-7 w-7 text-[#ffe0c2]" />
                     </div>
+                    <h4 className="text-base font-bold text-white leading-snug mb-2">
+                      {b.title}
+                    </h4>
+                    <p className="text-sm text-white/50 leading-relaxed">
+                      {b.line}
+                    </p>
                   </motion.div>
                 );
               })}
