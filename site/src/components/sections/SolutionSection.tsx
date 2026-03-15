@@ -147,7 +147,7 @@ function PropertyCardMockup() {
 
 export default function SolutionSection() {
   return (
-    <section id="solution" className="relative bg-[#111111]/90 py-32 px-6 md:px-12 arch-bg-grid arch-bg-radial">
+    <section id="solution" className="relative bg-[#111111] py-32 px-6 md:px-12 arch-bg-grid arch-bg-radial">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-1/3 left-1/4 h-[500px] w-[500px] rounded-full bg-[#ffe0c2]/5 blur-[140px]" />
         <div className="absolute bottom-1/4 right-1/4 h-[400px] w-[400px] rounded-full bg-[#ffdfb5]/5 blur-[120px]" />

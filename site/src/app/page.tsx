@@ -3,10 +3,6 @@
 import dynamic from "next/dynamic";
 import { Home as HomeIcon, Users, Handshake } from "lucide-react";
 import HeroSection from "@/components/sections/HeroSection";
-const CyberneticGridShader = dynamic(
-  () => import("@/components/ui/cybernetic-grid-shader"),
-  { ssr: false }
-);
 import ProblemSection from "@/components/sections/ProblemSection";
 import SolutionSection from "@/components/sections/SolutionSection";
 import ProfilesSection from "@/components/sections/ProfilesSection";
@@ -43,10 +39,7 @@ const apporteurCards = [
 
 export default function Home() {
   return (
-    <main className="bg-[#111111]/90 relative z-0">
-      {/* ── GLOBAL BACKGROUND SHADER ── */}
-      <CyberneticGridShader />
-
+    <main className="bg-[#111111]">
       {/* ── 1. HERO ── */}
       <HeroSection />
 
