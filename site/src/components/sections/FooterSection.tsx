@@ -8,7 +8,7 @@ const resourceLinks = ["FAQ", "Programme Fondateurs", "Conditions", "Confidentia
 
 export default function FooterSection() {
   return (
-    <footer className="relative bg-[#0a0a0a] overflow-hidden pb-20">
+    <footer className="relative bg-[#0a0a0a]/90 overflow-hidden pb-20">
       <div className="h-px w-full bg-gradient-to-r from-transparent via-[#ffe0c2]/30 to-transparent" />
 
       <motion.div

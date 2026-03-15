@@ -54,7 +54,7 @@ export default function ProfilesSection() {
   return (
     <section
       id="profiles"
-      className="relative bg-[#111111] py-32 px-6 md:px-12 arch-bg-grid arch-bg-perspective"
+      className="relative bg-[#111111]/90 py-32 px-6 md:px-12 arch-bg-grid arch-bg-perspective"
     >
       {/* Background accent */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">

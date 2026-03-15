@@ -82,7 +82,7 @@ export default function QualificationSection() {
   return (
     <section
       id="qualification"
-      className="relative py-32 px-6 md:px-12 bg-[#111111] overflow-hidden arch-bg-grid arch-bg-crosshatch"
+      className="relative py-32 px-6 md:px-12 bg-[#111111]/90 overflow-hidden arch-bg-grid arch-bg-crosshatch"
     >
       {/* Background glow */}
       <div className="pointer-events-none absolute inset-0">
