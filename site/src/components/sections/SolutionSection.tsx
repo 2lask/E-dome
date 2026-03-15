@@ -22,7 +22,7 @@ import {
 const EASE = [0.165, 0.84, 0.44, 1] as const;
 
 const featurePills: { icon: LucideIcon; label: string }[] = [
-  { icon: Users, label: "R\u00e9seau social" },
+  { icon: Users, label: "Réseau social" },
   { icon: ShoppingBag, label: "Marketplace" },
   { icon: Handshake, label: "Apporteurs" },
   { icon: Briefcase, label: "Services" },
@@ -37,38 +37,38 @@ const pillars: {
 }[] = [
   {
     icon: Users,
-    title: "R\u00e9seau social immobilier",
+    title: "Réseau social immobilier",
     description:
-      "Publiez reels et stories pour b\u00e2tir votre audience. Attirez des prospects qualifi\u00e9s sans d\u00e9penser un centime en pub.",
-    impact: "Visibilit\u00e9 organique, sans budget pub.",
+      "Publiez reels et stories pour bâtir votre audience. Attirez des prospects qualifiés sans dépenser un centime en pub.",
+    impact: "Visibilité organique, sans budget pub.",
   },
   {
     icon: Store,
     title: "Marketplace transactionnelle",
     description:
-      "Location CT, LT et vente r\u00e9unies. Des commissions nettement inf\u00e9rieures au march\u00e9. Une seule interface pour tout g\u00e9rer.",
+      "Location CT, LT et vente réunies. Des commissions nettement inférieures au marché. Une seule interface pour tout gérer.",
     impact: "Un seul outil pour toutes vos transactions.",
   },
   {
     icon: Link2,
-    title: "Syst\u00e8me d\u2019apporteurs",
+    title: "Système d’apporteurs",
     description:
-      "Lien unique, tracking transparent, commissions automatiques. Le bouche-\u00e0-oreille devient mesurable et r\u00e9mun\u00e9r\u00e9.",
-    impact: "Le bouche-\u00e0-oreille devient mesurable et r\u00e9mun\u00e9r\u00e9.",
+      "Lien unique, tracking transparent, commissions automatiques. Le bouche-à-oreille devient mesurable et rémunéré.",
+    impact: "Le bouche-à-oreille devient mesurable et rémunéré.",
   },
   {
     icon: Settings,
     title: "Services additionnels",
     description:
-      "Conciergerie, transport, exp\u00e9riences locales : r\u00e9servez directement depuis chaque bien. Chaque service g\u00e9n\u00e8re des revenus.",
-    impact: "Chaque r\u00e9servation g\u00e9n\u00e8re des revenus suppl\u00e9mentaires.",
+      "Conciergerie, transport, expériences locales : réservez directement depuis chaque bien. Chaque service génère des revenus.",
+    impact: "Chaque réservation génère des revenus supplémentaires.",
   },
   {
     icon: BookOpen,
-    title: "Formations & communaut\u00e9",
+    title: "Formations & communauté",
     description:
-      "Formations, lives et webinars par des experts. Rejoignez une communaut\u00e9 de professionnels qui partagent vos ambitions.",
-    impact: "La mont\u00e9e en comp\u00e9tence int\u00e9gr\u00e9e \u00e0 la plateforme.",
+      "Formations, lives et webinars par des experts. Rejoignez une communauté de professionnels qui partagent vos ambitions.",
+    impact: "La montée en compétence intégrée à la plateforme.",
   },
 ];
 
@@ -102,7 +102,7 @@ function PropertyCardMockup() {
       className="mx-auto mt-20 max-w-sm"
     >
       <p className="mb-4 text-center text-sm font-medium uppercase tracking-widest text-white/30">
-        Aper\u00e7u de la marketplace
+        Aperçu de la marketplace
       </p>
       <div className="group relative overflow-hidden rounded-2xl border border-[#201e18] bg-[#191919] shadow-2xl shadow-black/40 transition-all duration-500 hover:border-[#ffe0c2]/25 hover:shadow-[0_0_60px_-15px_rgba(255,224,194,0.12)]">
         <div className="relative h-48 w-full overflow-hidden">
@@ -118,7 +118,7 @@ function PropertyCardMockup() {
         <div className="p-5">
           <div className="flex items-start justify-between">
             <div>
-              <h5 className="text-base font-bold text-white">Villa M\u00e9diterran\u00e9e</h5>
+              <h5 className="text-base font-bold text-white">Villa Méditerranée</h5>
               <div className="mt-1 flex items-center gap-1.5 text-white/40">
                 <MapPin className="h-3.5 w-3.5" />
                 <span className="text-xs">Marrakech, Maroc</span>
@@ -137,7 +137,7 @@ function PropertyCardMockup() {
           </div>
           <div className="my-4 h-px bg-gradient-to-r from-transparent via-[#201e18] to-transparent" />
           <button className="w-full rounded-xl bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] px-4 py-2.5 text-sm font-semibold text-[#111111] transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_24px_-6px_rgba(255,224,194,0.35)]">
-            R\u00e9server
+            Réserver
           </button>
         </div>
       </div>
@@ -226,7 +226,7 @@ export default function SolutionSection() {
             <h3 className="mt-6 text-3xl font-bold tracking-tight text-white md:text-5xl">
               Cinq piliers.{" "}
               <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
-                Un seul \u00e9cosyst\u00e8me.
+                Un seul écosystème.
               </span>
             </h3>
           </motion.div>

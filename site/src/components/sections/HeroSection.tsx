@@ -18,9 +18,9 @@ const fadeUp = {
 
 const badges = [
   { icon: Globe, title: "International" },
-  { icon: Users, title: "Multi-r\u00F4les" },
-  { icon: TrendingUp, title: "Visibilit\u00E9 organique" },
-  { icon: Link, title: "\u00C9cosyst\u00E8me complet" },
+  { icon: Users, title: "Multi-rôles" },
+  { icon: TrendingUp, title: "Visibilité organique" },
+  { icon: Link, title: "Écosystème complet" },
 ];
 
 export default function HeroSection() {
@@ -57,8 +57,8 @@ export default function HeroSection() {
           <div key={`rtick-${i}`} className="absolute right-[8%] w-2 h-px bg-white/[0.06]" style={{ top: `${i * 80}px`, transform: 'translateX(50%)' }} />
         ))}
         {/* Coordinate labels */}
-        <span className="absolute top-4 left-[8%] ml-3 text-[9px] font-mono text-white/[0.06] tracking-wider">{"N 46\u00B059'"}</span>
-        <span className="absolute top-4 right-[8%] mr-3 text-[9px] font-mono text-white/[0.06] tracking-wider text-right">{"E 6\u00B056'"}</span>
+        <span className="absolute top-4 left-[8%] ml-3 text-[9px] font-mono text-white/[0.06] tracking-wider">{"N 46°59'"}</span>
+        <span className="absolute top-4 right-[8%] mr-3 text-[9px] font-mono text-white/[0.06] tracking-wider text-right">{"E 6°56'"}</span>
       </div>
 
       {/* Animated architectural grid pattern */}

@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { Globe, Mail, MapPin } from "lucide-react";
 
-const platformLinks = ["Marketplace", "R\u00e9seau Social", "Apporteurs", "Formations", "Services"];
-const resourceLinks = ["FAQ", "Programme Fondateurs", "Conditions", "Confidentialit\u00e9"];
+const platformLinks = ["Marketplace", "Réseau Social", "Apporteurs", "Formations", "Services"];
+const resourceLinks = ["FAQ", "Programme Fondateurs", "Conditions", "Confidentialité"];
 
 export default function FooterSection() {
   return (

@@ -108,7 +108,7 @@ const stats = [
   {
     display: "$32.8B",
     numericTarget: 32.8,
-    label: "Marché immobilier digital mondial d\u2019ici 2030",
+    label: "Marché immobilier digital mondial d’ici 2030",
     source: "Grand View Research, TCAC 13.7%",
     icon: Globe,
   },
@@ -129,16 +129,16 @@ const stats = [
   {
     display: "60%",
     numericTarget: 60,
-    label: "De la population suisse est locataire — record europ\u00e9en",
-    source: "Office f\u00e9d\u00e9ral statistique, 2023",
+    label: "De la population suisse est locataire — record européen",
+    source: "Office fédéral statistique, 2023",
     icon: TrendingUp,
   },
 ];
 
 const trendChips = [
-  { label: "Social commerce\u00a0: $992 Mds \u2192 $2.9T en 2030", icon: TrendingUp },
-  { label: "Marketing d\u2019affiliation\u00a0: $17 Mds \u2192 $27.8 Mds en 2030", icon: Link2 },
-  { label: "250\u2019000+ biens location CT en Suisse (+25% depuis 2020)", icon: Home },
+  { label: "Social commerce : $992 Mds → $2.9T en 2030", icon: TrendingUp },
+  { label: "Marketing d’affiliation : $17 Mds → $27.8 Mds en 2030", icon: Link2 },
+  { label: "250’000+ biens location CT en Suisse (+25% depuis 2020)", icon: Home },
 ];
 
 export default function MarketSection() {
@@ -165,7 +165,7 @@ export default function MarketSection() {
             {/* Badge */}
             <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-4 py-1.5 text-sm font-medium text-[#ffe0c2]">
               <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#ffe0c2]" />
-              Opportunit\u00e9 de March\u00e9
+              Opportunité de Marché
             </span>
 
             {/* Heading */}
@@ -178,8 +178,8 @@ export default function MarketSection() {
 
             {/* Description */}
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
-              Les tendances de fond valident le besoin. Les donn\u00e9es parlent
-              d&apos;elles-m\u00eames.
+              Les tendances de fond valident le besoin. Les données parlent
+              d&apos;elles-mêmes.
             </p>
 
             {/* Trend chips */}
@@ -205,7 +205,7 @@ export default function MarketSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6, delay: 0.4, ease }}
-              className="mt-10 rounded-xl border border-[#ffe0c2]/20 bg-[#191919] p-6"
+              className="mt-10 rounded-xl border border-[#ffe0c2]/20 bg-[#191919] p-6 transition-colors duration-300 hover:border-[#ffe0c2]/40"
             >
               <p className="text-lg font-semibold leading-relaxed text-white/80 md:text-xl">
                 Aucune plateforme ne combine marketplace, réseau social, apporteurs, formations et services.{" "}

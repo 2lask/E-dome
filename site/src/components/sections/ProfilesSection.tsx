@@ -83,7 +83,7 @@ export default function ProfilesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ delay: 0.4, duration: 0.6, ease: EASE }}
-              className="mt-10 rounded-xl border border-[#201e18] bg-[#191919] p-5 max-w-md"
+              className="mt-10 rounded-xl border border-[#201e18] bg-[#191919] p-5 max-w-md transition-colors duration-300 hover:border-[#ffe0c2]/20"
             >
               <p className="text-sm font-semibold text-white mb-1">30+ professionnels d&eacute;j&agrave; engag&eacute;s</p>
               <p className="text-xs text-white/40">Agences, h&ocirc;tes et promoteurs ont manifest&eacute; leur int&eacute;r&ecirc;t pour le programme fondateur.</p>

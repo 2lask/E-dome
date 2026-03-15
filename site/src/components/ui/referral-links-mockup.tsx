@@ -77,7 +77,7 @@ export function ReferralLinksMockup() {
           <motion.div
             key={item.link}
             variants={itemVariants}
-            className="rounded-xl bg-[#191919] border border-[#2a2720] p-4"
+            className="rounded-xl bg-[#191919] border border-[#201e18] p-4"
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-white/90">
@@ -89,7 +89,7 @@ export function ReferralLinksMockup() {
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-[#0d0d0d] border border-[#2a2720]">
+              <div className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-[#0d0d0d] border border-[#201e18]">
                 <span className="text-xs font-mono text-white/50 truncate block">
                   {item.link}
                 </span>
@@ -109,7 +109,7 @@ export function ReferralLinksMockup() {
         ))}
       </div>
 
-      <div className="mx-6 h-px bg-gradient-to-r from-transparent via-[#2a2720] to-transparent" />
+      <div className="mx-6 h-px bg-gradient-to-r from-transparent via-[#201e18] to-transparent" />
 
       <motion.div variants={itemVariants} className="px-6 pt-4 pb-6">
         <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">
@@ -119,7 +119,7 @@ export function ReferralLinksMockup() {
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-[#191919] border border-[#2a2720]"
+              className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-[#191919] border border-[#201e18]"
             >
               <stat.icon className="w-4 h-4 text-[#ffe0c2]/60" />
               <span className="text-sm font-bold text-white">

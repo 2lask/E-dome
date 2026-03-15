@@ -3,10 +3,6 @@
 import dynamic from "next/dynamic";
 import { Home as HomeIcon, Users, Handshake } from "lucide-react";
 import HeroSection from "@/components/sections/HeroSection";
-const CrystalShader = dynamic(
-  () => import("@/components/ui/crystal-shader"),
-  { ssr: false }
-);
 import ProblemSection from "@/components/sections/ProblemSection";
 import SolutionSection from "@/components/sections/SolutionSection";
 import ProfilesSection from "@/components/sections/ProfilesSection";
@@ -14,21 +10,21 @@ import MarketSection from "@/components/sections/MarketSection";
 import QualificationSection from "@/components/sections/QualificationSection";
 import FAQSection from "@/components/sections/FAQSection";
 import FooterSection from "@/components/sections/FooterSection";
-import { ScrollReveal, ScaleReveal } from "@/components/ui/scroll-reveal";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { SectionTransition } from "@/components/ui/section-transition";
-import { VillaElevationScene } from "@/components/ui/large-architectural-scenes";
-import { CityPanorama } from "@/components/ui/architectural-separators";
 import { ReferralTrackingMockup } from "@/components/ui/platform-visuals";
 import { ReferralLinksMockup } from "@/components/ui/referral-links-mockup";
 import { DashboardMockup } from "@/components/ui/dashboard-mockup";
-import DispersingBuilding from "@/components/ui/dispersing-building";
-import { GlareCard } from "@/components/ui/glare-card";
 import FeaturedCrmDemoSection from "@/components/ui/featured-crm-demo-section";
 import {
   WaveTransition,
   DiagonalWipeTransition,
-  ArchitecturalBlueprintTransition,
 } from "@/components/ui/dramatic-transitions";
+
+const CrystalShader = dynamic(
+  () => import("@/components/ui/crystal-shader"),
+  { ssr: false }
+);
 
 const Building3DScene = dynamic(
   () => import("@/components/ui/building-3d").then((m) => m.Building3DScene),
@@ -43,7 +39,7 @@ const apporteurCards = [
 
 export default function Home() {
   return (
-    <main className="bg-[#111111]/90 relative z-0">
+    <main className="bg-[#111111]">
       <CrystalShader cellDensity={6} animationSpeed={0.15} warpFactor={0.4} mouseInfluence={0.1} />
 
       {/* ── 1. HERO ── */}
@@ -56,10 +52,6 @@ export default function Home() {
         <ProblemSection />
       </ScrollReveal>
 
-      <ScaleReveal>
-        <VillaElevationScene className="py-10" />
-      </ScaleReveal>
-
       <WaveTransition />
 
       {/* ── 3. LA SOLUTION ── */}
@@ -67,6 +59,7 @@ export default function Home() {
         <SolutionSection />
       </ScrollReveal>
 
+      {/* ── 4. BUILDING 3D ── */}
       <ScrollReveal>
         <div className="relative py-24">
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -78,51 +71,9 @@ export default function Home() {
 
       <DiagonalWipeTransition direction="left-to-right" />
 
-      {/* ── 4. OUTILS ── */}
+      {/* ── 5. OUTILS + DASHBOARD ── */}
       <ScrollReveal>
-        <div className="py-24 px-6 md:px-12">
-          <FeaturedCrmDemoSection />
-        </div>
-      </ScrollReveal>
-
-      <SectionTransition variant="perspective-lines" />
-
-      {/* ── 5. PROFILS ── */}
-      <ScrollReveal>
-        <ProfilesSection />
-      </ScrollReveal>
-
-      {/* ── 6. GLARE CARDS ── */}
-      <ScrollReveal>
-        <div className="py-24 px-6 md:px-12">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-white/30 mb-10">
-            Ce qui nous rend unique
-          </p>
-          <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-8">
-            <GlareCard className="flex flex-col items-start justify-end p-8">
-              <p className="text-4xl font-bold text-white mb-1">5</p>
-              <p className="text-sm font-semibold text-white/80 mb-2">march&eacute;s unifi&eacute;s</p>
-              <p className="text-xs text-white/40">Aucun concurrent ne combine ces 5 verticales.</p>
-            </GlareCard>
-            <GlareCard className="flex flex-col items-start justify-end p-8">
-              <p className="text-4xl font-bold text-white mb-1">0 CHF</p>
-              <p className="text-sm font-semibold text-white/80 mb-2">de publicit&eacute;</p>
-              <p className="text-xs text-white/40">Visibilit&eacute; organique via le r&eacute;seau social int&eacute;gr&eacute;.</p>
-            </GlareCard>
-            <GlareCard className="flex flex-col items-start justify-end p-8">
-              <p className="text-4xl font-bold text-white mb-1">100</p>
-              <p className="text-sm font-semibold text-white/80 mb-2">fondateurs</p>
-              <p className="text-xs text-white/40">Places limit&eacute;es. Conditions exclusives &agrave; vie.</p>
-            </GlareCard>
-          </div>
-        </div>
-      </ScrollReveal>
-
-      <SectionTransition variant="glass-divider" />
-
-      {/* ── 7. MARCH\u00c9 ── */}
-      <ScrollReveal>
-        <MarketSection />
+        <FeaturedCrmDemoSection />
       </ScrollReveal>
 
       <ScrollReveal>
@@ -136,10 +87,16 @@ export default function Home() {
         </div>
       </ScrollReveal>
 
-      <DispersingBuilding className="w-full py-24" />
+      <SectionTransition variant="glass-divider" />
+
+      {/* ── 6. PROFILS ── */}
+      <ScrollReveal>
+        <ProfilesSection />
+      </ScrollReveal>
+
       <SectionTransition variant="dot-grid" />
 
-      {/* ── 8. APPORTEURS ── */}
+      {/* ── 7. APPORTEURS ── */}
       <ScrollReveal>
         <section id="apporteurs" className="relative py-32 px-6 md:px-12 arch-bg-grid">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -158,12 +115,11 @@ export default function Home() {
                 Partagez un lien tra&ccedil;able. Chaque transaction g&eacute;n&eacute;r&eacute;e
                 vous rapporte une commission automatique &mdash; sans frais pour le client.
               </p>
-
               <div className="mt-10 space-y-5">
                 {[
                   { step: "1", title: "Activez votre lien", desc: "Depuis votre tableau de bord" },
                   { step: "2", title: "Partagez", desc: "Biens, clients ou services" },
-                  { step: "3", title: "Encaissez", desc: "Commission automatique \u00e0 chaque conversion" },
+                  { step: "3", title: "Encaissez", desc: "Commission automatique à chaque conversion" },
                 ].map((item) => (
                   <div key={item.step} className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ffe0c2]/20 to-[#ffdfb5]/10 border border-[#ffe0c2]/30 flex items-center justify-center text-[#ffe0c2] font-bold text-sm shrink-0">
@@ -177,14 +133,13 @@ export default function Home() {
                 ))}
               </div>
             </div>
-
             <div className="space-y-4">
               <ReferralTrackingMockup />
               <ReferralLinksMockup />
               {apporteurCards.map((card) => {
                 const Icon = card.icon;
                 return (
-                  <div key={card.title} className="rounded-xl border border-[#201e18] bg-[#191919] p-5 hover:border-[#ffe0c2]/30 transition-colors flex items-start gap-4">
+                  <div key={card.title} className="rounded-xl border border-[#201e18] bg-[#191919] p-5 hover:border-[#ffe0c2]/30 transition-colors duration-300 flex items-start gap-4">
                     <div className="rounded-lg bg-[#ffe0c2]/10 p-2.5 shrink-0">
                       <Icon className="h-5 w-5 text-[#ffe0c2]" />
                     </div>
@@ -202,8 +157,9 @@ export default function Home() {
 
       <DiagonalWipeTransition direction="right-to-left" />
 
+      {/* ── 8. MARCHÉ ── */}
       <ScrollReveal>
-        <CityPanorama />
+        <MarketSection />
       </ScrollReveal>
 
       <SectionTransition variant="architectural-horizon" />
@@ -213,14 +169,10 @@ export default function Home() {
         <QualificationSection />
       </ScrollReveal>
 
-      <SectionTransition variant="perspective-lines" />
-
       {/* ── 10. FAQ ── */}
       <ScrollReveal>
         <FAQSection />
       </ScrollReveal>
-
-      <ArchitecturalBlueprintTransition />
 
       {/* ── FOOTER ── */}
       <FooterSection />

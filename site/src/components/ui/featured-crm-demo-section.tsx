@@ -1,7 +1,6 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import Image from "next/image";
 import { useState } from "react";
 import {
   Home,
@@ -20,44 +19,55 @@ import {
 
 const features = [
   {
-    title: "Marketplace int\u00e9gr\u00e9e",
-    subtitle: "Location courte et longue dur\u00e9e, vente \u2014 tout dans un parcours unique avec des commissions 40-60% inf\u00e9rieures aux plateformes traditionnelles.",
+    title: "Marketplace intégrée",
+    subtitle: "Location courte et longue durée, vente — tout dans un parcours unique avec des commissions 40-60% inférieures aux plateformes traditionnelles.",
   },
   {
-    title: "R\u00e9seau social immobilier",
-    subtitle: "Publiez des reels, stories et contenus pour b\u00e2tir votre audience. Visibilit\u00e9 organique gratuite, sans budget publicitaire.",
+    title: "Réseau social immobilier",
+    subtitle: "Publiez des reels, stories et contenus pour bâtir votre audience. Visibilité organique gratuite, sans budget publicitaire.",
   },
   {
-    title: "Syst\u00e8me d\u2019apporteurs",
-    subtitle: "Liens tra\u00e7ables, commissions automatiques, dashboard en temps r\u00e9el. Le bouche-\u00e0-oreille devient mesurable et r\u00e9mun\u00e9r\u00e9.",
+    title: "Système d’apporteurs",
+    subtitle: "Liens traçables, commissions automatiques, dashboard en temps réel. Le bouche-à-oreille devient mesurable et rémunéré.",
   },
   {
     title: "Formations & services",
-    subtitle: "Catalogue de formations, webinars d\u2019experts, et services additionnels int\u00e9gr\u00e9s directement \u00e0 chaque bien.",
+    subtitle: "Catalogue de formations, webinars d’experts, et services additionnels intégrés directement à chaque bien.",
   },
 ];
 
 const sidebarItems = [
   { icon: Home, label: "Accueil", active: false },
-  { icon: BarChart3, label: "Analytics", active: true },
+  { icon: BarChart3, label: "Analytique", active: true },
   { icon: Calendar, label: "Calendrier", active: false },
-  { icon: Users, label: "R\u00e9seau", active: false },
-  { icon: Settings, label: "R\u00e9glages", active: false },
+  { icon: Users, label: "Réseau", active: false },
+  { icon: Settings, label: "Réglages", active: false },
 ];
 
 const properties = [
-  { name: "Chalet Verbier", dates: "12\u201317 mars", status: "Confirm\u00e9e", color: "text-emerald-400 bg-emerald-500/15 border-emerald-500/20", price: "3\u2019200 CHF", rating: 4.8 },
-  { name: "Apt. Lausanne", dates: "20\u201323 mars", status: "En attente", color: "text-amber-400 bg-amber-500/15 border-amber-500/20", price: "1\u2019450 CHF", rating: 4.5 },
-  { name: "Villa Montreux", dates: "28\u201331 mars", status: "Confirm\u00e9e", color: "text-emerald-400 bg-emerald-500/15 border-emerald-500/20", price: "4\u2019800 CHF", rating: 4.9 },
+  { name: "Chalet Verbier", dates: "12\u201317 mars", status: "Confirmée", color: "text-emerald-400 bg-emerald-500/15 border-emerald-500/20", price: "3’200 CHF", rating: 4.8 },
+  { name: "Apt. Lausanne", dates: "20\u201323 mars", status: "En attente", color: "text-amber-400 bg-amber-500/15 border-amber-500/20", price: "1’450 CHF", rating: 4.5 },
+  { name: "Villa Montreux", dates: "28\u201331 mars", status: "Confirmée", color: "text-emerald-400 bg-emerald-500/15 border-emerald-500/20", price: "4’800 CHF", rating: 4.9 },
 ];
 
 const barData = [
   { month: "Oct", h: 30 },
   { month: "Nov", h: 42 },
-  { month: "D\u00e9c", h: 38 },
+  { month: "Déc", h: 38 },
   { month: "Jan", h: 55 },
-  { month: "F\u00e9v", h: 65 },
+  { month: "Fév", h: 65 },
   { month: "Mar", h: 88 },
+];
+
+const integrations = [
+  { name: "Stripe", subtitle: "Paiements sécurisés" },
+  { name: "Twilio", subtitle: "Communications" },
+  { name: "Google Maps", subtitle: "Géolocalisation" },
+  { name: "Cloudinary", subtitle: "Médias optimisés" },
+  { name: "Veriff", subtitle: "Vérification KYC" },
+  { name: "SendGrid", subtitle: "Notifications email" },
+  { name: "Intercom", subtitle: "Support client" },
+  { name: "Mixpanel", subtitle: "Analytique avancée" },
 ];
 
 function InteractiveDashboard() {
@@ -114,7 +124,7 @@ function InteractiveDashboard() {
 
         {/* Tabs */}
         <div className="flex gap-1">
-          {([["all", "Tous"], ["reservations", "R\u00e9servations"], ["apports", "Apports"]] as const).map(([key, label]) => (
+          {([["all", "Tous"], ["reservations", "Réservations"], ["apports", "Apports"]] as const).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setActiveTab(key)}
@@ -130,7 +140,7 @@ function InteractiveDashboard() {
         {/* Chart */}
         <div className="rounded-lg bg-[#111111] border border-[#201e18] p-3">
           <div className="flex items-end justify-between gap-1.5 h-16">
-            {barData.map((bar, i) => (
+            {barData.map((bar) => (
               <div key={bar.month} className="flex flex-col items-center gap-1 flex-1">
                 <div
                   className="w-full rounded-t bg-gradient-to-t from-[#ffe0c2]/50 to-[#ffdfb5]/15 transition-all duration-500"
@@ -184,68 +194,59 @@ function InteractiveDashboard() {
 
 export default function FeaturedCrmDemoSection() {
   return (
-    <div className="max-w-7xl mx-auto bg-[#111111] text-white">
-      <header className="text-left py-12">
-        <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
-          Des outils pens\u00e9s pour l&apos;immobilier. <br />
-          <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
-            de nouvelle g\u00e9n\u00e9ration.
-          </span>
-        </h2>
-      </header>
+    <div className="relative bg-[#111111]/85 text-white arch-bg-grid">
+      <div className="max-w-7xl mx-auto py-32 px-6 md:px-12">
+        <header className="text-left pb-12">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+            Des outils pensés pour l&apos;immobilier{" "}
+            <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
+              de nouvelle génération.
+            </span>
+          </h2>
+        </header>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-2 h-full">
-        {/* Interactive Dashboard */}
-        <Card className="lg:col-span-2 bg-[#191919] border-[#201e18] p-2 overflow-hidden relative mb-4 lg:mb-0 flex flex-col min-h-[500px]">
-          <InteractiveDashboard />
-        </Card>
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-2 h-full">
+          {/* Interactive Dashboard */}
+          <Card className="lg:col-span-2 bg-[#191919] border-[#201e18] p-2 overflow-hidden relative mb-4 lg:mb-0 flex flex-col min-h-[500px]">
+            <InteractiveDashboard />
+          </Card>
 
-        {/* Feature cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 h-full">
-          {features.map((feature, i) => (
+          {/* Feature cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 h-full">
+            {features.map((feature, i) => (
+              <div
+                key={i}
+                className="flex flex-col border border-[#201e18] rounded-xl p-2 hover:border-[#ffe0c2]/20 cursor-pointer transition-colors duration-300"
+              >
+                <Card className="bg-[#191919] border-[#201e18] flex-grow rounded-lg p-0" />
+                <div className="mt-2">
+                  <h3 className="text-sm font-medium text-white mb-1">{feature.title}</h3>
+                  <p className="text-xs text-white/40 leading-relaxed">{feature.subtitle}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-1 text-sm">
+          {integrations.map((integration) => (
             <div
-              key={i}
-              className="flex flex-col border border-[#201e18] rounded-xl p-2 hover:border-[#ffe0c2]/20 cursor-pointer transition-colors duration-300"
+              key={integration.name}
+              className="p-3 flex items-center gap-3 hover:bg-[#191919] rounded-xl transition-colors duration-300 border border-transparent hover:border-[#201e18]"
             >
-              <Card className="bg-[#191919] border-[#201e18] flex-grow rounded-lg p-0" />
-              <div className="mt-2">
-                <h3 className="text-sm font-medium text-white mb-1">{feature.title}</h3>
-                <p className="text-xs text-white/40 leading-relaxed">{feature.subtitle}</p>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ffe0c2]/20 to-[#ffdfb5]/5 border border-[#201e18] flex items-center justify-center shrink-0">
+                <span className="text-[#ffe0c2] text-xs font-bold">
+                  {integration.name.slice(0, 2).toUpperCase()}
+                </span>
+              </div>
+              <div>
+                <div className="font-normal text-white">{integration.name}</div>
+                <div className="text-xs text-white/40">{integration.subtitle}</div>
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      <section className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-1 text-sm">
-        {[
-          { name: "Stripe", subtitle: "Paiements s\u00e9curis\u00e9s", domain: "stripe.com" },
-          { name: "Twilio", subtitle: "Communications", domain: "twilio.com" },
-          { name: "Google Maps", subtitle: "G\u00e9olocalisation", domain: "google.com" },
-          { name: "Cloudinary", subtitle: "M\u00e9dias optimis\u00e9s", domain: "cloudinary.com" },
-          { name: "Veriff", subtitle: "V\u00e9rification KYC", domain: "veriff.com" },
-          { name: "SendGrid", subtitle: "Notifications email", domain: "sendgrid.com" },
-          { name: "Intercom", subtitle: "Support client", domain: "intercom.com" },
-          { name: "Mixpanel", subtitle: "Analytics avanc\u00e9es", domain: "mixpanel.com" },
-        ].map((integration) => (
-          <div
-            key={integration.name}
-            className="p-3 flex items-center gap-3 hover:bg-[#191919] rounded-xl transition-colors duration-300"
-          >
-            <Image
-              src={`https://logo.clearbit.com/${integration.domain}`}
-              alt={integration.name}
-              width={40}
-              height={40}
-              className="w-10 h-10 object-contain rounded-xl bg-white p-1"
-            />
-            <div>
-              <div className="font-normal text-white">{integration.name}</div>
-              <div className="text-xs text-white/40">{integration.subtitle}</div>
-            </div>
-          </div>
-        ))}
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

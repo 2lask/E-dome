@@ -44,21 +44,21 @@ const slideFromRight = {
 
 const problems = [
   {
-    title: "Commissions \u00e9lev\u00e9es",
+    title: "Commissions élevées",
     description:
-      "Les plateformes traditionnelles pr\u00e9l\u00e8vent des commissions significatives sur chaque transaction. Ajoutez la publicit\u00e9 obligatoire : une part majeure de votre CA dispara\u00eet.",
+      "Les plateformes traditionnelles prélèvent des commissions significatives sur chaque transaction. Ajoutez la publicité obligatoire : une part majeure de votre CA disparaît.",
     icon: DollarSign,
   },
   {
-    title: "D\u00e9pendance totale",
+    title: "Dépendance totale",
     description:
-      "Z\u00e9ro contr\u00f4le sur la relation client. Algorithmes opaques, risque de suspension. Vos avis, votre client\u00e8le, vos donn\u00e9es : tout appartient \u00e0 des tiers.",
+      "Zéro contrôle sur la relation client. Algorithmes opaques, risque de suspension. Vos avis, votre clientèle, vos données : tout appartient à des tiers.",
     icon: Lock,
   },
   {
-    title: "March\u00e9 fragment\u00e9",
+    title: "Marché fragmenté",
     description:
-      "5\u2019000+ agences, 150\u2019000+ propri\u00e9taires, 250\u2019000+ biens en Suisse \u2014 tous sur des outils diff\u00e9rents, sans passerelle ni vision d\u2019ensemble.",
+      "5’000+ agences, 150’000+ propriétaires, 250’000+ biens en Suisse — tous sur des outils différents, sans passerelle ni vision d’ensemble.",
     icon: Layers,
   },
 ];
@@ -191,7 +191,7 @@ export default function ProblemSection() {
             <motion.div
               custom={0}
               variants={slideFromRight}
-              className="rounded-xl border border-[#201e18] bg-[#191919] p-6 md:p-8"
+              className="rounded-xl border border-[#201e18] bg-[#191919] p-6 md:p-8 transition-colors duration-300 hover:border-[#ffe0c2]/20"
             >
               <p className="mb-4 text-xs font-medium uppercase tracking-widest text-white/30">
                 Marché actuel : outils dispersés
@@ -203,7 +203,7 @@ export default function ProblemSection() {
             <motion.div
               custom={1}
               variants={slideFromRight}
-              className="rounded-xl border border-[#201e18] bg-[#191919] p-6 md:p-8"
+              className="rounded-xl border border-[#201e18] bg-[#191919] p-6 md:p-8 transition-colors duration-300 hover:border-[#ffe0c2]/20"
             >
               <p className="mb-4 text-xs font-medium uppercase tracking-widest text-white/30">
                 Architecture du marché actuel
