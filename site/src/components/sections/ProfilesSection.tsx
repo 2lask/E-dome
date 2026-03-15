@@ -77,21 +77,17 @@ export default function ProfilesSection() {
               <SocialFeedMockup />
             </PhoneMockup>
 
-            {/* Closing quote */}
-            <motion.blockquote
+            {/* Social proof */}
+            <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ delay: 0.4, duration: 0.6, ease: EASE }}
-              className="mt-10 max-w-md border-l-2 border-[#ffe0c2]/30 pl-5"
+              className="mt-10 rounded-xl border border-[#201e18] bg-[#191919] p-5 max-w-md"
             >
-              <p className="text-base italic leading-relaxed text-white/50 md:text-lg text-center lg:text-left">
-                <span className="text-[#ffe0c2]/60">&ldquo;</span>
-                Peu importe où vous vous situez dans l&apos;immobilier,
-                E-Dome a été conçu pour vous.
-                <span className="text-[#ffe0c2]/60">&rdquo;</span>
-              </p>
-            </motion.blockquote>
+              <p className="text-sm font-semibold text-white mb-1">30+ professionnels d&eacute;j&agrave; engag&eacute;s</p>
+              <p className="text-xs text-white/40">Agences, h&ocirc;tes et promoteurs ont manifest&eacute; leur int&eacute;r&ecirc;t pour le programme fondateur.</p>
+            </motion.div>
           </motion.div>
 
           {/* ── Right column (55%) ── */}
@@ -110,16 +106,16 @@ export default function ProfilesSection() {
 
             {/* Heading */}
             <h2 className="mt-6 text-3xl font-bold tracking-tight text-white md:text-5xl">
-              Un compte.{" "}
+              Vous &ecirc;tes plusieurs.{" "}
               <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
-                Tous les rôles.
+                E-Dome aussi.
               </span>
             </h2>
 
             {/* Description */}
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
-              E-Dome s&apos;adapte à chaque acteur de l&apos;immobilier. Un
-              seul profil peut activer plusieurs rôles selon son activité.
+              Un seul compte, plusieurs casquettes. Activez les r&ocirc;les
+              qui correspondent &agrave; votre activit&eacute;.
             </p>
 
             {/* 3x3 Role cards grid */}

@@ -117,9 +117,9 @@ export default function QualificationSection() {
               variants={revealVariant}
               className="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight"
             >
-              Façonnez E-Dome{" "}
+              Construisez{" "}
               <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
-                avec nous.
+                l&apos;immobilier de demain.
               </span>
             </motion.h2>
 

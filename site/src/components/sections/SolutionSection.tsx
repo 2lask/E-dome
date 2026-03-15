@@ -166,9 +166,9 @@ export default function SolutionSection() {
               La Solution
             </span>
             <h2 className="mt-6 text-3xl font-bold tracking-tight text-white md:text-5xl">
-              E-Dome.{" "}
+              Tout r&eacute;uni.{" "}
               <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
-                La premi\u00e8re plateforme \u00e0 tout unifier.
+                Pour la premi&egrave;re fois.
               </span>
             </h2>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
@@ -252,7 +252,11 @@ export default function SolutionSection() {
                     idx === 4 && "sm:col-span-2 lg:col-span-1"
                   )}
                 >
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent rounded-t-2xl" />
+                  {/* Card number */}
+                  <span className="absolute top-4 right-5 text-5xl font-bold text-white/[0.03] select-none">
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ffe0c2]/15 to-transparent rounded-t-2xl" />
                   <div className="relative mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#ffe0c2]/15 to-[#ffdfb5]/10 ring-1 ring-[#ffe0c2]/15 transition-all group-hover:ring-[#ffe0c2]/30 group-hover:shadow-[0_0_20px_-4px_rgba(255,224,194,0.25)]">
                     <Icon className="h-6 w-6 text-[#ffe0c2] transition-transform duration-300 group-hover:scale-110" />
                   </div>

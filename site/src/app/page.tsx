@@ -96,18 +96,24 @@ export default function Home() {
       {/* ── 6. GLARE CARDS ── */}
       <ScrollReveal>
         <div className="py-24 px-6 md:px-12">
+          <p className="text-center text-xs font-semibold uppercase tracking-widest text-white/30 mb-10">
+            Ce qui nous rend unique
+          </p>
           <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-8">
-            <GlareCard className="flex flex-col items-center justify-center p-8">
-              <p className="text-2xl font-bold text-white mb-2">Marketplace</p>
-              <p className="text-sm text-white/50 text-center">Achetez, vendez et louez en confiance</p>
+            <GlareCard className="flex flex-col items-start justify-end p-8">
+              <p className="text-4xl font-bold text-white mb-1">5</p>
+              <p className="text-sm font-semibold text-white/80 mb-2">march&eacute;s unifi&eacute;s</p>
+              <p className="text-xs text-white/40">Aucun concurrent ne combine ces 5 verticales.</p>
             </GlareCard>
-            <GlareCard className="flex flex-col items-center justify-center p-8">
-              <p className="text-2xl font-bold text-white mb-2">R&eacute;seau Social</p>
-              <p className="text-sm text-white/50 text-center">Visibilit&eacute; organique gratuite</p>
+            <GlareCard className="flex flex-col items-start justify-end p-8">
+              <p className="text-4xl font-bold text-white mb-1">0 CHF</p>
+              <p className="text-sm font-semibold text-white/80 mb-2">de publicit&eacute;</p>
+              <p className="text-xs text-white/40">Visibilit&eacute; organique via le r&eacute;seau social int&eacute;gr&eacute;.</p>
             </GlareCard>
-            <GlareCard className="flex flex-col items-center justify-center p-8">
-              <p className="text-2xl font-bold text-white mb-2">Apporteurs</p>
-              <p className="text-sm text-white/50 text-center">Commissions automatiques tra&ccedil;ables</p>
+            <GlareCard className="flex flex-col items-start justify-end p-8">
+              <p className="text-4xl font-bold text-white mb-1">100</p>
+              <p className="text-sm font-semibold text-white/80 mb-2">fondateurs</p>
+              <p className="text-xs text-white/40">Places limit&eacute;es. Conditions exclusives &agrave; vie.</p>
             </GlareCard>
           </div>
         </div>

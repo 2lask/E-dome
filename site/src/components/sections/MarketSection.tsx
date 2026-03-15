@@ -170,9 +170,9 @@ export default function MarketSection() {
 
             {/* Heading */}
             <h2 className="mt-6 text-3xl font-bold leading-tight tracking-tight text-white md:text-5xl">
-              Un march\u00e9 mondial en{" "}
+              Les chiffres{" "}
               <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
-                pleine transformation.
+                parlent d&apos;eux-m&ecirc;mes.
               </span>
             </h2>
 

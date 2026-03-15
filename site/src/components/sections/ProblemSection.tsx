@@ -132,9 +132,9 @@ export default function ProblemSection() {
               variants={slideFromLeft}
               className="mb-10 text-3xl md:text-5xl font-bold tracking-tight text-white"
             >
-              Le marché immobilier mondial{" "}
+              Un march&eacute; immobilier{" "}
               <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
-                est fragmenté.
+                qui freine ses acteurs.
               </span>
             </motion.h2>
 

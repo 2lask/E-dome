@@ -37,6 +37,7 @@ export default function RootLayout({
     <html lang="fr" className="dark">
       <body
         className={`${inter.variable} ${dmSans.variable} ${jetbrainsMono.variable} bg-[#111111] text-white antialiased`}
+        style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
       >
         {children}
       </body>
