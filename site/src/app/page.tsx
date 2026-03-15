@@ -4,6 +4,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { Home as HomeIcon, Users, Handshake } from "lucide-react";
 import HeroSection from "@/components/sections/HeroSection";
+import AnimatedShaderHero from "@/components/ui/animated-shader-hero";
 import ProblemSection from "@/components/sections/ProblemSection";
 import SolutionSection from "@/components/sections/SolutionSection";
 import ProfilesSection from "@/components/sections/ProfilesSection";
@@ -82,7 +83,21 @@ export default function Home() {
   return (
     <main className="bg-[#111111]">
       {/* ================================================================
-       * 1. HERO
+       * 1. SHADER HERO (WebGL animated background)
+       * ================================================================*/}
+      <AnimatedShaderHero
+        badge="La Plateforme Immobili\u00e8re Nouvelle G\u00e9n\u00e9ration"
+        headline={{
+          line1: "L\u2019\u00e9cosyst\u00e8me qui connecte",
+          line2: "l\u2019immobilier mondial.",
+        }}
+        subtitle="R\u00e9seau social \u00b7 Marketplace \u00b7 Apporteurs d\u2019affaires \u00b7 Formations \u00b7 Services \u2014 enfin r\u00e9unis dans un seul \u00e9cosyst\u00e8me global."
+        primaryCta={{ text: "Rejoindre les Membres Fondateurs", href: "#qualification" }}
+        secondaryCta={{ text: "D\u00e9couvrir le projet", href: "#problem" }}
+      />
+
+      {/* ================================================================
+       * 1b. HERO SECTION (content details)
        * ================================================================*/}
       <HeroSection />
 
