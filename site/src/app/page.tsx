@@ -72,8 +72,11 @@ export default function Home() {
       </ScrollReveal>
 
       <ScrollReveal>
-        <div className="relative py-12">
-          <Building3DScene className="mx-auto max-w-5xl" />
+        <div className="relative py-24">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[600px] h-[600px] rounded-full bg-[#ffe0c2]/[0.04] blur-[120px]" />
+          </div>
+          <Building3DScene className="mx-auto max-w-6xl relative z-10" />
         </div>
       </ScrollReveal>
 
@@ -227,15 +230,15 @@ export default function Home() {
       <FooterSection />
 
       {/* ── STICKY CTA BAR ── */}
-      <div className="sticky-cta-bar">
-        <span className="text-[#111111] text-sm font-semibold hidden sm:inline">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] py-4 px-6 flex items-center justify-center gap-4 shadow-[0_-8px_32px_rgba(255,224,194,0.3)]">
+        <span className="text-[#111111] text-sm md:text-base font-semibold hidden sm:inline">
           Rejoignez les 100 premiers fondateurs
         </span>
         <a
           href="#qualification"
-          className="animate-cta-pulse inline-flex items-center px-6 py-2.5 bg-[#111111] text-[#ffe0c2] text-sm font-semibold rounded-full hover:bg-[#191919] transition-colors"
+          className="animate-cta-pulse inline-flex items-center px-8 py-3 bg-[#111111] text-[#ffe0c2] text-sm md:text-base font-bold rounded-full hover:bg-[#191919] transition-colors"
         >
-          Manifester mon int&eacute;r&ecirc;t
+          Manifester mon int&eacute;r&ecirc;t &rarr;
         </a>
       </div>
     </main>

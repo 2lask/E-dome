@@ -272,7 +272,7 @@ export default function SolutionSection() {
             })}
           </motion.div>
 
-          <PropertyCardMockup />
+          {/* PropertyCardMockup removed — CRM dashboard section shows the product */}
         </div>
       </div>
     </section>

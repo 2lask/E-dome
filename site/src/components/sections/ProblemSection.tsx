@@ -234,7 +234,7 @@ export default function ProblemSection() {
                           key={item.before}
                           className="flex items-center gap-3 text-sm leading-snug text-white/50"
                         >
-                          <XCircle className="h-4 w-4 shrink-0 text-[rgba(200,100,80,0.6)]" />
+                          <XCircle className="h-5 w-5 shrink-0 text-[rgba(220,100,80,0.8)]" />
                           {item.before}
                         </li>
                       ))}
@@ -256,7 +256,7 @@ export default function ProblemSection() {
                           key={item.after}
                           className="flex items-center gap-3 text-sm leading-snug text-white/70"
                         >
-                          <CheckCircle2 className="h-4 w-4 shrink-0 text-[rgba(160,200,120,0.7)]" />
+                          <CheckCircle2 className="h-5 w-5 shrink-0 text-[#ffe0c2]" />
                           {item.after}
                         </li>
                       ))}
