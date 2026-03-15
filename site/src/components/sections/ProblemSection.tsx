@@ -90,7 +90,7 @@ export default function ProblemSection() {
   return (
     <section
       id="problem"
-      className="relative bg-[#111111] py-32 px-6 md:px-12"
+      className="relative bg-[#111111] py-32 px-6 md:px-12 arch-bg-grid arch-bg-hatching"
     >
       {/* Diagonal hatching pattern background */}
       <div

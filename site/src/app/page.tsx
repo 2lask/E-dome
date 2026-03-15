@@ -136,7 +136,7 @@ export default function Home() {
 
       {/* ── 8. APPORTEURS ── */}
       <ScrollReveal>
-        <section id="apporteurs" className="py-32 px-6 md:px-12">
+        <section id="apporteurs" className="relative py-32 px-6 md:px-12 arch-bg-grid">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <div>
               <span className="inline-flex items-center rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-4 py-1.5 text-sm font-medium text-[#ffe0c2]">
