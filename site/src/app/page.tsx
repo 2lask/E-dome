@@ -32,9 +32,9 @@ const Building3DScene = dynamic(
 );
 
 const apporteurCards = [
-  { icon: HomeIcon, title: "Apporter un bien", desc: "Partagez des opportunit\u00e9s depuis votre r\u00e9seau" },
+  { icon: HomeIcon, title: "Apporter un bien", desc: "Partagez des opportunités depuis votre réseau" },
   { icon: Users, title: "Amener un client", desc: "Recommandez acheteurs, vendeurs ou locataires" },
-  { icon: Handshake, title: "Cr\u00e9er un partenariat", desc: "Connectez des professionnels compl\u00e9mentaires" },
+  { icon: Handshake, title: "Créer un partenariat", desc: "Connectez des professionnels complémentaires" },
 ];
 
 export default function Home() {
@@ -42,14 +42,14 @@ export default function Home() {
     <main className="bg-[#111111]">
       {/* ── 1. HERO ── */}
       <AnimatedShaderHero
-        badge="Plateforme Immobili\u00e8re Nouvelle G\u00e9n\u00e9ration"
+        badge="Plateforme Immobilière Nouvelle Génération"
         headline={{
-          line1: "L\u2019\u00e9cosyst\u00e8me qui connecte",
-          line2: "l\u2019immobilier mondial.",
+          line1: "L'écosystème qui connecte",
+          line2: "l'immobilier mondial.",
         }}
-        subtitle="Marketplace \u00b7 R\u00e9seau social \u00b7 Apporteurs d\u2019affaires \u00b7 Formations \u00b7 Services \u2014 r\u00e9unis pour la premi\u00e8re fois."
+        subtitle="Marketplace · Réseau social · Apporteurs d'affaires · Formations · Services — réunis pour la première fois."
         primaryCta={{ text: "Devenir Membre Fondateur", href: "#qualification" }}
-        secondaryCta={{ text: "D\u00e9couvrir le projet", href: "#problem" }}
+        secondaryCta={{ text: "Découvrir le projet", href: "#problem" }}
       />
 
       <SectionTransition variant="architectural-horizon" />
