@@ -67,9 +67,9 @@ const kpiCards = [
     change: "+18%",
     positive: true,
     icon: DollarSign,
-    gradient: "from-[#ffe0c2]/20 to-[#ffe0c2]/5",
-    iconBg: "bg-[#ffe0c2]/10",
-    iconColor: "text-[#ffe0c2]",
+    gradient: "from-[#8B6F47]/20 to-[#8B6F47]/5",
+    iconBg: "bg-[#8B6F47]/10",
+    iconColor: "text-[#8B6F47]",
   },
   {
     label: "Réservations",
@@ -122,7 +122,7 @@ const barData = [
 ];
 
 const progressMetrics = [
-  { label: "Taux d'occupation", value: 87, color: "bg-[#ffe0c2]" },
+  { label: "Taux d'occupation", value: 87, color: "bg-[#8B6F47]" },
   { label: "Satisfaction clients", value: 94, color: "bg-[#4ade80]" },
   { label: "Objectif mensuel", value: 72, color: "bg-[#60a5fa]" },
   { label: "Croissance réseau", value: 61, color: "bg-[#c084fc]" },
@@ -211,27 +211,27 @@ export function DashboardMockup() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.15 }}
-      className="w-full max-w-5xl mx-auto rounded-2xl border border-[#201e18] bg-[#0d0d0d] overflow-hidden shadow-2xl"
+      className="w-full max-w-5xl mx-auto rounded-2xl border border-[#8B6F47]/12 bg-[#EDE5DB] overflow-hidden shadow-2xl"
     >
       {/* ──── Header ──── */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between px-6 py-3.5 border-b border-[#201e18]"
+        className="flex items-center justify-between px-6 py-3.5 border-b border-[#8B6F47]/12"
       >
         <div className="flex items-center gap-3">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#ffe0c2]/80" />
-          <span className="text-sm font-semibold text-white tracking-tight">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#8B6F47]/80" />
+          <span className="text-sm font-semibold text-[#1A1A1A] tracking-tight">
             E-Dome Analytics
           </span>
-          <span className="hidden sm:inline text-[10px] text-white/25 font-medium ml-1">
+          <span className="hidden sm:inline text-[10px] text-[#1A1A1A]/25 font-medium ml-1">
             / Vue d&apos;ensemble
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="hidden sm:inline text-[10px] text-white/30">
+          <span className="hidden sm:inline text-[10px] text-[#AAAAAA]">
             Dernière mise à jour : il y a 2 min
           </span>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ffe0c2] to-[#ffdfb5] flex items-center justify-center text-[#111111] text-xs font-bold">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8B6F47] to-[#C4956A] flex items-center justify-center text-[#111111] text-xs font-bold">
             MD
           </div>
         </div>
@@ -241,7 +241,7 @@ export function DashboardMockup() {
         {/* ──── Sidebar ──── */}
         <motion.div
           variants={itemVariants}
-          className="hidden md:flex flex-col items-center gap-1.5 py-5 px-3 border-r border-[#201e18] bg-[#0a0a0a]"
+          className="hidden md:flex flex-col items-center gap-1.5 py-5 px-3 border-r border-[#8B6F47]/12 bg-[#0a0a0a]"
         >
           {sidebarIcons.map((item) => (
             <div
@@ -249,8 +249,8 @@ export function DashboardMockup() {
               title={item.label}
               className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
                 item.active
-                  ? "bg-[#ffe0c2]/10 text-[#ffe0c2]"
-                  : "text-white/25 hover:text-white/50"
+                  ? "bg-[#8B6F47]/10 text-[#8B6F47]"
+                  : "text-[#1A1A1A]/25 hover:text-[#888888]"
               }`}
             >
               <item.icon className="w-4 h-4" />
@@ -267,7 +267,7 @@ export function DashboardMockup() {
                 key={kpi.label}
                 variants={cardPopVariants}
                 custom={idx}
-                className={`rounded-xl bg-gradient-to-b ${kpi.gradient} border border-[#201e18] p-4 flex flex-col gap-3`}
+                className={`rounded-xl bg-gradient-to-b ${kpi.gradient} border border-[#8B6F47]/12 p-4 flex flex-col gap-3`}
               >
                 <div className="flex items-center justify-between">
                   <div
@@ -291,15 +291,15 @@ export function DashboardMockup() {
                   </span>
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-none">
+                  <p className="text-xl sm:text-2xl font-bold text-[#1A1A1A] tracking-tight leading-none">
                     {kpi.value}
                     {kpi.unit && (
-                      <span className="text-xs font-medium text-white/40 ml-1">
+                      <span className="text-xs font-medium text-[#888888] ml-1">
                         {kpi.unit}
                       </span>
                     )}
                   </p>
-                  <p className="text-[10px] font-medium text-white/35 mt-1 uppercase tracking-wider">
+                  <p className="text-[10px] font-medium text-[#1A1A1A]/35 mt-1 uppercase tracking-wider">
                     {kpi.label}
                   </p>
                 </div>
@@ -312,18 +312,18 @@ export function DashboardMockup() {
             {/* Left: Bar chart (spans 3 cols) */}
             <motion.div
               variants={itemVariants}
-              className="lg:col-span-3 rounded-xl bg-[#111111] border border-[#201e18] p-4 sm:p-5"
+              className="lg:col-span-3 rounded-xl bg-[#FAF8F5] border border-[#8B6F47]/12 p-4 sm:p-5"
             >
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-xs font-semibold text-white/80">
+                  <p className="text-xs font-semibold text-[#1A1A1A]/80">
                     Revenus mensuels
                   </p>
-                  <p className="text-[10px] text-white/30 mt-0.5">
+                  <p className="text-[10px] text-[#AAAAAA] mt-0.5">
                     Janvier – Décembre 2025
                   </p>
                 </div>
-                <span className="inline-flex items-center gap-1 text-[10px] text-[#ffe0c2]/70 font-medium bg-[#ffe0c2]/5 border border-[#ffe0c2]/10 rounded-full px-2 py-0.5">
+                <span className="inline-flex items-center gap-1 text-[10px] text-[#8B6F47]/70 font-medium bg-[#8B6F47]/5 border border-[#8B6F47]/10 rounded-full px-2 py-0.5">
                   <ArrowUpRight className="w-3 h-3" />
                   +24% annuel
                 </span>
@@ -335,7 +335,7 @@ export function DashboardMockup() {
                     className="flex flex-col items-center gap-1.5 flex-1 min-w-0"
                   >
                     <motion.div
-                      className="w-full rounded-t-md bg-gradient-to-t from-[#ffe0c2]/50 to-[#ffdfb5]/15 hover:from-[#ffe0c2]/70 hover:to-[#ffdfb5]/30 transition-colors cursor-default"
+                      className="w-full rounded-t-md bg-gradient-to-t from-[#8B6F47]/50 to-[#C4956A]/15 hover:from-[#8B6F47]/70 hover:to-[#C4956A]/30 transition-colors cursor-default"
                       initial={{ height: 0 }}
                       whileInView={{ height: `${bar.height}%` }}
                       viewport={{ once: true }}
@@ -345,7 +345,7 @@ export function DashboardMockup() {
                         ease: [0.165, 0.84, 0.44, 1] as const,
                       }}
                     />
-                    <span className="text-[8px] sm:text-[9px] text-white/30 truncate">
+                    <span className="text-[8px] sm:text-[9px] text-[#AAAAAA] truncate">
                       {bar.month}
                     </span>
                   </div>
@@ -356,13 +356,13 @@ export function DashboardMockup() {
             {/* Right: Progress + sparkline (spans 2 cols) */}
             <motion.div
               variants={itemVariants}
-              className="lg:col-span-2 rounded-xl bg-[#111111] border border-[#201e18] p-4 sm:p-5 flex flex-col justify-between gap-4"
+              className="lg:col-span-2 rounded-xl bg-[#FAF8F5] border border-[#8B6F47]/12 p-4 sm:p-5 flex flex-col justify-between gap-4"
             >
               <div>
-                <p className="text-xs font-semibold text-white/80">
+                <p className="text-xs font-semibold text-[#1A1A1A]/80">
                   Indicateurs clés
                 </p>
-                <p className="text-[10px] text-white/30 mt-0.5">
+                <p className="text-[10px] text-[#AAAAAA] mt-0.5">
                   Performance en temps réel
                 </p>
               </div>
@@ -372,14 +372,14 @@ export function DashboardMockup() {
                 {progressMetrics.map((m, idx) => (
                   <div key={m.label} className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-white/50">
+                      <span className="text-[10px] text-[#888888]">
                         {m.label}
                       </span>
-                      <span className="text-[10px] font-semibold text-white/70">
+                      <span className="text-[10px] font-semibold text-[#1A1A1A]/70">
                         {m.value}%
                       </span>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-[#191919]">
+                    <div className="h-1.5 w-full rounded-full bg-white">
                       <motion.div
                         className={`h-full rounded-full ${m.color}`}
                         initial={{ width: 0 }}
@@ -397,8 +397,8 @@ export function DashboardMockup() {
               </div>
 
               {/* Mini sparkline */}
-              <div className="rounded-lg bg-[#191919] border border-[#201e18] p-3">
-                <p className="text-[9px] text-white/30 mb-2">
+              <div className="rounded-lg bg-white border border-[#8B6F47]/12 p-3">
+                <p className="text-[9px] text-[#AAAAAA] mb-2">
                   Tendance des coûts
                 </p>
                 <svg
@@ -451,14 +451,14 @@ export function DashboardMockup() {
           {/* ── BOTTOM ROW: Recent bookings ── */}
           <motion.div variants={itemVariants}>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-semibold text-white/80">
+              <p className="text-xs font-semibold text-[#1A1A1A]/80">
                 Réservations récentes
               </p>
-              <span className="text-[10px] text-[#ffe0c2]/50 cursor-default hover:text-[#ffe0c2]/80 transition-colors">
+              <span className="text-[10px] text-[#8B6F47]/50 cursor-default hover:text-[#8B6F47]/80 transition-colors">
                 Voir tout
               </span>
             </div>
-            <div className="rounded-xl bg-[#111111] border border-[#201e18] overflow-hidden divide-y divide-[#201e18]/60">
+            <div className="rounded-xl bg-[#FAF8F5] border border-[#8B6F47]/12 overflow-hidden divide-y divide-[#201e18]/60">
               {bookings.map((booking, idx) => (
                 <motion.div
                   key={booking.name}
@@ -470,23 +470,23 @@ export function DashboardMockup() {
                     delay: 0.5 + idx * 0.07,
                     ease: [0.25, 0.46, 0.45, 0.94] as const,
                   }}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-[#191919]/50 transition-colors"
+                  className="flex items-center justify-between px-4 py-3 hover:bg-white/50 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="hidden sm:flex w-8 h-8 rounded-lg bg-[#191919] border border-[#201e18] items-center justify-center flex-shrink-0">
-                      <Calendar className="w-3.5 h-3.5 text-white/25" />
+                    <div className="hidden sm:flex w-8 h-8 rounded-lg bg-white border border-[#8B6F47]/12 items-center justify-center flex-shrink-0">
+                      <Calendar className="w-3.5 h-3.5 text-[#1A1A1A]/25" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
+                      <p className="text-sm font-medium text-[#1A1A1A] truncate">
                         {booking.name}
                       </p>
-                      <p className="text-[10px] text-white/30">
+                      <p className="text-[10px] text-[#AAAAAA]">
                         {booking.dates}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className="hidden sm:inline text-xs font-semibold text-white/60">
+                    <span className="hidden sm:inline text-xs font-semibold text-[#555555]">
                       {booking.amount}
                     </span>
                     <span
@@ -495,7 +495,7 @@ export function DashboardMockup() {
                       <booking.statusIcon className="w-2.5 h-2.5" />
                       {booking.status}
                     </span>
-                    <ChevronRight className="w-3.5 h-3.5 text-white/15" />
+                    <ChevronRight className="w-3.5 h-3.5 text-[#1A1A1A]/15" />
                   </div>
                 </motion.div>
               ))}

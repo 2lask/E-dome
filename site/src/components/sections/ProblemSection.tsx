@@ -90,7 +90,7 @@ export default function ProblemSection() {
   return (
     <section
       id="problem"
-      className="relative bg-[#111111]/85 py-32 px-6 md:px-12 arch-bg-grid arch-bg-hatching"
+      className="relative bg-[#FAF8F5]/90 py-32 px-6 md:px-12 arch-bg-grid arch-bg-hatching"
     >
       {/* Diagonal hatching pattern background */}
       <div
@@ -120,9 +120,9 @@ export default function ProblemSection() {
             <motion.span
               custom={0}
               variants={slideFromLeft}
-              className="mb-6 inline-flex w-fit items-center rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-4 py-1.5 text-sm font-medium text-[#ffe0c2] backdrop-blur-sm"
+              className="mb-6 inline-flex w-fit items-center rounded-full border border-[#8B6F47]/20 bg-[#8B6F47]/5 px-4 py-1.5 text-sm font-medium text-[#8B6F47] backdrop-blur-sm"
             >
-              <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[#ffe0c2] animate-pulse" />
+              <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[#8B6F47] animate-pulse" />
               Le Constat
             </motion.span>
 
@@ -130,10 +130,10 @@ export default function ProblemSection() {
             <motion.h2
               custom={1}
               variants={slideFromLeft}
-              className="mb-10 text-3xl md:text-5xl font-bold tracking-tight text-white"
+              className="mb-10 text-3xl md:text-5xl font-bold tracking-tight text-[#1A1A1A]"
             >
               Un march&eacute; immobilier{" "}
-              <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#8B6F47] to-[#C4956A] bg-clip-text text-transparent">
                 qui freine ses acteurs.
               </span>
             </motion.h2>
@@ -155,22 +155,22 @@ export default function ProblemSection() {
                       radius={300}
                       color="rgba(255,224,194,0.08)"
                       className={cn(
-                        "relative rounded-xl border border-[#201e18] bg-[#191919] p-6",
-                        "hover:border-[#ffe0c2]/20 transition-colors duration-300"
+                        "relative rounded-xl border border-[#8B6F47]/12 bg-white p-6",
+                        "hover:border-[#8B6F47]/20 transition-colors duration-300"
                       )}
                     >
                       {/* Icon + Title row */}
                       <div className="relative z-10 mb-3 flex items-center gap-4">
-                        <div className="inline-flex shrink-0 rounded-lg bg-[#ffe0c2]/10 p-3">
-                          <Icon className="h-6 w-6 text-[#ffe0c2]" />
+                        <div className="inline-flex shrink-0 rounded-lg bg-[#8B6F47]/10 p-3">
+                          <Icon className="h-6 w-6 text-[#8B6F47]" />
                         </div>
-                        <h3 className="text-lg font-semibold text-white">
+                        <h3 className="text-lg font-semibold text-[#1A1A1A]">
                           {problem.title}
                         </h3>
                       </div>
 
                       {/* Description */}
-                      <p className="relative z-10 text-base md:text-lg leading-relaxed text-white/60">
+                      <p className="relative z-10 text-base md:text-lg leading-relaxed text-[#555555]">
                         {problem.description}
                       </p>
                     </CardSpotlight>
@@ -191,9 +191,9 @@ export default function ProblemSection() {
             <motion.div
               custom={0}
               variants={slideFromRight}
-              className="rounded-xl border border-[#201e18] bg-[#191919] p-6 md:p-8 transition-colors duration-300 hover:border-[#ffe0c2]/20"
+              className="rounded-xl border border-[#8B6F47]/12 bg-white p-6 md:p-8 transition-colors duration-300 hover:border-[#8B6F47]/20"
             >
-              <p className="mb-4 text-xs font-medium uppercase tracking-widest text-white/30">
+              <p className="mb-4 text-xs font-medium uppercase tracking-widest text-[#AAAAAA]">
                 Marché actuel : outils dispersés
               </p>
               <MarketplaceMockup />
@@ -203,9 +203,9 @@ export default function ProblemSection() {
             <motion.div
               custom={1}
               variants={slideFromRight}
-              className="rounded-xl border border-[#201e18] bg-[#191919] p-6 md:p-8 transition-colors duration-300 hover:border-[#ffe0c2]/20"
+              className="rounded-xl border border-[#8B6F47]/12 bg-white p-6 md:p-8 transition-colors duration-300 hover:border-[#8B6F47]/20"
             >
-              <p className="mb-4 text-xs font-medium uppercase tracking-widest text-white/30">
+              <p className="mb-4 text-xs font-medium uppercase tracking-widest text-[#AAAAAA]">
                 Architecture du marché actuel
               </p>
               <div className="w-full overflow-hidden">
@@ -217,11 +217,11 @@ export default function ProblemSection() {
             <motion.div
               custom={2}
               variants={slideFromRight}
-              className="overflow-hidden rounded-xl border border-[#201e18]"
+              className="overflow-hidden rounded-xl border border-[#8B6F47]/12"
             >
               <div className="grid grid-cols-1 md:grid-cols-2">
                 {/* Before — Sans E-Dome */}
-                <div className="relative border-b border-[#201e18] bg-[#191919] p-6 md:border-b-0 md:border-r md:border-[#201e18]">
+                <div className="relative border-b border-[#8B6F47]/12 bg-white p-6 md:border-b-0 md:border-r md:border-[#8B6F47]/12">
                   {/* Subtle warm-red gradient overlay */}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[rgba(180,80,60,0.06)] to-transparent" />
                   <div className="relative">
@@ -232,7 +232,7 @@ export default function ProblemSection() {
                       {comparison.map((item) => (
                         <li
                           key={item.before}
-                          className="flex items-center gap-3 text-sm leading-snug text-white/50"
+                          className="flex items-center gap-3 text-sm leading-snug text-[#888888]"
                         >
                           <XCircle className="h-5 w-5 shrink-0 text-[rgba(220,100,80,0.8)]" />
                           {item.before}
@@ -243,20 +243,20 @@ export default function ProblemSection() {
                 </div>
 
                 {/* After — Avec E-Dome */}
-                <div className="relative bg-[#191919] p-6">
+                <div className="relative bg-white p-6">
                   {/* Subtle warm-green gradient overlay */}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[rgba(180,160,100,0.06)] to-transparent" />
                   <div className="relative">
-                    <span className="mb-5 inline-block rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#ffe0c2]">
+                    <span className="mb-5 inline-block rounded-full border border-[#8B6F47]/20 bg-[#8B6F47]/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#8B6F47]">
                       Avec E-Dome
                     </span>
                     <ul className="mt-4 space-y-3.5">
                       {comparison.map((item) => (
                         <li
                           key={item.after}
-                          className="flex items-center gap-3 text-sm leading-snug text-white/70"
+                          className="flex items-center gap-3 text-sm leading-snug text-[#333333]"
                         >
-                          <CheckCircle2 className="h-5 w-5 shrink-0 text-[#ffe0c2]" />
+                          <CheckCircle2 className="h-5 w-5 shrink-0 text-[#8B6F47]" />
                           {item.after}
                         </li>
                       ))}

@@ -36,7 +36,7 @@ export function WaveTransition({ className = "" }: { className?: string }) {
           <motion.path
             key={i}
             d={wave.d}
-            fill="#ffe0c2"
+            fill="#8B6F47"
             variants={{
               hidden: { opacity: 0, translateY: 20 },
               visible: { opacity: wave.opacity, translateY: 0 },
@@ -48,7 +48,7 @@ export function WaveTransition({ className = "" }: { className?: string }) {
         <motion.path
           d="M0,85 C200,35 400,125 600,65 C800,5 1000,95 1200,55"
           fill="none"
-          stroke="#ffe0c2"
+          stroke="#8B6F47"
           strokeWidth="1"
           variants={{
             hidden: { pathLength: 0, opacity: 0 },
@@ -177,7 +177,7 @@ export function ParticleFieldTransition({
               y1={line.y1}
               x2={line.x2}
               y2={line.y2}
-              stroke="#ffe0c2"
+              stroke="#8B6F47"
               strokeWidth="0.15"
               variants={{
                 hidden: { pathLength: 0, opacity: 0 },
@@ -192,7 +192,7 @@ export function ParticleFieldTransition({
         {particles.map((p, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full bg-[#ffe0c2]"
+            className="absolute rounded-full bg-[#8B6F47]"
             style={{
               left: `${p.x}%`,
               top: `${p.y}%`,
@@ -234,7 +234,7 @@ export function ArchitecturalBlueprintTransition({ className = "" }: { className
         {/* Outer perimeter */}
         <motion.rect
           x="100" y="20" width="600" height="120"
-          fill="none" stroke="#ffe0c2" strokeWidth="1.5"
+          fill="none" stroke="#8B6F47" strokeWidth="1.5"
           variants={{
             hidden: { pathLength: 0, opacity: 0 },
             visible: { pathLength: 1, opacity: 0.1 },
@@ -253,7 +253,7 @@ export function ArchitecturalBlueprintTransition({ className = "" }: { className
           <motion.line
             key={`wall-${i}`}
             x1={wall.x1} y1={wall.y1} x2={wall.x2} y2={wall.y2}
-            stroke="#ffe0c2" strokeWidth="1"
+            stroke="#8B6F47" strokeWidth="1"
             variants={{
               hidden: { pathLength: 0, opacity: 0 },
               visible: { pathLength: 1, opacity: 0.08 },
@@ -271,7 +271,7 @@ export function ArchitecturalBlueprintTransition({ className = "" }: { className
           <motion.path
             key={`door-${i}`}
             d={d}
-            fill="none" stroke="#ffe0c2" strokeWidth="0.5" strokeDasharray="3 2"
+            fill="none" stroke="#8B6F47" strokeWidth="0.5" strokeDasharray="3 2"
             variants={{
               hidden: { pathLength: 0, opacity: 0 },
               visible: { pathLength: 1, opacity: 0.1 },
@@ -288,11 +288,11 @@ export function ArchitecturalBlueprintTransition({ className = "" }: { className
           }}
           transition={{ duration: 0.8, delay: 1.0, ease: EASE_OUT_QUART }}
         >
-          <line x1="100" y1="150" x2="700" y2="150" stroke="#ffe0c2" strokeWidth="0.5" />
-          <line x1="100" y1="147" x2="100" y2="153" stroke="#ffe0c2" strokeWidth="0.5" />
-          <line x1="300" y1="147" x2="300" y2="153" stroke="#ffe0c2" strokeWidth="0.5" />
-          <line x1="500" y1="147" x2="500" y2="153" stroke="#ffe0c2" strokeWidth="0.5" />
-          <line x1="700" y1="147" x2="700" y2="153" stroke="#ffe0c2" strokeWidth="0.5" />
+          <line x1="100" y1="150" x2="700" y2="150" stroke="#8B6F47" strokeWidth="0.5" />
+          <line x1="100" y1="147" x2="100" y2="153" stroke="#8B6F47" strokeWidth="0.5" />
+          <line x1="300" y1="147" x2="300" y2="153" stroke="#8B6F47" strokeWidth="0.5" />
+          <line x1="500" y1="147" x2="500" y2="153" stroke="#8B6F47" strokeWidth="0.5" />
+          <line x1="700" y1="147" x2="700" y2="153" stroke="#8B6F47" strokeWidth="0.5" />
         </motion.g>
 
         {/* Corner reference dots */}
@@ -302,7 +302,7 @@ export function ArchitecturalBlueprintTransition({ className = "" }: { className
           <motion.circle
             key={`corner-${i}`}
             cx={cx} cy={cy} r="2"
-            fill="#ffe0c2"
+            fill="#8B6F47"
             variants={{
               hidden: { opacity: 0, scale: 0 },
               visible: { opacity: 0.12, scale: 1 },
@@ -320,7 +320,7 @@ export function ArchitecturalBlueprintTransition({ className = "" }: { className
           <motion.rect
             key={`furn-${i}`}
             x={f.x} y={f.y} width={f.w} height={f.h}
-            fill="none" stroke="#ffe0c2" strokeWidth="0.3" strokeDasharray="2 2"
+            fill="none" stroke="#8B6F47" strokeWidth="0.3" strokeDasharray="2 2"
             variants={{
               hidden: { opacity: 0 },
               visible: { opacity: 0.05 },

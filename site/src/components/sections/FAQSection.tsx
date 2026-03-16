@@ -77,26 +77,26 @@ function FAQItem({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
-      className="border-b border-[#201e18]"
+      className="border-b border-[#8B6F47]/12"
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between py-6 px-2 text-left group cursor-pointer"
       >
         <span className="flex items-center gap-3 flex-1 pr-4">
-          <HelpCircle className="shrink-0 w-5 h-5 text-[#ffe0c2]/40" />
-          <span className="text-lg font-semibold text-white group-hover:text-[#ffe0c2] transition-colors duration-300">
+          <HelpCircle className="shrink-0 w-5 h-5 text-[#8B6F47]/40" />
+          <span className="text-lg font-semibold text-[#1A1A1A] group-hover:text-[#8B6F47] transition-colors duration-300">
             {item.question}
           </span>
         </span>
 
-        <span className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full border border-[#201e18] transition-colors duration-300 group-hover:border-[#ffe0c2]/40">
+        <span className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full border border-[#8B6F47]/12 transition-colors duration-300 group-hover:border-[#8B6F47]/40">
           <motion.span
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="flex items-center justify-center"
           >
-            <ChevronDown className="w-4 h-4 text-[#ffe0c2]" />
+            <ChevronDown className="w-4 h-4 text-[#8B6F47]" />
           </motion.span>
         </span>
       </button>
@@ -110,7 +110,7 @@ function FAQItem({
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <p className="pb-6 px-2 pl-10 text-white/60 text-base leading-relaxed">
+            <p className="pb-6 px-2 pl-10 text-[#555555] text-base leading-relaxed">
               {item.answer}
             </p>
           </motion.div>
@@ -122,7 +122,7 @@ function FAQItem({
 
 export default function FAQSection() {
   return (
-    <section id="faq" className="relative py-32 px-6 md:px-12 bg-[#111111]/85 arch-bg-grid arch-bg-dots">
+    <section id="faq" className="relative py-32 px-6 md:px-12 bg-[#FAF8F5]/90 arch-bg-grid arch-bg-dots">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <motion.div
@@ -132,20 +132,20 @@ export default function FAQSection() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-flex items-center gap-2 text-sm font-medium text-[#ffe0c2] border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 rounded-full px-4 py-1.5 mb-6">
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-[#8B6F47] border border-[#8B6F47]/20 bg-[#8B6F47]/5 rounded-full px-4 py-1.5 mb-6">
             <MessageCircle className="w-3.5 h-3.5" />
             FAQ
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#1A1A1A]">
             Questions{" "}
-            <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#8B6F47] to-[#C4956A] bg-clip-text text-transparent">
               fréquentes
             </span>
           </h2>
         </motion.div>
 
         {/* Accordion */}
-        <div className="border-t border-[#201e18]">
+        <div className="border-t border-[#8B6F47]/12">
           {faqs.map((faq, i) => (
             <FAQItem key={faq.question} item={faq} index={i} />
           ))}
@@ -153,8 +153,8 @@ export default function FAQSection() {
 
         {/* CTA */}
         <motion.div className="mt-12 text-center" initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.5,delay:0.2}}>
-          <p className="text-white/40 text-sm mb-4">Vous avez d&apos;autres questions ?</p>
-          <a href="#qualification" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-[#ffe0c2]/30 text-[#ffe0c2] text-sm font-medium hover:bg-[#ffe0c2]/5 transition-colors duration-300">
+          <p className="text-[#888888] text-sm mb-4">Vous avez d&apos;autres questions ?</p>
+          <a href="#qualification" className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-[#8B6F47]/30 text-[#8B6F47] text-sm font-medium hover:bg-[#8B6F47]/5 transition-colors duration-300">
             Contactez-nous
           </a>
         </motion.div>

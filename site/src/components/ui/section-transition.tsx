@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
  * SectionTransition
  *
  * Minimal, premium section dividers — subtle breathing space between
- * sections. Low-opacity warm cream (#ffe0c2) accents with custom easing.
+ * sections. Low-opacity warm cream (#8B6F47) accents with custom easing.
  * All accent elements stay within the 10% accent rule (opacity 0.06–0.15).
  * -------------------------------------------------------------------------*/
 
@@ -87,7 +87,7 @@ function FadeLine() {
         className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2"
         style={{
           background:
-            "linear-gradient(90deg, transparent 0%, #ffe0c2 30%, #ffe0c2 70%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, #8B6F47 30%, #8B6F47 70%, transparent 100%)",
           transformOrigin: "center",
         }}
         variants={{
@@ -108,7 +108,7 @@ function FadeLine() {
               y1={`${50 - (tickH / 80) * 50}%`}
               x2={`${tick.pos}%`}
               y2={`${50 + (tickH / 80) * 50}%`}
-              stroke="#ffe0c2"
+              stroke="#8B6F47"
               strokeWidth={tick.isMajor ? "1" : "0.5"}
               variants={{
                 hidden: { opacity: 0, pathLength: 0 },
@@ -184,7 +184,7 @@ function ArchitecturalHorizon() {
         className="absolute bottom-0 left-0 h-px w-full"
         style={{
           background:
-            "linear-gradient(90deg, transparent 5%, #ffe0c2 30%, #ffe0c2 70%, transparent 95%)",
+            "linear-gradient(90deg, transparent 5%, #8B6F47 30%, #8B6F47 70%, transparent 95%)",
         }}
         variants={{
           hidden: { scaleX: 0, opacity: 0 },
@@ -198,7 +198,7 @@ function ArchitecturalHorizon() {
         className="absolute bottom-[2px] left-[10%] right-[10%] h-px"
         style={{
           background:
-            "linear-gradient(90deg, transparent 0%, #ffe0c2 40%, #ffe0c2 60%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, #8B6F47 40%, #8B6F47 60%, transparent 100%)",
         }}
         variants={{
           hidden: { scaleX: 0, opacity: 0 },
@@ -231,13 +231,13 @@ function ArchitecturalHorizon() {
           >
             {/* Building outline */}
             <div
-              className="absolute inset-0 border border-[#ffe0c2]"
+              className="absolute inset-0 border border-[#8B6F47]"
               style={{ opacity: 0.08 }}
             />
 
             {/* Building fill */}
             <div
-              className="absolute inset-0 bg-[#ffe0c2]"
+              className="absolute inset-0 bg-[#8B6F47]"
               style={{ opacity: 0.02 }}
             />
 
@@ -255,7 +255,7 @@ function ArchitecturalHorizon() {
                       (_, col) => (
                         <div
                           key={col}
-                          className="rounded-[0.5px] bg-[#ffe0c2]"
+                          className="rounded-[0.5px] bg-[#8B6F47]"
                           style={{
                             width: 2,
                             height: 1.5,
@@ -272,7 +272,7 @@ function ArchitecturalHorizon() {
             {/* Antenna accent on taller buildings */}
             {b.hasAntenna && (
               <div
-                className="absolute left-1/2 -translate-x-1/2 bg-[#ffe0c2]"
+                className="absolute left-1/2 -translate-x-1/2 bg-[#8B6F47]"
                 style={{
                   width: 1,
                   height: 6,
@@ -284,7 +284,7 @@ function ArchitecturalHorizon() {
 
             {/* Rooftop cap line */}
             <div
-              className="absolute left-0 right-0 top-0 h-px bg-[#ffe0c2]"
+              className="absolute left-0 right-0 top-0 h-px bg-[#8B6F47]"
               style={{ opacity: 0.1 }}
             />
           </motion.div>
@@ -382,7 +382,7 @@ function PerspectiveLines() {
             y1={cy}
             x2={line.endX}
             y2={line.endY}
-            stroke="#ffe0c2"
+            stroke="#8B6F47"
             strokeWidth="0.3"
             variants={{
               hidden: { pathLength: 0, opacity: 0 },
@@ -401,7 +401,7 @@ function PerspectiveLines() {
           cx={cx}
           cy={cy}
           r="0.6"
-          fill="#ffe0c2"
+          fill="#8B6F47"
           variants={{
             hidden: { opacity: 0 },
             visible: { opacity: 0.1 },
@@ -447,7 +447,7 @@ function DotGrid() {
             return (
               <motion.div
                 key={idx}
-                className="rounded-full bg-[#ffe0c2]"
+                className="rounded-full bg-[#8B6F47]"
                 style={{ width: 3, height: 3 }}
                 variants={{
                   hidden: { opacity: 0, scale: 0 },

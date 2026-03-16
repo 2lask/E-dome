@@ -43,11 +43,11 @@ const fadeUp = {
   },
 };
 
-const BLUE = "#ffe0c2";
-const VIOLET = "#ffdfb5";
-const TEAL = "#ffdfb5";
-const GREEN = "#ffe0c2";
-const AMBER = "#ffdfb5";
+const BLUE = "#8B6F47";
+const VIOLET = "#C4956A";
+const TEAL = "#C4956A";
+const GREEN = "#8B6F47";
+const AMBER = "#C4956A";
 const DARK = "#111111";
 const DARK_CARD = "#191919";
 const DARK_BORDER = "#201e18";
@@ -232,8 +232,8 @@ export function SocialFeedMockup() {
   const stories = [
     { initials: "SL", from: BLUE, to: VIOLET },
     { initials: "AK", from: TEAL, to: GREEN },
-    { initials: "JR", from: AMBER, to: "#ffe0c2" },
-    { initials: "CM", from: VIOLET, to: "#ffdfb5" },
+    { initials: "JR", from: AMBER, to: "#8B6F47" },
+    { initials: "CM", from: VIOLET, to: "#C4956A" },
   ];
 
   return (
@@ -325,30 +325,30 @@ export function SocialFeedMockup() {
                 className="w-full"
               >
                 {/* Ground */}
-                <line x1="20" y1="110" x2="240" y2="110" stroke="#ffe0c2" strokeWidth="0.8" />
+                <line x1="20" y1="110" x2="240" y2="110" stroke="#8B6F47" strokeWidth="0.8" />
                 {/* Main body */}
-                <rect x="50" y="55" width="100" height="55" fill="#191919" stroke="#ffe0c2" strokeWidth="1" />
+                <rect x="50" y="55" width="100" height="55" fill="#191919" stroke="#8B6F47" strokeWidth="1" />
                 {/* Roof */}
-                <polygon points="40,55 100,20 160,55" fill="#191919" stroke="#ffe0c2" strokeWidth="1" />
+                <polygon points="40,55 100,20 160,55" fill="#191919" stroke="#8B6F47" strokeWidth="1" />
                 {/* Windows */}
-                <rect x="65" y="68" width="18" height="14" rx="1" fill="#ffe0c2" fillOpacity="0.15" stroke="#ffe0c2" strokeWidth="0.7" />
-                <rect x="95" y="68" width="18" height="14" rx="1" fill="#ffe0c2" fillOpacity="0.15" stroke="#ffe0c2" strokeWidth="0.7" />
-                <rect x="125" y="68" width="18" height="14" rx="1" fill="#ffe0c2" fillOpacity="0.15" stroke="#ffe0c2" strokeWidth="0.7" />
+                <rect x="65" y="68" width="18" height="14" rx="1" fill="#8B6F47" fillOpacity="0.15" stroke="#8B6F47" strokeWidth="0.7" />
+                <rect x="95" y="68" width="18" height="14" rx="1" fill="#8B6F47" fillOpacity="0.15" stroke="#8B6F47" strokeWidth="0.7" />
+                <rect x="125" y="68" width="18" height="14" rx="1" fill="#8B6F47" fillOpacity="0.15" stroke="#8B6F47" strokeWidth="0.7" />
                 {/* Door */}
-                <rect x="90" y="90" width="20" height="20" rx="1" fill="#ffe0c2" fillOpacity="0.1" stroke="#ffe0c2" strokeWidth="0.7" />
+                <rect x="90" y="90" width="20" height="20" rx="1" fill="#8B6F47" fillOpacity="0.1" stroke="#8B6F47" strokeWidth="0.7" />
                 {/* Extension */}
-                <rect x="150" y="70" width="60" height="40" fill="#191919" stroke="#ffe0c2" strokeWidth="1" />
-                <line x1="150" y1="70" x2="180" y2="50" stroke="#ffe0c2" strokeWidth="1" />
-                <line x1="180" y1="50" x2="210" y2="70" stroke="#ffe0c2" strokeWidth="1" />
-                <rect x="165" y="80" width="16" height="12" rx="1" fill="#ffe0c2" fillOpacity="0.15" stroke="#ffe0c2" strokeWidth="0.7" />
-                <rect x="190" y="80" width="12" height="12" rx="1" fill="#ffe0c2" fillOpacity="0.15" stroke="#ffe0c2" strokeWidth="0.7" />
+                <rect x="150" y="70" width="60" height="40" fill="#191919" stroke="#8B6F47" strokeWidth="1" />
+                <line x1="150" y1="70" x2="180" y2="50" stroke="#8B6F47" strokeWidth="1" />
+                <line x1="180" y1="50" x2="210" y2="70" stroke="#8B6F47" strokeWidth="1" />
+                <rect x="165" y="80" width="16" height="12" rx="1" fill="#8B6F47" fillOpacity="0.15" stroke="#8B6F47" strokeWidth="0.7" />
+                <rect x="190" y="80" width="12" height="12" rx="1" fill="#8B6F47" fillOpacity="0.15" stroke="#8B6F47" strokeWidth="0.7" />
                 {/* Pool hint */}
-                <rect x="170" y="114" width="50" height="10" rx="3" fill="#ffe0c2" fillOpacity="0.08" stroke="#ffe0c2" strokeWidth="0.5" />
+                <rect x="170" y="114" width="50" height="10" rx="3" fill="#8B6F47" fillOpacity="0.08" stroke="#8B6F47" strokeWidth="0.5" />
                 {/* Trees (thin lines) */}
-                <line x1="30" y1="110" x2="30" y2="85" stroke="#ffe0c2" strokeWidth="0.6" />
-                <circle cx="30" cy="82" r="7" fill="#ffe0c2" fillOpacity="0.08" stroke="#ffe0c2" strokeWidth="0.5" />
-                <line x1="230" y1="110" x2="230" y2="90" stroke="#ffe0c2" strokeWidth="0.6" />
-                <circle cx="230" cy="87" r="6" fill="#ffe0c2" fillOpacity="0.08" stroke="#ffe0c2" strokeWidth="0.5" />
+                <line x1="30" y1="110" x2="30" y2="85" stroke="#8B6F47" strokeWidth="0.6" />
+                <circle cx="30" cy="82" r="7" fill="#8B6F47" fillOpacity="0.08" stroke="#8B6F47" strokeWidth="0.5" />
+                <line x1="230" y1="110" x2="230" y2="90" stroke="#8B6F47" strokeWidth="0.6" />
+                <circle cx="230" cy="87" r="6" fill="#8B6F47" fillOpacity="0.08" stroke="#8B6F47" strokeWidth="0.5" />
               </svg>
               {/* Price badge */}
               <div className="absolute bottom-2 left-2">
@@ -364,7 +364,7 @@ export function SocialFeedMockup() {
             {/* Actions */}
             <div className="flex items-center justify-between">
               <div className="flex gap-3">
-                <Heart size={16} style={{ color: "#ffe0c2" }} fill="#ffe0c2" />
+                <Heart size={16} style={{ color: "#8B6F47" }} fill="#8B6F47" />
                 <MessageCircle size={16} style={{ color: "#8a7e72" }} />
                 <Share2 size={16} style={{ color: "#8a7e72" }} />
               </div>
@@ -374,7 +374,7 @@ export function SocialFeedMockup() {
             <div>
               <p className="text-[11px] font-semibold">128 j&apos;aime</p>
               <p className="text-[10px] mt-0.5" style={{ color: "#b4a99e" }}>
-                <span className="font-semibold text-white">ImmoLux</span>{" "}
+                <span className="font-semibold text-[#1A1A1A]">ImmoLux</span>{" "}
                 Villa contemporaine avec vue lac, piscine et finitions haut de gamme.
               </p>
             </div>
@@ -628,9 +628,9 @@ export function PropertyListingMockup() {
               </linearGradient>
             </defs>
             {/* Mountains */}
-            <polygon points="0,140 60,80 120,140" fill="#ffe0c2" fillOpacity="0.4" />
-            <polygon points="80,140 160,70 240,140" fill="#ffdfb5" fillOpacity="0.3" />
-            <polygon points="200,140 280,90 320,140" fill="#ffe0c2" fillOpacity="0.3" />
+            <polygon points="0,140 60,80 120,140" fill="#8B6F47" fillOpacity="0.4" />
+            <polygon points="80,140 160,70 240,140" fill="#C4956A" fillOpacity="0.3" />
+            <polygon points="200,140 280,90 320,140" fill="#8B6F47" fillOpacity="0.3" />
             {/* Ground */}
             <rect x="0" y="140" width="320" height="40" fill="#111111" />
             {/* Villa main */}
@@ -700,7 +700,7 @@ export function PropertyListingMockup() {
               <span
                 key={f}
                 className="text-[10px] px-2.5 py-1 rounded-full font-medium"
-                style={{ background: "#191919", color: "#ffe0c2" }}
+                style={{ background: "#191919", color: "#8B6F47" }}
               >
                 {f}
               </span>
@@ -708,7 +708,7 @@ export function PropertyListingMockup() {
           </div>
 
           <button
-            className="w-full py-2.5 rounded-xl text-[12px] font-semibold text-white mt-1"
+            className="w-full py-2.5 rounded-xl text-[12px] font-semibold text-[#1A1A1A] mt-1"
             style={{ background: BLUE }}
           >
             Voir le bien
@@ -832,7 +832,7 @@ export function MultiRoleProfileMockup() {
         </div>
 
         <button
-          className="w-full py-2.5 rounded-xl text-[11px] font-semibold text-white"
+          className="w-full py-2.5 rounded-xl text-[11px] font-semibold text-[#1A1A1A]"
           style={{
             background: `linear-gradient(135deg,${BLUE},${VIOLET})`,
           }}

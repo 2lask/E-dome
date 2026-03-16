@@ -82,11 +82,11 @@ export default function QualificationSection() {
   return (
     <section
       id="qualification"
-      className="relative py-32 px-6 md:px-12 bg-[#111111]/85 overflow-hidden arch-bg-grid arch-bg-crosshatch"
+      className="relative py-32 px-6 md:px-12 bg-[#FAF8F5]/90 overflow-hidden arch-bg-grid arch-bg-crosshatch"
     >
       {/* Background glow */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#ffe0c2]/5 blur-[160px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#8B6F47]/5 blur-[160px]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -105,9 +105,9 @@ export default function QualificationSection() {
             <motion.span
               custom={0}
               variants={revealVariant}
-              className="mb-6 inline-flex self-start items-center rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-4 py-1.5 text-sm font-medium text-[#ffe0c2]"
+              className="mb-6 inline-flex self-start items-center rounded-full border border-[#8B6F47]/20 bg-[#8B6F47]/5 px-4 py-1.5 text-sm font-medium text-[#8B6F47]"
             >
-              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-[#ffe0c2] animate-pulse" />
+              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-[#8B6F47] animate-pulse" />
               Programme Membres Fondateurs
             </motion.span>
 
@@ -115,10 +115,10 @@ export default function QualificationSection() {
             <motion.h2
               custom={1}
               variants={revealVariant}
-              className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6"
+              className="text-3xl md:text-5xl font-bold tracking-tight text-[#1A1A1A] mb-6"
             >
               Construisez{" "}
-              <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#8B6F47] to-[#C4956A] bg-clip-text text-transparent">
                 l&apos;immobilier de demain.
               </span>
             </motion.h2>
@@ -127,7 +127,7 @@ export default function QualificationSection() {
             <motion.p
               custom={2}
               variants={revealVariant}
-              className="text-white/60 text-base md:text-lg max-w-xl leading-relaxed mb-10"
+              className="text-[#555555] text-base md:text-lg max-w-xl leading-relaxed mb-10"
             >
               100 fondateurs s&eacute;lectionn&eacute;s construisent la plateforme
               de l&apos;int&eacute;rieur. Acc&egrave;s anticip&eacute;, conditions pr&eacute;f&eacute;rentielles permanentes.
@@ -145,15 +145,15 @@ export default function QualificationSection() {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-60px" }}
-                    className="group rounded-xl border border-[#201e18] bg-[#191919] p-6 transition-all duration-300 hover:border-[#ffe0c2]/20 hover:shadow-[0_0_24px_-8px_rgba(255,224,194,0.12)]"
+                    className="group rounded-xl border border-[#8B6F47]/12 bg-white p-6 transition-all duration-300 hover:border-[#8B6F47]/20 hover:shadow-[0_0_24px_-8px_rgba(255,224,194,0.12)]"
                   >
-                    <div className="mb-4 rounded-xl bg-gradient-to-br from-[#ffe0c2]/10 to-[#ffdfb5]/5 p-3 w-fit">
-                      <Icon className="h-7 w-7 text-[#ffe0c2]" />
+                    <div className="mb-4 rounded-xl bg-gradient-to-br from-[#8B6F47]/10 to-[#C4956A]/5 p-3 w-fit">
+                      <Icon className="h-7 w-7 text-[#8B6F47]" />
                     </div>
-                    <h4 className="text-base font-bold text-white leading-snug mb-2">
+                    <h4 className="text-base font-bold text-[#1A1A1A] leading-snug mb-2">
                       {b.title}
                     </h4>
-                    <p className="text-sm text-white/50 leading-relaxed">
+                    <p className="text-sm text-[#888888] leading-relaxed">
                       {b.line}
                     </p>
                   </motion.div>
@@ -212,11 +212,11 @@ export default function QualificationSection() {
             className="relative inline-block"
           >
             {/* Glow behind button */}
-            <div className="absolute -inset-6 bg-gradient-to-r from-[#ffe0c2]/20 to-[#ffdfb5]/20 rounded-3xl blur-2xl animate-pulse" />
+            <div className="absolute -inset-6 bg-gradient-to-r from-[#8B6F47]/20 to-[#C4956A]/20 rounded-3xl blur-2xl animate-pulse" />
 
             <a
               href="#form"
-              className="relative inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] px-8 py-4 text-lg md:text-xl font-semibold text-[#111111] shadow-[0_0_48px_rgba(255,224,194,0.3)] hover:shadow-[0_0_72px_rgba(255,224,194,0.45)] transition-shadow duration-300"
+              className="relative inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-[#8B6F47] to-[#C4956A] px-8 py-4 text-lg md:text-xl font-semibold text-[#1A1A1A] shadow-[0_0_48px_rgba(255,224,194,0.3)] hover:shadow-[0_0_72px_rgba(255,224,194,0.45)] transition-shadow duration-300"
             >
               Je rejoins les Membres Fondateurs
               <ArrowRight className="w-5 h-5" />
@@ -233,9 +233,9 @@ export default function QualificationSection() {
               (badge) => (
                 <span
                   key={badge}
-                  className="inline-flex items-center gap-1.5 text-sm text-white/40"
+                  className="inline-flex items-center gap-1.5 text-sm text-[#888888]"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-[#ffe0c2]" />
+                  <CheckCircle2 className="w-4 h-4 text-[#8B6F47]" />
                   {badge}
                 </span>
               )
@@ -253,17 +253,17 @@ export default function QualificationSection() {
           <motion.h3
             custom={0}
             variants={revealVariant}
-            className="text-2xl md:text-3xl font-bold text-white text-center mb-16"
+            className="text-2xl md:text-3xl font-bold text-[#1A1A1A] text-center mb-16"
           >
             Comment rejoindre le programme
           </motion.h3>
 
           <div className="relative grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6">
             {/* Desktop horizontal connector line */}
-            <div className="hidden md:block absolute top-5 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-[#ffe0c2]/30 via-[#ffe0c2]/20 to-[#ffdfb5]/30 rounded-full" />
+            <div className="hidden md:block absolute top-5 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-[#8B6F47]/30 via-[#8B6F47]/20 to-[#C4956A]/30 rounded-full" />
 
             {/* Mobile vertical connector line */}
-            <div className="md:hidden absolute top-0 bottom-0 left-5 w-px bg-gradient-to-b from-[#ffe0c2]/30 via-[#ffe0c2]/20 to-[#ffdfb5]/30 rounded-full" />
+            <div className="md:hidden absolute top-0 bottom-0 left-5 w-px bg-gradient-to-b from-[#8B6F47]/30 via-[#8B6F47]/20 to-[#C4956A]/30 rounded-full" />
 
             {steps.map((step, i) => (
               <motion.div
@@ -272,10 +272,10 @@ export default function QualificationSection() {
                 variants={revealVariant}
                 className="relative flex flex-row md:flex-col items-center md:items-center gap-4 md:gap-0 md:text-center"
               >
-                <div className="relative z-10 w-10 h-10 rounded-full bg-[#191919] border border-[#ffe0c2]/30 flex items-center justify-center shrink-0 md:mb-4 text-lg font-bold text-[#ffe0c2]">
+                <div className="relative z-10 w-10 h-10 rounded-full bg-white border border-[#8B6F47]/30 flex items-center justify-center shrink-0 md:mb-4 text-lg font-bold text-[#8B6F47]">
                   {i + 1}
                 </div>
-                <span className="text-sm font-semibold text-white/60">
+                <span className="text-sm font-semibold text-[#555555]">
                   {step.label}
                 </span>
               </motion.div>

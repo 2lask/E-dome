@@ -32,7 +32,7 @@ export default function HeroSection() {
     const animate = () => {
       angle = (angle + 0.8) % 360;
       if (borderRef.current) {
-        borderRef.current.style.background = `conic-gradient(from ${angle}deg, #ffe0c2, #ffdfb5, #ffe0c2)`;
+        borderRef.current.style.background = `conic-gradient(from ${angle}deg, #8B6F47, #C4956A, #8B6F47)`;
       }
       animationId = requestAnimationFrame(animate);
     };
@@ -41,7 +41,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#111111]/80">
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#FAF8F5]/90">
       {/* Thin vertical lines with measurement ticks on both sides */}
       <div className="pointer-events-none absolute inset-0 hidden lg:block">
         {/* Left vertical line */}
@@ -57,8 +57,8 @@ export default function HeroSection() {
           <div key={`rtick-${i}`} className="absolute right-[8%] w-2 h-px bg-white/[0.06]" style={{ top: `${i * 80}px`, transform: 'translateX(50%)' }} />
         ))}
         {/* Coordinate labels */}
-        <span className="absolute top-4 left-[8%] ml-3 text-[9px] font-mono text-white/[0.06] tracking-wider">{"N 46°59'"}</span>
-        <span className="absolute top-4 right-[8%] mr-3 text-[9px] font-mono text-white/[0.06] tracking-wider text-right">{"E 6°56'"}</span>
+        <span className="absolute top-4 left-[8%] ml-3 text-[9px] font-mono text-[#1A1A1A]/[0.06] tracking-wider">{"N 46°59'"}</span>
+        <span className="absolute top-4 right-[8%] mr-3 text-[9px] font-mono text-[#1A1A1A]/[0.06] tracking-wider text-right">{"E 6°56'"}</span>
       </div>
 
       {/* Animated architectural grid pattern */}
@@ -86,8 +86,8 @@ export default function HeroSection() {
 
       {/* Background gradients — kept subtle to respect 60% dark */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#ffe0c2]/[0.06] blur-[140px]" />
-        <div className="absolute bottom-1/4 right-1/4 h-[400px] w-[400px] rounded-full bg-[#ffdfb5]/[0.05] blur-[120px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#8B6F47]/[0.06] blur-[140px]" />
+        <div className="absolute bottom-1/4 right-1/4 h-[400px] w-[400px] rounded-full bg-[#C4956A]/[0.05] blur-[120px]" />
         <div className="absolute top-0 left-0 h-full w-full bg-[radial-gradient(ellipse_at_center,transparent_20%,#111111_70%)]" />
       </div>
 
@@ -111,10 +111,10 @@ export default function HeroSection() {
         <line x1="30" y1="236" x2="30" y2="300" stroke="url(#leftGrad1)" strokeWidth="0.5" />
         <defs>
           <linearGradient id="leftGrad1" x1="30" y1="0" x2="30" y2="300" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#ffe0c2" stopOpacity="0" />
-            <stop offset="0.3" stopColor="#ffe0c2" />
-            <stop offset="0.7" stopColor="#ffdfb5" />
-            <stop offset="1" stopColor="#ffdfb5" stopOpacity="0" />
+            <stop stopColor="#8B6F47" stopOpacity="0" />
+            <stop offset="0.3" stopColor="#8B6F47" />
+            <stop offset="0.7" stopColor="#C4956A" />
+            <stop offset="1" stopColor="#C4956A" stopOpacity="0" />
           </linearGradient>
         </defs>
       </motion.svg>
@@ -139,10 +139,10 @@ export default function HeroSection() {
         <line x1="30" y1="213" x2="30" y2="260" stroke="url(#rightGrad1)" strokeWidth="0.5" />
         <defs>
           <linearGradient id="rightGrad1" x1="30" y1="0" x2="30" y2="260" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#ffdfb5" stopOpacity="0" />
-            <stop offset="0.3" stopColor="#ffdfb5" />
-            <stop offset="0.7" stopColor="#ffe0c2" />
-            <stop offset="1" stopColor="#ffe0c2" stopOpacity="0" />
+            <stop stopColor="#C4956A" stopOpacity="0" />
+            <stop offset="0.3" stopColor="#C4956A" />
+            <stop offset="0.7" stopColor="#8B6F47" />
+            <stop offset="1" stopColor="#8B6F47" stopOpacity="0" />
           </linearGradient>
         </defs>
       </motion.svg>
@@ -156,8 +156,8 @@ export default function HeroSection() {
           animate="visible"
           className="mb-10"
         >
-          <span className="inline-flex items-center rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-5 py-2 text-sm font-medium text-[#ffe0c2] backdrop-blur-sm">
-            <span className="mr-2.5 inline-block h-1.5 w-1.5 rounded-full bg-[#ffe0c2] animate-pulse" />
+          <span className="inline-flex items-center rounded-full border border-[#8B6F47]/20 bg-[#8B6F47]/5 px-5 py-2 text-sm font-medium text-[#8B6F47] backdrop-blur-sm">
+            <span className="mr-2.5 inline-block h-1.5 w-1.5 rounded-full bg-[#8B6F47] animate-pulse" />
             La Plateforme Immobili&egrave;re Nouvelle G&eacute;n&eacute;ration
           </span>
         </motion.div>
@@ -168,11 +168,11 @@ export default function HeroSection() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="mb-4 font-bold tracking-tight text-white text-4xl md:text-6xl lg:text-7xl xl:text-[5.5rem] leading-[0.95]"
+          className="mb-4 font-bold tracking-tight text-[#1A1A1A] text-4xl md:text-6xl lg:text-7xl xl:text-[5.5rem] leading-[0.95]"
         >
           <span className="block">L&apos;&eacute;cosyst&egrave;me qui connecte</span>
           <span className="block">tous les acteurs</span>
-          <span className="mt-2 block bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
+          <span className="mt-2 block bg-gradient-to-r from-[#8B6F47] to-[#C4956A] bg-clip-text text-transparent">
             de l&apos;immobilier mondial.
           </span>
         </motion.h1>
@@ -185,9 +185,9 @@ export default function HeroSection() {
           animate="visible"
           className="mb-8 flex items-center gap-3"
         >
-          <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#ffe0c2]/40" />
-          <div className="h-1 w-1 rounded-full bg-[#ffe0c2]/50" />
-          <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#ffdfb5]/40" />
+          <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#8B6F47]/40" />
+          <div className="h-1 w-1 rounded-full bg-[#8B6F47]/50" />
+          <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#C4956A]/40" />
         </motion.div>
 
         {/* Subheadline */}
@@ -196,7 +196,7 @@ export default function HeroSection() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="mb-12 max-w-2xl text-base leading-relaxed text-white/60 md:text-lg md:leading-relaxed"
+          className="mb-12 max-w-2xl text-base leading-relaxed text-[#555555] md:text-lg md:leading-relaxed"
         >
           R&eacute;seau social &middot; Marketplace &middot; Apporteurs d&apos;affaires &middot; Formations &middot; Services&nbsp;&mdash; enfin r&eacute;unis dans un seul &eacute;cosyst&egrave;me global.
         </motion.p>
@@ -216,10 +216,10 @@ export default function HeroSection() {
               className="absolute inset-0 rounded-full opacity-80 transition-opacity duration-300 group-hover:opacity-100"
               style={{
                 background:
-                  "conic-gradient(from 0deg, #ffe0c2, #ffdfb5, #ffe0c2)",
+                  "conic-gradient(from 0deg, #8B6F47, #C4956A, #8B6F47)",
               }}
             />
-            <span className="relative z-10 inline-flex items-center rounded-full bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] px-8 py-3 text-sm font-semibold text-[#111111] transition-shadow duration-300 group-hover:shadow-lg group-hover:shadow-[#ffe0c2]/20">
+            <span className="relative z-10 inline-flex items-center rounded-full bg-gradient-to-r from-[#8B6F47] to-[#C4956A] px-8 py-3 text-sm font-semibold text-[#1A1A1A] transition-shadow duration-300 group-hover:shadow-lg group-hover:shadow-[#8B6F47]/20">
               Rejoindre les Membres Fondateurs &rarr;
             </span>
           </a>
@@ -227,7 +227,7 @@ export default function HeroSection() {
           {/* Secondary CTA */}
           <a
             href="#problem"
-            className="inline-flex items-center rounded-full border border-[#ffe0c2]/30 bg-transparent px-8 py-3 text-sm font-semibold text-[#ffe0c2] transition-all duration-300 hover:border-[#ffe0c2]/50 hover:bg-[#ffe0c2]/5"
+            className="inline-flex items-center rounded-full border border-[#8B6F47]/30 bg-transparent px-8 py-3 text-sm font-semibold text-[#8B6F47] transition-all duration-300 hover:border-[#8B6F47]/50 hover:bg-[#8B6F47]/5"
           >
             D&eacute;couvrir le projet &darr;
           </a>
@@ -239,7 +239,7 @@ export default function HeroSection() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="mb-16 text-sm text-white/40"
+          className="mb-16 text-sm text-[#888888]"
         >
           Sans engagement &middot; Gratuit &middot; Confidentiel
         </motion.p>
@@ -261,13 +261,13 @@ export default function HeroSection() {
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
-                className="group relative rounded-xl border border-[#201e18] bg-[#191919] p-5 transition-all duration-300 hover:border-[#ffe0c2]/20"
+                className="group relative rounded-xl border border-[#8B6F47]/12 bg-white p-5 transition-all duration-300 hover:border-[#8B6F47]/20"
               >
                 <div className="flex flex-col items-center gap-3">
-                  <div className="rounded-lg bg-[#ffe0c2]/10 p-2">
-                    <Icon className="h-5 w-5 text-[#ffe0c2]" />
+                  <div className="rounded-lg bg-[#8B6F47]/10 p-2">
+                    <Icon className="h-5 w-5 text-[#8B6F47]" />
                   </div>
-                  <span className="text-sm font-semibold text-white">
+                  <span className="text-sm font-semibold text-[#1A1A1A]">
                     {badge.title}
                   </span>
                 </div>
@@ -283,7 +283,7 @@ export default function HeroSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 0.8, ease }}
-        className="absolute bottom-8 z-10 flex flex-col items-center gap-1.5 text-white/30 transition-colors duration-300 hover:text-white/50"
+        className="absolute bottom-8 z-10 flex flex-col items-center gap-1.5 text-[#AAAAAA] transition-colors duration-300 hover:text-[#888888]"
       >
         <span className="text-[11px] font-medium tracking-widest uppercase">D&eacute;couvrir</span>
         <motion.div

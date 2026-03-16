@@ -44,7 +44,7 @@ function PhoneMockup({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative mx-auto w-full max-w-[300px]">
       {/* Outer glow */}
-      <div className="absolute -inset-4 rounded-[44px] bg-[#ffe0c2]/5 blur-2xl" />
+      <div className="absolute -inset-4 rounded-[44px] bg-[#8B6F47]/5 blur-2xl" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -54,11 +54,11 @@ export default function ProfilesSection() {
   return (
     <section
       id="profiles"
-      className="relative bg-[#111111]/85 py-32 px-6 md:px-12 arch-bg-grid arch-bg-perspective"
+      className="relative bg-[#FAF8F5]/90 py-32 px-6 md:px-12 arch-bg-grid arch-bg-perspective"
     >
       {/* Background accent */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#ffdfb5]/5 blur-[160px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-[#C4956A]/5 blur-[160px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl">
@@ -83,10 +83,10 @@ export default function ProfilesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ delay: 0.4, duration: 0.6, ease: EASE }}
-              className="mt-10 rounded-xl border border-[#201e18] bg-[#191919] p-5 max-w-md transition-colors duration-300 hover:border-[#ffe0c2]/20"
+              className="mt-10 rounded-xl border border-[#8B6F47]/12 bg-white p-5 max-w-md transition-colors duration-300 hover:border-[#8B6F47]/20"
             >
-              <p className="text-sm font-semibold text-white mb-1">30+ professionnels d&eacute;j&agrave; engag&eacute;s</p>
-              <p className="text-xs text-white/40">Agences, h&ocirc;tes et promoteurs ont manifest&eacute; leur int&eacute;r&ecirc;t pour le programme fondateur.</p>
+              <p className="text-sm font-semibold text-[#1A1A1A] mb-1">30+ professionnels d&eacute;j&agrave; engag&eacute;s</p>
+              <p className="text-xs text-[#888888]">Agences, h&ocirc;tes et promoteurs ont manifest&eacute; leur int&eacute;r&ecirc;t pour le programme fondateur.</p>
             </motion.div>
           </motion.div>
 
@@ -99,21 +99,21 @@ export default function ProfilesSection() {
             className="lg:w-[55%]"
           >
             {/* Badge */}
-            <span className="mb-4 inline-flex items-center rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-4 py-1.5 text-sm font-medium text-[#ffe0c2] backdrop-blur-sm">
-              <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[#ffe0c2] animate-pulse" />
+            <span className="mb-4 inline-flex items-center rounded-full border border-[#8B6F47]/20 bg-[#8B6F47]/5 px-4 py-1.5 text-sm font-medium text-[#8B6F47] backdrop-blur-sm">
+              <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[#8B6F47] animate-pulse" />
               Multi-Rôles
             </span>
 
             {/* Heading */}
-            <h2 className="mt-6 text-3xl font-bold tracking-tight text-white md:text-5xl">
+            <h2 className="mt-6 text-3xl font-bold tracking-tight text-[#1A1A1A] md:text-5xl">
               Vous &ecirc;tes plusieurs.{" "}
-              <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#8B6F47] to-[#C4956A] bg-clip-text text-transparent">
                 E-Dome aussi.
               </span>
             </h2>
 
             {/* Description */}
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-[#555555] md:text-lg">
               Un seul compte, plusieurs casquettes. Activez les r&ocirc;les
               qui correspondent &agrave; votre activit&eacute;.
             </p>
@@ -132,15 +132,15 @@ export default function ProfilesSection() {
                     viewport={{ once: true, amount: 0.15 }}
                     className="group flex"
                   >
-                    <div className="flex-1 flex items-start gap-3 rounded-xl border border-[#201e18] bg-[#191919] p-4 transition-all duration-300 hover:border-[#ffe0c2]/20 hover:bg-[#1f1d17]">
-                      <div className="shrink-0 rounded-lg bg-[#ffe0c2]/10 p-2.5">
-                        <Icon className="h-5 w-5 text-[#ffe0c2]" />
+                    <div className="flex-1 flex items-start gap-3 rounded-xl border border-[#8B6F47]/12 bg-white p-4 transition-all duration-300 hover:border-[#8B6F47]/20 hover:bg-[#F3EDE7]">
+                      <div className="shrink-0 rounded-lg bg-[#8B6F47]/10 p-2.5">
+                        <Icon className="h-5 w-5 text-[#8B6F47]" />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-sm font-semibold text-white">
+                        <h3 className="text-sm font-semibold text-[#1A1A1A]">
                           {profile.role}
                         </h3>
-                        <p className="mt-0.5 text-xs leading-relaxed text-white/40">
+                        <p className="mt-0.5 text-xs leading-relaxed text-[#888888]">
                           {profile.benefit}
                         </p>
                       </div>

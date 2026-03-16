@@ -88,18 +88,18 @@ function StatCounter({
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.6, delay: index * 0.12, ease }}
-      className="rounded-xl border border-[#201e18] bg-[#191919] p-6 text-center transition-colors duration-300 hover:border-[#ffe0c2]/20"
+      className="rounded-xl border border-[#8B6F47]/12 bg-white p-6 text-center transition-colors duration-300 hover:border-[#8B6F47]/20"
     >
-      <div className="mb-4 inline-flex rounded-lg bg-[#ffe0c2]/10 p-2.5">
-        <Icon className="h-5 w-5 text-[#ffe0c2]" />
+      <div className="mb-4 inline-flex rounded-lg bg-[#8B6F47]/10 p-2.5">
+        <Icon className="h-5 w-5 text-[#8B6F47]" />
       </div>
-      <p className="text-3xl font-bold text-[#ffe0c2] md:text-4xl">
+      <p className="text-3xl font-bold text-[#8B6F47] md:text-4xl">
         {formatValue()}
       </p>
-      <p className="mt-3 text-sm font-medium text-white md:text-base">
+      <p className="mt-3 text-sm font-medium text-[#1A1A1A] md:text-base">
         {label}
       </p>
-      <p className="mt-2 text-xs text-white/30">{source}</p>
+      <p className="mt-2 text-xs text-[#AAAAAA]">{source}</p>
     </motion.div>
   );
 }
@@ -145,12 +145,12 @@ export default function MarketSection() {
   return (
     <section
       id="market"
-      className="relative overflow-hidden bg-[#111111]/85 py-32 px-6 md:px-12 arch-bg-grid"
+      className="relative overflow-hidden bg-[#FAF8F5]/90 py-32 px-6 md:px-12 arch-bg-grid"
     >
       {/* Background glow */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/4 top-1/3 h-[500px] w-[500px] rounded-full bg-[#ffe0c2]/5 blur-[120px]" />
-        <div className="absolute bottom-1/3 right-1/4 h-[400px] w-[400px] rounded-full bg-[#ffdfb5]/5 blur-[100px]" />
+        <div className="absolute left-1/4 top-1/3 h-[500px] w-[500px] rounded-full bg-[#8B6F47]/5 blur-[120px]" />
+        <div className="absolute bottom-1/3 right-1/4 h-[400px] w-[400px] rounded-full bg-[#C4956A]/5 blur-[100px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl">
@@ -163,21 +163,21 @@ export default function MarketSection() {
             transition={{ duration: 0.8, ease }}
           >
             {/* Badge */}
-            <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#ffe0c2]/20 bg-[#ffe0c2]/5 px-4 py-1.5 text-sm font-medium text-[#ffe0c2]">
-              <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#ffe0c2]" />
+            <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#8B6F47]/20 bg-[#8B6F47]/5 px-4 py-1.5 text-sm font-medium text-[#8B6F47]">
+              <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#8B6F47]" />
               Opportunité de Marché
             </span>
 
             {/* Heading */}
-            <h2 className="mt-6 text-3xl font-bold leading-tight tracking-tight text-white md:text-5xl">
+            <h2 className="mt-6 text-3xl font-bold leading-tight tracking-tight text-[#1A1A1A] md:text-5xl">
               Les chiffres{" "}
-              <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#8B6F47] to-[#C4956A] bg-clip-text text-transparent">
                 parlent d&apos;eux-m&ecirc;mes.
               </span>
             </h2>
 
             {/* Description */}
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-[#555555] md:text-lg">
               Les tendances de fond valident le besoin. Les données parlent
               d&apos;elles-mêmes.
             </p>
@@ -191,9 +191,9 @@ export default function MarketSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 0.5, delay: 0.3 + i * 0.1, ease }}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#201e18] bg-[#191919] px-3.5 py-1.5 text-xs text-white/50"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#8B6F47]/12 bg-white px-3.5 py-1.5 text-xs text-[#888888]"
                 >
-                  <chip.icon className="h-3.5 w-3.5 text-[#ffe0c2]/60" />
+                  <chip.icon className="h-3.5 w-3.5 text-[#8B6F47]/60" />
                   {chip.label}
                 </motion.span>
               ))}
@@ -205,11 +205,11 @@ export default function MarketSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6, delay: 0.4, ease }}
-              className="mt-10 rounded-xl border border-[#ffe0c2]/20 bg-[#191919] p-6 transition-colors duration-300 hover:border-[#ffe0c2]/40"
+              className="mt-10 rounded-xl border border-[#8B6F47]/20 bg-white p-6 transition-colors duration-300 hover:border-[#8B6F47]/40"
             >
-              <p className="text-lg font-semibold leading-relaxed text-white/80 md:text-xl">
+              <p className="text-lg font-semibold leading-relaxed text-[#333333] md:text-xl">
                 Aucune plateforme ne combine marketplace, réseau social, apporteurs, formations et services.{" "}
-                <span className="bg-gradient-to-r from-[#ffe0c2] to-[#ffdfb5] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#8B6F47] to-[#C4956A] bg-clip-text text-transparent">
                   E-Dome est le premier à unifier ces 5 marchés.
                 </span>
               </p>
