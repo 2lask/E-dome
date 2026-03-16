@@ -20,6 +20,10 @@ import {
   WaveTransition,
   DiagonalWipeTransition,
 } from "@/components/ui/dramatic-transitions";
+import { AnimatedListDemo } from "@/components/ui/animated-list-demo";
+import { VillaElevationScene, CityBlockPlanScene } from "@/components/ui/large-architectural-scenes";
+import { ScaleReveal } from "@/components/ui/scroll-reveal";
+import { GlareCard } from "@/components/ui/glare-card";
 
 const Building3DScene = dynamic(
   () => import("@/components/ui/building-3d").then((m) => m.Building3DScene),
@@ -45,6 +49,11 @@ export default function Home() {
       <ScrollReveal>
         <ProblemSection />
       </ScrollReveal>
+
+      {/* ── Dessin architectural : Villa ── */}
+      <ScaleReveal>
+        <VillaElevationScene className="py-12" />
+      </ScaleReveal>
 
       <WaveTransition />
 
@@ -80,6 +89,11 @@ export default function Home() {
           </div>
         </div>
       </ScrollReveal>
+
+      {/* ── Dessin architectural : Plan urbain ── */}
+      <ScaleReveal>
+        <CityBlockPlanScene className="py-12" />
+      </ScaleReveal>
 
       <SectionTransition variant="glass-divider" />
 
@@ -149,7 +163,54 @@ export default function Home() {
         </section>
       </ScrollReveal>
 
+      {/* ── Activité en temps réel ── */}
+      <ScrollReveal>
+        <div className="py-24 px-6 md:px-12">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="inline-flex items-center rounded-full border border-[#8B6F47]/20 bg-[#8B6F47]/5 px-4 py-1.5 text-sm font-medium text-[#8B6F47]">
+                <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[#8B6F47] animate-pulse" />
+                En direct
+              </span>
+              <h2 className="mt-6 text-3xl md:text-4xl font-bold text-[#1A1A1A] tracking-tight">
+                Une plateforme{" "}
+                <span className="bg-gradient-to-r from-[#8B6F47] to-[#C4956A] bg-clip-text text-transparent">
+                  vivante.
+                </span>
+              </h2>
+              <p className="mt-4 text-[#555555] max-w-md text-base leading-relaxed">
+                R&eacute;servations, commissions, nouveaux membres, publications &mdash; tout se passe en temps r&eacute;el sur E-Dome.
+              </p>
+            </div>
+            <AnimatedListDemo />
+          </div>
+        </div>
+      </ScrollReveal>
+
       <DiagonalWipeTransition direction="right-to-left" />
+
+      {/* ── Ce qui nous rend unique ── */}
+      <ScrollReveal>
+        <div className="py-24 px-6 md:px-12">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            <GlareCard className="flex flex-col items-center justify-center p-8 text-center">
+              <p className="text-4xl font-bold text-[#8B6F47]">5</p>
+              <p className="mt-2 text-sm font-semibold text-[#1A1A1A]">March&eacute;s unifi&eacute;s</p>
+              <p className="mt-1 text-xs text-[#888888]">Marketplace, r&eacute;seau, apporteurs, services, formations</p>
+            </GlareCard>
+            <GlareCard className="flex flex-col items-center justify-center p-8 text-center">
+              <p className="text-4xl font-bold text-[#8B6F47]">0 CHF</p>
+              <p className="mt-2 text-sm font-semibold text-[#1A1A1A]">De publicit&eacute;</p>
+              <p className="mt-1 text-xs text-[#888888]">Visibilit&eacute; organique gratuite pour tous</p>
+            </GlareCard>
+            <GlareCard className="flex flex-col items-center justify-center p-8 text-center">
+              <p className="text-4xl font-bold text-[#8B6F47]">100</p>
+              <p className="mt-2 text-sm font-semibold text-[#1A1A1A]">Fondateurs</p>
+              <p className="mt-1 text-xs text-[#888888]">Places limit&eacute;es pour le programme fondateurs</p>
+            </GlareCard>
+          </div>
+        </div>
+      </ScrollReveal>
 
       {/* ── 8. MARCH\u00c9 ── */}
       <ScrollReveal>
