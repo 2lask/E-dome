@@ -24,6 +24,7 @@ import { AnimatedListDemo } from "@/components/ui/animated-list-demo";
 import { VillaElevationScene, CityBlockPlanScene } from "@/components/ui/large-architectural-scenes";
 import { ScaleReveal } from "@/components/ui/scroll-reveal";
 import { GlareCard } from "@/components/ui/glare-card";
+import { FloorPlanDrawing, BuildingElevationDrawing, BlueprintGridOverlay } from "@/components/ui/arch-drawings";
 
 const Building3DScene = dynamic(
   () => import("@/components/ui/building-3d").then((m) => m.Building3DScene),
@@ -60,6 +61,14 @@ export default function Home() {
       {/* ── 3. LA SOLUTION ── */}
       <ScrollReveal>
         <SolutionSection />
+      </ScrollReveal>
+
+      {/* ── Dessin : Plan d'étage ── */}
+      <ScrollReveal>
+        <div className="relative py-16">
+          <BlueprintGridOverlay />
+          <FloorPlanDrawing className="relative z-10" />
+        </div>
       </ScrollReveal>
 
       {/* ── 4. BUILDING 3D ── */}
@@ -215,6 +224,11 @@ export default function Home() {
       {/* ── 8. MARCH\u00c9 ── */}
       <ScrollReveal>
         <MarketSection />
+      </ScrollReveal>
+
+      {/* ── Dessin : Élévation bâtiment ── */}
+      <ScrollReveal>
+        <BuildingElevationDrawing className="py-12" />
       </ScrollReveal>
 
       <SectionTransition variant="architectural-horizon" />

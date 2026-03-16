@@ -193,7 +193,7 @@ export default function ProblemSection() {
               variants={slideFromRight}
               className="rounded-xl border border-[#8B6F47]/12 bg-white p-6 md:p-8 transition-colors duration-300 hover:border-[#8B6F47]/20"
             >
-              <p className="mb-4 text-xs font-medium uppercase tracking-widest text-[#AAAAAA]">
+              <p className="mb-4 text-xs font-medium uppercase tracking-widest text-[#888888]">
                 Marché actuel : outils dispersés
               </p>
               <MarketplaceMockup />
@@ -205,7 +205,7 @@ export default function ProblemSection() {
               variants={slideFromRight}
               className="rounded-xl border border-[#8B6F47]/12 bg-white p-6 md:p-8 transition-colors duration-300 hover:border-[#8B6F47]/20"
             >
-              <p className="mb-4 text-xs font-medium uppercase tracking-widest text-[#AAAAAA]">
+              <p className="mb-4 text-xs font-medium uppercase tracking-widest text-[#888888]">
                 Architecture du marché actuel
               </p>
               <div className="w-full overflow-hidden">

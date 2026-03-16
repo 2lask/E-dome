@@ -289,7 +289,7 @@ export function MarketplaceMockup() {
                       className={`w-2.5 h-2.5 ${
                         si < l.stars
                           ? "text-[#C4956A] fill-[#C4956A]"
-                          : "text-[#1A1A1A]/10"
+                          : "text-[#1A1A1A]/30"
                       }`}
                     />
                   ))}
