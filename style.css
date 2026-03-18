@@ -1,7 +1,24 @@
 /* ============================================================
    E-Dome — Site Vitrine
-   Phase 1 : Structure & Contenu
+   Phase 2 : Structure + SEO + Design
    ============================================================ */
+
+/* --- Skip link (accessibilité SEO) --- */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  background: var(--color-accent);
+  color: white;
+  padding: 0.5rem 1rem;
+  z-index: 1000;
+  font-size: 0.85rem;
+  border-radius: 0 0 8px 0;
+}
+
+.skip-link:focus {
+  top: 0;
+}
 
 /* --- Variables --- */
 :root {

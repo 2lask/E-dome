@@ -3,20 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E-Dome — Marketplace Immobilier & Réseau Social</title>
-  <meta name="description" content="La première plateforme internationale qui combine marketplace immobilier, réseau social professionnel, système d'apporteurs, formations et services.">
+  <title>E-Dome — Marketplace Immobilier & Réseau Social International</title>
+  <meta name="description" content="E-Dome réunit marketplace immobilier, réseau social, apporteurs d'affaires, formations et services en un seul écosystème. Rejoignez les membres fondateurs.">
+  <link rel="canonical" href="https://2lask.github.io/E-dome/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="E-Dome — L'écosystème immobilier international">
+  <meta property="og:description" content="Marketplace, réseau social, apporteurs d'affaires, formations et services réunis pour la première fois. Rejoignez les 100 premiers fondateurs.">
+  <meta property="og:url" content="https://2lask.github.io/E-dome/">
+  <meta property="og:image" content="https://2lask.github.io/E-dome/og-image.png">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="E-Dome">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="E-Dome — L'écosystème immobilier international">
+  <meta name="twitter:description" content="Marketplace, réseau social, apporteurs d'affaires, formations et services réunis pour la première fois.">
+  <meta name="twitter:image" content="https://2lask.github.io/E-dome/og-image.png">
+
+  <!-- Fonts avec display swap -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Icons (defer) -->
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- Schema.org : Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "E-Dome",
+    "url": "https://2lask.github.io/E-dome/",
+    "description": "Première plateforme internationale combinant marketplace immobilier, réseau social professionnel et système d'apporteurs d'affaires.",
+    "foundingDate": "2024"
+  }
+  </script>
+
+  <!-- Schema.org : FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "E-Dome est-il déjà lancé ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "E-Dome est actuellement en phase de développement. Les membres fondateurs auront un accès bêta exclusif plusieurs semaines avant l'ouverture publique."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "À qui s'adresse E-Dome ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "À tous les acteurs de l'immobilier : agences, hôtes, propriétaires, promoteurs, photographes, courtiers, notaires, architectes, formateurs, partout dans le monde."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quelle est la différence avec Airbnb ou Booking ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "E-Dome est un écosystème complet : réseau social, marketplace multi-services, système d'apporteurs rémunérés, formations et services additionnels avec des commissions nettement inférieures."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
+
+  <!-- Skip to content (accessibilité) -->
+  <a href="#hero" class="skip-link">Aller au contenu principal</a>
 
   <!-- ============================================================
        HEADER
        ============================================================ -->
-  <header>
+  <header role="banner">
     <div class="container">
       <div class="logo">E-<span>Dome</span></div>
       <nav>
@@ -35,6 +106,8 @@
   <!-- ============================================================
        HERO
        ============================================================ -->
+  <main>
+
   <section class="hero" id="hero">
     <div class="container">
       <span class="badge">Plateforme Immobilière Nouvelle Génération</span>
@@ -370,6 +443,8 @@
     </div>
   </section>
 
+  </main>
+
   <!-- ============================================================
        FOOTER
        ============================================================ -->
@@ -390,8 +465,8 @@
     </div>
   </footer>
 
-  <!-- Lucide Icons init -->
-  <script>lucide.createIcons();</script>
+  <!-- Lucide Icons init (after defer load) -->
+  <script>document.addEventListener('DOMContentLoaded', function() { lucide.createIcons(); });</script>
 
 </body>
 </html>
