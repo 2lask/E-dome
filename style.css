@@ -289,8 +289,14 @@ nav a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   margin-bottom: 1rem;
+  color: var(--color-accent);
+}
+
+.card-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.5;
 }
 
 .card h3 {
@@ -406,8 +412,14 @@ nav a:hover {
 }
 
 .role-card .role-icon {
-  font-size: 1.5rem;
   margin-bottom: 0.5rem;
+  color: var(--color-accent);
+}
+
+.role-card .role-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.5;
 }
 
 .role-card h4 {
