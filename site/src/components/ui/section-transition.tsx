@@ -170,7 +170,7 @@ function ArchitecturalHorizon() {
           width: "60%",
           height: "70%",
           background:
-            "radial-gradient(ellipse at 50% 100%, rgba(255,224,194,0.06) 0%, transparent 70%)",
+            "radial-gradient(ellipse at 50% 100%, rgba(139,111,71,0.06) 0%, transparent 70%)",
         }}
         variants={{
           hidden: { opacity: 0 },
@@ -329,7 +329,7 @@ function GlassDivider() {
         className="absolute left-[15%] right-[15%] top-1/2 h-px -translate-y-1/2"
         style={{
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(255,224,194,0.12) 30%, rgba(255,224,194,0.15) 50%, rgba(255,224,194,0.12) 70%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, rgba(139,111,71,0.12) 30%, rgba(139,111,71,0.15) 50%, rgba(139,111,71,0.12) 70%, transparent 100%)",
         }}
         variants={{
           hidden: { scaleX: 0, opacity: 0 },

@@ -106,8 +106,8 @@ function PropertyCardMockup() {
       </p>
       <div className="group relative overflow-hidden rounded-2xl border border-[#8B6F47]/12 bg-white shadow-2xl shadow-black/40 transition-all duration-500 hover:border-[#8B6F47]/25 hover:shadow-[0_0_60px_-15px_rgba(255,224,194,0.12)]">
         <div className="relative h-48 w-full overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#8B6F47]/20 via-[#191919] to-[#C4956A]/15" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#191919] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#8B6F47]/20 via-[#F3EDE7] to-[#C4956A]/15" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#F3EDE7] via-transparent to-transparent" />
           <div className="absolute left-4 top-4 rounded-full border border-[#8B6F47]/20 bg-[#FAF8F5]/70 px-3 py-1 text-xs font-medium text-[#8B6F47] backdrop-blur-sm">
             Coup de coeur
           </div>
