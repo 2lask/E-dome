@@ -116,7 +116,7 @@
       <a href="#rejoindre" class="hero-cta">Rejoindre les Membres Fondateurs &rarr;</a>
       <p class="hero-trust">Sans engagement &middot; Gratuit &middot; Confidentiel</p>
 
-      <div class="hero-stats">
+      <div class="hero-stats reveal-stagger">
         <div class="stat">
           <div class="stat-value">$32.8B</div>
           <div class="stat-label">Marché immobilier digital d'ici 2030</div>
@@ -145,7 +145,7 @@
       <span class="badge">Le Constat</span>
       <h2 style="margin-top:1rem;">Le secteur immobilier souffre de <span class="accent">4 problèmes majeurs.</span></h2>
 
-      <div class="cards-grid">
+      <div class="cards-grid reveal-stagger">
         <div class="card">
           <div class="card-icon"><i data-lucide="trending-down"></i></div>
           <h3>Commissions élevées</h3>
@@ -169,7 +169,7 @@
       </div>
 
       <!-- Comparaison Sans / Avec -->
-      <div class="comparison">
+      <div class="comparison reveal">
         <div class="comparison-col sans">
           <h4>Sans E-Dome</h4>
           <ul>
@@ -203,7 +203,7 @@
       <h2 style="margin-top:1rem;">Cinq piliers. <span class="accent">Un seul écosystème.</span></h2>
       <p style="margin-top:1rem;">Un seul compte pour tout gérer : transactions, visibilité, commissions, formations et services. Accessible à tous les acteurs du secteur, partout dans le monde.</p>
 
-      <div class="cards-grid">
+      <div class="cards-grid reveal-stagger">
         <div class="card">
           <div class="card-icon"><i data-lucide="home"></i></div>
           <h3>Marketplace immobilier</h3>
@@ -242,7 +242,7 @@
       <h2 style="margin-top:1rem;">Un compte. <span class="accent">Tous les rôles.</span></h2>
       <p style="margin-top:1rem;">E-Dome s'adapte à chaque acteur de l'immobilier. Un seul profil peut activer plusieurs rôles selon son activité.</p>
 
-      <div class="roles-grid">
+      <div class="roles-grid reveal-stagger">
         <div class="role-card">
           <div class="role-icon"><i data-lucide="user"></i></div>
           <h4>Client</h4>
@@ -295,7 +295,7 @@
       <span class="badge">Opportunité de Marché</span>
       <h2 style="margin-top:1rem;">Un marché mondial en <span class="accent">pleine transformation.</span></h2>
 
-      <div class="stats-row">
+      <div class="stats-row reveal-stagger">
         <div class="stat-card">
           <div class="stat-value">$32.8B</div>
           <div class="stat-label">Marché immobilier digital d'ici 2030</div>
@@ -363,7 +363,7 @@
       </div>
 
       <!-- Timeline du processus -->
-      <div class="timeline">
+      <div class="timeline reveal">
         <div class="timeline-step">
           <div class="step-number">1</div>
           <h4>Manifestez votre intérêt</h4>
@@ -396,7 +396,7 @@
       <span class="badge">FAQ</span>
       <h2 style="margin-top:1rem;">Questions <span class="accent">fréquentes</span></h2>
 
-      <div class="faq-list">
+      <div class="faq-list reveal">
         <div class="faq-item">
           <button class="faq-question">E-Dome est-il déjà lancé ?</button>
           <div class="faq-answer"><p>E-Dome est actuellement en phase de développement. Les membres fondateurs auront un accès bêta exclusif plusieurs semaines avant l'ouverture publique.</p></div>
@@ -434,7 +434,7 @@
        ============================================================ -->
   <section>
     <div class="container">
-      <div class="cta-section">
+      <div class="cta-section reveal">
         <span class="badge">100 places disponibles</span>
         <h2 style="margin-top:1rem;">Rejoignez les <span class="accent">membres fondateurs.</span></h2>
         <p>Soyez parmi les premiers à construire l'avenir de l'immobilier digital.</p>
@@ -465,8 +465,33 @@
     </div>
   </footer>
 
-  <!-- Lucide Icons init (after defer load) -->
-  <script>document.addEventListener('DOMContentLoaded', function() { lucide.createIcons(); });</script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // --- Lucide Icons ---
+    lucide.createIcons();
+
+    // --- Scroll Reveal ---
+    const reveals = document.querySelectorAll('.reveal, .reveal-stagger');
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+    reveals.forEach(function(el) { observer.observe(el); });
+
+    // --- FAQ Accordion ---
+    document.querySelectorAll('.faq-question').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var item = this.parentElement;
+        var isActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item.active').forEach(function(i) { i.classList.remove('active'); });
+        if (!isActive) item.classList.add('active');
+      });
+    });
+  });
+  </script>
 
 </body>
 </html>
