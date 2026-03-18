@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Dome — Marketplace Immobilier & Réseau Social International</title>
-  <meta name="description" content="E-Dome réunit marketplace immobilier, réseau social, apporteurs d'affaires, formations et services en un seul écosystème. Rejoignez les membres fondateurs.">
+  <meta name="description" content="E-Dome réunit marketplace immobilier, réseau social, apporteurs d'affaires, formations et services en un seul écosystème.">
   <link rel="canonical" href="https://2lask.github.io/E-dome/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="E-Dome — L'écosystème immobilier international">
-  <meta property="og:description" content="Marketplace, réseau social, apporteurs d'affaires, formations et services réunis pour la première fois.">
   <meta property="og:url" content="https://2lask.github.io/E-dome/">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,9 +15,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest" defer></script>
   <link rel="stylesheet" href="style.css">
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Organization","name":"E-Dome","url":"https://2lask.github.io/E-dome/","description":"Première plateforme internationale combinant marketplace immobilier et réseau social professionnel.","foundingDate":"2024"}
-  </script>
 </head>
 <body>
 
@@ -31,7 +27,6 @@
       <nav>
         <a href="#probleme">Constat</a>
         <a href="#solution">Solution</a>
-        <a href="#profils">Profils</a>
         <a href="#marche">Marché</a>
         <a href="#faq">FAQ</a>
         <a href="#rejoindre" class="nav-cta">Rejoindre</a>
@@ -41,82 +36,69 @@
 
   <main>
 
-  <!-- ══════════════════════════════════════════════════════════
-       1. HERO — plein écran, texte massif
-       ══════════════════════════════════════════════════════════ -->
+  <!-- ════════════════════════════════════════════
+       1. HERO — plein écran
+       ════════════════════════════════════════════ -->
   <section class="hero" id="hero">
     <div class="hero-content reveal">
       <p class="label">Plateforme Immobilière Nouvelle Génération</p>
       <h1>L'écosystème qui<br><span class="accent">réunit l'immobilier</span><br>mondial.</h1>
       <p class="subtitle">Marketplace &middot; Réseau social &middot; Apporteurs &middot; Formations &middot; Services</p>
       <a href="#rejoindre" class="btn-primary">Rejoindre les Fondateurs &rarr;</a>
-      <p class="trust">Sans engagement &middot; Gratuit &middot; Confidentiel</p>
     </div>
-    <div class="scroll-indicator">
-      <span></span>
-    </div>
+    <div class="scroll-indicator"><span></span></div>
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       2. STATS — barre horizontale de chiffres
-       ══════════════════════════════════════════════════════════ -->
-  <section class="stats-band">
+  <!-- ════════════════════════════════════════════
+       2. STATS BAND
+       ════════════════════════════════════════════ -->
+  <div class="stats-band">
     <div class="stats-inner reveal-stagger">
-      <div class="stat-item">
-        <strong>$32.8B</strong>
-        <span>Marché digital immobilier 2030</span>
-      </div>
-      <div class="stat-item">
-        <strong>$193B</strong>
-        <span>Location courte durée 2029</span>
-      </div>
-      <div class="stat-item">
-        <strong>$2.9T</strong>
-        <span>Social commerce 2030</span>
-      </div>
-      <div class="stat-item">
-        <strong>82%</strong>
-        <span>Transactions via bouche-à-oreille</span>
-      </div>
+      <div class="stat-item"><strong>$32.8B</strong><span>Immobilier digital 2030</span></div>
+      <div class="stat-item"><strong>$193B</strong><span>Location courte durée 2029</span></div>
+      <div class="stat-item"><strong>$2.9T</strong><span>Social commerce 2030</span></div>
+      <div class="stat-item"><strong>82%</strong><span>Transactions via bouche-à-oreille</span></div>
     </div>
-  </section>
+  </div>
 
-  <!-- ══════════════════════════════════════════════════════════
-       3. PROBLÈME — plein écran, texte + liste
-       ══════════════════════════════════════════════════════════ -->
-  <section class="fullscreen" id="probleme">
-    <div class="fs-content reveal">
+  <!-- ════════════════════════════════════════════
+       3. PROBLÈME — STICKY SCROLL
+       Titre sticky à gauche, cards défilent à droite
+       ════════════════════════════════════════════ -->
+  <section class="sticky-section" id="probleme">
+    <div class="sticky-left">
       <p class="label">Le Constat</p>
-      <h2>Le secteur immobilier<br>est <span class="accent">fragmenté.</span></h2>
+      <h2>Le secteur<br>immobilier est<br><span class="accent">fragmenté.</span></h2>
+      <p class="sticky-desc">Les professionnels font face à quatre défis majeurs qui impactent leur rentabilité.</p>
     </div>
-    <div class="fs-grid reveal-stagger">
-      <div class="fs-card">
-        <div class="fs-card-icon"><i data-lucide="trending-down"></i></div>
+    <div class="sticky-right">
+      <div class="scroll-card reveal">
+        <div class="sc-icon"><i data-lucide="trending-down"></i></div>
         <h3>Commissions élevées</h3>
-        <p>14 à 25% prélevés par les plateformes traditionnelles sur chaque transaction.</p>
+        <p>Les plateformes traditionnelles prélèvent 14 à 25% par transaction. Les professionnels perdent une part majeure de leur chiffre d'affaires.</p>
       </div>
-      <div class="fs-card">
-        <div class="fs-card-icon"><i data-lucide="lock"></i></div>
+      <div class="scroll-card reveal">
+        <div class="sc-icon"><i data-lucide="lock"></i></div>
         <h3>Dépendance totale</h3>
-        <p>Zéro contrôle sur la relation client. Algorithmes opaques. Risque de suspension.</p>
+        <p>Zéro contrôle sur la relation client. Algorithmes opaques. Suspension de compte = perte d'activité du jour au lendemain.</p>
       </div>
-      <div class="fs-card">
-        <div class="fs-card-icon"><i data-lucide="megaphone"></i></div>
+      <div class="scroll-card reveal">
+        <div class="sc-icon"><i data-lucide="megaphone"></i></div>
         <h3>Visibilité payante</h3>
-        <p>Des centaines d'euros par mois en publicité. Sans budget, vos biens sont invisibles.</p>
+        <p>Des centaines d'euros par mois en publicité obligatoire. Sans budget, vos biens restent totalement invisibles.</p>
       </div>
-      <div class="fs-card">
-        <div class="fs-card-icon"><i data-lucide="handshake"></i></div>
+      <div class="scroll-card reveal">
+        <div class="sc-icon"><i data-lucide="handshake"></i></div>
         <h3>Apporteurs = chaos</h3>
-        <p>Aucun tracking transparent. Calculs manuels, erreurs, litiges fréquents.</p>
+        <p>Aucun outil de tracking transparent. Calculs manuels, erreurs fréquentes, litiges à répétition.</p>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       4. COMPARAISON — plein écran, split
-       ══════════════════════════════════════════════════════════ -->
-  <section class="fullscreen split-section">
+  <!-- ════════════════════════════════════════════
+       4. COMPARAISON — split plein écran
+       ════════════════════════════════════════════ -->
+  <section class="split-section">
     <div class="split-col split-sans reveal">
       <h3>Sans E-Dome</h3>
       <ul>
@@ -139,121 +121,110 @@
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       5. SOLUTION TITRE — plein écran, juste le titre
-       ══════════════════════════════════════════════════════════ -->
-  <section class="fullscreen centered" id="solution">
-    <div class="reveal">
+  <!-- ════════════════════════════════════════════
+       5. SOLUTION — STICKY SCROLL
+       Titre sticky à gauche, 5 piliers défilent à droite
+       ════════════════════════════════════════════ -->
+  <section class="sticky-section" id="solution">
+    <div class="sticky-left">
       <p class="label">La Solution</p>
-      <h2>Cinq piliers.<br><span class="accent">Un seul écosystème.</span></h2>
-      <p class="big-subtitle">Un seul compte pour tout gérer. Accessible à tous les acteurs, partout dans le monde.</p>
+      <h2>Cinq piliers.<br><span class="accent">Un seul<br>écosystème.</span></h2>
+      <p class="sticky-desc">Un seul compte pour tout gérer. Accessible à tous les acteurs, partout dans le monde.</p>
     </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════
-       6. LES 5 PILIERS — un par ligne, grand format
-       ══════════════════════════════════════════════════════════ -->
-  <section class="pillars">
-    <div class="pillar reveal">
-      <div class="pillar-number">01</div>
-      <div class="pillar-content">
-        <div class="pillar-icon"><i data-lucide="home"></i></div>
+    <div class="sticky-right">
+      <div class="scroll-card reveal">
+        <div class="sc-num">01</div>
+        <div class="sc-icon"><i data-lucide="home"></i></div>
         <h3>Marketplace immobilier</h3>
         <p>Vente, location courte et longue durée. Commissions nettement inférieures au marché. Un seul parcours pour tout gérer.</p>
       </div>
-    </div>
-    <div class="pillar reveal">
-      <div class="pillar-number">02</div>
-      <div class="pillar-content">
-        <div class="pillar-icon"><i data-lucide="smartphone"></i></div>
+      <div class="scroll-card reveal">
+        <div class="sc-num">02</div>
+        <div class="sc-icon"><i data-lucide="smartphone"></i></div>
         <h3>Réseau social immobilier</h3>
         <p>Publiez reels et stories pour bâtir votre audience. Attirez des prospects qualifiés sans budget publicitaire.</p>
       </div>
-    </div>
-    <div class="pillar reveal">
-      <div class="pillar-number">03</div>
-      <div class="pillar-content">
-        <div class="pillar-icon"><i data-lucide="link"></i></div>
+      <div class="scroll-card reveal">
+        <div class="sc-num">03</div>
+        <div class="sc-icon"><i data-lucide="link"></i></div>
         <h3>Système d'apporteurs</h3>
         <p>Lien unique, tracking transparent, commissions automatiques. Le bouche-à-oreille devient mesurable et rémunéré.</p>
       </div>
-    </div>
-    <div class="pillar reveal">
-      <div class="pillar-number">04</div>
-      <div class="pillar-content">
-        <div class="pillar-icon"><i data-lucide="settings"></i></div>
+      <div class="scroll-card reveal">
+        <div class="sc-num">04</div>
+        <div class="sc-icon"><i data-lucide="settings"></i></div>
         <h3>Services additionnels</h3>
         <p>Conciergerie, transport, expériences locales. Réservez directement depuis chaque bien. Chaque service génère des revenus.</p>
       </div>
-    </div>
-    <div class="pillar reveal">
-      <div class="pillar-number">05</div>
-      <div class="pillar-content">
-        <div class="pillar-icon"><i data-lucide="book-open"></i></div>
+      <div class="scroll-card reveal">
+        <div class="sc-num">05</div>
+        <div class="sc-icon"><i data-lucide="book-open"></i></div>
         <h3>Formations & communauté</h3>
         <p>Formations, lives et webinars par des experts. Rejoignez une communauté qui partage vos ambitions.</p>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       7. PROFILS — plein écran titre + grille
-       ══════════════════════════════════════════════════════════ -->
-  <section class="fullscreen" id="profils">
-    <div class="fs-content reveal">
+  <!-- ════════════════════════════════════════════
+       6. PROFILS — STICKY SCROLL
+       ════════════════════════════════════════════ -->
+  <section class="sticky-section" id="profils">
+    <div class="sticky-left">
       <p class="label">Multi-Rôles</p>
-      <h2>Un compte.<br><span class="accent">Tous les rôles.</span></h2>
+      <h2>Un compte.<br><span class="accent">Tous les<br>rôles.</span></h2>
+      <p class="sticky-desc">E-Dome s'adapte à chaque acteur. Un seul profil, plusieurs rôles activables.</p>
     </div>
-    <div class="roles-grid reveal-stagger">
-      <div class="role"><i data-lucide="user"></i><span>Client</span></div>
-      <div class="role"><i data-lucide="home"></i><span>Hôte</span></div>
-      <div class="role"><i data-lucide="key-round"></i><span>Propriétaire</span></div>
-      <div class="role"><i data-lucide="building-2"></i><span>Agence</span></div>
-      <div class="role"><i data-lucide="hard-hat"></i><span>Promoteur</span></div>
-      <div class="role"><i data-lucide="handshake"></i><span>Apporteur</span></div>
-      <div class="role"><i data-lucide="bar-chart-3"></i><span>Investisseur</span></div>
-      <div class="role"><i data-lucide="graduation-cap"></i><span>Formateur</span></div>
+    <div class="sticky-right">
+      <div class="scroll-card reveal">
+        <div class="sc-icon"><i data-lucide="user"></i></div>
+        <h3>Client</h3>
+        <p>Réservez, achetez, suivez vos transactions et gérez vos favoris depuis un tableau de bord simple et intuitif.</p>
+      </div>
+      <div class="scroll-card reveal">
+        <div class="sc-icon"><i data-lucide="home"></i></div>
+        <h3>Hôte & Propriétaire</h3>
+        <p>Publiez vos biens en location courte ou longue durée. Dashboard revenus, calendrier, analytics intégrés.</p>
+      </div>
+      <div class="scroll-card reveal">
+        <div class="sc-icon"><i data-lucide="building-2"></i></div>
+        <h3>Agence & Promoteur</h3>
+        <p>Multi-biens, gestion d'équipe, CRM intégré, rapports automatiques. API disponible pour les grands comptes.</p>
+      </div>
+      <div class="scroll-card reveal">
+        <div class="sc-icon"><i data-lucide="handshake"></i></div>
+        <h3>Apporteur d'affaires</h3>
+        <p>Lien affilié unique, dashboard commissions en temps réel, versements automatiques. Historique complet.</p>
+      </div>
+      <div class="scroll-card reveal">
+        <div class="sc-icon"><i data-lucide="graduation-cap"></i></div>
+        <h3>Formateur & Investisseur</h3>
+        <p>Diffusez vos formations, accédez aux données globales de la plateforme, projections financières et rapports.</p>
+      </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       8. MARCHÉ — plein écran, gros chiffres
-       ══════════════════════════════════════════════════════════ -->
+  <!-- ════════════════════════════════════════════
+       7. MARCHÉ — plein écran centré
+       ════════════════════════════════════════════ -->
   <section class="fullscreen centered" id="marche">
     <div class="reveal">
       <p class="label">Opportunité de Marché</p>
       <h2>Un marché mondial en<br><span class="accent">pleine transformation.</span></h2>
     </div>
     <div class="big-stats reveal-stagger">
-      <div class="big-stat">
-        <strong>$32.8B</strong>
-        <span>Immobilier digital 2030</span>
-        <em>Grand View Research</em>
-      </div>
-      <div class="big-stat">
-        <strong>$193B</strong>
-        <span>Location courte durée 2029</span>
-        <em>Statista</em>
-      </div>
-      <div class="big-stat">
-        <strong>$2.9T</strong>
-        <span>Social commerce 2030</span>
-        <em>Grand View Research</em>
-      </div>
-      <div class="big-stat">
-        <strong>82%</strong>
-        <span>Transactions via bouche-à-oreille</span>
-        <em>NAR, 2023</em>
-      </div>
+      <div class="big-stat"><strong>$32.8B</strong><span>Immobilier digital 2030</span><em>Grand View Research</em></div>
+      <div class="big-stat"><strong>$193B</strong><span>Location courte durée 2029</span><em>Statista</em></div>
+      <div class="big-stat"><strong>$2.9T</strong><span>Social commerce 2030</span><em>Grand View Research</em></div>
+      <div class="big-stat"><strong>82%</strong><span>Transactions via bouche-à-oreille</span><em>NAR, 2023</em></div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       9. PROGRAMME FONDATEURS — plein écran
-       ══════════════════════════════════════════════════════════ -->
+  <!-- ════════════════════════════════════════════
+       8. FONDATEURS — plein écran
+       ════════════════════════════════════════════ -->
   <section class="fullscreen centered" id="rejoindre">
     <div class="reveal">
-      <p class="label">Programme Membres Fondateurs</p>
+      <p class="label">Programme Fondateurs</p>
       <h2>Façonnez E-Dome<br><span class="accent">avec nous.</span></h2>
       <p class="big-subtitle">100 places. Sélection sur dossier. Avantages permanents.</p>
     </div>
@@ -263,74 +234,54 @@
       <div class="founder-card"><i data-lucide="book-open"></i><h4>Formations offertes</h4></div>
       <div class="founder-card"><i data-lucide="users"></i><h4>Réseau exclusif</h4></div>
       <div class="founder-card"><i data-lucide="percent"></i><h4>Conditions préférentielles</h4></div>
-      <div class="founder-card"><i data-lucide="message-square"></i><h4>Voix dans les décisions</h4></div>
+      <div class="founder-card"><i data-lucide="message-square"></i><h4>Voix décisionnelle</h4></div>
     </div>
     <div class="reveal" style="margin-top:4rem;text-align:center;">
       <a href="#rejoindre" class="btn-primary btn-large">Manifester mon intérêt &rarr;</a>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       10. TIMELINE — plein écran, horizontal
-       ══════════════════════════════════════════════════════════ -->
-  <section class="fullscreen centered">
-    <div class="reveal">
-      <p class="label">Processus</p>
-      <h2>4 étapes pour <span class="accent">rejoindre.</span></h2>
-    </div>
-    <div class="timeline reveal">
-      <div class="tl-step"><div class="tl-num">1</div><h4>Manifestez<br>votre intérêt</h4></div>
-      <div class="tl-line"></div>
-      <div class="tl-step"><div class="tl-num">2</div><h4>Analyse de<br>votre profil</h4></div>
-      <div class="tl-line"></div>
-      <div class="tl-step"><div class="tl-num">3</div><h4>Échange de<br>présentation</h4></div>
-      <div class="tl-line"></div>
-      <div class="tl-step"><div class="tl-num">4</div><h4>Accès<br>anticipé</h4></div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════
-       11. FAQ — plein écran
-       ══════════════════════════════════════════════════════════ -->
-  <section class="fullscreen" id="faq">
-    <div class="fs-content reveal">
+  <!-- ════════════════════════════════════════════
+       9. FAQ — STICKY SCROLL
+       ════════════════════════════════════════════ -->
+  <section class="sticky-section" id="faq">
+    <div class="sticky-left">
       <p class="label">FAQ</p>
       <h2>Questions<br><span class="accent">fréquentes.</span></h2>
     </div>
-    <div class="faq-list reveal">
+    <div class="sticky-right">
       <div class="faq-item">
         <button class="faq-q">E-Dome est-il déjà lancé ?</button>
-        <div class="faq-a"><p>E-Dome est en phase de développement. Les membres fondateurs auront un accès bêta exclusif avant l'ouverture publique.</p></div>
+        <div class="faq-a"><p>E-Dome est en développement. Les fondateurs auront un accès bêta exclusif avant l'ouverture publique.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q">La manifestation d'intérêt engage-t-elle ?</button>
-        <div class="faq-a"><p>Non. Gratuite, confidentielle, sans engagement. Elle nous permet d'évaluer votre profil pour le programme fondateurs.</p></div>
+        <div class="faq-a"><p>Non. Gratuite, confidentielle, sans engagement. Elle nous permet d'évaluer votre profil.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q">À qui s'adresse E-Dome ?</button>
-        <div class="faq-a"><p>À tous les acteurs de l'immobilier : agences, hôtes, propriétaires, promoteurs, courtiers, architectes, formateurs — partout dans le monde.</p></div>
+        <div class="faq-a"><p>Tous les acteurs de l'immobilier : agences, hôtes, propriétaires, promoteurs, courtiers, architectes, formateurs — partout dans le monde.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q">Quelle différence avec Airbnb ou Booking ?</button>
-        <div class="faq-a"><p>E-Dome est un écosystème complet : réseau social, marketplace multi-services, apporteurs rémunérés, formations. Le tout avec des commissions nettement inférieures.</p></div>
+        <button class="faq-q">Différence avec Airbnb ou Booking ?</button>
+        <div class="faq-a"><p>E-Dome est un écosystème complet : réseau social, marketplace, apporteurs rémunérés, formations. Commissions nettement inférieures.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q">Comment fonctionne le système d'apporteurs ?</button>
-        <div class="faq-a"><p>Chaque utilisateur reçoit un lien traçable. En le partageant, il génère une commission automatique sur chaque transaction — sans coût pour le client.</p></div>
+        <div class="faq-a"><p>Lien traçable unique. Commission automatique sur chaque transaction générée — sans coût pour le client.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q">Mes données sont-elles protégées ?</button>
-        <div class="faq-a"><p>Conforme au RGPD. Données jamais vendues. Paiements via prestataires certifiés PCI-DSS. Vérification d'identité pour les professionnels.</p></div>
+        <div class="faq-a"><p>Conforme RGPD. Données jamais vendues. Paiements via prestataires certifiés PCI-DSS.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       12. CTA FINAL — plein écran, centré
-       ══════════════════════════════════════════════════════════ -->
+  <!-- ════════════════════════════════════════════
+       10. CTA FINAL
+       ════════════════════════════════════════════ -->
   <section class="fullscreen centered cta-final">
     <div class="reveal">
-      <p class="label">100 places disponibles</p>
       <h2>Construisez l'avenir<br>de <span class="accent">l'immobilier.</span></h2>
       <a href="#rejoindre" class="btn-primary btn-large" style="margin-top:3rem;">Manifester mon intérêt &rarr;</a>
     </div>
@@ -346,7 +297,6 @@
       <div class="footer-links">
         <a href="#probleme">Constat</a>
         <a href="#solution">Solution</a>
-        <a href="#profils">Profils</a>
         <a href="#marche">Marché</a>
         <a href="#faq">FAQ</a>
         <a href="#">Confidentialité</a>
@@ -358,16 +308,11 @@
   <script>
   document.addEventListener('DOMContentLoaded', function() {
     lucide.createIcons();
-
-    // Scroll reveal with translate3d
-    var reveals = document.querySelectorAll('.reveal, .reveal-stagger');
+    // Scroll reveal
     var obs = new IntersectionObserver(function(entries) {
-      entries.forEach(function(e) {
-        if (e.isIntersecting) e.target.classList.add('visible');
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' });
-    reveals.forEach(function(el) { obs.observe(el); });
-
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el) { obs.observe(el); });
     // FAQ accordion
     document.querySelectorAll('.faq-q').forEach(function(btn) {
       btn.addEventListener('click', function() {
