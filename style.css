@@ -26,10 +26,10 @@ a { color: var(--accent); text-decoration: none; }
 .skip-link { position: absolute; top: -100%; left: 0; background: var(--accent); color: #000; padding: .5rem 1rem; z-index: 9999; }
 .skip-link:focus { top: 0; }
 
-/* ── Reveal ── */
-.reveal { opacity: 0; transform: translate3d(0, 80px, 0); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+/* ── Reveal (ADM: translate3d 0,100%,0 → 0,0,0) ── */
+.reveal { opacity: 0; transform: translate3d(0, 100px, 0); transition: opacity 1.2s var(--ease), transform 1.2s var(--ease); }
 .reveal.visible { opacity: 1; transform: translate3d(0, 0, 0); }
-.reveal-stagger > * { opacity: 0; transform: translate3d(0, 60px, 0); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+.reveal-stagger > * { opacity: 0; transform: translate3d(0, 80px, 0); transition: opacity 1s var(--ease), transform 1s var(--ease); }
 .reveal-stagger.visible > *:nth-child(1) { transition-delay: 0s; }
 .reveal-stagger.visible > *:nth-child(2) { transition-delay: .12s; }
 .reveal-stagger.visible > *:nth-child(3) { transition-delay: .24s; }
@@ -133,41 +133,27 @@ nav a:hover { color: var(--white); }
 .stat-item span { font-size: .8rem; color: var(--w40); margin-top: .4rem; display: block; }
 
 /* ══════════════════════════════════════════════
-   STICKY SCROLL SECTIONS
-   Le coeur du layout ADM : titre fixe à gauche,
-   contenu qui défile à droite
+   CONTENT SECTIONS (ADM style: everything slides up)
    ══════════════════════════════════════════════ */
 .sticky-section {
-  display: flex;
-  min-height: 100vh;
+  padding: 8rem 4vw;
   border-top: 1px solid var(--w06);
+  max-width: 1200px;
+  margin: 0 auto;
 }
-
-/* Colonne gauche : STICKY */
 .sticky-left {
-  width: 40%;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 4rem 4vw;
-  border-right: 1px solid var(--w06);
+  margin-bottom: 4rem;
 }
 .sticky-left h2 {
-  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-size: clamp(2.2rem, 5vw, 4rem);
   font-weight: 700; line-height: 1.1; letter-spacing: -.04em;
+  margin-top: 1rem;
 }
 .sticky-desc {
-  font-size: .95rem; color: var(--w40); margin-top: 1.5rem;
-  max-width: 320px; line-height: 1.7;
+  font-size: 1rem; color: var(--w40); margin-top: 1.5rem;
+  max-width: 500px; line-height: 1.7;
 }
-
-/* Colonne droite : SCROLLABLE */
 .sticky-right {
-  width: 60%;
-  padding: 6rem 4vw;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -325,14 +311,8 @@ footer { padding: 4rem 4vw; text-align: center; border-top: 1px solid var(--w06)
   nav { display: none; }
   .hero h1 { font-size: clamp(2.2rem, 9vw, 3.5rem); }
 
-  /* Sticky → stacked on mobile */
-  .sticky-section { flex-direction: column; }
-  .sticky-left {
-    width: 100%; position: relative; height: auto;
-    padding: 4rem 5vw 2rem; border-right: none;
-    border-bottom: 1px solid var(--w06);
-  }
-  .sticky-right { width: 100%; padding: 2rem 5vw 4rem; }
+  .sticky-section { padding: 4rem 5vw; }
+  .sticky-left { margin-bottom: 2rem; }
 
   .split-section { flex-direction: column; }
   .split-col { min-height: auto; padding: 4rem 5vw; }
