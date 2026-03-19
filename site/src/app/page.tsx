@@ -51,18 +51,18 @@ const pillars = [
 ];
 
 const roles = [
-  { icon: User, name: "Client" },
-  { icon: Home, name: "H\u00f4te" },
-  { icon: Building2, name: "Agence" },
-  { icon: HardHat, name: "Promoteur" },
-  { icon: Handshake, name: "Apporteur" },
-  { icon: BarChart3, name: "Investisseur" },
-  { icon: GraduationCap, name: "Formateur" },
-  { icon: Key, name: "Propri\u00e9taire" },
-  { icon: Camera, name: "Photographe" },
-  { icon: Briefcase, name: "Courtier" },
-  { icon: PenTool, name: "Architecte" },
-  { icon: Scale, name: "Notaire" },
+  { icon: User, name: "Client", color: "#8B5CF6" },
+  { icon: Home, name: "H\u00f4te", color: "#3B82F6" },
+  { icon: Building2, name: "Agence", color: "#8B5CF6" },
+  { icon: HardHat, name: "Promoteur", color: "#10B981" },
+  { icon: Handshake, name: "Apporteur", color: "#F59E0B" },
+  { icon: BarChart3, name: "Investisseur", color: "#EF4444" },
+  { icon: GraduationCap, name: "Formateur", color: "#EC4899" },
+  { icon: Key, name: "Propri\u00e9taire", color: "#06B6D4" },
+  { icon: Camera, name: "Photographe", color: "#F97316" },
+  { icon: Briefcase, name: "Courtier", color: "#6366F1" },
+  { icon: PenTool, name: "Architecte", color: "#C4956A" },
+  { icon: Scale, name: "Notaire", color: "#14B8A6" },
 ];
 
 const stats = [
@@ -321,8 +321,11 @@ export default function Page() {
                   {roles.map((r) => (
                     <StaggerItem key={r.name}>
                       <TiltCard className="w-[120px] py-7 flex flex-col items-center gap-3">
-                        <r.icon className="w-6 h-6 text-[#C4956A]" />
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${r.color}15` }}>
+                          <r.icon className="w-5 h-5" style={{ color: r.color }} />
+                        </div>
                         <span className="text-xs font-medium text-white/70">{r.name}</span>
+                        <div className="w-6 h-1 rounded-full" style={{ backgroundColor: r.color, opacity: 0.6 }} />
                       </TiltCard>
                     </StaggerItem>
                   ))}
