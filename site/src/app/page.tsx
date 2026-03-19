@@ -73,12 +73,12 @@ const stats = [
 ];
 
 const founders = [
-  { icon: Award, label: "Badge fondateur permanent" },
-  { icon: Rocket, label: "Acc\u00e8s b\u00eata anticip\u00e9" },
-  { icon: BookOpen, label: "Formations offertes" },
-  { icon: Users, label: "R\u00e9seau de 100 fondateurs" },
-  { icon: Percent, label: "Conditions pr\u00e9f\u00e9rentielles" },
-  { icon: MessageSquare, label: "Voix dans les d\u00e9cisions produit" },
+  { icon: Award, label: "Badge fondateur permanent", color: "#F59E0B" },
+  { icon: Rocket, label: "Acc\u00e8s b\u00eata anticip\u00e9", color: "#3B82F6" },
+  { icon: BookOpen, label: "Formations offertes", color: "#EC4899" },
+  { icon: Users, label: "R\u00e9seau de 100 fondateurs", color: "#8B5CF6" },
+  { icon: Percent, label: "Conditions pr\u00e9f\u00e9rentielles", color: "#10B981" },
+  { icon: MessageSquare, label: "Voix dans les d\u00e9cisions produit", color: "#06B6D4" },
 ];
 
 const faqs = [
@@ -178,9 +178,9 @@ export default function Page() {
           <BlueprintOverlay />
           <div className="max-w-[1200px] mx-auto relative z-10">
             <ScrollReveal>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-6">
-                <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
-                <span className="text-sm text-[#C4956A] font-medium">Le Constat</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#EF4444]/10 border border-[#EF4444]/20 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#EF4444] animate-[dot-pulse_2s_ease_infinite]" />
+                <span className="text-sm text-[#EF4444] font-medium">Le Constat</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em] max-w-2xl">
                 Le march&eacute; immobilier est <GradientText>fragment&eacute;.</GradientText>
@@ -218,9 +218,9 @@ export default function Page() {
         <DotBackground className="py-32 px-[4vw]" id="solution">
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-20">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-6">
-                <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
-                <span className="text-sm text-[#C4956A] font-medium">La Solution</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#10B981]/10 border border-[#10B981]/20 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#10B981] animate-[dot-pulse_2s_ease_infinite]" />
+                <span className="text-sm text-[#10B981] font-medium">La Solution</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">
                 Cinq piliers. <GradientText>Un seul &eacute;cosyst&egrave;me.</GradientText>
@@ -372,9 +372,9 @@ export default function Page() {
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <ScrollReveal>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-6">
-                <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
-                <span className="text-sm text-[#C4956A] font-medium">Apporteurs d&apos;affaires</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F59E0B]/10 border border-[#F59E0B]/20 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#F59E0B] animate-[dot-pulse_2s_ease_infinite]" />
+                <span className="text-sm text-[#F59E0B] font-medium">Apporteurs d&apos;affaires</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Recommandez. <GradientText>Gagnez.</GradientText></h2>
               <p className="text-white/40 mt-6 text-lg leading-relaxed max-w-xl">Partagez un lien tra&ccedil;able unique. Chaque transaction g&eacute;n&eacute;r&eacute;e vous rapporte une commission automatique &mdash; sans aucun frais pour le client final.</p>
@@ -385,7 +385,7 @@ export default function Page() {
                   { step: "3", title: "Encaissez", desc: "Commission automatique \u00e0 chaque conversion" },
                 ].map((s) => (
                   <div key={s.step} className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#C4956A]/15 border border-[#C4956A]/30 flex items-center justify-center text-[#C4956A] font-bold text-sm shrink-0">{s.step}</div>
+                    <div className="w-10 h-10 rounded-full bg-[#F59E0B]/15 border border-[#F59E0B]/30 flex items-center justify-center text-[#F59E0B] font-bold text-sm shrink-0">{s.step}</div>
                     <div>
                       <p className="font-semibold">{s.title}</p>
                       <p className="text-white/40 text-sm">{s.desc}</p>
@@ -443,9 +443,9 @@ export default function Page() {
         <AuroraBackground className="py-32 px-[4vw] min-h-screen flex items-center" id="rejoindre">
           <div className="max-w-[1200px] mx-auto text-center w-full">
             <ScrollReveal>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-6">
-                <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
-                <span className="text-sm text-[#C4956A] font-medium">Programme Fondateurs</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-[dot-pulse_2s_ease_infinite]" />
+                <span className="text-sm text-[#8B5CF6] font-medium">Programme Fondateurs</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Fa&ccedil;onnez E-Dome <GradientText>avec nous.</GradientText></h2>
               <p className="text-white/40 mt-4 text-lg max-w-xl mx-auto">100 places. S&eacute;lection sur dossier. Avantages permanents d&egrave;s le lancement.</p>
@@ -453,11 +453,14 @@ export default function Page() {
             <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-14 max-w-[800px] mx-auto" stagger={0.08}>
               {founders.map((f) => (
                 <StaggerItem key={f.label}>
-                  <TiltCard className="py-8 flex flex-col items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-[#C4956A]/10 flex items-center justify-center">
-                      <f.icon className="w-7 h-7 text-[#C4956A]" />
+                  <TiltCard className="py-8 flex flex-col items-center gap-4 relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 right-0 h-[2px] transition-all duration-500 group-hover:h-[3px]" style={{ backgroundColor: f.color }} />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" style={{ background: `radial-gradient(circle at 50% 0%, ${f.color}10, transparent 70%)` }} />
+                    <div className="relative z-10 w-14 h-14 rounded-xl flex items-center justify-center transition-shadow duration-300 group-hover:shadow-lg" style={{ backgroundColor: `${f.color}15` }}>
+                      <f.icon className="w-7 h-7" style={{ color: f.color }} />
                     </div>
-                    <h4 className="text-sm font-semibold">{f.label}</h4>
+                    <h4 className="relative z-10 text-sm font-semibold">{f.label}</h4>
+                    <div className="w-8 h-[2px] rounded-full" style={{ backgroundColor: f.color, opacity: 0.4 }} />
                   </TiltCard>
                 </StaggerItem>
               ))}

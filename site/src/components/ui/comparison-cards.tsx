@@ -92,16 +92,16 @@ export function ComparisonCards() {
         >
           <div className="p-8 md:p-12 ml-auto max-w-[50%]">
             <div className="flex justify-end">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-8">
-                <Check className="w-3.5 h-3.5 text-[#C4956A]" />
-                <span className="text-xs font-semibold text-[#C4956A] uppercase tracking-wider">Avec E-Dome</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#10B981]/10 border border-[#10B981]/20 mb-8">
+                <Check className="w-3.5 h-3.5 text-[#10B981]" />
+                <span className="text-xs font-semibold text-[#10B981] uppercase tracking-wider">Avec E-Dome</span>
               </div>
             </div>
             <ul className="space-y-5">
               {withEdome.map((item, i) => (
                 <li key={i} className="flex items-start gap-3 flex-row-reverse text-right">
-                  <span className="w-7 h-7 rounded-full bg-[#C4956A]/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="w-3.5 h-3.5 text-[#C4956A]" />
+                  <span className="w-7 h-7 rounded-full bg-[#10B981]/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="w-3.5 h-3.5 text-[#10B981]" />
                   </span>
                   <span className="text-white/70 leading-relaxed text-sm">{item}</span>
                 </li>
@@ -112,11 +112,11 @@ export function ComparisonCards() {
 
         {/* BARRE SLIDER */}
         <div className="absolute top-0 bottom-0 z-30" style={{ left: `${percent}%` }}>
-          <div className="absolute inset-0 w-[2px] -translate-x-px bg-gradient-to-b from-transparent via-[#C4956A] to-transparent" />
-          <div className="absolute top-0 bottom-0 w-20 -left-20 bg-gradient-to-r from-transparent to-[#C4956A]/8" />
-          <div className="absolute top-0 bottom-0 w-20 left-0 bg-gradient-to-l from-transparent to-[#C4956A]/5" />
+          <div className="absolute inset-0 w-[2px] -translate-x-px bg-gradient-to-b from-transparent via-[#10B981] to-transparent" />
+          <div className="absolute top-0 bottom-0 w-20 -left-20 bg-gradient-to-r from-transparent to-[#10B981]/8" />
+          <div className="absolute top-0 bottom-0 w-20 left-0 bg-gradient-to-l from-transparent to-[#10B981]/5" />
           <div
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-[#C4956A] shadow-[0_0_24px_rgba(196,149,106,0.6)] flex items-center justify-center z-40 cursor-grab active:cursor-grabbing hover:scale-110 transition-transform"
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-[#10B981] shadow-[0_0_24px_rgba(16,185,129,0.6)] flex items-center justify-center z-40 cursor-grab active:cursor-grabbing hover:scale-110 transition-transform"
             onMouseDown={() => setDragging(true)}
             onTouchStart={() => setDragging(true)}
           >
