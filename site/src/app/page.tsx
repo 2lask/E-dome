@@ -37,18 +37,18 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 const problems = [
-  { icon: TrendingDown, title: "Commissions excessives", color: "#EF4444", desc: "Les plateformes traditionnelles captent une part significative de chaque transaction. Vos marges fondent avant m\u00eame de commencer." },
-  { icon: Lock, title: "D\u00e9pendance aux plateformes", color: "#F97316", desc: "Aucun contr\u00f4le sur votre client\u00e8le. Algorithmes opaques, suspension sans pr\u00e9avis. Vos donn\u00e9es ne vous appartiennent pas." },
-  { icon: Megaphone, title: "Visibilit\u00e9 co\u00fbteuse", color: "#F59E0B", desc: "Sans budget publicitaire cons\u00e9quent, vos biens restent invisibles. La visibilit\u00e9 organique n\u2019existe plus sur les plateformes actuelles." },
-  { icon: Handshake, title: "Recommandations non structur\u00e9es", color: "#EC4899", desc: "Le bouche-\u00e0-oreille g\u00e9n\u00e8re la majorit\u00e9 des transactions, mais aucun outil ne permet de le tracer ni de le r\u00e9mun\u00e9rer automatiquement." },
+  { icon: TrendingDown, title: "Un secteur fragment\u00e9", color: "#EF4444", desc: "Agences, investisseurs, photographes, notaires \u2014 chacun travaille en silo. Aucune infrastructure partag\u00e9e pour collaborer ou recommander des clients." },
+  { icon: Lock, title: "Revenus captur\u00e9s", color: "#F97316", desc: "Les plateformes traditionnelles pr\u00e9l\u00e8vent 15 \u00e0 25% par transaction. Pour un gestionnaire de 2 \u00e0 5 biens, cela repr\u00e9sente 15\u2019000 \u00e0 50\u2019000 CHF par an." },
+  { icon: Megaphone, title: "Aucune propri\u00e9t\u00e9", color: "#F59E0B", desc: "Vous construisez votre r\u00e9putation sur des plateformes lou\u00e9es. Quand elles changent leurs r\u00e8gles, vos donn\u00e9es, avis et r\u00e9seau disparaissent." },
+  { icon: Handshake, title: "Recommandations perdues", color: "#EC4899", desc: "Le bouche-\u00e0-oreille g\u00e9n\u00e8re la majorit\u00e9 des transactions, mais aucun outil ne permet de le tracer ni de le r\u00e9mun\u00e9rer." },
 ];
 
 const pillars = [
-  { num: "01", icon: Home, title: "Marketplace immobili\u00e8re", color: "#3B82F6", desc: "Vente, location courte et longue dur\u00e9e r\u00e9unies dans un seul parcours. Des commissions nettement inf\u00e9rieures au march\u00e9." },
-  { num: "02", icon: Smartphone, title: "R\u00e9seau social professionnel", color: "#8B5CF6", desc: "Publiez du contenu immobilier, b\u00e2tissez votre audience et attirez des prospects de mani\u00e8re organique." },
-  { num: "03", icon: Link2, title: "Syst\u00e8me d\u2019apporteurs", color: "#F59E0B", desc: "Un lien unique et tra\u00e7able par utilisateur. Commissions calcul\u00e9es et vers\u00e9es automatiquement." },
-  { num: "04", icon: Settings, title: "Services int\u00e9gr\u00e9s", color: "#10B981", desc: "Conciergerie, transport, exp\u00e9riences locales : r\u00e9servables directement depuis chaque bien. Chaque service g\u00e9n\u00e8re des revenus." },
-  { num: "05", icon: BookOpen, title: "Formations & communaut\u00e9", color: "#EC4899", desc: "Acc\u00e9dez \u00e0 des formations, webinars et coaching anim\u00e9s par des experts du secteur." },
+  { num: "01", icon: Home, title: "Marketplace immobili\u00e8re", color: "#3B82F6", desc: "Achetez, vendez, louez et investissez avec des commissions 40 \u00e0 60% inf\u00e9rieures aux plateformes traditionnelles." },
+  { num: "02", icon: Smartphone, title: "R\u00e9seau social immobilier", color: "#8B5CF6", desc: "Partagez vos annonces, construisez votre r\u00e9putation et connectez tous les acteurs de l\u2019\u00e9cosyst\u00e8me." },
+  { num: "03", icon: Link2, title: "Syst\u00e8me d\u2019apporteurs", color: "#F59E0B", desc: "Recommandations automatiques, liens tra\u00e7ables, commissions vers\u00e9es sans intervention. Le parrainage devient un revenu." },
+  { num: "04", icon: Settings, title: "\u00c9cosyst\u00e8me professionnel", color: "#10B981", desc: "Services int\u00e9gr\u00e9s, donn\u00e9es investisseurs, \u00e9v\u00e9nements \u2014 tout ce dont les professionnels ont besoin, au m\u00eame endroit." },
+  { num: "05", icon: BookOpen, title: "Formation & \u00e9v\u00e9nements", color: "#EC4899", desc: "Formations certifiantes, webinars d\u2019experts et coaching individuel directement int\u00e9gr\u00e9s \u00e0 la plateforme." },
 ];
 
 const roles = [
@@ -82,7 +82,7 @@ const founders = [
 ];
 
 const faqs = [
-  { q: "E-Dome est-il d\u00e9j\u00e0 lanc\u00e9 ?", a: "E-Dome est actuellement en d\u00e9veloppement. Les membres fondateurs b\u00e9n\u00e9ficieront d\u2019un acc\u00e8s b\u00eata exclusif plusieurs semaines avant l\u2019ouverture publique, pr\u00e9vue au second semestre 2025." },
+  { q: "E-Dome est-il d\u00e9j\u00e0 lanc\u00e9 ?", a: "E-Dome est actuellement en d\u00e9veloppement. Le lancement mondial est pr\u00e9vu en 2026. Les membres fondateurs b\u00e9n\u00e9ficieront d\u2019un acc\u00e8s b\u00eata exclusif avant l\u2019ouverture publique." },
   { q: "La manifestation d\u2019int\u00e9r\u00eat m\u2019engage-t-elle ?", a: "Non. C\u2019est gratuit, confidentiel et sans aucun engagement. Vous pouvez vous d\u00e9sinscrire \u00e0 tout moment." },
   { q: "\u00c0 qui s\u2019adresse E-Dome ?", a: "Tous les acteurs de l\u2019immobilier : agences, h\u00f4tes, propri\u00e9taires, promoteurs, courtiers, architectes, photographes, notaires \u2014 partout dans le monde." },
   { q: "Quelle diff\u00e9rence avec Airbnb ou Booking ?", a: "E-Dome est un \u00e9cosyst\u00e8me complet : r\u00e9seau social professionnel, marketplace multi-services, syst\u00e8me d\u2019apporteurs r\u00e9mun\u00e9r\u00e9s et formations int\u00e9gr\u00e9es. Avec des commissions nettement inf\u00e9rieures." },
@@ -125,7 +125,7 @@ export default function Page() {
               <TextReveal>E-Dome</TextReveal>
             </h1>
             <div className="mt-3 text-[clamp(1.3rem,3vw,2.2rem)] font-semibold leading-[1.2] tracking-[-0.01em] text-white/70">
-              <TextReveal delay={0.2}>L&apos;&eacute;cosyst&egrave;me immobilier international</TextReveal>
+              <TextReveal delay={0.2}>Unifions l&apos;&eacute;cosyst&egrave;me immobilier mondial</TextReveal>
             </div>
             <div className="mt-6 text-[clamp(1.2rem,2.5vw,1.8rem)] font-medium leading-[1.3]">
               <LayoutTextFlip
@@ -136,7 +136,7 @@ export default function Page() {
               />
             </div>
             <ScrollReveal delay={0.4}>
-              <p className="text-white/40 text-base md:text-lg mt-8 max-w-xl mx-auto leading-relaxed">Marketplace, r&eacute;seau social, apporteurs d&apos;affaires, formations et services r&eacute;unis pour chaque professionnel de l&apos;immobilier &mdash; partout dans le monde.</p>
+              <p className="text-white/40 text-base md:text-lg mt-8 max-w-xl mx-auto leading-relaxed">Une plateforme. Chaque acteur. Partout. Le premier &eacute;cosyst&egrave;me unifi&eacute; pour l&apos;immobilier &mdash; &agrave; l&apos;&eacute;chelle mondiale.</p>
             </ScrollReveal>
             <ScrollReveal delay={0.6}>
               <div className="mt-10">
@@ -498,25 +498,38 @@ export default function Page() {
       </main>
 
       <footer className="py-16 px-[4vw] border-t border-white/[0.06]">
-        <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="text-center md:text-left">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div>
             <p className="text-xl font-bold">E-<span className="text-[#C4956A]">Dome</span></p>
-            <p className="text-sm text-white/40 mt-1">&Eacute;cosyst&egrave;me Immobilier International</p>
+            <p className="text-sm text-white/40 mt-2 leading-relaxed">Le premier &eacute;cosyst&egrave;me unifi&eacute; pour l&apos;immobilier mondial. Une plateforme, chaque acteur, partout.</p>
+            <p className="text-xs text-white/25 mt-4">Neuch&acirc;tel, Suisse &middot; Op&eacute;rations mondiales</p>
           </div>
-          <div className="flex gap-8 flex-wrap justify-center">
-            {[
-              { label: "Constat", href: "#probleme" },
-              { label: "Solution", href: "#solution" },
-              { label: "March\u00e9", href: "#marche" },
-              { label: "FAQ", href: "#faq" },
-              { label: "Rejoindre", href: "#rejoindre" },
-            ].map((l) => (
-              <a key={l.label} href={l.href} className="text-sm text-white/30 hover:text-[#C4956A] transition-colors">{l.label}</a>
-            ))}
+          <div>
+            <p className="text-xs text-white/30 uppercase tracking-wider mb-4">Navigation</p>
+            <div className="flex flex-col gap-3">
+              {[
+                { label: "Le Constat", href: "#probleme" },
+                { label: "La Solution", href: "#solution" },
+                { label: "Les R\u00f4les", href: "#profils" },
+                { label: "March\u00e9", href: "#marche" },
+                { label: "FAQ", href: "#faq" },
+              ].map((l) => (
+                <a key={l.label} href={l.href} className="text-sm text-white/40 hover:text-[#C4956A] transition-colors">{l.label}</a>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs text-white/30 uppercase tracking-wider mb-4">Contact</p>
+            <a href="mailto:contact@edome.world" className="text-sm text-[#C4956A] hover:text-[#D4A574] transition-colors">contact@edome.world</a>
+            <p className="text-xs text-white/25 mt-4">Lancement pr&eacute;vu : 2026</p>
+            <p className="text-xs text-white/25 mt-1">100 places Membres Fondateurs</p>
+            <div className="mt-6">
+              <a href="#rejoindre" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 text-sm text-[#C4956A] hover:bg-[#C4956A]/20 transition-colors">Rejoindre <ArrowRight className="w-3.5 h-3.5" /></a>
+            </div>
           </div>
         </div>
-        <div className="max-w-[1200px] mx-auto mt-10 pt-6 border-t border-white/[0.06] text-center">
-          <p className="text-xs text-white/25">&copy; 2024&ndash;2026 E-Dome. Tous droits r&eacute;serv&eacute;s.</p>
+        <div className="max-w-[1200px] mx-auto mt-12 pt-6 border-t border-white/[0.06] text-center">
+          <p className="text-xs text-white/25">&copy; 2026 E-Dome. Tous droits r&eacute;serv&eacute;s.</p>
         </div>
       </footer>
     </>
