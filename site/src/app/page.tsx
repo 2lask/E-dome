@@ -16,6 +16,7 @@ import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
 import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection } from "@/components/ui/arch-extras";
+import { ComparisonCards } from "@/components/ui/comparison-cards";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -240,33 +241,15 @@ export default function Page() {
         </section>
 
         {/* COMPARAISON SANS / AVEC */}
-        <div className="flex flex-col md:flex-row min-h-screen border-t border-white/[0.06]">
-          <ScrollReveal direction="left" className="flex-1 p-12 md:p-16 flex flex-col justify-center bg-[#0a0606] border-r border-white/[0.06]">
-            <h3 className="text-xs uppercase tracking-[0.15em] text-red-400 mb-10 pb-4 border-b border-white/[0.06]">Sans E-Dome</h3>
-            <ul className="space-y-6">
-              {["Revenus amput&eacute;s par les commissions", "Visibilit&eacute; uniquement payante", "Relation client capt&eacute;e par des tiers", "Outils multiples et d&eacute;connect&eacute;s", "Donn&eacute;es dispers&eacute;es, aucune vue d&apos;ensemble"].map((item) => (
-                <li key={item} className="flex items-center gap-4 text-white/60 text-lg" dangerouslySetInnerHTML={{ __html: `<span class="w-9 h-9 rounded-full bg-red-500/10 flex items-center justify-center shrink-0 text-red-400 font-semibold text-sm">\u2715</span>${item}` }} />
-              ))}
-            </ul>
-          </ScrollReveal>
-          <ScrollReveal direction="right" className="flex-1 p-12 md:p-16 flex flex-col justify-center bg-[#060a06]">
-            <h3 className="text-xs uppercase tracking-[0.15em] text-[#C4956A] mb-10 pb-4 border-b border-white/[0.06]">Avec E-Dome</h3>
-            <ul className="space-y-6">
-              {[
-                "Commissions nettement inf\u00e9rieures au march\u00e9",
-                "Visibilit\u00e9 organique gratuite et illimit\u00e9e",
-                "Relation directe avec vos clients",
-                "\u00c9cosyst\u00e8me unifi\u00e9 tout-en-un",
-                "Analytics centralis\u00e9s en temps r\u00e9el",
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-4 text-white/60 text-lg">
-                  <span className="w-9 h-9 rounded-full bg-[#C4956A]/10 flex items-center justify-center shrink-0 text-[#C4956A] font-semibold text-sm">{"\u2713"}</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </ScrollReveal>
-        </div>
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto">
+            <ScrollReveal className="text-center mb-16">
+              <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
+              <p className="text-white/40 mt-4 text-lg">Ce qui change concr&egrave;tement pour les professionnels de l&apos;immobilier.</p>
+            </ScrollReveal>
+            <ComparisonCards />
+          </div>
+        </section>
 
         {/* BUILDING ELEVATION + CRANE + DETAILS */}
         <div className="py-8 px-[4vw] relative">
