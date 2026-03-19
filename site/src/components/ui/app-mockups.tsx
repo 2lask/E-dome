@@ -292,37 +292,48 @@ export function DashboardMockup() {
 /* ------------------------------------------------------------------ */
 export function ReferralMockup() {
   const links = [
-    { label: "Amener un hôte", url: "e-dome.ch/ref/jm-host", badge: "100 CHF/hôte" },
-    { label: "Amener un client", url: "e-dome.ch/ref/jm-client", badge: "5% résa" },
-    { label: "Amener un bien", url: "e-dome.ch/ref/jm-listing", badge: "2% vente" },
+    { label: "Amener un hôte", url: "e-dome.ch/ref/jm-host", badge: "100 CHF/hôte", color: "#3B82F6", icon: Home },
+    { label: "Amener un client", url: "e-dome.ch/ref/jm-client", badge: "5% résa", color: "#8B5CF6", icon: User },
+    { label: "Amener un bien", url: "e-dome.ch/ref/jm-listing", badge: "2% vente", color: "#10B981", icon: MapPin },
+  ];
+
+  const stats = [
+    { v: "23", l: "Clics", color: "#F59E0B" },
+    { v: "8", l: "Conversions", color: "#10B981" },
+    { v: "2'400 CHF", l: "Gagnés", color: "#3B82F6" },
   ];
 
   return (
     <motion.div {...fadeUp(0.2)} className="w-full max-w-md rounded-2xl border border-white/[0.06] bg-[#0a0a0a] overflow-hidden">
       <div className="flex items-center gap-2 px-5 py-4 border-b border-white/[0.06]">
-        <Link2 className="w-4 h-4 text-[#C4956A]" />
+        <div className="w-7 h-7 rounded-lg bg-[#F59E0B]/15 flex items-center justify-center"><Link2 className="w-4 h-4 text-[#F59E0B]" /></div>
         <span className="text-sm font-semibold text-white">Liens de Parrainage</span>
       </div>
       <div className="p-4 space-y-3">
         {links.map((l, i) => (
           <motion.div key={l.label} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.1, ease: EASE }}
-            className="rounded-xl bg-white/[0.04] border border-white/[0.06] p-3.5">
+            className="rounded-xl bg-white/[0.04] border border-white/[0.06] p-3.5 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 right-0 h-[2px] group-hover:h-[3px] transition-all" style={{ backgroundColor: l.color }} />
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-white/70">{l.label}</span>
-              <span className="text-[9px] font-semibold text-[#C4956A] bg-[#C4956A]/10 rounded-full px-2 py-0.5 border border-[#C4956A]/20">{l.badge}</span>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: `${l.color}15` }}>
+                  <l.icon className="w-3.5 h-3.5" style={{ color: l.color }} />
+                </div>
+                <span className="text-xs font-medium text-white/70">{l.label}</span>
+              </div>
+              <span className="text-[9px] font-semibold rounded-full px-2 py-0.5 border" style={{ color: l.color, backgroundColor: `${l.color}10`, borderColor: `${l.color}30` }}>{l.badge}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex-1 px-3 py-1.5 rounded-lg bg-black/40 border border-white/[0.06]"><span className="text-[10px] font-mono text-white/40">{l.url}</span></div>
-              <button className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#C4956A]/30 text-[10px] text-[#C4956A] font-medium hover:bg-[#C4956A]/5 transition-colors"><Copy className="w-3 h-3" />Copier</button>
+              <button className="flex items-center gap-1 px-3 py-1.5 rounded-lg border text-[10px] font-medium transition-colors" style={{ borderColor: `${l.color}30`, color: l.color }}><Copy className="w-3 h-3" />Copier</button>
             </div>
           </motion.div>
         ))}
       </div>
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-2 px-4 pb-4">
-        {[{ v: "23", l: "Clics" }, { v: "8", l: "Conversions" }, { v: "2'400 CHF", l: "Gagnés" }].map((s) => (
+        {stats.map((s) => (
           <div key={s.l} className="rounded-lg bg-white/[0.03] border border-white/[0.06] py-2.5 text-center">
-            <p className="text-sm font-bold text-[#C4956A]">{s.v}</p>
+            <p className="text-sm font-bold" style={{ color: s.color }}>{s.v}</p>
             <p className="text-[8px] text-white/30 mt-0.5">{s.l}</p>
           </div>
         ))}

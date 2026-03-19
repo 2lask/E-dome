@@ -67,9 +67,9 @@ const roles = [
 ];
 
 const stats = [
-  { value: 32, prefix: "$", suffix: "B", label: "March\u00e9 immobilier digital d\u2019ici 2030", src: "Grand View Research" },
-  { value: 193, prefix: "$", suffix: "B", label: "March\u00e9 location courte dur\u00e9e 2029", src: "Statista, 2024" },
-  { value: 82, prefix: "", suffix: "%", label: "Des transactions impliquent le bouche-\u00e0-oreille", src: "NAR, 2023" },
+  { value: 32, prefix: "$", suffix: "B", label: "March\u00e9 immobilier digital d\u2019ici 2030", src: "Grand View Research", color: "#3B82F6", icon: Building2 },
+  { value: 193, prefix: "$", suffix: "B", label: "March\u00e9 location courte dur\u00e9e 2029", src: "Statista, 2024", color: "#10B981", icon: Home },
+  { value: 82, prefix: "", suffix: "%", label: "Des transactions impliquent le bouche-\u00e0-oreille", src: "NAR, 2023", color: "#F59E0B", icon: Handshake },
 ];
 
 const founders = [
@@ -279,21 +279,6 @@ export default function Page() {
           </div>
         </section>
 
-        {/* DASHBOARD PREVIEW */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
-          <div className="max-w-[1200px] mx-auto">
-            <ScrollReveal className="text-center mb-12">
-              <p className="text-xs text-white/30 uppercase tracking-[0.2em] mb-3">Aper&ccedil;u de la plateforme</p>
-              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">
-                Votre tableau de bord <GradientText>E-Dome.</GradientText>
-              </h2>
-              <p className="text-white/40 mt-3 max-w-lg mx-auto">G&eacute;rez vos biens, suivez vos revenus et pilotez votre activit&eacute; depuis une interface unique.</p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.2}>
-              <DashboardMockup />
-            </ScrollReveal>
-          </div>
-        </section>
 
         {/* ARCHITECTURAL SCENE: Luxury Villa Plan */}
         <div className="py-16 px-[4vw] relative overflow-hidden">
@@ -403,6 +388,21 @@ export default function Page() {
           </div>
         </section>
 
+        {/* DASHBOARD — après Apporteurs */}
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto">
+            <ScrollReveal className="text-center mb-12">
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">
+                Votre tableau de bord <GradientText>E-Dome.</GradientText>
+              </h2>
+              <p className="text-white/40 mt-3 max-w-lg mx-auto">G&eacute;rez vos biens, suivez vos revenus et pilotez votre activit&eacute; depuis une interface unique.</p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.2}>
+              <DashboardMockup />
+            </ScrollReveal>
+          </div>
+        </section>
+
         {/* ARCH SCENE: City Block + Interior */}
         <div className="py-16 px-[4vw] relative overflow-hidden">
           <div className="max-w-[900px] mx-auto opacity-15">
@@ -426,12 +426,19 @@ export default function Page() {
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-16" stagger={0.1}>
               {stats.map((s) => (
                 <StaggerItem key={s.label}>
-                  <TiltCard className="p-8 text-center h-full">
-                    <div className="text-3xl md:text-4xl font-extrabold text-[#C4956A] tracking-tight">
-                      <Counter target={s.value} prefix={s.prefix} suffix={s.suffix} />
+                  <TiltCard className="p-8 text-center h-full relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 right-0 h-[3px] transition-all duration-500 group-hover:h-[4px]" style={{ backgroundColor: s.color }} />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" style={{ background: `radial-gradient(circle at 50% 0%, ${s.color}10, transparent 70%)` }} />
+                    <div className="relative z-10">
+                      <div className="w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center transition-shadow duration-300 group-hover:shadow-lg" style={{ backgroundColor: `${s.color}15` }}>
+                        <s.icon className="w-6 h-6" style={{ color: s.color }} />
+                      </div>
+                      <div className="text-3xl md:text-4xl font-extrabold tracking-tight" style={{ color: s.color }}>
+                        <Counter target={s.value} prefix={s.prefix} suffix={s.suffix} />
+                      </div>
+                      <p className="text-sm text-white/60 mt-3">{s.label}</p>
+                      <p className="text-xs text-white/25 mt-1 italic">{s.src}</p>
                     </div>
-                    <p className="text-sm text-white/60 mt-3">{s.label}</p>
-                    <p className="text-xs text-white/25 mt-1 italic">{s.src}</p>
                   </TiltCard>
                 </StaggerItem>
               ))}
