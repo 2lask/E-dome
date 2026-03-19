@@ -14,7 +14,7 @@ interface RoleCardProps {
 
 export function RoleCard({ icon: Icon, name, color, desc }: RoleCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const isExpanded = isHovered;
   const ref = useRef<HTMLDivElement>(null);
 
   const mouseX = useMotionValue(0);
@@ -45,7 +45,6 @@ export function RoleCard({ icon: Icon, name, color, desc }: RoleCardProps) {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
-      onClick={() => setIsExpanded(!isExpanded)}
     >
       <motion.div
         className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0e0e]"
