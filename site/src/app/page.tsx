@@ -11,6 +11,7 @@ import { GridBackground, DotBackground } from "@/components/ui/grid-bg";
 import { useState } from "react";
 import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, ReferralMockup, TrainingMockup } from "@/components/ui/app-mockups";
 import { ImagesBadge } from "@/components/ui/images-badge";
+import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, ArchDivider, BlueprintOverlay } from "@/components/ui/arch-visuals";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -145,6 +146,11 @@ export default function Page() {
           </div>
         </AuroraBackground>
 
+        {/* SKYLINE TRANSITION */}
+        <div className="relative overflow-hidden">
+          <SkylineSVG className="opacity-30" />
+        </div>
+
         {/* STATS BAR */}
         <div className="border-y border-white/[0.06] py-16 px-[4vw]">
           <StaggerContainer className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -160,9 +166,13 @@ export default function Page() {
           </StaggerContainer>
         </div>
 
+        {/* ARCH DIVIDER */}
+        <ArchDivider />
+
         {/* LE CONSTAT */}
-        <GridBackground className="py-32 px-[4vw]" id="probleme">
-          <div className="max-w-[1200px] mx-auto">
+        <GridBackground className="py-32 px-[4vw] relative" id="probleme">
+          <BlueprintOverlay />
+          <div className="max-w-[1200px] mx-auto relative z-10">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
@@ -188,6 +198,11 @@ export default function Page() {
             </StaggerContainer>
           </div>
         </GridBackground>
+
+        {/* FLOOR PLAN TRANSITION */}
+        <div className="py-8 px-[4vw] max-w-[900px] mx-auto opacity-20">
+          <FloorPlanSVG />
+        </div>
 
         {/* DASHBOARD PREVIEW */}
         <section className="py-28 px-[4vw]">
@@ -232,6 +247,11 @@ export default function Page() {
               ))}
             </ul>
           </ScrollReveal>
+        </div>
+
+        {/* BUILDING ELEVATION TRANSITION */}
+        <div className="py-8 px-[4vw] max-w-[700px] mx-auto opacity-25">
+          <BuildingElevationSVG />
         </div>
 
         {/* LA SOLUTION — 5 PILIERS */}
@@ -297,6 +317,12 @@ export default function Page() {
             </div>
           </div>
         </section>
+
+        {/* ISOMETRIC VILLA TRANSITION */}
+        <ArchDivider />
+        <div className="py-8 px-[4vw] max-w-[600px] mx-auto opacity-25">
+          <IsometricVillaSVG />
+        </div>
 
         {/* APPORTEURS D'AFFAIRES */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
