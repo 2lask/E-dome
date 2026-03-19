@@ -9,6 +9,8 @@ import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ui/scr
 import { Counter } from "@/components/ui/counter";
 import { GridBackground, DotBackground } from "@/components/ui/grid-bg";
 import { useState } from "react";
+import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, ReferralMockup, TrainingMockup } from "@/components/ui/app-mockups";
+import { ImagesBadge } from "@/components/ui/images-badge";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -117,7 +119,19 @@ export default function Page() {
               </div>
               <p className="text-white/30 text-sm mt-6">Sans engagement &middot; Gratuit &middot; Confidentiel</p>
             </ScrollReveal>
-            <div className="mt-20">
+            <ScrollReveal delay={0.8}>
+              <div className="mt-12 flex justify-center">
+                <ImagesBadge
+                  text="Rejoindre les premiers fondateurs"
+                  images={[
+                    "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=100&h=100&fit=crop&crop=faces",
+                    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=100&h=100&fit=crop&crop=faces",
+                    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=100&h=100&fit=crop&crop=faces",
+                  ]}
+                />
+              </div>
+            </ScrollReveal>
+            <div className="mt-16">
               <div className="w-px h-16 mx-auto bg-gradient-to-b from-[#C4956A] to-transparent animate-[scroll-line_2s_ease-in-out_infinite]" />
             </div>
           </div>
@@ -163,6 +177,17 @@ export default function Page() {
           </div>
         </GridBackground>
 
+        {/* DASHBOARD */}
+        <section className="py-24 px-[4vw]">
+          <div className="max-w-[1000px] mx-auto">
+            <ScrollReveal className="text-center mb-10">
+              <p className="text-xs text-white/30 uppercase tracking-[0.2em] mb-3">Aper&ccedil;u de la plateforme</p>
+              <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.1] tracking-[-0.03em]">Votre tableau de bord <GradientText>E-Dome.</GradientText></h2>
+            </ScrollReveal>
+            <DashboardMockup />
+          </div>
+        </section>
+
         {/* COMPARAISON */}
         <div className="flex flex-col md:flex-row min-h-screen border-t border-white/[0.06]">
           <ScrollReveal direction="left" className="flex-1 p-12 md:p-16 flex flex-col justify-center bg-[#0a0606] border-r border-white/[0.06]">
@@ -189,7 +214,7 @@ export default function Page() {
           </ScrollReveal>
         </div>
 
-        {/* SOLUTION */}
+        {/* SOLUTION — split layout: piliers + phone mockup */}
         <DotBackground className="py-32 px-[4vw]" id="solution">
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-20">
@@ -197,43 +222,76 @@ export default function Page() {
                 <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
                 <span className="text-sm text-[#C4956A] font-medium">La Solution</span>
               </div>
-              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Cinq piliers. <GradientText>Un seul \u00e9cosyst\u00e8me.</GradientText></h2>
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Cinq piliers. <GradientText>Un seul &eacute;cosyst&egrave;me.</GradientText></h2>
             </ScrollReveal>
-            <div className="space-y-6">
-              {pillars.map((p, i) => (
-                <ScrollReveal key={p.title} delay={i * 0.08}>
-                  <div className="flex items-center gap-8 md:gap-12 py-10 border-b border-white/[0.06] group">
-                    <span className="text-[clamp(3rem,7vw,7rem)] font-extrabold text-white/[0.04] tracking-[-0.05em] hidden md:block min-w-[130px] text-right">{p.num}</span>
-                    <div className="w-16 h-16 rounded-2xl bg-[#C4956A]/10 flex items-center justify-center shrink-0 group-hover:bg-[#C4956A]/20 transition-colors">
-                      <p.icon className="w-7 h-7 text-[#C4956A]" />
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-16 items-start">
+              <div className="space-y-6">
+                {pillars.map((p, i) => (
+                  <ScrollReveal key={p.title} delay={i * 0.08}>
+                    <div className="flex items-center gap-8 md:gap-12 py-10 border-b border-white/[0.06] group">
+                      <span className="text-[clamp(3rem,7vw,7rem)] font-extrabold text-white/[0.04] tracking-[-0.05em] hidden md:block min-w-[130px] text-right">{p.num}</span>
+                      <div className="w-16 h-16 rounded-2xl bg-[#C4956A]/10 flex items-center justify-center shrink-0 group-hover:bg-[#C4956A]/20 transition-colors">
+                        <p.icon className="w-7 h-7 text-[#C4956A]" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl md:text-2xl font-semibold mb-1">{p.title}</h3>
+                        <p className="text-white/50 max-w-lg leading-relaxed">{p.desc}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-xl md:text-2xl font-semibold mb-1">{p.title}</h3>
-                      <p className="text-white/50 max-w-lg leading-relaxed">{p.desc}</p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
+                  </ScrollReveal>
+                ))}
+              </div>
+              <div className="hidden lg:block sticky top-24">
+                <MarketplacePhoneMockup />
+              </div>
             </div>
           </div>
         </DotBackground>
 
-        {/* PROFILS */}
+        {/* PROFILS — split: roles grid + social feed phone */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
-          <div className="max-w-[1200px] mx-auto text-center">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-16 items-center">
+              <div className="text-center lg:text-left">
+                <ScrollReveal>
+                  <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Un compte. <GradientText>Tous les r&ocirc;les.</GradientText></h2>
+                  <p className="text-white/40 mt-4 text-lg max-w-xl">Quel que soit votre m&eacute;tier dans l&apos;immobilier, E-Dome s&apos;adapte &agrave; votre activit&eacute;.</p>
+                </ScrollReveal>
+                <StaggerContainer className="flex flex-wrap justify-center lg:justify-start gap-4 mt-12" stagger={0.08}>
+                  {roles.map((r) => (
+                    <StaggerItem key={r.name}>
+                      <TiltCard className="w-[130px] py-8 flex flex-col items-center gap-3">
+                        <r.icon className="w-7 h-7 text-[#C4956A]" />
+                        <span className="text-sm font-medium text-white/70">{r.name}</span>
+                      </TiltCard>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+              </div>
+              <div className="hidden lg:block">
+                <SocialFeedPhoneMockup />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* APPORTEURS — split: texte + referral mockup */}
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <ScrollReveal>
-              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Un compte. <GradientText>Tous les r\u00f4les.</GradientText></h2>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
+                <span className="text-sm text-[#C4956A] font-medium">Apporteurs d&apos;affaires</span>
+              </div>
+              <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.1] tracking-[-0.04em]">Recommandez. <GradientText>Gagnez.</GradientText></h2>
+              <p className="text-white/50 mt-6 text-lg leading-relaxed max-w-xl">Partagez un lien tra&ccedil;able. Chaque transaction vous rapporte une commission automatique &mdash; sans frais pour le client.</p>
+              <div className="mt-10">
+                <TrainingMockup />
+              </div>
             </ScrollReveal>
-            <StaggerContainer className="flex flex-wrap justify-center gap-4 mt-16" stagger={0.08}>
-              {roles.map((r) => (
-                <StaggerItem key={r.name}>
-                  <TiltCard className="w-[130px] py-8 flex flex-col items-center gap-3">
-                    <r.icon className="w-7 h-7 text-[#C4956A]" />
-                    <span className="text-sm font-medium text-white/70">{r.name}</span>
-                  </TiltCard>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
+            <ScrollReveal delay={0.2}>
+              <ReferralMockup />
+            </ScrollReveal>
           </div>
         </section>
 
