@@ -209,33 +209,6 @@ export default function Page() {
           <div className="absolute -right-4 top-1/4 opacity-50"><ApartmentBlock /></div>
         </div>
 
-        {/* DASHBOARD PREVIEW */}
-        <section className="py-28 px-[4vw]">
-          <div className="max-w-[1000px] mx-auto">
-            <ScrollReveal className="text-center mb-12">
-              <p className="text-xs text-white/30 uppercase tracking-[0.2em] mb-3">Aper&ccedil;u de la plateforme</p>
-              <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.1] tracking-[-0.03em]">
-                Votre tableau de bord <GradientText>E-Dome.</GradientText>
-              </h2>
-              <p className="text-white/40 mt-3 max-w-lg mx-auto">G&eacute;rez vos biens, suivez vos revenus et pilotez votre activit&eacute; depuis une interface unique.</p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.2}>
-              <DashboardMockup />
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* ARCHITECTURAL SCENE: Luxury Villa Plan + Office */}
-        <div className="py-16 px-[4vw] relative overflow-hidden">
-          <div className="max-w-[900px] mx-auto opacity-20">
-            <LuxuryVillaPlan />
-          </div>
-          <div className="absolute left-[2%] top-1/2 -translate-y-1/2 opacity-15"><SkyscraperDetailed /></div>
-          <div className="absolute right-[3%] top-12 opacity-12"><ArtDecoFacade /></div>
-          <div className="absolute right-[20%] bottom-4 opacity-10"><SpiralStaircase /></div>
-          <div className="absolute left-[15%] bottom-0 opacity-10"><RoofDetail /></div>
-        </div>
-
         {/* COMPARAISON SANS / AVEC */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
           <div className="max-w-[1200px] mx-auto">
@@ -247,7 +220,7 @@ export default function Page() {
           </div>
         </section>
 
-        {/* BUILDING ELEVATION + CRANE + CROSS SECTION */}
+        {/* BUILDING ELEVATION + CRANE */}
         <div className="py-12 px-[4vw] relative overflow-hidden">
           <div className="max-w-[700px] mx-auto opacity-25">
             <BuildingElevationSVG />
@@ -259,17 +232,7 @@ export default function Page() {
             <WindowDetail />
             <WindowDetail />
           </div>
-          <div className="absolute right-[18%] top-4 opacity-12"><StairSection /></div>
           <div className="absolute left-[8%] bottom-0 opacity-10"><SpiralStaircase /></div>
-        </div>
-
-        {/* BUILDING CROSS SECTION */}
-        <div className="py-8 px-[4vw] relative overflow-hidden">
-          <div className="max-w-[800px] mx-auto opacity-18">
-            <BuildingCrossSection />
-          </div>
-          <div className="absolute left-[3%] top-1/3 opacity-12"><RoofDetail /></div>
-          <div className="absolute right-[5%] top-1/4 opacity-10"><WallSection /></div>
         </div>
 
         {/* LA SOLUTION — 5 PILIERS */}
@@ -308,6 +271,42 @@ export default function Page() {
             </div>
           </div>
         </DotBackground>
+
+        {/* DASHBOARD PREVIEW */}
+        <section className="py-28 px-[4vw]">
+          <div className="max-w-[1000px] mx-auto">
+            <ScrollReveal className="text-center mb-12">
+              <p className="text-xs text-white/30 uppercase tracking-[0.2em] mb-3">Aper&ccedil;u de la plateforme</p>
+              <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.1] tracking-[-0.03em]">
+                Votre tableau de bord <GradientText>E-Dome.</GradientText>
+              </h2>
+              <p className="text-white/40 mt-3 max-w-lg mx-auto">G&eacute;rez vos biens, suivez vos revenus et pilotez votre activit&eacute; depuis une interface unique.</p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.2}>
+              <DashboardMockup />
+            </ScrollReveal>
+          </div>
+        </section>
+
+        {/* ARCHITECTURAL SCENE: Luxury Villa Plan */}
+        <div className="py-16 px-[4vw] relative overflow-hidden">
+          <div className="max-w-[900px] mx-auto opacity-20">
+            <LuxuryVillaPlan />
+          </div>
+          <div className="absolute left-[2%] top-1/2 -translate-y-1/2 opacity-15"><SkyscraperDetailed /></div>
+          <div className="absolute right-[3%] top-12 opacity-12"><ArtDecoFacade /></div>
+          <div className="absolute right-[20%] bottom-4 opacity-10"><SpiralStaircase /></div>
+          <div className="absolute left-[15%] bottom-0 opacity-10"><RoofDetail /></div>
+        </div>
+
+        {/* BUILDING CROSS SECTION */}
+        <div className="py-8 px-[4vw] relative overflow-hidden">
+          <div className="max-w-[800px] mx-auto opacity-18">
+            <BuildingCrossSection />
+          </div>
+          <div className="absolute left-[3%] top-1/3 opacity-12"><RoofDetail /></div>
+          <div className="absolute right-[5%] top-1/4 opacity-10"><WallSection /></div>
+        </div>
 
         {/* LES PROFILS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
