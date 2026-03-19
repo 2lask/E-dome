@@ -136,7 +136,7 @@ export default function Page() {
               />
             </div>
             <ScrollReveal delay={0.4}>
-              <p className="text-white/45 text-base md:text-lg mt-8 max-w-xl mx-auto leading-relaxed">Marketplace, r&eacute;seau social, apporteurs d&apos;affaires, formations et services r&eacute;unis pour chaque professionnel de l&apos;immobilier &mdash; partout dans le monde.</p>
+              <p className="text-white/40 text-base md:text-lg mt-8 max-w-xl mx-auto leading-relaxed">Marketplace, r&eacute;seau social, apporteurs d&apos;affaires, formations et services r&eacute;unis pour chaque professionnel de l&apos;immobilier &mdash; partout dans le monde.</p>
             </ScrollReveal>
             <ScrollReveal delay={0.6}>
               <div className="mt-10">
@@ -182,7 +182,7 @@ export default function Page() {
                 <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
                 <span className="text-sm text-[#C4956A] font-medium">Le Constat</span>
               </div>
-              <h2 className="text-[clamp(2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em] max-w-2xl">
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em] max-w-2xl">
                 Le march&eacute; immobilier est <GradientText>fragment&eacute;.</GradientText>
               </h2>
               <p className="text-white/40 mt-4 text-lg max-w-xl">Les acteurs du secteur jonglent entre des outils d&eacute;connect&eacute;s, des commissions &eacute;lev&eacute;es et une visibilit&eacute; d&eacute;pendante de la publicit&eacute;.</p>
@@ -234,7 +234,7 @@ export default function Page() {
                       </div>
                       <div>
                         <h3 className="text-xl md:text-2xl font-semibold mb-2">{p.title}</h3>
-                        <p className="text-white/50 max-w-lg leading-relaxed">{p.desc}</p>
+                        <p className="text-white/40 max-w-lg leading-relaxed">{p.desc}</p>
                       </div>
                     </div>
                   </ScrollReveal>
@@ -266,7 +266,7 @@ export default function Page() {
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-16">
-              <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
               <p className="text-white/40 mt-4 text-lg">Ce qui change concr&egrave;tement pour les professionnels de l&apos;immobilier.</p>
             </ScrollReveal>
             <ComparisonCards />
@@ -274,11 +274,11 @@ export default function Page() {
         </section>
 
         {/* DASHBOARD PREVIEW */}
-        <section className="py-28 px-[4vw]">
-          <div className="max-w-[1000px] mx-auto">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-12">
               <p className="text-xs text-white/30 uppercase tracking-[0.2em] mb-3">Aper&ccedil;u de la plateforme</p>
-              <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.1] tracking-[-0.03em]">
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">
                 Votre tableau de bord <GradientText>E-Dome.</GradientText>
               </h2>
               <p className="text-white/40 mt-3 max-w-lg mx-auto">G&eacute;rez vos biens, suivez vos revenus et pilotez votre activit&eacute; depuis une interface unique.</p>
@@ -370,8 +370,8 @@ export default function Page() {
                 <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
                 <span className="text-sm text-[#C4956A] font-medium">Apporteurs d&apos;affaires</span>
               </div>
-              <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.1] tracking-[-0.04em]">Recommandez. <GradientText>Gagnez.</GradientText></h2>
-              <p className="text-white/50 mt-6 text-lg leading-relaxed max-w-xl">Partagez un lien tra&ccedil;able unique. Chaque transaction g&eacute;n&eacute;r&eacute;e vous rapporte une commission automatique &mdash; sans aucun frais pour le client final.</p>
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Recommandez. <GradientText>Gagnez.</GradientText></h2>
+              <p className="text-white/40 mt-6 text-lg leading-relaxed max-w-xl">Partagez un lien tra&ccedil;able unique. Chaque transaction g&eacute;n&eacute;r&eacute;e vous rapporte une commission automatique &mdash; sans aucun frais pour le client final.</p>
               <div className="mt-10 space-y-4">
                 {[
                   { step: "1", title: "Activez votre lien", desc: "Depuis votre tableau de bord E-Dome" },
