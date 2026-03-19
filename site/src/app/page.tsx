@@ -37,18 +37,18 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 const problems = [
-  { icon: TrendingDown, title: "Commissions excessives", desc: "Les plateformes traditionnelles captent une part significative de chaque transaction. Vos marges fondent avant m\u00eame de commencer." },
-  { icon: Lock, title: "D\u00e9pendance aux plateformes", desc: "Aucun contr\u00f4le sur votre client\u00e8le. Algorithmes opaques, suspension sans pr\u00e9avis. Vos donn\u00e9es ne vous appartiennent pas." },
-  { icon: Megaphone, title: "Visibilit\u00e9 co\u00fbteuse", desc: "Sans budget publicitaire cons\u00e9quent, vos biens restent invisibles. La visibilit\u00e9 organique n\u2019existe plus sur les plateformes actuelles." },
-  { icon: Handshake, title: "Recommandations non structur\u00e9es", desc: "Le bouche-\u00e0-oreille g\u00e9n\u00e8re la majorit\u00e9 des transactions, mais aucun outil ne permet de le tracer ni de le r\u00e9mun\u00e9rer automatiquement." },
+  { icon: TrendingDown, title: "Commissions excessives", color: "#EF4444", desc: "Les plateformes traditionnelles captent une part significative de chaque transaction. Vos marges fondent avant m\u00eame de commencer." },
+  { icon: Lock, title: "D\u00e9pendance aux plateformes", color: "#F97316", desc: "Aucun contr\u00f4le sur votre client\u00e8le. Algorithmes opaques, suspension sans pr\u00e9avis. Vos donn\u00e9es ne vous appartiennent pas." },
+  { icon: Megaphone, title: "Visibilit\u00e9 co\u00fbteuse", color: "#F59E0B", desc: "Sans budget publicitaire cons\u00e9quent, vos biens restent invisibles. La visibilit\u00e9 organique n\u2019existe plus sur les plateformes actuelles." },
+  { icon: Handshake, title: "Recommandations non structur\u00e9es", color: "#EC4899", desc: "Le bouche-\u00e0-oreille g\u00e9n\u00e8re la majorit\u00e9 des transactions, mais aucun outil ne permet de le tracer ni de le r\u00e9mun\u00e9rer automatiquement." },
 ];
 
 const pillars = [
-  { num: "01", icon: Home, title: "Marketplace immobili\u00e8re", desc: "Vente, location courte et longue dur\u00e9e r\u00e9unies dans un seul parcours. Des commissions nettement inf\u00e9rieures au march\u00e9." },
-  { num: "02", icon: Smartphone, title: "R\u00e9seau social professionnel", desc: "Publiez du contenu immobilier, b\u00e2tissez votre audience et attirez des prospects de mani\u00e8re organique." },
-  { num: "03", icon: Link2, title: "Syst\u00e8me d\u2019apporteurs", desc: "Un lien unique et tra\u00e7able par utilisateur. Commissions calcul\u00e9es et vers\u00e9es automatiquement." },
-  { num: "04", icon: Settings, title: "Services int\u00e9gr\u00e9s", desc: "Conciergerie, transport, exp\u00e9riences locales : r\u00e9servables directement depuis chaque bien. Chaque service g\u00e9n\u00e8re des revenus." },
-  { num: "05", icon: BookOpen, title: "Formations & communaut\u00e9", desc: "Acc\u00e9dez \u00e0 des formations, webinars et coaching anim\u00e9s par des experts du secteur." },
+  { num: "01", icon: Home, title: "Marketplace immobili\u00e8re", color: "#3B82F6", desc: "Vente, location courte et longue dur\u00e9e r\u00e9unies dans un seul parcours. Des commissions nettement inf\u00e9rieures au march\u00e9." },
+  { num: "02", icon: Smartphone, title: "R\u00e9seau social professionnel", color: "#8B5CF6", desc: "Publiez du contenu immobilier, b\u00e2tissez votre audience et attirez des prospects de mani\u00e8re organique." },
+  { num: "03", icon: Link2, title: "Syst\u00e8me d\u2019apporteurs", color: "#F59E0B", desc: "Un lien unique et tra\u00e7able par utilisateur. Commissions calcul\u00e9es et vers\u00e9es automatiquement." },
+  { num: "04", icon: Settings, title: "Services int\u00e9gr\u00e9s", color: "#10B981", desc: "Conciergerie, transport, exp\u00e9riences locales : r\u00e9servables directement depuis chaque bien. Chaque service g\u00e9n\u00e8re des revenus." },
+  { num: "05", icon: BookOpen, title: "Formations & communaut\u00e9", color: "#EC4899", desc: "Acc\u00e9dez \u00e0 des formations, webinars et coaching anim\u00e9s par des experts du secteur." },
 ];
 
 const roles = [
@@ -190,12 +190,16 @@ export default function Page() {
             <StaggerContainer className="grid md:grid-cols-2 gap-5 mt-14" stagger={0.12}>
               {problems.map((p) => (
                 <StaggerItem key={p.title}>
-                  <TiltCard className="p-8 h-full">
-                    <div className="w-14 h-14 rounded-xl bg-[#C4956A]/10 flex items-center justify-center mb-5">
-                      <p.icon className="w-6 h-6 text-[#C4956A]" />
+                  <TiltCard className="p-8 h-full relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 right-0 h-[3px] transition-all duration-500 group-hover:h-[4px]" style={{ backgroundColor: p.color }} />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" style={{ background: `radial-gradient(circle at 50% 0%, ${p.color}10, transparent 70%)` }} />
+                    <div className="relative z-10">
+                      <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 transition-shadow duration-300 group-hover:shadow-lg" style={{ backgroundColor: `${p.color}15` }}>
+                        <p.icon className="w-6 h-6" style={{ color: p.color }} />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-3">{p.title}</h3>
+                      <p className="text-white/40 leading-relaxed">{p.desc}</p>
                     </div>
-                    <h3 className="text-xl font-semibold mb-3">{p.title}</h3>
-                    <p className="text-white/50 leading-relaxed">{p.desc}</p>
                   </TiltCard>
                 </StaggerItem>
               ))}
@@ -227,14 +231,16 @@ export default function Page() {
               <div className="space-y-2">
                 {pillars.map((p, i) => (
                   <ScrollReveal key={p.title} delay={i * 0.08}>
-                    <div className="flex items-center gap-8 md:gap-12 py-10 border-b border-white/[0.06] group hover:bg-white/[0.01] transition-colors rounded-lg px-4 -mx-4">
-                      <span className="text-[clamp(3rem,7vw,7rem)] font-extrabold text-white/[0.04] tracking-[-0.05em] hidden md:block min-w-[130px] text-right group-hover:text-white/[0.08] transition-colors">{p.num}</span>
-                      <div className="w-16 h-16 rounded-2xl bg-[#C4956A]/10 flex items-center justify-center shrink-0 group-hover:bg-[#C4956A]/20 transition-colors">
-                        <p.icon className="w-7 h-7 text-[#C4956A]" />
+                    <div className="flex items-center gap-8 md:gap-12 py-10 border-b border-white/[0.06] group hover:bg-white/[0.01] transition-colors rounded-lg px-4 -mx-4 relative">
+                      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ backgroundColor: p.color }} />
+                      <span className="text-[clamp(3rem,7vw,7rem)] font-extrabold tracking-[-0.05em] hidden md:block min-w-[130px] text-right transition-colors duration-500" style={{ color: `${p.color}08` }}>{p.num}</span>
+                      <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:shadow-lg" style={{ backgroundColor: `${p.color}12` }}>
+                        <p.icon className="w-7 h-7" style={{ color: p.color }} />
                       </div>
                       <div>
                         <h3 className="text-xl md:text-2xl font-semibold mb-2">{p.title}</h3>
                         <p className="text-white/40 max-w-lg leading-relaxed">{p.desc}</p>
+                        <div className="w-12 h-[2px] rounded-full mt-3 opacity-50" style={{ backgroundColor: p.color }} />
                       </div>
                     </div>
                   </ScrollReveal>
@@ -316,7 +322,7 @@ export default function Page() {
               <div className="text-center mb-4">
                 <ScrollReveal>
                   <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Un compte. <GradientText>Tous les r&ocirc;les.</GradientText></h2>
-                  <p className="text-white/40 mt-4 text-lg max-w-xl">Quel que soit votre m&eacute;tier dans l&apos;immobilier, E-Dome s&apos;adapte. Un seul profil, plusieurs r&ocirc;les activables selon votre activit&eacute;.</p>
+                  <p className="text-white/40 mt-4 text-lg max-w-2xl mx-auto">Quel que soit votre m&eacute;tier dans l&apos;immobilier, E-Dome s&apos;adapte. Un seul profil, plusieurs r&ocirc;les activables selon votre activit&eacute;.</p>
                 </ScrollReveal>
                 <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-12" stagger={0.06}>
                   {roles.map((r) => (
