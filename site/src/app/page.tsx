@@ -11,6 +11,7 @@ import { GridBackground, DotBackground } from "@/components/ui/grid-bg";
 import { useState } from "react";
 import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, ReferralMockup, TrainingMockup } from "@/components/ui/app-mockups";
 import { ImagesBadge } from "@/components/ui/images-badge";
+import { ParallaxHeroImages } from "@/components/ui/parallax-hero-images";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -97,8 +98,16 @@ export default function Page() {
 
       <main>
         {/* HERO */}
-        <AuroraBackground className="min-h-screen flex items-center justify-center text-center px-6 pt-24">
-          <div className="max-w-[900px]">
+        <AuroraBackground className="relative min-h-screen flex items-center justify-center text-center px-6 pt-24 overflow-hidden">
+          <ParallaxHeroImages images={[
+            "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80",
+            "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80",
+            "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80",
+            "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80",
+            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80",
+            "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80",
+          ]} />
+          <div className="relative z-10 max-w-[900px]">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-8">
                 <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
