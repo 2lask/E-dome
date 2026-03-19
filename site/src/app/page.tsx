@@ -202,40 +202,14 @@ export default function Page() {
           </div>
         </GridBackground>
 
-        {/* FLOOR PLAN + DECORATIVE BUILDINGS */}
+        {/* FLOOR PLAN TRANSITION */}
         <div className="py-8 px-[4vw] max-w-[900px] mx-auto opacity-20 relative">
           <FloorPlanSVG />
           <div className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-60"><TowerThin /></div>
           <div className="absolute -right-4 top-1/4 opacity-50"><ApartmentBlock /></div>
         </div>
 
-        {/* COMPARAISON SANS / AVEC */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
-          <div className="max-w-[1200px] mx-auto">
-            <ScrollReveal className="text-center mb-16">
-              <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
-              <p className="text-white/40 mt-4 text-lg">Ce qui change concr&egrave;tement pour les professionnels de l&apos;immobilier.</p>
-            </ScrollReveal>
-            <ComparisonCards />
-          </div>
-        </section>
-
-        {/* BUILDING ELEVATION + CRANE */}
-        <div className="py-12 px-[4vw] relative overflow-hidden">
-          <div className="max-w-[700px] mx-auto opacity-25">
-            <BuildingElevationSVG />
-          </div>
-          <div className="absolute left-[1%] top-4 opacity-20"><CraneSVG /></div>
-          <div className="absolute right-[2%] top-0 opacity-15"><SkyscraperDetailed /></div>
-          <div className="absolute right-[5%] bottom-8 opacity-20 flex gap-4">
-            <WindowDetail />
-            <WindowDetail />
-            <WindowDetail />
-          </div>
-          <div className="absolute left-[8%] bottom-0 opacity-10"><SpiralStaircase /></div>
-        </div>
-
-        {/* LA SOLUTION — 5 PILIERS */}
+        {/* 2. LA SOLUTION — 5 PILIERS */}
         <DotBackground className="py-32 px-[4vw]" id="solution">
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-20">
@@ -271,6 +245,32 @@ export default function Page() {
             </div>
           </div>
         </DotBackground>
+
+        {/* BUILDING ELEVATION TRANSITION */}
+        <div className="py-12 px-[4vw] relative overflow-hidden">
+          <div className="max-w-[700px] mx-auto opacity-25">
+            <BuildingElevationSVG />
+          </div>
+          <div className="absolute left-[1%] top-4 opacity-20"><CraneSVG /></div>
+          <div className="absolute right-[2%] top-0 opacity-15"><SkyscraperDetailed /></div>
+          <div className="absolute right-[5%] bottom-8 opacity-20 flex gap-4">
+            <WindowDetail />
+            <WindowDetail />
+            <WindowDetail />
+          </div>
+          <div className="absolute left-[8%] bottom-0 opacity-10"><SpiralStaircase /></div>
+        </div>
+
+        {/* 3. COMPARAISON SANS / AVEC */}
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto">
+            <ScrollReveal className="text-center mb-16">
+              <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
+              <p className="text-white/40 mt-4 text-lg">Ce qui change concr&egrave;tement pour les professionnels de l&apos;immobilier.</p>
+            </ScrollReveal>
+            <ComparisonCards />
+          </div>
+        </section>
 
         {/* DASHBOARD PREVIEW */}
         <section className="py-28 px-[4vw]">
