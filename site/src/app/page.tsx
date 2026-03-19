@@ -246,8 +246,8 @@ export default function Page() {
                   </ScrollReveal>
                 ))}
               </div>
-              <div className="hidden lg:block sticky top-24 w-[340px]">
-                <MiniDashboard />
+              <div className="hidden lg:block sticky top-24 w-[380px] scale-[0.85] origin-top-right">
+                <DashboardMockup />
               </div>
             </div>
           </div>
@@ -388,20 +388,6 @@ export default function Page() {
           </div>
         </section>
 
-        {/* DASHBOARD — après Apporteurs */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
-          <div className="max-w-[1200px] mx-auto">
-            <ScrollReveal className="text-center mb-12">
-              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">
-                Votre tableau de bord <GradientText>E-Dome.</GradientText>
-              </h2>
-              <p className="text-white/40 mt-3 max-w-lg mx-auto">G&eacute;rez vos biens, suivez vos revenus et pilotez votre activit&eacute; depuis une interface unique.</p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.2}>
-              <DashboardMockup />
-            </ScrollReveal>
-          </div>
-        </section>
 
         {/* ARCH SCENE: City Block + Interior */}
         <div className="py-16 px-[4vw] relative overflow-hidden">
