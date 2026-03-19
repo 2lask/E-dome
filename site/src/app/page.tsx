@@ -69,7 +69,6 @@ const stats = [
   { value: 32, prefix: "$", suffix: "B", label: "March\u00e9 immobilier digital d\u2019ici 2030", src: "Grand View Research" },
   { value: 193, prefix: "$", suffix: "B", label: "March\u00e9 location courte dur\u00e9e 2029", src: "Statista, 2024" },
   { value: 82, prefix: "", suffix: "%", label: "Des transactions impliquent le bouche-\u00e0-oreille", src: "NAR, 2023" },
-  { value: 60, prefix: "", suffix: "%", label: "De locataires en Europe — demande massive", src: "Office f\u00e9d\u00e9ral statistique" },
 ];
 
 const founders = [
@@ -171,7 +170,7 @@ export default function Page() {
 
         {/* STATS BAR */}
         <div className="border-y border-white/[0.06] py-16 px-[4vw]">
-          <StaggerContainer className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+          <StaggerContainer className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
             {stats.map((s) => (
               <StaggerItem key={s.label} className="text-center">
                 <div className="text-[clamp(2rem,4vw,3.5rem)] font-bold text-[#C4956A] tracking-tight">
@@ -389,7 +388,7 @@ export default function Page() {
               </h2>
               <p className="text-white/40 mt-4 text-lg max-w-2xl mx-auto">Aucune plateforme existante ne combine marketplace, r&eacute;seau social, apporteurs, formations et services. E-Dome est le premier &agrave; unifier ces cinq march&eacute;s.</p>
             </ScrollReveal>
-            <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-16" stagger={0.1}>
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-16" stagger={0.1}>
               {stats.map((s) => (
                 <StaggerItem key={s.label}>
                   <TiltCard className="p-8 text-center h-full">
