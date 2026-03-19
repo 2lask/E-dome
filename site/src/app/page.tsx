@@ -12,6 +12,7 @@ import { useState } from "react";
 import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, ReferralMockup, TrainingMockup } from "@/components/ui/app-mockups";
 import { ImagesBadge } from "@/components/ui/images-badge";
 import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, ArchDivider, BlueprintOverlay } from "@/components/ui/arch-visuals";
+import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection } from "@/components/ui/arch-extras";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
@@ -116,9 +117,14 @@ export default function Page() {
               </div>
             </ScrollReveal>
             <h1 className="text-[clamp(2.8rem,7vw,6rem)] font-extrabold leading-[1.05] tracking-[-0.04em]">
-              <TextReveal>L&apos;&eacute;cosyst&egrave;me qui</TextReveal><br />
-              <GradientText className="text-[clamp(2.8rem,7vw,6rem)] font-extrabold leading-[1.05] tracking-[-0.04em]">r&eacute;unit l&apos;immobilier</GradientText><br />
-              <TextReveal delay={0.3}>mondial.</TextReveal>
+              <TextReveal>La plateforme pour</TextReveal><br />
+              <LayoutTextFlip
+                text=""
+                words={["les agences", "les h\u00f4tes", "les promoteurs", "les apporteurs", "les investisseurs", "les architectes", "tous les acteurs"]}
+                interval={2000}
+                className="text-[clamp(2.8rem,7vw,6rem)] font-extrabold leading-[1.05] tracking-[-0.04em]"
+              /><br />
+              <TextReveal delay={0.3}>de l&apos;immobilier.</TextReveal>
             </h1>
             <ScrollReveal delay={0.4}>
               <p className="text-white/40 text-lg mt-8 tracking-wide">Marketplace &middot; R&eacute;seau social &middot; Apporteurs &middot; Formations &middot; Services</p>
