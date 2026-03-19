@@ -12,6 +12,7 @@ import { useState } from "react";
 import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, ReferralMockup, TrainingMockup } from "@/components/ui/app-mockups";
 import { ImagesBadge } from "@/components/ui/images-badge";
 import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, ArchDivider, BlueprintOverlay } from "@/components/ui/arch-visuals";
+import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection } from "@/components/ui/arch-extras";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -146,9 +147,11 @@ export default function Page() {
           </div>
         </AuroraBackground>
 
-        {/* SKYLINE TRANSITION */}
+        {/* SKYLINE + SMALL BUILDINGS */}
         <div className="relative overflow-hidden">
           <SkylineSVG className="opacity-30" />
+          <div className="absolute top-4 left-[5%] opacity-15"><HouseIcon /></div>
+          <div className="absolute top-2 right-[8%] opacity-15"><ChaletSVG /></div>
         </div>
 
         {/* STATS BAR */}
@@ -199,9 +202,11 @@ export default function Page() {
           </div>
         </GridBackground>
 
-        {/* FLOOR PLAN TRANSITION */}
-        <div className="py-8 px-[4vw] max-w-[900px] mx-auto opacity-20">
+        {/* FLOOR PLAN + DECORATIVE BUILDINGS */}
+        <div className="py-8 px-[4vw] max-w-[900px] mx-auto opacity-20 relative">
           <FloorPlanSVG />
+          <div className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-60"><TowerThin /></div>
+          <div className="absolute -right-4 top-1/4 opacity-50"><ApartmentBlock /></div>
         </div>
 
         {/* DASHBOARD PREVIEW */}
@@ -249,9 +254,18 @@ export default function Page() {
           </ScrollReveal>
         </div>
 
-        {/* BUILDING ELEVATION TRANSITION */}
-        <div className="py-8 px-[4vw] max-w-[700px] mx-auto opacity-25">
-          <BuildingElevationSVG />
+        {/* BUILDING ELEVATION + CRANE + DETAILS */}
+        <div className="py-8 px-[4vw] relative">
+          <div className="max-w-[700px] mx-auto opacity-25">
+            <BuildingElevationSVG />
+          </div>
+          <div className="absolute left-[3%] top-8 opacity-20"><CraneSVG /></div>
+          <div className="absolute right-[5%] bottom-12 opacity-20 flex gap-4">
+            <WindowDetail />
+            <WindowDetail />
+            <WindowDetail />
+          </div>
+          <div className="absolute right-[15%] top-4 opacity-15"><StairSection /></div>
         </div>
 
         {/* LA SOLUTION — 5 PILIERS */}
@@ -318,10 +332,20 @@ export default function Page() {
           </div>
         </section>
 
-        {/* ISOMETRIC VILLA TRANSITION */}
+        {/* VILLA + NEIGHBORHOOD + TWIN TOWERS */}
         <ArchDivider />
-        <div className="py-8 px-[4vw] max-w-[600px] mx-auto opacity-25">
-          <IsometricVillaSVG />
+        <div className="py-12 px-[4vw] relative">
+          <div className="max-w-[600px] mx-auto opacity-25">
+            <IsometricVillaSVG />
+          </div>
+          <div className="absolute left-[2%] top-0 opacity-15"><TwinTowers /></div>
+          <div className="absolute right-[3%] top-8 opacity-10 max-w-[350px]"><NeighborhoodPlan /></div>
+          <div className="absolute left-[20%] bottom-4 opacity-15"><WallSection /></div>
+          <div className="absolute right-[25%] bottom-0 opacity-15"><HouseIcon /></div>
+        </div>
+        {/* FULL-WIDTH VILLA */}
+        <div className="py-6 px-[4vw] opacity-15">
+          <VillaLarge />
         </div>
 
         {/* APPORTEURS D'AFFAIRES */}
