@@ -13,6 +13,8 @@ import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, Referra
 import { ImagesBadge } from "@/components/ui/images-badge";
 import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, ArchDivider, BlueprintOverlay } from "@/components/ui/arch-visuals";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
+import dynamic from "next/dynamic";
+const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
 import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection } from "@/components/ui/arch-extras";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
@@ -108,8 +110,10 @@ export default function Page() {
 
       <main>
         {/* HERO */}
-        <AuroraBackground className="min-h-screen flex items-center justify-center text-center px-6 pt-24">
-          <div className="max-w-[900px]">
+        <div className="relative min-h-screen flex items-center justify-center text-center px-6 pt-24 overflow-hidden">
+          <BeamsBackground />
+          <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[#080808]/60 via-transparent to-[#080808]/30" />
+          <div className="relative z-10 max-w-[900px]">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-8">
                 <span className="w-2 h-2 rounded-full bg-[#C4956A] animate-[dot-pulse_2s_ease_infinite]" />
@@ -155,7 +159,7 @@ export default function Page() {
               <div className="w-px h-16 mx-auto bg-gradient-to-b from-[#C4956A] to-transparent animate-[scroll-line_2s_ease-in-out_infinite]" />
             </div>
           </div>
-        </AuroraBackground>
+        </div>
 
         {/* SKYLINE + SMALL BUILDINGS */}
         <div className="relative overflow-hidden">
