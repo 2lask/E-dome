@@ -139,148 +139,75 @@ export function SocialFeedPhoneMockup() {
 /*  3. Dashboard Revenue Mockup (large, not in phone)                  */
 /* ------------------------------------------------------------------ */
 export function DashboardMockup() {
-  const months = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
-
-  /* Revenus par source — couleurs par catégorie */
-  const revenueBySource = [
-    { label: "Location CT", color: "#3B82F6", values: [8, 12, 10, 18, 15, 22, 28, 20, 30, 25, 35, 40] },
-    { label: "Commissions", color: "#F59E0B", values: [3, 5, 4, 8, 6, 10, 12, 9, 14, 11, 16, 20] },
-    { label: "Services", color: "#10B981", values: [2, 3, 3, 5, 4, 6, 7, 5, 8, 6, 9, 12] },
-    { label: "Formations", color: "#EC4899", values: [1, 2, 1, 3, 2, 4, 5, 3, 5, 4, 6, 8] },
-  ];
+  const months = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+  const bars = [14, 22, 18, 31, 25, 38, 45, 33, 52, 42, 60, 72];
 
   const kpis = [
-    { label: "Revenus totaux", value: "12'450 CHF", change: "+18%", color: "#C4956A", icon: TrendingUp },
-    { label: "Réservations", value: "34", change: "+12", color: "#3B82F6", icon: Calendar },
-    { label: "Apports", value: "8'200 CHF", change: "+23%", color: "#F59E0B", icon: Link2 },
-    { label: "Conversions", value: "78%", change: "+4.2%", color: "#10B981", icon: BarChart3 },
+    { label: "Revenus", value: "12'450", color: "#C4956A", icon: TrendingUp },
+    { label: "R\u00e9servations", value: "34", color: "#3B82F6", icon: Calendar },
+    { label: "Apports", value: "8'200", color: "#F59E0B", icon: Link2 },
+    { label: "Conversion", value: "78%", color: "#10B981", icon: BarChart3 },
   ];
 
   const activity = [
-    { type: "Hôte", initials: "MD", color: "#3B82F6", name: "Marc Dupont", action: "Nouvelle réservation", detail: "Chalet Verbier · CHF 1,900", time: "il y a 2h" },
-    { type: "Apporteur", initials: "SL", color: "#F59E0B", name: "Sophie Laurent", action: "Commission versée", detail: "Parrainage client · CHF 320", time: "il y a 4h" },
-    { type: "Agence", initials: "PR", color: "#8B5CF6", name: "Pierre Renaud", action: "Bien publié", detail: "Villa Montreux · CHF 1.2M", time: "il y a 6h" },
-    { type: "Formateur", initials: "JB", color: "#EC4899", name: "Julie Blanc", action: "Formation complétée", detail: "Expertise immobilière · 12 inscrits", time: "il y a 8h" },
-    { type: "Promoteur", initials: "TM", color: "#10B981", name: "Thomas Martin", action: "Nouveau projet", detail: "Résidence du Lac · 24 lots", time: "hier" },
+    { initials: "MD", color: "#3B82F6", name: "Marc D.", action: "R\u00e9servation", amount: "1,900" },
+    { initials: "SL", color: "#F59E0B", name: "Sophie L.", action: "Commission", amount: "320" },
+    { initials: "PR", color: "#8B5CF6", name: "Pierre R.", action: "Publication", amount: "1.2M" },
   ];
-
-  const maxBar = Math.max(...revenueBySource[0].values.map((_, i) => revenueBySource.reduce((s, src) => s + src.values[i], 0)));
 
   return (
     <motion.div {...fadeUp(0.2)} className="w-full rounded-2xl border border-white/[0.06] bg-[#0a0a0a] overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C4956A] to-[#8B6F47] flex items-center justify-center"><BarChart3 className="w-4 h-4 text-white" /></div>
-          <div><p className="text-sm font-semibold text-white">E-Dome Dashboard</p><p className="text-[10px] text-white/30">Mars 2026</p></div>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#C4956A] to-[#8B6F47] flex items-center justify-center shrink-0"><BarChart3 className="w-3 h-3 text-white" /></div>
+          <span className="text-xs font-semibold text-white truncate">E-Dome</span>
         </div>
-        <div className="flex items-center gap-2">
-          {["MD", "SL", "PR"].map((init, i) => (
-            <div key={init} className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ backgroundColor: ["#3B82F6", "#F59E0B", "#8B5CF6"][i], marginLeft: i > 0 ? -8 : 0, zIndex: 3 - i, border: "2px solid #0a0a0a" }}>{init}</div>
+        <div className="flex items-center shrink-0">
+          {["MD", "SL"].map((init, i) => (
+            <div key={init} className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white" style={{ backgroundColor: ["#3B82F6", "#F59E0B"][i], marginLeft: i > 0 ? -6 : 0, zIndex: 2 - i, border: "2px solid #0a0a0a" }}>{init}</div>
           ))}
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
-        {/* KPIs colorés */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="p-3 space-y-3">
+        <div className="grid grid-cols-2 gap-2">
           {kpis.map((k, i) => (
-            <motion.div key={k.label} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.08, ease: EASE }}
-              className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 relative overflow-hidden">
+            <motion.div key={k.label} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.06, ease: EASE }}
+              className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-2.5 relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ backgroundColor: k.color }} />
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] text-white/30 uppercase tracking-wider">{k.label}</p>
-                <k.icon className="w-3.5 h-3.5" style={{ color: k.color }} />
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[8px] text-white/30 uppercase truncate">{k.label}</p>
+                <k.icon className="w-3 h-3 shrink-0" style={{ color: k.color }} />
               </div>
-              <p className="text-xl font-bold text-white">{k.value}</p>
-              <div className="flex items-center gap-1 mt-1">
-                <TrendingUp className="w-3 h-3" style={{ color: k.color }} />
-                <span className="text-[10px]" style={{ color: k.color }}>{k.change}</span>
-              </div>
+              <p className="text-sm font-bold text-white truncate">{k.value}</p>
             </motion.div>
           ))}
         </div>
 
-        {/* Chart empilé par source */}
-        <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-white/40 uppercase tracking-wider">Revenus par source</p>
-            <div className="flex items-center gap-3">
-              {revenueBySource.map((src) => (
-                <div key={src.label} className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: src.color }} />
-                  <span className="text-[9px] text-white/40">{src.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-end gap-[4px] h-36">
-            {months.map((_, mi) => {
-              const total = revenueBySource.reduce((s, src) => s + src.values[mi], 0);
-              const pct = (total / maxBar) * 100;
-              return (
-                <div key={mi} className="flex-1 flex flex-col-reverse rounded-t-sm overflow-hidden" style={{ height: `${pct}%` }}>
-                  {revenueBySource.map((src) => {
-                    const segPct = (src.values[mi] / total) * 100;
-                    return (
-                      <motion.div key={src.label} style={{ height: `${segPct}%`, backgroundColor: src.color, opacity: 0.85 }}
-                        initial={{ scaleY: 0 }} whileInView={{ scaleY: 1 }} viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.1 + mi * 0.03, ease: EASE }} className="origin-bottom" />
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
-          <div className="flex justify-between mt-2">{months.map((m) => <span key={m} className="text-[7px] text-white/20 flex-1 text-center">{m}</span>)}</div>
-        </div>
-
-        {/* Activité multi-acteurs */}
-        <div className="space-y-2">
-          <p className="text-xs text-white/40 uppercase tracking-wider">Activité récente</p>
-          {activity.map((a, i) => (
-            <motion.div key={a.name} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.06, ease: EASE }}
-              className="flex items-center justify-between rounded-xl bg-white/[0.03] border border-white/[0.06] px-4 py-3">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: a.color }}>{a.initials}</div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-white">{a.name}</p>
-                    <span className="text-[8px] rounded-full px-1.5 py-0.5 font-medium" style={{ backgroundColor: `${a.color}20`, color: a.color }}>{a.type}</span>
-                  </div>
-                  <p className="text-[10px] text-white/30">{a.action}</p>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <p className="text-[11px] text-white/60">{a.detail}</p>
-                <p className="text-[9px] text-white/20">{a.time}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Répartition par rôle */}
-        <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
-          <p className="text-xs text-white/40 uppercase tracking-wider mb-3">Utilisateurs par rôle</p>
-          <div className="space-y-2">
-            {[
-              { role: "Hôtes", count: 1240, pct: 35, color: "#3B82F6" },
-              { role: "Agences", count: 420, pct: 22, color: "#8B5CF6" },
-              { role: "Apporteurs", count: 380, pct: 18, color: "#F59E0B" },
-              { role: "Propriétaires", count: 290, pct: 12, color: "#06B6D4" },
-              { role: "Autres", count: 170, pct: 13, color: "#888888" },
-            ].map((r) => (
-              <div key={r.role} className="flex items-center gap-3">
-                <span className="text-[10px] text-white/40 w-20 shrink-0">{r.role}</span>
-                <div className="flex-1 h-2 rounded-full bg-white/[0.04] overflow-hidden">
-                  <motion.div className="h-full rounded-full" style={{ backgroundColor: r.color }}
-                    initial={{ width: 0 }} whileInView={{ width: `${r.pct}%` }} viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.2, ease: EASE }} />
-                </div>
-                <span className="text-[10px] text-white/30 w-12 text-right">{r.count}</span>
-              </div>
+        <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-2.5">
+          <p className="text-[8px] text-white/30 uppercase mb-2">Revenus</p>
+          <div className="flex items-end gap-[2px] h-20">
+            {bars.map((h, i) => (
+              <motion.div key={i} className="flex-1 rounded-t-sm"
+                style={{ background: i >= 10 ? "linear-gradient(to top, #C4956A, #D4A574)" : "linear-gradient(to top, rgba(196,149,106,0.2), rgba(196,149,106,0.05))" }}
+                initial={{ height: 0 }} whileInView={{ height: `${h}%` }} viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.03, ease: EASE }} />
             ))}
           </div>
+          <div className="flex justify-between mt-1">{months.map((m, i) => <span key={i} className="text-[6px] text-white/15 flex-1 text-center">{m}</span>)}</div>
+        </div>
+
+        <div className="space-y-1.5">
+          {activity.map((a, i) => (
+            <motion.div key={a.name} initial={{ opacity: 0, x: -6 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.06, ease: EASE }}
+              className="flex items-center justify-between rounded-lg bg-white/[0.03] border border-white/[0.06] px-2.5 py-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0" style={{ backgroundColor: a.color }}>{a.initials}</div>
+                <div className="min-w-0"><p className="text-[10px] font-medium text-white truncate">{a.name}</p><p className="text-[8px] text-white/25 truncate">{a.action}</p></div>
+              </div>
+              <span className="text-[10px] font-semibold shrink-0 ml-2" style={{ color: a.color }}>{a.amount}</span>
+            </motion.div>
+          ))}
         </div>
       </div>
     </motion.div>
