@@ -17,6 +17,7 @@ import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
 import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection, SkyscraperDetailed, LuxuryVillaPlan, InteriorPerspective, BuildingCrossSection, ArtDecoFacade, CityBlockPlan, SpiralStaircase, RoofDetail, OfficeIsometric, BridgeSVG } from "@/components/ui/arch-extras";
 import { ComparisonCards } from "@/components/ui/comparison-cards";
+import { RoleCard } from "@/components/ui/role-card";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -317,27 +318,10 @@ export default function Page() {
                   <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Un compte. <GradientText>Tous les r&ocirc;les.</GradientText></h2>
                   <p className="text-white/40 mt-4 text-lg max-w-xl">Quel que soit votre m&eacute;tier dans l&apos;immobilier, E-Dome s&apos;adapte. Un seul profil, plusieurs r&ocirc;les activables selon votre activit&eacute;.</p>
                 </ScrollReveal>
-                <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-12" stagger={0.06}>
+                <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-12" stagger={0.06}>
                   {roles.map((r) => (
                     <StaggerItem key={r.name}>
-                      <TiltCard className="p-6 h-full relative overflow-hidden group">
-                        {/* Barre couleur en haut */}
-                        <div className="absolute top-0 left-0 right-0 h-[3px] transition-all duration-500 group-hover:h-[4px]" style={{ backgroundColor: r.color }} />
-                        {/* Glow subtil au hover */}
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" style={{ background: `radial-gradient(circle at 50% 0%, ${r.color}10, transparent 70%)` }} />
-                        <div className="relative z-10">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${r.color}15` }}>
-                              <r.icon className="w-5 h-5" style={{ color: r.color }} />
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-bold text-white">{r.name}</h4>
-                              <div className="w-8 h-[2px] rounded-full mt-1" style={{ backgroundColor: r.color, opacity: 0.5 }} />
-                            </div>
-                          </div>
-                          <p className="text-[13px] text-white/50 leading-relaxed">{r.desc}</p>
-                        </div>
-                      </TiltCard>
+                      <RoleCard icon={r.icon} name={r.name} color={r.color} desc={r.desc} />
                     </StaggerItem>
                   ))}
                 </StaggerContainer>
