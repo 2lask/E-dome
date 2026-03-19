@@ -116,18 +116,19 @@ export default function Page() {
                 <span className="text-sm text-[#C4956A] font-medium">Plateforme Immobili&egrave;re Nouvelle G&eacute;n&eacute;ration</span>
               </div>
             </ScrollReveal>
-            <h1 className="text-[clamp(2.8rem,7vw,6rem)] font-extrabold leading-[1.05] tracking-[-0.04em]">
-              <TextReveal>La plateforme pour</TextReveal><br />
-              <LayoutTextFlip
-                text=""
-                words={["les agences", "les h\u00f4tes", "les promoteurs", "les apporteurs", "les investisseurs", "les architectes", "tous les acteurs"]}
-                interval={2000}
-                className="text-[clamp(2.8rem,7vw,6rem)] font-extrabold leading-[1.05] tracking-[-0.04em]"
-              /><br />
-              <TextReveal delay={0.3}>de l&apos;immobilier.</TextReveal>
+            <h1 className="text-[clamp(2.5rem,6vw,5.5rem)] font-extrabold leading-[1.08] tracking-[-0.04em]">
+              <TextReveal>E-Dome</TextReveal>
             </h1>
+            <div className="mt-4 text-[clamp(1.5rem,3.5vw,2.8rem)] font-bold leading-[1.15] tracking-[-0.02em]">
+              <LayoutTextFlip
+                text="L&apos;immobilier pour "
+                words={["les agences", "les h\u00f4tes", "les promoteurs", "les apporteurs", "les investisseurs", "les architectes"]}
+                interval={2200}
+                className="text-[clamp(1.5rem,3.5vw,2.8rem)] font-bold leading-[1.15]"
+              />
+            </div>
             <ScrollReveal delay={0.4}>
-              <p className="text-white/40 text-lg mt-8 tracking-wide">Marketplace &middot; R&eacute;seau social &middot; Apporteurs &middot; Formations &middot; Services</p>
+              <p className="text-white/50 text-lg md:text-xl mt-8 max-w-2xl mx-auto leading-relaxed">La premi&egrave;re plateforme qui r&eacute;unit marketplace, r&eacute;seau social, syst&egrave;me d&apos;apporteurs, formations et services &mdash; dans un seul &eacute;cosyst&egrave;me.</p>
             </ScrollReveal>
             <ScrollReveal delay={0.6}>
               <div className="mt-10">
