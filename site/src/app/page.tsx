@@ -51,18 +51,18 @@ const pillars = [
 ];
 
 const roles = [
-  { icon: User, name: "Client", color: "#8B5CF6" },
-  { icon: Home, name: "H\u00f4te", color: "#3B82F6" },
-  { icon: Building2, name: "Agence", color: "#8B5CF6" },
-  { icon: HardHat, name: "Promoteur", color: "#10B981" },
-  { icon: Handshake, name: "Apporteur", color: "#F59E0B" },
-  { icon: BarChart3, name: "Investisseur", color: "#EF4444" },
-  { icon: GraduationCap, name: "Formateur", color: "#EC4899" },
-  { icon: Key, name: "Propri\u00e9taire", color: "#06B6D4" },
-  { icon: Camera, name: "Photographe", color: "#F97316" },
-  { icon: Briefcase, name: "Courtier", color: "#6366F1" },
-  { icon: PenTool, name: "Architecte", color: "#C4956A" },
-  { icon: Scale, name: "Notaire", color: "#14B8A6" },
+  { icon: User, name: "Client", color: "#8B5CF6", desc: "R\u00e9servez, louez ou achetez des biens dans le monde entier depuis une seule interface." },
+  { icon: Home, name: "H\u00f4te", color: "#3B82F6", desc: "G\u00e9rez vos biens, recevez des r\u00e9servations et augmentez vos revenus avec moins de commissions." },
+  { icon: Building2, name: "Agence", color: "#8B5CF6", desc: "Publiez vos mandats, g\u00e9n\u00e9rez des leads organiques et pilotez votre activit\u00e9 depuis un dashboard." },
+  { icon: HardHat, name: "Promoteur", color: "#10B981", desc: "Pr\u00e9sentez vos projets \u00e0 une audience qualifi\u00e9e et suivez les manifestations d\u2019int\u00e9r\u00eat." },
+  { icon: Handshake, name: "Apporteur", color: "#F59E0B", desc: "Partagez un lien tra\u00e7able et touchez automatiquement une commission sur chaque transaction." },
+  { icon: BarChart3, name: "Investisseur", color: "#EF4444", desc: "Acc\u00e9dez \u00e0 des opportunit\u00e9s immobili\u00e8res v\u00e9rifi\u00e9es et suivez vos rendements en temps r\u00e9el." },
+  { icon: GraduationCap, name: "Formateur", color: "#EC4899", desc: "Cr\u00e9ez et vendez vos formations, webinars et coaching directement sur la plateforme." },
+  { icon: Key, name: "Propri\u00e9taire", color: "#06B6D4", desc: "Pilotez vos biens, suivez vos revenus locatifs et acc\u00e9dez \u00e0 des services de gestion." },
+  { icon: Camera, name: "Photographe", color: "#F97316", desc: "Montrez votre portfolio, recevez des demandes de shooting directement depuis les annonces." },
+  { icon: Briefcase, name: "Courtier", color: "#6366F1", desc: "D\u00e9veloppez votre r\u00e9seau, trouvez des mandats et g\u00e9rez vos transactions immobili\u00e8res." },
+  { icon: PenTool, name: "Architecte", color: "#C4956A", desc: "Pr\u00e9sentez vos projets, attirez de nouveaux clients et collaborez avec les promoteurs." },
+  { icon: Scale, name: "Notaire", color: "#14B8A6", desc: "Simplifiez vos transactions, recevez des dossiers compl\u00e9t\u00e9s et signez num\u00e9riquement." },
 ];
 
 const stats = [
@@ -311,28 +311,36 @@ export default function Page() {
         {/* LES PROFILS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
           <div className="max-w-[1200px] mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-16 items-center">
-              <div className="text-center lg:text-left">
+            <div>
+              <div className="text-center mb-4">
                 <ScrollReveal>
                   <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Un compte. <GradientText>Tous les r&ocirc;les.</GradientText></h2>
                   <p className="text-white/40 mt-4 text-lg max-w-xl">Quel que soit votre m&eacute;tier dans l&apos;immobilier, E-Dome s&apos;adapte. Un seul profil, plusieurs r&ocirc;les activables selon votre activit&eacute;.</p>
                 </ScrollReveal>
-                <StaggerContainer className="flex flex-wrap justify-center lg:justify-start gap-4 mt-12" stagger={0.06}>
+                <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-12" stagger={0.06}>
                   {roles.map((r) => (
                     <StaggerItem key={r.name}>
-                      <TiltCard className="w-[120px] py-7 flex flex-col items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${r.color}15` }}>
-                          <r.icon className="w-5 h-5" style={{ color: r.color }} />
+                      <TiltCard className="p-6 h-full relative overflow-hidden group">
+                        {/* Barre couleur en haut */}
+                        <div className="absolute top-0 left-0 right-0 h-[3px] transition-all duration-500 group-hover:h-[4px]" style={{ backgroundColor: r.color }} />
+                        {/* Glow subtil au hover */}
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" style={{ background: `radial-gradient(circle at 50% 0%, ${r.color}10, transparent 70%)` }} />
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${r.color}15` }}>
+                              <r.icon className="w-5 h-5" style={{ color: r.color }} />
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-bold text-white">{r.name}</h4>
+                              <div className="w-8 h-[2px] rounded-full mt-1" style={{ backgroundColor: r.color, opacity: 0.5 }} />
+                            </div>
+                          </div>
+                          <p className="text-[13px] text-white/50 leading-relaxed">{r.desc}</p>
                         </div>
-                        <span className="text-xs font-medium text-white/70">{r.name}</span>
-                        <div className="w-6 h-1 rounded-full" style={{ backgroundColor: r.color, opacity: 0.6 }} />
                       </TiltCard>
                     </StaggerItem>
                   ))}
                 </StaggerContainer>
-              </div>
-              <div className="hidden lg:block">
-                <SocialFeedPhoneMockup />
               </div>
             </div>
           </div>
