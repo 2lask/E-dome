@@ -288,6 +288,75 @@ export function DashboardMockup() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Mini Dashboard (sidebar version)                                    */
+/* ------------------------------------------------------------------ */
+export function MiniDashboard() {
+  const kpis = [
+    { label: "Revenus", value: "12'450", unit: "CHF", color: "#F59E0B", icon: TrendingUp },
+    { label: "Réservations", value: "34", unit: "", color: "#3B82F6", icon: Calendar },
+  ];
+  const bars = [20, 35, 28, 45, 38, 55, 62, 48, 68, 58, 78, 85];
+  const activity = [
+    { initials: "MD", color: "#3B82F6", name: "Marc D.", action: "Réservation", amount: "CHF 1,900" },
+    { initials: "SL", color: "#F59E0B", name: "Sophie L.", action: "Commission", amount: "CHF 320" },
+    { initials: "PR", color: "#8B5CF6", name: "Pierre R.", action: "Bien publié", amount: "CHF 1.2M" },
+  ];
+
+  return (
+    <motion.div {...fadeUp(0.3)} className="w-full rounded-2xl border border-white/[0.06] bg-[#0a0a0a] overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#C4956A] to-[#8B6F47] flex items-center justify-center"><BarChart3 className="w-3 h-3 text-white" /></div>
+          <span className="text-xs font-semibold text-white">Dashboard</span>
+        </div>
+        <span className="text-[9px] text-white/30">Mars 2026</span>
+      </div>
+      <div className="p-3 space-y-3">
+        {/* KPIs */}
+        <div className="grid grid-cols-2 gap-2">
+          {kpis.map((k, i) => (
+            <motion.div key={k.label} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.1, ease: EASE }}
+              className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-2.5 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ backgroundColor: k.color }} />
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[8px] text-white/30 uppercase">{k.label}</p>
+                <k.icon className="w-3 h-3" style={{ color: k.color }} />
+              </div>
+              <p className="text-base font-bold text-white">{k.value} <span className="text-[9px] text-white/30">{k.unit}</span></p>
+            </motion.div>
+          ))}
+        </div>
+        {/* Mini chart */}
+        <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-2.5">
+          <p className="text-[8px] text-white/30 uppercase mb-2">Revenus mensuels</p>
+          <div className="flex items-end gap-[2px] h-16">
+            {bars.map((h, i) => (
+              <motion.div key={i} className="flex-1 rounded-t-sm"
+                style={{ background: i >= 10 ? "linear-gradient(to top, #F59E0B, #FBBF24)" : "linear-gradient(to top, rgba(245,158,11,0.2), rgba(245,158,11,0.05))" }}
+                initial={{ height: 0 }} whileInView={{ height: `${h}%` }} viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 + i * 0.03, ease: EASE }} />
+            ))}
+          </div>
+        </div>
+        {/* Activity */}
+        <div className="space-y-1.5">
+          {activity.map((a, i) => (
+            <motion.div key={a.name} initial={{ opacity: 0, x: -6 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 + i * 0.08, ease: EASE }}
+              className="flex items-center justify-between rounded-lg bg-white/[0.03] border border-white/[0.06] px-2.5 py-2">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white" style={{ backgroundColor: a.color }}>{a.initials}</div>
+                <div><p className="text-[10px] font-medium text-white">{a.name}</p><p className="text-[8px] text-white/25">{a.action}</p></div>
+              </div>
+              <span className="text-[10px] font-semibold" style={{ color: a.color }}>{a.amount}</span>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  4. Referral Links Mockup                                           */
 /* ------------------------------------------------------------------ */
 export function ReferralMockup() {

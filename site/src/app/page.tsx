@@ -9,7 +9,7 @@ import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ui/scr
 import { Counter } from "@/components/ui/counter";
 import { GridBackground, DotBackground } from "@/components/ui/grid-bg";
 import { useState } from "react";
-import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, ReferralMockup, TrainingMockup } from "@/components/ui/app-mockups";
+import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, ReferralMockup, TrainingMockup, MiniDashboard } from "@/components/ui/app-mockups";
 import { ImagesBadge } from "@/components/ui/images-badge";
 import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, ArchDivider, BlueprintOverlay } from "@/components/ui/arch-visuals";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
@@ -246,8 +246,8 @@ export default function Page() {
                   </ScrollReveal>
                 ))}
               </div>
-              <div className="hidden lg:block sticky top-24">
-                <MarketplacePhoneMockup />
+              <div className="hidden lg:block sticky top-24 w-[340px]">
+                <MiniDashboard />
               </div>
             </div>
           </div>
