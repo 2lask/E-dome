@@ -15,7 +15,7 @@ import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, Arch
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
-import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection } from "@/components/ui/arch-extras";
+import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection, SkyscraperDetailed, LuxuryVillaPlan, InteriorPerspective, BuildingCrossSection, ArtDecoFacade, CityBlockPlan, SpiralStaircase, RoofDetail, OfficeIsometric, BridgeSVG } from "@/components/ui/arch-extras";
 import { ComparisonCards } from "@/components/ui/comparison-cards";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
@@ -168,20 +168,6 @@ export default function Page() {
           <div className="absolute top-2 right-[8%] opacity-15"><ChaletSVG /></div>
         </div>
 
-        {/* STATS BAR */}
-        <div className="border-y border-white/[0.06] py-16 px-[4vw]">
-          <StaggerContainer className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
-            {stats.map((s) => (
-              <StaggerItem key={s.label} className="text-center">
-                <div className="text-[clamp(2rem,4vw,3.5rem)] font-bold text-[#C4956A] tracking-tight">
-                  <Counter target={s.value} prefix={s.prefix} suffix={s.suffix} />
-                </div>
-                <p className="text-sm text-white/50 mt-2">{s.label}</p>
-                <p className="text-xs text-white/25 mt-1 italic">{s.src}</p>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
 
         {/* ARCH DIVIDER */}
         <ArchDivider />
@@ -239,6 +225,17 @@ export default function Page() {
           </div>
         </section>
 
+        {/* ARCHITECTURAL SCENE: Luxury Villa Plan + Office */}
+        <div className="py-16 px-[4vw] relative overflow-hidden">
+          <div className="max-w-[900px] mx-auto opacity-20">
+            <LuxuryVillaPlan />
+          </div>
+          <div className="absolute left-[2%] top-1/2 -translate-y-1/2 opacity-15"><SkyscraperDetailed /></div>
+          <div className="absolute right-[3%] top-12 opacity-12"><ArtDecoFacade /></div>
+          <div className="absolute right-[20%] bottom-4 opacity-10"><SpiralStaircase /></div>
+          <div className="absolute left-[15%] bottom-0 opacity-10"><RoofDetail /></div>
+        </div>
+
         {/* COMPARAISON SANS / AVEC */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
           <div className="max-w-[1200px] mx-auto">
@@ -250,18 +247,29 @@ export default function Page() {
           </div>
         </section>
 
-        {/* BUILDING ELEVATION + CRANE + DETAILS */}
-        <div className="py-8 px-[4vw] relative">
+        {/* BUILDING ELEVATION + CRANE + CROSS SECTION */}
+        <div className="py-12 px-[4vw] relative overflow-hidden">
           <div className="max-w-[700px] mx-auto opacity-25">
             <BuildingElevationSVG />
           </div>
-          <div className="absolute left-[3%] top-8 opacity-20"><CraneSVG /></div>
-          <div className="absolute right-[5%] bottom-12 opacity-20 flex gap-4">
+          <div className="absolute left-[1%] top-4 opacity-20"><CraneSVG /></div>
+          <div className="absolute right-[2%] top-0 opacity-15"><SkyscraperDetailed /></div>
+          <div className="absolute right-[5%] bottom-8 opacity-20 flex gap-4">
             <WindowDetail />
             <WindowDetail />
             <WindowDetail />
           </div>
-          <div className="absolute right-[15%] top-4 opacity-15"><StairSection /></div>
+          <div className="absolute right-[18%] top-4 opacity-12"><StairSection /></div>
+          <div className="absolute left-[8%] bottom-0 opacity-10"><SpiralStaircase /></div>
+        </div>
+
+        {/* BUILDING CROSS SECTION */}
+        <div className="py-8 px-[4vw] relative overflow-hidden">
+          <div className="max-w-[800px] mx-auto opacity-18">
+            <BuildingCrossSection />
+          </div>
+          <div className="absolute left-[3%] top-1/3 opacity-12"><RoofDetail /></div>
+          <div className="absolute right-[5%] top-1/4 opacity-10"><WallSection /></div>
         </div>
 
         {/* LA SOLUTION — 5 PILIERS */}
@@ -328,18 +336,34 @@ export default function Page() {
           </div>
         </section>
 
-        {/* VILLA + NEIGHBORHOOD + TWIN TOWERS */}
+        {/* MASSIVE ARCHITECTURAL SCENE */}
         <ArchDivider />
-        <div className="py-12 px-[4vw] relative">
+        <div className="py-16 px-[4vw] relative overflow-hidden">
+          {/* Centre: Villa isométrique */}
           <div className="max-w-[600px] mx-auto opacity-25">
             <IsometricVillaSVG />
           </div>
-          <div className="absolute left-[2%] top-0 opacity-15"><TwinTowers /></div>
-          <div className="absolute right-[3%] top-8 opacity-10 max-w-[350px]"><NeighborhoodPlan /></div>
-          <div className="absolute left-[20%] bottom-4 opacity-15"><WallSection /></div>
-          <div className="absolute right-[25%] bottom-0 opacity-15"><HouseIcon /></div>
+          {/* Gauche: Tours jumelles + façade Art Déco */}
+          <div className="absolute left-[1%] top-0 opacity-15"><TwinTowers /></div>
+          <div className="absolute left-[10%] top-1/3 opacity-12"><ArtDecoFacade /></div>
+          {/* Droite: Plan quartier + bureau isométrique */}
+          <div className="absolute right-[2%] top-4 opacity-10 max-w-[350px]"><NeighborhoodPlan /></div>
+          <div className="absolute right-[8%] bottom-0 opacity-12"><OfficeIsometric /></div>
+          {/* Petits détails dispersés */}
+          <div className="absolute left-[25%] bottom-0 opacity-15"><WallSection /></div>
+          <div className="absolute right-[30%] top-0 opacity-12"><HouseIcon /></div>
+          <div className="absolute left-[40%] top-8 opacity-8"><SpiralStaircase /></div>
+          <div className="absolute right-[40%] bottom-8 opacity-10"><RoofDetail /></div>
         </div>
-        {/* FULL-WIDTH VILLA */}
+
+        {/* FULL-WIDTH BRIDGE + VILLA */}
+        <div className="py-8 px-[4vw] relative overflow-hidden">
+          <div className="max-w-[800px] mx-auto opacity-15">
+            <BridgeSVG />
+          </div>
+          <div className="absolute left-[5%] top-0 opacity-10"><ChaletSVG /></div>
+          <div className="absolute right-[5%] top-0 opacity-10"><HouseIcon /></div>
+        </div>
         <div className="py-6 px-[4vw] opacity-15">
           <VillaLarge />
         </div>
@@ -378,6 +402,17 @@ export default function Page() {
             </ScrollReveal>
           </div>
         </section>
+
+        {/* ARCH SCENE: City Block + Interior */}
+        <div className="py-16 px-[4vw] relative overflow-hidden">
+          <div className="max-w-[900px] mx-auto opacity-15">
+            <CityBlockPlan />
+          </div>
+          <div className="absolute left-[2%] top-1/4 opacity-12"><InteriorPerspective /></div>
+          <div className="absolute right-[3%] bottom-0 opacity-10"><ApartmentBlock /></div>
+          <div className="absolute left-[35%] top-0 opacity-8"><WindowDetail /></div>
+          <div className="absolute right-[35%] top-0 opacity-8"><WindowDetail /></div>
+        </div>
 
         {/* MARCH&Eacute; */}
         <GridBackground className="py-32 px-[4vw] min-h-screen flex items-center" id="marche">
@@ -432,6 +467,15 @@ export default function Page() {
             </ScrollReveal>
           </div>
         </AuroraBackground>
+
+        {/* ARCH SCENE before FAQ */}
+        <div className="py-12 px-[4vw] relative overflow-hidden">
+          <div className="max-w-[700px] mx-auto opacity-18">
+            <InteriorPerspective />
+          </div>
+          <div className="absolute left-[3%] top-0 opacity-12"><TowerThin /></div>
+          <div className="absolute right-[3%] bottom-0 opacity-10"><ChaletSVG /></div>
+        </div>
 
         {/* FAQ */}
         <section className="py-32 px-[4vw]" id="faq">

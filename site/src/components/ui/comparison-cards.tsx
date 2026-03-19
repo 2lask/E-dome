@@ -125,9 +125,6 @@ export function ComparisonCards() {
         </div>
       </div>
 
-      <div className="text-center py-3 bg-white/[0.02] border-t border-white/[0.06]">
-        <p className="text-xs text-white/30">Cliquez sur la poign&eacute;e pour contr&ocirc;ler</p>
-      </div>
     </div>
   );
 }
