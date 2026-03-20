@@ -16,6 +16,7 @@ import { FounderForm } from "@/components/ui/founder-form";
 import { ArchBg3DBuilding, ArchBg3DVilla, ArchBg3DComplex, ArchBgLuxuryVilla } from "@/components/ui/arch-backgrounds";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import { SparklesCore } from "@/components/ui/sparkles";
+import { EntropyBackground } from "@/components/ui/entropy-bg";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
 import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection, SkyscraperDetailed, LuxuryVillaPlan, InteriorPerspective, BuildingCrossSection, ArtDecoFacade, CityBlockPlan, SpiralStaircase, RoofDetail, OfficeIsometric, BridgeSVG } from "@/components/ui/arch-extras";
@@ -399,7 +400,8 @@ export default function Page() {
 
 
         {/* ÉCOSYSTÈME PROFESSIONNEL */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
+        <EntropyBackground />
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-16">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#10B981]/10 border border-[#10B981]/20 mb-6">
