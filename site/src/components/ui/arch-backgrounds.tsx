@@ -146,3 +146,133 @@ export function ArchBg3DComplex() {
     </div>
   );
 }
+
+/* ================================================================== */
+/*  4. GRANDE VILLA DÉTAILLÉE — pour Apporteurs                        */
+/* ================================================================== */
+export function ArchBgLuxuryVilla() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <motion.svg viewBox="0 0 1400 900" className="absolute left-[-5%] top-[-5%] w-[110%] h-[110%]" preserveAspectRatio="xMidYMid slice"
+        initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1.5 }}>
+
+        {/* Sol */}
+        <motion.line x1="0" y1="680" x2="1400" y2="680" stroke={C} strokeWidth="2" opacity="0.12"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 2, ease: EASE }} />
+        {Array.from({ length: 40 }).map((_, i) => (
+          <motion.line key={`g${i}`} x1={30+i*35} y1="680" x2={35+i*35} y2={690+Math.sin(i)*3} stroke={C} strokeWidth="0.4" opacity="0.06"
+            initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 0.3, delay: 2+i*0.02 }} />
+        ))}
+
+        {/* RDC */}
+        <motion.rect x="300" y="430" width="800" height="250" fill="none" stroke={C} strokeWidth="1.8" opacity="0.13"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 3, ease: EASE }} />
+
+        {/* Étage */}
+        <motion.rect x="380" y="220" width="640" height="210" fill="none" stroke={C} strokeWidth="1.5" opacity="0.11"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 2.5, delay: 0.5, ease: EASE }} />
+
+        {/* Toit */}
+        <motion.line x1="360" y1="220" x2="1040" y2="220" stroke={C} strokeWidth="2" opacity="0.10"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 2, delay: 1, ease: EASE }} />
+        <motion.line x1="360" y1="215" x2="1040" y2="215" stroke={C} strokeWidth="0.5" opacity="0.06"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.5, delay: 1.2 }} />
+
+        {/* Baies vitrées RDC */}
+        {[0,1,2,3,4].map((i) => (
+          <motion.g key={`bv${i}`} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 2+i*0.15, duration: 0.5 }}>
+            <rect x={340+i*145} y="460" width="120" height="190" fill="none" stroke={C} strokeWidth="0.8" opacity="0.10" />
+            <line x1={400+i*145} y1="460" x2={400+i*145} y2="650" stroke={C} strokeWidth="0.4" opacity="0.07" />
+            <line x1={340+i*145} y1="555" x2={460+i*145} y2="555" stroke={C} strokeWidth="0.3" opacity="0.06" />
+            <line x1={345+i*145} y1="650" x2={455+i*145} y2="470" stroke={C} strokeWidth="0.2" opacity="0.03" />
+          </motion.g>
+        ))}
+
+        {/* Fenêtres étage */}
+        {[0,1,2,3,4,5].map((i) => (
+          <motion.g key={`fe${i}`} initial={{ opacity: 0, y: 5 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 2.5+i*0.12, duration: 0.4 }}>
+            <rect x={405+i*98} y="260" width="70" height="130" fill="none" stroke={C} strokeWidth="0.7" opacity="0.09" />
+            <line x1={440+i*98} y1="260" x2={440+i*98} y2="390" stroke={C} strokeWidth="0.3" opacity="0.06" />
+            <line x1={405+i*98} y1="325" x2={475+i*98} y2="325" stroke={C} strokeWidth="0.3" opacity="0.05" />
+          </motion.g>
+        ))}
+
+        {/* Porte */}
+        <motion.rect x="660" y="520" width="80" height="160" fill="none" stroke={C} strokeWidth="1" opacity="0.12"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.5, delay: 3, ease: EASE }} />
+        <motion.line x1="700" y1="520" x2="700" y2="680" stroke={C} strokeWidth="0.5" opacity="0.08"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 3.3 }} />
+        <motion.path d="M660,520 Q700,490 740,520" fill="none" stroke={C} strokeWidth="0.7" opacity="0.08"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 3.5 }} />
+        <motion.circle cx="725" cy="600" r="3" fill={C} opacity="0.10"
+          initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ delay: 3.8, type: "spring" }} />
+
+        {/* Garage */}
+        <motion.rect x="100" y="480" width="200" height="200" fill="none" stroke={C} strokeWidth="1" opacity="0.09"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 2, delay: 1.5, ease: EASE }} />
+        <motion.rect x="130" y="530" width="140" height="150" fill="none" stroke={C} strokeWidth="0.6" opacity="0.07"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.5, delay: 2.5 }} />
+        {Array.from({ length: 6 }).map((_, i) => (
+          <motion.line key={`gl${i}`} x1="130" y1={545+i*22} x2="270" y2={545+i*22} stroke={C} strokeWidth="0.3" opacity="0.05"
+            initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 3+i*0.08 }} />
+        ))}
+
+        {/* Pergola droite */}
+        <motion.path d="M1100,530 L1100,430 L1300,430 L1300,680" fill="none" stroke={C} strokeWidth="0.8" opacity="0.08"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 2, delay: 2, ease: EASE }} />
+        {Array.from({ length: 5 }).map((_, i) => (
+          <motion.line key={`pg${i}`} x1="1100" y1={445+i*20} x2="1300" y2={445+i*20} stroke={C} strokeWidth="0.4" opacity="0.05"
+            initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 3+i*0.1 }} />
+        ))}
+        {[1100,1200,1300].map((x, i) => (
+          <motion.line key={`pc${i}`} x1={x} y1="430" x2={x} y2="680" stroke={C} strokeWidth="0.5" opacity="0.06"
+            initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 2.5+i*0.15 }} />
+        ))}
+
+        {/* Piscine */}
+        <motion.rect x="400" y="720" width="500" height="120" rx="15" fill="none" stroke={C2} strokeWidth="1.2" opacity="0.10"
+          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 2, delay: 4, ease: EASE }} />
+        {Array.from({ length: 6 }).map((_, i) => (
+          <motion.path key={`pw${i}`} d={`M${420+i*10},${740+i*5} Q650,${750+Math.sin(i*2)*8} ${880-i*10},${740+i*5}`}
+            fill="none" stroke={C2} strokeWidth="0.3" opacity="0.05"
+            initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.5, delay: 4.5+i*0.1 }} />
+        ))}
+
+        {/* Arbres */}
+        {[{x:60,y:620,r:30},{x:1350,y:600,r:35},{x:1280,y:650,r:22},{x:50,y:660,r:18},{x:180,y:700,r:25}].map((t, i) => (
+          <motion.g key={`t${i}`} initial={{ scale: 0, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ delay: 5+i*0.15, type: "spring" }}>
+            <circle cx={t.x} cy={t.y} r={t.r} fill="none" stroke={C} strokeWidth="0.7" opacity="0.07" />
+            <circle cx={t.x} cy={t.y} r={t.r*0.6} fill="none" stroke={C} strokeWidth="0.4" opacity="0.04" />
+            <line x1={t.x} y1={t.y+t.r} x2={t.x} y2={t.y+t.r+15} stroke={C} strokeWidth="0.5" opacity="0.05" />
+          </motion.g>
+        ))}
+
+        {/* Cotes */}
+        <motion.g initial={{ opacity: 0 }} whileInView={{ opacity: 0.07 }} viewport={{ once: true }} transition={{ delay: 5.5, duration: 1 }}>
+          <line x1="100" y1="195" x2="1100" y2="195" stroke={C} strokeWidth="0.4" strokeDasharray="3,5" />
+          <text x="600" y="190" fill={C} fontSize="10" textAnchor="middle">32.00 m</text>
+          <line x1="80" y1="220" x2="80" y2="680" stroke={C} strokeWidth="0.4" strokeDasharray="3,5" />
+          <text x="70" y="450" fill={C} fontSize="9" textAnchor="end" transform="rotate(-90,70,450)">8.50 m</text>
+        </motion.g>
+
+        {/* Points de mesure */}
+        {[{x:300,y:430},{x:1100,y:430},{x:380,y:220},{x:1020,y:220},{x:300,y:680},{x:1100,y:680}].map((p, i) => (
+          <motion.g key={`p${i}`} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 5.5+i*0.08 }}>
+            <circle cx={p.x} cy={p.y} r="2" fill={C} opacity="0.12" />
+            <circle cx={p.x} cy={p.y} r="5" fill="none" stroke={C} strokeWidth="0.3" opacity="0.06" />
+          </motion.g>
+        ))}
+
+        {/* Scan line */}
+        <motion.line x1="0" y1="450" x2="1400" y2="450" stroke={C} strokeWidth="0.4" opacity="0.07"
+          animate={{ y1: [150, 850], y2: [150, 850] }} transition={{ duration: 7, repeat: Infinity, ease: "linear" }} />
+
+        {/* Particules */}
+        {Array.from({ length: 12 }).map((_, i) => (
+          <motion.circle key={`pr${i}`} cx={100+i*110} cy={300+Math.sin(i*1.5)*150} r="1.5" fill={C} opacity="0.06"
+            animate={{ y: [0,-10,0], opacity: [0.04,0.08,0.04] }} transition={{ duration: 3+i*0.5, repeat: Infinity, delay: i*0.3 }} />
+        ))}
+      </motion.svg>
+    </div>
+  );
+}

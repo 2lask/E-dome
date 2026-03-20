@@ -13,7 +13,7 @@ import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, Referra
 import { ImagesBadge } from "@/components/ui/images-badge";
 import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, ArchDivider, BlueprintOverlay } from "@/components/ui/arch-visuals";
 import { FounderForm } from "@/components/ui/founder-form";
-import { ArchBg3DBuilding, ArchBg3DVilla, ArchBg3DComplex } from "@/components/ui/arch-backgrounds";
+import { ArchBg3DBuilding, ArchBg3DVilla, ArchBg3DComplex, ArchBgLuxuryVilla } from "@/components/ui/arch-backgrounds";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
@@ -363,7 +363,8 @@ export default function Page() {
         </section>
 
         {/* APPORTEURS D'AFFAIRES */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="apporteurs">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06] relative" id="apporteurs">
+        <ArchBgLuxuryVilla />
 
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <ScrollReveal>
