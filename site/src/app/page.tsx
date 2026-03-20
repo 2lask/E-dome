@@ -15,6 +15,7 @@ import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, Arch
 import { FounderForm } from "@/components/ui/founder-form";
 import { ArchBg3DBuilding, ArchBg3DVilla, ArchBg3DComplex, ArchBgLuxuryVilla } from "@/components/ui/arch-backgrounds";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
+import { SparklesCore } from "@/components/ui/sparkles";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
 import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection, SkyscraperDetailed, LuxuryVillaPlan, InteriorPerspective, BuildingCrossSection, ArtDecoFacade, CityBlockPlan, SpiralStaircase, RoofDetail, OfficeIsometric, BridgeSVG } from "@/components/ui/arch-extras";
@@ -476,9 +477,25 @@ export default function Page() {
         </section>
 
         {/* COMPARAISON SANS / AVEC */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
+          {/* Sparkles background */}
+          <div className="absolute inset-0 w-full h-full">
+            <SparklesCore
+              id="comparison-sparkles"
+              background="transparent"
+              minSize={0.4}
+              maxSize={1.2}
+              particleDensity={80}
+              className="w-full h-full"
+              particleColor="#C4956A"
+              speed={0.8}
+            />
+          </div>
+          {/* Gradient line */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-[2px] bg-gradient-to-r from-transparent via-[#C4956A]/40 to-transparent blur-sm" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-px bg-gradient-to-r from-transparent via-[#C4956A]/60 to-transparent" />
 
-          <div className="max-w-[1200px] mx-auto">
+          <div className="max-w-[1200px] mx-auto relative z-10">
             <ScrollReveal className="text-center mb-16">
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
               <p className="text-white/40 mt-4 text-lg">Ce qui change concr&egrave;tement pour les professionnels de l&apos;immobilier.</p>
