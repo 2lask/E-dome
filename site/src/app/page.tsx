@@ -13,7 +13,7 @@ import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, Referra
 import { ImagesBadge } from "@/components/ui/images-badge";
 import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, ArchDivider, BlueprintOverlay } from "@/components/ui/arch-visuals";
 import { FounderForm } from "@/components/ui/founder-form";
-import { ArchBgModernTower, ArchBgFloorPlan, ArchBgIsometricVilla, ArchBgSkyline, ArchBgBlueprint, ArchBgNetwork, ArchBgAuditorium, ArchBgSplitBuilding, ArchBgDome } from "@/components/ui/arch-backgrounds";
+import { ArchBg3DBuilding, ArchBg3DVilla, ArchBg3DComplex } from "@/components/ui/arch-backgrounds";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
@@ -119,7 +119,6 @@ export default function Page() {
       <main id="main-content">
         {/* HERO */}
         <div className="relative min-h-screen flex items-center justify-center text-center px-6 pt-24 overflow-hidden">
-        <ArchBgModernTower />
           <BeamsBackground />
           <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[#080808]/60 via-transparent to-[#080808]/30" />
           <div className="relative z-10 max-w-[900px]">
@@ -172,7 +171,7 @@ export default function Page() {
 
         {/* LE CONSTAT */}
         <GridBackground className="py-32 px-[4vw] relative" id="probleme">
-        <ArchBgFloorPlan />
+
           <BlueprintOverlay />
           <div className="max-w-[1200px] mx-auto relative z-10">
             <ScrollReveal>
@@ -214,7 +213,7 @@ export default function Page() {
 
         {/* 2. LA SOLUTION — 5 PILIERS */}
         <DotBackground className="py-32 px-[4vw]" id="solution">
-        <ArchBgIsometricVilla />
+        <ArchBg3DBuilding />
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-20">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#10B981]/10 border border-[#10B981]/20 mb-6">
@@ -282,7 +281,7 @@ export default function Page() {
 
         {/* MARKETPLACE */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="marketplace">
-        <ArchBgSkyline />
+
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal>
               <div className="space-y-6">
@@ -327,7 +326,7 @@ export default function Page() {
 
         {/* RÉSEAU SOCIAL IMMOBILIER */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="social">
-        <ArchBgBlueprint />
+        <ArchBg3DVilla />
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 mb-6">
@@ -365,7 +364,7 @@ export default function Page() {
 
         {/* APPORTEURS D'AFFAIRES */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="apporteurs">
-        <ArchBgNetwork />
+
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F59E0B]/10 border border-[#F59E0B]/20 mb-6">
@@ -440,7 +439,7 @@ export default function Page() {
 
         {/* FORMATIONS & ÉVÉNEMENTS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="formations">
-        <ArchBgAuditorium />
+        <ArchBg3DComplex />
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#EC4899]/10 border border-[#EC4899]/20 mb-6">
@@ -477,7 +476,7 @@ export default function Page() {
 
         {/* COMPARAISON SANS / AVEC */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
-        <ArchBgSplitBuilding />
+
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-16">
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
@@ -491,7 +490,7 @@ export default function Page() {
         {/* PROGRAMME FONDATEURS */}
         <AuroraBackground className="py-32 px-[4vw] min-h-screen flex items-center justify-center" id="rejoindre">
           <div className="max-w-[900px] mx-auto text-center w-full flex flex-col items-center">
-        <ArchBgDome />
+
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-[dot-pulse_2s_ease_infinite]" />
