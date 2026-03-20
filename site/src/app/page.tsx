@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Smartphone, Link2, Settings, BookOpen, TrendingDown, Lock, Megaphone, Handshake, User, Building2, HardHat, GraduationCap, BarChart3, Award, Rocket, Users, Percent, MessageSquare, ArrowRight, Camera, Key, Briefcase, PenTool, Scale, ExternalLink } from "lucide-react";
+import { Home, Smartphone, Link2, Settings, BookOpen, TrendingDown, Lock, Megaphone, Handshake, User, Building2, HardHat, GraduationCap, BarChart3, Award, Rocket, Users, Percent, MessageSquare, ArrowRight, Camera, Key, Briefcase, PenTool, Scale, ExternalLink, Calendar } from "lucide-react";
 import { TextReveal, GradientText } from "@/components/ui/text-reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { AuroraBackground } from "@/components/ui/aurora-bg";
@@ -9,9 +9,11 @@ import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ui/scr
 import { Counter } from "@/components/ui/counter";
 import { GridBackground, DotBackground } from "@/components/ui/grid-bg";
 import { useState } from "react";
-import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, ReferralMockup, TrainingMockup, MiniDashboard } from "@/components/ui/app-mockups";
+import { MarketplacePhoneMockup, SocialFeedPhoneMockup, DashboardMockup, ReferralMockup, TrainingMockup, MiniDashboard, PropertyAnalyticsMockup, OptionsMockup } from "@/components/ui/app-mockups";
 import { ImagesBadge } from "@/components/ui/images-badge";
 import { FloorPlanSVG, BuildingElevationSVG, IsometricVillaSVG, SkylineSVG, ArchDivider, BlueprintOverlay } from "@/components/ui/arch-visuals";
+import { FounderForm } from "@/components/ui/founder-form";
+import { ArchBgModernTower, ArchBgFloorPlan, ArchBgIsometricVilla, ArchBgSkyline, ArchBgBlueprint, ArchBgNetwork, ArchBgAuditorium, ArchBgSplitBuilding, ArchBgDome } from "@/components/ui/arch-backgrounds";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
@@ -79,7 +81,7 @@ const founders = [
   { icon: Rocket, label: "Acc\u00e8s b\u00eata anticip\u00e9", color: "#3B82F6", desc: "Explorez et testez chaque fonctionnalit\u00e9 avant l\u2019ouverture publique." },
   { icon: BookOpen, label: "Formations offertes", color: "#EC4899", desc: "Webinars exclusifs et coaching individuel inclus dans le programme." },
   { icon: Users, label: "R\u00e9seau exclusif de fondateurs", color: "#8B5CF6", desc: "Rejoignez un cercle de professionnels s\u00e9lectionn\u00e9s, pr\u00eats \u00e0 collaborer." },
-  { icon: Percent, label: "Conditions pr\u00e9f\u00e9rentielles", color: "#10B981", desc: "Des avantages concrets sur les frais d\u00e8s le premier jour du lancement." },
+  { icon: Calendar, label: "Parcours avant lancement", color: "#10B981", desc: "Inscription, s\u00e9lection, conf\u00e9rence explicative, configuration de votre compte \u2014 tout avant l\u2019ouverture officielle." },
   { icon: MessageSquare, label: "Voix dans les d\u00e9cisions", color: "#06B6D4", desc: "Acc\u00e9dez \u00e0 la roadmap en avant-premi\u00e8re et influencez les prochaines \u00e9tapes." },
 ];
 
@@ -90,7 +92,7 @@ const faqs = [
   { q: "Quelle diff\u00e9rence avec Airbnb ou Booking ?", a: "E-Dome est un \u00e9cosyst\u00e8me complet : r\u00e9seau social professionnel, marketplace multi-services, syst\u00e8me d\u2019apporteurs r\u00e9mun\u00e9r\u00e9s et formations int\u00e9gr\u00e9es. Avec des commissions nettement inf\u00e9rieures." },
   { q: "Comment fonctionne le syst\u00e8me d\u2019apporteurs ?", a: "Chaque utilisateur re\u00e7oit un lien de parrainage unique et tra\u00e7able. Lorsqu\u2019une transaction est g\u00e9n\u00e9r\u00e9e via ce lien, une commission est calcul\u00e9e et vers\u00e9e automatiquement \u2014 sans co\u00fbt suppl\u00e9mentaire pour le client." },
   { q: "Mes donn\u00e9es sont-elles prot\u00e9g\u00e9es ?", a: "Absolument. E-Dome est conforme au RGPD europ\u00e9en. Les paiements transitent par des prestataires certifi\u00e9s PCI-DSS. Vos donn\u00e9es ne sont jamais vendues \u00e0 des tiers." },
-  { q: "Comment devenir membre fondateur ?", a: "Remplissez le formulaire de manifestation d\u2019int\u00e9r\u00eat. Notre \u00e9quipe analyse votre profil et vous contacte pour un \u00e9change. Les membres s\u00e9lectionn\u00e9s re\u00e7oivent des avantages permanents d\u00e8s le lancement." },
+  { q: "Comment devenir membre fondateur ?", a: "Inscrivez-vous via le formulaire membre fondateur. Votre profil est analys\u00e9 et s\u00e9lectionn\u00e9 avant le lancement. Vous participez ensuite \u00e0 une conf\u00e9rence en ligne o\u00f9 toutes les fonctionnalit\u00e9s et options de la plateforme sont pr\u00e9sent\u00e9es en d\u00e9tail, avec un temps de questions-r\u00e9ponses. Enfin, vous configurez votre compte avant l\u2019ouverture officielle." },
   { q: "E-Dome est-il limit\u00e9 \u00e0 un seul pays ?", a: "Non. E-Dome est con\u00e7u comme une plateforme internationale. Le lancement initial cible l\u2019Europe francophone, avec une expansion progressive vers le reste du monde." },
 ];
 
@@ -101,10 +103,13 @@ export default function Page() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#080808]/80 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="max-w-[1400px] mx-auto px-[4vw] h-[72px] flex items-center justify-between">
           <a href="#" className="text-2xl font-bold tracking-tight">E-<span className="text-[#C4956A]">Dome</span></a>
-          <nav className="hidden md:flex items-center gap-10">
+          <nav className="hidden md:flex items-center gap-8">
             <a href="#probleme" className="text-sm text-white/40 hover:text-white transition-colors">Constat</a>
             <a href="#solution" className="text-sm text-white/40 hover:text-white transition-colors">Solution</a>
-            <a href="#marche" className="text-sm text-white/40 hover:text-white transition-colors">March&eacute;</a>
+            <a href="#marketplace" className="text-sm text-white/40 hover:text-white transition-colors">Marketplace</a>
+            <a href="#social" className="text-sm text-white/40 hover:text-white transition-colors">R&eacute;seau social</a>
+            <a href="#apporteurs" className="text-sm text-white/40 hover:text-white transition-colors">Apporteurs</a>
+            <a href="#formations" className="text-sm text-white/40 hover:text-white transition-colors">Formations</a>
             <a href="#faq" className="text-sm text-white/40 hover:text-white transition-colors">FAQ</a>
             <a href="#rejoindre" className="px-5 py-2 rounded-full bg-[#C4956A] text-[#080808] text-sm font-semibold hover:bg-[#D4A574] transition-all hover:shadow-[0_0_25px_rgba(196,149,106,0.4)]">Rejoindre</a>
           </nav>
@@ -114,6 +119,7 @@ export default function Page() {
       <main id="main-content">
         {/* HERO */}
         <div className="relative min-h-screen flex items-center justify-center text-center px-6 pt-24 overflow-hidden">
+        <ArchBgModernTower />
           <BeamsBackground />
           <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[#080808]/60 via-transparent to-[#080808]/30" />
           <div className="relative z-10 max-w-[900px]">
@@ -124,7 +130,7 @@ export default function Page() {
               </div>
             </ScrollReveal>
             <h1 className="text-[clamp(2.5rem,6vw,5.5rem)] font-extrabold leading-[1.08] tracking-[-0.04em]">
-              <TextReveal>E-Dome</TextReveal>
+              <TextReveal>Projet E-Dome</TextReveal>
             </h1>
             <div className="mt-3 text-[clamp(1.3rem,3vw,2.2rem)] font-semibold leading-[1.2] tracking-[-0.01em] text-white/70">
               <TextReveal delay={0.2}>Unifions l&apos;&eacute;cosyst&egrave;me immobilier mondial</TextReveal>
@@ -138,7 +144,7 @@ export default function Page() {
               />
             </div>
             <ScrollReveal delay={0.4}>
-              <p className="text-white/40 text-base md:text-lg mt-8 max-w-xl mx-auto leading-relaxed">Une plateforme. Chaque acteur. Partout. Le premier &eacute;cosyst&egrave;me unifi&eacute; pour l&apos;immobilier &mdash; &agrave; l&apos;&eacute;chelle mondiale.</p>
+              <p className="text-white/40 text-base md:text-lg mt-8 max-w-xl mx-auto leading-relaxed">Marketplace, r&eacute;seau social, apporteurs d&apos;affaires, formations et services &mdash; tout ce dont les professionnels de l&apos;immobilier ont besoin, r&eacute;uni pour la premi&egrave;re fois.</p>
             </ScrollReveal>
             <ScrollReveal delay={0.6}>
               <div className="mt-10">
@@ -166,6 +172,7 @@ export default function Page() {
 
         {/* LE CONSTAT */}
         <GridBackground className="py-32 px-[4vw] relative" id="probleme">
+        <ArchBgFloorPlan />
           <BlueprintOverlay />
           <div className="max-w-[1200px] mx-auto relative z-10">
             <ScrollReveal>
@@ -207,6 +214,7 @@ export default function Page() {
 
         {/* 2. LA SOLUTION — 5 PILIERS */}
         <DotBackground className="py-32 px-[4vw]" id="solution">
+        <ArchBgIsometricVilla />
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-20">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#10B981]/10 border border-[#10B981]/20 mb-6">
@@ -273,10 +281,14 @@ export default function Page() {
         </section>
 
         {/* MARKETPLACE */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="marketplace">
+        <ArchBgSkyline />
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal>
-              <MarketplacePhoneMockup />
+              <div className="space-y-6">
+                <MarketplacePhoneMockup />
+                <PropertyAnalyticsMockup />
+              </div>
             </ScrollReveal>
             <ScrollReveal delay={0.2}>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 mb-6">
@@ -306,12 +318,16 @@ export default function Page() {
                   </StaggerItem>
                 ))}
               </StaggerContainer>
+              <div className="mt-8">
+                <OptionsMockup />
+              </div>
             </ScrollReveal>
           </div>
         </section>
 
         {/* RÉSEAU SOCIAL IMMOBILIER */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="social">
+        <ArchBgBlueprint />
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 mb-6">
@@ -348,7 +364,8 @@ export default function Page() {
         </section>
 
         {/* APPORTEURS D'AFFAIRES */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="apporteurs">
+        <ArchBgNetwork />
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F59E0B]/10 border border-[#F59E0B]/20 mb-6">
@@ -422,7 +439,8 @@ export default function Page() {
         </section>
 
         {/* FORMATIONS & ÉVÉNEMENTS */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="formations">
+        <ArchBgAuditorium />
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#EC4899]/10 border border-[#EC4899]/20 mb-6">
@@ -457,40 +475,9 @@ export default function Page() {
           </div>
         </section>
 
-        {/* MARCH&Eacute; */}
-        <GridBackground className="py-32 px-[4vw] min-h-screen flex items-center" id="marche">
-          <div className="max-w-[1200px] mx-auto text-center w-full">
-            <ScrollReveal>
-              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">
-                Un march&eacute; mondial en <GradientText>pleine transformation.</GradientText>
-              </h2>
-              <p className="text-white/40 mt-4 text-lg max-w-2xl mx-auto">Aucune plateforme existante ne combine marketplace, r&eacute;seau social, apporteurs, formations et services. E-Dome est le premier &agrave; unifier ces cinq march&eacute;s.</p>
-            </ScrollReveal>
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-16" stagger={0.1}>
-              {stats.map((s) => (
-                <StaggerItem key={s.label}>
-                  <TiltCard className="p-8 text-center h-full relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 right-0 h-[3px] transition-all duration-500 group-hover:h-[4px]" style={{ backgroundColor: s.color }} />
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" style={{ background: `radial-gradient(circle at 50% 0%, ${s.color}10, transparent 70%)` }} />
-                    <div className="relative z-10">
-                      <div className="w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center transition-shadow duration-300 group-hover:shadow-lg" style={{ backgroundColor: `${s.color}15` }}>
-                        <s.icon className="w-6 h-6" style={{ color: s.color }} />
-                      </div>
-                      <div className="text-3xl md:text-4xl font-extrabold tracking-tight" style={{ color: s.color }}>
-                        <Counter target={s.value} prefix={s.prefix} suffix={s.suffix} />
-                      </div>
-                      <p className="text-sm text-white/60 mt-3">{s.label}</p>
-                      <p className="text-xs text-white/25 mt-1 italic">{s.src}</p>
-                    </div>
-                  </TiltCard>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
-          </div>
-        </GridBackground>
-
         {/* COMPARAISON SANS / AVEC */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+        <ArchBgSplitBuilding />
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-16">
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
@@ -500,9 +487,11 @@ export default function Page() {
           </div>
         </section>
 
+
         {/* PROGRAMME FONDATEURS */}
         <AuroraBackground className="py-32 px-[4vw] min-h-screen flex items-center justify-center" id="rejoindre">
           <div className="max-w-[900px] mx-auto text-center w-full flex flex-col items-center">
+        <ArchBgDome />
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-[dot-pulse_2s_ease_infinite]" />
@@ -527,9 +516,28 @@ export default function Page() {
                 </StaggerItem>
               ))}
             </StaggerContainer>
-            <ScrollReveal delay={0.4} className="mt-12">
-              <p className="text-white/30 text-sm max-w-lg mx-auto mb-8">Sans engagement &middot; Gratuit &middot; Confidentiel</p>
-              <MagneticButton href="#rejoindre" className="text-xl px-10 py-5">Manifester mon int&eacute;r&ecirc;t <ArrowRight className="w-5 h-5" /></MagneticButton>
+            <ScrollReveal delay={0.3} className="mt-14">
+              <p className="text-xs font-semibold text-white/50 uppercase tracking-widest mb-6">Les &eacute;tapes</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-0 max-w-3xl mx-auto mb-10">
+                {[
+                  { step: "1", text: "Inscription via le formulaire" },
+                  { step: "2", text: "S\u00e9lection des profils" },
+                  { step: "3", text: "Conf\u00e9rence en ligne explicative" },
+                  { step: "4", text: "Configuration de votre compte" },
+                ].map((s, i) => (
+                  <div key={s.step} className="flex items-center gap-2 sm:gap-0">
+                    <div className="flex flex-col items-center text-center px-3">
+                      <div className="w-9 h-9 rounded-full bg-[#8B5CF6]/15 border border-[#8B5CF6]/30 flex items-center justify-center text-[#8B5CF6] font-bold text-sm mb-2">{s.step}</div>
+                      <p className="text-[11px] text-white/50 max-w-[120px]">{s.text}</p>
+                    </div>
+                    {i < 3 && <div className="hidden sm:block w-10 h-px bg-white/[0.1] mt-[-14px]" />}
+                  </div>
+                ))}
+              </div>
+              <p className="text-white/30 text-sm max-w-lg mx-auto mb-6">Sans engagement &middot; Gratuit &middot; Confidentiel</p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.4} className="w-full max-w-xl mx-auto">
+              <FounderForm />
             </ScrollReveal>
           </div>
         </AuroraBackground>
@@ -559,10 +567,12 @@ export default function Page() {
             <p className="text-xs text-white/30 uppercase tracking-wider mb-4">Navigation</p>
             <div className="flex flex-col gap-3">
               {[
-                { label: "Le Constat", href: "#probleme" },
-                { label: "La Solution", href: "#solution" },
-                { label: "Les R\u00f4les", href: "#profils" },
-                { label: "March\u00e9", href: "#marche" },
+                { label: "Constat", href: "#probleme" },
+                { label: "Solution", href: "#solution" },
+                { label: "Marketplace", href: "#marketplace" },
+                { label: "R\u00e9seau social", href: "#social" },
+                { label: "Apporteurs", href: "#apporteurs" },
+                { label: "Formations", href: "#formations" },
                 { label: "FAQ", href: "#faq" },
               ].map((l) => (
                 <a key={l.label} href={l.href} className="text-sm text-white/40 hover:text-[#C4956A] transition-colors">{l.label}</a>

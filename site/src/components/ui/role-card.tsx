@@ -175,16 +175,17 @@ export function RoleCard({ icon: Icon, name, color, desc }: RoleCardProps) {
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
                 <p className="text-[12px] text-white/50 leading-relaxed">{desc}</p>
-                <motion.div
-                  className="mt-4 flex items-center gap-2 text-[11px] font-semibold"
+                <motion.a
+                  href="#rejoindre"
+                  className="mt-4 flex items-center gap-2 text-[11px] font-semibold hover:gap-3 transition-all"
                   style={{ color }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <span>D&eacute;couvrir</span>
+                  <span>Rejoindre</span>
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                </motion.div>
+                </motion.a>
               </motion.div>
             )}
           </AnimatePresence>

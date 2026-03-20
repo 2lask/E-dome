@@ -57,7 +57,7 @@ export function MarketplacePhoneMockup() {
             <motion.div key={l.name} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.1, ease: EASE }}
               className="rounded-xl bg-white/[0.04] border border-white/[0.06] overflow-hidden">
               <div className="h-20 relative overflow-hidden">
-                <img src={l.img} alt={l.name} className="absolute inset-0 w-full h-full object-cover" />
+                {i === 0 ? <video src="/feed-video-2.mp4" autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" /> : <img src={l.img} alt={l.name} className="absolute inset-0 w-full h-full object-cover" />}
                 <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center"><Heart className="w-3 h-3 text-white/60" /></div>
                 <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm rounded-md px-2 py-0.5"><span className="text-[9px] font-bold text-[#C4956A]">{l.price}</span></div>
               </div>
@@ -373,42 +373,254 @@ export function ReferralMockup() {
 /*  5. Training Mockup                                                 */
 /* ------------------------------------------------------------------ */
 export function TrainingMockup() {
-  const chapters = [
-    { title: "Introduction au marché", done: true },
-    { title: "Évaluation des biens", done: true },
-    { title: "Techniques de négociation", done: true },
-    { title: "Droit immobilier", active: true },
-    { title: "Marketing digital" },
-    { title: "Certification finale", locked: true },
+  const myFormations = [
+    { title: "Investir en Tha\u00eflande", progress: 60, modules: "7/12 modules", gradient: "from-[#8B5CF6] to-[#6366F1]", emoji: "🏝️", status: "En cours", statusColor: "#3B82F6", btn: "Continuer", btnColor: "#3B82F6" },
+    { title: "Agent Immobilier International", progress: 100, modules: "Termin\u00e9", gradient: "from-[#10B981] to-[#06B6D4]", emoji: "🤝", status: "Termin\u00e9", statusColor: "#10B981", btn: "Certificat", btnColor: "#10B981" },
+    { title: "Bootcamp Apporteur Pro", progress: 0, modules: "Commence le 10 Mars 2026", gradient: "from-[#F97316] to-[#EF4444]", emoji: "📊", status: "\u00c0 venir", statusColor: "#F97316", btn: "Voir infos", btnColor: "#F97316" },
+  ];
+
+  const catalogue = [
+    { title: "Agent Immobilier International", author: "@CoachImmo", rating: "4.9", reviews: "567", price: "297\u20ac", img: "/formation-1.jpg" },
+    { title: "Bootcamp Apporteur Pro (30j)", author: "@BusinessAcademy", rating: "4.9", reviews: "342", price: "997\u20ac", img: "/formation-2.jpg" },
+    { title: "Analyse ROI & Projections", author: "@InvestmentGuru", rating: "4.7", reviews: "890", price: "147\u20ac", img: "/formation-3.jpg" },
+    { title: "Investir aux Philippines", author: "@AsiaProperty", rating: "4.6", reviews: "234", price: "197\u20ac", img: "/formation-4.jpg" },
   ];
 
   return (
-    <motion.div {...fadeUp(0.2)} className="w-full max-w-md rounded-2xl border border-white/[0.06] bg-[#0a0a0a] overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-        <div className="flex items-center gap-2"><div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#C4956A] to-[#8B6F47] flex items-center justify-center"><Play className="w-3 h-3 text-white ml-0.5" fill="white" /></div><span className="text-sm font-semibold text-white">Formation E-Dome</span></div>
-        <span className="text-[10px] text-[#C4956A] bg-[#C4956A]/10 rounded-full px-2.5 py-1 font-medium">65%</span>
+    <motion.div {...fadeUp(0.2)} className="w-full max-w-lg rounded-2xl border border-white/[0.08] bg-[#0c0c0c] overflow-hidden">
+      {/* MES FORMATIONS */}
+      <div className="px-4 pt-4 pb-2">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-base">📚</span>
+          <span className="text-[12px] font-bold text-white">Mes Formations</span>
+        </div>
+        <div className="space-y-2.5">
+          {myFormations.map((f, i) => (
+            <motion.div key={f.title} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 + i * 0.08, ease: EASE }}
+              className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 flex items-center gap-3">
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center text-xl shrink-0 shadow-lg`}>
+                {f.emoji}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-semibold text-white truncate">{f.title}</p>
+                {f.progress > 0 && f.progress < 100 && (
+                  <div className="mt-1.5 h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
+                    <motion.div className="h-full rounded-full" style={{ backgroundColor: f.btnColor }}
+                      initial={{ width: 0 }} whileInView={{ width: `${f.progress}%` }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.3, ease: EASE }} />
+                  </div>
+                )}
+                <div className="flex items-center gap-2 mt-1">
+                  {f.progress === 100 && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: `${f.statusColor}20`, color: f.statusColor }}>&#x2714; {f.status}</span>}
+                  <span className="text-[9px]" style={{ color: f.statusColor }}>{f.modules}</span>
+                </div>
+              </div>
+              <button className="text-[9px] font-bold px-3 py-1.5 rounded-lg text-white shrink-0 flex items-center gap-1" style={{ backgroundColor: f.btnColor }}>
+                {f.progress > 0 && f.progress < 100 && <Play className="w-2.5 h-2.5" fill="white" />}
+                {f.btn}
+              </button>
+            </motion.div>
+          ))}
+        </div>
       </div>
-      {/* Image formation */}
-      <div className="mx-4 mt-4 h-32 rounded-xl border border-white/[0.06] relative overflow-hidden">
-        <img src="/training.jpg" alt="Formation" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <div className="absolute top-3 left-3"><p className="text-[8px] text-white/40">Module 4/6</p><p className="text-[10px] text-white/80 font-medium">Droit immobilier</p></div>
-        <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1"><Play className="w-2.5 h-2.5 text-white" fill="white" /><span className="text-[8px] text-white/80">En cours</span></div>
+
+      {/* CATALOGUE */}
+      <div className="px-4 pt-4 pb-4 border-t border-white/[0.06] mt-2">
+        <p className="text-[11px] font-semibold text-white/60 mb-3">Autres formations</p>
+        <div className="grid grid-cols-2 gap-2">
+          {catalogue.map((c, i) => (
+            <motion.div key={c.title} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.06, ease: EASE }}
+              className="rounded-xl border border-white/[0.06] bg-white/[0.03] overflow-hidden hover:bg-white/[0.06] transition-colors">
+              <div className="h-16 relative overflow-hidden">
+                <img src={(c as any).img} alt={c.title} className="absolute inset-0 w-full h-full object-cover" />
+              </div>
+              <div className="p-2.5">
+                <p className="text-[10px] font-semibold text-white leading-tight">{c.title}</p>
+                <p className="text-[8px] text-white/30 mt-0.5">Par {c.author}</p>
+                <div className="flex items-center gap-1 mt-1">
+                  <Star className="w-2.5 h-2.5 text-[#F59E0B] fill-[#F59E0B]" />
+                  <span className="text-[8px] text-white/50">{c.rating} ({c.reviews})</span>
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-[11px] font-bold text-[#8B5CF6]">{c.price}</span>
+                  <span className="text-[8px] text-white/30 border border-white/[0.1] rounded px-1.5 py-0.5">Voir</span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
-      {/* Progress */}
-      <div className="px-4 py-3">
-        <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden"><motion.div className="h-full rounded-full bg-gradient-to-r from-[#C4956A] to-[#D4A574]" initial={{ width: 0 }} whileInView={{ width: "65%" }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.3, ease: EASE }} /></div>
+
+      {/* WEBINAIRE LIVE */}
+      <div className="px-4 pb-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4, ease: EASE }}
+          className="rounded-xl border border-[#EF4444]/20 bg-[#EF4444]/5 p-3 flex items-center gap-3">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#EF4444] to-[#EC4899] flex items-center justify-center shrink-0 relative">
+            <Play className="w-6 h-6 text-white" fill="white" />
+            <span className="absolute -top-1 -right-1 text-[7px] font-bold bg-[#EF4444] text-white px-1.5 py-0.5 rounded-full animate-pulse">LIVE</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-bold text-white">Webinaire : Acheter &agrave; Bali en 2026</p>
+            <p className="text-[8px] text-white/40 mt-0.5">@BaliPropertyExpert &middot; 15 Mars 2026 &middot; 20h00</p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-[10px] font-bold text-[#10B981]">Gratuit</span>
+              <span className="text-[8px] text-white/30">234 inscrits</span>
+            </div>
+          </div>
+          <button className="text-[8px] font-bold bg-[#EF4444] text-white px-3 py-1.5 rounded-lg shrink-0">S&apos;inscrire</button>
+        </motion.div>
       </div>
-      {/* Chapters */}
-      <div className="px-4 pb-4 space-y-1.5">
-        {chapters.map((c, i) => (
-          <motion.div key={c.title} initial={{ opacity: 0, x: -8 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.06, ease: EASE }}
-            className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[10px] ${c.active ? "bg-[#C4956A]/5 border border-[#C4956A]/15" : "border border-transparent"} ${c.locked ? "opacity-40" : ""}`}>
-            {c.done ? <CheckCircle2 className="w-4 h-4 text-[#C4956A] shrink-0" /> : c.active ? <Play className="w-4 h-4 text-[#C4956A] shrink-0" /> : <div className="w-4 h-4 rounded-full border border-white/15 shrink-0" />}
-            <span className={`flex-1 ${c.done ? "text-white/40 line-through" : c.active ? "text-white font-medium" : "text-white/50"}`}>{c.title}</span>
-            <ChevronRight className="w-3 h-3 text-white/15" />
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Options Additionnelles Mockup                                      */
+/* ------------------------------------------------------------------ */
+
+const addOptions = [
+  { icon: "☕", name: "Caf\u00e9 de bienvenue", price: "Gratuit", color: "#10B981", free: true },
+  { icon: "🍾", name: "Champagne \u00e0 l\u2019arriv\u00e9e", price: "+50\u20ac", color: "#F59E0B", free: false },
+  { icon: "💆", name: "Massage 1h en villa", price: "+80\u20ac", color: "#EC4899", free: false },
+  { icon: "👨‍🍳", name: "Chef priv\u00e9 (d\u00eener)", price: "+200\u20ac", color: "#EF4444", free: false },
+  { icon: "🚗", name: "Transfert a\u00e9roport", price: "+60\u20ac", color: "#3B82F6", free: false },
+];
+
+export function OptionsMockup() {
+  return (
+    <motion.div {...fadeUp(0.1)} className="w-full rounded-xl bg-[#0c0c0c] border border-white/[0.08] overflow-hidden">
+      <div className="px-3 py-2 border-b border-white/[0.06] flex items-center gap-2">
+        <span className="text-sm">💰</span>
+        <span className="text-[9px] font-semibold text-white/60 uppercase tracking-wider">Options</span>
+        <span className="ml-auto text-[10px] text-[#C4956A] font-medium">(configurable par l&apos;h&ocirc;te)</span>
+      </div>
+      <div className="p-2 space-y-1.5">
+        {addOptions.map((opt, i) => (
+          <motion.div key={opt.name} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 + i * 0.05, ease: EASE }}
+            className="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors">
+            <div className="w-7 h-7 rounded flex items-center justify-center text-sm" style={{ backgroundColor: `${opt.color}15` }}>
+              {opt.icon}
+            </div>
+            <p className="flex-1 text-[10px] font-medium text-white truncate">{opt.name}</p>
+            <span className={`text-[10px] font-bold ${opt.free ? 'text-[#10B981]' : ''}`} style={opt.free ? {} : { color: opt.color }}>{opt.price}</span>
+            <button className={`text-[8px] font-semibold px-2 py-1 rounded ${opt.free ? 'bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/20' : 'border border-white/[0.1] text-white/50'}`}>
+              {opt.free ? 'Inclus' : 'Ajouter'}
+            </button>
           </motion.div>
         ))}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Property Analytics Mockup — fiche bien + données investisseur     */
+/* ------------------------------------------------------------------ */
+
+export function PropertyAnalyticsMockup() {
+  const metrics = [
+    { label: "Rendement brut", value: "6.8%", color: "#10B981", trend: "+0.4%" },
+    { label: "Rendement net", value: "4.9%", color: "#3B82F6", trend: "+0.2%" },
+    { label: "Cash-flow mensuel", value: "CHF 1,240", color: "#F59E0B", trend: "+8%" },
+    { label: "ROI sur 5 ans", value: "34.2%", color: "#8B5CF6", trend: "" },
+  ];
+
+  const monthlyData = [65, 72, 58, 80, 75, 88, 82, 90, 85, 95, 92, 98];
+
+  return (
+    <motion.div {...fadeUp(0.1)} className="w-full max-w-md mx-auto rounded-2xl bg-[#0c0c0c] border border-white/[0.08] overflow-hidden">
+      {/* Property header with image */}
+      <div className="relative h-44 overflow-hidden">
+        <img src="/villa.jpg" alt="Villa Méditerranée" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent" />
+        <div className="absolute top-3 left-3 flex gap-2">
+          <span className="text-[9px] font-bold bg-[#10B981]/90 text-white px-2 py-0.5 rounded-full">Investissement</span>
+          <span className="text-[9px] font-bold bg-[#3B82F6]/90 text-white px-2 py-0.5 rounded-full">Vente</span>
+        </div>
+        <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <Heart className="w-3.5 h-3.5 text-white/70" />
+        </div>
+        <div className="absolute bottom-3 left-3 right-3">
+          <h3 className="text-base font-bold text-white">Villa Méditerranée</h3>
+          <div className="flex items-center gap-1 mt-0.5">
+            <MapPin className="w-3 h-3 text-white/50" />
+            <span className="text-[10px] text-white/50">Côte d&apos;Azur, France</span>
+            <span className="ml-auto text-sm font-bold text-[#C4956A]">CHF 1,850,000</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick stats bar */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/[0.06] bg-white/[0.02]">
+        <div className="flex items-center gap-1"><Home className="w-3 h-3 text-white/30" /><span className="text-[9px] text-white/40">5 pièces</span></div>
+        <div className="flex items-center gap-1"><Calendar className="w-3 h-3 text-white/30" /><span className="text-[9px] text-white/40">Disponible</span></div>
+        <div className="flex items-center gap-0.5">
+          <Star className="w-3 h-3 text-[#C4956A] fill-[#C4956A]" />
+          <span className="text-[9px] text-white/50">4.9</span>
+        </div>
+        <button className="text-[9px] font-semibold bg-[#C4956A] text-black px-3 py-1 rounded-full">Réserver une visite</button>
+      </div>
+
+      {/* Analytics section */}
+      <div className="px-4 pt-3 pb-1">
+        <div className="flex items-center gap-2 mb-3">
+          <BarChart3 className="w-3.5 h-3.5 text-[#C4956A]" />
+          <span className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">Analyse investisseur</span>
+        </div>
+
+        {/* 4 KPI cards */}
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          {metrics.map((m, i) => (
+            <motion.div key={m.label} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.08, ease: EASE }}
+              className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-2.5">
+              <p className="text-[8px] text-white/40 uppercase tracking-wider">{m.label}</p>
+              <div className="flex items-end gap-1.5 mt-1">
+                <span className="text-lg font-bold" style={{ color: m.color }}>{m.value}</span>
+                {m.trend && (
+                  <span className="text-[8px] font-medium text-[#10B981] mb-0.5 flex items-center gap-0.5">
+                    <TrendingUp className="w-2.5 h-2.5" />{m.trend}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Mini bar chart — Taux d'occupation */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-3 mb-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[9px] font-medium text-white/50">Taux d&apos;occupation (12 mois)</span>
+            <span className="text-[9px] font-bold text-[#10B981]">87% moy.</span>
+          </div>
+          <div className="flex items-end gap-[3px] h-12">
+            {monthlyData.map((h, i) => (
+              <motion.div key={i} className="flex-1 rounded-sm" style={{ background: `linear-gradient(to top, ${h > 85 ? '#10B981' : h > 70 ? '#3B82F6' : '#F59E0B'}40, ${h > 85 ? '#10B981' : h > 70 ? '#3B82F6' : '#F59E0B'}15)` }}
+                initial={{ height: 0 }} whileInView={{ height: `${h}%` }} viewport={{ once: true }} transition={{ duration: 0.4, delay: 0.2 + i * 0.03, ease: EASE }} />
+            ))}
+          </div>
+          <div className="flex justify-between mt-1">
+            <span className="text-[7px] text-white/25">Jan</span>
+            <span className="text-[7px] text-white/25">Juin</span>
+            <span className="text-[7px] text-white/25">Déc</span>
+          </div>
+        </div>
+
+        {/* Financials breakdown */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-3 mb-3">
+          <span className="text-[9px] font-medium text-white/50 block mb-2">Projection financière</span>
+          {[
+            { label: "Revenus locatifs annuels", value: "CHF 126,000", color: "#10B981" },
+            { label: "Charges & entretien", value: "- CHF 18,200", color: "#EF4444" },
+            { label: "Hypothèque (estimation)", value: "- CHF 42,000", color: "#F59E0B" },
+            { label: "Revenu net annuel", value: "CHF 65,800", color: "#3B82F6", bold: true },
+          ].map((row, i) => (
+            <div key={i} className={`flex items-center justify-between py-1.5 ${i < 3 ? 'border-b border-white/[0.04]' : ''}`}>
+              <span className={`text-[10px] ${(row as any).bold ? 'text-white font-semibold' : 'text-white/40'}`}>{row.label}</span>
+              <span className={`text-[10px] font-bold`} style={{ color: row.color }}>{row.value}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="pb-2" />
       </div>
     </motion.div>
   );
