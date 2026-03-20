@@ -583,26 +583,28 @@ export default function Page() {
 
 
         {/* PROGRAMME FONDATEURS */}
-        <AuroraBackground className="py-32 px-[4vw] min-h-screen flex items-center justify-center relative overflow-hidden" id="rejoindre">
-          {/* Fond : étoiles / constellation (exclusivité) */}
+        <section className="py-32 px-[4vw] min-h-screen flex items-center justify-center relative overflow-hidden border-t border-white/[0.06]" id="rejoindre">
+          {/* Fond : sparkles violet + grille diamant */}
+          <div className="absolute inset-0 w-full h-full">
+            <SparklesCore
+              id="founders-sparkles"
+              background="transparent"
+              minSize={0.3}
+              maxSize={1.5}
+              particleDensity={60}
+              className="w-full h-full"
+              particleColor="#8B5CF6"
+              speed={0.5}
+            />
+          </div>
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.06]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.05]">
               <defs>
-                <pattern id="stars-pattern" width="100" height="100" patternUnits="userSpaceOnUse">
-                  <circle cx="10" cy="20" r="1" fill="#8B5CF6" />
-                  <circle cx="50" cy="10" r="0.8" fill="#8B5CF6" />
-                  <circle cx="85" cy="40" r="1.2" fill="#8B5CF6" />
-                  <circle cx="30" cy="70" r="0.6" fill="#8B5CF6" />
-                  <circle cx="70" cy="80" r="1" fill="#8B5CF6" />
-                  <circle cx="90" cy="90" r="0.7" fill="#8B5CF6" />
-                  <circle cx="15" cy="50" r="0.9" fill="#8B5CF6" />
-                  <line x1="10" y1="20" x2="50" y2="10" stroke="#8B5CF6" strokeWidth="0.2" />
-                  <line x1="50" y1="10" x2="85" y2="40" stroke="#8B5CF6" strokeWidth="0.2" />
-                  <line x1="30" y1="70" x2="70" y2="80" stroke="#8B5CF6" strokeWidth="0.2" />
-                  <line x1="15" y1="50" x2="30" y2="70" stroke="#8B5CF6" strokeWidth="0.2" />
+                <pattern id="diamond-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                  <path d="M30,0 L60,30 L30,60 L0,30 Z" fill="none" stroke="#8B5CF6" strokeWidth="0.6" />
                 </pattern>
               </defs>
-              <rect width="100%" height="100%" fill="url(#stars-pattern)" />
+              <rect width="100%" height="100%" fill="url(#diamond-grid)" />
             </svg>
           </div>
           <div className="max-w-[900px] mx-auto text-center w-full flex flex-col items-center relative z-10">
@@ -655,7 +657,7 @@ export default function Page() {
               <FounderForm />
             </ScrollReveal>
           </div>
-        </AuroraBackground>
+        </section>
 
         {/* FAQ */}
         <section className="py-32 px-[4vw] relative overflow-hidden border-t border-white/[0.06]" id="faq">
