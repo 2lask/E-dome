@@ -151,11 +151,20 @@ export function InteractiveGlobe({
 
     ctx.clearRect(0, 0, w, h);
 
-    // Outer glow
-    const glow = ctx.createRadialGradient(cx, cy, radius * 0.7, cx, cy, radius * 1.5);
-    glow.addColorStop(0, "rgba(196, 149, 106, 0.08)");
-    glow.addColorStop(1, "rgba(196, 149, 106, 0)");
-    ctx.fillStyle = glow;
+    // Strong outer glow — multiple layers
+    const glow1 = ctx.createRadialGradient(cx, cy, radius * 0.3, cx, cy, radius * 1.6);
+    glow1.addColorStop(0, "rgba(196, 149, 106, 0.15)");
+    glow1.addColorStop(0.5, "rgba(196, 149, 106, 0.06)");
+    glow1.addColorStop(1, "rgba(196, 149, 106, 0)");
+    ctx.fillStyle = glow1;
+    ctx.fillRect(0, 0, w, h);
+
+    // Second glow layer — tighter, brighter
+    const glow2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 1.1);
+    glow2.addColorStop(0, "rgba(196, 149, 106, 0.10)");
+    glow2.addColorStop(0.7, "rgba(196, 149, 106, 0.04)");
+    glow2.addColorStop(1, "rgba(196, 149, 106, 0)");
+    ctx.fillStyle = glow2;
     ctx.fillRect(0, 0, w, h);
 
     // Globe circle
