@@ -64,3 +64,9 @@ body {
 ::-webkit-scrollbar-track { background: #080808; }
 ::-webkit-scrollbar-thumb { background: rgba(196, 149, 106, 0.3); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(196, 149, 106, 0.5); }
+
+/* Scan line animation */
+@keyframes scan {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}

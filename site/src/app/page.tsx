@@ -440,8 +440,36 @@ export default function Page() {
         </section>
 
         {/* FORMATIONS & ÉVÉNEMENTS */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="formations">
-        <ArchBg3DComplex />
+        <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="formations">
+        {/* Fond quadrillé animé */}
+        <div className="absolute inset-0 pointer-events-none">
+          <svg className="absolute inset-0 w-full h-full opacity-[0.06]">
+            <defs>
+              <pattern id="grid-fine" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#C4956A" strokeWidth="0.5" />
+              </pattern>
+              <pattern id="grid-bold" width="200" height="200" patternUnits="userSpaceOnUse">
+                <path d="M 200 0 L 0 0 0 200" fill="none" stroke="#C4956A" strokeWidth="1.2" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid-fine)" />
+            <rect width="100%" height="100%" fill="url(#grid-bold)" />
+          </svg>
+          {/* Cross marks aux intersections */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.08]">
+            <defs>
+              <pattern id="cross-marks" width="200" height="200" patternUnits="userSpaceOnUse">
+                <line x1="95" y1="100" x2="105" y2="100" stroke="#C4956A" strokeWidth="0.8" />
+                <line x1="100" y1="95" x2="100" y2="105" stroke="#C4956A" strokeWidth="0.8" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#cross-marks)" />
+          </svg>
+          {/* Glow central */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#EC4899]/[0.03] blur-[120px]" />
+          {/* Scan line horizontale */}
+          <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#EC4899]/20 to-transparent animate-[scan_6s_linear_infinite]" style={{ top: "30%" }} />
+        </div>
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#EC4899]/10 border border-[#EC4899]/20 mb-6">
