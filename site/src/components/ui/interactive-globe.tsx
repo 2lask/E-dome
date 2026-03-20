@@ -41,10 +41,27 @@ const MARKERS = [
   { lat: -33.87, lng: 151.21, label: "Sydney" },
   { lat: -23.55, lng: -46.63, label: "S\u00e3o Paulo" },
   { lat: 13.76, lng: 100.50, label: "Bangkok" },
+  { lat: 55.76, lng: 37.62, label: "Moscou" },
+  { lat: 19.43, lng: -99.13, label: "Mexico" },
+  { lat: 28.61, lng: 77.21, label: "Delhi" },
+  { lat: -1.29, lng: 36.82, label: "Nairobi" },
+  { lat: 33.87, lng: 35.51, label: "Beyrouth" },
+  { lat: 41.01, lng: 28.98, label: "Istanbul" },
+  { lat: 52.52, lng: 13.40, label: "Berlin" },
+  { lat: 45.46, lng: 9.19, label: "Milan" },
+  { lat: 34.05, lng: -118.24, label: "Los Angeles" },
+  { lat: 22.32, lng: 114.17, label: "Hong Kong" },
+  { lat: -34.60, lng: -58.38, label: "Buenos Aires" },
+  { lat: 37.57, lng: 126.98, label: "S\u00e9oul" },
+  { lat: 30.04, lng: 31.24, label: "Le Caire" },
+  { lat: 6.52, lng: 3.38, label: "Lagos" },
 ];
 
 const CONNECTIONS: [number, number][] = [
   [0,1],[0,2],[0,3],[0,4],[1,2],[2,3],[4,5],[5,6],[5,7],[4,9],[6,9],[3,8],
+  [0,16],[0,17],[1,16],[2,15],[4,10],[4,14],[5,19],[5,12],[6,21],[6,19],
+  [7,5],[8,20],[8,11],[3,18],[10,12],[13,4],[13,23],[14,15],[15,10],
+  [16,17],[17,0],[18,3],[19,21],[20,8],[22,4],[22,14],[23,13],
 ];
 
 function latLngToXYZ(lat: number, lng: number, r: number): [number, number, number] {
@@ -244,8 +261,8 @@ export function InteractiveGlobe({
       ctx.fillStyle = markerColor; ctx.fill();
       // Label
       if (m.label) {
-        ctx.font = "11px system-ui, sans-serif";
-        ctx.fillStyle = "rgba(255,230,200,1)";
+        ctx.font = "bold 12px system-ui, sans-serif";
+        ctx.fillStyle = "#ffffff";
         ctx.fillText(m.label, sx + 8, sy + 3);
       }
     });
