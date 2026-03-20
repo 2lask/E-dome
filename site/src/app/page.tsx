@@ -255,7 +255,20 @@ export default function Page() {
 
 
         {/* LES PROFILS */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
+          {/* Fond : grille hexagonale (réseau de rôles) */}
+          <div className="absolute inset-0 pointer-events-none">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.04]">
+              <defs>
+                <pattern id="hex-grid" width="56" height="100" patternUnits="userSpaceOnUse" patternTransform="scale(1.5)">
+                  <path d="M28,2 L54,18 L54,50 L28,66 L2,50 L2,18 Z" fill="none" stroke="#C4956A" strokeWidth="0.6" />
+                  <path d="M28,34 L54,50 L54,82 L28,98 L2,82 L2,50 Z" fill="none" stroke="#C4956A" strokeWidth="0.6" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#hex-grid)" />
+            </svg>
+            <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-[#8B5CF6]/[0.03] blur-[150px]" />
+          </div>
           <div className="max-w-[1200px] mx-auto">
             <div>
               <div className="text-center mb-4">
@@ -282,7 +295,23 @@ export default function Page() {
         </section>
 
         {/* MARKETPLACE */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]" id="marketplace">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="marketplace">
+          {/* Fond : lignes diagonales (transactions) */}
+          <div className="absolute inset-0 pointer-events-none">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.04]">
+              <defs>
+                <pattern id="diag-lines" width="30" height="30" patternUnits="userSpaceOnUse">
+                  <line x1="0" y1="30" x2="30" y2="0" stroke="#3B82F6" strokeWidth="0.5" />
+                </pattern>
+                <pattern id="diag-bold" width="120" height="120" patternUnits="userSpaceOnUse">
+                  <line x1="0" y1="120" x2="120" y2="0" stroke="#3B82F6" strokeWidth="1" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#diag-lines)" />
+              <rect width="100%" height="100%" fill="url(#diag-bold)" />
+            </svg>
+            <div className="absolute bottom-1/4 left-1/3 w-[600px] h-[600px] rounded-full bg-[#3B82F6]/[0.03] blur-[140px]" />
+          </div>
 
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal>
@@ -590,7 +619,20 @@ export default function Page() {
         </AuroraBackground>
 
         {/* FAQ */}
-        <section className="py-32 px-[4vw]" id="faq">
+        <section className="py-32 px-[4vw] relative overflow-hidden" id="faq">
+          {/* Fond : cercles concentriques (questions) */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+            <svg className="w-[800px] h-[800px] opacity-[0.04]" viewBox="0 0 800 800">
+              {[100,160,220,280,340,400].map((r, i) => (
+                <circle key={i} cx="400" cy="400" r={r} fill="none" stroke="#C4956A" strokeWidth={i % 2 === 0 ? "1" : "0.4"} strokeDasharray={i % 2 === 0 ? "none" : "4,8"} />
+              ))}
+              {[0,45,90,135,180,225,270,315].map((a, i) => {
+                const rad = a * Math.PI / 180;
+                return <line key={i} x1={400 + Math.cos(rad) * 80} y1={400 + Math.sin(rad) * 80} x2={400 + Math.cos(rad) * 400} y2={400 + Math.sin(rad) * 400} stroke="#C4956A" strokeWidth="0.3" />;
+              })}
+            </svg>
+            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#C4956A]/[0.02] blur-[100px]" />
+          </div>
           <div className="max-w-[700px] mx-auto">
             <ScrollReveal className="text-center mb-14">
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Questions <GradientText>fr&eacute;quentes.</GradientText></h2>
