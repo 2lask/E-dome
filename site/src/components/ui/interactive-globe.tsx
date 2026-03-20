@@ -143,7 +143,7 @@ export function InteractiveGlobe({
     const w = canvas.clientWidth, h = canvas.clientHeight;
     canvas.width = w * dpr; canvas.height = h * dpr;
     ctx.scale(dpr, dpr);
-    const cx = w / 2, cy = h / 2, radius = Math.min(w, h) * 0.38, fov = 600;
+    const cx = w / 2, cy = h / 2, radius = Math.min(w, h) * 0.44, fov = 600;
     if (!dragRef.current.active) ryRef.current += autoRotateSpeed;
     tRef.current += 0.015;
     const time = tRef.current;
@@ -152,8 +152,8 @@ export function InteractiveGlobe({
     ctx.clearRect(0, 0, w, h);
 
     // Outer glow
-    const glow = ctx.createRadialGradient(cx, cy, radius * 0.8, cx, cy, radius * 1.4);
-    glow.addColorStop(0, "rgba(196, 149, 106, 0.04)");
+    const glow = ctx.createRadialGradient(cx, cy, radius * 0.7, cx, cy, radius * 1.5);
+    glow.addColorStop(0, "rgba(196, 149, 106, 0.08)");
     glow.addColorStop(1, "rgba(196, 149, 106, 0)");
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, w, h);
@@ -161,8 +161,8 @@ export function InteractiveGlobe({
     // Globe circle
     ctx.beginPath();
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(196, 149, 106, 0.08)";
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(196, 149, 106, 0.15)";
+    ctx.lineWidth = 1.5;
     ctx.stroke();
 
     // Ocean dots (faint)
@@ -172,10 +172,10 @@ export function InteractiveGlobe({
       [x, y, z] = rotY(x, y, z, ry);
       if (z > 0) return;
       const [sx, sy] = proj(x, y, z, cx, cy, fov);
-      const da = Math.max(0.05, 0.3 * (1 - (z + radius) / (2 * radius)));
+      const da = Math.max(0.08, 0.4 * (1 - (z + radius) / (2 * radius)));
       ctx.fillStyle = dotColor.replace("ALPHA", da.toFixed(2));
       ctx.beginPath();
-      ctx.arc(sx, sy, 0.8, 0, Math.PI * 2);
+      ctx.arc(sx, sy, 1.2, 0, Math.PI * 2);
       ctx.fill();
     });
 
@@ -186,10 +186,10 @@ export function InteractiveGlobe({
       [x, y, z] = rotY(x, y, z, ry);
       if (z > 0) return;
       const [sx, sy] = proj(x, y, z, cx, cy, fov);
-      const da = Math.max(0.15, 0.8 * (1 - (z + radius) / (2 * radius)));
+      const da = Math.max(0.3, 1 * (1 - (z + radius) / (2 * radius)));
       ctx.fillStyle = dotColor.replace("ALPHA", da.toFixed(2));
       ctx.beginPath();
-      ctx.arc(sx, sy, 1.5, 0, Math.PI * 2);
+      ctx.arc(sx, sy, 2, 0, Math.PI * 2);
       ctx.fill();
     });
 
@@ -206,8 +206,8 @@ export function InteractiveGlobe({
         if (!started) { ctx.moveTo(sx, sy); started = true; }
         else ctx.lineTo(sx, sy);
       }
-      ctx.strokeStyle = "rgba(196, 149, 106, 0.25)";
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(196, 149, 106, 0.45)";
+      ctx.lineWidth = 1.8;
       ctx.stroke();
     });
 
@@ -226,7 +226,7 @@ export function InteractiveGlobe({
       const ah = radius * 1.2;
       const [scx, scy] = proj(mx / ml * ah, my / ml * ah, mz / ml * ah, cx, cy, fov);
       ctx.beginPath(); ctx.moveTo(sx1, sy1); ctx.quadraticCurveTo(scx, scy, sx2, sy2);
-      ctx.strokeStyle = arcColor; ctx.lineWidth = 0.8; ctx.stroke();
+      ctx.strokeStyle = arcColor; ctx.lineWidth = 1.2; ctx.stroke();
 
       // Traveling dot
       const t = (Math.sin(time * 1.2 + ma.lat * 0.1) + 1) / 2;
@@ -247,12 +247,12 @@ export function InteractiveGlobe({
       ctx.beginPath(); ctx.arc(sx, sy, 4 + pulse * 4, 0, Math.PI * 2);
       ctx.strokeStyle = `rgba(196,149,106,${0.15 + pulse * 0.15})`; ctx.lineWidth = 1; ctx.stroke();
       // Core
-      ctx.beginPath(); ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.arc(sx, sy, 4, 0, Math.PI * 2);
       ctx.fillStyle = markerColor; ctx.fill();
       // Label
       if (m.label) {
-        ctx.font = "10px system-ui, sans-serif";
-        ctx.fillStyle = "rgba(196,149,106,0.7)";
+        ctx.font = "11px system-ui, sans-serif";
+        ctx.fillStyle = "rgba(196,149,106,0.9)";
         ctx.fillText(m.label, sx + 8, sy + 3);
       }
     });

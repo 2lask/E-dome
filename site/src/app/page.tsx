@@ -436,7 +436,7 @@ export default function Page() {
               ))}
             </StaggerContainer>
             <ScrollReveal delay={0.3} className="mt-16 flex justify-center">
-              <InteractiveGlobe size={380} />
+              <InteractiveGlobe size={550} />
             </ScrollReveal>
           </div>
         </section>
