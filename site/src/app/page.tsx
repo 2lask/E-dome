@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Smartphone, Link2, Settings, BookOpen, TrendingDown, Lock, Megaphone, Handshake, User, Building2, HardHat, GraduationCap, BarChart3, Award, Rocket, Users, Percent, MessageSquare, ArrowRight, Camera, Key, Briefcase, PenTool, Scale } from "lucide-react";
+import { Home, Smartphone, Link2, Settings, BookOpen, TrendingDown, Lock, Megaphone, Handshake, User, Building2, HardHat, GraduationCap, BarChart3, Award, Rocket, Users, Percent, MessageSquare, ArrowRight, Camera, Key, Briefcase, PenTool, Scale, ExternalLink } from "lucide-react";
 import { TextReveal, GradientText } from "@/components/ui/text-reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { AuroraBackground } from "@/components/ui/aurora-bg";
@@ -17,13 +17,14 @@ import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
 import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection, SkyscraperDetailed, LuxuryVillaPlan, InteriorPerspective, BuildingCrossSection, ArtDecoFacade, CityBlockPlan, SpiralStaircase, RoofDetail, OfficeIsometric, BridgeSVG } from "@/components/ui/arch-extras";
 import { ComparisonCards } from "@/components/ui/comparison-cards";
+import { InteractiveGlobe } from "@/components/ui/interactive-globe";
 import { RoleCard } from "@/components/ui/role-card";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b border-white/[0.06]">
-      <button onClick={() => setOpen(!open)} className="w-full flex justify-between items-center py-6 text-left group">
+      <button onClick={() => setOpen(!open)} aria-expanded={open} className="w-full flex justify-between items-center py-6 text-left group">
         <span className="text-lg font-semibold pr-4 group-hover:text-[#C4956A] transition-colors">{q}</span>
         <span className={`w-10 h-10 rounded-full bg-[#C4956A]/10 flex items-center justify-center shrink-0 transition-transform duration-300 ${open ? "rotate-45" : ""}`}>
           <span className="text-[#C4956A] text-xl">+</span>
@@ -38,13 +39,14 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 const problems = [
   { icon: TrendingDown, title: "Un secteur fragment\u00e9", color: "#EF4444", desc: "Agences, investisseurs, photographes, notaires \u2014 chacun travaille en silo. Aucune infrastructure partag\u00e9e pour collaborer ou recommander des clients." },
-  { icon: Lock, title: "Revenus captur\u00e9s", color: "#F97316", desc: "Les plateformes traditionnelles pr\u00e9l\u00e8vent 15 \u00e0 25% par transaction. Pour un gestionnaire de 2 \u00e0 5 biens, cela repr\u00e9sente 15\u2019000 \u00e0 50\u2019000 CHF par an." },
+  { icon: Lock, title: "Revenus captur\u00e9s", color: "#F97316", desc: "Les plateformes traditionnelles absorbent une part importante de chaque transaction. Vos marges fondent avant m\u00eame de commencer." },
   { icon: Megaphone, title: "Aucune propri\u00e9t\u00e9", color: "#F59E0B", desc: "Vous construisez votre r\u00e9putation sur des plateformes lou\u00e9es. Quand elles changent leurs r\u00e8gles, vos donn\u00e9es, avis et r\u00e9seau disparaissent." },
   { icon: Handshake, title: "Recommandations perdues", color: "#EC4899", desc: "Le bouche-\u00e0-oreille g\u00e9n\u00e8re la majorit\u00e9 des transactions, mais aucun outil ne permet de le tracer ni de le r\u00e9mun\u00e9rer." },
+  { icon: ExternalLink, title: "Attention dispers\u00e9e", color: "#6366F1", desc: "Sur les r\u00e9seaux sociaux, votre contenu immobilier redirige toujours vers un site externe. L\u2019utilisateur quitte, se perd, et l\u2019attention est d\u00e9finitivement perdue." },
 ];
 
 const pillars = [
-  { num: "01", icon: Home, title: "Marketplace immobili\u00e8re", color: "#3B82F6", desc: "Achetez, vendez, louez et investissez avec des commissions 40 \u00e0 60% inf\u00e9rieures aux plateformes traditionnelles." },
+  { num: "01", icon: Home, title: "Marketplace immobili\u00e8re", color: "#3B82F6", desc: "Achetez, vendez, louez et investissez avec des frais nettement inf\u00e9rieurs aux plateformes traditionnelles." },
   { num: "02", icon: Smartphone, title: "R\u00e9seau social immobilier", color: "#8B5CF6", desc: "Partagez vos annonces, construisez votre r\u00e9putation et connectez tous les acteurs de l\u2019\u00e9cosyst\u00e8me." },
   { num: "03", icon: Link2, title: "Syst\u00e8me d\u2019apporteurs", color: "#F59E0B", desc: "Recommandations automatiques, liens tra\u00e7ables, commissions vers\u00e9es sans intervention. Le parrainage devient un revenu." },
   { num: "04", icon: Settings, title: "\u00c9cosyst\u00e8me professionnel", color: "#10B981", desc: "Services int\u00e9gr\u00e9s, donn\u00e9es investisseurs, \u00e9v\u00e9nements \u2014 tout ce dont les professionnels ont besoin, au m\u00eame endroit." },
@@ -73,12 +75,12 @@ const stats = [
 ];
 
 const founders = [
-  { icon: Award, label: "Badge fondateur permanent", color: "#F59E0B" },
-  { icon: Rocket, label: "Acc\u00e8s b\u00eata anticip\u00e9", color: "#3B82F6" },
-  { icon: BookOpen, label: "Formations offertes", color: "#EC4899" },
-  { icon: Users, label: "R\u00e9seau de 100 fondateurs", color: "#8B5CF6" },
-  { icon: Percent, label: "Conditions pr\u00e9f\u00e9rentielles", color: "#10B981" },
-  { icon: MessageSquare, label: "Voix dans les d\u00e9cisions produit", color: "#06B6D4" },
+  { icon: Award, label: "Badge fondateur permanent", color: "#F59E0B", desc: "Un marqueur de confiance visible sur votre profil, pour toujours." },
+  { icon: Rocket, label: "Acc\u00e8s b\u00eata anticip\u00e9", color: "#3B82F6", desc: "Explorez et testez chaque fonctionnalit\u00e9 avant l\u2019ouverture publique." },
+  { icon: BookOpen, label: "Formations offertes", color: "#EC4899", desc: "Webinars exclusifs et coaching individuel inclus dans le programme." },
+  { icon: Users, label: "R\u00e9seau exclusif de fondateurs", color: "#8B5CF6", desc: "Rejoignez un cercle de professionnels s\u00e9lectionn\u00e9s, pr\u00eats \u00e0 collaborer." },
+  { icon: Percent, label: "Conditions pr\u00e9f\u00e9rentielles", color: "#10B981", desc: "Des avantages concrets sur les frais d\u00e8s le premier jour du lancement." },
+  { icon: MessageSquare, label: "Voix dans les d\u00e9cisions", color: "#06B6D4", desc: "Acc\u00e9dez \u00e0 la roadmap en avant-premi\u00e8re et influencez les prochaines \u00e9tapes." },
 ];
 
 const faqs = [
@@ -109,7 +111,7 @@ export default function Page() {
         </div>
       </header>
 
-      <main>
+      <main id="main-content">
         {/* HERO */}
         <div className="relative min-h-screen flex items-center justify-center text-center px-6 pt-24 overflow-hidden">
           <BeamsBackground />
@@ -162,17 +164,6 @@ export default function Page() {
           </div>
         </div>
 
-        {/* SKYLINE + SMALL BUILDINGS */}
-        <div className="relative overflow-hidden">
-          <SkylineSVG className="opacity-30" />
-          <div className="absolute top-4 left-[5%] opacity-15"><HouseIcon /></div>
-          <div className="absolute top-2 right-[8%] opacity-15"><ChaletSVG /></div>
-        </div>
-
-
-        {/* ARCH DIVIDER */}
-        <ArchDivider />
-
         {/* LE CONSTAT */}
         <GridBackground className="py-32 px-[4vw] relative" id="probleme">
           <BlueprintOverlay />
@@ -203,16 +194,16 @@ export default function Page() {
                   </TiltCard>
                 </StaggerItem>
               ))}
+              <StaggerItem>
+                <div className="p-8 h-full flex flex-col justify-center space-y-5">
+                  <p className="text-white/60 leading-relaxed"><span className="text-[#C4956A] font-semibold">69,8%</span> des utilisateurs abandonnent lorsqu&apos;ils sont redirig&eacute;s vers un site externe pour finaliser une action. <span className="text-white/30 text-xs italic">&mdash; Baymard Institute</span></p>
+                  <p className="text-white/60 leading-relaxed"><span className="text-[#C4956A] font-semibold">53%</span> des visiteurs mobiles quittent une page qui met plus de 3 secondes &agrave; charger. Chaque redirection ajoute du d&eacute;lai. <span className="text-white/30 text-xs italic">&mdash; Google</span></p>
+                  <p className="text-white/60 leading-relaxed">Les parcours fragment&eacute;s <span className="text-[#C4956A] font-semibold">r&eacute;duisent les conversions de 20 &agrave; 30%</span> par rapport &agrave; une exp&eacute;rience unifi&eacute;e. <span className="text-white/30 text-xs italic">&mdash; Forrester Research</span></p>
+                </div>
+              </StaggerItem>
             </StaggerContainer>
           </div>
         </GridBackground>
-
-        {/* FLOOR PLAN TRANSITION */}
-        <div className="py-8 px-[4vw] max-w-[900px] mx-auto opacity-20 relative">
-          <FloorPlanSVG />
-          <div className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-60"><TowerThin /></div>
-          <div className="absolute -right-4 top-1/4 opacity-50"><ApartmentBlock /></div>
-        </div>
 
         {/* 2. LA SOLUTION — 5 PILIERS */}
         <DotBackground className="py-32 px-[4vw]" id="solution">
@@ -253,52 +244,6 @@ export default function Page() {
           </div>
         </DotBackground>
 
-        {/* BUILDING ELEVATION TRANSITION */}
-        <div className="py-12 px-[4vw] relative overflow-hidden">
-          <div className="max-w-[700px] mx-auto opacity-25">
-            <BuildingElevationSVG />
-          </div>
-          <div className="absolute left-[1%] top-4 opacity-20"><CraneSVG /></div>
-          <div className="absolute right-[2%] top-0 opacity-15"><SkyscraperDetailed /></div>
-          <div className="absolute right-[5%] bottom-8 opacity-20 flex gap-4">
-            <WindowDetail />
-            <WindowDetail />
-            <WindowDetail />
-          </div>
-          <div className="absolute left-[8%] bottom-0 opacity-10"><SpiralStaircase /></div>
-        </div>
-
-        {/* 3. COMPARAISON SANS / AVEC */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
-          <div className="max-w-[1200px] mx-auto">
-            <ScrollReveal className="text-center mb-16">
-              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
-              <p className="text-white/40 mt-4 text-lg">Ce qui change concr&egrave;tement pour les professionnels de l&apos;immobilier.</p>
-            </ScrollReveal>
-            <ComparisonCards />
-          </div>
-        </section>
-
-
-        {/* ARCHITECTURAL SCENE: Luxury Villa Plan */}
-        <div className="py-16 px-[4vw] relative overflow-hidden">
-          <div className="max-w-[900px] mx-auto opacity-20">
-            <LuxuryVillaPlan />
-          </div>
-          <div className="absolute left-[2%] top-1/2 -translate-y-1/2 opacity-15"><SkyscraperDetailed /></div>
-          <div className="absolute right-[3%] top-12 opacity-12"><ArtDecoFacade /></div>
-          <div className="absolute right-[20%] bottom-4 opacity-10"><SpiralStaircase /></div>
-          <div className="absolute left-[15%] bottom-0 opacity-10"><RoofDetail /></div>
-        </div>
-
-        {/* BUILDING CROSS SECTION */}
-        <div className="py-8 px-[4vw] relative overflow-hidden">
-          <div className="max-w-[800px] mx-auto opacity-18">
-            <BuildingCrossSection />
-          </div>
-          <div className="absolute left-[3%] top-1/3 opacity-12"><RoofDetail /></div>
-          <div className="absolute right-[5%] top-1/4 opacity-10"><WallSection /></div>
-        </div>
 
         {/* LES PROFILS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
@@ -316,42 +261,91 @@ export default function Page() {
                     </StaggerItem>
                   ))}
                 </StaggerContainer>
+                <ScrollReveal delay={0.4}>
+                  <div className="mt-12 text-center max-w-2xl mx-auto rounded-2xl bg-white/[0.03] border border-[#C4956A]/20 p-8">
+                    <p className="text-lg font-semibold text-white">Un profil, des r&ocirc;les illimit&eacute;s.</p>
+                    <p className="text-white/50 mt-3 leading-relaxed">Chaque profil est enti&egrave;rement configurable. Si votre m&eacute;tier a un lien avec l&apos;immobilier, <span className="text-[#C4956A] font-medium">vous avez votre place sur E-Dome.</span></p>
+                  </div>
+                </ScrollReveal>
               </div>
             </div>
           </div>
         </section>
 
-        {/* MASSIVE ARCHITECTURAL SCENE */}
-        <ArchDivider />
-        <div className="py-16 px-[4vw] relative overflow-hidden">
-          {/* Centre: Villa isométrique */}
-          <div className="max-w-[600px] mx-auto opacity-25">
-            <IsometricVillaSVG />
+        {/* MARKETPLACE */}
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <ScrollReveal>
+              <MarketplacePhoneMockup />
+            </ScrollReveal>
+            <ScrollReveal delay={0.2}>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#3B82F6] animate-[dot-pulse_2s_ease_infinite]" />
+                <span className="text-sm text-[#3B82F6] font-medium">Marketplace</span>
+              </div>
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Achetez. Vendez. Louez. <GradientText>Investissez.</GradientText></h2>
+              <p className="text-white/40 mt-4 text-lg max-w-xl leading-relaxed">Location courte dur&eacute;e, longue dur&eacute;e et vente r&eacute;unies dans un seul parcours fluide. Des frais nettement inf&eacute;rieurs aux plateformes traditionnelles.</p>
+              <StaggerContainer className="grid grid-cols-2 gap-4 mt-10" stagger={0.08}>
+                {[
+                  { icon: Home, title: "Location courte dur\u00e9e", desc: "G\u00e9rez vos biens saisonniers avec un calendrier int\u00e9gr\u00e9 et des r\u00e9servations directes.", color: "#3B82F6" },
+                  { icon: Key, title: "Location longue dur\u00e9e", desc: "Trouvez des locataires qualifi\u00e9s, g\u00e9rez les baux et les paiements depuis la plateforme.", color: "#06B6D4" },
+                  { icon: Building2, title: "Vente immobili\u00e8re", desc: "Publiez vos biens en vente, recevez des offres et suivez les transactions.", color: "#10B981" },
+                  { icon: BarChart3, title: "Investissement", desc: "Acc\u00e9dez \u00e0 des opportunit\u00e9s v\u00e9rifi\u00e9es, analysez les rendements et investissez en confiance.", color: "#F59E0B" },
+                  { icon: Settings, title: "Options vendables", desc: "Spa, transport a\u00e9roport, d\u00e9cor romantique, menu restaurant \u2014 l\u2019h\u00f4te active les options, payantes ou non, depuis son annonce.", color: "#EC4899" },
+                  { icon: Briefcase, title: "Services int\u00e9gr\u00e9s", desc: "Conciergerie, shooting photo, check-in personnalis\u00e9, exp\u00e9riences locales \u2014 r\u00e9servables en un clic par le client.", color: "#F97316" },
+                ].map((f) => (
+                  <StaggerItem key={f.title}>
+                    <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] h-full group hover:bg-white/[0.05] transition-colors relative overflow-hidden">
+                      <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ backgroundColor: f.color }} />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ backgroundColor: `${f.color}15` }}>
+                        <f.icon className="w-5 h-5" style={{ color: f.color }} />
+                      </div>
+                      <h4 className="text-sm font-semibold mb-1">{f.title}</h4>
+                      <p className="text-xs text-white/40 leading-relaxed">{f.desc}</p>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            </ScrollReveal>
           </div>
-          {/* Gauche: Tours jumelles + façade Art Déco */}
-          <div className="absolute left-[1%] top-0 opacity-15"><TwinTowers /></div>
-          <div className="absolute left-[10%] top-1/3 opacity-12"><ArtDecoFacade /></div>
-          {/* Droite: Plan quartier + bureau isométrique */}
-          <div className="absolute right-[2%] top-4 opacity-10 max-w-[350px]"><NeighborhoodPlan /></div>
-          <div className="absolute right-[8%] bottom-0 opacity-12"><OfficeIsometric /></div>
-          {/* Petits détails dispersés */}
-          <div className="absolute left-[25%] bottom-0 opacity-15"><WallSection /></div>
-          <div className="absolute right-[30%] top-0 opacity-12"><HouseIcon /></div>
-          <div className="absolute left-[40%] top-8 opacity-8"><SpiralStaircase /></div>
-          <div className="absolute right-[40%] bottom-8 opacity-10"><RoofDetail /></div>
-        </div>
+        </section>
 
-        {/* FULL-WIDTH BRIDGE + VILLA */}
-        <div className="py-8 px-[4vw] relative overflow-hidden">
-          <div className="max-w-[800px] mx-auto opacity-15">
-            <BridgeSVG />
+        {/* RÉSEAU SOCIAL IMMOBILIER */}
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <ScrollReveal>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-[dot-pulse_2s_ease_infinite]" />
+                <span className="text-sm text-[#8B5CF6] font-medium">R&eacute;seau social immobilier</span>
+              </div>
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Cr&eacute;ez du contenu. <GradientText>B&acirc;tissez votre audience.</GradientText></h2>
+              <p className="text-white/40 mt-4 text-lg max-w-xl leading-relaxed">E-Dome int&egrave;gre un v&eacute;ritable r&eacute;seau social pens&eacute; pour l&apos;immobilier. Pas de redirection, pas de site externe &mdash; tout reste sur la plateforme.</p>
+              <StaggerContainer className="grid grid-cols-2 gap-4 mt-10" stagger={0.08}>
+                {[
+                  { icon: Smartphone, title: "Posts & reels", desc: "Publiez photos, vid\u00e9os courtes et visites virtuelles de vos biens.", color: "#8B5CF6" },
+                  { icon: Camera, title: "Stories & lives", desc: "Partagez en direct vos visites, \u00e9v\u00e9nements et coulisses de votre activit\u00e9.", color: "#EC4899" },
+                  { icon: BookOpen, title: "S\u00e9minaires & webinars", desc: "Organisez et diffusez des formations en direct depuis votre profil.", color: "#F59E0B" },
+                  { icon: Users, title: "Communaut\u00e9 & r\u00e9seau", desc: "Suivez d\u2019autres professionnels, commentez, partagez et collaborez.", color: "#3B82F6" },
+                ].map((f) => (
+                  <StaggerItem key={f.title}>
+                    <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] h-full group hover:bg-white/[0.05] transition-colors relative overflow-hidden">
+                      <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ backgroundColor: f.color }} />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ backgroundColor: `${f.color}15` }}>
+                        <f.icon className="w-5 h-5" style={{ color: f.color }} />
+                      </div>
+                      <h4 className="text-sm font-semibold mb-1">{f.title}</h4>
+                      <p className="text-xs text-white/40 leading-relaxed">{f.desc}</p>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+              <p className="text-white/30 text-sm mt-8">Votre contenu g&eacute;n&egrave;re de la visibilit&eacute; organique, attire des prospects qualifi&eacute;s et reste accessible directement depuis votre profil &mdash; sans d&eacute;pendance publicitaire.</p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.2}>
+              <SocialFeedPhoneMockup />
+            </ScrollReveal>
           </div>
-          <div className="absolute left-[5%] top-0 opacity-10"><ChaletSVG /></div>
-          <div className="absolute right-[5%] top-0 opacity-10"><HouseIcon /></div>
-        </div>
-        <div className="py-6 px-[4vw] opacity-15">
-          <VillaLarge />
-        </div>
+        </section>
 
         {/* APPORTEURS D'AFFAIRES */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06]">
@@ -378,9 +372,6 @@ export default function Page() {
                   </div>
                 ))}
               </div>
-              <div className="mt-12">
-                <TrainingMockup />
-              </div>
             </ScrollReveal>
             <ScrollReveal delay={0.2}>
               <ReferralMockup />
@@ -389,16 +380,82 @@ export default function Page() {
         </section>
 
 
-        {/* ARCH SCENE: City Block + Interior */}
-        <div className="py-16 px-[4vw] relative overflow-hidden">
-          <div className="max-w-[900px] mx-auto opacity-15">
-            <CityBlockPlan />
+        {/* ÉCOSYSTÈME PROFESSIONNEL */}
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto">
+            <ScrollReveal className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#10B981]/10 border border-[#10B981]/20 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#10B981] animate-[dot-pulse_2s_ease_infinite]" />
+                <span className="text-sm text-[#10B981] font-medium">&Eacute;cosyst&egrave;me professionnel</span>
+              </div>
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Tout au m&ecirc;me endroit. <GradientText>Rien &agrave; chercher ailleurs.</GradientText></h2>
+              <p className="text-white/40 mt-4 text-lg max-w-2xl mx-auto">E-Dome centralise les outils, les donn&eacute;es et les connexions dont chaque professionnel de l&apos;immobilier a besoin au quotidien.</p>
+            </ScrollReveal>
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" stagger={0.08}>
+              {[
+                { icon: BarChart3, title: "Dashboard centralis\u00e9", desc: "Revenus, r\u00e9servations, apports, conversions \u2014 toute votre activit\u00e9 dans une seule vue.", color: "#10B981" },
+                { icon: Users, title: "R\u00e9seau de professionnels", desc: "Connectez-vous avec des agents, promoteurs, notaires et autres acteurs pour collaborer.", color: "#8B5CF6" },
+                { icon: Link2, title: "Parrainage int\u00e9gr\u00e9", desc: "Chaque recommandation est trac\u00e9e, chaque commission est calcul\u00e9e automatiquement.", color: "#F59E0B" },
+                { icon: Briefcase, title: "Services \u00e0 la carte", desc: "Conciergerie, shooting photo, transport \u2014 proposez ou r\u00e9servez directement depuis la plateforme.", color: "#F97316" },
+                { icon: BarChart3, title: "Donn\u00e9es & analytics", desc: "Suivez vos performances, analysez vos tendances et prenez des d\u00e9cisions \u00e9clair\u00e9es.", color: "#06B6D4" },
+                { icon: Scale, title: "Conformit\u00e9 & s\u00e9curit\u00e9", desc: "RGPD, v\u00e9rification KYC, paiements s\u00e9curis\u00e9s \u2014 un cadre de confiance pour tous.", color: "#6366F1" },
+              ].map((s) => (
+                <StaggerItem key={s.title}>
+                  <TiltCard className="p-6 h-full relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 right-0 h-[3px] transition-all duration-500 group-hover:h-[4px]" style={{ backgroundColor: s.color }} />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" style={{ background: `radial-gradient(circle at 50% 0%, ${s.color}10, transparent 70%)` }} />
+                    <div className="relative z-10">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-shadow duration-300 group-hover:shadow-lg" style={{ backgroundColor: `${s.color}15` }}>
+                        <s.icon className="w-5 h-5" style={{ color: s.color }} />
+                      </div>
+                      <h3 className="text-base font-semibold mb-2">{s.title}</h3>
+                      <p className="text-sm text-white/40 leading-relaxed">{s.desc}</p>
+                    </div>
+                  </TiltCard>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+            <ScrollReveal delay={0.3} className="mt-16 flex justify-center">
+              <InteractiveGlobe size={380} />
+            </ScrollReveal>
           </div>
-          <div className="absolute left-[2%] top-1/4 opacity-12"><InteriorPerspective /></div>
-          <div className="absolute right-[3%] bottom-0 opacity-10"><ApartmentBlock /></div>
-          <div className="absolute left-[35%] top-0 opacity-8"><WindowDetail /></div>
-          <div className="absolute right-[35%] top-0 opacity-8"><WindowDetail /></div>
-        </div>
+        </section>
+
+        {/* FORMATIONS & ÉVÉNEMENTS */}
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <ScrollReveal>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#EC4899]/10 border border-[#EC4899]/20 mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#EC4899] animate-[dot-pulse_2s_ease_infinite]" />
+                <span className="text-sm text-[#EC4899] font-medium">Formations &amp; &eacute;v&eacute;nements</span>
+              </div>
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Apprenez. Formez. <GradientText>Certifiez.</GradientText></h2>
+              <p className="text-white/40 mt-4 text-lg max-w-xl leading-relaxed">Acc&eacute;dez &agrave; un catalogue de formations cr&eacute;&eacute;es par des experts du secteur ou cr&eacute;ez et vendez les v&ocirc;tres directement sur votre profil.</p>
+              <StaggerContainer className="grid grid-cols-2 gap-4 mt-10" stagger={0.08}>
+                {[
+                  { icon: BookOpen, title: "Cours en ligne", desc: "Modules vid\u00e9o, quiz et certifications pour monter en comp\u00e9tence \u00e0 votre rythme.", color: "#EC4899" },
+                  { icon: Users, title: "Webinars en direct", desc: "Sessions live avec des experts, questions-r\u00e9ponses et replays disponibles.", color: "#8B5CF6" },
+                  { icon: Award, title: "Certifications", desc: "Obtenez des badges visibles sur votre profil qui renforcent votre cr\u00e9dibilit\u00e9.", color: "#F59E0B" },
+                  { icon: GraduationCap, title: "S\u00e9minaires & conf\u00e9rences", desc: "\u00c9v\u00e9nements en pr\u00e9sentiel ou en ligne organis\u00e9s par la communaut\u00e9 E-Dome.", color: "#3B82F6" },
+                ].map((f) => (
+                  <StaggerItem key={f.title}>
+                    <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] h-full group hover:bg-white/[0.05] transition-colors relative overflow-hidden">
+                      <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ backgroundColor: f.color }} />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style={{ backgroundColor: `${f.color}15` }}>
+                        <f.icon className="w-5 h-5" style={{ color: f.color }} />
+                      </div>
+                      <h4 className="text-sm font-semibold mb-1">{f.title}</h4>
+                      <p className="text-xs text-white/40 leading-relaxed">{f.desc}</p>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            </ScrollReveal>
+            <ScrollReveal delay={0.2}>
+              <TrainingMockup />
+            </ScrollReveal>
+          </div>
+        </section>
 
         {/* MARCH&Eacute; */}
         <GridBackground className="py-32 px-[4vw] min-h-screen flex items-center" id="marche">
@@ -432,46 +489,50 @@ export default function Page() {
           </div>
         </GridBackground>
 
+        {/* COMPARAISON SANS / AVEC */}
+        <section className="py-32 px-[4vw] border-t border-white/[0.06]">
+          <div className="max-w-[1200px] mx-auto">
+            <ScrollReveal className="text-center mb-16">
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
+              <p className="text-white/40 mt-4 text-lg">Ce qui change concr&egrave;tement pour les professionnels de l&apos;immobilier.</p>
+            </ScrollReveal>
+            <ComparisonCards />
+          </div>
+        </section>
+
         {/* PROGRAMME FONDATEURS */}
-        <AuroraBackground className="py-32 px-[4vw] min-h-screen flex items-center" id="rejoindre">
-          <div className="max-w-[1200px] mx-auto text-center w-full">
+        <AuroraBackground className="py-32 px-[4vw] min-h-screen flex items-center justify-center" id="rejoindre">
+          <div className="max-w-[900px] mx-auto text-center w-full flex flex-col items-center">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-[dot-pulse_2s_ease_infinite]" />
-                <span className="text-sm text-[#8B5CF6] font-medium">Programme Fondateurs</span>
+                <span className="text-sm text-[#8B5CF6] font-medium">Programme Membres Fondateurs</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Fa&ccedil;onnez E-Dome <GradientText>avec nous.</GradientText></h2>
-              <p className="text-white/40 mt-4 text-lg max-w-xl mx-auto">100 places. S&eacute;lection sur dossier. Avantages permanents d&egrave;s le lancement.</p>
+              <p className="text-white/40 mt-4 text-lg max-w-2xl mx-auto">Les premiers membres fondateurs construisent la plateforme de l&apos;int&eacute;rieur. Places limit&eacute;es, s&eacute;lection sur dossier. Aucun engagement, aucun paiement requis.</p>
             </ScrollReveal>
-            <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-14 max-w-[800px] mx-auto" stagger={0.08}>
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-14 max-w-[900px] mx-auto" stagger={0.08}>
               {founders.map((f) => (
                 <StaggerItem key={f.label}>
-                  <TiltCard className="py-8 flex flex-col items-center gap-4 relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 right-0 h-[2px] transition-all duration-500 group-hover:h-[3px]" style={{ backgroundColor: f.color }} />
+                  <TiltCard className="p-6 flex flex-col items-center gap-3 relative overflow-hidden group h-full">
+                    <div className="absolute top-0 left-0 right-0 h-[3px] transition-all duration-500 group-hover:h-[4px]" style={{ backgroundColor: f.color }} />
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" style={{ background: `radial-gradient(circle at 50% 0%, ${f.color}10, transparent 70%)` }} />
                     <div className="relative z-10 w-14 h-14 rounded-xl flex items-center justify-center transition-shadow duration-300 group-hover:shadow-lg" style={{ backgroundColor: `${f.color}15` }}>
                       <f.icon className="w-7 h-7" style={{ color: f.color }} />
                     </div>
                     <h4 className="relative z-10 text-sm font-semibold">{f.label}</h4>
-                    <div className="w-8 h-[2px] rounded-full" style={{ backgroundColor: f.color, opacity: 0.4 }} />
+                    <p className="relative z-10 text-xs text-white/35 leading-relaxed text-center">{f.desc}</p>
+                    <div className="w-8 h-[2px] rounded-full mt-auto" style={{ backgroundColor: f.color, opacity: 0.4 }} />
                   </TiltCard>
                 </StaggerItem>
               ))}
             </StaggerContainer>
-            <ScrollReveal delay={0.5} className="mt-14">
+            <ScrollReveal delay={0.4} className="mt-12">
+              <p className="text-white/30 text-sm max-w-lg mx-auto mb-8">Sans engagement &middot; Gratuit &middot; Confidentiel</p>
               <MagneticButton href="#rejoindre" className="text-xl px-10 py-5">Manifester mon int&eacute;r&ecirc;t <ArrowRight className="w-5 h-5" /></MagneticButton>
             </ScrollReveal>
           </div>
         </AuroraBackground>
-
-        {/* ARCH SCENE before FAQ */}
-        <div className="py-12 px-[4vw] relative overflow-hidden">
-          <div className="max-w-[700px] mx-auto opacity-18">
-            <InteriorPerspective />
-          </div>
-          <div className="absolute left-[3%] top-0 opacity-12"><TowerThin /></div>
-          <div className="absolute right-[3%] bottom-0 opacity-10"><ChaletSVG /></div>
-        </div>
 
         {/* FAQ */}
         <section className="py-32 px-[4vw]" id="faq">
@@ -485,16 +546,6 @@ export default function Page() {
           </div>
         </section>
 
-        {/* CTA FINAL */}
-        <DotBackground className="py-40 px-[4vw] min-h-[80vh] flex items-center justify-center text-center bg-[#0e0e0e]">
-          <ScrollReveal>
-            <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-[1.05] tracking-[-0.05em]">Construisez l&apos;avenir<br />de <GradientText>l&apos;immobilier.</GradientText></h2>
-            <p className="text-white/40 mt-6 text-lg max-w-lg mx-auto">Rejoignez les premiers acteurs qui fa&ccedil;onnent la plateforme de demain.</p>
-            <div className="mt-12">
-              <MagneticButton href="#rejoindre" className="text-xl px-10 py-5">Manifester mon int&eacute;r&ecirc;t <ArrowRight className="w-5 h-5" /></MagneticButton>
-            </div>
-          </ScrollReveal>
-        </DotBackground>
       </main>
 
       <footer className="py-16 px-[4vw] border-t border-white/[0.06]">
@@ -522,14 +573,19 @@ export default function Page() {
             <p className="text-xs text-white/30 uppercase tracking-wider mb-4">Contact</p>
             <a href="mailto:contact@edome.world" className="text-sm text-[#C4956A] hover:text-[#D4A574] transition-colors">contact@edome.world</a>
             <p className="text-xs text-white/25 mt-4">Lancement pr&eacute;vu : 2026</p>
-            <p className="text-xs text-white/25 mt-1">100 places Membres Fondateurs</p>
+            <p className="text-xs text-white/25 mt-1">Places limit&eacute;es &mdash; Membres Fondateurs</p>
             <div className="mt-6">
               <a href="#rejoindre" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 text-sm text-[#C4956A] hover:bg-[#C4956A]/20 transition-colors">Rejoindre <ArrowRight className="w-3.5 h-3.5" /></a>
             </div>
           </div>
         </div>
-        <div className="max-w-[1200px] mx-auto mt-12 pt-6 border-t border-white/[0.06] text-center">
+        <div className="max-w-[1200px] mx-auto mt-12 pt-6 border-t border-white/[0.06] flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/25">&copy; 2026 E-Dome. Tous droits r&eacute;serv&eacute;s.</p>
+          <div className="flex gap-6">
+            <a href="#" className="text-xs text-white/25 hover:text-white/40 transition-colors">Mentions l&eacute;gales</a>
+            <a href="#" className="text-xs text-white/25 hover:text-white/40 transition-colors">Conditions g&eacute;n&eacute;rales</a>
+            <a href="#" className="text-xs text-white/25 hover:text-white/40 transition-colors">Confidentialit&eacute;</a>
+          </div>
         </div>
       </footer>
     </>

@@ -27,9 +27,9 @@ function Phone({ children, className = "" }: { children: React.ReactNode; classN
 /* ------------------------------------------------------------------ */
 export function MarketplacePhoneMockup() {
   const listings = [
-    { name: "Villa Méditerranée", loc: "Marrakech", price: "245 CHF/nuit", stars: 4.8, gradient: "from-[#C4956A]/40 to-[#8B6F47]/20" },
-    { name: "Chalet Alpin", loc: "Verbier", price: "380 CHF/nuit", stars: 4.9, gradient: "from-[#8B6F47]/30 to-[#C4956A]/10" },
-    { name: "Loft Urbain", loc: "Genève", price: "185 CHF/nuit", stars: 4.6, gradient: "from-[#C4956A]/25 to-[#D4A574]/15" },
+    { name: "Chalet Alpin", loc: "Verbier", price: "380 CHF/nuit", stars: 4.9, img: "/chalet.jpg" },
+    { name: "Villa Charme", loc: "C\u00f4te d\u2019Azur", price: "520 CHF/nuit", stars: 4.8, img: "/villa.jpg" },
+    { name: "Loft Design", loc: "Gen\u00e8ve", price: "185 CHF/nuit", stars: 4.6, img: "/interior.jpg" },
   ];
 
   return (
@@ -52,11 +52,12 @@ export function MarketplacePhoneMockup() {
           </div>
         </div>
         {/* Listings */}
-        <div className="px-4 space-y-2.5 pb-4">
+        <div className="px-4 space-y-2.5 pb-16 overflow-y-auto flex-1">
           {listings.map((l, i) => (
             <motion.div key={l.name} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.1, ease: EASE }}
               className="rounded-xl bg-white/[0.04] border border-white/[0.06] overflow-hidden">
-              <div className={`h-16 bg-gradient-to-br ${l.gradient} relative`}>
+              <div className="h-20 relative overflow-hidden">
+                <img src={l.img} alt={l.name} className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center"><Heart className="w-3 h-3 text-white/60" /></div>
                 <div className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm rounded-md px-2 py-0.5"><span className="text-[9px] font-bold text-[#C4956A]">{l.price}</span></div>
               </div>
@@ -97,38 +98,68 @@ export function SocialFeedPhoneMockup() {
         </div>
         {/* Stories */}
         <div className="flex gap-3 px-4 py-2 overflow-hidden">
-          {["Vous", "Claire", "Marc", "Sophie", "Jean"].map((n, i) => (
-            <div key={n} className="flex flex-col items-center gap-1 shrink-0">
-              <div className={`w-10 h-10 rounded-full ${i === 0 ? "border-2 border-dashed border-white/20" : "border-2 border-[#C4956A]"} flex items-center justify-center`}>
-                {i === 0 ? <span className="text-white/30 text-lg">+</span> : <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C4956A]/30 to-[#8B6F47]/10 flex items-center justify-center"><span className="text-[8px] font-bold text-[#C4956A]">{n[0]}</span></div>}
+          {[
+            { name: "Vous", color: "#C4956A", isYou: true },
+            { name: "Claire", color: "#8B5CF6" },
+            { name: "Marc", color: "#3B82F6" },
+            { name: "Sophie", color: "#EC4899" },
+            { name: "Jean", color: "#10B981" },
+          ].map((s) => (
+            <div key={s.name} className="flex flex-col items-center gap-1 shrink-0">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ border: s.isYou ? "2px dashed rgba(255,255,255,0.2)" : `2px solid ${s.color}` }}>
+                {s.isYou ? <span className="text-white/30 text-lg">+</span> : <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${s.color}40, ${s.color}15)` }}><span className="text-[8px] font-bold" style={{ color: s.color }}>{s.name[0]}</span></div>}
               </div>
-              <span className="text-[8px] text-white/40">{n}</span>
+              <span className="text-[8px] text-white/40">{s.name}</span>
             </div>
           ))}
         </div>
         {/* Posts */}
-        <div className="px-4 space-y-3 py-2">
-          {[
-            { name: "Claire Dupont", role: "Agent", text: "Nouvelle exclusivité à Lausanne ! Vue lac imprenable.", gradient: "from-[#C4956A]/30 to-[#8B6F47]/15", likes: 24 },
-            { name: "Marc Berger", role: "Hôte", text: "Mon chalet Verbier affiche complet pour mars !", gradient: "from-[#8B6F47]/25 to-[#C4956A]/10", likes: 41 },
-          ].map((p, i) => (
-            <motion.div key={p.name} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 + i * 0.15, ease: EASE }}
-              className="rounded-xl bg-white/[0.04] border border-white/[0.06] overflow-hidden">
-              <div className="p-2.5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#C4956A]/30 to-[#8B6F47]/10 flex items-center justify-center"><span className="text-[8px] font-bold text-[#C4956A]">{p.name[0]}</span></div>
-                  <div><div className="flex items-center gap-1"><span className="text-[10px] font-semibold text-white">{p.name}</span><span className="text-[7px] bg-[#C4956A]/15 text-[#C4956A] rounded px-1 py-[1px]">{p.role}</span></div></div>
-                </div>
-                <p className="text-[9px] text-white/50 leading-relaxed">{p.text}</p>
+        <div className="px-4 space-y-3 py-2 overflow-y-auto flex-1 pb-16">
+          {/* Post vidéo */}
+          <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4, ease: EASE }}
+            className="rounded-xl bg-white/[0.04] border border-white/[0.06] overflow-hidden">
+            <div className="p-2.5">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#3B82F6]/30 to-[#3B82F6]/10 flex items-center justify-center"><span className="text-[8px] font-bold text-[#3B82F6]">C</span></div>
+                <div><div className="flex items-center gap-1"><span className="text-[10px] font-semibold text-white">Claire Dupont</span><span className="text-[7px] bg-[#8B5CF6]/15 text-[#8B5CF6] rounded px-1 py-[1px]">Agent</span></div></div>
               </div>
-              <div className={`h-20 bg-gradient-to-br ${p.gradient}`} />
-              <div className="flex items-center gap-4 px-3 py-2 border-t border-white/[0.04]">
-                <div className="flex items-center gap-1 text-white/30"><Heart className="w-3 h-3" /><span className="text-[8px]">{p.likes}</span></div>
-                <div className="flex items-center gap-1 text-white/30"><MessageCircle className="w-3 h-3" /><span className="text-[8px]">7</span></div>
-                <div className="flex items-center gap-1 text-white/30"><Share2 className="w-3 h-3" /></div>
+              <p className="text-[9px] text-white/50 leading-relaxed">Visite exclusive de cette villa avec vue panoramique</p>
+            </div>
+            <div className="h-32 relative overflow-hidden">
+              <video src="/feed-video-1.mp4" autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1">
+                <Play className="w-2.5 h-2.5 text-white" fill="white" />
+                <span className="text-[8px] text-white/80">Reel</span>
               </div>
-            </motion.div>
-          ))}
+            </div>
+            <div className="px-3 py-2 border-t border-white/[0.04]">
+              <button className="w-full py-1.5 rounded-lg bg-[#C4956A] text-[9px] font-bold text-white hover:bg-[#D4A574] transition-colors">R&eacute;server</button>
+            </div>
+            <div className="flex items-center gap-4 px-3 py-2 border-t border-white/[0.04]">
+              <div className="flex items-center gap-1 text-[#EF4444]"><Heart className="w-3 h-3 fill-[#EF4444]" /><span className="text-[8px]">127</span></div>
+              <div className="flex items-center gap-1 text-white/30"><MessageCircle className="w-3 h-3" /><span className="text-[8px]">34</span></div>
+              <div className="flex items-center gap-1 text-white/30"><Share2 className="w-3 h-3" /></div>
+            </div>
+          </motion.div>
+          {/* Post image */}
+          <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.55, ease: EASE }}
+            className="rounded-xl bg-white/[0.04] border border-white/[0.06] overflow-hidden">
+            <div className="p-2.5">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#F59E0B]/30 to-[#F59E0B]/10 flex items-center justify-center"><span className="text-[8px] font-bold text-[#F59E0B]">M</span></div>
+                <div><div className="flex items-center gap-1"><span className="text-[10px] font-semibold text-white">Marc Berger</span><span className="text-[7px] bg-[#3B82F6]/15 text-[#3B82F6] rounded px-1 py-[1px]">H&ocirc;te</span></div></div>
+              </div>
+              <p className="text-[9px] text-white/50 leading-relaxed">Mon chalet Verbier affiche complet pour mars !</p>
+            </div>
+            <div className="h-20 relative overflow-hidden">
+              <img src="/chalet.jpg" alt="Chalet" className="absolute inset-0 w-full h-full object-cover" />
+            </div>
+            <div className="flex items-center gap-4 px-3 py-2 border-t border-white/[0.04]">
+              <div className="flex items-center gap-1 text-white/30"><Heart className="w-3 h-3" /><span className="text-[8px]">41</span></div>
+              <div className="flex items-center gap-1 text-white/30"><MessageCircle className="w-3 h-3" /><span className="text-[8px]">7</span></div>
+              <div className="flex items-center gap-1 text-white/30"><Share2 className="w-3 h-3" /></div>
+            </div>
+          </motion.div>
         </div>
       </Phone>
     </motion.div>
@@ -357,10 +388,12 @@ export function TrainingMockup() {
         <div className="flex items-center gap-2"><div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#C4956A] to-[#8B6F47] flex items-center justify-center"><Play className="w-3 h-3 text-white ml-0.5" fill="white" /></div><span className="text-sm font-semibold text-white">Formation E-Dome</span></div>
         <span className="text-[10px] text-[#C4956A] bg-[#C4956A]/10 rounded-full px-2.5 py-1 font-medium">65%</span>
       </div>
-      {/* Video placeholder */}
-      <div className="mx-4 mt-4 h-32 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#0e0e0e] border border-white/[0.06] flex items-center justify-center relative overflow-hidden">
-        <div className="absolute top-3 left-3"><p className="text-[8px] text-white/30">Module 4/6</p><p className="text-[10px] text-white/60 font-medium">Droit immobilier</p></div>
-        <div className="w-12 h-12 rounded-full bg-[#C4956A]/20 border border-[#C4956A]/30 flex items-center justify-center"><Play className="w-5 h-5 text-[#C4956A] ml-0.5" /></div>
+      {/* Image formation */}
+      <div className="mx-4 mt-4 h-32 rounded-xl border border-white/[0.06] relative overflow-hidden">
+        <img src="/training.jpg" alt="Formation" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <div className="absolute top-3 left-3"><p className="text-[8px] text-white/40">Module 4/6</p><p className="text-[10px] text-white/80 font-medium">Droit immobilier</p></div>
+        <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1"><Play className="w-2.5 h-2.5 text-white" fill="white" /><span className="text-[8px] text-white/80">En cours</span></div>
       </div>
       {/* Progress */}
       <div className="px-4 py-3">

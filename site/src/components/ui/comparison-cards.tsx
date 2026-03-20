@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { X, Check, GripVertical } from "lucide-react";
 
 const without = [
-  "Commissions de 14 à 25% sur chaque transaction",
+  "Commissions \u00e9lev\u00e9es sur chaque transaction",
   "Visibilité uniquement via publicité payante",
   "Relation client captée par les plateformes",
   "Outils fragmentés et déconnectés",
