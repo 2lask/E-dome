@@ -358,9 +358,11 @@ export default function Page() {
         {/* RÉSEAU SOCIAL IMMOBILIER */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="social">
           <ArchBg3DVilla />
-          {/* Fond additionnel : réseau de connexions sociales */}
+          {/* Fond : gradient rose + réseau connexions */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#EC4899]/[0.05] via-transparent to-[#8B5CF6]/[0.04] pointer-events-none" />
+          <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-[#EC4899]/[0.06] blur-[100px] pointer-events-none" />
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.03]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.10]">
               <defs>
                 <pattern id="social-dots" width="60" height="60" patternUnits="userSpaceOnUse">
                   <circle cx="30" cy="30" r="1.5" fill="#EC4899" />
@@ -584,29 +586,32 @@ export default function Page() {
 
         {/* PROGRAMME FONDATEURS */}
         <section className="py-32 px-[4vw] min-h-screen flex items-center justify-center relative overflow-hidden border-t border-white/[0.06]" id="rejoindre">
-          {/* Fond : sparkles violet + grille diamant */}
+          {/* Fond : sparkles violet + grille diamant + gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/[0.06] via-transparent to-[#C4956A]/[0.04]" />
           <div className="absolute inset-0 w-full h-full">
             <SparklesCore
               id="founders-sparkles"
               background="transparent"
-              minSize={0.3}
-              maxSize={1.5}
-              particleDensity={60}
+              minSize={0.4}
+              maxSize={2}
+              particleDensity={150}
               className="w-full h-full"
               particleColor="#8B5CF6"
-              speed={0.5}
+              speed={0.8}
             />
           </div>
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.05]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.12]">
               <defs>
-                <pattern id="diamond-grid" width="60" height="60" patternUnits="userSpaceOnUse">
-                  <path d="M30,0 L60,30 L30,60 L0,30 Z" fill="none" stroke="#8B5CF6" strokeWidth="0.6" />
+                <pattern id="diamond-grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                  <path d="M25,0 L50,25 L25,50 L0,25 Z" fill="none" stroke="#8B5CF6" strokeWidth="0.8" />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#diamond-grid)" />
             </svg>
           </div>
+          {/* Glow central */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#8B5CF6]/[0.08] blur-[120px] pointer-events-none" />
           <div className="max-w-[900px] mx-auto text-center w-full flex flex-col items-center relative z-10">
 
             <ScrollReveal>
@@ -661,25 +666,34 @@ export default function Page() {
 
         {/* FAQ */}
         <section className="py-32 px-[4vw] relative overflow-hidden border-t border-white/[0.06]" id="faq">
-          {/* Fond : bulle de dialogue stylisée */}
+          {/* Fond : gradient chaud + bulles de dialogue + grille */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#C4956A]/[0.05] via-transparent to-[#F59E0B]/[0.03] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#C4956A]/[0.06] blur-[140px] pointer-events-none" />
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute right-[-5%] top-[10%] w-[500px] h-[500px] opacity-[0.04]" viewBox="0 0 200 200">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.06]">
+              <defs>
+                <pattern id="faq-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M0,20 L40,20 M20,0 L20,40" fill="none" stroke="#C4956A" strokeWidth="0.4" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#faq-grid)" />
+            </svg>
+            <svg className="absolute right-[-5%] top-[10%] w-[500px] h-[500px] opacity-[0.10]" viewBox="0 0 200 200">
               <path d="M40,20 Q20,20 20,40 L20,120 Q20,140 40,140 L80,140 L100,170 L105,140 L160,140 Q180,140 180,120 L180,40 Q180,20 160,20 Z" fill="none" stroke="#C4956A" strokeWidth="2" />
               <circle cx="70" cy="80" r="6" fill="#C4956A" opacity="0.3" />
               <circle cx="100" cy="80" r="6" fill="#C4956A" opacity="0.3" />
               <circle cx="130" cy="80" r="6" fill="#C4956A" opacity="0.3" />
             </svg>
-            <svg className="absolute left-[5%] bottom-[15%] w-[350px] h-[350px] opacity-[0.03]" viewBox="0 0 200 200">
+            <svg className="absolute left-[5%] bottom-[15%] w-[350px] h-[350px] opacity-[0.08]" viewBox="0 0 200 200">
               <path d="M160,180 Q180,180 180,160 L180,80 Q180,60 160,60 L120,60 L100,30 L95,60 L40,60 Q20,60 20,80 L20,160 Q20,180 40,180 Z" fill="none" stroke="#C4956A" strokeWidth="2" />
-              <line x1="50" y1="100" x2="150" y2="100" stroke="#C4956A" strokeWidth="1" opacity="0.2" />
-              <line x1="50" y1="120" x2="130" y2="120" stroke="#C4956A" strokeWidth="1" opacity="0.2" />
-              <line x1="50" y1="140" x2="110" y2="140" stroke="#C4956A" strokeWidth="1" opacity="0.2" />
+              <line x1="50" y1="100" x2="150" y2="100" stroke="#C4956A" strokeWidth="1" opacity="0.3" />
+              <line x1="50" y1="120" x2="130" y2="120" stroke="#C4956A" strokeWidth="1" opacity="0.3" />
+              <line x1="50" y1="140" x2="110" y2="140" stroke="#C4956A" strokeWidth="1" opacity="0.3" />
             </svg>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[#C4956A]/[0.02] blur-[120px]" />
           </div>
           <div className="max-w-[700px] mx-auto relative z-10">
             <ScrollReveal className="text-center mb-14">
-              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Vous avez des <GradientText>questions ?</GradientText></h2>
+              <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Tout savoir sur <GradientText>E-Dome.</GradientText></h2>
             </ScrollReveal>
             <ScrollReveal>
               {faqs.map((f) => <FAQItem key={f.q} q={f.q} a={f.a} />)}
