@@ -61,9 +61,9 @@ export function EntropyBackground({ className = "" }: { className?: string }) {
           this.vy += (Math.random() - 0.5) * 0.4;
           this.vx *= 0.96; this.vy *= 0.96;
           this.x += this.vx; this.y += this.vy;
-          if (this.x < w / 2 || this.x > w) this.vx *= -1;
+          if (this.x < 0 || this.x > w) this.vx *= -1;
           if (this.y < 0 || this.y > h) this.vy *= -1;
-          this.x = Math.max(w / 2, Math.min(w, this.x));
+          this.x = Math.max(0, Math.min(w, this.x));
           this.y = Math.max(0, Math.min(h, this.y));
         }
       }
@@ -85,7 +85,7 @@ export function EntropyBackground({ className = "" }: { className?: string }) {
       for (let j = 0; j < rows; j++) {
         const x = sx * i + sx / 2;
         const y = sy * j + sy / 2;
-        particles.push(new Particle(x, y, x < w / 2));
+        particles.push(new Particle(x, y, false));
       }
     }
 
