@@ -21,7 +21,7 @@ import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
 import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection, SkyscraperDetailed, LuxuryVillaPlan, InteriorPerspective, BuildingCrossSection, ArtDecoFacade, CityBlockPlan, SpiralStaircase, RoofDetail, OfficeIsometric, BridgeSVG } from "@/components/ui/arch-extras";
 import { ComparisonCards } from "@/components/ui/comparison-cards";
-import { InteractiveGlobe } from "@/components/ui/interactive-globe";
+import { WireframeGlobe } from "@/components/ui/wireframe-globe";
 import { RoleCard } from "@/components/ui/role-card";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
@@ -436,7 +436,7 @@ export default function Page() {
               ))}
             </StaggerContainer>
             <ScrollReveal delay={0.3} className="mt-16 flex justify-center">
-              <InteractiveGlobe size={380} />
+              <WireframeGlobe size={420} />
             </ScrollReveal>
           </div>
         </section>
