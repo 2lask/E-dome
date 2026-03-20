@@ -71,9 +71,9 @@ function proj(x: number, y: number, z: number, cx: number, cy: number, fov: numb
 export function InteractiveGlobe({
   className,
   size = 400,
-  dotColor = "rgba(196, 149, 106, ALPHA)",
-  arcColor = "rgba(196, 149, 106, 0.5)",
-  markerColor = "rgba(196, 149, 106, 1)",
+  dotColor = "rgba(255, 230, 200, ALPHA)",
+  arcColor = "rgba(230, 190, 140, 0.6)",
+  markerColor = "rgba(255, 220, 170, 1)",
   autoRotateSpeed = 0.002,
 }: GlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -88,9 +88,9 @@ export function InteractiveGlobe({
   useEffect(() => {
     const dots: [number, number, number][] = [];
     const gr = (1 + Math.sqrt(5)) / 2;
-    for (let i = 0; i < 800; i++) {
+    for (let i = 0; i < 1800; i++) {
       const th = (2 * Math.PI * i) / gr;
-      const ph = Math.acos(1 - (2 * (i + 0.5)) / 800);
+      const ph = Math.acos(1 - (2 * (i + 0.5)) / 1800);
       dots.push([Math.cos(th) * Math.sin(ph), Math.cos(ph), Math.sin(th) * Math.sin(ph)]);
     }
     dotsRef.current = dots;
@@ -104,7 +104,7 @@ export function InteractiveGlobe({
       for (let i = 0; i < cont.length - 1; i++) {
         const [lat1, lng1] = cont[i];
         const [lat2, lng2] = cont[i + 1];
-        const steps = 8;
+        const steps = 15;
         for (let s = 0; s <= steps; s++) {
           const t = s / steps;
           const lat = lat1 + (lat2 - lat1) * t;
@@ -124,7 +124,7 @@ export function InteractiveGlobe({
       const lngs = cont.map(c => c[1]);
       const minLat = Math.min(...lats), maxLat = Math.max(...lats);
       const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
-      for (let i = 0; i < 60; i++) {
+      for (let i = 0; i < 150; i++) {
         const rlat = minLat + Math.random() * (maxLat - minLat);
         const rlng = minLng + Math.random() * (maxLng - minLng);
         const [x, y, z] = latLngToXYZ(rlat, rlng, 1);
@@ -151,10 +151,10 @@ export function InteractiveGlobe({
 
     ctx.clearRect(0, 0, w, h);
 
-    // Globe circle — no glow rect, just the circle
+    // Globe circle
     ctx.beginPath();
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(196, 149, 106, 0.12)";
+    ctx.strokeStyle = "rgba(255, 230, 200, 0.2)";
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -165,7 +165,7 @@ export function InteractiveGlobe({
       [x, y, z] = rotY(x, y, z, ry);
       if (z > 0) return;
       const [sx, sy] = proj(x, y, z, cx, cy, fov);
-      const da = Math.max(0.1, 0.5 * (1 - (z + radius) / (2 * radius)));
+      const da = Math.max(0.15, 0.6 * (1 - (z + radius) / (2 * radius)));
       ctx.fillStyle = dotColor.replace("ALPHA", da.toFixed(2));
       ctx.beginPath();
       ctx.arc(sx, sy, 1, 0, Math.PI * 2);
@@ -179,7 +179,7 @@ export function InteractiveGlobe({
       [x, y, z] = rotY(x, y, z, ry);
       if (z > 0) return;
       const [sx, sy] = proj(x, y, z, cx, cy, fov);
-      const da = Math.max(0.4, 1 * (1 - (z + radius) / (2 * radius)));
+      const da = Math.max(0.5, 1 * (1 - (z + radius) / (2 * radius)));
       ctx.fillStyle = dotColor.replace("ALPHA", da.toFixed(2));
       ctx.beginPath();
       ctx.arc(sx, sy, 1.8, 0, Math.PI * 2);
@@ -199,7 +199,7 @@ export function InteractiveGlobe({
         if (!started) { ctx.moveTo(sx, sy); started = true; }
         else ctx.lineTo(sx, sy);
       }
-      ctx.strokeStyle = "rgba(196, 149, 106, 0.6)";
+      ctx.strokeStyle = "rgba(255, 220, 170, 0.7)";
       ctx.lineWidth = 1.5;
       ctx.stroke();
     });
@@ -238,14 +238,14 @@ export function InteractiveGlobe({
       // Pulse ring
       const pulse = Math.sin(time * 2 + m.lat) * 0.5 + 0.5;
       ctx.beginPath(); ctx.arc(sx, sy, 4 + pulse * 4, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(196,149,106,${0.3 + pulse * 0.3})`; ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.strokeStyle = `rgba(255,220,170,${0.4 + pulse * 0.4})`; ctx.lineWidth = 1.2; ctx.stroke();
       // Core
       ctx.beginPath(); ctx.arc(sx, sy, 4, 0, Math.PI * 2);
       ctx.fillStyle = markerColor; ctx.fill();
       // Label
       if (m.label) {
         ctx.font = "11px system-ui, sans-serif";
-        ctx.fillStyle = "rgba(196,149,106,0.9)";
+        ctx.fillStyle = "rgba(255,230,200,1)";
         ctx.fillText(m.label, sx + 8, sy + 3);
       }
     });
