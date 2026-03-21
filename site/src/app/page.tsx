@@ -17,7 +17,7 @@ import { ArchBg3DBuilding, ArchBg3DVilla, ArchBg3DComplex, ArchBgLuxuryVilla } f
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import { SparklesCore } from "@/components/ui/sparkles";
 import { EntropyBackground } from "@/components/ui/entropy-bg";
-import { FadeOutSection, ClipRevealSection, WipeSection, PerspectiveSection, CrossFadeSection, LineDivider } from "@/components/ui/section-transitions";
+import { FadeOutSection, ClipRevealSection, WipeSection, PerspectiveSection, CrossFadeSection, SlideRotateSection, ZoomBurstSection, SplitRevealSection, FlipSection, ParallaxStackSection, LineDivider, DiamondDivider, DotCascadeDivider, WaveDivider } from "@/components/ui/section-transitions";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
 const ShaderBg = dynamic(() => import("@/components/ui/shader-background"), { ssr: false });
@@ -173,7 +173,7 @@ export default function Page() {
           </div>
         </div>
 
-        <LineDivider color="#C4956A" />
+        <DiamondDivider color="#C4956A" />
         {/* LE CONSTAT */}
         <GridBackground className="py-32 px-[4vw] relative" id="probleme">
 
@@ -216,7 +216,7 @@ export default function Page() {
           </div>
         </GridBackground>
 
-        <LineDivider color="#10B981" />
+        <WaveDivider color="#10B981" />
         {/* 2. LA SOLUTION — 5 PILIERS */}
         <DotBackground className="py-32 px-[4vw]" id="solution">
         <ArchBg3DBuilding />
@@ -258,7 +258,7 @@ export default function Page() {
         </DotBackground>
 
 
-        <LineDivider color="#8B5CF6" />
+        <DotCascadeDivider color="#8B5CF6" count={7} />
         {/* LES PROFILS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
           {/* Fond : grille hexagonale (réseau de rôles) */}
@@ -299,7 +299,7 @@ export default function Page() {
           </div>
         </section>
 
-        <LineDivider color="#3B82F6" />
+        <DiamondDivider color="#3B82F6" />
         {/* MARKETPLACE */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="marketplace">
           {/* Fond : lignes diagonales (transactions) */}
@@ -361,7 +361,7 @@ export default function Page() {
           </div>
         </section>
 
-        <LineDivider color="#EC4899" />
+        <WaveDivider color="#EC4899" />
         {/* RÉSEAU SOCIAL IMMOBILIER */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="social">
           <ArchBg3DVilla />
@@ -420,7 +420,7 @@ export default function Page() {
           </div>
         </section>
 
-        <LineDivider color="#F59E0B" />
+        <DotCascadeDivider color="#F59E0B" count={5} />
         {/* APPORTEURS D'AFFAIRES */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative" id="apporteurs">
         <ArchBgLuxuryVilla />
@@ -456,7 +456,7 @@ export default function Page() {
         </section>
 
 
-        <LineDivider color="#06B6D4" />
+        <DiamondDivider color="#06B6D4" />
         {/* ÉCOSYSTÈME PROFESSIONNEL */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
         <EntropyBackground />
@@ -499,7 +499,7 @@ export default function Page() {
           </div>
         </section>
 
-        <LineDivider color="#F97316" />
+        <WaveDivider color="#F97316" />
         {/* FORMATIONS & ÉVÉNEMENTS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="formations">
         {/* Fond quadrillé animé */}
@@ -565,7 +565,7 @@ export default function Page() {
           </div>
         </section>
 
-        <LineDivider color="#EF4444" />
+        <DotCascadeDivider color="#EF4444" count={9} />
         {/* COMPARAISON SANS / AVEC */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
           {/* Sparkles background */}
@@ -595,7 +595,7 @@ export default function Page() {
         </section>
 
 
-        <LineDivider color="#8B5CF6" />
+        <DiamondDivider color="#8B5CF6" />
         {/* PROGRAMME FONDATEURS */}
         <section className="py-32 px-[4vw] min-h-screen flex items-center justify-center relative overflow-hidden border-t border-white/[0.06]" id="rejoindre">
           {/* Fond : sparkles violet + grille diamant + gradient */}
@@ -676,7 +676,7 @@ export default function Page() {
           </div>
         </section>
 
-        <LineDivider color="#C4956A" />
+        <WaveDivider color="#C4956A" />
         {/* FAQ */}
         <section className="py-32 px-[4vw] relative overflow-hidden border-t border-white/[0.06]" id="faq">
           {/* Fond : gradient chaud + bulles de dialogue + grille */}
