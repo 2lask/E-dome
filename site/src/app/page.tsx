@@ -17,6 +17,7 @@ import { ArchBg3DBuilding, ArchBg3DVilla, ArchBg3DComplex, ArchBgLuxuryVilla } f
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
 import { SparklesCore } from "@/components/ui/sparkles";
 import { EntropyBackground } from "@/components/ui/entropy-bg";
+import { ScrollSection } from "@/components/ui/scroll-section";
 import { FadeOutSection, ClipRevealSection, WipeSection, PerspectiveSection, CrossFadeSection, SlideRotateSection, ZoomBurstSection, SplitRevealSection, FlipSection, ParallaxStackSection, LineDivider, DiamondDivider, DotCascadeDivider, WaveDivider } from "@/components/ui/section-transitions";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
@@ -175,6 +176,7 @@ export default function Page() {
 
         <DiamondDivider color="#C4956A" />
         {/* LE CONSTAT */}
+        <ScrollSection variant="fade">
         <GridBackground className="py-32 px-[4vw] relative" id="probleme">
 
           <BlueprintOverlay />
@@ -216,7 +218,9 @@ export default function Page() {
           </div>
         </GridBackground>
 
+        </ScrollSection>
         <WaveDivider color="#10B981" />
+        <ScrollSection variant="clip">
         {/* 2. LA SOLUTION — 5 PILIERS */}
         <DotBackground className="py-32 px-[4vw]" id="solution">
         <ArchBg3DBuilding />
@@ -258,7 +262,9 @@ export default function Page() {
         </DotBackground>
 
 
+        </ScrollSection>
         <DotCascadeDivider color="#8B5CF6" count={7} />
+        <ScrollSection variant="perspective">
         {/* LES PROFILS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
           {/* Fond : grille hexagonale (réseau de rôles) */}
@@ -299,7 +305,9 @@ export default function Page() {
           </div>
         </section>
 
+        </ScrollSection>
         <DiamondDivider color="#3B82F6" />
+        <ScrollSection variant="wipe-right">
         {/* MARKETPLACE */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="marketplace">
           {/* Fond : lignes diagonales (transactions) */}
@@ -361,7 +369,9 @@ export default function Page() {
           </div>
         </section>
 
+        </ScrollSection>
         <WaveDivider color="#EC4899" />
+        <ScrollSection variant="slide-left">
         {/* RÉSEAU SOCIAL IMMOBILIER */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="social">
           <ArchBg3DVilla />
@@ -420,7 +430,9 @@ export default function Page() {
           </div>
         </section>
 
+        </ScrollSection>
         <DotCascadeDivider color="#F59E0B" count={5} />
+        <ScrollSection variant="slide-right">
         {/* APPORTEURS D'AFFAIRES */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative" id="apporteurs">
         <ArchBgLuxuryVilla />
@@ -456,7 +468,9 @@ export default function Page() {
         </section>
 
 
+        </ScrollSection>
         <DiamondDivider color="#06B6D4" />
+        <ScrollSection variant="zoom">
         {/* ÉCOSYSTÈME PROFESSIONNEL */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
         <EntropyBackground />
@@ -499,7 +513,9 @@ export default function Page() {
           </div>
         </section>
 
+        </ScrollSection>
         <WaveDivider color="#F97316" />
+        <ScrollSection variant="flip">
         {/* FORMATIONS & ÉVÉNEMENTS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="formations">
         {/* Fond quadrillé animé */}
@@ -565,7 +581,9 @@ export default function Page() {
           </div>
         </section>
 
+        </ScrollSection>
         <DotCascadeDivider color="#EF4444" count={9} />
+        <ScrollSection variant="blur">
         {/* COMPARAISON SANS / AVEC */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
           {/* Sparkles background */}
@@ -595,7 +613,9 @@ export default function Page() {
         </section>
 
 
+        </ScrollSection>
         <DiamondDivider color="#8B5CF6" />
+        <ScrollSection variant="clip">
         {/* PROGRAMME FONDATEURS */}
         <section className="py-32 px-[4vw] min-h-screen flex items-center justify-center relative overflow-hidden border-t border-white/[0.06]" id="rejoindre">
           {/* Fond : sparkles violet + grille diamant + gradient */}
@@ -676,7 +696,9 @@ export default function Page() {
           </div>
         </section>
 
+        </ScrollSection>
         <WaveDivider color="#C4956A" />
+        <ScrollSection variant="perspective">
         {/* FAQ */}
         <section className="py-32 px-[4vw] relative overflow-hidden border-t border-white/[0.06]" id="faq">
           {/* Fond : gradient chaud + bulles de dialogue + grille */}
@@ -714,6 +736,7 @@ export default function Page() {
           </div>
         </section>
 
+        </ScrollSection>
       </main>
 
       <footer className="py-16 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
