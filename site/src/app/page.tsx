@@ -20,6 +20,7 @@ import { EntropyBackground } from "@/components/ui/entropy-bg";
 import { FadeOutSection, ClipRevealSection, WipeSection, PerspectiveSection, CrossFadeSection, LineDivider } from "@/components/ui/section-transitions";
 import dynamic from "next/dynamic";
 const BeamsBackground = dynamic(() => import("@/components/ui/beams-hero").then(m => ({ default: m.BeamsBackground })), { ssr: false });
+const ShaderBg = dynamic(() => import("@/components/ui/shader-background"), { ssr: false });
 import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletSVG, ApartmentBlock, CraneSVG, WindowDetail, StairSection, WallSection, SkyscraperDetailed, LuxuryVillaPlan, InteriorPerspective, BuildingCrossSection, ArtDecoFacade, CityBlockPlan, SpiralStaircase, RoofDetail, OfficeIsometric, BridgeSVG } from "@/components/ui/arch-extras";
 import { ComparisonCards } from "@/components/ui/comparison-cards";
 import { WireframeGlobe } from "@/components/ui/wireframe-globe";
@@ -715,8 +716,9 @@ export default function Page() {
 
       </main>
 
-      <footer className="py-16 px-[4vw] border-t border-white/[0.06]">
-        <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+      <footer className="py-16 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
+        <div className="absolute inset-0"><ShaderBg /></div>
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
           <div>
             <p className="text-xl font-bold">E-<span className="text-[#C4956A]">Dome</span></p>
             <p className="text-sm text-white/40 mt-2 leading-relaxed">Le premier &eacute;cosyst&egrave;me unifi&eacute; pour l&apos;immobilier mondial. Une plateforme, chaque acteur, partout.</p>
@@ -748,7 +750,7 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <div className="max-w-[1200px] mx-auto mt-12 pt-6 border-t border-white/[0.06] flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="max-w-[1200px] mx-auto mt-12 pt-6 border-t border-white/[0.06] flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
           <p className="text-xs text-white/25">&copy; 2026 E-Dome. Tous droits r&eacute;serv&eacute;s.</p>
           <div className="flex gap-6">
             <a href="#" className="text-xs text-white/25 hover:text-white/40 transition-colors">Mentions l&eacute;gales</a>
