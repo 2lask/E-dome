@@ -1,71 +1,72 @@
 @import "tailwindcss";
 
-@theme inline {
-  --font-sans: "Inter", system-ui, sans-serif;
-  --color-primary: #C4956A;
-  --color-primary-dark: #8B6F47;
-  --color-bg: #080808;
-  --color-surface: #111111;
-  --color-border: rgba(255,255,255,0.06);
+:root {
+  --background: #080808;
+  --foreground: #ffffff;
 }
 
-html { scroll-behavior: smooth; }
-
 body {
-  background: #080808;
-  color: #f5f0eb;
-  font-family: "Inter", system-ui, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
+/* Aurora animations */
+@keyframes aurora-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+@keyframes aurora-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-40px, 30px) scale(1.05); }
+  66% { transform: translate(25px, -40px) scale(1.1); }
+}
+@keyframes aurora-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 40px) scale(1.15); }
+}
+
+.animate-aurora-1 { animation: aurora-1 15s ease-in-out infinite; }
+.animate-aurora-2 { animation: aurora-2 18s ease-in-out infinite; }
+.animate-aurora-3 { animation: aurora-3 12s ease-in-out infinite; }
+
+/* Gradient text shift */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-shift { animation: gradient-shift 4s ease infinite; }
+
+/* Scroll line */
+@keyframes scroll-line {
+  0% { opacity: 0; transform: scaleY(0); transform-origin: top; }
+  50% { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* Dot pulse */
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Selection */
 ::selection {
-  background: rgba(196,149,106,0.3);
-  color: white;
+  background: rgba(196, 149, 106, 0.3);
+  color: #fff;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #080808; }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #555; }
+::-webkit-scrollbar-thumb { background: rgba(196, 149, 106, 0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(196, 149, 106, 0.5); }
 
-/* Architectural grid background */
-.arch-grid {
-  background-image:
-    linear-gradient(rgba(196,149,106,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(196,149,106,0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-/* Dot grid */
-.dot-grid {
-  background-image: radial-gradient(circle, rgba(196,149,106,0.06) 1px, transparent 1px);
-  background-size: 30px 30px;
-}
-
-/* Blueprint grid */
-.blueprint-grid {
-  background-image:
-    linear-gradient(rgba(196,149,106,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(196,149,106,0.04) 1px, transparent 1px),
-    linear-gradient(rgba(196,149,106,0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(196,149,106,0.08) 1px, transparent 1px);
-  background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
-}
-
-/* Line drawing animation */
-@keyframes draw-line {
-  from { stroke-dashoffset: 1000; }
-  to { stroke-dashoffset: 0; }
-}
-
-.animate-draw {
-  stroke-dasharray: 1000;
-  animation: draw-line 3s ease-out forwards;
-}
-
-/* Fade in up */
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Scan line animation */
+@keyframes scan {
+  0% { top: 0%; }
+  100% { top: 100%; }
 }
