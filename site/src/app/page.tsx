@@ -26,6 +26,7 @@ import { HouseIcon, TowerThin, VillaLarge, TwinTowers, NeighborhoodPlan, ChaletS
 import { ComparisonCards } from "@/components/ui/comparison-cards";
 import { WireframeGlobe } from "@/components/ui/wireframe-globe";
 import { RoleCard } from "@/components/ui/role-card";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -116,6 +117,7 @@ export default function Page() {
             <a href="#apporteurs" className="text-sm text-white/40 hover:text-white transition-colors">Apporteurs</a>
             <a href="#formations" className="text-sm text-white/40 hover:text-white transition-colors">Formations</a>
             <a href="#faq" className="text-sm text-white/40 hover:text-white transition-colors">FAQ</a>
+            <ThemeToggle />
             <a href="#rejoindre" className="px-5 py-2 rounded-full bg-[#C4956A] text-[#080808] text-sm font-semibold hover:bg-[#D4A574] transition-all hover:shadow-[0_0_25px_rgba(196,149,106,0.4)]">Rejoindre</a>
           </nav>
         </div>
@@ -269,7 +271,7 @@ export default function Page() {
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
           {/* Fond : grille hexagonale (réseau de rôles) */}
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.04]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.12]">
               <defs>
                 <pattern id="hex-grid" width="56" height="100" patternUnits="userSpaceOnUse" patternTransform="scale(1.5)">
                   <path d="M28,2 L54,18 L54,50 L28,66 L2,50 L2,18 Z" fill="none" stroke="#C4956A" strokeWidth="0.6" />
@@ -312,7 +314,7 @@ export default function Page() {
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="marketplace">
           {/* Fond : lignes diagonales (transactions) */}
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.04]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.12]">
               <defs>
                 <pattern id="diag-lines" width="30" height="30" patternUnits="userSpaceOnUse">
                   <line x1="0" y1="30" x2="30" y2="0" stroke="#3B82F6" strokeWidth="0.5" />
@@ -520,7 +522,7 @@ export default function Page() {
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="formations">
         {/* Fond quadrillé animé */}
         <div className="absolute inset-0 pointer-events-none">
-          <svg className="absolute inset-0 w-full h-full opacity-[0.06]">
+          <svg className="absolute inset-0 w-full h-full opacity-[0.15]">
             <defs>
               <pattern id="grid-fine" width="40" height="40" patternUnits="userSpaceOnUse">
                 <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#C4956A" strokeWidth="0.5" />
@@ -533,7 +535,7 @@ export default function Page() {
             <rect width="100%" height="100%" fill="url(#grid-bold)" />
           </svg>
           {/* Cross marks aux intersections */}
-          <svg className="absolute inset-0 w-full h-full opacity-[0.08]">
+          <svg className="absolute inset-0 w-full h-full opacity-[0.18]">
             <defs>
               <pattern id="cross-marks" width="200" height="200" patternUnits="userSpaceOnUse">
                 <line x1="95" y1="100" x2="105" y2="100" stroke="#C4956A" strokeWidth="0.8" />
@@ -705,7 +707,7 @@ export default function Page() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#C4956A]/[0.05] via-transparent to-[#F59E0B]/[0.03] pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#C4956A]/[0.06] blur-[140px] pointer-events-none" />
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.06]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.15]">
               <defs>
                 <pattern id="faq-grid" width="40" height="40" patternUnits="userSpaceOnUse">
                   <path d="M0,20 L40,20 M20,0 L20,40" fill="none" stroke="#C4956A" strokeWidth="0.4" />
@@ -719,7 +721,7 @@ export default function Page() {
               <circle cx="100" cy="80" r="6" fill="#C4956A" opacity="0.3" />
               <circle cx="130" cy="80" r="6" fill="#C4956A" opacity="0.3" />
             </svg>
-            <svg className="absolute left-[5%] bottom-[15%] w-[350px] h-[350px] opacity-[0.08]" viewBox="0 0 200 200">
+            <svg className="absolute left-[5%] bottom-[15%] w-[350px] h-[350px] opacity-[0.18]" viewBox="0 0 200 200">
               <path d="M160,180 Q180,180 180,160 L180,80 Q180,60 160,60 L120,60 L100,30 L95,60 L40,60 Q20,60 20,80 L20,160 Q20,180 40,180 Z" fill="none" stroke="#C4956A" strokeWidth="2" />
               <line x1="50" y1="100" x2="150" y2="100" stroke="#C4956A" strokeWidth="1" opacity="0.3" />
               <line x1="50" y1="120" x2="130" y2="120" stroke="#C4956A" strokeWidth="1" opacity="0.3" />
@@ -740,7 +742,6 @@ export default function Page() {
       </main>
 
       <footer className="py-16 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
-        <div className="absolute inset-0"><ShaderBg /></div>
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
           <div>
             <p className="text-xl font-bold">E-<span className="text-[#C4956A]">Dome</span></p>
