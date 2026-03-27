@@ -128,7 +128,8 @@ export default function Page() {
         {/* HERO */}
         <div className="relative min-h-screen flex items-center justify-center text-center px-6 pt-24 overflow-hidden">
           <BeamsBackground />
-          <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[#080808]/60 via-transparent to-[#080808]/30" />
+          <CityBlock className="absolute inset-x-0 bottom-0 w-full h-[500px] opacity-[0.05] z-[1]" />
+          <div className="absolute inset-0 z-[2] bg-gradient-to-t from-[#080808]/60 via-transparent to-[#080808]/30" />
           <div className="relative z-10 max-w-[900px]">
             <ScrollReveal>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C4956A]/10 border border-[#C4956A]/20 mb-8">
@@ -227,6 +228,7 @@ export default function Page() {
         {/* 2. LA SOLUTION — 5 PILIERS */}
         <DotBackground className="py-32 px-[4vw]" id="solution">
         <ArchBg3DBuilding />
+        <LuxuryVilla className="absolute right-0 bottom-0 w-[800px] h-[400px] opacity-[0.06]" />
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal className="text-center mb-20">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#10B981]/10 border border-[#10B981]/20 mb-6">
@@ -270,8 +272,8 @@ export default function Page() {
         <ScrollSection variant="perspective">
         {/* LES PROFILS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
-          <ModernTower className="absolute right-[3%] top-[5%] w-[300px] h-[550px] opacity-[0.25]" />
-          <IsometricHouse className="absolute left-[2%] bottom-[8%] w-[350px] h-[280px] opacity-[0.20]" />
+          <ModernTower className="absolute right-0 top-0 w-[600px] h-[900px] opacity-[0.08]" />
+          <IsometricHouse className="absolute left-0 bottom-0 w-[500px] h-[420px] opacity-[0.07]" />
           {/* Fond : grille hexagonale (réseau de rôles) */}
           <div className="absolute inset-0 pointer-events-none">
             <svg className="absolute inset-0 w-full h-full opacity-[0.30]">
@@ -380,6 +382,7 @@ export default function Page() {
         {/* RÉSEAU SOCIAL IMMOBILIER */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="social">
           <ArchBg3DVilla />
+          <InteriorView className="absolute left-0 top-[10%] w-[700px] h-[500px] opacity-[0.06]" />
           {/* Fond : gradient rose + réseau connexions */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#EC4899]/[0.05] via-transparent to-[#8B5CF6]/[0.04] pointer-events-none" />
           <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-[#EC4899]/[0.06] blur-[100px] pointer-events-none" />
@@ -439,7 +442,8 @@ export default function Page() {
         <DotCascadeDivider color="#F59E0B" count={5} />
         <ScrollSection variant="slide-right">
         {/* APPORTEURS D'AFFAIRES */}
-        <section className="py-32 px-[4vw] border-t border-white/[0.06] relative" id="apporteurs">
+        <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="apporteurs">
+        <IsometricHouse className="absolute right-0 top-[5%] w-[550px] h-[450px] opacity-[0.06]" />
         <ArchBgLuxuryVilla />
 
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -523,6 +527,8 @@ export default function Page() {
         <ScrollSection variant="flip">
         {/* FORMATIONS & ÉVÉNEMENTS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="formations">
+        <ModernTower className="absolute left-0 top-0 w-[500px] h-[800px] opacity-[0.06]" />
+        <FloorPlan className="absolute right-0 bottom-0 w-[600px] h-[500px] opacity-[0.05]" />
         {/* Fond quadrillé animé */}
         <div className="absolute inset-0 pointer-events-none">
           <svg className="absolute inset-0 w-full h-full opacity-[0.35]">
@@ -591,7 +597,7 @@ export default function Page() {
         <ScrollSection variant="blur">
         {/* COMPARAISON SANS / AVEC */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
-          <CityBlock className="absolute inset-x-0 bottom-0 w-full h-[300px] opacity-[0.15]" />
+          <CityBlock className="absolute inset-x-0 bottom-0 w-full h-[400px] opacity-[0.08]" />
           {/* Sparkles background */}
           <div className="absolute inset-0 w-full h-full">
             <SparklesCore
@@ -625,7 +631,7 @@ export default function Page() {
         {/* PROGRAMME FONDATEURS */}
         <section className="py-32 px-[4vw] min-h-screen flex items-center justify-center relative overflow-hidden border-t border-white/[0.06]" id="rejoindre">
           {/* Fond : sparkles violet + grille diamant + gradient + villa */}
-          <LuxuryVilla className="absolute inset-x-0 bottom-[5%] w-full h-[300px] opacity-[0.20]" />
+          <LuxuryVilla className="absolute inset-0 w-full h-full opacity-[0.07]" />
           <div className="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/[0.06] via-transparent to-[#C4956A]/[0.04]" />
           <div className="absolute inset-0 w-full h-full">
             <SparklesCore
@@ -708,8 +714,8 @@ export default function Page() {
         <ScrollSection variant="perspective">
         {/* FAQ */}
         <section className="py-32 px-[4vw] relative overflow-hidden border-t border-white/[0.06]" id="faq">
-          <FloorPlan className="absolute right-[2%] top-[5%] w-[450px] h-[380px] opacity-[0.18]" />
-          <InteriorView className="absolute left-[3%] bottom-[10%] w-[400px] h-[280px] opacity-[0.15]" />
+          <FloorPlan className="absolute right-0 top-0 w-[700px] h-[580px] opacity-[0.08]" />
+          <InteriorView className="absolute left-0 bottom-0 w-[600px] h-[420px] opacity-[0.06]" />
           {/* Fond : gradient chaud + bulles de dialogue + grille */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#C4956A]/[0.05] via-transparent to-[#F59E0B]/[0.03] pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#C4956A]/[0.06] blur-[140px] pointer-events-none" />
