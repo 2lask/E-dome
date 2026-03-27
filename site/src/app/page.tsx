@@ -57,7 +57,7 @@ const problems = [
 const pillars = [
   { num: "01", icon: Home, title: "Marketplace immobili\u00e8re", color: "#3B82F6", desc: "Achetez, vendez, louez et investissez avec des frais nettement inf\u00e9rieurs aux plateformes traditionnelles." },
   { num: "02", icon: Smartphone, title: "R\u00e9seau social immobilier", color: "#8B5CF6", desc: "Partagez vos annonces, construisez votre r\u00e9putation et connectez tous les acteurs de l\u2019\u00e9cosyst\u00e8me." },
-  { num: "03", icon: Link2, title: "Syst\u00e8me d\u2019apporteurs", color: "#F59E0B", desc: "Recommandations automatiques, liens tra\u00e7ables, commissions vers\u00e9es sans intervention. Le parrainage devient un revenu." },
+  { num: "03", icon: Link2, title: "Syst\u00e8me d\u2019apporteurs", color: "#F59E0B", desc: "Liens tra\u00e7ables, commissions partag\u00e9es depuis les revenus de la plateforme. Aucun frais suppl\u00e9mentaire pour l\u2019h\u00f4te." },
   { num: "04", icon: Settings, title: "\u00c9cosyst\u00e8me professionnel", color: "#10B981", desc: "Services int\u00e9gr\u00e9s, donn\u00e9es investisseurs, \u00e9v\u00e9nements \u2014 tout ce dont les professionnels ont besoin, au m\u00eame endroit." },
   { num: "05", icon: BookOpen, title: "Formation & \u00e9v\u00e9nements", color: "#EC4899", desc: "Formations certifiantes, webinars d\u2019experts et coaching individuel directement int\u00e9gr\u00e9s \u00e0 la plateforme." },
 ];
@@ -67,7 +67,7 @@ const roles = [
   { icon: Home, name: "H\u00f4te", color: "#3B82F6", desc: "G\u00e9rez vos biens, recevez des r\u00e9servations et augmentez vos revenus avec moins de commissions." },
   { icon: Building2, name: "Agence", color: "#8B5CF6", desc: "Publiez vos mandats, g\u00e9n\u00e9rez des leads organiques et pilotez votre activit\u00e9 depuis un dashboard." },
   { icon: HardHat, name: "Promoteur", color: "#10B981", desc: "Pr\u00e9sentez vos projets \u00e0 une audience qualifi\u00e9e et suivez les manifestations d\u2019int\u00e9r\u00eat." },
-  { icon: Handshake, name: "Apporteur", color: "#F59E0B", desc: "Partagez un lien tra\u00e7able et touchez automatiquement une commission sur chaque transaction." },
+  { icon: Handshake, name: "Apporteur", color: "#F59E0B", desc: "Partagez un lien tra\u00e7able et touchez une commission pr\u00e9lev\u00e9e sur les revenus de la plateforme, pas sur l\u2019h\u00f4te." },
   { icon: BarChart3, name: "Investisseur", color: "#EF4444", desc: "Acc\u00e9dez \u00e0 des opportunit\u00e9s immobili\u00e8res v\u00e9rifi\u00e9es et suivez vos rendements en temps r\u00e9el." },
   { icon: GraduationCap, name: "Formateur", color: "#EC4899", desc: "Cr\u00e9ez et vendez vos formations, webinars et coaching directement sur la plateforme." },
   { icon: Key, name: "Propri\u00e9taire", color: "#06B6D4", desc: "Pilotez vos biens, suivez vos revenus locatifs et acc\u00e9dez \u00e0 des services de gestion." },
@@ -97,7 +97,7 @@ const faqs = [
   { q: "La manifestation d\u2019int\u00e9r\u00eat m\u2019engage-t-elle ?", a: "Non. C\u2019est gratuit, confidentiel et sans aucun engagement. Vous pouvez vous d\u00e9sinscrire \u00e0 tout moment." },
   { q: "\u00c0 qui s\u2019adresse E-Dome ?", a: "Tous les acteurs de l\u2019immobilier : agences, h\u00f4tes, propri\u00e9taires, promoteurs, courtiers, architectes, photographes, notaires \u2014 partout dans le monde." },
   { q: "Quelle diff\u00e9rence avec Airbnb ou Booking ?", a: "E-Dome est un \u00e9cosyst\u00e8me complet : r\u00e9seau social professionnel, marketplace multi-services, syst\u00e8me d\u2019apporteurs r\u00e9mun\u00e9r\u00e9s et formations int\u00e9gr\u00e9es. Avec des commissions nettement inf\u00e9rieures." },
-  { q: "Comment fonctionne le syst\u00e8me d\u2019apporteurs ?", a: "Chaque utilisateur re\u00e7oit un lien de parrainage unique et tra\u00e7able. Lorsqu\u2019une transaction est g\u00e9n\u00e9r\u00e9e via ce lien, une commission est calcul\u00e9e et vers\u00e9e automatiquement \u2014 sans co\u00fbt suppl\u00e9mentaire pour le client." },
+  { q: "Comment fonctionne le syst\u00e8me d\u2019apporteurs ?", a: "Chaque utilisateur re\u00e7oit un lien de parrainage unique et tra\u00e7able. Lorsqu\u2019une transaction est g\u00e9n\u00e9r\u00e9e via ce lien, une commission est pr\u00e9lev\u00e9e sur les revenus de la plateforme et vers\u00e9e automatiquement \u2014 sans aucun co\u00fbt suppl\u00e9mentaire pour l\u2019h\u00f4te ni pour le client." },
   { q: "Mes donn\u00e9es sont-elles prot\u00e9g\u00e9es ?", a: "Absolument. E-Dome est conforme au RGPD europ\u00e9en. Les paiements transitent par des prestataires certifi\u00e9s PCI-DSS. Vos donn\u00e9es ne sont jamais vendues \u00e0 des tiers." },
   { q: "Comment devenir membre fondateur ?", a: "Inscrivez-vous via le formulaire membre fondateur. Votre profil est analys\u00e9 et s\u00e9lectionn\u00e9 avant le lancement. Vous participez ensuite \u00e0 une conf\u00e9rence en ligne o\u00f9 toutes les fonctionnalit\u00e9s et options de la plateforme sont pr\u00e9sent\u00e9es en d\u00e9tail, avec un temps de questions-r\u00e9ponses. Enfin, vous configurez votre compte avant l\u2019ouverture officielle." },
   { q: "E-Dome est-il limit\u00e9 \u00e0 un seul pays ?", a: "Non. E-Dome est con\u00e7u comme une plateforme internationale. Le lancement initial cible l\u2019Europe francophone, avec une expansion progressive vers le reste du monde." },
@@ -453,7 +453,7 @@ export default function Page() {
                 <span className="text-sm text-[#F59E0B] font-medium">Apporteurs d&apos;affaires</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Recommandez. <GradientText>Gagnez.</GradientText></h2>
-              <p className="text-white/40 mt-6 text-lg leading-relaxed max-w-xl">Partagez un lien tra&ccedil;able unique. Chaque transaction g&eacute;n&eacute;r&eacute;e vous rapporte une commission automatique &mdash; sans aucun frais pour le client final.</p>
+              <p className="text-white/40 mt-6 text-lg leading-relaxed max-w-xl">Partagez un lien tra&ccedil;able unique. Chaque transaction g&eacute;n&eacute;r&eacute;e vous rapporte une commission pr&eacute;lev&eacute;e sur les revenus de la plateforme &mdash; aucun co&ucirc;t suppl&eacute;mentaire pour l&apos;h&ocirc;te ni pour le client.</p>
               <div className="mt-10 space-y-4">
                 {[
                   { step: "1", title: "Activez votre lien", desc: "Depuis votre tableau de bord E-Dome" },
