@@ -27,6 +27,7 @@ import { ComparisonCards } from "@/components/ui/comparison-cards";
 import { WireframeGlobe } from "@/components/ui/wireframe-globe";
 import { RoleCard } from "@/components/ui/role-card";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { ModernTower, LuxuryVilla, FloorPlan, CityBlock, IsometricHouse, InteriorView } from "@/components/ui/arch-scenes";
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -269,9 +270,11 @@ export default function Page() {
         <ScrollSection variant="perspective">
         {/* LES PROFILS */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
+          <ModernTower className="absolute right-[3%] top-[5%] w-[300px] h-[550px] opacity-[0.25]" />
+          <IsometricHouse className="absolute left-[2%] bottom-[8%] w-[350px] h-[280px] opacity-[0.20]" />
           {/* Fond : grille hexagonale (réseau de rôles) */}
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.12]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.30]">
               <defs>
                 <pattern id="hex-grid" width="56" height="100" patternUnits="userSpaceOnUse" patternTransform="scale(1.5)">
                   <path d="M28,2 L54,18 L54,50 L28,66 L2,50 L2,18 Z" fill="none" stroke="#C4956A" strokeWidth="0.6" />
@@ -314,7 +317,7 @@ export default function Page() {
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="marketplace">
           {/* Fond : lignes diagonales (transactions) */}
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.12]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.30]">
               <defs>
                 <pattern id="diag-lines" width="30" height="30" patternUnits="userSpaceOnUse">
                   <line x1="0" y1="30" x2="30" y2="0" stroke="#3B82F6" strokeWidth="0.5" />
@@ -381,7 +384,7 @@ export default function Page() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#EC4899]/[0.05] via-transparent to-[#8B5CF6]/[0.04] pointer-events-none" />
           <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-[#EC4899]/[0.06] blur-[100px] pointer-events-none" />
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.10]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.30]">
               <defs>
                 <pattern id="social-dots" width="60" height="60" patternUnits="userSpaceOnUse">
                   <circle cx="30" cy="30" r="1.5" fill="#EC4899" />
@@ -522,7 +525,7 @@ export default function Page() {
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden" id="formations">
         {/* Fond quadrillé animé */}
         <div className="absolute inset-0 pointer-events-none">
-          <svg className="absolute inset-0 w-full h-full opacity-[0.15]">
+          <svg className="absolute inset-0 w-full h-full opacity-[0.35]">
             <defs>
               <pattern id="grid-fine" width="40" height="40" patternUnits="userSpaceOnUse">
                 <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#C4956A" strokeWidth="0.5" />
@@ -535,7 +538,7 @@ export default function Page() {
             <rect width="100%" height="100%" fill="url(#grid-bold)" />
           </svg>
           {/* Cross marks aux intersections */}
-          <svg className="absolute inset-0 w-full h-full opacity-[0.18]">
+          <svg className="absolute inset-0 w-full h-full opacity-[0.35]">
             <defs>
               <pattern id="cross-marks" width="200" height="200" patternUnits="userSpaceOnUse">
                 <line x1="95" y1="100" x2="105" y2="100" stroke="#C4956A" strokeWidth="0.8" />
@@ -588,6 +591,7 @@ export default function Page() {
         <ScrollSection variant="blur">
         {/* COMPARAISON SANS / AVEC */}
         <section className="py-32 px-[4vw] border-t border-white/[0.06] relative overflow-hidden">
+          <CityBlock className="absolute inset-x-0 bottom-0 w-full h-[300px] opacity-[0.15]" />
           {/* Sparkles background */}
           <div className="absolute inset-0 w-full h-full">
             <SparklesCore
@@ -620,7 +624,8 @@ export default function Page() {
         <ScrollSection variant="clip">
         {/* PROGRAMME FONDATEURS */}
         <section className="py-32 px-[4vw] min-h-screen flex items-center justify-center relative overflow-hidden border-t border-white/[0.06]" id="rejoindre">
-          {/* Fond : sparkles violet + grille diamant + gradient */}
+          {/* Fond : sparkles violet + grille diamant + gradient + villa */}
+          <LuxuryVilla className="absolute inset-x-0 bottom-[5%] w-full h-[300px] opacity-[0.20]" />
           <div className="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/[0.06] via-transparent to-[#C4956A]/[0.04]" />
           <div className="absolute inset-0 w-full h-full">
             <SparklesCore
@@ -635,7 +640,7 @@ export default function Page() {
             />
           </div>
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.12]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.30]">
               <defs>
                 <pattern id="diamond-grid" width="50" height="50" patternUnits="userSpaceOnUse">
                   <path d="M25,0 L50,25 L25,50 L0,25 Z" fill="none" stroke="#8B5CF6" strokeWidth="0.8" />
@@ -703,11 +708,13 @@ export default function Page() {
         <ScrollSection variant="perspective">
         {/* FAQ */}
         <section className="py-32 px-[4vw] relative overflow-hidden border-t border-white/[0.06]" id="faq">
+          <FloorPlan className="absolute right-[2%] top-[5%] w-[450px] h-[380px] opacity-[0.18]" />
+          <InteriorView className="absolute left-[3%] bottom-[10%] w-[400px] h-[280px] opacity-[0.15]" />
           {/* Fond : gradient chaud + bulles de dialogue + grille */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#C4956A]/[0.05] via-transparent to-[#F59E0B]/[0.03] pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#C4956A]/[0.06] blur-[140px] pointer-events-none" />
           <div className="absolute inset-0 pointer-events-none">
-            <svg className="absolute inset-0 w-full h-full opacity-[0.15]">
+            <svg className="absolute inset-0 w-full h-full opacity-[0.35]">
               <defs>
                 <pattern id="faq-grid" width="40" height="40" patternUnits="userSpaceOnUse">
                   <path d="M0,20 L40,20 M20,0 L20,40" fill="none" stroke="#C4956A" strokeWidth="0.4" />
@@ -715,13 +722,13 @@ export default function Page() {
               </defs>
               <rect width="100%" height="100%" fill="url(#faq-grid)" />
             </svg>
-            <svg className="absolute right-[-5%] top-[10%] w-[500px] h-[500px] opacity-[0.10]" viewBox="0 0 200 200">
+            <svg className="absolute right-[-5%] top-[10%] w-[500px] h-[500px] opacity-[0.30]" viewBox="0 0 200 200">
               <path d="M40,20 Q20,20 20,40 L20,120 Q20,140 40,140 L80,140 L100,170 L105,140 L160,140 Q180,140 180,120 L180,40 Q180,20 160,20 Z" fill="none" stroke="#C4956A" strokeWidth="2" />
               <circle cx="70" cy="80" r="6" fill="#C4956A" opacity="0.3" />
               <circle cx="100" cy="80" r="6" fill="#C4956A" opacity="0.3" />
               <circle cx="130" cy="80" r="6" fill="#C4956A" opacity="0.3" />
             </svg>
-            <svg className="absolute left-[5%] bottom-[15%] w-[350px] h-[350px] opacity-[0.18]" viewBox="0 0 200 200">
+            <svg className="absolute left-[5%] bottom-[15%] w-[350px] h-[350px] opacity-[0.35]" viewBox="0 0 200 200">
               <path d="M160,180 Q180,180 180,160 L180,80 Q180,60 160,60 L120,60 L100,30 L95,60 L40,60 Q20,60 20,80 L20,160 Q20,180 40,180 Z" fill="none" stroke="#C4956A" strokeWidth="2" />
               <line x1="50" y1="100" x2="150" y2="100" stroke="#C4956A" strokeWidth="1" opacity="0.3" />
               <line x1="50" y1="120" x2="130" y2="120" stroke="#C4956A" strokeWidth="1" opacity="0.3" />
