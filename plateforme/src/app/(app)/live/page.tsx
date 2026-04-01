@@ -1,0 +1,295 @@
+"use client";
+
+import React, { useState } from "react";
+import { useApp } from "@/lib/context";
+
+/* ─── Mock Data ──────────────────────────────────────────────────────────── */
+
+const UPCOMING_LIVES = [
+  { id: "L1", titre: "Investir dans l'immobilier suisse en 2026", speaker: "Marc Bonnard", role: "Formateur", date: "2026-04-05 18:00", inscrits: 124 },
+  { id: "L2", titre: "Visite virtuelle: Villa Montreux", speaker: "Sophie Meier", role: "Agence", date: "2026-04-08 14:00", inscrits: 87 },
+  { id: "L3", titre: "Optimiser son annonce immobiliere", speaker: "Laura Fischer", role: "Hote", date: "2026-04-12 10:00", inscrits: 56 },
+];
+
+const PAST_REPLAYS = [
+  { id: "R1", titre: "Les tendances du marche Q1 2026", speaker: "Jean-Pierre Dumont", date: "2026-03-20", vues: 1240, duree: "1h12" },
+  { id: "R2", titre: "Comment fixer le bon prix de location", speaker: "Nadia Silva", date: "2026-03-15", vues: 890, duree: "45min" },
+  { id: "R3", titre: "Fiscalite immobiliere en Suisse", speaker: "Patrick Leroy", date: "2026-03-10", vues: 2100, duree: "1h30" },
+  { id: "R4", titre: "Home staging: avant/apres", speaker: "Amina Kone", date: "2026-03-05", vues: 670, duree: "38min" },
+  { id: "R5", titre: "Droit du bail: vos obligations", speaker: "Thomas Roth", date: "2026-02-28", vues: 1560, duree: "55min" },
+  { id: "R6", titre: "Photographie immobiliere pro", speaker: "Amina Kone", date: "2026-02-20", vues: 780, duree: "42min" },
+];
+
+const MOCK_CHAT = [
+  { user: "Marc D.", message: "Tres interessant, merci pour ces chiffres !", time: "18:02" },
+  { user: "Sophie M.", message: "Quelle est la meilleure region pour investir ?", time: "18:04" },
+  { user: "Laura F.", message: "Les rendements a Lausanne sont encore bons ?", time: "18:05" },
+  { user: "Jean P.", message: "Merci pour la presentation !", time: "18:07" },
+  { user: "Nadia S.", message: "Est-ce que vous pouvez parler du Valais ?", time: "18:08" },
+];
+
+/* ─── Page ───────────────────────────────────────────────────────────────── */
+
+export default function LivePage() {
+  const { activeRole } = useApp();
+  const [isLive] = useState(false);
+  const [viewingReplay, setViewingReplay] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatMessages, setChatMessages] = useState(MOCK_CHAT);
+  const [handRaised, setHandRaised] = useState(false);
+
+  // Create modal state
+  const [newLive, setNewLive] = useState({ titre: "", type: "webinaire", date: "", description: "" });
+
+  const canCreateLive = activeRole === "formateur" || activeRole === "agence";
+
+  const handleSendChat = () => {
+    if (!chatMessage.trim()) return;
+    setChatMessages((prev) => [...prev, { user: "Vous", message: chatMessage, time: new Date().toLocaleTimeString("fr-CH", { hour: "2-digit", minute: "2-digit" }) }]);
+    setChatMessage("");
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText("https://edome.world/live/current");
+    alert("Lien copie dans le presse-papiers !");
+  };
+
+  const replayItem = viewingReplay ? PAST_REPLAYS.find((r) => r.id === viewingReplay) : null;
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">Live</h1>
+        {canCreateLive && (
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="px-4 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
+          >
+            Creer un live
+          </button>
+        )}
+      </div>
+
+      {/* Live Viewer (when live) */}
+      {isLive ? (
+        <section className="grid lg:grid-cols-3 gap-6">
+          {/* Video area */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="relative aspect-video rounded-xl bg-gray-900 flex items-center justify-center overflow-hidden">
+              <div className="absolute top-4 left-4 flex items-center gap-2">
+                <span className="px-2 py-1 rounded bg-red-600 text-white text-xs font-bold animate-pulse">LIVE</span>
+                <span className="px-2 py-1 rounded bg-black/50 text-white text-xs">247 spectateurs</span>
+              </div>
+              <p className="text-white/50 text-lg">Video en direct</p>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-[var(--foreground)]">Investir dans l&apos;immobilier suisse en 2026</h2>
+                <p className="text-sm text-[var(--text-secondary)]">Par Marc Bonnard — Formateur</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setHandRaised(!handRaised)}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+                    handRaised ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]"
+                  }`}
+                >
+                  {handRaised ? "Main levee" : "Lever la main"}
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="px-3 py-2 rounded-lg bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)] text-sm font-medium hover:bg-[var(--hover-bg)] transition"
+                >
+                  Partager
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Chat sidebar */}
+          <div className="flex flex-col rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden">
+            <div className="p-4 border-b border-[var(--card-border)]">
+              <h3 className="font-semibold text-[var(--foreground)]">Chat en direct</h3>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-80 lg:max-h-[400px]">
+              {chatMessages.map((msg, idx) => (
+                <div key={idx}>
+                  <span className="text-xs text-[#C4956A] font-medium">{msg.user}</span>
+                  <span className="text-xs text-[var(--text-muted)] ml-2">{msg.time}</span>
+                  <p className="text-sm text-[var(--foreground)]">{msg.message}</p>
+                </div>
+              ))}
+            </div>
+            <div className="p-3 border-t border-[var(--card-border)] flex gap-2">
+              <input
+                type="text"
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSendChat()}
+                placeholder="Votre message..."
+                className="flex-1 px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] text-sm placeholder:text-[var(--text-muted)] outline-none"
+              />
+              <button
+                onClick={handleSendChat}
+                className="px-3 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
+              >
+                Envoyer
+              </button>
+            </div>
+          </div>
+        </section>
+      ) : (
+        /* Empty state when no live */
+        <section className="text-center py-12 space-y-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+          <div className="text-6xl">📡</div>
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun live en cours</h2>
+          <p className="text-[var(--text-secondary)] max-w-md mx-auto">
+            Il n&apos;y a pas de diffusion en direct pour le moment. Consultez les prochains lives programmes ou regardez les replays.
+          </p>
+        </section>
+      )}
+
+      {/* Upcoming Lives */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Prochains lives</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {UPCOMING_LIVES.map((live) => (
+            <div key={live.id} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-3 hover:border-[#C4956A]/40 transition">
+              <h3 className="font-medium text-[var(--foreground)]">{live.titre}</h3>
+              <p className="text-sm text-[var(--text-secondary)]">{live.speaker} — {live.role}</p>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-[var(--text-muted)]">{live.date}</span>
+                <span className="text-[#C4956A] font-medium">{live.inscrits} inscrits</span>
+              </div>
+              <button className="w-full px-4 py-2 rounded-lg border border-[#C4956A] text-[#C4956A] text-sm font-medium hover:bg-[#C4956A]/10 transition">
+                S&apos;inscrire
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Replay viewer */}
+      {replayItem && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-[var(--foreground)]">Replay: {replayItem.titre}</h2>
+            <button
+              onClick={() => setViewingReplay(null)}
+              className="px-3 py-1.5 rounded-lg text-sm text-[var(--text-secondary)] hover:text-[var(--foreground)] transition"
+            >
+              Fermer
+            </button>
+          </div>
+          <div className="aspect-video rounded-xl bg-gray-900 flex items-center justify-center">
+            <div className="text-center space-y-2">
+              <div className="text-4xl">▶</div>
+              <p className="text-white/50">Lecture du replay — {replayItem.duree}</p>
+            </div>
+          </div>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Par {replayItem.speaker} — {replayItem.date} — {replayItem.vues.toLocaleString("fr-CH")} vues
+          </p>
+        </section>
+      )}
+
+      {/* Replays Grid */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Replays</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PAST_REPLAYS.map((replay) => (
+            <div
+              key={replay.id}
+              className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden hover:border-[#C4956A]/40 transition cursor-pointer"
+              onClick={() => setViewingReplay(replay.id)}
+            >
+              <div className="aspect-video bg-gray-800 flex items-center justify-center relative">
+                <div className="text-3xl text-white/40">▶</div>
+                <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/70 text-white text-xs">{replay.duree}</span>
+              </div>
+              <div className="p-4 space-y-1">
+                <h3 className="font-medium text-[var(--foreground)] text-sm">{replay.titre}</h3>
+                <p className="text-xs text-[var(--text-secondary)]">{replay.speaker}</p>
+                <div className="flex justify-between text-xs text-[var(--text-muted)]">
+                  <span>{replay.date}</span>
+                  <span>{replay.vues.toLocaleString("fr-CH")} vues</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Create Live Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--overlay)]" onClick={() => setShowCreateModal(false)}>
+          <div
+            className="w-full max-w-lg mx-4 p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-5 animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-xl font-semibold text-[var(--foreground)]">Creer un live</h2>
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-sm text-[var(--text-secondary)]">Titre</label>
+                <input
+                  type="text"
+                  value={newLive.titre}
+                  onChange={(e) => setNewLive({ ...newLive, titre: e.target.value })}
+                  placeholder="Titre du live..."
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm text-[var(--text-secondary)]">Type</label>
+                <select
+                  value={newLive.type}
+                  onChange={(e) => setNewLive({ ...newLive, type: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
+                >
+                  <option value="webinaire">Webinaire</option>
+                  <option value="visite">Visite virtuelle</option>
+                  <option value="formation">Formation</option>
+                  <option value="qa">Questions / Reponses</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm text-[var(--text-secondary)]">Date et heure</label>
+                <input
+                  type="datetime-local"
+                  value={newLive.date}
+                  onChange={(e) => setNewLive({ ...newLive, date: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm text-[var(--text-secondary)]">Description</label>
+                <textarea
+                  value={newLive.description}
+                  onChange={(e) => setNewLive({ ...newLive, description: e.target.value })}
+                  placeholder="Decrivez votre live..."
+                  rows={3}
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition resize-none"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="px-4 py-2 rounded-lg border border-[var(--card-border)] text-[var(--foreground)] text-sm font-medium hover:bg-[var(--hover-bg)] transition"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => { alert("Live cree (demo)"); setShowCreateModal(false); }}
+                className="px-4 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
+              >
+                Programmer le live
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

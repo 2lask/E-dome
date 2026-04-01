@@ -1,0 +1,381 @@
+"use client";
+
+import React, { useState } from "react";
+import { useApp } from "@/lib/context";
+
+/* ─── Mock Data ──────────────────────────────────────────────────────────── */
+
+const REFERRAL_ID = "AP-7291";
+
+const REFERRAL_LINKS = [
+  {
+    label: "Amener un hote",
+    url: `edome.world/ref/hote/${REFERRAL_ID}`,
+    description: "Partagez ce lien pour inviter un proprietaire a publier ses biens sur E-Dome.",
+    clicks: 234,
+    conversions: 18,
+    color: "bg-amber-500/20 text-amber-400",
+  },
+  {
+    label: "Amener un client",
+    url: `edome.world/ref/client/${REFERRAL_ID}`,
+    description: "Invitez des locataires ou acheteurs potentiels a rejoindre la plateforme.",
+    clicks: 412,
+    conversions: 37,
+    color: "bg-blue-500/20 text-blue-400",
+  },
+  {
+    label: "Amener un bien",
+    url: `edome.world/ref/bien/${REFERRAL_ID}`,
+    description: "Recommandez un bien specifique et touchez une commission sur la transaction.",
+    clicks: 156,
+    conversions: 9,
+    color: "bg-emerald-500/20 text-emerald-400",
+  },
+];
+
+const APPORT_TYPES = [
+  { title: "Bien / Mandat", desc: "Apportez un bien immobilier ou un mandat de gestion", icon: "🏠", commission: "2-5%" },
+  { title: "Client qualifie", desc: "Presentez un acheteur ou locataire qualifie", icon: "👤", commission: "1-3%" },
+  { title: "Prestataire", desc: "Recommandez un photographe, architecte, notaire...", icon: "📷", commission: "100-500 CHF" },
+  { title: "Partenariat local", desc: "Connectez E-Dome avec un acteur local", icon: "🤝", commission: "Variable" },
+  { title: "Audience ciblee", desc: "Amenez du trafic qualifie via votre reseau", icon: "📢", commission: "CPA" },
+  { title: "Parrainage reseau", desc: "Parrainez d'autres apporteurs d'affaires", icon: "🔗", commission: "10% indirect" },
+];
+
+const MOCK_APPORTS = [
+  { id: "A-001", type: "Client qualifie", ref: "Marc Dupont", date: "2026-03-15", status: "converti", commission: 1500 },
+  { id: "A-002", type: "Bien / Mandat", ref: "Villa Montreux", date: "2026-03-10", status: "en_cours", commission: 0 },
+  { id: "A-003", type: "Prestataire", ref: "Photo Pro Sarl", date: "2026-02-28", status: "converti", commission: 300 },
+  { id: "A-004", type: "Client qualifie", ref: "Sophie Meier", date: "2026-02-20", status: "expire", commission: 0 },
+  { id: "A-005", type: "Partenariat local", ref: "Agence Riviera", date: "2026-02-15", status: "converti", commission: 2200 },
+  { id: "A-006", type: "Audience ciblee", ref: "Campagne LinkedIn", date: "2026-01-30", status: "converti", commission: 800 },
+];
+
+const MOCK_VERSEMENTS = [
+  { id: "V-001", date: "2026-03-01", montant: 4800, methode: "Virement IBAN", statut: "verse" },
+  { id: "V-002", date: "2026-02-01", montant: 3200, methode: "Virement IBAN", statut: "verse" },
+  { id: "V-003", date: "2026-01-01", montant: 1500, methode: "Virement IBAN", statut: "verse" },
+];
+
+const LEADERBOARD = [
+  { rank: 1, nom: "Karim B.", apports: 47, commissions: 18500 },
+  { rank: 2, nom: "Laura M.", apports: 39, commissions: 15200 },
+  { rank: 3, nom: "Jean-Pierre D.", apports: 34, commissions: 12800 },
+  { rank: 4, nom: "Vous", apports: 28, commissions: 9500, isYou: true },
+  { rank: 5, nom: "Nadia S.", apports: 25, commissions: 8700 },
+  { rank: 6, nom: "Thomas R.", apports: 22, commissions: 7400 },
+  { rank: 7, nom: "Amina K.", apports: 19, commissions: 6100 },
+  { rank: 8, nom: "Patrick L.", apports: 15, commissions: 4900 },
+];
+
+/* ─── Helpers ────────────────────────────────────────────────────────────── */
+
+function copyToClipboard(text: string) {
+  navigator.clipboard.writeText(`https://${text}`);
+}
+
+function shareWhatsApp(url: string) {
+  window.open(`https://wa.me/?text=${encodeURIComponent(`https://${url}`)}`, "_blank");
+}
+
+function shareEmail(url: string, label: string) {
+  window.open(`mailto:?subject=E-Dome - ${label}&body=${encodeURIComponent(`https://${url}`)}`, "_blank");
+}
+
+const statusStyles: Record<string, string> = {
+  converti: "bg-emerald-500/20 text-emerald-400",
+  en_cours: "bg-amber-500/20 text-amber-400",
+  expire: "bg-red-500/20 text-red-400",
+};
+
+const statusLabels: Record<string, string> = {
+  converti: "Converti",
+  en_cours: "En cours",
+  expire: "Expire",
+};
+
+/* ─── Page ───────────────────────────────────────────────────────────────── */
+
+export default function ApporteursPage() {
+  const { activeRole, formatPrice } = useApp();
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [showQR, setShowQR] = useState<number | null>(null);
+
+  if (activeRole !== "apporteur") {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
+          <div className="text-5xl mb-4">🔒</div>
+          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Acces restreint</h2>
+          <p className="text-[var(--text-secondary)]">
+            Cette page est reservee aux apporteurs d&apos;affaires. Activez le role &laquo;Apporteur&raquo; dans vos parametres.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const totalCommissions = MOCK_APPORTS.reduce((s, a) => s + a.commission, 0);
+  const totalVersements = MOCK_VERSEMENTS.reduce((s, v) => s + v.montant, 0);
+  const enAttente = totalCommissions - totalVersements;
+
+  const handleCopy = (url: string, idx: number) => {
+    copyToClipboard(url);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
+      {/* Hero */}
+      <section className="text-center space-y-3">
+        <h1 className="text-3xl md:text-4xl font-bold text-[var(--foreground)]">
+          Programme Apporteurs d&apos;Affaires
+        </h1>
+        <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
+          Generez des revenus en recommandant E-Dome a votre reseau. Chaque conversion vous rapporte une commission prelevee sur la part plateforme, sans surcharge pour les utilisateurs.
+        </p>
+      </section>
+
+      {/* Referral Link Cards */}
+      <section className="grid md:grid-cols-3 gap-6">
+        {REFERRAL_LINKS.map((link, idx) => (
+          <div key={idx} className="p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
+            <div className="flex items-center justify-between">
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${link.color}`}>{link.label}</span>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)]">{link.description}</p>
+            <div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
+              <span className="text-xs text-[var(--text-muted)] truncate flex-1">{link.url}</span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleCopy(link.url, idx)}
+                className="flex-1 px-3 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
+              >
+                {copiedIdx === idx ? "Copie !" : "Copier"}
+              </button>
+              <button
+                onClick={() => shareWhatsApp(link.url)}
+                className="px-3 py-2 rounded-lg bg-green-600/20 text-green-400 text-sm hover:bg-green-600/30 transition"
+                title="WhatsApp"
+              >
+                WA
+              </button>
+              <button
+                onClick={() => shareEmail(link.url, link.label)}
+                className="px-3 py-2 rounded-lg bg-blue-600/20 text-blue-400 text-sm hover:bg-blue-600/30 transition"
+                title="Email"
+              >
+                @
+              </button>
+              <button
+                onClick={() => setShowQR(showQR === idx ? null : idx)}
+                className="px-3 py-2 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm hover:opacity-80 transition"
+                title="QR Code"
+              >
+                QR
+              </button>
+            </div>
+            {showQR === idx && (
+              <div className="flex items-center justify-center p-4 rounded-lg bg-white">
+                <div className="w-32 h-32 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs text-center">
+                  QR Code<br />pour<br />{link.label}
+                </div>
+              </div>
+            )}
+            <div className="flex justify-between text-sm">
+              <span className="text-[var(--text-muted)]">Clics: <span className="text-[var(--foreground)] font-medium">{link.clicks}</span></span>
+              <span className="text-[var(--text-muted)]">Conversions: <span className="text-[var(--foreground)] font-medium">{link.conversions}</span></span>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Types d'Apport */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Types d&apos;apport</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {APPORT_TYPES.map((type, idx) => (
+            <div key={idx} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition space-y-2">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{type.icon}</span>
+                <h3 className="font-medium text-[var(--foreground)]">{type.title}</h3>
+              </div>
+              <p className="text-sm text-[var(--text-secondary)]">{type.desc}</p>
+              <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#C4956A]/20 text-[#C4956A]">
+                Commission: {type.commission}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Commission Flow */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Comment ca fonctionne</h2>
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          {[
+            { step: "1", title: "Lien clique", desc: "Un prospect clique sur votre lien de parrainage" },
+            { step: "2", title: "Conversion confirmee", desc: "Le prospect s'inscrit et realise une transaction" },
+            { step: "3", title: "Commission versee", desc: "Votre commission est calculee et viree mensuellement" },
+          ].map((s, idx) => (
+            <React.Fragment key={idx}>
+              {idx > 0 && <div className="hidden md:block text-[var(--text-muted)] text-2xl">→</div>}
+              <div className="flex-1 w-full p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] text-center space-y-2">
+                <div className="w-10 h-10 mx-auto rounded-full bg-[#C4956A] text-white flex items-center justify-center font-bold">
+                  {s.step}
+                </div>
+                <h3 className="font-medium text-[var(--foreground)]">{s.title}</h3>
+                <p className="text-sm text-[var(--text-secondary)]">{s.desc}</p>
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+        <p className="text-sm text-[var(--text-muted)] text-center italic">
+          La commission est prelevee sur la part plateforme E-Dome. Aucun cout supplementaire pour l&apos;hote ou le client.
+        </p>
+      </section>
+
+      {/* Dashboard: Apports Table */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Mes apports</h2>
+        <div className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[var(--card-border)]">
+                <th className="text-left p-4 text-[var(--text-muted)] font-medium">ID</th>
+                <th className="text-left p-4 text-[var(--text-muted)] font-medium">Type</th>
+                <th className="text-left p-4 text-[var(--text-muted)] font-medium">Reference</th>
+                <th className="text-left p-4 text-[var(--text-muted)] font-medium">Date</th>
+                <th className="text-left p-4 text-[var(--text-muted)] font-medium">Statut</th>
+                <th className="text-right p-4 text-[var(--text-muted)] font-medium">Commission</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MOCK_APPORTS.map((a) => (
+                <tr key={a.id} className="border-b border-[var(--card-border)] last:border-0 hover:bg-[var(--hover-bg)] transition">
+                  <td className="p-4 text-[var(--foreground)] font-mono text-xs">{a.id}</td>
+                  <td className="p-4 text-[var(--foreground)]">{a.type}</td>
+                  <td className="p-4 text-[var(--foreground)]">{a.ref}</td>
+                  <td className="p-4 text-[var(--text-secondary)]">{a.date}</td>
+                  <td className="p-4">
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusStyles[a.status]}`}>
+                      {statusLabels[a.status]}
+                    </span>
+                  </td>
+                  <td className="p-4 text-right text-[var(--foreground)] font-medium">
+                    {a.commission > 0 ? formatPrice(a.commission) : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Commissions Summary + Versements */}
+      <section className="grid md:grid-cols-2 gap-6">
+        {/* Summary */}
+        <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
+          <h3 className="font-semibold text-[var(--foreground)]">Resume des commissions</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-[var(--text-secondary)]">Total gagne</span>
+              <span className="text-[var(--foreground)] font-bold text-lg">{formatPrice(totalCommissions)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[var(--text-secondary)]">Deja verse</span>
+              <span className="text-emerald-400 font-medium">{formatPrice(totalVersements)}</span>
+            </div>
+            <div className="flex justify-between border-t border-[var(--card-border)] pt-3">
+              <span className="text-[var(--text-secondary)]">En attente</span>
+              <span className="text-[#C4956A] font-bold">{formatPrice(enAttente)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Versements */}
+        <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
+          <h3 className="font-semibold text-[var(--foreground)]">Historique des versements</h3>
+          <div className="space-y-3">
+            {MOCK_VERSEMENTS.map((v) => (
+              <div key={v.id} className="flex items-center justify-between py-2 border-b border-[var(--card-border)] last:border-0">
+                <div>
+                  <p className="text-sm text-[var(--foreground)]">{v.date}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{v.methode}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium text-emerald-400">{formatPrice(v.montant)}</p>
+                  <p className="text-xs text-emerald-400/60">Verse</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Leaderboard */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Classement des apporteurs</h2>
+
+        {/* Podium */}
+        <div className="flex items-end justify-center gap-4 py-6">
+          {/* 2nd */}
+          <div className="text-center space-y-2">
+            <div className="w-16 h-16 mx-auto rounded-full bg-gray-400/20 flex items-center justify-center text-2xl">🥈</div>
+            <p className="text-sm font-medium text-[var(--foreground)]">{LEADERBOARD[1].nom}</p>
+            <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[1].commissions)}</p>
+            <div className="w-20 h-24 bg-gray-400/10 rounded-t-lg mx-auto" />
+          </div>
+          {/* 1st */}
+          <div className="text-center space-y-2">
+            <div className="w-20 h-20 mx-auto rounded-full bg-[#C4956A]/20 flex items-center justify-center text-3xl">🥇</div>
+            <p className="text-sm font-bold text-[#C4956A]">{LEADERBOARD[0].nom}</p>
+            <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[0].commissions)}</p>
+            <div className="w-20 h-32 bg-[#C4956A]/10 rounded-t-lg mx-auto" />
+          </div>
+          {/* 3rd */}
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 mx-auto rounded-full bg-amber-700/20 flex items-center justify-center text-xl">🥉</div>
+            <p className="text-sm font-medium text-[var(--foreground)]">{LEADERBOARD[2].nom}</p>
+            <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[2].commissions)}</p>
+            <div className="w-20 h-16 bg-amber-700/10 rounded-t-lg mx-auto" />
+          </div>
+        </div>
+
+        {/* Full table */}
+        <div className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[var(--card-border)]">
+                <th className="text-left p-4 text-[var(--text-muted)] font-medium">#</th>
+                <th className="text-left p-4 text-[var(--text-muted)] font-medium">Apporteur</th>
+                <th className="text-right p-4 text-[var(--text-muted)] font-medium">Apports</th>
+                <th className="text-right p-4 text-[var(--text-muted)] font-medium">Commissions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {LEADERBOARD.map((l) => (
+                <tr
+                  key={l.rank}
+                  className={`border-b border-[var(--card-border)] last:border-0 transition ${
+                    l.isYou ? "bg-[#C4956A]/5" : "hover:bg-[var(--hover-bg)]"
+                  }`}
+                >
+                  <td className="p-4 text-[var(--foreground)] font-bold">{l.rank}</td>
+                  <td className="p-4 text-[var(--foreground)] font-medium">
+                    {l.nom} {l.isYou && <span className="text-xs text-[#C4956A]">(vous)</span>}
+                  </td>
+                  <td className="p-4 text-right text-[var(--text-secondary)]">{l.apports}</td>
+                  <td className="p-4 text-right text-[var(--foreground)] font-medium">{formatPrice(l.commissions)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+}
