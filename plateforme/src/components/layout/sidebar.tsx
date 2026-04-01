@@ -370,7 +370,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           style={{ color: "var(--text-muted)", borderTop: "1px solid var(--divider)" }}
         >
           <Link href="/conditions" className="hover:underline">Conditions</Link>
-          <Link href="/confidentialite" className="hover:underline">Confidentialite</Link>
+          <Link href="/confidentialite" className="hover:underline">Confidentialité</Link>
           <Link href="/aide" className="hover:underline">Aide</Link>
           <Link href="/contact" className="hover:underline">Contact</Link>
         </div>

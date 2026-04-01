@@ -16,60 +16,15 @@ import { useToast } from "@/components/ui/toast";
 import { timeAgo, formatDate } from "@/lib/utils";
 import { roleBadgeColors, roleLabels } from "@/lib/types";
 import type { Property, PropertyAnalytics, User, Currency } from "@/lib/types";
+import {
+  properties as allProperties,
+  getPropertyById,
+  getSimilarProperties,
+  getReviewsForProperty,
+} from "@/lib/mock-data";
+import type { Review } from "@/lib/mock-data";
 
-// ─── Mock property data ──────────────────────────────────────────────────────
-
-const MOCK_HOST: User = {
-  id: "u1", firstName: "Sophie", lastName: "Martin", email: "sophie@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
-  city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote",
-  stats: { followers: 1240, following: 380, properties: 12, reviews: 89, rating: 4.8, transactions: 45, revenue: 125000 },
-  bio: "Hôte passionnée, spécialiste de l'immobilier de luxe en Suisse romande. Réponse rapide garantie.",
-  languages: ["Français", "Anglais", "Allemand"],
-  certifications: ["Superhôte E-Dome", "Identité vérifiée"],
-  responseTime: "< 1h",
-};
-
-const MOCK_PROPERTIES: Record<string, Property> = {
-  prop1: {
-    id: "prop1", title: "Villa moderne avec piscine infinity et vue lac", description: "Découvrez cette villa d'exception située sur les hauteurs de Lausanne, offrant une vue panoramique imprenable sur le lac Léman et les Alpes.\n\nCette propriété de standing comprend 5 chambres spacieuses, 3 salles de bains luxueuses, un salon double hauteur baigné de lumière naturelle, une cuisine gastronomique entièrement équipée Gaggenau, et une suite parentale avec dressing et salle de bains privative.\n\nL'extérieur est tout aussi remarquable avec sa piscine infinity chauffée, son jardin paysager de 800m², sa terrasse couverte et son garage double. Les finitions haut de gamme incluent du parquet en chêne massif, de la pierre naturelle et des menuiseries en aluminium.\n\nSituée dans un quartier résidentiel prisé, à proximité des écoles internationales et du centre-ville, cette villa représente un investissement exceptionnel.",
-    type: "villa", transactionType: "vente", price: 1850000, currency: "CHF",
-    location: { city: "Lausanne", country: "Suisse", address: "Route de Berne 45" },
-    images: [
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200",
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
-      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200",
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200",
-    ],
-    videos: ["/videos/property-tour-1.mp4"],
-    host: MOCK_HOST, bedrooms: 5, bathrooms: 3, area: 320, floor: 0,
-    amenities: ["Piscine infinity", "Jardin paysager", "Garage double", "Cuisine Gaggenau", "Domotique", "Alarme", "Parquet chêne", "Cave à vin", "Buanderie", "Terrasse couverte", "Vue lac", "Cheminée"],
-    rating: 4.9, reviewCount: 24, featured: true,
-    analytics: { rendementBrut: 5.2, rendementNet: 3.8, prixM2: 5781, dpe: "A", etatGeneral: "Neuf", anneeConstruction: 2023, potentielPlusValue: 15, roi5ans: 32, roi10ans: 72, tauxOccupation: 95 },
-  },
-  prop2: {
-    id: "prop2", title: "Appartement vue lac - Montreux", description: "Superbe appartement avec vue imprenable sur le lac Léman.",
-    type: "appartement", transactionType: "location-ct", price: 250, currency: "CHF",
-    location: { city: "Montreux", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200", "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200"],
-    host: MOCK_HOST, bedrooms: 3, bathrooms: 2, area: 120,
-    amenities: ["Vue lac", "Balcon", "Parking", "WiFi", "Cuisine équipée", "Lave-linge"],
-    rating: 4.7, reviewCount: 56,
-  },
-};
-
-const MOCK_REVIEWS = [
-  { id: "r1", author: { name: "Jean-Pierre M.", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80" }, rating: 5, content: "Villa absolument magnifique ! La vue sur le lac est à couper le souffle. Sophie est une hôte exceptionnelle.", date: "2026-03-15" },
-  { id: "r2", author: { name: "Marie L.", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80" }, rating: 5, content: "Finitions impeccables, emplacement idéal. Je recommande vivement.", date: "2026-02-28" },
-  { id: "r3", author: { name: "Thomas K.", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80" }, rating: 4, content: "Très belle propriété, conforme aux photos. Le jardin est magnifique.", date: "2026-01-10" },
-];
-
-const SIMILAR_PROPERTIES = [
-  { id: "prop4", title: "Penthouse panoramique", price: 3200000, currency: "CHF" as Currency, image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400", city: "Genève", bedrooms: 4, area: 280, rating: 5.0, transactionType: "vente" as const },
-  { id: "prop8", title: "Maison familiale Neuchâtel", price: 980000, currency: "CHF" as Currency, image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400", city: "Neuchâtel", bedrooms: 4, area: 180, rating: 4.6, transactionType: "vente" as const },
-  { id: "prop5", title: "Chalet alpin Verbier", price: 350, currency: "CHF" as Currency, image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400", city: "Verbier", bedrooms: 6, area: 400, rating: 4.9, transactionType: "location-ct" as const },
-];
+// ─── Paid options (applicable to location-ct) ───────────────────────────────
 
 const PAID_OPTIONS = [
   { id: "o1", label: "Nettoyage professionnel", price: 150 },
@@ -79,13 +34,69 @@ const PAID_OPTIONS = [
   { id: "o5", label: "Chef privé (dîner)", price: 350 },
 ];
 
+// ─── Resolve property by ID (handles multiple ID formats) ───────────────────
+
+function resolveProperty(id: string): Property | undefined {
+  // 1) Direct lookup (e.g. "prop-001")
+  let found = getPropertyById(id);
+  if (found) return found;
+
+  // 2) Map short IDs like "prop1" -> "prop-001", "prop14" -> "prop-014"
+  const shortMatch = id.match(/^prop(\d+)$/);
+  if (shortMatch) {
+    const num = parseInt(shortMatch[1], 10);
+    const paddedId = `prop-${String(num).padStart(3, "0")}`;
+    found = getPropertyById(paddedId);
+    if (found) return found;
+
+    // 3) Fallback: find by index (1-based)
+    if (num >= 1 && num <= allProperties.length) {
+      return allProperties[num - 1];
+    }
+  }
+
+  // 4) Search by partial match
+  return allProperties.find((p) => p.id.includes(id) || id.includes(p.id));
+}
+
+// ─── Unified review type for local state ────────────────────────────────────
+
+interface DisplayReview {
+  id: string;
+  author: { name: string; avatar: string };
+  rating: number;
+  content: string;
+  date: string;
+}
+
+function mapMockReviewToDisplay(r: Review): DisplayReview {
+  return {
+    id: r.id,
+    author: {
+      name: `${r.author.firstName} ${r.author.lastName.charAt(0)}.`,
+      avatar: r.author.avatar,
+    },
+    rating: r.rating,
+    content: r.comment,
+    date: r.createdAt.split("T")[0],
+  };
+}
+
 export default function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { formatPrice, toggleFavorite, isFavorite } = useApp();
   const { addToast } = useToast();
   const router = useRouter();
 
-  const property = MOCK_PROPERTIES[id] || MOCK_PROPERTIES.prop1;
+  const property = resolveProperty(id);
+
+  // Load reviews from mock-data for this property
+  const mockPropertyReviews = property
+    ? getReviewsForProperty(property.id).map(mapMockReviewToDisplay)
+    : [];
+
+  // Similar properties from mock-data (excludes current property)
+  const similarProperties = property ? getSimilarProperties(property) : [];
 
   // Gallery
   const [galleryIndex, setGalleryIndex] = useState(0);
@@ -99,7 +110,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   const [videoPlaying, setVideoPlaying] = useState(false);
 
   // Investment simulator
-  const [simApport, setSimApport] = useState(property.price * 0.2);
+  const [simApport, setSimApport] = useState(0);
   const [simDuree, setSimDuree] = useState(20);
   const [simTaux, setSimTaux] = useState(1.5);
 
@@ -127,7 +138,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   // Review form
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
-  const [reviews, setReviews] = useState(MOCK_REVIEWS);
+  const [reviews, setReviews] = useState<DisplayReview[]>(mockPropertyReviews);
 
   // Share
   const [showShare, setShowShare] = useState(false);
@@ -138,35 +149,66 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   const [visitDate, setVisitDate] = useState("");
   const [visitTime, setVisitTime] = useState("10:00");
   const [showOfferModal, setShowOfferModal] = useState(false);
-  const [offerAmount, setOfferAmount] = useState(property.price);
+  const [offerAmount, setOfferAmount] = useState(0);
   const [offerConditions, setOfferConditions] = useState("");
 
-  // Computed average rating
-  const averageRating = reviews.length > 0
-    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-    : "0";
+  // Initialize price-dependent state when property changes
+  useEffect(() => {
+    if (property) {
+      setSimApport(property.price * 0.2);
+      setOfferAmount(property.price);
+    }
+  }, [property?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Update reviews when property changes
+  useEffect(() => {
+    if (property) {
+      const propReviews = getReviewsForProperty(property.id).map(mapMockReviewToDisplay);
+      setReviews(propReviews);
+    }
+  }, [property?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Track recently viewed
   useEffect(() => {
+    if (!property) return;
     try {
       const stored = localStorage.getItem("edome_recently_viewed");
       const ids: string[] = stored ? JSON.parse(stored) : [];
       const updated = [property.id, ...ids.filter((i) => i !== property.id)].slice(0, 10);
       localStorage.setItem("edome_recently_viewed", JSON.stringify(updated));
     } catch { /* ignore */ }
-  }, [property.id]);
+  }, [property?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keyboard nav for gallery
   useEffect(() => {
-    if (!showFullGallery) return;
+    if (!property || !showFullGallery) return;
+    const imgCount = property.images.length;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") setGalleryIndex((prev) => (prev + 1) % property.images.length);
-      if (e.key === "ArrowLeft") setGalleryIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+      if (e.key === "ArrowRight") setGalleryIndex((prev) => (prev + 1) % imgCount);
+      if (e.key === "ArrowLeft") setGalleryIndex((prev) => (prev - 1 + imgCount) % imgCount);
       if (e.key === "Escape") setShowFullGallery(false);
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [showFullGallery, property.images.length]);
+  }, [showFullGallery, property?.images?.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Computed average rating
+  const averageRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : "0";
+
+  // If property not found, show a not-found state
+  if (!property) {
+    return (
+      <div className="max-w-5xl mx-auto py-20 text-center">
+        <h1 className="text-2xl font-bold text-[var(--foreground)] mb-4">Bien introuvable</h1>
+        <p className="text-[var(--text-secondary)] mb-6">Le bien avec l&apos;identifiant &quot;{id}&quot; n&apos;existe pas.</p>
+        <Link href="/explorer" className="px-6 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors">
+          Retour à l&apos;explorer
+        </Link>
+      </div>
+    );
+  }
 
   const optionsTotal = PAID_OPTIONS.filter((o) => selectedOptions.has(o.id)).reduce((sum, o) => sum + o.price, 0);
 
@@ -314,7 +356,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 </span>
                 <span className="flex items-center gap-1 text-[#C4956A]">
                   <Star className="w-4 h-4 fill-[#C4956A]" />
-                  {property.rating} ({property.reviewCount} avis)
+                  {reviews.length > 0 ? averageRating : property.rating} ({reviews.length > 0 ? reviews.length : property.reviewCount} avis)
                 </span>
               </div>
             </div>
@@ -762,24 +804,26 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           </div>
 
           {/* Similar properties */}
+          {similarProperties.length > 0 && (
           <div className="mb-8">
             <h2 className="text-lg font-bold text-[var(--foreground)] mb-4">Biens similaires</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {SIMILAR_PROPERTIES.map((sp) => (
+              {similarProperties.slice(0, 3).map((sp) => (
                 <Link
                   key={sp.id}
                   href={`/explorer/${sp.id}`}
                   className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden card-hover"
                 >
-                  <img src={sp.image} alt="" className="w-full h-36 object-cover" />
+                  <img src={sp.images[0]} alt="" className="w-full h-36 object-cover" />
                   <div className="p-3">
                     <p className="text-sm font-medium text-[var(--foreground)] truncate">{sp.title}</p>
                     <p className="text-sm font-bold text-[#C4956A] mt-1">
                       {formatPrice(sp.price, sp.currency)}
                       {sp.transactionType === "location-ct" && <span className="text-xs text-[var(--text-muted)]">/nuit</span>}
+                      {sp.transactionType === "location-lt" && <span className="text-xs text-[var(--text-muted)]">/mois</span>}
                     </p>
                     <div className="flex items-center gap-3 mt-1 text-xs text-[var(--text-muted)]">
-                      <span>{sp.city}</span>
+                      <span>{sp.location.city}</span>
                       <span className="flex items-center gap-0.5">
                         <Star className="w-3 h-3 fill-[#C4956A] text-[#C4956A]" /> {sp.rating}
                       </span>
@@ -789,6 +833,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               ))}
             </div>
           </div>
+          )}
         </div>
 
         {/* Right sidebar */}

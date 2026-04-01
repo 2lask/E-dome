@@ -98,7 +98,7 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
       location: `${user.city}, ${user.country}`,
       property: i % 3 === 0
         ? {
-            id: `prop${i}`,
+            id: `prop-${String(((i / 3) % 14) + 1).padStart(3, "0")}`,
             title: `Villa de luxe à ${user.city}`,
             description: "Villa exceptionnelle",
             type: "villa",
