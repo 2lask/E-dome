@@ -5,6 +5,15 @@ import { useApp } from "@/lib/context";
 import { roleLabels } from "@/lib/types";
 import type { Role } from "@/lib/types";
 
+// ─── Alert types ────────────────────────────────────────────────────────────
+
+interface PropertyAlert {
+  id: string;
+  type: string;
+  city: string;
+  priceLabel: string;
+}
+
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 type Section = "general" | "securite" | "notifications" | "confidentialite" | "facturation" | "roles";
@@ -87,6 +96,39 @@ export default function ParametresPage() {
     showStats: true,
   });
   const [showGDPR, setShowGDPR] = useState(false);
+
+  // Property alerts
+  const [alerts, setAlerts] = useState<PropertyAlert[]>([
+    { id: "a1", type: "Vente", city: "Lausanne", priceLabel: "500K-1.5M CHF" },
+    { id: "a2", type: "Location CT", city: "Verbier", priceLabel: "200-500 CHF/nuit" },
+  ]);
+  const [alertForm, setAlertForm] = useState({ type: "Tous", priceMin: "", priceMax: "", city: "" });
+  const [removingAlertId, setRemovingAlertId] = useState<string | null>(null);
+
+  const createAlert = () => {
+    if (!alertForm.city.trim()) return;
+    const priceLabel =
+      alertForm.priceMin || alertForm.priceMax
+        ? `${alertForm.priceMin || "0"}-${alertForm.priceMax || "∞"} CHF`
+        : "Tout prix";
+    const newAlert: PropertyAlert = {
+      id: `a${Date.now()}`,
+      type: alertForm.type,
+      city: alertForm.city,
+      priceLabel,
+    };
+    setAlerts((prev) => [newAlert, ...prev]);
+    setAlertForm({ type: "Tous", priceMin: "", priceMax: "", city: "" });
+    showToast("Alerte créée !");
+  };
+
+  const removeAlert = (id: string) => {
+    setRemovingAlertId(id);
+    setTimeout(() => {
+      setAlerts((prev) => prev.filter((a) => a.id !== id));
+      setRemovingAlertId(null);
+    }, 300);
+  };
 
   // Billing
   const mockPlan = { name: "Premium", price: 49, period: "/mois" };
@@ -336,6 +378,104 @@ export default function ParametresPage() {
                       </div>
                     );
                   })}
+                </div>
+              </div>
+
+              {/* ─── Alertes de biens ─────────────────────────────── */}
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6">
+                <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Alertes de biens</h2>
+
+                {/* Create alert form */}
+                <div className="p-4 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] mb-5">
+                  <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Créer une alerte</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <label className="block text-xs text-[var(--text-muted)] mb-1">Type</label>
+                      <select
+                        value={alertForm.type}
+                        onChange={(e) => setAlertForm({ ...alertForm, type: e.target.value })}
+                        className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--card)] border border-[var(--input-border)] text-[var(--foreground)]"
+                      >
+                        <option value="Tous">Tous</option>
+                        <option value="Location CT">Location CT</option>
+                        <option value="Location LT">Location LT</option>
+                        <option value="Vente">Vente</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[var(--text-muted)] mb-1">Ville</label>
+                      <input
+                        type="text"
+                        value={alertForm.city}
+                        onChange={(e) => setAlertForm({ ...alertForm, city: e.target.value })}
+                        placeholder="Ex: Lausanne"
+                        className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--card)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[var(--text-muted)] mb-1">Prix min</label>
+                      <input
+                        type="number"
+                        value={alertForm.priceMin}
+                        onChange={(e) => setAlertForm({ ...alertForm, priceMin: e.target.value })}
+                        placeholder="0"
+                        className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--card)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[var(--text-muted)] mb-1">Prix max</label>
+                      <input
+                        type="number"
+                        value={alertForm.priceMax}
+                        onChange={(e) => setAlertForm({ ...alertForm, priceMax: e.target.value })}
+                        placeholder="Illimité"
+                        className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--card)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)]"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={createAlert}
+                    className="px-5 py-2.5 text-sm rounded-xl text-white font-medium transition-colors hover:opacity-90"
+                    style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}
+                  >
+                    Créer l&apos;alerte
+                  </button>
+                </div>
+
+                {/* Active alerts list */}
+                <div>
+                  <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Mes alertes actives</h3>
+                  {alerts.length === 0 ? (
+                    <p className="text-sm text-[var(--text-muted)] italic">Aucune alerte active.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {alerts.map((alert) => (
+                        <div
+                          key={alert.id}
+                          className="flex items-center justify-between p-3 rounded-xl border border-[var(--card-border)] transition-all duration-300"
+                          style={{
+                            opacity: removingAlertId === alert.id ? 0 : 1,
+                            transform: removingAlertId === alert.id ? "translateX(20px)" : "translateX(0)",
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 rounded-md bg-[#C4956A]/10 text-[#C4956A] text-xs font-medium">
+                              {alert.type}
+                            </span>
+                            <span className="text-sm text-[var(--foreground)]">
+                              {alert.city} · {alert.priceLabel}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => removeAlert(alert.id)}
+                            className="w-7 h-7 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

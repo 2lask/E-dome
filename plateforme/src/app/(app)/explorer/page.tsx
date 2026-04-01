@@ -586,28 +586,82 @@ export default function ExplorerPage() {
       {/* Map floating button */}
       <button
         onClick={() => setShowMap(true)}
-        className="fixed bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 z-30 px-5 py-3 rounded-full bg-[var(--foreground)] text-[var(--background)] font-medium flex items-center gap-2 shadow-xl hover:opacity-90 transition-opacity"
+        className="fixed bottom-20 md:bottom-8 right-6 z-30 px-5 py-3 rounded-full font-medium flex items-center gap-2 shadow-xl text-white hover:opacity-90 transition-opacity"
+        style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}
       >
-        <Map className="w-5 h-5" />
+        <span className="text-lg">🗺</span>
         Carte
       </button>
 
       {/* Map modal */}
       {showMap && (
-        <div className="fixed inset-0 z-50 bg-[var(--overlay)] flex items-center justify-center">
-          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl w-[90vw] h-[80vh] max-w-4xl overflow-hidden animate-scale-in">
-            <div className="flex items-center justify-between p-4 border-b border-[var(--card-border)]">
-              <h3 className="font-semibold text-[var(--foreground)]">Carte des biens</h3>
-              <button onClick={() => setShowMap(false)} className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
+        <div className="fixed inset-0 z-50 bg-[var(--overlay)] flex items-center justify-center p-4" onClick={() => setShowMap(false)}>
+          <div
+            className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden animate-scale-in flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-[var(--card-border)]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}>
+                  🗺
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[var(--foreground)]">Carte des biens</h3>
+                  <p className="text-xs text-[var(--text-muted)]">{filtered.length} bien{filtered.length > 1 ? "s" : ""} disponible{filtered.length > 1 ? "s" : ""}</p>
+                </div>
+              </div>
+              <button onClick={() => setShowMap(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="w-full h-full flex items-center justify-center text-[var(--text-muted)]">
-              <div className="text-center">
-                <Map className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                <p className="text-sm">Carte interactive</p>
-                <p className="text-xs mt-1">{filtered.length} biens dans cette zone</p>
-              </div>
+
+            {/* Properties grouped by country */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-6">
+              {Object.entries(
+                filtered.reduce<Record<string, typeof filtered>>((acc, prop) => {
+                  const country = prop.location.country;
+                  if (!acc[country]) acc[country] = [];
+                  acc[country].push(prop);
+                  return acc;
+                }, {})
+              ).map(([country, props]) => (
+                <div key={country}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <MapPin className="w-4 h-4 text-[#C4956A]" />
+                    <h4 className="text-sm font-semibold text-[var(--foreground)]">{country}</h4>
+                    <span className="text-xs text-[var(--text-muted)]">({props.length} bien{props.length > 1 ? "s" : ""})</span>
+                  </div>
+                  <div className="space-y-2">
+                    {props.map((prop) => (
+                      <Link
+                        key={prop.id}
+                        href={`/explorer/${prop.id}`}
+                        onClick={() => setShowMap(false)}
+                        className="flex items-center gap-3 p-3 rounded-xl border border-[var(--card-border)] hover:border-[#C4956A]/40 hover:bg-[#C4956A]/5 transition-colors"
+                      >
+                        <img src={prop.images[0]} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-[var(--foreground)] truncate">{prop.title}</p>
+                          <p className="text-xs text-[var(--text-muted)] flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3" /> {prop.location.city}
+                          </p>
+                        </div>
+                        <p className="text-sm font-bold text-[#C4956A] shrink-0">
+                          {formatPrice(prop.price, prop.currency)}
+                          {prop.transactionType === "location-ct" && <span className="text-xs font-normal text-[var(--text-muted)]">/nuit</span>}
+                          {prop.transactionType === "location-lt" && <span className="text-xs font-normal text-[var(--text-muted)]">/mois</span>}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer note */}
+            <div className="p-4 border-t border-[var(--card-border)] text-center">
+              <p className="text-xs text-[var(--text-muted)] italic">Carte interactive disponible prochainement</p>
             </div>
           </div>
         </div>

@@ -2425,15 +2425,18 @@ export function getPropertyById(id: string): Property | undefined {
 }
 
 export function getSimilarProperties(property: Property): Property[] {
-  return properties
-    .filter(
-      (p) =>
-        p.id !== property.id &&
-        (p.type === property.type ||
-          p.location.country === property.location.country ||
-          p.transactionType === property.transactionType)
-    )
-    .slice(0, 4);
+  // Priorité : même type de transaction, puis même pays, puis même type de bien
+  const sameTransaction = properties.filter(
+    (p) => p.id !== property.id && p.transactionType === property.transactionType
+  );
+  if (sameTransaction.length >= 3) return sameTransaction.slice(0, 4);
+  // Fallback : même pays
+  const sameCountry = properties.filter(
+    (p) => p.id !== property.id && p.location.country === property.location.country
+  );
+  if (sameCountry.length >= 2) return sameCountry.slice(0, 4);
+  // Dernier fallback : n'importe quel bien différent
+  return properties.filter((p) => p.id !== property.id).slice(0, 4);
 }
 
 export function getReviewsForProperty(propertyId: string): Review[] {
