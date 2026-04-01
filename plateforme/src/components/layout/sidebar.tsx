@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -36,44 +36,156 @@ interface NavItem {
   key: string;
   href: string;
   icon: React.ElementType;
-  roles?: Role[];
   badge?: number;
   indicator?: boolean;
 }
 
-const mainNavItems: NavItem[] = [
-  { key: "nav.feed", href: "/feed", icon: Home },
-  { key: "nav.live", href: "/live", icon: Radio, indicator: true },
-  { key: "nav.explorer", href: "/explorer", icon: Search },
-  { key: "nav.publier", href: "/publier", icon: Plus, roles: ["hote", "agence", "promoteur", "proprietaire"] },
-  { key: "nav.favoris", href: "/favoris", icon: Heart },
-  { key: "nav.messages", href: "/messages", icon: MessageCircle, badge: 3 },
-  { key: "nav.notifications", href: "/notifications", icon: Bell, badge: 5 },
-  { key: "nav.reservations", href: "/reservations", icon: Calendar },
-  {
-    key: "nav.dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-    roles: ["hote", "agence", "promoteur", "proprietaire", "apporteur", "formateur", "courtier"],
-  },
-  {
-    key: "nav.statistiques",
-    href: "/statistiques",
-    icon: BarChart3,
-    roles: ["hote", "agence", "promoteur", "proprietaire"],
-  },
-  { key: "nav.apporteurs", href: "/apporteurs", icon: Users, roles: ["apporteur"] },
-  { key: "nav.formations", href: "/formations", icon: BookOpen },
-  { key: "nav.services", href: "/services", icon: Briefcase },
-  { key: "nav.evenements", href: "/evenements", icon: CalendarDays },
-  { key: "nav.investisseurs", href: "/investisseurs", icon: Wallet, roles: ["investisseur"] },
-];
+// Role-specific navigation configurations
+const roleNavKeys: Record<Role, string[]> = {
+  client: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.formations",
+    "nav.evenements",
+    "nav.messages",
+    "nav.favoris",
+    "nav.reservations",
+  ],
+  hote: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.publier",
+    "nav.reservations",
+    "nav.messages",
+    "nav.dashboard",
+    "nav.statistiques",
+    "nav.live",
+  ],
+  agence: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.publier",
+    "nav.reservations",
+    "nav.messages",
+    "nav.dashboard",
+    "nav.statistiques",
+    "nav.services",
+  ],
+  promoteur: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.publier",
+    "nav.dashboard",
+    "nav.statistiques",
+    "nav.services",
+    "nav.evenements",
+  ],
+  formateur: [
+    "nav.feed",
+    "nav.formations",
+    "nav.live",
+    "nav.dashboard",
+    "nav.statistiques",
+    "nav.messages",
+  ],
+  apporteur: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.apporteurs",
+    "nav.messages",
+    "nav.formations",
+  ],
+  investisseur: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.favoris",
+    "nav.investisseurs",
+    "nav.formations",
+    "nav.evenements",
+  ],
+  proprietaire: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.publier",
+    "nav.reservations",
+    "nav.messages",
+    "nav.dashboard",
+    "nav.statistiques",
+  ],
+  photographe: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.services",
+    "nav.messages",
+    "nav.dashboard",
+  ],
+  courtier: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.publier",
+    "nav.reservations",
+    "nav.messages",
+    "nav.dashboard",
+    "nav.statistiques",
+    "nav.services",
+  ],
+  architecte: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.services",
+    "nav.messages",
+    "nav.dashboard",
+  ],
+  notaire: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.services",
+    "nav.messages",
+    "nav.dashboard",
+  ],
+  admin: [
+    "nav.feed",
+    "nav.explorer",
+    "nav.publier",
+    "nav.favoris",
+    "nav.messages",
+    "nav.notifications",
+    "nav.reservations",
+    "nav.dashboard",
+    "nav.statistiques",
+    "nav.apporteurs",
+    "nav.formations",
+    "nav.services",
+    "nav.evenements",
+    "nav.investisseurs",
+    "nav.live",
+  ],
+};
+
+// All possible nav items with their metadata
+const allNavItems: Record<string, NavItem> = {
+  "nav.feed": { key: "nav.feed", href: "/feed", icon: Home },
+  "nav.live": { key: "nav.live", href: "/live", icon: Radio, indicator: true },
+  "nav.explorer": { key: "nav.explorer", href: "/explorer", icon: Search },
+  "nav.publier": { key: "nav.publier", href: "/publier", icon: Plus },
+  "nav.favoris": { key: "nav.favoris", href: "/favoris", icon: Heart },
+  "nav.messages": { key: "nav.messages", href: "/messages", icon: MessageCircle, badge: 3 },
+  "nav.notifications": { key: "nav.notifications", href: "/notifications", icon: Bell, badge: 5 },
+  "nav.reservations": { key: "nav.reservations", href: "/reservations", icon: Calendar },
+  "nav.dashboard": { key: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
+  "nav.statistiques": { key: "nav.statistiques", href: "/statistiques", icon: BarChart3 },
+  "nav.apporteurs": { key: "nav.apporteurs", href: "/apporteurs", icon: Users },
+  "nav.formations": { key: "nav.formations", href: "/formations", icon: BookOpen },
+  "nav.services": { key: "nav.services", href: "/services", icon: Briefcase },
+  "nav.evenements": { key: "nav.evenements", href: "/evenements", icon: CalendarDays },
+  "nav.investisseurs": { key: "nav.investisseurs", href: "/investisseurs", icon: Wallet },
+};
 
 const bottomNavItems: NavItem[] = [
   { key: "nav.profil", href: "/profil", icon: User },
   { key: "nav.parametres", href: "/parametres", icon: Settings },
   { key: "nav.deconnexion", href: "/auth/connexion", icon: LogOut },
-  { key: "nav.administration", href: "/administration", icon: Shield, roles: ["admin"] },
+  { key: "nav.administration", href: "/administration", icon: Shield },
 ];
 
 interface SidebarProps {
@@ -83,13 +195,23 @@ interface SidebarProps {
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
-  const { activeRole, availableRoles } = useApp();
+  const { activeRole } = useApp();
   const { t } = useLanguage();
 
-  const isVisible = (item: NavItem) => {
-    if (!item.roles) return true;
-    return item.roles.some((r) => availableRoles.includes(r) || activeRole === r);
-  };
+  // Build nav items based on active role
+  const mainNavItems = useMemo(() => {
+    const keys = roleNavKeys[activeRole] || roleNavKeys.client;
+    return keys
+      .map((key) => allNavItems[key])
+      .filter(Boolean);
+  }, [activeRole]);
+
+  const visibleBottomItems = useMemo(() => {
+    return bottomNavItems.filter((item) => {
+      if (item.key === "nav.administration") return activeRole === "admin";
+      return true;
+    });
+  }, [activeRole]);
 
   const isActive = (href: string) => {
     if (href === "/feed") return pathname === "/feed" || pathname === "/";
@@ -131,7 +253,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Main nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1 no-scrollbar">
-        {mainNavItems.filter(isVisible).map((item) => {
+        {mainNavItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
           return (
@@ -176,7 +298,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Bottom nav */}
       <div className="px-3 py-2 space-y-1" style={{ borderTop: "1px solid var(--divider)" }}>
-        {bottomNavItems.filter(isVisible).map((item) => {
+        {visibleBottomItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
           const isLogout = item.key === "nav.deconnexion";
@@ -226,7 +348,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 className="text-sm font-medium truncate"
                 style={{ color: "var(--text-primary)" }}
               >
-                Leo Demo
+                Léo Martin
               </p>
               <span
                 className={cn(
@@ -248,7 +370,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           style={{ color: "var(--text-muted)", borderTop: "1px solid var(--divider)" }}
         >
           <Link href="/conditions" className="hover:underline">Conditions</Link>
-          <Link href="/confidentialite" className="hover:underline">Confidentialité</Link>
+          <Link href="/confidentialite" className="hover:underline">Confidentialite</Link>
           <Link href="/aide" className="hover:underline">Aide</Link>
           <Link href="/contact" className="hover:underline">Contact</Link>
         </div>

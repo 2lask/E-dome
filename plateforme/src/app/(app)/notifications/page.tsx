@@ -8,7 +8,7 @@ import { formatDate } from "@/lib/utils";
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
 const initialNotifications: Notification[] = [
-  { id: "n1", type: "reservation", title: "Nouvelle réservation", message: "Sophie Bernard a réservé le Chalet Alpin du 10 au 17 juillet.", read: false, createdAt: "2026-04-01T09:00:00", href: "/reservations" },
+  { id: "n1", type: "reservation", title: "Nouvelle réservation", message: "Sophie Martin a réservé le Chalet Alpin du 10 au 17 juillet.", read: false, createdAt: "2026-04-01T09:00:00", href: "/reservations" },
   { id: "n2", type: "message", title: "Nouveau message", message: "Jean Dupont vous a envoyé un message.", read: false, createdAt: "2026-04-01T08:30:00", href: "/messages" },
   { id: "n3", type: "payment", title: "Paiement reçu", message: "Vous avez reçu un paiement de 1'200 CHF.", read: false, createdAt: "2026-03-31T16:00:00", href: "/dashboard" },
   { id: "n4", type: "review", title: "Nouvel avis", message: "Marie Leroy a laissé un avis 5 étoiles.", read: true, createdAt: "2026-03-31T10:00:00", href: "/profil" },

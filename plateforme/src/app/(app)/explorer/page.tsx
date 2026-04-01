@@ -134,6 +134,11 @@ export default function ExplorerPage() {
   const [visibleCount, setVisibleCount] = useState(6);
   const [loadingMore, setLoadingMore] = useState(false);
 
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(6);
+  }, [search, filterType, filterTransaction, filterCountry, filterPriceMin, filterPriceMax, filterBedrooms, sortBy]);
+
   // Load saved searches and recently viewed
   useEffect(() => {
     try {
@@ -552,8 +557,11 @@ export default function ExplorerPage() {
       )}
 
       {/* Load more / Pagination */}
-      {hasMore && (
-        <div className="flex justify-center mt-8">
+      <div className="flex flex-col items-center gap-3 mt-8">
+        <p className="text-sm text-[var(--text-secondary)]">
+          Affichage de {visibleProperties.length} sur {filtered.length} bien{filtered.length > 1 ? "s" : ""}
+        </p>
+        {hasMore ? (
           <button
             onClick={loadMore}
             disabled={loadingMore}
@@ -565,8 +573,10 @@ export default function ExplorerPage() {
               "Charger plus"
             )}
           </button>
-        </div>
-      )}
+        ) : filtered.length > 0 ? (
+          <p className="text-sm text-[var(--text-muted)] italic">Tous les biens sont affichés</p>
+        ) : null}
+      </div>
 
       {/* Map floating button */}
       <button

@@ -100,12 +100,22 @@ export default function ProfilPage() {
   });
 
   const totalReviews = ratingBreakdown.reduce((s, r) => s + r.count, 0);
-  const tabs = [
-    { key: "biens" as const, label: "Mes Biens" },
-    { key: "publications" as const, label: "Publications" },
-    { key: "avis" as const, label: "Avis" },
-    { key: "apropos" as const, label: "A propos" },
-  ];
+  const isClient = activeRole === "client";
+  const propertyCount = mockProperties.length;
+
+  const tabs = isClient
+    ? [
+        { key: "biens" as const, label: "Biens sauvegardés" },
+        { key: "publications" as const, label: "Publications" },
+        { key: "avis" as const, label: "Avis" },
+        { key: "apropos" as const, label: "A propos" },
+      ]
+    : [
+        { key: "biens" as const, label: "Mes Biens" },
+        { key: "publications" as const, label: "Publications" },
+        { key: "avis" as const, label: "Avis" },
+        { key: "apropos" as const, label: "A propos" },
+      ];
 
   return (
     <div className="max-w-4xl mx-auto pb-12 animate-fade-in">
@@ -139,10 +149,10 @@ export default function ProfilPage() {
         {/* Stats */}
         <div className="flex gap-6 mt-6 flex-wrap">
           {[
-            { label: "Biens", value: currentUser.stats.properties },
+            ...(!isClient ? [{ label: "Biens", value: propertyCount }] : []),
             { label: "Abonnés", value: currentUser.stats.followers },
             { label: "Suivis", value: currentUser.stats.following },
-            { label: "Note", value: `${currentUser.stats.rating}/5` },
+            ...(totalReviews > 0 || !isClient ? [{ label: "Note", value: `${currentUser.stats.rating}/5` }] : []),
           ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-lg font-bold text-[var(--foreground)]">
@@ -177,7 +187,7 @@ export default function ProfilPage() {
 
         {/* Tab Content */}
         <div className="mt-6">
-          {tab === "biens" && (
+          {tab === "biens" && !isClient && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {mockProperties.map((p) => (
                 <Link
@@ -203,6 +213,26 @@ export default function ProfilPage() {
                   </div>
                 </Link>
               ))}
+            </div>
+          )}
+
+          {tab === "biens" && isClient && (
+            <div className="space-y-6">
+              {/* Formations en cours */}
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Formations en cours</h3>
+                <p className="text-sm text-[var(--text-muted)]">Aucune formation en cours.</p>
+              </div>
+              {/* Événements à venir */}
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Événements à venir</h3>
+                <p className="text-sm text-[var(--text-muted)]">Aucun événement à venir.</p>
+              </div>
+              {/* Réservations récentes */}
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Réservations récentes</h3>
+                <p className="text-sm text-[var(--text-muted)]">Aucune réservation récente.</p>
+              </div>
             </div>
           )}
 

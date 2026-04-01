@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import {
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send,
   MapPin, Image as ImageIcon, Video, X, ChevronUp, Plus,
   Edit3, Trash2, Flag, EyeOff, Copy, Play, Pause,
-  TrendingUp, Calendar, Users,
+  TrendingUp, Calendar, Users, Upload, Building2, GraduationCap,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { timeAgo, formatCount } from "@/lib/utils";
@@ -147,11 +147,13 @@ const UPCOMING_EVENTS = [
 const CURRENT_USER_ID = "u1";
 
 export default function FeedPage() {
-  const { formatPrice, toggleFollow, isFollowing } = useApp();
+  const { formatPrice, toggleFollow, isFollowing, activeRole } = useApp();
   const [posts, setPosts] = useState<SocialPost[]>(() => generatePosts(5));
   const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis" | "tendances">("pour-vous");
   const [showStoryViewer, setShowStoryViewer] = useState<number | null>(null);
   const [storyProgress, setStoryProgress] = useState(0);
+  const [viewedStories, setViewedStories] = useState<Set<string>>(() => new Set(MOCK_STORIES.filter((s) => s.viewed).map((s) => s.id)));
+  const [showStoryUpload, setShowStoryUpload] = useState(false);
 
   // Create post
   const [newPostContent, setNewPostContent] = useState("");
@@ -175,9 +177,13 @@ export default function FeedPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  // Story viewer
+  // Story viewer — mark as viewed + auto-close after 5s
   useEffect(() => {
     if (showStoryViewer === null) return;
+    const story = MOCK_STORIES[showStoryViewer];
+    if (story) {
+      setViewedStories((prev) => new Set([...prev, story.id]));
+    }
     setStoryProgress(0);
     const interval = setInterval(() => {
       setStoryProgress((prev) => {
@@ -295,6 +301,14 @@ export default function FeedPage() {
     setEditContent("");
   };
 
+  // ─── Tab filtering ──────────────────────────────────────────────────────
+  const filteredPosts = useMemo(() => {
+    if (activeTab === "pour-vous") return posts;
+    if (activeTab === "suivis") return posts.filter((p) => isFollowing(p.author.id));
+    if (activeTab === "tendances") return [...posts].sort((a, b) => b.likes - a.likes);
+    return posts;
+  }, [posts, activeTab, isFollowing]);
+
   const renderContent = (content: string) => {
     return content.split(/([@#]\S+)/g).map((part, i) => {
       if (part.startsWith("@")) {
@@ -321,8 +335,11 @@ export default function FeedPage() {
       <div className="mb-6 overflow-x-auto no-scrollbar">
         <div className="flex gap-4 pb-2">
           {/* Your story */}
-          <button className="flex flex-col items-center gap-1.5 shrink-0">
-            <div className="w-16 h-16 rounded-full border-2 border-dashed border-[var(--text-muted)] flex items-center justify-center bg-[var(--card)]">
+          <button
+            onClick={() => setShowStoryUpload(true)}
+            className="flex flex-col items-center gap-1.5 shrink-0"
+          >
+            <div className="w-16 h-16 rounded-full border-2 border-dashed border-[var(--text-muted)] flex items-center justify-center bg-[var(--card)] hover:border-[#C4956A] transition-colors">
               <Plus className="w-6 h-6 text-[var(--text-muted)]" />
             </div>
             <span className="text-xs text-[var(--text-muted)]">Votre story</span>
@@ -335,7 +352,7 @@ export default function FeedPage() {
             >
               <div
                 className={`w-16 h-16 rounded-full p-0.5 ${
-                  story.viewed ? "bg-[var(--text-muted)]" : "bg-gradient-to-br from-[#C4956A] to-[#e8c89e]"
+                  viewedStories.has(story.id) ? "bg-[var(--text-muted)]" : "bg-gradient-to-br from-[#C4956A] to-[#e8c89e]"
                 }`}
               >
                 <img
@@ -388,6 +405,42 @@ export default function FeedPage() {
         </div>
       )}
 
+      {/* Story upload overlay */}
+      {showStoryUpload && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl w-[90vw] max-w-md p-6 animate-scale-in">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-[var(--foreground)]">Créer une story</h3>
+              <button
+                onClick={() => setShowStoryUpload(false)}
+                className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="relative border-2 border-dashed border-[var(--card-border)] rounded-xl p-10 text-center hover:border-[#C4956A]/50 transition-colors cursor-pointer">
+              <Upload className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
+              <p className="text-sm font-medium text-[var(--foreground)] mb-1">
+                Glissez une image ou cliquez pour sélectionner
+              </p>
+              <p className="text-xs text-[var(--text-muted)]">JPG, PNG ou WEBP — max 10 Mo</p>
+              <input
+                type="file"
+                accept="image/*"
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={() => setShowStoryUpload(false)}
+              />
+            </div>
+            <button
+              onClick={() => setShowStoryUpload(false)}
+              className="w-full mt-4 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors"
+            >
+              Publier la story
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Create post */}
       <div className="mb-6 p-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)]">
         <div className="flex gap-3">
@@ -430,6 +483,25 @@ export default function FeedPage() {
                   <option value="post">Post</option>
                   <option value="reel">Reel</option>
                 </select>
+                {/* Role-based options */}
+                {(activeRole === "hote" || activeRole === "agence" || activeRole === "promoteur") && (
+                  <button
+                    className="flex items-center gap-1 p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors"
+                    title="Attacher un bien"
+                  >
+                    <Building2 className="w-5 h-5" />
+                    <span className="text-xs hidden sm:inline">Bien</span>
+                  </button>
+                )}
+                {activeRole === "formateur" && (
+                  <button
+                    className="flex items-center gap-1 p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors"
+                    title="Attacher une formation"
+                  >
+                    <GraduationCap className="w-5 h-5" />
+                    <span className="text-xs hidden sm:inline">Formation</span>
+                  </button>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-[var(--text-muted)]">
@@ -479,7 +551,17 @@ export default function FeedPage() {
 
           {/* Posts */}
           <div className="space-y-6">
-            {posts.map((post, idx) => (
+            {filteredPosts.length === 0 && (
+              <div className="text-center py-16">
+                <Users className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
+                <p className="text-sm text-[var(--text-secondary)]">
+                  {activeTab === "suivis"
+                    ? "Vous ne suivez personne pour le moment. Suivez des utilisateurs pour voir leurs publications ici."
+                    : "Aucune publication à afficher."}
+                </p>
+              </div>
+            )}
+            {filteredPosts.map((post, idx) => (
               <article
                 key={post.id}
                 className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden animate-fade-in"

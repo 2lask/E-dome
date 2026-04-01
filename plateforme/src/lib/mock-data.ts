@@ -27,11 +27,11 @@ import type {
 
 export const currentUser: User = {
   id: 'user-001',
-  firstName: 'Karim',
-  lastName: 'Benali',
-  email: 'karim.benali@edome.ch',
+  firstName: 'Léo',
+  lastName: 'Martin',
+  email: 'leo.martin@edome.ch',
   avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-  city: 'Neuch\u00e2tel',
+  city: 'Neuchâtel',
   country: 'Suisse',
   roles: ['hote', 'apporteur', 'formateur'] as Role[],
   activeRole: 'hote' as Role,
@@ -44,9 +44,9 @@ export const currentUser: User = {
     transactions: 52,
     revenue: 485000,
   },
-  bio: 'Expert immobilier certifi\u00e9 USPI. Sp\u00e9cialiste des investissements locatifs en Suisse romande et \u00e0 l\u2019international. Passionn\u00e9 par l\u2019innovation proptech.',
-  languages: ['Fran\u00e7ais', 'English', 'Arabic'],
-  certifications: ['Expert Immobilier USPI (2024)', 'Courtier F\u00e9d\u00e9ral (2022)'],
+  bio: 'Expert immobilier certifié USPI. Spécialiste des investissements locatifs en Suisse romande et à l\u2019international. Passionné par l\u2019innovation proptech.',
+  languages: ['Français', 'English', 'Arabic'],
+  certifications: ['Expert Immobilier USPI (2024)', 'Courtier Fédéral (2022)'],
   responseTime: '2h',
 };
 
@@ -471,7 +471,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1520984032042-162d526883e0?w=800&h=600&fit=crop',
     ],
     videos: [],
-    host: users[0], // Karim
+    host: users[0], // Léo
     bedrooms: 6,
     bathrooms: 4,
     area: 350,
@@ -1033,7 +1033,7 @@ export const conversations: Conversation[] = [
     id: 'conv-001',
     participant: users[1],
     messages: [
-      { id: 'msg-001', senderId: 'user-002', content: 'Bonjour Karim, j\u2019ai un client int\u00e9ress\u00e9 par le chalet de Verbier.', timestamp: '2026-03-31T09:00:00Z', read: true },
+      { id: 'msg-001', senderId: 'user-002', content: 'Bonjour Léo, j\u2019ai un client intéressé par le chalet de Verbier.', timestamp: '2026-03-31T09:00:00Z', read: true },
       { id: 'msg-002', senderId: 'user-001', content: 'Super Sophie ! Il est disponible \u00e0 partir du 15 avril. Quel budget pour ton client ?', timestamp: '2026-03-31T09:15:00Z', read: true },
       { id: 'msg-003', senderId: 'user-002', content: 'Budget illimit\u00e9, c\u2019est un family office genevois. On peut organiser une visite cette semaine ?', timestamp: '2026-03-31T09:30:00Z', read: false },
     ],
@@ -1045,7 +1045,7 @@ export const conversations: Conversation[] = [
     id: 'conv-002',
     participant: users[3],
     messages: [
-      { id: 'msg-004', senderId: 'user-004', content: 'Salam Karim ! Le riad est pr\u00eat pour les photos. Tu viens quand \u00e0 Marrakech ?', timestamp: '2026-03-30T15:00:00Z', read: true },
+      { id: 'msg-004', senderId: 'user-004', content: 'Salam Léo ! Le riad est prêt pour les photos. Tu viens quand à Marrakech ?', timestamp: '2026-03-30T15:00:00Z', read: true },
       { id: 'msg-005', senderId: 'user-001', content: 'Inchallah la semaine prochaine. Je te confirme les dates demain.', timestamp: '2026-03-30T16:00:00Z', read: true },
       { id: 'msg-006', senderId: 'user-004', content: 'Parfait ! J\u2019ai aussi 2 nouveaux riads \u00e0 te montrer pour le portefeuille.', timestamp: '2026-03-30T16:30:00Z', read: true },
     ],
@@ -1082,7 +1082,7 @@ export const conversations: Conversation[] = [
     id: 'conv-005',
     participant: users[5],
     messages: [
-      { id: 'msg-014', senderId: 'user-006', content: 'Hi Karim, I have a VIP client looking for a ski chalet in Switzerland. Any recommendations?', timestamp: '2026-03-27T12:00:00Z', read: true },
+      { id: 'msg-014', senderId: 'user-006', content: 'Hi Léo, I have a VIP client looking for a ski chalet in Switzerland. Any recommendations?', timestamp: '2026-03-27T12:00:00Z', read: true },
       { id: 'msg-015', senderId: 'user-001', content: 'Absolutely Yasmin! Our Verbier chalet would be perfect. I\u2019ll send the full dossier.', timestamp: '2026-03-27T13:00:00Z', read: true },
     ],
     unreadCount: 0,
@@ -1094,7 +1094,7 @@ export const conversations: Conversation[] = [
     participant: users[7],
     messages: [
       { id: 'msg-016', senderId: 'user-001', content: 'Nathalie, j\u2019aurais besoin de votre expertise pour un acte de vente \u00e0 Neuch\u00e2tel.', timestamp: '2026-03-26T09:00:00Z', read: true },
-      { id: 'msg-017', senderId: 'user-008', content: 'Bien s\u00fbr Karim. Envoyez-moi les documents et je vous fais un devis. D\u00e9lai habituel : 10 jours ouvrables.', timestamp: '2026-03-26T11:00:00Z', read: true },
+      { id: 'msg-017', senderId: 'user-008', content: 'Bien sûr Léo. Envoyez-moi les documents et je vous fais un devis. Délai habituel : 10 jours ouvrables.', timestamp: '2026-03-26T11:00:00Z', read: true },
       { id: 'msg-018', senderId: 'user-001', content: 'Parfait, je vous envoie tout demain matin.', timestamp: '2026-03-26T11:30:00Z', read: true },
       { id: 'msg-019', senderId: 'user-008', content: 'J\u2019ai bien re\u00e7u les documents. Je reviens vers vous mercredi avec le projet d\u2019acte.', timestamp: '2026-03-27T09:00:00Z', read: false },
     ],
@@ -1106,7 +1106,7 @@ export const conversations: Conversation[] = [
     id: 'conv-007',
     participant: users[9],
     messages: [
-      { id: 'msg-020', senderId: 'user-010', content: 'Karim, j\u2019ai 3 investisseurs s\u00e9n\u00e9galais int\u00e9ress\u00e9s par vos formations. Commission apporteur possible ?', timestamp: '2026-03-25T14:00:00Z', read: true },
+      { id: 'msg-020', senderId: 'user-010', content: 'Léo, j\u2019ai 3 investisseurs sénégalais intéressés par vos formations. Commission apporteur possible ?', timestamp: '2026-03-25T14:00:00Z', read: true },
       { id: 'msg-021', senderId: 'user-001', content: 'Absolument Fatima ! 15% de commission sur chaque inscription. Je t\u2019envoie le lien d\u2019affiliation.', timestamp: '2026-03-25T15:00:00Z', read: true },
     ],
     unreadCount: 0,
@@ -2050,7 +2050,7 @@ export interface StoryUser {
 }
 
 export const storyUsers: StoryUser[] = [
-  { id: 'user-001', name: 'Karim', avatar: users[0].avatar, hasNewStory: true },
+  { id: 'user-001', name: 'Léo', avatar: users[0].avatar, hasNewStory: true },
   { id: 'user-002', name: 'Sophie', avatar: users[1].avatar, hasNewStory: true },
   { id: 'user-004', name: 'Amina', avatar: users[3].avatar, hasNewStory: true },
   { id: 'user-006', name: 'Yasmin', avatar: users[5].avatar, hasNewStory: false },

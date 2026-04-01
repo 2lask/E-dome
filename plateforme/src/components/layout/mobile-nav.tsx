@@ -1,20 +1,57 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, Plus, MessageCircle, User } from "lucide-react";
+import { Home, Search, Plus, MessageCircle, User, Heart, BookOpen, Radio } from "lucide-react";
+import { useApp } from "@/lib/context";
+import type { Role } from "@/lib/types";
 
-const NAV_ITEMS = [
-  { href: "/feed", icon: Home, label: "Feed" },
-  { href: "/explorer", icon: Search, label: "Explorer" },
-  { href: "/publier", icon: Plus, label: "Publier", isGold: true },
-  { href: "/messages", icon: MessageCircle, label: "Messages" },
-  { href: "/profil", icon: User, label: "Profil" },
-];
+interface MobileNavItem {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  isGold?: boolean;
+}
+
+const roleMobileNav: Record<string, MobileNavItem[]> = {
+  client: [
+    { href: "/feed", icon: Home, label: "Feed" },
+    { href: "/explorer", icon: Search, label: "Explorer" },
+    { href: "/favoris", icon: Heart, label: "Favoris" },
+    { href: "/messages", icon: MessageCircle, label: "Messages" },
+    { href: "/profil", icon: User, label: "Profil" },
+  ],
+  hote: [
+    { href: "/feed", icon: Home, label: "Feed" },
+    { href: "/explorer", icon: Search, label: "Explorer" },
+    { href: "/publier", icon: Plus, label: "Publier", isGold: true },
+    { href: "/messages", icon: MessageCircle, label: "Messages" },
+    { href: "/profil", icon: User, label: "Profil" },
+  ],
+  formateur: [
+    { href: "/feed", icon: Home, label: "Feed" },
+    { href: "/formations", icon: BookOpen, label: "Formations" },
+    { href: "/live", icon: Radio, label: "Live", isGold: true },
+    { href: "/messages", icon: MessageCircle, label: "Messages" },
+    { href: "/profil", icon: User, label: "Profil" },
+  ],
+  default: [
+    { href: "/feed", icon: Home, label: "Feed" },
+    { href: "/explorer", icon: Search, label: "Explorer" },
+    { href: "/publier", icon: Plus, label: "Publier", isGold: true },
+    { href: "/messages", icon: MessageCircle, label: "Messages" },
+    { href: "/profil", icon: User, label: "Profil" },
+  ],
+};
 
 export function MobileNav() {
   const pathname = usePathname();
+  const { activeRole } = useApp();
+
+  const navItems = useMemo(() => {
+    return roleMobileNav[activeRole] || roleMobileNav.default;
+  }, [activeRole]);
 
   return (
     <nav
@@ -24,7 +61,7 @@ export function MobileNav() {
         borderTop: "1px solid var(--card-border)",
       }}
     >
-      {NAV_ITEMS.map((item) => {
+      {navItems.map((item) => {
         const active =
           item.href === "/feed"
             ? pathname === "/feed" || pathname === "/"

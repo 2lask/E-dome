@@ -11,7 +11,7 @@ const mockConversations: Conversation[] = [
   {
     id: "c1",
     participant: {
-      id: "u1", firstName: "Sophie", lastName: "Bernard", email: "s@e.ch", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+      id: "u1", firstName: "Sophie", lastName: "Martin", email: "s@e.ch", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
       city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote",
       stats: { followers: 120, following: 45, properties: 3, reviews: 28, rating: 4.8, transactions: 15, revenue: 24000 },
       bio: "",

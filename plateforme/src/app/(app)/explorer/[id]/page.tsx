@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, use } from "react";
+import React, { useState, useEffect, useCallback, useRef, use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft, Heart, Share2, Star, MapPin, Bed, Bath, Maximize,
   ChevronLeft, ChevronRight, X, Play, Pause, Printer,
@@ -11,6 +12,7 @@ import {
   Building2, Layers, DollarSign, Percent, Award,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { useToast } from "@/components/ui/toast";
 import { timeAgo, formatDate } from "@/lib/utils";
 import { roleBadgeColors, roleLabels } from "@/lib/types";
 import type { Property, PropertyAnalytics, User, Currency } from "@/lib/types";
@@ -40,7 +42,7 @@ const MOCK_PROPERTIES: Record<string, Property> = {
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200",
       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200",
     ],
-    videos: ["https://example.com/visite-virtuelle.mp4"],
+    videos: ["/videos/property-tour-1.mp4"],
     host: MOCK_HOST, bedrooms: 5, bathrooms: 3, area: 320, floor: 0,
     amenities: ["Piscine infinity", "Jardin paysager", "Garage double", "Cuisine Gaggenau", "Domotique", "Alarme", "Parquet chêne", "Cave à vin", "Buanderie", "Terrasse couverte", "Vue lac", "Cheminée"],
     rating: 4.9, reviewCount: 24, featured: true,
@@ -80,12 +82,15 @@ const PAID_OPTIONS = [
 export default function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { formatPrice, toggleFavorite, isFavorite } = useApp();
+  const { addToast } = useToast();
+  const router = useRouter();
 
   const property = MOCK_PROPERTIES[id] || MOCK_PROPERTIES.prop1;
 
   // Gallery
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [showFullGallery, setShowFullGallery] = useState(false);
+  const touchStartX = useRef<number | null>(null);
 
   // Description
   const [descExpanded, setDescExpanded] = useState(false);
@@ -122,11 +127,24 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   // Review form
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
-  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviews, setReviews] = useState(MOCK_REVIEWS);
 
   // Share
   const [showShare, setShowShare] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Vente modals
+  const [showVisitModal, setShowVisitModal] = useState(false);
+  const [visitDate, setVisitDate] = useState("");
+  const [visitTime, setVisitTime] = useState("10:00");
+  const [showOfferModal, setShowOfferModal] = useState(false);
+  const [offerAmount, setOfferAmount] = useState(property.price);
+  const [offerConditions, setOfferConditions] = useState("");
+
+  // Computed average rating
+  const averageRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : "0";
 
   // Track recently viewed
   useEffect(() => {
@@ -231,7 +249,19 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <X className="w-8 h-8" />
             </button>
           </div>
-          <div className="flex-1 flex items-center justify-center relative">
+          <div
+            className="flex-1 flex items-center justify-center relative"
+            onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => {
+              if (touchStartX.current === null) return;
+              const diff = e.changedTouches[0].clientX - touchStartX.current;
+              if (Math.abs(diff) > 50) {
+                if (diff < 0) setGalleryIndex((prev) => (prev + 1) % property.images.length);
+                else setGalleryIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+              }
+              touchStartX.current = null;
+            }}
+          >
             <button
               onClick={() => setGalleryIndex((prev) => (prev - 1 + property.images.length) % property.images.length)}
               className="absolute left-4 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
@@ -411,7 +441,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           </div>
 
           {/* Video section */}
-          {property.videos && property.videos.length > 0 && (
+          {property.videos && property.videos.length > 0 && property.videos.some((v) => v && !v.includes("example.com")) && (
             <div className="mb-8">
               <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">Visite virtuelle</h2>
               <div className="relative aspect-video rounded-xl overflow-hidden bg-[var(--card)] border border-[var(--card-border)]">
@@ -659,50 +689,57 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           <div className="mb-8">
             <h2 className="text-lg font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
               <Star className="w-5 h-5 fill-[#C4956A] text-[#C4956A]" />
-              {property.rating} · {property.reviewCount} avis
+              {averageRating} · {reviews.length} avis
             </h2>
 
             {/* Review submission */}
-            {!reviewSubmitted ? (
-              <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-5 mb-6">
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Laisser un avis</h3>
-                <div className="flex gap-1 mb-3">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button key={star} onClick={() => setReviewRating(star)}>
-                      <Star
-                        className={`w-6 h-6 transition-colors ${
-                          star <= reviewRating ? "fill-[#C4956A] text-[#C4956A]" : "text-[var(--text-muted)]"
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-                <textarea
-                  value={reviewText}
-                  onChange={(e) => setReviewText(e.target.value)}
-                  placeholder="Partagez votre expérience..."
-                  rows={3}
-                  className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#C4956A] mb-3"
-                />
-                <button
-                  onClick={() => setReviewSubmitted(true)}
-                  disabled={!reviewRating || !reviewText.trim()}
-                  className="px-5 py-2 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors disabled:opacity-40"
-                >
-                  Publier l&apos;avis
-                </button>
+            <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-5 mb-6">
+              <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Laisser un avis</h3>
+              <div className="flex gap-1 mb-3">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button key={star} onClick={() => setReviewRating(star)} className="cursor-pointer">
+                    <Star
+                      className={`w-6 h-6 transition-colors ${
+                        star <= reviewRating ? "fill-[#C4956A] text-[#C4956A]" : "text-[var(--text-muted)]"
+                      }`}
+                    />
+                  </button>
+                ))}
               </div>
-            ) : (
-              <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-4 mb-6 animate-fade-in">
-                <p className="text-sm text-green-400 flex items-center gap-2">
-                  <Check className="w-4 h-4" /> Merci pour votre avis !
-                </p>
-              </div>
-            )}
+              <textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Partagez votre expérience (min. 20 caractères)..."
+                rows={3}
+                className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#C4956A] mb-1"
+              />
+              <p className={`text-xs mb-3 ${reviewText.length >= 20 ? "text-green-400" : "text-[var(--text-muted)]"}`}>
+                {reviewText.length}/20 caractères minimum
+              </p>
+              <button
+                onClick={() => {
+                  const newReview = {
+                    id: `r-new-${Date.now()}`,
+                    author: { name: "Vous", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80" },
+                    rating: reviewRating,
+                    content: reviewText,
+                    date: new Date().toISOString().split("T")[0],
+                  };
+                  setReviews((prev) => [newReview, ...prev]);
+                  setReviewRating(0);
+                  setReviewText("");
+                  addToast("Avis publié avec succès !", "success");
+                }}
+                disabled={!reviewRating || reviewText.trim().length < 20}
+                className="px-5 py-2 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors disabled:opacity-40"
+              >
+                Publier
+              </button>
+            </div>
 
             {/* Existing reviews */}
             <div className="space-y-4">
-              {MOCK_REVIEWS.map((review) => (
+              {reviews.map((review) => (
                 <div key={review.id} className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <img src={review.author.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
@@ -756,8 +793,133 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Right sidebar */}
         <aside className="w-full lg:w-80 shrink-0 space-y-6">
+          {/* Booking widget for location-ct */}
+          {property.transactionType === "location-ct" && (() => {
+            const nights = checkIn && checkOut
+              ? Math.max(0, Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)))
+              : 0;
+            const subtotal = nights * property.price;
+            const fraisEdome = Math.round(subtotal * 0.08);
+            const total = subtotal + fraisEdome + optionsTotal;
+            return (
+              <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 lg:sticky lg:top-20">
+                <p className="text-2xl font-bold text-[#C4956A] mb-1">
+                  {formatPrice(property.price, property.currency)} <span className="text-sm font-normal text-[var(--text-muted)]">/ nuit</span>
+                </p>
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                  <div>
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">Arrivée</label>
+                    <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">Départ</label>
+                    <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <label className="block text-xs text-[var(--text-muted)] mb-1">Voyageurs</label>
+                  <select value={guests} onChange={(e) => setGuests(Number(e.target.value))}
+                    className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A] appearance-none cursor-pointer">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                      <option key={n} value={n}>{n} voyageur{n > 1 ? "s" : ""}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mt-4 space-y-2">
+                  <p className="text-xs font-semibold text-[var(--foreground)]">Options</p>
+                  {PAID_OPTIONS.map((opt) => (
+                    <label key={opt.id} className="flex items-center justify-between text-sm cursor-pointer">
+                      <span className="flex items-center gap-2">
+                        <input type="checkbox" checked={selectedOptions.has(opt.id)}
+                          onChange={() => {
+                            setSelectedOptions((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(opt.id)) next.delete(opt.id); else next.add(opt.id);
+                              return next;
+                            });
+                          }}
+                          className="w-4 h-4 rounded accent-[#C4956A]" />
+                        <span className="text-[var(--text-secondary)]">{opt.label}</span>
+                      </span>
+                      <span className="text-[#C4956A] text-xs">{formatPrice(opt.price, property.currency)}</span>
+                    </label>
+                  ))}
+                </div>
+                {nights > 0 && (
+                  <div className="mt-4 pt-4 border-t border-[var(--card-border)] space-y-2">
+                    <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+                      <span>{nights} nuit{nights > 1 ? "s" : ""} x {formatPrice(property.price, property.currency)}</span>
+                      <span>{formatPrice(subtotal, property.currency)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+                      <span>Frais E-Dome</span>
+                      <span>{formatPrice(fraisEdome, property.currency)}</span>
+                    </div>
+                    {optionsTotal > 0 && (
+                      <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+                        <span>Options</span>
+                        <span>{formatPrice(optionsTotal, property.currency)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm font-bold text-[var(--foreground)] pt-2 border-t border-[var(--card-border)]">
+                      <span>Total</span>
+                      <span className="text-[#C4956A]">{formatPrice(total, property.currency)}</span>
+                    </div>
+                  </div>
+                )}
+                <button
+                  onClick={() => {
+                    if (!checkIn || !checkOut) { addToast("Veuillez sélectionner les dates.", "warning"); return; }
+                    router.push("/paiement");
+                  }}
+                  className="w-full mt-4 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
+                >
+                  Réserver
+                </button>
+                <Link href="/messages" className="block text-center mt-3 text-sm text-[#C4956A] hover:underline">
+                  Contacter l&apos;hôte
+                </Link>
+              </div>
+            );
+          })()}
+
+          {/* Vente CTAs */}
+          {property.transactionType === "vente" && (
+            <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 lg:sticky lg:top-20 space-y-3">
+              <p className="text-2xl font-bold text-[#C4956A] mb-4">
+                {formatPrice(property.price, property.currency)}
+              </p>
+              <button
+                onClick={() => setShowVisitModal(true)}
+                className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <CalendarIcon className="w-4 h-4" /> Planifier une visite
+              </button>
+              <button
+                onClick={() => setShowOfferModal(true)}
+                className="w-full py-3 rounded-xl border-2 border-[#C4956A] text-[#C4956A] hover:bg-[#C4956A]/10 font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <DollarSign className="w-4 h-4" /> Faire une offre
+              </button>
+              <Link
+                href="/messages"
+                className="w-full py-3 rounded-xl border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-4 h-4" /> Contacter l&apos;agent
+              </Link>
+              <button
+                onClick={() => window.print()}
+                className="w-full py-3 rounded-xl border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <Printer className="w-4 h-4" /> Télécharger la fiche PDF
+              </button>
+            </div>
+          )}
+
           {/* Host card */}
-          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 lg:sticky lg:top-20">
+          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6">
             <div className="flex items-center gap-4 mb-4">
               <Link href={`/profil/${property.host.id}`}>
                 <img src={property.host.avatar} alt="" className="w-14 h-14 rounded-full object-cover" />
@@ -887,6 +1049,90 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         </div>
       )}
 
+      {/* Visit scheduling modal (vente) */}
+      {showVisitModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowVisitModal(false)}>
+          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full mx-4 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[var(--foreground)]">Planifier une visite</h3>
+              <button onClick={() => setShowVisitModal(false)} className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Date souhaitée</label>
+                <input type="date" value={visitDate} onChange={(e) => setVisitDate(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
+              </div>
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Heure</label>
+                <select value={visitTime} onChange={(e) => setVisitTime(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A] appearance-none cursor-pointer">
+                  {["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"].map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => {
+                  if (!visitDate) { addToast("Veuillez sélectionner une date.", "warning"); return; }
+                  addToast("Demande de visite envoyée avec succès !", "success");
+                  setShowVisitModal(false);
+                  setVisitDate("");
+                }}
+                className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
+              >
+                Confirmer la visite
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Offer modal (vente) */}
+      {showOfferModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowOfferModal(false)}>
+          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full mx-4 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[var(--foreground)]">Faire une offre</h3>
+              <button onClick={() => setShowOfferModal(false)} className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Prix demandé</label>
+                <p className="text-sm text-[var(--foreground)] font-semibold">{formatPrice(property.price, property.currency)}</p>
+              </div>
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Montant de votre offre ({property.currency})</label>
+                <input type="number" value={offerAmount} onChange={(e) => setOfferAmount(Number(e.target.value))}
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
+              </div>
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Conditions (optionnel)</label>
+                <textarea value={offerConditions} onChange={(e) => setOfferConditions(e.target.value)}
+                  placeholder="Ex: sous réserve de financement, date de remise souhaitée..."
+                  rows={3}
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#C4956A]" />
+              </div>
+              <button
+                onClick={() => {
+                  if (!offerAmount || offerAmount <= 0) { addToast("Veuillez saisir un montant valide.", "warning"); return; }
+                  addToast("Offre envoyée avec succès !", "success");
+                  setShowOfferModal(false);
+                  setOfferConditions("");
+                }}
+                className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
+              >
+                Envoyer l&apos;offre
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sticky CTA bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden border-t border-[var(--card-border)] bg-[var(--card)] px-4 py-3 flex items-center justify-between">
         <div>
@@ -897,9 +1143,26 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             <span className="text-xs text-[var(--text-muted)]">par nuit</span>
           )}
         </div>
-        <button className="px-6 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors">
-          {property.transactionType === "vente" ? "Contacter" : "Réserver"}
-        </button>
+        {property.transactionType === "vente" ? (
+          <div className="flex gap-2">
+            <button onClick={() => setShowVisitModal(true)} className="px-4 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors text-sm">
+              Visite
+            </button>
+            <button onClick={() => setShowOfferModal(true)} className="px-4 py-3 rounded-xl border border-[#C4956A] text-[#C4956A] font-semibold transition-colors text-sm">
+              Offre
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => {
+              if (!checkIn || !checkOut) { addToast("Sélectionnez vos dates.", "warning"); return; }
+              router.push("/paiement");
+            }}
+            className="px-6 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
+          >
+            Réserver
+          </button>
+        )}
       </div>
     </div>
   );

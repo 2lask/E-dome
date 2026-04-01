@@ -2,7 +2,9 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { useToast } from "@/components/ui/toast";
 import type { Reservation, User, Property } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
@@ -49,17 +51,28 @@ const statusColors: Record<string, string> = {
   completed: "bg-blue-500/20 text-blue-400",
 };
 
+const calendarStatusColors: Record<string, string> = {
+  confirmed: "bg-emerald-500/30 text-emerald-300",
+  pending: "bg-amber-500/30 text-amber-300",
+  completed: "bg-gray-500/30 text-gray-300",
+  cancelled: "bg-red-500/30 text-red-300",
+};
+
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function ReservationsPage() {
   const { formatPrice } = useApp();
+  const { addToast } = useToast();
   const [reservations, setReservations] = useState(mockReservations);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [confirmModal, setConfirmModal] = useState<{ id: string; action: "confirm" | "cancel" } | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
   const [reviewModal, setReviewModal] = useState<string | null>(null);
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
+  const [calMonth, setCalMonth] = useState(new Date().getMonth());
+  const [calYear, setCalYear] = useState(new Date().getFullYear());
 
   const filtered = useMemo(() => {
     if (statusFilter === "all") return reservations;
@@ -86,7 +99,25 @@ export default function ReservationsPage() {
       ) as Reservation[]
     );
     setConfirmModal(null);
-  }, []);
+    setCancelReason("");
+    if (action === "confirm") {
+      addToast("Réservation confirmée avec succès !", "success");
+    } else {
+      addToast("Réservation annulée.", "info");
+    }
+  }, [addToast]);
+
+  const handleInvoice = useCallback(() => {
+    addToast("Facture téléchargée", "success");
+  }, [addToast]);
+
+  const handleReviewSubmit = useCallback(() => {
+    if (!reviewModal) return;
+    addToast("Avis publié avec succès !", "success");
+    setReviewModal(null);
+    setReviewText("");
+    setReviewRating(5);
+  }, [reviewModal, addToast]);
 
   // Timeline progress
   const getProgress = (checkIn: string, checkOut: string, status: string) => {
@@ -95,31 +126,38 @@ export default function ReservationsPage() {
     const now = new Date().getTime();
     const start = new Date(checkIn).getTime();
     const end = new Date(checkOut).getTime();
-    if (now < start) return 10; // Upcoming
+    if (now < start) return 10;
     if (now > end) return 100;
     return Math.round(((now - start) / (end - start)) * 100);
   };
 
-  // Calendar view - simple month grid
+  // Calendar month navigation
+  const prevMonth = () => {
+    if (calMonth === 0) { setCalMonth(11); setCalYear(calYear - 1); }
+    else setCalMonth(calMonth - 1);
+  };
+  const nextMonth = () => {
+    if (calMonth === 11) { setCalMonth(0); setCalYear(calYear + 1); }
+    else setCalMonth(calMonth + 1);
+  };
+
+  const MONTH_NAMES = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+
+  // Calendar view - month grid with colored reservation blocks
   const calendarDays = useMemo(() => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const days: { day: number; hasReservation: boolean }[] = [];
+    const firstDay = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const days: { day: number; reservation: Reservation | null }[] = [];
     for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
-      days.push({ day: 0, hasReservation: false });
+      days.push({ day: 0, reservation: null });
     }
     for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-      const hasRes = reservations.some((r) => {
-        return dateStr >= r.checkIn && dateStr <= r.checkOut && r.status !== "cancelled";
-      });
-      days.push({ day: d, hasReservation: hasRes });
+      const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      const res = reservations.find((r) => dateStr >= r.checkIn && dateStr <= r.checkOut) || null;
+      days.push({ day: d, reservation: res });
     }
     return days;
-  }, [reservations]);
+  }, [reservations, calMonth, calYear]);
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 animate-fade-in">
@@ -175,12 +213,20 @@ export default function ReservationsPage() {
         </div>
       </div>
 
-      {/* Calendar view */}
+      {/* Calendar view with colored blocks */}
       {viewMode === "calendar" && (
         <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5 mb-6">
-          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
-            {new Date().toLocaleDateString("fr-CH", { month: "long", year: "numeric" })}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-secondary)]">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              {MONTH_NAMES[calMonth]} {calYear}
+            </h3>
+            <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-secondary)]">
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
           <div className="grid grid-cols-7 gap-1 text-center">
             {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
               <div key={d} className="text-xs text-[var(--text-muted)] py-2">{d}</div>
@@ -191,12 +237,27 @@ export default function ReservationsPage() {
                 className={`py-2 text-sm rounded-lg ${
                   d.day === 0
                     ? ""
-                    : d.hasReservation
-                    ? "bg-[#C4956A]/20 text-[#C4956A] font-medium"
+                    : d.reservation
+                    ? `${calendarStatusColors[d.reservation.status]} font-medium`
                     : "text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
                 }`}
+                title={d.reservation ? `${d.reservation.property.title} - ${statusLabels[d.reservation.status]}` : ""}
               >
                 {d.day > 0 ? d.day : ""}
+              </div>
+            ))}
+          </div>
+          {/* Legend */}
+          <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-[var(--card-border)]">
+            {[
+              { label: "Confirmée", color: "bg-emerald-500/30" },
+              { label: "En attente", color: "bg-amber-500/30" },
+              { label: "Terminée", color: "bg-gray-500/30" },
+              { label: "Annulée", color: "bg-red-500/30" },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                <div className={`w-3 h-3 rounded ${item.color}`} />
+                {item.label}
               </div>
             ))}
           </div>
@@ -298,7 +359,10 @@ export default function ReservationsPage() {
                         >
                           Contacter
                         </Link>
-                        <button className="px-3 py-1.5 text-xs rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]">
+                        <button
+                          onClick={handleInvoice}
+                          className="px-3 py-1.5 text-xs rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+                        >
                           Facture
                         </button>
                         {res.status === "completed" && (
@@ -323,7 +387,7 @@ export default function ReservationsPage() {
       {confirmModal && (
         <div
           className="fixed inset-0 bg-[var(--overlay)] flex items-center justify-center z-50 p-4"
-          onClick={() => setConfirmModal(null)}
+          onClick={() => { setConfirmModal(null); setCancelReason(""); }}
         >
           <div
             className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 w-full max-w-sm animate-scale-in"
@@ -332,14 +396,26 @@ export default function ReservationsPage() {
             <h3 className="text-lg font-semibold text-[var(--foreground)] mb-3">
               {confirmModal.action === "confirm" ? "Confirmer la réservation" : "Annuler la réservation"}
             </h3>
-            <p className="text-sm text-[var(--text-secondary)] mb-6">
+            <p className="text-sm text-[var(--text-secondary)] mb-4">
               {confirmModal.action === "confirm"
                 ? "Êtes-vous sûr de vouloir confirmer cette réservation ?"
                 : "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est irréversible."}
             </p>
+            {confirmModal.action === "cancel" && (
+              <div className="mb-4">
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Raison de l&apos;annulation</label>
+                <textarea
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="Indiquez la raison..."
+                  rows={3}
+                  className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none outline-none focus:border-[#C4956A]"
+                />
+              </div>
+            )}
             <div className="flex gap-3">
               <button
-                onClick={() => setConfirmModal(null)}
+                onClick={() => { setConfirmModal(null); setCancelReason(""); }}
                 className="flex-1 py-2.5 text-sm rounded-xl border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
               >
                 Retour
@@ -376,7 +452,7 @@ export default function ReservationsPage() {
                 <button
                   key={star}
                   onClick={() => setReviewRating(star)}
-                  className={`text-2xl ${star <= reviewRating ? "text-[#C4956A]" : "text-[var(--text-muted)]"}`}
+                  className={`text-2xl cursor-pointer transition-colors ${star <= reviewRating ? "text-[#C4956A]" : "text-[var(--text-muted)]"}`}
                 >
                   ★
                 </button>
@@ -388,19 +464,23 @@ export default function ReservationsPage() {
               onChange={(e) => setReviewText(e.target.value)}
               placeholder="Partagez votre expérience..."
               rows={4}
-              className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none mb-4"
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none mb-2 outline-none focus:border-[#C4956A]"
             />
+            <p className={`text-xs mb-4 ${reviewText.length >= 20 ? "text-green-400" : "text-[var(--text-muted)]"}`}>
+              {reviewText.length}/20 caractères minimum
+            </p>
 
             <div className="flex gap-3">
               <button
-                onClick={() => setReviewModal(null)}
+                onClick={() => { setReviewModal(null); setReviewText(""); }}
                 className="flex-1 py-2.5 text-sm rounded-xl border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
               >
                 Annuler
               </button>
               <button
-                onClick={() => { setReviewModal(null); setReviewText(""); }}
-                className="flex-1 py-2.5 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a]"
+                onClick={handleReviewSubmit}
+                disabled={!reviewRating || reviewText.trim().length < 20}
+                className="flex-1 py-2.5 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a] disabled:opacity-40"
               >
                 Publier
               </button>

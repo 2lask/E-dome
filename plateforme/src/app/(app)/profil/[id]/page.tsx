@@ -11,7 +11,7 @@ import { formatCount, timeAgo } from "@/lib/utils";
 
 const mockUsers: Record<string, User> = {
   u1: {
-    id: "u1", firstName: "Sophie", lastName: "Bernard", email: "sophie@e-dome.ch",
+    id: "u1", firstName: "Sophie", lastName: "Martin", email: "sophie@e-dome.ch",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
     city: "Genève", country: "Suisse", roles: ["hote", "courtier"], activeRole: "hote",
     stats: { followers: 890, following: 210, properties: 5, reviews: 42, rating: 4.9, transactions: 89, revenue: 120000 },
@@ -93,6 +93,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
   const breakdown = ratingBreakdowns[id] || [];
   const totalReviews = breakdown.reduce((s, r) => s + r.count, 0);
   const following = isFollowing(id);
+  const propertyCount = properties.length;
 
   const tabs = [
     { key: "biens" as const, label: "Biens" },
@@ -142,7 +143,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
         {/* Stats */}
         <div className="flex gap-6 mt-6 flex-wrap">
           {[
-            { label: "Biens", value: user.stats.properties },
+            { label: "Biens", value: propertyCount },
             { label: "Abonnés", value: user.stats.followers },
             { label: "Suivis", value: user.stats.following },
             { label: "Note", value: `${user.stats.rating}/5` },

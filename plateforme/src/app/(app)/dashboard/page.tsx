@@ -41,7 +41,7 @@ const kpiData = [
     sparkline: [12, 18, 14, 22, 19, 25, 24],
   },
   {
-    label: "Réservations",
+    label: "Reservations",
     value: 47,
     prev: 38,
     isCurrency: false,
@@ -66,34 +66,34 @@ const kpiData = [
 
 const mockRevenueData: MonthlyRevenue[] = [
   { month: "Jan", revenue: 3200, bookings: 5, occupancy: 70 },
-  { month: "Fév", revenue: 4100, bookings: 7, occupancy: 75 },
+  { month: "Fev", revenue: 4100, bookings: 7, occupancy: 75 },
   { month: "Mar", revenue: 3800, bookings: 6, occupancy: 72 },
   { month: "Avr", revenue: 5200, bookings: 9, occupancy: 85 },
   { month: "Mai", revenue: 4800, bookings: 8, occupancy: 80 },
   { month: "Juin", revenue: 6100, bookings: 11, occupancy: 90 },
   { month: "Juil", revenue: 7200, bookings: 14, occupancy: 95 },
-  { month: "Août", revenue: 6800, bookings: 12, occupancy: 92 },
+  { month: "Aout", revenue: 6800, bookings: 12, occupancy: 92 },
   { month: "Sep", revenue: 5500, bookings: 9, occupancy: 82 },
   { month: "Oct", revenue: 4200, bookings: 7, occupancy: 76 },
   { month: "Nov", revenue: 3600, bookings: 6, occupancy: 68 },
-  { month: "Déc", revenue: 4500, bookings: 8, occupancy: 78 },
+  { month: "Dec", revenue: 4500, bookings: 8, occupancy: 78 },
 ];
 
 const mockTransactions: Transaction[] = [
-  { id: "t1", type: "payment", amount: 1200, currency: "CHF", status: "completed", description: "Réservation #R-2024-001", date: "2026-03-28", counterpart: "Jean Dupont" },
+  { id: "t1", type: "payment", amount: 1200, currency: "CHF", status: "completed", description: "Reservation #R-2024-001", date: "2026-03-28", counterpart: "Jean Dupont" },
   { id: "t2", type: "payout", amount: 3500, currency: "CHF", status: "completed", description: "Virement mensuel", date: "2026-03-25" },
   { id: "t3", type: "commission", amount: 250, currency: "CHF", status: "pending", description: "Commission apporteur", date: "2026-03-22", counterpart: "Marie Leroy" },
   { id: "t4", type: "refund", amount: 800, currency: "CHF", status: "completed", description: "Annulation #R-2024-042", date: "2026-03-20", counterpart: "Paul Moreau" },
-  { id: "t5", type: "payment", amount: 2100, currency: "CHF", status: "completed", description: "Réservation #R-2024-003", date: "2026-03-18", counterpart: "Sophie Bernard" },
+  { id: "t5", type: "payment", amount: 2100, currency: "CHF", status: "completed", description: "Reservation #R-2024-003", date: "2026-03-18", counterpart: "Sophie Martin" },
   { id: "t6", type: "commission", amount: 180, currency: "CHF", status: "completed", description: "Commission formation", date: "2026-03-15" },
 ];
 
 const mockActivity = [
-  { id: "a1", text: "Nouvelle réservation pour Chalet Alpin", href: "/reservations", time: "Il y a 2h" },
-  { id: "a2", text: "Avis 5 étoiles de Jean D.", href: "/profil", time: "Il y a 5h" },
-  { id: "a3", text: "Paiement de 1'200 CHF reçu", href: "/dashboard", time: "Il y a 1j" },
-  { id: "a4", text: "Nouvel abonné: Marie L.", href: "/profil", time: "Il y a 2j" },
-  { id: "a5", text: "Formation \"Investir en Suisse\" publiée", href: "/formations", time: "Il y a 3j" },
+  { id: "a1", text: "Nouvelle reservation pour Chalet Alpin", href: "/reservations", time: "Il y a 2h" },
+  { id: "a2", text: "Avis 5 etoiles de Jean D.", href: "/profil", time: "Il y a 5h" },
+  { id: "a3", text: "Paiement de 1'200 CHF recu", href: "/dashboard", time: "Il y a 1j" },
+  { id: "a4", text: "Nouvel abonne: Marie L.", href: "/profil", time: "Il y a 2j" },
+  { id: "a5", text: "Formation \"Investir en Suisse\" publiee", href: "/formations", time: "Il y a 3j" },
 ];
 
 const mockAppointments = [
@@ -104,10 +104,10 @@ const mockAppointments = [
 
 const shortcuts = [
   { label: "Publier", href: "/publier", icon: "+" },
-  { label: "Créer formation", href: "/formations/creer", icon: "📚" },
-  { label: "Créer événement", href: "/evenements/creer", icon: "📅" },
-  { label: "Proposer service", href: "/services/proposer", icon: "🔧" },
-  { label: "Statistiques", href: "/statistiques", icon: "📊" },
+  { label: "Creer formation", href: "/formations/creer", icon: "B" },
+  { label: "Creer evenement", href: "/evenements/creer", icon: "C" },
+  { label: "Proposer service", href: "/services/proposer", icon: "S" },
+  { label: "Statistiques", href: "/statistiques", icon: "G" },
 ];
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -140,45 +140,214 @@ function getDateStr() {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { activeRole, formatPrice } = useApp();
-  const isRemunerable = REMUNERABLE_ROLES.includes(activeRole);
+  const { activeRole } = useApp();
 
-  if (!isRemunerable) {
-    return <SimplifiedDashboard />;
+  if (activeRole === "client") {
+    return <ClientDashboard />;
   }
 
+  if (activeRole === "formateur") {
+    return <FormateurDashboard />;
+  }
+
+  if (activeRole === "apporteur") {
+    return <ApporteurDashboard />;
+  }
+
+  // Hote, agence, promoteur, proprietaire, courtier, and others get the full dashboard
   return <FullDashboard />;
 }
 
-// ─── Simplified Dashboard ───────────────────────────────────────────────────
+// ─── Client Dashboard ──────────────────────────────────────────────────────
 
-function SimplifiedDashboard() {
+function ClientDashboard() {
+  const [recentlyViewed, setRecentlyViewed] = useState<{ id: string; title: string; image: string }[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("edome_recently_viewed");
+      if (stored) setRecentlyViewed(JSON.parse(stored));
+    } catch {}
+  }, []);
+
+  const mockReservations = [
+    { id: "r1", title: "Chalet Alpin - Verbier", date: "12-15 avr. 2026", status: "confirmed" },
+    { id: "r2", title: "Appartement Vue Lac - Montreux", date: "28-30 avr. 2026", status: "pending" },
+  ];
+
+  const mockFormations = [
+    { id: "f1", title: "Investir en Suisse", progress: 65 },
+    { id: "f2", title: "Gestion locative avancee", progress: 30 },
+    { id: "f3", title: "Droit immobilier", progress: 10 },
+  ];
+
+  const mockEvents = [
+    { id: "e1", title: "Salon de l'immobilier - Geneve", date: "20 avr. 2026" },
+    { id: "e2", title: "Webinaire investissement", date: "25 avr. 2026" },
+  ];
+
+  const suggestions = [
+    { id: "s1", title: "Villa contemporaine - Lausanne", price: "1'250'000 CHF", image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=200&h=150&fit=crop" },
+    { id: "s2", title: "Studio meuble - Geneve", price: "1'800 CHF/mois", image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=200&h=150&fit=crop" },
+    { id: "s3", title: "Penthouse - Zurich", price: "2'800'000 CHF", image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=200&h=150&fit=crop" },
+  ];
+
+  const statusColors: Record<string, string> = {
+    confirmed: "text-emerald-400",
+    pending: "text-amber-400",
+    cancelled: "text-red-400",
+  };
+  const statusLabels: Record<string, string> = {
+    confirmed: "Confirmee",
+    pending: "En attente",
+    cancelled: "Annulee",
+  };
+
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-8 animate-fade-in">
-      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-8 text-center">
-        <div className="w-16 h-16 rounded-full bg-[#C4956A]/20 flex items-center justify-center mx-auto mb-4">
-          <span className="text-2xl">👋</span>
+    <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6 animate-fade-in">
+      {/* Welcome */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6">
+        <div className="flex items-center gap-4">
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold shrink-0"
+            style={{ background: "var(--gold)", color: "#000" }}
+          >
+            {currentUser.firstName.charAt(0)}{currentUser.lastName.charAt(0)}
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-[var(--foreground)]">
+              Bonjour, {currentUser.firstName}
+            </h1>
+            <p className="text-sm text-[var(--text-muted)] capitalize">{getDateStr()}</p>
+          </div>
         </div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)] mb-2">
-          Bienvenue sur E-Dome
-        </h1>
-        <p className="text-[var(--text-secondary)]">
-          Explorez les biens, gérez vos favoris et vos réservations.
-        </p>
       </div>
 
+      {/* Prochaines reservations */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Prochaines reservations</h2>
+          <Link href="/reservations" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
+        </div>
+        {mockReservations.length === 0 ? (
+          <p className="text-sm text-[var(--text-muted)]">Aucune reservation a venir.</p>
+        ) : (
+          <div className="space-y-3">
+            {mockReservations.map((r) => (
+              <Link
+                key={r.id}
+                href="/reservations"
+                className="flex items-center justify-between py-3 px-3 -mx-1 rounded-lg hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                <div>
+                  <div className="text-sm font-medium text-[var(--foreground)]">{r.title}</div>
+                  <div className="text-xs text-[var(--text-muted)]">{r.date}</div>
+                </div>
+                <span className={`text-xs font-medium ${statusColors[r.status] || "text-[var(--text-muted)]"}`}>
+                  {statusLabels[r.status] || r.status}
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Formations en cours */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Formations en cours</h2>
+          <Link href="/formations" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
+        </div>
+        <div className="space-y-4">
+          {mockFormations.map((f) => (
+            <div key={f.id}>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-sm text-[var(--foreground)]">{f.title}</span>
+                <span className="text-xs text-[var(--text-muted)]">{f.progress}%</span>
+              </div>
+              <div className="w-full h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-[#C4956A] transition-all duration-500"
+                  style={{ width: `${f.progress}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Evenements inscrits */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Evenements inscrits</h2>
+          <Link href="/evenements" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
+        </div>
+        <div className="space-y-3">
+          {mockEvents.map((e) => (
+            <div key={e.id} className="flex items-center gap-4 py-2 border-b border-[var(--card-border)] last:border-0">
+              <div className="w-10 h-10 rounded-lg bg-[#C4956A]/10 flex items-center justify-center shrink-0">
+                <span className="text-sm text-[#C4956A] font-semibold">E</span>
+              </div>
+              <div>
+                <div className="text-sm text-[var(--foreground)]">{e.title}</div>
+                <div className="text-xs text-[var(--text-muted)]">{e.date}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Biens recemment consultes */}
+      {recentlyViewed.length > 0 && (
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+          <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Biens recemment consultes</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {recentlyViewed.slice(0, 3).map((item) => (
+              <Link key={item.id} href={`/explorer/${item.id}`} className="rounded-lg overflow-hidden border border-[var(--card-border)] hover:border-[#C4956A]/50 transition-colors">
+                <img src={item.image} alt={item.title} className="w-full h-28 object-cover" />
+                <div className="p-3">
+                  <span className="text-sm text-[var(--foreground)]">{item.title}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Suggestions */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Suggestions de biens</h2>
+          <Link href="/explorer" className="text-sm text-[#C4956A] hover:underline">Explorer</Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {suggestions.map((s) => (
+            <Link key={s.id} href="/explorer" className="rounded-lg overflow-hidden border border-[var(--card-border)] hover:border-[#C4956A]/50 transition-colors">
+              <img src={s.image} alt={s.title} className="w-full h-32 object-cover" />
+              <div className="p-3">
+                <div className="text-sm font-medium text-[var(--foreground)]">{s.title}</div>
+                <div className="text-xs text-[#C4956A] mt-1">{s.price}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick actions */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: "Mes favoris", href: "/favoris", icon: "❤️" },
-          { label: "Mes réservations", href: "/reservations", icon: "📋" },
-          { label: "Explorer", href: "/explorer", icon: "🔍" },
+          { label: "Mes favoris", href: "/favoris", icon: "F" },
+          { label: "Mes reservations", href: "/reservations", icon: "R" },
+          { label: "Explorer", href: "/explorer", icon: "E" },
         ].map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 text-center hover:border-[#C4956A]/50 transition-colors"
           >
-            <span className="text-3xl block mb-3">{item.icon}</span>
+            <div className="w-12 h-12 rounded-full bg-[#C4956A]/10 flex items-center justify-center mx-auto mb-3">
+              <span className="text-lg text-[#C4956A] font-bold">{item.icon}</span>
+            </div>
             <span className="text-[var(--foreground)] font-medium">{item.label}</span>
           </Link>
         ))}
@@ -187,7 +356,253 @@ function SimplifiedDashboard() {
   );
 }
 
-// ─── Full Dashboard ─────────────────────────────────────────────────────────
+// ─── Formateur Dashboard ───────────────────────────────────────────────────
+
+function FormateurDashboard() {
+  const { formatPrice } = useApp();
+
+  const stats = {
+    revenusFormations: 4200,
+    nouveauxInscrits: 18,
+    totalEtudiants: 156,
+    noteMoyenne: 4.7,
+  };
+
+  const topFormations = [
+    { id: "tf1", title: "Investir en Suisse", rating: 4.9, students: 68, revenue: 12400 },
+    { id: "tf2", title: "Gestion locative avancee", rating: 4.7, students: 45, revenue: 8100 },
+    { id: "tf3", title: "Droit immobilier suisse", rating: 4.6, students: 32, revenue: 5760 },
+  ];
+
+  const prochainLive = {
+    title: "Masterclass: Optimisation fiscale immobiliere",
+    date: "8 avril 2026",
+    time: "19:00",
+    inscrits: 42,
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6 animate-fade-in">
+      {/* Welcome */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6">
+        <div className="flex items-center gap-4">
+          <img
+            src={currentUser.avatar}
+            alt=""
+            className="w-14 h-14 rounded-full object-cover border-2 border-[#C4956A]"
+          />
+          <div>
+            <h1 className="text-xl font-bold text-[var(--foreground)]">
+              Bonjour, {currentUser.firstName}
+            </h1>
+            <p className="text-sm text-[var(--text-muted)] capitalize">{getDateStr()}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+          <span className="text-sm text-[var(--text-muted)]">Revenus formations du mois</span>
+          <div className="text-2xl font-bold text-[var(--foreground)] mt-2">{formatPrice(stats.revenusFormations)}</div>
+        </div>
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+          <span className="text-sm text-[var(--text-muted)]">Nouveaux inscrits (7j)</span>
+          <div className="text-2xl font-bold text-[var(--foreground)] mt-2">{stats.nouveauxInscrits}</div>
+        </div>
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+          <span className="text-sm text-[var(--text-muted)]">Total etudiants</span>
+          <div className="text-2xl font-bold text-[var(--foreground)] mt-2">{stats.totalEtudiants}</div>
+        </div>
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+          <span className="text-sm text-[var(--text-muted)]">Note moyenne</span>
+          <div className="text-2xl font-bold text-[var(--foreground)] mt-2">{stats.noteMoyenne}/5</div>
+        </div>
+      </div>
+
+      {/* Prochain live */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Prochain live programme</h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium text-[var(--foreground)]">{prochainLive.title}</div>
+            <div className="text-xs text-[var(--text-muted)] mt-1">{prochainLive.date} a {prochainLive.time}</div>
+            <div className="text-xs text-emerald-400 mt-1">{prochainLive.inscrits} inscrits</div>
+          </div>
+          <Link
+            href="/live"
+            className="px-4 py-2 text-sm rounded-lg bg-[#C4956A] text-white hover:bg-[#b8845a] transition-colors"
+          >
+            Gerer
+          </Link>
+        </div>
+      </div>
+
+      {/* Formations les mieux notees */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Formations les mieux notees</h2>
+          <Link href="/formations" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
+        </div>
+        <div className="space-y-3">
+          {topFormations.map((f, idx) => (
+            <div
+              key={f.id}
+              className="flex items-center justify-between py-3 border-b border-[var(--card-border)] last:border-0"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#C4956A]/10 flex items-center justify-center text-sm font-bold text-[#C4956A]">
+                  {idx + 1}
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-[var(--foreground)]">{f.title}</div>
+                  <div className="text-xs text-[var(--text-muted)]">{f.students} etudiants</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-medium text-[var(--foreground)]">{f.rating}/5</div>
+                <div className="text-xs text-[var(--text-muted)]">{formatPrice(f.revenue)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Apporteur Dashboard ───────────────────────────────────────────────────
+
+function ApporteurDashboard() {
+  const { formatPrice } = useApp();
+
+  const stats = {
+    commissionsTotal: 3850,
+    reservationsApportees: 24,
+    tauxConversion: 18,
+    classement: 5,
+  };
+
+  const trackingLinks = [
+    { id: "tl1", label: "Lien principal", url: "https://e-dome.ch/r/LEO2026", clicks: 142, conversions: 8 },
+    { id: "tl2", label: "Campagne Instagram", url: "https://e-dome.ch/r/LEO-IG", clicks: 87, conversions: 3 },
+    { id: "tl3", label: "Newsletter", url: "https://e-dome.ch/r/LEO-NL", clicks: 56, conversions: 2 },
+  ];
+
+  const leaderboard = [
+    { rank: 1, name: "Sophie M.", commissions: 8200 },
+    { rank: 2, name: "Thomas R.", commissions: 6700 },
+    { rank: 3, name: "Julie K.", commissions: 5400 },
+    { rank: 4, name: "Marc D.", commissions: 4100 },
+    { rank: 5, name: "Leo M. (vous)", commissions: 3850, isUser: true },
+  ];
+
+  return (
+    <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6 animate-fade-in">
+      {/* Welcome */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6">
+        <div className="flex items-center gap-4">
+          <img
+            src={currentUser.avatar}
+            alt=""
+            className="w-14 h-14 rounded-full object-cover border-2 border-[#C4956A]"
+          />
+          <div>
+            <h1 className="text-xl font-bold text-[var(--foreground)]">
+              Bonjour, {currentUser.firstName}
+            </h1>
+            <p className="text-sm text-[var(--text-muted)] capitalize">{getDateStr()}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+          <span className="text-sm text-[var(--text-muted)]">Commissions totales</span>
+          <div className="text-2xl font-bold text-[var(--foreground)] mt-2">{formatPrice(stats.commissionsTotal)}</div>
+        </div>
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+          <span className="text-sm text-[var(--text-muted)]">Reservations apportees</span>
+          <div className="text-2xl font-bold text-[var(--foreground)] mt-2">{stats.reservationsApportees}</div>
+        </div>
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+          <span className="text-sm text-[var(--text-muted)]">Taux de conversion</span>
+          <div className="text-2xl font-bold text-[var(--foreground)] mt-2">{stats.tauxConversion}%</div>
+        </div>
+        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+          <span className="text-sm text-[var(--text-muted)]">Classement</span>
+          <div className="text-2xl font-bold text-[#C4956A] mt-2">#{stats.classement}</div>
+        </div>
+      </div>
+
+      {/* Liens de tracking */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Liens de tracking</h2>
+        <div className="space-y-3">
+          {trackingLinks.map((link) => (
+            <div
+              key={link.id}
+              className="flex items-center justify-between py-3 border-b border-[var(--card-border)] last:border-0"
+            >
+              <div>
+                <div className="text-sm font-medium text-[var(--foreground)]">{link.label}</div>
+                <div className="text-xs text-[var(--text-muted)] font-mono">{link.url}</div>
+              </div>
+              <div className="flex items-center gap-4 text-right">
+                <div>
+                  <div className="text-sm text-[var(--foreground)]">{link.clicks}</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">clics</div>
+                </div>
+                <div>
+                  <div className="text-sm text-emerald-400">{link.conversions}</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">conv.</div>
+                </div>
+                <button
+                  onClick={() => navigator.clipboard?.writeText(link.url)}
+                  className="px-3 py-1.5 text-xs rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors"
+                >
+                  Copier
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Classement performance */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Classement performance</h2>
+        <div className="space-y-2">
+          {leaderboard.map((entry) => (
+            <div
+              key={entry.rank}
+              className={`flex items-center justify-between py-3 px-3 rounded-lg ${
+                entry.isUser ? "bg-[#C4956A]/10 border border-[#C4956A]/30" : "border-b border-[var(--card-border)] last:border-0"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    entry.rank <= 3 ? "bg-[#C4956A]/20 text-[#C4956A]" : "bg-[var(--input-bg)] text-[var(--text-muted)]"
+                  }`}
+                >
+                  {entry.rank}
+                </div>
+                <span className={`text-sm ${entry.isUser ? "font-semibold text-[#C4956A]" : "text-[var(--foreground)]"}`}>
+                  {entry.name}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-[var(--foreground)]">{formatPrice(entry.commissions)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Full Dashboard (Hote, Agence, etc.) ───────────────────────────────────
 
 function FullDashboard() {
   const { formatPrice } = useApp();
@@ -196,7 +611,7 @@ function FullDashboard() {
   const [showInvite, setShowInvite] = useState(false);
   const [goals, setGoals] = useState<{ label: string; target: number; current: number }[]>([
     { label: "Revenus mensuels", target: 10000, current: 6800 },
-    { label: "Réservations", target: 20, current: 14 },
+    { label: "Reservations", target: 20, current: 14 },
     { label: "Note moyenne", target: 5, current: 4.8 },
   ]);
   const [editGoalIdx, setEditGoalIdx] = useState<number | null>(null);
@@ -233,7 +648,7 @@ function FullDashboard() {
   const chartMax = Math.max(...mockRevenueData.map((d) => d.revenue));
 
   const exportCSV = useCallback(() => {
-    const header = "Mois,Revenus,Réservations,Occupation\n";
+    const header = "Mois,Revenus,Reservations,Occupation\n";
     const rows = mockRevenueData
       .map((d) => `${d.month},${d.revenue},${d.bookings},${d.occupancy}`)
       .join("\n");
@@ -271,7 +686,7 @@ function FullDashboard() {
           />
           <div>
             <h1 className="text-xl font-bold text-[var(--foreground)]">
-              Bonjour, {currentUser.firstName} 👋
+              Bonjour, {currentUser.firstName}
             </h1>
             <p className="text-sm text-[var(--text-muted)] capitalize">{getDateStr()}</p>
           </div>
@@ -312,7 +727,7 @@ function FullDashboard() {
               </div>
               <div className={`text-xs mt-1 ${isUp ? "text-emerald-400" : "text-red-400"}`}>
                 {isUp ? "+" : ""}
-                {change.toFixed(1)}% vs période précédente
+                {change.toFixed(1)}% vs periode precedente
               </div>
             </div>
           );
@@ -407,7 +822,7 @@ function FullDashboard() {
                 >
                   {tooltipIdx === i && (
                     <div className="absolute -top-14 bg-[var(--foreground)] text-[var(--background)] text-xs px-3 py-1.5 rounded-lg whitespace-nowrap z-10">
-                      {formatPrice(d.revenue)} - {d.bookings} rés.
+                      {formatPrice(d.revenue)} - {d.bookings} res.
                     </div>
                   )}
                   <div
@@ -459,7 +874,7 @@ function FullDashboard() {
                     {formatPrice(tx.amount)}
                   </div>
                   <div className={`text-xs ${txStatusColors[tx.status]}`}>
-                    {tx.status === "completed" ? "Terminé" : tx.status === "pending" ? "En attente" : "Échoué"}
+                    {tx.status === "completed" ? "Termine" : tx.status === "pending" ? "En attente" : "Echoue"}
                   </div>
                 </div>
               </div>
@@ -472,7 +887,7 @@ function FullDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Activity */}
         <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-          <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Activité récente</h2>
+          <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Activite recente</h2>
           <div className="space-y-3">
             {mockActivity.map((a) => (
               <Link
@@ -524,7 +939,7 @@ function FullDashboard() {
               href={s.href}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--card-border)] hover:border-[#C4956A]/50 text-sm text-[var(--foreground)] transition-colors"
             >
-              <span>{s.icon}</span>
+              <span className="w-6 h-6 rounded bg-[#C4956A]/10 flex items-center justify-center text-xs text-[#C4956A] font-bold">{s.icon}</span>
               <span>{s.label}</span>
             </Link>
           ))}
@@ -545,7 +960,7 @@ function FullDashboard() {
               Inviter un contact
             </h3>
             <p className="text-sm text-[var(--text-secondary)] mb-4">
-              Partagez votre lien de parrainage et gagnez des commissions sur les revenus générés.
+              Partagez votre lien de parrainage et gagnez des commissions sur les revenus generes.
             </p>
             <div className="flex gap-2 mb-4">
               <input

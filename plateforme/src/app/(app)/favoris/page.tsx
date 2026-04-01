@@ -19,7 +19,7 @@ const allProperties: Property[] = [
     id: "p2", title: "Appartement Vue Lac", description: "", type: "appartement", transactionType: "vente",
     price: 1250000, currency: "CHF", location: { city: "Montreux", country: "Suisse" },
     images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop"],
-    host: { id: "h2", firstName: "Sophie", lastName: "Bernard", email: "", avatar: "", city: "Genève", country: "Suisse", roles: ["agence"], activeRole: "agence", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    host: { id: "h2", firstName: "Sophie", lastName: "Martin", email: "", avatar: "", city: "Genève", country: "Suisse", roles: ["agence"], activeRole: "agence", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
     bedrooms: 3, bathrooms: 2, area: 120, amenities: ["Vue lac", "Parking"], rating: 4.7, reviewCount: 15,
   },
   {

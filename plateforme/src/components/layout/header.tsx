@@ -376,7 +376,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
             <div style={dropdownStyle}>
               <div className="px-3 py-2 mb-1" style={{ borderBottom: "1px solid var(--divider)" }}>
                 <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                  Leo Demo
+                  Léo Martin
                 </p>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                   leo@edome.ch

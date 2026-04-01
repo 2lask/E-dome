@@ -16,7 +16,7 @@ const MOCK_USERS = [
   { id: "U001", nom: "Marie Dupont", email: "marie@example.com", role: "hote", date: "2026-01-15", statut: "actif" },
   { id: "U002", nom: "Jean Martin", email: "jean@example.com", role: "client", date: "2026-01-20", statut: "actif" },
   { id: "U003", nom: "Sophie Meier", email: "sophie@example.com", role: "agence", date: "2026-02-01", statut: "actif" },
-  { id: "U004", nom: "Karim Ben Ali", email: "karim@example.com", role: "apporteur", date: "2026-02-10", statut: "suspendu" },
+  { id: "U004", nom: "Léo Martin", email: "leo@example.com", role: "apporteur", date: "2026-02-10", statut: "suspendu" },
   { id: "U005", nom: "Laura Fischer", email: "laura@example.com", role: "investisseur", date: "2026-02-15", statut: "actif" },
   { id: "U006", nom: "Thomas Roth", email: "thomas@example.com", role: "formateur", date: "2026-02-20", statut: "actif" },
   { id: "U007", nom: "Nadia Silva", email: "nadia@example.com", role: "courtier", date: "2026-03-01", statut: "actif" },
