@@ -1,50 +1,99 @@
 "use client";
 
-import React, { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { Suspense, useState, useMemo, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
 const ALL_RESULTS = {
   biens: [
-    { id: "B1", titre: "Appartement 3p Lausanne", prix: 450000, type: "Appartement", ville: "Lausanne" },
-    { id: "B2", titre: "Villa Montreux vue lac", prix: 1250000, type: "Villa", ville: "Montreux" },
-    { id: "B3", titre: "Studio Geneve centre", prix: 285000, type: "Studio", ville: "Geneve" },
-    { id: "B4", titre: "Chalet Verbier luxe", prix: 890000, type: "Chalet", ville: "Verbier" },
-    { id: "B5", titre: "Penthouse Zurich", prix: 2100000, type: "Penthouse", ville: "Zurich" },
-    { id: "B6", titre: "Loft Berne centre", prix: 520000, type: "Loft", ville: "Berne" },
-    { id: "B7", titre: "Maison Neuchatel", prix: 680000, type: "Maison", ville: "Neuchatel" },
+    { id: "B1", titre: "Appartement 3p Lausanne", prix: 450000, type: "Appartement", ville: "Lausanne", pays: "Suisse" },
+    { id: "B2", titre: "Villa Montreux vue lac", prix: 1250000, type: "Villa", ville: "Montreux", pays: "Suisse" },
+    { id: "B3", titre: "Studio Geneve centre", prix: 285000, type: "Studio", ville: "Geneve", pays: "Suisse" },
+    { id: "B4", titre: "Chalet Verbier luxe", prix: 890000, type: "Chalet", ville: "Verbier", pays: "Suisse" },
+    { id: "B5", titre: "Penthouse Zurich", prix: 2100000, type: "Penthouse", ville: "Zurich", pays: "Suisse" },
+    { id: "B6", titre: "Loft Berne centre", prix: 520000, type: "Loft", ville: "Berne", pays: "Suisse" },
+    { id: "B7", titre: "Maison Neuchatel", prix: 680000, type: "Maison", ville: "Neuchatel", pays: "Suisse" },
+    { id: "B8", titre: "Riad Marrakech", prix: 380000, type: "Riad", ville: "Marrakech", pays: "Maroc" },
   ],
   formations: [
-    { id: "F1", titre: "Investir dans l'immobilier", instructeur: "Marc Bonnard", prix: 299, niveau: "Débutant" },
-    { id: "F2", titre: "Photographie immobilière", instructeur: "Amina Kone", prix: 199, niveau: "Intermédiaire" },
-    { id: "F3", titre: "Droit du bail suisse", instructeur: "Thomas Roth", prix: 349, niveau: "Avancé" },
-    { id: "F4", titre: "Home staging efficace", instructeur: "Laura Fischer", prix: 149, niveau: "Débutant" },
+    { id: "F1", titre: "Investir dans l'immobilier", instructeur: "Marc Bonnard", prix: 299, niveau: "Debutant" },
+    { id: "F2", titre: "Photographie immobiliere", instructeur: "Amina Kone", prix: 199, niveau: "Intermediaire" },
+    { id: "F3", titre: "Droit du bail suisse", instructeur: "Thomas Roth", prix: 349, niveau: "Avance" },
+    { id: "F4", titre: "Home staging efficace", instructeur: "Laura Fischer", prix: 149, niveau: "Debutant" },
   ],
   utilisateurs: [
     { id: "U1", nom: "Marie Dupont", role: "Hote", ville: "Lausanne" },
     { id: "U2", nom: "Jean Martin", role: "Client", ville: "Geneve" },
     { id: "U3", nom: "Sophie Meier", role: "Agence", ville: "Zurich" },
-    { id: "U4", nom: "Léo Martin", role: "Apporteur", ville: "Montreux" },
+    { id: "U4", nom: "Leo Martin", role: "Apporteur", ville: "Montreux" },
     { id: "U5", nom: "Laura Fischer", role: "Investisseur", ville: "Berne" },
   ],
   evenements: [
     { id: "E1", titre: "Salon de l'immobilier Geneve", date: "2026-05-15", lieu: "Palexpo, Geneve" },
     { id: "E2", titre: "Workshop investissement Lausanne", date: "2026-04-20", lieu: "SwissTech, Lausanne" },
-    { id: "E3", titre: "Conférence PropTech Zurich", date: "2026-06-10", lieu: "Zurich Convention Center" },
+    { id: "E3", titre: "Conference PropTech Zurich", date: "2026-06-10", lieu: "Zurich Convention Center" },
+  ],
+  services: [
+    { id: "S1", titre: "Estimation immobiliere", description: "Estimation professionnelle de votre bien", prix: 150 },
+    { id: "S2", titre: "Photographie immobiliere pro", description: "Seance photo HDR + drone", prix: 450 },
+    { id: "S3", titre: "Home staging virtuel", description: "Mise en scene 3D de votre bien", prix: 299 },
+    { id: "S4", titre: "Accompagnement juridique", description: "Conseil juridique pour transactions", prix: 200 },
   ],
 };
+
+const POPULAR_SEARCHES = [
+  "Villa Lausanne",
+  "Appartement Geneve",
+  "Chalet Verbier",
+  "Investissement immobilier",
+  "Location courte duree",
+  "Marrakech",
+  "Studio Zurich",
+  "Penthouse",
+];
+
+/* ─── Category tabs ─────────────────────────────────────────────────────── */
+
+type CategoryKey = "tous" | "biens" | "profils" | "formations" | "evenements" | "services";
+
+const CATEGORY_TABS: { key: CategoryKey; label: string }[] = [
+  { key: "tous", label: "Tous" },
+  { key: "biens", label: "Biens" },
+  { key: "profils", label: "Profils" },
+  { key: "formations", label: "Formations" },
+  { key: "evenements", label: "Evenements" },
+  { key: "services", label: "Services" },
+];
 
 /* ─── Search logic ───────────────────────────────────────────────────────── */
 
 function filterResults(query: string) {
   const q = query.toLowerCase();
   return {
-    biens: ALL_RESULTS.biens.filter((b) => b.titre.toLowerCase().includes(q) || b.ville.toLowerCase().includes(q) || b.type.toLowerCase().includes(q)),
-    formations: ALL_RESULTS.formations.filter((f) => f.titre.toLowerCase().includes(q) || f.instructeur.toLowerCase().includes(q)),
-    utilisateurs: ALL_RESULTS.utilisateurs.filter((u) => u.nom.toLowerCase().includes(q) || u.role.toLowerCase().includes(q) || u.ville.toLowerCase().includes(q)),
-    evenements: ALL_RESULTS.evenements.filter((e) => e.titre.toLowerCase().includes(q) || e.lieu.toLowerCase().includes(q)),
+    biens: ALL_RESULTS.biens.filter(
+      (b) =>
+        b.titre.toLowerCase().includes(q) ||
+        b.ville.toLowerCase().includes(q) ||
+        b.pays.toLowerCase().includes(q) ||
+        b.type.toLowerCase().includes(q)
+    ),
+    formations: ALL_RESULTS.formations.filter(
+      (f) => f.titre.toLowerCase().includes(q) || f.instructeur.toLowerCase().includes(q)
+    ),
+    utilisateurs: ALL_RESULTS.utilisateurs.filter(
+      (u) =>
+        u.nom.toLowerCase().includes(q) ||
+        u.role.toLowerCase().includes(q) ||
+        u.ville.toLowerCase().includes(q)
+    ),
+    evenements: ALL_RESULTS.evenements.filter(
+      (e) => e.titre.toLowerCase().includes(q) || e.lieu.toLowerCase().includes(q)
+    ),
+    services: ALL_RESULTS.services.filter(
+      (s) => s.titre.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
+    ),
   };
 }
 
@@ -52,54 +101,140 @@ function filterResults(query: string) {
 
 function SearchResults() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { formatPrice } = useApp();
   const query = searchParams.get("q") || "";
+  const [activeCategory, setActiveCategory] = useState<CategoryKey>("tous");
 
+  const results = useMemo(() => (query.trim() ? filterResults(query) : null), [query]);
+
+  const counts = useMemo(() => {
+    if (!results) return { biens: 0, profils: 0, formations: 0, evenements: 0, services: 0, tous: 0 };
+    const c = {
+      biens: results.biens.length,
+      profils: results.utilisateurs.length,
+      formations: results.formations.length,
+      evenements: results.evenements.length,
+      services: results.services.length,
+      tous: 0,
+    };
+    c.tous = c.biens + c.profils + c.formations + c.evenements + c.services;
+    return c;
+  }, [results]);
+
+  const handlePopularSearch = useCallback(
+    (term: string) => {
+      router.push(`/recherche?q=${encodeURIComponent(term)}`);
+    },
+    [router]
+  );
+
+  // Empty state with popular searches
   if (!query.trim()) {
     return (
-      <div className="text-center py-16 space-y-4">
+      <div className="text-center py-16 space-y-6">
         <div className="text-6xl">🔍</div>
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Rechercher sur E-Dome</h2>
         <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-          Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou événements.
+          Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou evenements.
         </p>
+        <div className="max-w-lg mx-auto">
+          <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-3">Recherches populaires</h3>
+          <div className="flex flex-wrap justify-center gap-2">
+            {POPULAR_SEARCHES.map((term) => (
+              <button
+                key={term}
+                onClick={() => handlePopularSearch(term)}
+                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[#C4956A]/40 hover:text-[#C4956A] transition-colors cursor-pointer"
+              >
+                {term}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
-  const results = filterResults(query);
-  const totalCount = results.biens.length + results.formations.length + results.utilisateurs.length + results.evenements.length;
-
-  if (totalCount === 0) {
+  // No results
+  if (counts.tous === 0) {
     return (
-      <div className="text-center py-16 space-y-4">
-        <div className="text-6xl">😕</div>
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun resultat</h2>
-        <p className="text-[var(--text-secondary)]">
-          Aucun resultat pour &laquo;{query}&raquo;. Essayez avec d&apos;autres termes.
-        </p>
+      <div className="space-y-8">
+        <div className="text-center py-16 space-y-4">
+          <div className="text-6xl">😕</div>
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun resultat</h2>
+          <p className="text-[var(--text-secondary)]">
+            Aucun resultat pour &laquo;{query}&raquo;. Essayez avec d&apos;autres termes.
+          </p>
+        </div>
+        <div className="max-w-lg mx-auto text-center">
+          <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-3">Recherches populaires</h3>
+          <div className="flex flex-wrap justify-center gap-2">
+            {POPULAR_SEARCHES.map((term) => (
+              <button
+                key={term}
+                onClick={() => handlePopularSearch(term)}
+                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[#C4956A]/40 hover:text-[#C4956A] transition-colors cursor-pointer"
+              >
+                {term}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
+
+  const showBiens = (activeCategory === "tous" || activeCategory === "biens") && results!.biens.length > 0;
+  const showFormations = (activeCategory === "tous" || activeCategory === "formations") && results!.formations.length > 0;
+  const showProfils = (activeCategory === "tous" || activeCategory === "profils") && results!.utilisateurs.length > 0;
+  const showEvenements = (activeCategory === "tous" || activeCategory === "evenements") && results!.evenements.length > 0;
+  const showServices = (activeCategory === "tous" || activeCategory === "services") && results!.services.length > 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <p className="text-[var(--text-secondary)]">
-        {totalCount} resultat{totalCount > 1 ? "s" : ""} pour &laquo;<span className="text-[var(--foreground)] font-medium">{query}</span>&raquo;
+        {counts.tous} resultat{counts.tous > 1 ? "s" : ""} pour &laquo;<span className="text-[var(--foreground)] font-medium">{query}</span>&raquo;
       </p>
 
+      {/* Category tabs */}
+      <div className="flex gap-1 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-x-auto no-scrollbar">
+        {CATEGORY_TABS.map((tab) => {
+          const count = counts[tab.key];
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveCategory(tab.key)}
+              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                activeCategory === tab.key
+                  ? "bg-[#C4956A] text-white"
+                  : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {tab.label}
+              {count > 0 && (
+                <span className={`ml-1.5 text-xs ${activeCategory === tab.key ? "text-white/80" : "text-[var(--text-muted)]"}`}>
+                  ({count})
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Biens */}
-      {results.biens.length > 0 && (
-        <section className="space-y-3">
+      {showBiens && (
+        <section className="space-y-3 animate-fade-in">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">
-            Biens immobiliers <span className="text-sm text-[var(--text-muted)] font-normal">({results.biens.length})</span>
+            Biens immobiliers <span className="text-sm text-[var(--text-muted)] font-normal">({results!.biens.length})</span>
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
-            {results.biens.map((b) => (
-              <div key={b.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition">
+            {results!.biens.map((b) => (
+              <div key={b.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition cursor-pointer"
+                onClick={() => router.push(`/explorer/${b.id}`)}>
                 <h3 className="font-medium text-[var(--foreground)]">{b.titre}</h3>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-sm text-[var(--text-secondary)]">{b.type} — {b.ville}</span>
+                  <span className="text-sm text-[var(--text-secondary)]">{b.type} — {b.ville}, {b.pays}</span>
                   <span className="text-sm font-bold text-[#C4956A]">{formatPrice(b.prix)}</span>
                 </div>
               </div>
@@ -109,14 +244,15 @@ function SearchResults() {
       )}
 
       {/* Formations */}
-      {results.formations.length > 0 && (
-        <section className="space-y-3">
+      {showFormations && (
+        <section className="space-y-3 animate-fade-in">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">
-            Formations <span className="text-sm text-[var(--text-muted)] font-normal">({results.formations.length})</span>
+            Formations <span className="text-sm text-[var(--text-muted)] font-normal">({results!.formations.length})</span>
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
-            {results.formations.map((f) => (
-              <div key={f.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition">
+            {results!.formations.map((f) => (
+              <div key={f.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition cursor-pointer"
+                onClick={() => router.push("/formations")}>
                 <h3 className="font-medium text-[var(--foreground)]">{f.titre}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">{f.instructeur} — {f.niveau}</p>
                 <p className="text-sm font-bold text-[#C4956A] mt-1">{formatPrice(f.prix)}</p>
@@ -126,15 +262,16 @@ function SearchResults() {
         </section>
       )}
 
-      {/* Utilisateurs */}
-      {results.utilisateurs.length > 0 && (
-        <section className="space-y-3">
+      {/* Profils (Utilisateurs) */}
+      {showProfils && (
+        <section className="space-y-3 animate-fade-in">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">
-            Utilisateurs <span className="text-sm text-[var(--text-muted)] font-normal">({results.utilisateurs.length})</span>
+            Profils <span className="text-sm text-[var(--text-muted)] font-normal">({results!.utilisateurs.length})</span>
           </h2>
           <div className="space-y-2">
-            {results.utilisateurs.map((u) => (
-              <div key={u.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] flex items-center justify-between hover:bg-[var(--hover-bg)] transition">
+            {results!.utilisateurs.map((u) => (
+              <div key={u.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] flex items-center justify-between hover:bg-[var(--hover-bg)] transition cursor-pointer"
+                onClick={() => router.push(`/profil/${u.id}`)}>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#C4956A]/20 flex items-center justify-center text-[#C4956A] font-bold text-sm">
                     {u.nom.split(" ").map((n) => n[0]).join("")}
@@ -153,20 +290,39 @@ function SearchResults() {
         </section>
       )}
 
-      {/* Événements */}
-      {results.evenements.length > 0 && (
-        <section className="space-y-3">
+      {/* Evenements */}
+      {showEvenements && (
+        <section className="space-y-3 animate-fade-in">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">
-            Événements <span className="text-sm text-[var(--text-muted)] font-normal">({results.evenements.length})</span>
+            Evenements <span className="text-sm text-[var(--text-muted)] font-normal">({results!.evenements.length})</span>
           </h2>
           <div className="space-y-2">
-            {results.evenements.map((e) => (
-              <div key={e.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition">
+            {results!.evenements.map((e) => (
+              <div key={e.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition cursor-pointer"
+                onClick={() => router.push("/evenements")}>
                 <h3 className="font-medium text-[var(--foreground)]">{e.titre}</h3>
                 <div className="flex items-center gap-4 mt-1 text-sm text-[var(--text-secondary)]">
                   <span>{e.date}</span>
                   <span>{e.lieu}</span>
                 </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Services */}
+      {showServices && (
+        <section className="space-y-3 animate-fade-in">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+            Services <span className="text-sm text-[var(--text-muted)] font-normal">({results!.services.length})</span>
+          </h2>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {results!.services.map((s) => (
+              <div key={s.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition">
+                <h3 className="font-medium text-[var(--foreground)]">{s.titre}</h3>
+                <p className="text-sm text-[var(--text-secondary)] mt-1">{s.description}</p>
+                <p className="text-sm font-bold text-[#C4956A] mt-2">Des {formatPrice(s.prix)}</p>
               </div>
             ))}
           </div>

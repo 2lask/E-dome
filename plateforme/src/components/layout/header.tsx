@@ -166,15 +166,50 @@ export function Header({ onMenuToggle }: HeaderProps) {
             />
           </div>
         </form>
-        {searchFocused && recentSearches.length > 0 && (
+        {searchFocused && (
           <div style={dropdownStyle}>
+            {recentSearches.length > 0 && (
+              <>
+                <p className="text-xs font-medium px-3 py-1.5" style={{ color: "var(--text-muted)" }}>
+                  Recherches recentes
+                </p>
+                {recentSearches.map((s) => (
+                  <div
+                    key={s}
+                    className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer"
+                    style={{ color: "var(--text-secondary)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    onClick={() => {
+                      setSearchQuery(s);
+                      router.push(`/recherche?q=${encodeURIComponent(s)}`);
+                      setSearchFocused(false);
+                    }}
+                  >
+                    <span className="text-sm">{s}</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeRecentSearch(s);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </>
+            )}
+            {recentSearches.length > 0 && (
+              <div style={{ borderTop: "1px solid var(--card-border)", margin: "4px 0" }} />
+            )}
             <p className="text-xs font-medium px-3 py-1.5" style={{ color: "var(--text-muted)" }}>
-              Recherches recentes
+              Suggestions
             </p>
-            {recentSearches.map((s) => (
+            {["Villa Lausanne", "Appartement Geneve", "Investissement", "Chalet Verbier"].map((s) => (
               <div
                 key={s}
-                className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer"
                 style={{ color: "var(--text-secondary)" }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
@@ -184,16 +219,8 @@ export function Header({ onMenuToggle }: HeaderProps) {
                   setSearchFocused(false);
                 }}
               >
+                <Search size={12} style={{ color: "var(--text-muted)" }} />
                 <span className="text-sm">{s}</span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeRecentSearch(s);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <X size={14} />
-                </button>
               </div>
             ))}
           </div>

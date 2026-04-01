@@ -9,7 +9,7 @@ import {
   Calendar as CalendarIcon, ChevronDown, ChevronUp,
   TrendingUp, BarChart3, Shield, Check, Send, Flag,
   Facebook, Mail, Copy, Phone, MessageCircle, Users,
-  Building2, Layers, DollarSign, Percent, Award,
+  Building2, Layers, DollarSign, Percent, Award, Rocket,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
@@ -87,7 +87,7 @@ function mapMockReviewToDisplay(r: Review): DisplayReview {
 
 export default function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { formatPrice, toggleFavorite, isFavorite } = useApp();
+  const { formatPrice, toggleFavorite, isFavorite, activeRole } = useApp();
   const { addToast } = useToast();
   const router = useRouter();
 
@@ -146,6 +146,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   // Share
   const [showShare, setShowShare] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Boost modal
+  const [showBoostModal, setShowBoostModal] = useState(false);
+  const [boostDuration, setBoostDuration] = useState<7 | 14 | 30>(7);
 
   // Vente modals
   const [showVisitModal, setShowVisitModal] = useState(false);
@@ -434,6 +438,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             >
               <Printer className="w-4 h-4" /> Imprimer
             </button>
+            {(activeRole === "hote" || activeRole === "agence" || activeRole === "promoteur") && (
+              <button
+                onClick={() => setShowBoostModal(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#C4956A] bg-[#C4956A]/10 text-[#C4956A] hover:bg-[#C4956A]/20 transition-colors"
+              >
+                <Rocket className="w-4 h-4" /> Booster
+              </button>
+            )}
           </div>
 
           {/* Characteristics grid */}
@@ -484,6 +496,68 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               ))}
             </div>
           </div>
+
+          {/* Floor plan - only for properties with bedrooms >= 2 */}
+          {property.bedrooms >= 2 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">Plan du bien</h2>
+              <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 overflow-x-auto">
+                <svg viewBox="0 0 600 400" className="w-full max-w-[600px] mx-auto" style={{ minWidth: 400 }}>
+                  {/* Background */}
+                  <rect x="0" y="0" width="600" height="400" fill="white" rx="8" />
+
+                  {/* Outer walls */}
+                  <rect x="20" y="20" width="560" height="360" fill="none" stroke="#9ca3af" strokeWidth="2" />
+
+                  {/* SALON - large room left */}
+                  <rect x="20" y="20" width="280" height="220" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
+                  <text x="160" y="120" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">SALON</text>
+                  <text x="160" y="140" textAnchor="middle" fontSize="11" fill="#6b7280">42m²</text>
+
+                  {/* CUISINE - top right */}
+                  <rect x="300" y="20" width="280" height="130" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
+                  <text x="440" y="80" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">CUISINE</text>
+                  <text x="440" y="100" textAnchor="middle" fontSize="11" fill="#6b7280">18m²</text>
+
+                  {/* CH.1 - middle right */}
+                  <rect x="300" y="150" width="155" height="140" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
+                  <text x="377" y="215" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">CH.1</text>
+                  <text x="377" y="235" textAnchor="middle" fontSize="11" fill="#6b7280">16m²</text>
+
+                  {/* CH.2 - far right */}
+                  <rect x="455" y="150" width="125" height="140" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
+                  <text x="517" y="215" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">CH.2</text>
+                  <text x="517" y="235" textAnchor="middle" fontSize="11" fill="#6b7280">14m²</text>
+
+                  {/* SDB - bottom right */}
+                  <rect x="380" y="290" width="200" height="90" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
+                  <text x="480" y="335" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">SDB</text>
+                  <text x="480" y="355" textAnchor="middle" fontSize="11" fill="#6b7280">8m²</text>
+
+                  {/* ENTREE - bottom left */}
+                  <rect x="20" y="240" width="280" height="140" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
+                  <text x="160" y="305" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">ENTREE</text>
+
+                  {/* Couloir / passage */}
+                  <rect x="300" y="290" width="80" height="90" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
+
+                  {/* Door indicators (small arcs) */}
+                  <path d="M 300 310 Q 310 320 310 330" fill="none" stroke="#C4956A" strokeWidth="1" />
+                  <path d="M 160 240 Q 170 250 170 260" fill="none" stroke="#C4956A" strokeWidth="1" />
+                  <path d="M 300 85 Q 290 75 280 85" fill="none" stroke="#C4956A" strokeWidth="1" />
+
+                  {/* Scale indicator */}
+                  <line x1="30" y1="390" x2="130" y2="390" stroke="#9ca3af" strokeWidth="1" />
+                  <line x1="30" y1="386" x2="30" y2="394" stroke="#9ca3af" strokeWidth="1" />
+                  <line x1="130" y1="386" x2="130" y2="394" stroke="#9ca3af" strokeWidth="1" />
+                  <text x="80" y="399" textAnchor="middle" fontSize="9" fill="#9ca3af">5m</text>
+                </svg>
+                <p className="text-xs text-[var(--text-muted)] text-center mt-3">
+                  Plan indicatif — Les surfaces sont approximatives
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Video section */}
           {property.videos && property.videos.length > 0 && property.videos.some((v) => v && !v.includes("example.com")) && (
@@ -1205,6 +1279,61 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 Soumettre l&apos;offre
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Boost modal */}
+      {showBoostModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowBoostModal(false)}>
+          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full mx-4 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
+                <Rocket className="w-5 h-5 text-[#C4956A]" /> Booster ce bien
+              </h3>
+              <button onClick={() => setShowBoostModal(false)} className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] mb-5">
+              Le bien apparaitra en premier dans l&apos;Explorer avec un badge &laquo;Mis en avant&raquo;.
+            </p>
+            <div className="space-y-2 mb-6">
+              {([
+                { days: 7 as const, price: 99 },
+                { days: 14 as const, price: 179 },
+                { days: 30 as const, price: 299 },
+              ] as const).map((opt) => (
+                <label
+                  key={opt.days}
+                  className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-colors ${
+                    boostDuration === opt.days ? "border-[#C4956A] bg-[#C4956A]/10" : "border-[var(--card-border)] hover:border-[var(--text-muted)]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="boost"
+                      checked={boostDuration === opt.days}
+                      onChange={() => setBoostDuration(opt.days)}
+                      className="accent-[#C4956A]"
+                    />
+                    <span className="text-sm font-medium text-[var(--foreground)]">{opt.days} jours</span>
+                  </div>
+                  <span className="text-sm font-bold text-[#C4956A]">{formatPrice(opt.price)}</span>
+                </label>
+              ))}
+            </div>
+            <button
+              onClick={() => {
+                addToast("Boost active !", "success");
+                setShowBoostModal(false);
+              }}
+              className="w-full py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+              style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)", color: "#fff" }}
+            >
+              <Rocket className="w-4 h-4" /> Confirmer le boost
+            </button>
           </div>
         </div>
       )}

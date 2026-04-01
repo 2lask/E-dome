@@ -12,32 +12,94 @@ export default function ContactPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = () => {
+    const errs: Record<string, string> = {};
+    if (!form.sujet) errs.sujet = "Veuillez selectionner un sujet.";
+    if (!form.nom.trim()) errs.nom = "Le nom est requis.";
+    if (!form.email.trim()) errs.email = "L'email est requis.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "L'email n'est pas valide.";
+    if (!form.message.trim()) errs.message = "Le message est requis.";
+    else if (form.message.trim().length < 10) errs.message = "Le message doit contenir au moins 10 caracteres.";
+    return errs;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.sujet || !form.nom || !form.email || !form.message) return;
-    setSubmitted(true);
+    const errs = validate();
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
+    setSending(true);
+    // Simulate email sending delay
+    setTimeout(() => {
+      setSending(false);
+      setSubmitted(true);
+    }, 1500);
   };
 
   const handleChange = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    // Clear error on change
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const handleReset = () => {
+    setSubmitted(false);
+    setForm({ sujet: "", nom: "", email: "", message: "" });
+    setErrors({});
   };
 
   if (submitted) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
         <div className="text-center py-16 space-y-4 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
-          <div className="text-6xl">✅</div>
-          <h2 className="text-2xl font-bold text-[var(--foreground)]">Message envoyé !</h2>
+          {/* Animated checkmark */}
+          <div className="relative mx-auto w-20 h-20">
+            <div
+              className="w-20 h-20 rounded-full flex items-center justify-center"
+              style={{
+                background: "linear-gradient(135deg, #C4956A, #d4a574)",
+                animation: "scaleIn 0.5s ease-out",
+              }}
+            >
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 13l4 4L19 7" style={{ strokeDasharray: 24, strokeDashoffset: 0, animation: "drawCheck 0.6s ease-out 0.3s both" }} />
+              </svg>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-[var(--foreground)]">Message envoye !</h2>
           <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-            Merci pour votre message. Notre équipe vous répondra dans les plus brefs délais, généralement sous 24 heures.
+            Votre message a ete envoye. Nous vous repondrons sous 24-48h.
+          </p>
+          <p className="text-sm text-[var(--text-muted)] max-w-sm mx-auto">
+            Un email de confirmation a ete envoye a <span className="text-[var(--foreground)] font-medium">{form.email || "votre adresse"}</span>.
           </p>
           <button
-            onClick={() => { setSubmitted(false); setForm({ sujet: "", nom: "", email: "", message: "" }); }}
+            onClick={handleReset}
             className="mt-4 px-6 py-2.5 rounded-lg bg-[#C4956A] text-white font-medium hover:opacity-90 transition"
           >
             Envoyer un autre message
           </button>
+          <style>{`
+            @keyframes scaleIn {
+              0% { transform: scale(0); opacity: 0; }
+              50% { transform: scale(1.15); }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            @keyframes drawCheck {
+              0% { stroke-dashoffset: 24; }
+              100% { stroke-dashoffset: 0; }
+            }
+          `}</style>
         </div>
       </div>
     );
@@ -60,7 +122,9 @@ export default function ContactPage() {
                 value={form.sujet}
                 onChange={(e) => handleChange("sujet", e.target.value)}
                 required
-                className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
+                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] outline-none focus:border-[#C4956A] transition ${
+                  errors.sujet ? "border-red-400" : "border-[var(--input-border)]"
+                }`}
               >
                 <option value="">Selectionnez un sujet</option>
                 <option value="general">Question generale</option>
@@ -72,6 +136,7 @@ export default function ContactPage() {
                 <option value="presse">Presse et media</option>
                 <option value="autre">Autre</option>
               </select>
+              {errors.sujet && <p className="text-xs text-red-400 mt-1">{errors.sujet}</p>}
             </div>
             <div className="space-y-1">
               <label className="text-sm text-[var(--text-secondary)]">Nom complet</label>
@@ -81,8 +146,11 @@ export default function ContactPage() {
                 onChange={(e) => handleChange("nom", e.target.value)}
                 required
                 placeholder="Votre nom..."
-                className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition"
+                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition ${
+                  errors.nom ? "border-red-400" : "border-[var(--input-border)]"
+                }`}
               />
+              {errors.nom && <p className="text-xs text-red-400 mt-1">{errors.nom}</p>}
             </div>
             <div className="space-y-1">
               <label className="text-sm text-[var(--text-secondary)]">Adresse email</label>
@@ -92,8 +160,11 @@ export default function ContactPage() {
                 onChange={(e) => handleChange("email", e.target.value)}
                 required
                 placeholder="votre@email.com"
-                className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition"
+                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition ${
+                  errors.email ? "border-red-400" : "border-[var(--input-border)]"
+                }`}
               />
+              {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
             </div>
             <div className="space-y-1">
               <label className="text-sm text-[var(--text-secondary)]">Message</label>
@@ -101,16 +172,29 @@ export default function ContactPage() {
                 value={form.message}
                 onChange={(e) => handleChange("message", e.target.value)}
                 required
-                placeholder="Décrivez votre demande..."
+                placeholder="Decrivez votre demande..."
                 rows={5}
-                className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition resize-none"
+                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition resize-none ${
+                  errors.message ? "border-red-400" : "border-[var(--input-border)]"
+                }`}
               />
+              {errors.message && <p className="text-xs text-red-400 mt-1">{errors.message}</p>}
             </div>
             <button
               type="submit"
-              className="w-full px-6 py-3 rounded-lg bg-[#C4956A] text-white font-medium hover:opacity-90 transition"
+              disabled={sending}
+              className="w-full px-6 py-3 rounded-lg bg-[#C4956A] text-white font-medium hover:opacity-90 transition disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              Envoyer le message
+              {sending ? (
+                <>
+                  <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="31.4" strokeDashoffset="10" strokeLinecap="round" />
+                  </svg>
+                  Envoi en cours...
+                </>
+              ) : (
+                "Envoyer le message"
+              )}
             </button>
           </form>
         </div>

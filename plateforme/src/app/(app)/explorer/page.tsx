@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   Search, SlidersHorizontal, Heart, MapPin, Bed, Bath, Maximize,
   Star, ChevronDown, Grid3X3, List, Map, Bookmark, BookmarkCheck,
-  X, Loader2, SortAsc, Building2, TrendingUp,
+  X, Loader2, SortAsc, Building2, TrendingUp, Rocket,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
@@ -429,8 +429,8 @@ export default function ExplorerPage() {
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex gap-2">
                   {prop.featured && (
-                    <span className="px-2.5 py-1 rounded-lg bg-[#C4956A] text-white text-xs font-medium">
-                      En vedette
+                    <span className="px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}>
+                      <Rocket className="w-3 h-3" /> Mis en avant
                     </span>
                   )}
                   <span className="px-2.5 py-1 rounded-lg bg-black/60 text-white text-xs font-medium backdrop-blur-sm">
@@ -514,6 +514,11 @@ export default function ExplorerPage() {
                 <Link href={`/explorer/${prop.id}`}>
                   <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover" />
                 </Link>
+                {prop.featured && (
+                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}>
+                    <Rocket className="w-3 h-3" /> Mis en avant
+                  </span>
+                )}
                 <button
                   onClick={() => toggleFavorite(prop.id)}
                   className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white"
