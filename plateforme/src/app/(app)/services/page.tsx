@@ -10,11 +10,11 @@ const CATEGORIES = [
   { label: "Conciergerie", icon: "key" },
   { label: "Transport", icon: "truck" },
   { label: "Photographie", icon: "camera" },
-  { label: "Decoration", icon: "palette" },
+  { label: "Décoration", icon: "palette" },
   { label: "Juridique", icon: "scale" },
   { label: "Finance", icon: "chart" },
   { label: "Renovation", icon: "hammer" },
-  { label: "Demenagement", icon: "box" },
+  { label: "Déménagement", icon: "box" },
 ];
 
 const GRADIENTS = [
@@ -33,18 +33,18 @@ const SERVICES = [
   { id: "s1", title: "Conciergerie premium Airbnb", category: "Conciergerie", provider: "Swiss Concierge", providerAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop", rating: 4.9, reviews: 127, price: 150, unit: "/mois", gradient: 0 },
   { id: "s2", title: "Transport de meubles Suisse romande", category: "Transport", provider: "TransLogistic SA", providerAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop", rating: 4.7, reviews: 89, price: 80, unit: "/trajet", gradient: 1 },
   { id: "s3", title: "Photographie immobiliere HD + drone", category: "Photographie", provider: "PixelHome", providerAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 4.8, reviews: 203, price: 350, unit: "/seance", gradient: 2 },
-  { id: "s4", title: "Decoration interieure & home staging", category: "Decoration", provider: "Deco Studio", providerAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 4.6, reviews: 56, price: 200, unit: "/piece", gradient: 3 },
+  { id: "s4", title: "Décoration interieure & home staging", category: "Décoration", provider: "Deco Studio", providerAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 4.6, reviews: 56, price: 200, unit: "/piece", gradient: 3 },
   { id: "s5", title: "Conseil juridique immobilier", category: "Juridique", provider: "Cabinet Moreau", providerAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop", rating: 4.9, reviews: 145, price: 250, unit: "/h", gradient: 4 },
   { id: "s6", title: "Gestion comptable locative", category: "Finance", provider: "FinImmo Conseil", providerAvatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=60&h=60&fit=crop", rating: 4.5, reviews: 34, price: 120, unit: "/mois", gradient: 5 },
   { id: "s7", title: "Renovation complete appartement", category: "Renovation", provider: "RenovaPro", providerAvatar: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=60&h=60&fit=crop", rating: 4.8, reviews: 178, price: 5000, unit: "/projet", gradient: 6 },
-  { id: "s8", title: "Demenagement professionnel", category: "Demenagement", provider: "MoveSwiss", providerAvatar: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=60&h=60&fit=crop", rating: 4.7, reviews: 92, price: 600, unit: "/demenagement", gradient: 7 },
+  { id: "s8", title: "Déménagement professionnel", category: "Déménagement", provider: "MoveSwiss", providerAvatar: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=60&h=60&fit=crop", rating: 4.7, reviews: 92, price: 600, unit: "/demenagement", gradient: 7 },
   { id: "s9", title: "Gestion cles et accueil voyageurs", category: "Conciergerie", provider: "KeyMaster", providerAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop", rating: 4.6, reviews: 67, price: 30, unit: "/accueil", gradient: 8 },
 ];
 
 const STEPS = [
-  { number: "1", title: "Choisissez un service", desc: "Parcourez notre catalogue de prestataires verifies et selectionnez le service adapte a vos besoins." },
+  { number: "1", title: "Choisissez un service", desc: "Parcourez notre catalogue de prestataires vérifiés et sélectionnez le service adapté à vos besoins." },
   { number: "2", title: "Demandez un devis", desc: "Décrivez votre projet et recevez un devis personnalisé directement du prestataire." },
-  { number: "3", title: "Profitez du service", desc: "Le prestataire realise la mission. Payez en toute securite via la plateforme." },
+  { number: "3", title: "Profitez du service", desc: "Le prestataire réalise la mission. Payez en toute sécurité via la plateforme." },
 ];
 
 /* ─── Stars ──────────────────────────────────────────────────────────────── */

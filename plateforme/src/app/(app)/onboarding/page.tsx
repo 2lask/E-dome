@@ -14,13 +14,13 @@ import {
 const WELCOME_FEATURES = [
   {
     icon: ShoppingBag,
-    title: "Marketplace immobiliere",
+    title: "Marketplace immobilière",
     desc: "Achetez, vendez ou louez des biens dans le monde entier.",
   },
   {
     icon: MessageCircle,
-    title: "Reseau social integre",
-    desc: "Publiez, echangez et developpez votre reseau professionnel.",
+    title: "Réseau social intégré",
+    desc: "Publiez, echangez et developpez votre réseau professionnel.",
   },
   {
     icon: Handshake,
@@ -41,7 +41,7 @@ const ROLES = [
   { id: "promoteur", label: "Promoteur", icon: TrendingUp, desc: "Developper des projets" },
   { id: "apporteur", label: "Apporteur", icon: Handshake, desc: "Referer et gagner" },
   { id: "investisseur", label: "Investisseur", icon: Briefcase, desc: "Investir dans l'immobilier" },
-  { id: "formateur", label: "Formateur", icon: GraduationCap, desc: "Creer des formations" },
+  { id: "formateur", label: "Formateur", icon: GraduationCap, desc: "Créer des formations" },
   { id: "photographe", label: "Photographe", icon: Camera, desc: "Services photo" },
   { id: "courtier", label: "Courtier", icon: Scale, desc: "Accompagner les transactions" },
   { id: "architecte", label: "Architecte", icon: PenTool, desc: "Concevoir des espaces" },
@@ -86,7 +86,7 @@ export default function OnboardingPage() {
       suggestions.push({ icon: Plus, label: "Publier un bien", href: "/publier" });
     }
     if (selectedRoles.includes("formateur")) {
-      suggestions.push({ icon: BookOpen, label: "Creer une formation", href: "/formations/creer" });
+      suggestions.push({ icon: BookOpen, label: "Créer une formation", href: "/formations/creer" });
     }
     if (selectedRoles.includes("apporteur")) {
       suggestions.push({ icon: Handshake, label: "Espace apporteurs", href: "/apporteurs" });
@@ -144,7 +144,7 @@ export default function OnboardingPage() {
                   Bienvenue sur E-Dome, Leo !
                 </h2>
                 <p className="text-[var(--text-secondary)]">
-                  Decouvrez tout ce que la plateforme peut vous offrir.
+                  Découvrez tout ce que la plateforme peut vous offrir.
                 </p>
               </div>
 
@@ -178,7 +178,7 @@ export default function OnboardingPage() {
               {/* Progress indicator */}
               <div className="mb-8 p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)]">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Profil complete a {profileCompletion()}%</span>
+                  <span className="text-sm font-medium">Profil complété à {profileCompletion()}%</span>
                   <span className="text-sm text-[#C4956A] font-semibold">{profileCompletion()}%</span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-[var(--input-bg)]">
@@ -209,7 +209,7 @@ export default function OnboardingPage() {
                   <textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    placeholder="Presentez-vous en quelques mots..."
+                    placeholder="Présentez-vous en quelques mots..."
                     rows={3}
                     className={`${inputClass} resize-none`}
                   />
@@ -252,7 +252,7 @@ export default function OnboardingPage() {
             <div className="animate-fade-in">
               <h2 className="text-2xl font-bold mb-2">Activez vos roles</h2>
               <p className="text-[var(--text-secondary)] mb-6">
-                Selectionnez les roles qui correspondent a votre activite. Vous pourrez les modifier a tout moment.
+                Sélectionnez les roles qui correspondent a votre activité. Vous pourrez les modifier a tout moment.
               </p>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -311,7 +311,7 @@ export default function OnboardingPage() {
                   Tout est pret !
                 </h2>
                 <p className="text-[var(--text-secondary)]">
-                  Voici des suggestions personnalisees pour commencer votre experience E-Dome.
+                  Voici des suggestions personnalisées pour commencer votre expérience E-Dome.
                 </p>
               </div>
 

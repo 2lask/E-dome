@@ -16,18 +16,18 @@ import {
 const PAIN_POINTS = [
   {
     icon: Layers,
-    title: "Plateformes fragmentees",
+    title: "Plateformes fragmentées",
     desc: "Airbnb, Immoscout, Instagram, formations... tout est disperse sur des dizaines de plateformes incompatibles.",
   },
   {
     icon: BarChart3,
     title: "Commissions excessives",
-    desc: "Jusqu'a 20% de commissions prelevees par les intermediaires, reduisant drastiquement vos marges.",
+    desc: "Jusqu'a 20% de commissions prélevées par les intermédiaires, reduisant drastiquement vos marges.",
   },
   {
     icon: Network,
-    title: "Aucun reseau social dedie",
-    desc: "Pas de lieu central pour echanger, partager et collaborer entre professionnels de l'immobilier.",
+    title: "Aucun réseau social dédié",
+    desc: "Pas de lieu central pour échanger, partager et collaborer entre professionnels de l'immobilier.",
   },
   {
     icon: Handshake,
@@ -50,7 +50,7 @@ const PILLARS = [
   },
   {
     icon: MessageCircle,
-    title: "Reseau social immobilier",
+    title: "Réseau social immobilier",
     desc: "Feed, stories, groupes, lives. Connectez-vous avec la communaute immobiliere mondiale.",
     color: "#7C9EE5",
   },
@@ -97,18 +97,18 @@ const STATS = [
 
 const COMPARISON = {
   without: [
-    "Plateformes fragmentees (5+ outils)",
+    "Plateformes fragmentées (5+ outils)",
     "Commissions de 15-20%",
-    "Aucun reseau social immobilier",
+    "Aucun réseau social immobilier",
     "Pas d'apporteurs d'affaires",
     "Formations dispersees et cheres",
   ],
   with: [
     "Tout-en-un : marketplace + social + services",
     "Commissions reduites et transparentes",
-    "Reseau social integre et specialise",
+    "Réseau social intégré et spécialisé",
     "Apporteurs remuneres automatiquement",
-    "Formations certifiantes integrees",
+    "Formations certifiantes intégrées",
   ],
 };
 
@@ -122,7 +122,7 @@ const TESTIMONIALS = [
   {
     name: "Karim Benali",
     role: "Investisseur, Dubai",
-    quote: "Grace au reseau d'apporteurs, j'ai decouvert des opportunites que je n'aurais jamais trouvees ailleurs. Le ROI est exceptionnel.",
+    quote: "Grace au réseau d'apporteurs, j'ai decouvert des opportunites que je n'aurais jamais trouvees ailleurs. Le ROI est exceptionnel.",
     avatar: "KB",
   },
   {
@@ -145,7 +145,7 @@ const ROLE_OPTIONS = [
 
 const INTEREST_OPTIONS = [
   "Marketplace (achat/vente/location)",
-  "Reseau social immobilier",
+  "Réseau social immobilier",
   "Apporteurs d'affaires",
   "Formations et certifications",
   "Services professionnels",
@@ -236,9 +236,9 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-3xl mx-auto mb-10 leading-relaxed">
-            E-Dome fusionne marketplace, reseau social, apporteurs d&apos;affaires,
+            E-Dome fusionne marketplace, réseau social, apporteurs d&apos;affaires,
             formations et services professionnels en une seule plateforme premium
-            dediee a l&apos;immobilier.
+            dédiée a l&apos;immobilier.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -555,7 +555,7 @@ export default function LandingPage() {
                       onChange={(e) => setFormCountry(e.target.value)}
                       className={`${inputClass} appearance-none cursor-pointer`}
                     >
-                      <option value="">Selectionnez un pays</option>
+                      <option value="">Sélectionnez un pays</option>
                       {COUNTRIES_LIST.map((c) => (
                         <option key={c} value={c}>{c}</option>
                       ))}
@@ -568,7 +568,7 @@ export default function LandingPage() {
                       onChange={(e) => setFormRole(e.target.value)}
                       className={`${inputClass} appearance-none cursor-pointer`}
                     >
-                      <option value="">Selectionnez un role</option>
+                      <option value="">Sélectionnez un role</option>
                       {ROLE_OPTIONS.map((r) => (
                         <option key={r} value={r}>{r}</option>
                       ))}
@@ -580,10 +580,10 @@ export default function LandingPage() {
               {/* Step 2: Experience */}
               {formStep === 2 && (
                 <div className="space-y-4 animate-fade-in">
-                  <h3 className="text-lg font-semibold mb-4">Votre experience</h3>
+                  <h3 className="text-lg font-semibold mb-4">Votre expérience</h3>
                   <div>
                     <label className="block text-sm text-[var(--text-secondary)] mb-2">
-                      Decrivez votre experience dans l&apos;immobilier
+                      Décrivez votre expérience dans l&apos;immobilier
                     </label>
                     <textarea
                       value={formExperience}
@@ -601,7 +601,7 @@ export default function LandingPage() {
                 <div className="space-y-4 animate-fade-in">
                   <h3 className="text-lg font-semibold mb-4">Vos centres d&apos;interet</h3>
                   <p className="text-sm text-[var(--text-secondary)] mb-4">
-                    Selectionnez les fonctionnalites qui vous interessent le plus :
+                    Sélectionnez les fonctionnalites qui vous interessent le plus :
                   </p>
                   <div className="space-y-3">
                     {INTEREST_OPTIONS.map((interest) => (

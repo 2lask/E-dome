@@ -556,7 +556,7 @@ export default function FeedPage() {
                 <Users className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
                 <p className="text-sm text-[var(--text-secondary)]">
                   {activeTab === "suivis"
-                    ? "Vous ne suivez personne pour le moment. Suivez des utilisateurs pour voir leurs publications ici."
+                    ? "Vous n'êtes abonné à personne pour le moment. Abonnez-vous à des utilisateurs pour voir leurs publications ici."
                     : "Aucune publication à afficher."}
                 </p>
               </div>

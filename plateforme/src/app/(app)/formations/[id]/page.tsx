@@ -350,7 +350,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                 Fermer
               </button>
               <button className="flex-1 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
-                Telecharger PDF
+                Télécharger PDF
               </button>
             </div>
           </div>

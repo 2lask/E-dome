@@ -61,7 +61,7 @@ export default function AdminPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
           <div className="text-5xl mb-4">🔒</div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Acces restreint</h2>
+          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Accès restreint</h2>
           <p className="text-[var(--text-secondary)]">
             Cette page est reservee aux administrateurs et agences.
           </p>

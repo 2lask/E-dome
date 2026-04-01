@@ -66,9 +66,9 @@ export default function InvestisseursPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
           <div className="text-5xl mb-4">🔒</div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Acces restreint</h2>
+          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Accès restreint</h2>
           <p className="text-[var(--text-secondary)]">
-            Cette page est reservee aux investisseurs. Activez le role &laquo;Investisseur&raquo; dans vos parametres.
+            Cette page est réservée aux investisseurs. Activez le role &laquo;Investisseur&raquo; dans vos paramètres.
           </p>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function InvestisseursPage() {
                 <p className="text-sm text-[var(--text-muted)]">{r.date} — {r.type}</p>
               </div>
               <button className="px-3 py-1.5 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm hover:text-[var(--foreground)] transition">
-                Telecharger
+                Télécharger
               </button>
             </div>
           ))}

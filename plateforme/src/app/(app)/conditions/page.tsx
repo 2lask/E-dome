@@ -13,7 +13,7 @@ const SECTIONS = [
   {
     id: "definitions",
     title: "2. Definitions",
-    content: `- "Plateforme" : le site web et l'application mobile E-Dome.\n- "Utilisateur" : toute personne physique ou morale inscrite sur la Plateforme.\n- "Hote" : Utilisateur proposant un bien immobilier a la vente ou a la location.\n- "Client" : Utilisateur recherchant un bien immobilier.\n- "Apporteur d'affaires" : Utilisateur recommandant des prospects via les liens de parrainage.\n- "Contenu" : tout texte, image, video, annonce ou information publiee sur la Plateforme.\n- "Commission" : pourcentage preleve par la Plateforme sur les transactions realisees.`,
+    content: `- "Plateforme" : le site web et l'application mobile E-Dome.\n- "Utilisateur" : toute personne physique ou morale inscrite sur la Plateforme.\n- "Hote" : Utilisateur proposant un bien immobilier a la vente ou a la location.\n- "Client" : Utilisateur recherchant un bien immobilier.\n- "Apporteur d'affaires" : Utilisateur recommandant des prospects via les liens de parrainage.\n- "Contenu" : tout texte, image, video, annonce ou information publiee sur la Plateforme.\n- "Commission" : pourcentage preleve par la Plateforme sur les transactions réalisées.`,
   },
   {
     id: "inscription",
@@ -23,17 +23,17 @@ const SECTIONS = [
   {
     id: "services",
     title: "4. Services proposes",
-    content: `La Plateforme permet :\n- La publication et la consultation d'annonces immobilieres (vente, location courte et longue duree).\n- La mise en relation entre hotes et clients.\n- La reservation et la gestion de biens immobiliers.\n- L'acces a des formations en ligne.\n- La participation a des evenements en direct (lives).\n- Le programme d'apporteurs d'affaires.\n- L'acces a des outils de statistiques et de gestion.\n\nE-Dome agit en qualite d'intermediaire et n'est pas partie aux contrats conclus entre Utilisateurs.`,
+    content: `La Plateforme permet :\n- La publication et la consultation d'annonces immobilières (vente, location courte et longue durée).\n- La mise en relation entre hotes et clients.\n- La reservation et la gestion de biens immobiliers.\n- L'acces a des formations en ligne.\n- La participation a des evenements en direct (lives).\n- Le programme d'apporteurs d'affaires.\n- L'acces a des outils de statistiques et de gestion.\n\nE-Dome agit en qualite d'intermédiaire et n'est pas partie aux contrats conclus entre Utilisateurs.`,
   },
   {
     id: "commissions",
     title: "5. Commissions et tarification",
-    content: `E-Dome preleve une commission sur les transactions realisees via la Plateforme, selon le bareme suivant :`,
+    content: `E-Dome preleve une commission sur les transactions réalisées via la Plateforme, selon le bareme suivant :`,
     table: [
       ["Type de transaction", "Commission Plateforme", "Part Apporteur (si applicable)"],
-      ["Vente immobiliere", "3.5% du prix de vente", "Jusqu'a 15% de la commission plateforme"],
-      ["Location courte duree", "8% du montant du sejour", "Jusqu'a 15% de la commission plateforme"],
-      ["Location longue duree", "50% du premier loyer", "Jusqu'a 15% de la commission plateforme"],
+      ["Vente immobilière", "3.5% du prix de vente", "Jusqu'a 15% de la commission plateforme"],
+      ["Location courte durée", "8% du montant du sejour", "Jusqu'a 15% de la commission plateforme"],
+      ["Location longue durée", "50% du premier loyer", "Jusqu'a 15% de la commission plateforme"],
       ["Formation vendue", "20% du prix de la formation", "Jusqu'a 10% de la commission plateforme"],
     ],
     contentAfter: `La commission de l'apporteur d'affaires est exclusivement prelevee sur la part plateforme. En aucun cas elle ne constitue un cout supplementaire pour l'hote ou le client. Les tarifs peuvent etre modifies avec un preavis de 30 jours.`,

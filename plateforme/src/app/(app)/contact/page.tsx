@@ -126,7 +126,7 @@ export default function ContactPage() {
                   errors.sujet ? "border-red-400" : "border-[var(--input-border)]"
                 }`}
               >
-                <option value="">Selectionnez un sujet</option>
+                <option value="">Sélectionnez un sujet</option>
                 <option value="general">Question generale</option>
                 <option value="technique">Probleme technique</option>
                 <option value="compte">Mon compte</option>
@@ -172,7 +172,7 @@ export default function ContactPage() {
                 value={form.message}
                 onChange={(e) => handleChange("message", e.target.value)}
                 required
-                placeholder="Decrivez votre demande..."
+                placeholder="Décrivez votre demande..."
                 rows={5}
                 className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition resize-none ${
                   errors.message ? "border-red-400" : "border-[var(--input-border)]"

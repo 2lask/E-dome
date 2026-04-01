@@ -279,7 +279,7 @@ export default function LivePage() {
             className="w-full max-w-lg mx-4 p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-5 animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl font-semibold text-[var(--foreground)]">Cr&eacute;er un live</h2>
+            <h2 className="text-xl font-semibold text-[var(--foreground)]">Créer un live</h2>
             <div className="space-y-4">
               <div className="space-y-1">
                 <label className="text-sm text-[var(--text-secondary)]">Titre</label>
@@ -301,7 +301,7 @@ export default function LivePage() {
                   <option value="webinaire">Webinaire</option>
                   <option value="visite">Visite virtuelle</option>
                   <option value="formation">Formation</option>
-                  <option value="qa">Questions / Reponses</option>
+                  <option value="qa">Questions / Réponses</option>
                 </select>
               </div>
               <div className="space-y-1">

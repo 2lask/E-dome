@@ -171,7 +171,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
             {recentSearches.length > 0 && (
               <>
                 <p className="text-xs font-medium px-3 py-1.5" style={{ color: "var(--text-muted)" }}>
-                  Recherches recentes
+                  Recherches récentes
                 </p>
                 {recentSearches.map((s) => (
                   <div
@@ -446,7 +446,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
               >
                 <LogOut size={16} />
-                Deconnexion
+                Déconnexion
               </button>
             </div>
           )}

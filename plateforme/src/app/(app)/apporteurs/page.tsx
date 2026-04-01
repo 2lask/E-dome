@@ -109,9 +109,9 @@ export default function ApporteursPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
           <div className="text-5xl mb-4">🔒</div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Acces restreint</h2>
+          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Accès restreint</h2>
           <p className="text-[var(--text-secondary)]">
-            Cette page est reservee aux apporteurs d&apos;affaires. Activez le role &laquo;Apporteur&raquo; dans vos parametres.
+            Cette page est réservée aux apporteurs d&apos;affaires. Activez le role &laquo;Apporteur&raquo; dans vos paramètres.
           </p>
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function ApporteursPage() {
           Programme Apporteurs d&apos;Affaires
         </h1>
         <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-          Generez des revenus en recommandant E-Dome a votre reseau. Chaque conversion vous rapporte une commission prelevee sur la part plateforme, sans surcharge pour les utilisateurs.
+          Générez des revenus en recommandant E-Dome a votre réseau. Chaque conversion vous rapporte une commission prelevee sur la part plateforme, sans surcharge pour les utilisateurs.
         </p>
       </section>
 
@@ -223,7 +223,7 @@ export default function ApporteursPage() {
         <div className="flex flex-col md:flex-row items-center gap-4">
           {[
             { step: "1", title: "Lien clique", desc: "Un prospect clique sur votre lien de parrainage" },
-            { step: "2", title: "Conversion confirmee", desc: "Le prospect s'inscrit et realise une transaction" },
+            { step: "2", title: "Conversion confirmée", desc: "Le prospect s'inscrit et réalise une transaction" },
             { step: "3", title: "Commission versee", desc: "Votre commission est calculee et viree mensuellement" },
           ].map((s, idx) => (
             <React.Fragment key={idx}>
