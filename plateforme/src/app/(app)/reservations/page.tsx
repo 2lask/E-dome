@@ -404,13 +404,19 @@ export default function ReservationsPage() {
             {confirmModal.action === "cancel" && (
               <div className="mb-4">
                 <label className="block text-xs text-[var(--text-muted)] mb-1">Raison de l&apos;annulation</label>
-                <textarea
+                <select
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
-                  placeholder="Indiquez la raison..."
-                  rows={3}
-                  className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none outline-none focus:border-[#C4956A]"
-                />
+                  className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] appearance-none cursor-pointer"
+                >
+                  <option value="">Sélectionnez une raison</option>
+                  <option value="dates">Changement de dates</option>
+                  <option value="personnel">Raison personnelle</option>
+                  <option value="autre_bien">Autre bien trouvé</option>
+                  <option value="imprévu">Imprévu / force majeure</option>
+                  <option value="prix">Prix trop élevé</option>
+                  <option value="autre">Autre</option>
+                </select>
               </div>
             )}
             <div className="flex gap-3">

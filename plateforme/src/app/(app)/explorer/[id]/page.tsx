@@ -758,15 +758,20 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   {Array.from({ length: getDaysInMonth(calMonth, calYear) }, (_, i) => {
                     const day = i + 1;
                     const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-                    const isAvailable = day % 7 !== 0; // Mock availability
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const cellDate = new Date(calYear, calMonth, day);
+                    const isPast = cellDate < today;
+                    const isBooked = day % 7 === 0; // Mock: booked dates
+                    const isDisabled = isPast || isBooked;
                     return (
                       <button
                         key={day}
-                        disabled={!isAvailable}
+                        disabled={isDisabled}
                         className={`py-2 rounded-lg text-sm transition-colors ${
-                          isAvailable
-                            ? "text-[var(--foreground)] hover:bg-[#C4956A]/20 cursor-pointer"
-                            : "text-[var(--text-muted)] opacity-30 cursor-not-allowed line-through"
+                          isDisabled
+                            ? "text-[var(--text-muted)] opacity-30 cursor-not-allowed line-through"
+                            : "text-[var(--foreground)] hover:bg-[#C4956A]/20 cursor-pointer"
                         } ${checkIn === dateStr || checkOut === dateStr ? "bg-[#C4956A] text-white" : ""}`}
                         onClick={() => {
                           if (!checkIn || (checkIn && checkOut)) {
@@ -782,40 +787,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     );
                   })}
                 </div>
-                {/* Availability request */}
-                <div className="mt-6 pt-6 border-t border-[var(--card-border)]">
-                  <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Demande de disponibilité</h3>
-                  <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div>
-                      <label className="block text-xs text-[var(--text-muted)] mb-1">Arrivée</label>
-                      <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-[var(--text-muted)] mb-1">Départ</label>
-                      <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
-                    </div>
+                {/* Legend */}
+                <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-[var(--card-border)]">
+                  <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                    <div className="w-3 h-3 rounded bg-[#C4956A]/20" />
+                    Disponible
                   </div>
-                  <div className="mb-3">
-                    <label className="block text-xs text-[var(--text-muted)] mb-1">Voyageurs</label>
-                    <select value={guests} onChange={(e) => setGuests(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A] appearance-none cursor-pointer">
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                        <option key={n} value={n}>{n} voyageur{n > 1 ? "s" : ""}</option>
-                      ))}
-                    </select>
+                  <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                    <div className="w-3 h-3 rounded bg-[var(--text-muted)]/20 line-through" />
+                    Indisponible
                   </div>
-                  <textarea
-                    value={requestMessage}
-                    onChange={(e) => setRequestMessage(e.target.value)}
-                    placeholder="Message pour l'hôte (optionnel)..."
-                    rows={3}
-                    className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#C4956A] mb-3"
-                  />
-                  <button className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors">
-                    Demander la disponibilité
-                  </button>
                 </div>
               </div>
             </div>

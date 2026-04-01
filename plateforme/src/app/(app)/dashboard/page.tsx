@@ -161,160 +161,164 @@ export default function DashboardPage() {
 // ─── Client Dashboard ──────────────────────────────────────────────────────
 
 function ClientDashboard() {
-  const [recentlyViewed, setRecentlyViewed] = useState<{ id: string; title: string; image: string }[]>([]);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("edome_recently_viewed");
-      if (stored) setRecentlyViewed(JSON.parse(stored));
-    } catch {}
-  }, []);
+  const { formatPrice } = useApp();
 
   const mockReservations = [
-    { id: "r1", title: "Chalet Alpin - Verbier", date: "12-15 avr. 2026", status: "confirmed" },
-    { id: "r2", title: "Appartement Vue Lac - Montreux", date: "28-30 avr. 2026", status: "pending" },
+    {
+      id: "r1",
+      title: "Chalet Alpin Premium",
+      image: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=250&fit=crop",
+      dates: "12 – 15 avril 2026",
+      status: "confirmée",
+    },
+    {
+      id: "r2",
+      title: "Appartement Vue Lac",
+      image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=250&fit=crop",
+      dates: "28 – 30 avril 2026",
+      status: "en attente",
+    },
   ];
 
   const mockFormations = [
-    { id: "f1", title: "Investir en Suisse", progress: 65 },
-    { id: "f2", title: "Gestion locative avancee", progress: 30 },
-    { id: "f3", title: "Droit immobilier", progress: 10 },
+    { id: "form-001", title: "Investissement immobilier", progress: 65, instructor: "Sophie Martin" },
+    { id: "form-002", title: "Gestion locative avancée", progress: 30, instructor: "Marc Dupont" },
   ];
 
   const mockEvents = [
-    { id: "e1", title: "Salon de l'immobilier - Geneve", date: "20 avr. 2026" },
-    { id: "e2", title: "Webinaire investissement", date: "25 avr. 2026" },
+    { id: "e1", title: "Salon de l'immobilier", date: "20 avril 2026", price: 45, location: "Palexpo, Genève" },
+    { id: "e2", title: "Webinaire investissement locatif", date: "25 avril 2026", price: 0, location: "En ligne" },
   ];
 
   const suggestions = [
-    { id: "s1", title: "Villa contemporaine - Lausanne", price: "1'250'000 CHF", image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=200&h=150&fit=crop" },
-    { id: "s2", title: "Studio meuble - Geneve", price: "1'800 CHF/mois", image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=200&h=150&fit=crop" },
-    { id: "s3", title: "Penthouse - Zurich", price: "2'800'000 CHF", image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=200&h=150&fit=crop" },
+    { id: "s1", title: "Villa contemporaine - Lausanne", price: 1250000, currency: "CHF", rating: 4.9, image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=300&h=200&fit=crop" },
+    { id: "s2", title: "Studio meublé - Genève", price: 1800, currency: "CHF", rating: 4.6, image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300&h=200&fit=crop" },
+    { id: "s3", title: "Penthouse - Zurich", price: 2800000, currency: "CHF", rating: 4.8, image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
   ];
 
-  const statusColors: Record<string, string> = {
-    confirmed: "text-emerald-400",
-    pending: "text-amber-400",
-    cancelled: "text-red-400",
-  };
-  const statusLabels: Record<string, string> = {
-    confirmed: "Confirmee",
-    pending: "En attente",
-    cancelled: "Annulee",
-  };
+  const recentActivity = [
+    { id: "a1", icon: "📅", text: "Réservation confirmée pour Chalet Alpin Premium", time: "Il y a 2h" },
+    { id: "a2", icon: "❤️", text: "Vous avez sauvegardé « Villa Prestige - Lausanne »", time: "Il y a 5h" },
+    { id: "a3", icon: "📚", text: "Module 4 terminé : Investissement immobilier", time: "Il y a 1j" },
+  ];
+
+  const kpis = [
+    { icon: "📅", label: "Réservations actives", value: "3" },
+    { icon: "❤️", label: "Biens sauvegardés", value: "7" },
+    { icon: "📚", label: "Formations en cours", value: "2" },
+    { icon: "🎟", label: "Prochains événements", value: "2" },
+  ];
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6 animate-fade-in">
-      {/* Welcome */}
+      {/* Header */}
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6">
         <div className="flex items-center gap-4">
-          <div
-            className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold shrink-0"
-            style={{ background: "var(--gold)", color: "#000" }}
-          >
-            {currentUser.firstName.charAt(0)}{currentUser.lastName.charAt(0)}
-          </div>
+          <img
+            src={currentUser.avatar}
+            alt=""
+            className="w-14 h-14 rounded-full object-cover border-2 border-[#C4956A]/30 shrink-0"
+          />
           <div>
             <h1 className="text-xl font-bold text-[var(--foreground)]">
-              Bonjour, {currentUser.firstName}
+              Bonjour {currentUser.firstName} 👋
             </h1>
             <p className="text-sm text-[var(--text-muted)] capitalize">{getDateStr()}</p>
           </div>
         </div>
       </div>
 
-      {/* Prochaines reservations */}
-      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">Prochaines reservations</h2>
-          <Link href="/reservations" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
-        </div>
-        {mockReservations.length === 0 ? (
-          <p className="text-sm text-[var(--text-muted)]">Aucune reservation a venir.</p>
-        ) : (
-          <div className="space-y-3">
-            {mockReservations.map((r) => (
-              <Link
-                key={r.id}
-                href="/reservations"
-                className="flex items-center justify-between py-3 px-3 -mx-1 rounded-lg hover:bg-[var(--hover-bg)] transition-colors"
-              >
-                <div>
-                  <div className="text-sm font-medium text-[var(--foreground)]">{r.title}</div>
-                  <div className="text-xs text-[var(--text-muted)]">{r.date}</div>
-                </div>
-                <span className={`text-xs font-medium ${statusColors[r.status] || "text-[var(--text-muted)]"}`}>
-                  {statusLabels[r.status] || r.status}
-                </span>
-              </Link>
-            ))}
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {kpis.map((kpi) => (
+          <div
+            key={kpi.label}
+            className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4 text-center"
+          >
+            <span className="text-2xl">{kpi.icon}</span>
+            <div className="text-2xl font-bold text-[var(--foreground)] mt-1">{kpi.value}</div>
+            <div className="text-xs text-[var(--text-muted)] mt-0.5">{kpi.label}</div>
           </div>
-        )}
+        ))}
       </div>
 
-      {/* Formations en cours */}
+      {/* Mes prochaines réservations */}
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">Formations en cours</h2>
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Mes prochaines réservations</h2>
+          <Link href="/reservations" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {mockReservations.map((r) => (
+            <div
+              key={r.id}
+              className="flex gap-4 p-3 rounded-xl border border-[var(--card-border)] hover:border-[#C4956A]/30 transition-colors"
+            >
+              <img
+                src={r.image}
+                alt={r.title}
+                className="w-24 h-20 rounded-lg object-cover shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-[var(--foreground)] truncate">{r.title}</h3>
+                <p className="text-xs text-[var(--text-muted)] mt-1">{r.dates}</p>
+                <div className="flex items-center justify-between mt-2">
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                      r.status === "confirmée"
+                        ? "bg-emerald-500/20 text-emerald-400"
+                        : "bg-amber-500/20 text-amber-400"
+                    }`}
+                  >
+                    {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+                  </span>
+                  <Link
+                    href="/reservations"
+                    className="text-xs text-[#C4956A] hover:underline font-medium"
+                  >
+                    Voir
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Mes formations en cours */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Mes formations en cours</h2>
           <Link href="/formations" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
         </div>
         <div className="space-y-4">
           {mockFormations.map((f) => (
-            <div key={f.id}>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm text-[var(--foreground)]">{f.title}</span>
-                <span className="text-xs text-[var(--text-muted)]">{f.progress}%</span>
+            <div key={f.id} className="p-3 rounded-xl border border-[var(--card-border)]">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-[var(--foreground)]">{f.title}</span>
+                <Link
+                  href={`/formations/${f.id}`}
+                  className="text-xs text-[#C4956A] hover:underline font-medium"
+                >
+                  Reprendre
+                </Link>
               </div>
-              <div className="w-full h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-[#C4956A] transition-all duration-500"
-                  style={{ width: `${f.progress}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Événements inscrits */}
-      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">Événements inscrits</h2>
-          <Link href="/evenements" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
-        </div>
-        <div className="space-y-3">
-          {mockEvents.map((e) => (
-            <div key={e.id} className="flex items-center gap-4 py-2 border-b border-[var(--card-border)] last:border-0">
-              <div className="w-10 h-10 rounded-lg bg-[#C4956A]/10 flex items-center justify-center shrink-0">
-                <span className="text-sm text-[#C4956A] font-semibold">E</span>
-              </div>
-              <div>
-                <div className="text-sm text-[var(--foreground)]">{e.title}</div>
-                <div className="text-xs text-[var(--text-muted)]">{e.date}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Biens recemment consultes */}
-      {recentlyViewed.length > 0 && (
-        <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-          <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Biens recemment consultes</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {recentlyViewed.slice(0, 3).map((item) => (
-              <Link key={item.id} href={`/explorer/${item.id}`} className="rounded-lg overflow-hidden border border-[var(--card-border)] hover:border-[#C4956A]/50 transition-colors">
-                <img src={item.image} alt={item.title} className="w-full h-28 object-cover" />
-                <div className="p-3">
-                  <span className="text-sm text-[var(--foreground)]">{item.title}</span>
+              <p className="text-xs text-[var(--text-muted)] mb-2">Par {f.instructor}</p>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-[#C4956A] transition-all duration-500"
+                    style={{ width: `${f.progress}%` }}
+                  />
                 </div>
-              </Link>
-            ))}
-          </div>
+                <span className="text-xs text-[var(--text-muted)] shrink-0">{f.progress}%</span>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
 
-      {/* Suggestions */}
+      {/* Suggestions de biens */}
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">Suggestions de biens</h2>
@@ -322,35 +326,66 @@ function ClientDashboard() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {suggestions.map((s) => (
-            <Link key={s.id} href="/explorer" className="rounded-lg overflow-hidden border border-[var(--card-border)] hover:border-[#C4956A]/50 transition-colors">
+            <Link
+              key={s.id}
+              href="/explorer"
+              className="rounded-xl overflow-hidden border border-[var(--card-border)] hover:border-[#C4956A]/50 transition-colors"
+            >
               <img src={s.image} alt={s.title} className="w-full h-32 object-cover" />
               <div className="p-3">
-                <div className="text-sm font-medium text-[var(--foreground)]">{s.title}</div>
-                <div className="text-xs text-[#C4956A] mt-1">{s.price}</div>
+                <div className="text-sm font-medium text-[var(--foreground)] truncate">{s.title}</div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs font-bold text-[#C4956A]">
+                    {formatPrice(s.price, s.currency as import("@/lib/types").Currency)}
+                  </span>
+                  <span className="text-xs text-[var(--text-muted)]">★ {s.rating}</span>
+                </div>
               </div>
             </Link>
           ))}
         </div>
       </div>
 
-      {/* Quick actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {[
-          { label: "Mes favoris", href: "/favoris", icon: "F" },
-          { label: "Mes reservations", href: "/reservations", icon: "R" },
-          { label: "Explorer", href: "/explorer", icon: "E" },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 text-center hover:border-[#C4956A]/50 transition-colors"
-          >
-            <div className="w-12 h-12 rounded-full bg-[#C4956A]/10 flex items-center justify-center mx-auto mb-3">
-              <span className="text-lg text-[#C4956A] font-bold">{item.icon}</span>
+      {/* Prochains événements */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Prochains événements</h2>
+          <Link href="/evenements" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
+        </div>
+        <div className="space-y-3">
+          {mockEvents.map((e) => (
+            <div
+              key={e.id}
+              className="flex items-center gap-4 p-3 rounded-xl border border-[var(--card-border)]"
+            >
+              <div className="w-10 h-10 rounded-lg bg-[#C4956A]/10 flex items-center justify-center shrink-0">
+                <span className="text-lg">🎟</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-[var(--foreground)]">{e.title}</div>
+                <div className="text-xs text-[var(--text-muted)]">
+                  {e.date} · {e.location} · {e.price === 0 ? "Gratuit" : formatPrice(e.price)}
+                </div>
+              </div>
             </div>
-            <span className="text-[var(--foreground)] font-medium">{item.label}</span>
-          </Link>
-        ))}
+          ))}
+        </div>
+      </div>
+
+      {/* Activité récente */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Activité récente</h2>
+        <div className="space-y-3">
+          {recentActivity.map((a) => (
+            <div key={a.id} className="flex items-center gap-3">
+              <span className="text-lg shrink-0">{a.icon}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-[var(--foreground)] truncate">{a.text}</p>
+              </div>
+              <span className="text-xs text-[var(--text-muted)] shrink-0">{a.time}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

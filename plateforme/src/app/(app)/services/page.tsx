@@ -6,15 +6,15 @@ import { useApp } from "@/lib/context";
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
 const CATEGORIES = [
-  { label: "Tous", icon: "grid" },
-  { label: "Conciergerie", icon: "key" },
-  { label: "Transport", icon: "truck" },
-  { label: "Photographie", icon: "camera" },
-  { label: "Décoration", icon: "palette" },
-  { label: "Juridique", icon: "scale" },
-  { label: "Finance", icon: "chart" },
-  { label: "Renovation", icon: "hammer" },
-  { label: "Déménagement", icon: "box" },
+  { label: "Tous", icon: "🔍" },
+  { label: "Conciergerie", icon: "🏨" },
+  { label: "Transport", icon: "🚗" },
+  { label: "Photographie", icon: "📸" },
+  { label: "Décoration", icon: "🎨" },
+  { label: "Juridique", icon: "⚖️" },
+  { label: "Finance", icon: "💼" },
+  { label: "Renovation", icon: "🔨" },
+  { label: "Déménagement", icon: "📦" },
 ];
 
 const GRADIENTS = [
@@ -124,7 +124,7 @@ export default function ServicesPage() {
         <div className="flex gap-2 flex-wrap">
           {CATEGORIES.map((cat) => (
             <button key={cat.label} onClick={() => setCategory(cat.label)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${category === cat.label ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
-              {cat.label}
+              {cat.icon} {cat.label}
             </button>
           ))}
         </div>
@@ -135,7 +135,7 @@ export default function ServicesPage() {
             <div key={service.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#C4956A]/40 transition-colors">
               {/* Gradient thumbnail */}
               <div className={`h-32 bg-gradient-to-br ${GRADIENTS[service.gradient]} flex items-center justify-center`}>
-                <span className="text-white/90 text-4xl font-bold">{service.category.charAt(0)}</span>
+                <span className="text-5xl">{CATEGORIES.find((c) => c.label === service.category)?.icon || service.category.charAt(0)}</span>
               </div>
               <div className="p-4 space-y-3">
                 <span className="inline-block px-2 py-0.5 bg-[#C4956A]/20 text-[#C4956A] rounded-full text-xs font-medium">{service.category}</span>

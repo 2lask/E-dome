@@ -152,7 +152,7 @@ export default function ProfilPage() {
             ...(!isClient ? [{ label: "Biens", value: propertyCount }] : []),
             { label: "Abonnés", value: currentUser.stats.followers },
             { label: "Suivis", value: currentUser.stats.following },
-            ...(totalReviews > 0 || !isClient ? [{ label: "Note", value: `${currentUser.stats.rating}/5` }] : []),
+            ...(isClient ? [{ label: "Note voyageur", value: `4.8/5` }] : totalReviews > 0 ? [{ label: "Note", value: `${currentUser.stats.rating}/5` }] : []),
           ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-lg font-bold text-[var(--foreground)]">
@@ -217,22 +217,34 @@ export default function ProfilPage() {
           )}
 
           {tab === "biens" && isClient && (
-            <div className="space-y-6">
-              {/* Formations en cours */}
-              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Formations en cours</h3>
-                <p className="text-sm text-[var(--text-muted)]">Aucune formation en cours.</p>
-              </div>
-              {/* Événements à venir */}
-              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Événements à venir</h3>
-                <p className="text-sm text-[var(--text-muted)]">Aucun événement à venir.</p>
-              </div>
-              {/* Réservations récentes */}
-              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Réservations récentes</h3>
-                <p className="text-sm text-[var(--text-muted)]">Aucune réservation récente.</p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mockProperties.map((p) => (
+                <Link
+                  key={p.id}
+                  href={`/explorer/${p.id}`}
+                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#C4956A]/30 transition-colors"
+                >
+                  <div className="relative">
+                    <img src={p.images[0]} alt={p.title} className="w-full h-40 object-cover" />
+                    <span className="absolute top-2 right-2 px-2 py-0.5 bg-red-500/90 text-white text-[10px] rounded-full">❤️ Sauvegardé</span>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-[var(--foreground)] truncate">{p.title}</h3>
+                    <p className="text-xs text-[var(--text-muted)] mt-1">
+                      {p.location.city}, {p.location.country}
+                    </p>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-sm font-bold text-[#C4956A]">
+                        {formatPrice(p.price, p.currency)}
+                        {p.transactionType === "location-ct" ? "/nuit" : ""}
+                      </span>
+                      <span className="text-xs text-[var(--text-muted)]">
+                        {p.rating} ({p.reviewCount})
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           )}
 

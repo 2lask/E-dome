@@ -59,7 +59,7 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
     const id = `p${startId + i}`;
     const contents = [
       `Nouvelle villa exceptionnelle disponible en #location-courte-duree à ${user.city}! \n\nVue panoramique, piscine privée et finitions haut de gamme. Idéal pour un séjour de luxe. @${MOCK_USERS[(i + 1) % MOCK_USERS.length].firstName.toLowerCase()} qu'en penses-tu ? \n\n#immobilier #luxe #${user.city.toLowerCase()}`,
-      `Le marché immobilier à ${user.country} continue de montrer des signes positifs. Les investissements dans le #luxe restent solides avec un rendement moyen de 6.2%. @${MOCK_USERS[(i + 2) % MOCK_USERS.length].firstName.toLowerCase()} intéressant non ? \n\n#investissement #immobilier #tendances`,
+      `Le marché immobilier en ${user.country} continue de montrer des signes positifs. Les investissements dans le #luxe restent solides avec un rendement moyen de 6.2%. @${MOCK_USERS[(i + 2) % MOCK_USERS.length].firstName.toLowerCase()} intéressant non ? \n\n#investissement #immobilier #tendances`,
       `Visite exclusive de ce penthouse au cœur de ${user.city}. 280m², terrasse de 60m², vue à 360°. Un bien d'exception. \n\n#penthouse #immobilier #${user.city.toLowerCase()} #luxe`,
       `Formation sur la gestion locative optimisée. Apprenez à maximiser vos revenus tout en offrant un service 5 étoiles à vos locataires. \n\n#formation #gestionlocative #revenus`,
     ];

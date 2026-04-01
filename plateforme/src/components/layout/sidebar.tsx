@@ -31,6 +31,7 @@ import { useLanguage } from "@/lib/i18n";
 import { roleBadgeColors, roleLabels } from "@/lib/types";
 import type { Role } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { conversations, notifications } from "@/lib/mock-data";
 
 interface NavItem {
   key: string;
@@ -169,8 +170,8 @@ const allNavItems: Record<string, NavItem> = {
   "nav.explorer": { key: "nav.explorer", href: "/explorer", icon: Search },
   "nav.publier": { key: "nav.publier", href: "/publier", icon: Plus },
   "nav.favoris": { key: "nav.favoris", href: "/favoris", icon: Heart },
-  "nav.messages": { key: "nav.messages", href: "/messages", icon: MessageCircle, badge: 3 },
-  "nav.notifications": { key: "nav.notifications", href: "/notifications", icon: Bell, badge: 5 },
+  "nav.messages": { key: "nav.messages", href: "/messages", icon: MessageCircle },
+  "nav.notifications": { key: "nav.notifications", href: "/notifications", icon: Bell },
   "nav.reservations": { key: "nav.reservations", href: "/reservations", icon: Calendar },
   "nav.dashboard": { key: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
   "nav.statistiques": { key: "nav.statistiques", href: "/statistiques", icon: BarChart3 },
@@ -198,13 +199,23 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const { activeRole } = useApp();
   const { t } = useLanguage();
 
+  // Dynamic badge counts from mock data
+  const unreadMessages = useMemo(() => conversations.reduce((sum, c) => sum + c.unreadCount, 0), []);
+  const unreadNotifications = useMemo(() => notifications.filter((n) => !n.read).length, []);
+
   // Build nav items based on active role
   const mainNavItems = useMemo(() => {
     const keys = roleNavKeys[activeRole] || roleNavKeys.client;
     return keys
-      .map((key) => allNavItems[key])
-      .filter(Boolean);
-  }, [activeRole]);
+      .map((key) => {
+        const item = allNavItems[key];
+        if (!item) return null;
+        if (key === "nav.messages" && unreadMessages > 0) return { ...item, badge: unreadMessages };
+        if (key === "nav.notifications" && unreadNotifications > 0) return { ...item, badge: unreadNotifications };
+        return item;
+      })
+      .filter(Boolean) as NavItem[];
+  }, [activeRole, unreadMessages, unreadNotifications]);
 
   const visibleBottomItems = useMemo(() => {
     return bottomNavItems.filter((item) => {

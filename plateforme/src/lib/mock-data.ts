@@ -1245,10 +1245,17 @@ export const formations: Formation[] = [
       {
         id: 'mod-004',
         title: 'Strat\u00e9gies avanc\u00e9es',
-        duration: '3h',
+        duration: '2h',
         lessons: [
           { id: 'les-010', title: 'Multi-lots et immeubles', duration: '1h', completed: false },
           { id: 'les-011', title: 'Investir \u00e0 l\u2019\u00e9tranger', duration: '1h', completed: false },
+        ],
+      },
+      {
+        id: 'mod-005',
+        title: '\u00c9tudes de cas et conclusion',
+        duration: '1h',
+        lessons: [
           { id: 'les-012', title: '\u00c9tude de cas r\u00e9els', duration: '1h', completed: false },
         ],
       },
