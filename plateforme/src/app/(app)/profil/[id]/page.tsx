@@ -22,14 +22,64 @@ const mockUsers: Record<string, User> = {
     responseTime: "< 30 min",
   },
   u2: {
-    id: "u2", firstName: "Jean", lastName: "Dupont", email: "jean@e-dome.ch",
+    id: "u2", firstName: "Marc", lastName: "Dupont", email: "marc@e-dome.ch",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
-    city: "Zürich", country: "Suisse", roles: ["promoteur"], activeRole: "promoteur",
+    city: "Zürich", country: "Suisse", roles: ["investisseur", "formateur"], activeRole: "investisseur",
     stats: { followers: 2100, following: 150, properties: 15, reviews: 78, rating: 4.7, transactions: 200, revenue: 450000 },
-    bio: "Promoteur immobilier depuis 20 ans. Projets résidentiels et commerciaux en Suisse alémanique.",
-    languages: ["Français", "Allemand"],
-    certifications: ["Promoteur agréé"],
+    bio: "Investisseur et formateur, spécialiste de l'analyse financière immobilière.",
+    languages: ["Français", "Allemand", "Anglais"],
+    certifications: ["Analyste financier certifié", "Formateur USPI"],
     responseTime: "< 2 heures",
+  },
+  u3: {
+    id: "u3", firstName: "Amira", lastName: "El Fassi", email: "amira@e-dome.ch",
+    avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop",
+    city: "Marrakech", country: "Maroc", roles: ["agence"], activeRole: "agence",
+    stats: { followers: 1500, following: 320, properties: 12, reviews: 45, rating: 4.8, transactions: 60, revenue: 280000 },
+    bio: "Agence spécialisée dans l'immobilier de prestige au Maroc.",
+    languages: ["Français", "Arabe", "Anglais"],
+    certifications: ["Agence agréée FNPI"],
+    responseTime: "< 1 heure",
+  },
+  u4: {
+    id: "u4", firstName: "Thomas", lastName: "Weber", email: "thomas@e-dome.ch",
+    avatar: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=200&h=200&fit=crop",
+    city: "Zurich", country: "Suisse", roles: ["promoteur"], activeRole: "promoteur",
+    stats: { followers: 3200, following: 180, properties: 20, reviews: 92, rating: 4.6, transactions: 150, revenue: 1200000 },
+    bio: "Promoteur immobilier actif en Suisse alémanique.",
+    languages: ["Deutsch", "Français", "English"],
+    certifications: ["Promoteur agréé SVIT"],
+    responseTime: "< 3 heures",
+  },
+  g1: {
+    id: "g1", firstName: "Sophie", lastName: "Bernard", email: "sophie.bernard@e-dome.ch",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop",
+    city: "Genève", country: "Suisse", roles: ["client"], activeRole: "client",
+    stats: { followers: 120, following: 85, properties: 0, reviews: 5, rating: 4.5, transactions: 2, revenue: 0 },
+    bio: "En recherche d'un bien immobilier à Genève. Passionnée d'architecture et de design d'intérieur.",
+    languages: ["Français", "Anglais"],
+    certifications: [],
+    responseTime: "< 4 heures",
+  },
+  g2: {
+    id: "g2", firstName: "Jean-Marc", lastName: "Dupont", email: "jeanmarc@e-dome.ch",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
+    city: "Zurich", country: "Suisse", roles: ["client"], activeRole: "client",
+    stats: { followers: 95, following: 60, properties: 0, reviews: 3, rating: 4.2, transactions: 1, revenue: 0 },
+    bio: "Cadre dans la finance, en quête d'un premier investissement immobilier en Suisse alémanique.",
+    languages: ["Français", "Deutsch", "English"],
+    certifications: [],
+    responseTime: "< 6 heures",
+  },
+  g3: {
+    id: "g3", firstName: "Marie", lastName: "Leroy", email: "marie.leroy@e-dome.ch",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop",
+    city: "Lausanne", country: "Suisse", roles: ["client"], activeRole: "client",
+    stats: { followers: 75, following: 110, properties: 0, reviews: 7, rating: 4.4, transactions: 3, revenue: 0 },
+    bio: "Jeune professionnelle à Lausanne, intéressée par la location et l'achat d'un premier appartement.",
+    languages: ["Français", "Anglais"],
+    certifications: [],
+    responseTime: "< 5 heures",
   },
 };
 
@@ -56,6 +106,22 @@ const mockProperties: Record<string, Property[]> = {
       host: mockUsers.u2, bedrooms: 3, bathrooms: 2, area: 95, amenities: [], rating: 4.8, reviewCount: 5,
     },
   ],
+  u3: [
+    {
+      id: "p30", title: "Riad de prestige Marrakech", description: "", type: "riad", transactionType: "vente",
+      price: 450000, currency: "EUR", location: { city: "Marrakech", country: "Maroc" },
+      images: ["https://images.unsplash.com/photo-1590059390258-ea0456c8548a?w=400&h=300&fit=crop"],
+      host: mockUsers.u3, bedrooms: 5, bathrooms: 4, area: 320, amenities: [], rating: 4.9, reviewCount: 18,
+    },
+  ],
+  u4: [
+    {
+      id: "p40", title: "Projet résidentiel Zurich Nord", description: "", type: "appartement", transactionType: "vente",
+      price: 1250000, currency: "CHF", location: { city: "Zurich", country: "Suisse" },
+      images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop"],
+      host: mockUsers.u4, bedrooms: 4, bathrooms: 2, area: 120, amenities: [], rating: 4.7, reviewCount: 8,
+    },
+  ],
 };
 
 const mockReviews: Record<string, { id: string; author: string; rating: number; text: string; date: string; reply: string | null }[]> = {
@@ -64,7 +130,25 @@ const mockReviews: Record<string, { id: string; author: string; rating: number; 
     { id: "r11", author: "Laura K.", rating: 5, text: "Service impeccable du début à la fin.", date: "2026-03-10", reply: "Merci beaucoup Laura !" },
   ],
   u2: [
-    { id: "r20", author: "Pierre N.", rating: 4, text: "Bon promoteur, projets de qualité.", date: "2026-03-12", reply: null },
+    { id: "r20", author: "Pierre N.", rating: 5, text: "Marc est un excellent formateur, ses analyses financières sont très pertinentes.", date: "2026-03-12", reply: null },
+    { id: "r21", author: "Sophie B.", rating: 4, text: "Formation de qualité, très bon investisseur.", date: "2026-02-28", reply: "Merci Sophie, ravi que la formation vous ait plu !" },
+  ],
+  u3: [
+    { id: "r30", author: "Laurent M.", rating: 5, text: "Amira connaît parfaitement le marché marocain. Service irréprochable.", date: "2026-03-15", reply: null },
+    { id: "r31", author: "Catherine D.", rating: 5, text: "Agence de confiance, très professionnelle. Le riad trouvé est magnifique.", date: "2026-02-20", reply: "Merci Catherine, bienvenue à Marrakech !" },
+  ],
+  u4: [
+    { id: "r40", author: "Hans K.", rating: 4, text: "Thomas livre des projets de qualité dans les délais.", date: "2026-03-10", reply: null },
+    { id: "r41", author: "Markus W.", rating: 5, text: "Excellent promoteur, finitions haut de gamme.", date: "2026-02-15", reply: null },
+  ],
+  g1: [
+    { id: "r50", author: "Agent A.", rating: 5, text: "Cliente agréable et décisive. Transaction fluide.", date: "2026-03-08", reply: null },
+  ],
+  g2: [
+    { id: "r60", author: "Conseiller B.", rating: 4, text: "Client sérieux, bon dossier financier.", date: "2026-03-05", reply: null },
+  ],
+  g3: [
+    { id: "r70", author: "Agent C.", rating: 5, text: "Marie sait exactement ce qu'elle veut. Collaboration très agréable.", date: "2026-03-01", reply: null },
   ],
 };
 
@@ -82,9 +166,23 @@ const mockPosts: Record<string, SocialPost[]> = {
   ],
   u2: [
     {
-      id: "sp20", author: mockUsers.u2, content: "Lancement de notre nouveau projet résidentiel à Zürich. 24 appartements haut standing, livraison 2027.",
+      id: "sp20", author: mockUsers.u2, content: "Nouvelle analyse financière publiée : rendements locatifs 2026 en Suisse alémanique. Des opportunités à saisir !",
       media: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop"],
       type: "post", likes: 112, comments: [], createdAt: "2026-03-20T09:00:00",
+    },
+  ],
+  u3: [
+    {
+      id: "sp30", author: mockUsers.u3, content: "Magnifique riad rénové dans la médina de Marrakech. Un bijou architectural disponible à la vente.",
+      media: ["https://images.unsplash.com/photo-1590059390258-ea0456c8548a?w=600&h=400&fit=crop"],
+      type: "post", likes: 87, comments: [], createdAt: "2026-03-18T11:00:00",
+    },
+  ],
+  u4: [
+    {
+      id: "sp40", author: mockUsers.u4, content: "Nouveau projet résidentiel à Zurich Nord : 32 appartements modernes avec label Minergie. Livraison 2027.",
+      media: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop"],
+      type: "post", likes: 95, comments: [], createdAt: "2026-03-16T08:00:00",
     },
   ],
 };
@@ -92,6 +190,11 @@ const mockPosts: Record<string, SocialPost[]> = {
 const ratingBreakdowns: Record<string, { stars: number; count: number }[]> = {
   u1: [{ stars: 5, count: 35 }, { stars: 4, count: 5 }, { stars: 3, count: 2 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
   u2: [{ stars: 5, count: 50 }, { stars: 4, count: 20 }, { stars: 3, count: 5 }, { stars: 2, count: 2 }, { stars: 1, count: 1 }],
+  u3: [{ stars: 5, count: 30 }, { stars: 4, count: 10 }, { stars: 3, count: 4 }, { stars: 2, count: 1 }, { stars: 1, count: 0 }],
+  u4: [{ stars: 5, count: 55 }, { stars: 4, count: 25 }, { stars: 3, count: 8 }, { stars: 2, count: 3 }, { stars: 1, count: 1 }],
+  g1: [{ stars: 5, count: 4 }, { stars: 4, count: 1 }, { stars: 3, count: 0 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
+  g2: [{ stars: 5, count: 1 }, { stars: 4, count: 2 }, { stars: 3, count: 0 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
+  g3: [{ stars: 5, count: 5 }, { stars: 4, count: 2 }, { stars: 3, count: 0 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
 };
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -329,7 +432,9 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
               )}
               <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Membre depuis</h3>
-                <p className="text-sm text-[var(--text-secondary)]">{id === "u1" ? "Mars 2023" : "Juin 2022"}</p>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  {{ u1: "Mars 2023", u2: "Juin 2022", u3: "Janvier 2024", u4: "Septembre 2023", g1: "Février 2025", g2: "Mai 2025", g3: "Novembre 2024" }[id] || "Janvier 2025"}
+                </p>
               </div>
             </div>
           )}

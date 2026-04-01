@@ -8,22 +8,22 @@ const SECTIONS = [
   {
     id: "objet",
     title: "1. Objet",
-    content: `Les presentes Conditions Generales d'Utilisation (ci-apres "CGU") regissent l'acces et l'utilisation de la plateforme E-Dome (ci-apres "la Plateforme"), editee par E-Dome Sarl, dont le siege social se situe en Suisse. En accedant a la Plateforme, l'Utilisateur accepte sans reserve l'integralite des presentes CGU. Si l'Utilisateur n'accepte pas ces conditions, il doit cesser toute utilisation de la Plateforme.`,
+    content: `Les présentes Conditions Générales d'Utilisation (ci-après "CGU") régissent l'accès et l'utilisation de la plateforme E-Dome (ci-après "la Plateforme"), éditée par E-Dome Sàrl, dont le siège social se situe en Suisse. En accédant à la Plateforme, l'Utilisateur accepte sans réserve l'intégralité des présentes CGU. Si l'Utilisateur n'accepte pas ces conditions, il doit cesser toute utilisation de la Plateforme.`,
   },
   {
     id: "definitions",
-    title: "2. Definitions",
-    content: `- "Plateforme" : le site web et l'application mobile E-Dome.\n- "Utilisateur" : toute personne physique ou morale inscrite sur la Plateforme.\n- "Hote" : Utilisateur proposant un bien immobilier a la vente ou a la location.\n- "Client" : Utilisateur recherchant un bien immobilier.\n- "Apporteur d'affaires" : Utilisateur recommandant des prospects via les liens de parrainage.\n- "Contenu" : tout texte, image, video, annonce ou information publiee sur la Plateforme.\n- "Commission" : pourcentage preleve par la Plateforme sur les transactions réalisées.`,
+    title: "2. Définitions",
+    content: `- "Plateforme" : le site web et l'application mobile E-Dome.\n- "Utilisateur" : toute personne physique ou morale inscrite sur la Plateforme.\n- "Hôte" : Utilisateur proposant un bien immobilier à la vente ou à la location.\n- "Client" : Utilisateur recherchant un bien immobilier.\n- "Apporteur d'affaires" : Utilisateur recommandant des prospects via les liens de parrainage.\n- "Contenu" : tout texte, image, vidéo, annonce ou information publiée sur la Plateforme.\n- "Commission" : pourcentage prélevé par la Plateforme sur les transactions réalisées.`,
   },
   {
     id: "inscription",
     title: "3. Inscription et compte",
-    content: `L'inscription sur la Plateforme est gratuite et ouverte a toute personne majeure ou entite juridique valablement constituee. L'Utilisateur s'engage a fournir des informations exactes, completes et a jour lors de son inscription. Chaque Utilisateur ne peut detenir qu'un seul compte. E-Dome se reserve le droit de suspendre ou supprimer tout compte en cas de violation des presentes CGU, sans preavis ni indemnite.`,
+    content: `L'inscription sur la Plateforme est gratuite et ouverte à toute personne majeure ou entité juridique valablement constituée. L'Utilisateur s'engage à fournir des informations exactes, complètes et à jour lors de son inscription. Chaque Utilisateur ne peut détenir qu'un seul compte. E-Dome se réserve le droit de suspendre ou supprimer tout compte en cas de violation des présentes CGU, sans préavis ni indemnité.`,
   },
   {
     id: "services",
-    title: "4. Services proposes",
-    content: `La Plateforme permet :\n- La publication et la consultation d'annonces immobilières (vente, location courte et longue durée).\n- La mise en relation entre hotes et clients.\n- La reservation et la gestion de biens immobiliers.\n- L'acces a des formations en ligne.\n- La participation a des evenements en direct (lives).\n- Le programme d'apporteurs d'affaires.\n- L'acces a des outils de statistiques et de gestion.\n\nE-Dome agit en qualite d'intermédiaire et n'est pas partie aux contrats conclus entre Utilisateurs.`,
+    title: "4. Services proposés",
+    content: `La Plateforme permet :\n- La publication et la consultation d'annonces immobilières (vente, location courte et longue durée).\n- La mise en relation entre hôtes et clients.\n- La réservation et la gestion de biens immobiliers.\n- L'accès à des formations en ligne.\n- La participation à des événements en direct (lives).\n- Le programme d'apporteurs d'affaires.\n- L'accès à des outils de statistiques et de gestion.\n\nE-Dome agit en qualité d'intermédiaire et n'est pas partie aux contrats conclus entre Utilisateurs.`,
   },
   {
     id: "commissions",
@@ -31,37 +31,37 @@ const SECTIONS = [
     content: `E-Dome preleve une commission sur les transactions réalisées via la Plateforme, selon le bareme suivant :`,
     table: [
       ["Type de transaction", "Commission Plateforme", "Part Apporteur (si applicable)"],
-      ["Vente immobilière", "3.5% du prix de vente", "Jusqu'a 15% de la commission plateforme"],
-      ["Location courte durée", "8% du montant du sejour", "Jusqu'a 15% de la commission plateforme"],
-      ["Location longue durée", "50% du premier loyer", "Jusqu'a 15% de la commission plateforme"],
-      ["Formation vendue", "20% du prix de la formation", "Jusqu'a 10% de la commission plateforme"],
+      ["Vente immobilière", "3.5% du prix de vente", "Jusqu'à 15% de la commission plateforme"],
+      ["Location courte durée", "8% du montant du séjour", "Jusqu'à 15% de la commission plateforme"],
+      ["Location longue durée", "50% du premier loyer", "Jusqu'à 15% de la commission plateforme"],
+      ["Formation vendue", "20% du prix de la formation", "Jusqu'à 10% de la commission plateforme"],
     ],
-    contentAfter: `La commission de l'apporteur d'affaires est exclusivement prelevee sur la part plateforme. En aucun cas elle ne constitue un cout supplementaire pour l'hote ou le client. Les tarifs peuvent etre modifies avec un preavis de 30 jours.`,
+    contentAfter: `La commission de l'apporteur d'affaires est exclusivement prélevée sur la part plateforme. En aucun cas elle ne constitue un coût supplémentaire pour l'hôte ou le client. Les tarifs peuvent être modifiés avec un préavis de 30 jours.`,
   },
   {
     id: "obligations",
     title: "6. Obligations des Utilisateurs",
-    content: `L'Utilisateur s'engage a :\n- Utiliser la Plateforme conformement a sa destination et aux lois en vigueur.\n- Ne publier aucun contenu illicite, trompeur, diffamatoire ou portant atteinte aux droits de tiers.\n- Respecter les droits de propriete intellectuelle.\n- Ne pas tenter de contourner les mecanismes de la Plateforme (scraping, spam, etc.).\n- Maintenir la confidentialite de ses identifiants de connexion.\n- Signaler tout contenu ou comportement inapproprie.`,
+    content: `L'Utilisateur s'engage à :\n- Utiliser la Plateforme conformément à sa destination et aux lois en vigueur.\n- Ne publier aucun contenu illicite, trompeur, diffamatoire ou portant atteinte aux droits de tiers.\n- Respecter les droits de propriété intellectuelle.\n- Ne pas tenter de contourner les mécanismes de la Plateforme (scraping, spam, etc.).\n- Maintenir la confidentialité de ses identifiants de connexion.\n- Signaler tout contenu ou comportement inapproprié.`,
   },
   {
     id: "propriete",
-    title: "7. Propriete intellectuelle",
-    content: `L'ensemble des elements composant la Plateforme (design, textes, logos, algorithmes, code source) sont la propriete exclusive d'E-Dome ou de ses partenaires. Toute reproduction, representation ou exploitation, meme partielle, est interdite sans autorisation prealable ecrite. Les Utilisateurs conservent la propriete de leurs contenus mais accordent a E-Dome une licence non exclusive, mondiale et gratuite pour leur affichage sur la Plateforme.`,
+    title: "7. Propriété intellectuelle",
+    content: `L'ensemble des éléments composant la Plateforme (design, textes, logos, algorithmes, code source) sont la propriété exclusive d'E-Dome ou de ses partenaires. Toute reproduction, représentation ou exploitation, même partielle, est interdite sans autorisation préalable écrite. Les Utilisateurs conservent la propriété de leurs contenus mais accordent à E-Dome une licence non exclusive, mondiale et gratuite pour leur affichage sur la Plateforme.`,
   },
   {
     id: "responsabilite",
-    title: "8. Limitation de responsabilite",
-    content: `E-Dome met tout en oeuvre pour assurer la disponibilite et la securite de la Plateforme, mais ne saurait etre tenue responsable :\n- Des interruptions temporaires de service pour maintenance ou mise a jour.\n- Des contenus publies par les Utilisateurs.\n- Des litiges entre Utilisateurs.\n- Des pertes financieres liees a l'utilisation de la Plateforme.\n- De l'exactitude des informations fournies par les Utilisateurs.\n\nLa responsabilite d'E-Dome est en tout etat de cause limitee au montant des commissions percues au cours des 12 derniers mois.`,
+    title: "8. Limitation de responsabilité",
+    content: `E-Dome met tout en œuvre pour assurer la disponibilité et la sécurité de la Plateforme, mais ne saurait être tenue responsable :\n- Des interruptions temporaires de service pour maintenance ou mise à jour.\n- Des contenus publiés par les Utilisateurs.\n- Des litiges entre Utilisateurs.\n- Des pertes financières liées à l'utilisation de la Plateforme.\n- De l'exactitude des informations fournies par les Utilisateurs.\n\nLa responsabilité d'E-Dome est en tout état de cause limitée au montant des commissions perçues au cours des 12 derniers mois.`,
   },
   {
     id: "donnees",
-    title: "9. Protection des donnees",
-    content: `Le traitement des donnees personnelles est regi par notre Politique de Confidentialite, accessible depuis la page dediee. E-Dome s'engage a respecter la Loi federale sur la protection des donnees (LPD) ainsi que le Reglement general sur la protection des donnees (RGPD) pour les Utilisateurs situes dans l'Union europeenne.`,
+    title: "9. Protection des données",
+    content: `Le traitement des données personnelles est régi par notre Politique de Confidentialité, accessible depuis la page dédiée. E-Dome s'engage à respecter la Loi fédérale sur la protection des données (LPD) ainsi que le Règlement général sur la protection des données (RGPD) pour les Utilisateurs situés dans l'Union européenne.`,
   },
   {
     id: "juridiction",
     title: "10. Droit applicable et juridiction",
-    content: `Les presentes CGU sont soumises au droit suisse. En cas de litige, les parties s'engagent a rechercher une solution amiable. A defaut, les tribunaux competents du canton de Neuchatel, Suisse, seront seuls competents.\n\nLes presentes CGU sont entrees en vigueur le 1er janvier 2026 et peuvent etre modifiees a tout moment par E-Dome. Les modifications prennent effet des leur publication sur la Plateforme. L'Utilisateur est invite a consulter regulierement les CGU.`,
+    content: `Les présentes CGU sont soumises au droit suisse. En cas de litige, les parties s'engagent à rechercher une solution amiable. À défaut, les tribunaux compétents du canton de Neuchâtel, Suisse, seront seuls compétents.\n\nLes présentes CGU sont entrées en vigueur le 1er janvier 2026 et peuvent être modifiées à tout moment par E-Dome. Les modifications prennent effet dès leur publication sur la Plateforme. L'Utilisateur est invité à consulter régulièrement les CGU.`,
   },
 ];
 
@@ -75,13 +75,13 @@ export default function ConditionsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Conditions Generales d&apos;Utilisation</h1>
-        <p className="text-[var(--text-secondary)]">Derniere mise a jour : 1er janvier 2026</p>
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">Conditions Générales d&apos;Utilisation</h1>
+        <p className="text-[var(--text-secondary)]">Dernière mise à jour : 1er janvier 2026</p>
       </div>
 
       {/* Table of contents */}
       <nav className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-2">
-        <h2 className="font-semibold text-[var(--foreground)] mb-3">Table des matieres</h2>
+        <h2 className="font-semibold text-[var(--foreground)] mb-3">Table des matières</h2>
         {SECTIONS.map((s) => (
           <button
             key={s.id}

@@ -6,12 +6,12 @@ import { useApp } from "@/lib/context";
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
 const EVENTS = [
-  { id: "e1", titre: "Salon de l'immobilier Suisse 2026", type: "Conférence", date: "2026-05-15", heure: "09:00", duree: "8h", lieu: "Palexpo, Geneve", description: "Le plus grand salon immobilier de Suisse romande.", thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop", spots: 500, spotsRemaining: 127, prix: 45, featured: true, intervenant: "Plusieurs experts" },
-  { id: "e2", titre: "Webinaire : Optimiser son rendement locatif", type: "Webinaire", date: "2026-04-20", heure: "18:00", duree: "1h30", lieu: "En ligne", description: "Strategies pour maximiser la rentabilite de vos biens.", thumbnail: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600&h=400&fit=crop", spots: 200, spotsRemaining: 84, prix: 0, featured: false, intervenant: "Sophie Martin" },
+  { id: "e1", titre: "Salon de l'immobilier Suisse 2026", type: "Conférence", date: "2026-05-15", heure: "09:00", duree: "8h", lieu: "Palexpo, Genève", description: "Le plus grand salon immobilier de Suisse romande.", thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop", spots: 500, spotsRemaining: 127, prix: 45, featured: true, intervenant: "Plusieurs experts" },
+  { id: "e2", titre: "Webinaire : Optimiser son rendement locatif", type: "Webinaire", date: "2026-04-20", heure: "18:00", duree: "1h30", lieu: "En ligne", description: "Stratégies pour maximiser la rentabilité de vos biens.", thumbnail: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600&h=400&fit=crop", spots: 200, spotsRemaining: 84, prix: 0, featured: false, intervenant: "Sophie Martin" },
   { id: "e3", titre: "Atelier : Home staging pratique", type: "Atelier", date: "2026-04-10", heure: "14:00", duree: "3h", lieu: "Lausanne, Centre Flon", description: "Apprenez les techniques de home staging pour vendre plus vite.", thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", spots: 30, spotsRemaining: 8, prix: 89, featured: false, intervenant: "Claire Bernard" },
-  { id: "e4", titre: "Networking investisseurs romands", type: "Networking", date: "2026-04-05", heure: "19:00", duree: "2h", lieu: "Hotel Royal, Montreux", description: "Rencontrez les investisseurs les plus actifs de la region.", thumbnail: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=400&fit=crop", spots: 80, spotsRemaining: 22, prix: 35, featured: false, intervenant: "Marc Dupont" },
-  { id: "e5", titre: "Formation live : Fiscalite immobiliere", type: "Formation live", date: "2026-03-20", heure: "10:00", duree: "4h", lieu: "En ligne", description: "Comprendre la fiscalite liee aux investissements immobiliers.", thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop", spots: 150, spotsRemaining: 0, prix: 120, featured: false, intervenant: "Jean Leroy" },
-  { id: "e6", titre: "Conference : Marche immobilier 2026", type: "Conférence", date: "2026-03-10", heure: "17:00", duree: "2h", lieu: "EPFL, Lausanne", description: "Analyse et perspectives du marche immobilier suisse.", thumbnail: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=400&fit=crop", spots: 300, spotsRemaining: 0, prix: 0, featured: false, intervenant: "Prof. A. Blanc" },
+  { id: "e4", titre: "Networking investisseurs romands", type: "Networking", date: "2026-04-05", heure: "19:00", duree: "2h", lieu: "Hôtel Royal, Montreux", description: "Rencontrez les investisseurs les plus actifs de la région.", thumbnail: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=400&fit=crop", spots: 80, spotsRemaining: 22, prix: 35, featured: false, intervenant: "Marc Dupont" },
+  { id: "e5", titre: "Formation live : Fiscalité immobilière", type: "Formation live", date: "2026-03-20", heure: "10:00", duree: "4h", lieu: "En ligne", description: "Comprendre la fiscalité liée aux investissements immobiliers.", thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop", spots: 150, spotsRemaining: 0, prix: 120, featured: false, intervenant: "Jean Leroy" },
+  { id: "e6", titre: "Conférence : Marché immobilier 2026", type: "Conférence", date: "2026-03-10", heure: "17:00", duree: "2h", lieu: "EPFL, Lausanne", description: "Analyse et perspectives du marché immobilier suisse.", thumbnail: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=400&fit=crop", spots: 300, spotsRemaining: 0, prix: 0, featured: false, intervenant: "Prof. A. Blanc" },
 ];
 
 const TYPE_COLORS: Record<string, string> = {
@@ -130,7 +130,7 @@ export default function EvenementsPage() {
               <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-2 ${TYPE_COLORS[featured.type] || "bg-gray-500/20 text-gray-400"}`}>{featured.type}</span>
               <h2 className="text-2xl font-bold text-white mb-1">{featured.titre}</h2>
               <div className="flex items-center gap-4 text-white/80 text-sm">
-                <span>{new Date(featured.date).toLocaleDateString("fr-CH")} a {featured.heure}</span>
+                <span>{new Date(featured.date).toLocaleDateString("fr-CH")} à {featured.heure}</span>
                 <span>{featured.lieu}</span>
                 <span className="text-[#C4956A] font-semibold">{featured.prix > 0 ? formatPrice(featured.prix) : "Gratuit"}</span>
               </div>
@@ -276,7 +276,7 @@ export default function EvenementsPage() {
               <h2 className="text-xl font-bold mb-2">S&apos;inscrire à l&apos;événement</h2>
               <h3 className="text-[#C4956A] font-medium mb-4">{ev.titre}</h3>
               <div className="space-y-2 text-sm text-[var(--text-secondary)] mb-6">
-                <p>Date : {new Date(ev.date).toLocaleDateString("fr-CH")} a {ev.heure}</p>
+                <p>Date : {new Date(ev.date).toLocaleDateString("fr-CH")} à {ev.heure}</p>
                 <p>Lieu : {ev.lieu}</p>
                 <p>Prix : {ev.prix > 0 ? formatPrice(ev.prix) : "Gratuit"}</p>
                 <p>Places restantes : {ev.spotsRemaining}</p>

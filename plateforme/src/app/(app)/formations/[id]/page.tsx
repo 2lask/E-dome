@@ -3,66 +3,80 @@
 import React, { useState, use, useMemo } from "react";
 import Link from "next/link";
 import { useApp } from "@/lib/context";
+import {
+  getFormationById,
+  getSimilarFormations,
+  formations as allFormations,
+} from "@/lib/mock-data";
+import type { Formation } from "@/lib/types";
 
-/* ─── Mock Data ──────────────────────────────────────────────────────────── */
+/* ─── Resolve formation by ID (handles f1, form-001, etc.) ─────────────── */
 
-const INSTRUCTOR = {
-  id: "u1", name: "Sophie Martin", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-  bio: "Experte en immobilier avec plus de 15 ans d'experience. Formatrice certifiee et investisseuse active en Suisse romande.",
-  students: 1240, rating: 4.9, formations: 8,
+function resolveFormation(id: string): Formation | undefined {
+  // 1) Direct lookup (e.g. "form-001")
+  let found = getFormationById(id);
+  if (found) return found;
+
+  // 2) Map short IDs like "f1" -> "form-001", "f12" -> "form-012"
+  const shortMatch = id.match(/^f(\d+)$/);
+  if (shortMatch) {
+    const num = parseInt(shortMatch[1], 10);
+    const paddedId = `form-${String(num).padStart(3, "0")}`;
+    found = getFormationById(paddedId);
+    if (found) return found;
+
+    // 3) Fallback: find by index (1-based)
+    if (num >= 1 && num <= allFormations.length) {
+      return allFormations[num - 1];
+    }
+  }
+
+  // 4) Search by partial match
+  return allFormations.find((f) => f.id.includes(id) || id.includes(f.id));
+}
+
+/* ─── Formation reviews (per-formation, not from mock-data property reviews) */
+
+const FORMATION_REVIEWS: Record<string, { id: string; author: string; avatar: string; rating: number; comment: string; date: string }[]> = {
+  "form-001": [
+    { id: "fr1", author: "Pierre Müller", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop", rating: 5, comment: "Formation exceptionnelle. Très complète et bien structurée. J'ai pu acheter mon premier bien 3 mois après.", date: "2025-11-15" },
+    { id: "fr2", author: "Marie Laurent", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 5, comment: "Léo explique de manière très claire et pratique. Je recommande vivement.", date: "2025-10-22" },
+    { id: "fr3", author: "Lucas Favre", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 4, comment: "Bon contenu, j'aurais aimé plus d'exemples concrets sur le marché romand.", date: "2025-09-30" },
+  ],
+  "form-002": [
+    { id: "fr4", author: "Nathalie Blanc", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=60&h=60&fit=crop", rating: 5, comment: "Amina maîtrise parfaitement la location courte durée. Ses conseils sur le pricing dynamique m'ont permis d'augmenter mes revenus de 40%.", date: "2025-12-05" },
+    { id: "fr5", author: "Jean-Luc Hartmann", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=60&h=60&fit=crop", rating: 5, comment: "Formation très pratique avec des outils concrets. Le module sur l'automatisation est un vrai game-changer.", date: "2025-11-20" },
+  ],
+  "form-003": [
+    { id: "fr6", author: "Marc Favre", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 5, comment: "Sophie est une négociatrice hors pair. Ses techniques m'ont aidé à vendre ma villa 15% au-dessus du prix estimé.", date: "2025-10-10" },
+    { id: "fr7", author: "Elena P.", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop", rating: 4, comment: "Très bon contenu, surtout le module sur la psychologie de l'acheteur. Niveau avancé justifié.", date: "2025-09-18" },
+  ],
+  "form-004": [
+    { id: "fr8", author: "Alexandre Petit", avatar: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=60&h=60&fit=crop", rating: 5, comment: "Yasmin connaît le marché du luxe comme personne. Formation indispensable pour qui veut se positionner sur le haut de gamme.", date: "2025-12-12" },
+  ],
+  "form-005": [
+    { id: "fr9", author: "Pierre Gonçalves", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=60&h=60&fit=crop", rating: 5, comment: "Thomas m'a permis de comprendre les subtilités de la rénovation énergétique. Mon projet Minergie avance grâce à cette formation.", date: "2025-11-28" },
+    { id: "fr10", author: "Clémence Moreau", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 4, comment: "Bonne formation sur la rénovation, le module sur les subventions est très utile.", date: "2025-10-15" },
+  ],
+  "form-006": [
+    { id: "fr11", author: "Carlos Rivera", avatar: "https://images.unsplash.com/photo-1548449112-96a38a643324?w=60&h=60&fit=crop", rating: 5, comment: "Lucas maîtrise parfaitement le marketing digital immobilier. Mes annonces génèrent 3x plus de leads depuis cette formation.", date: "2025-12-01" },
+  ],
+  "form-007": [
+    { id: "fr12", author: "Sophie Durand", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop", rating: 5, comment: "Nathalie est une experte juridique remarquable. Cette formation est essentielle pour tout professionnel de l'immobilier en Suisse.", date: "2025-11-05" },
+  ],
+  "form-008": [
+    { id: "fr13", author: "Omar Benjelloun", avatar: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=60&h=60&fit=crop", rating: 5, comment: "Carlos m'a appris à photographier mes biens comme un pro. Le module drone est fantastique.", date: "2025-12-08" },
+  ],
+  "form-009": [
+    { id: "fr14", author: "Fatima Zahra", avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=60&h=60&fit=crop", rating: 4, comment: "Bonne introduction au marché thaïlandais. Les études de cas réels sont très instructives.", date: "2025-11-18" },
+  ],
+  "form-010": [
+    { id: "fr15", author: "Marc Favre", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 5, comment: "Yasmin connaît Dubaï sur le bout des doigts. Formation incontournable pour investir aux Émirats.", date: "2025-12-15" },
+  ],
+  "form-011": [
+    { id: "fr16", author: "Jean-Luc Hartmann", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=60&h=60&fit=crop", rating: 5, comment: "Le bootcamp de Fatima est intense mais très efficace. J'ai signé mes premiers deals d'apporteur en 30 jours.", date: "2025-11-30" },
+  ],
 };
-
-const FORMATION_DATA: Record<string, {
-  title: string; description: string; category: string; level: string; price: number; duration: string;
-  thumbnail: string; previewVideo: string; rating: number; studentCount: number;
-  modules: { id: string; title: string; lessons: { id: string; title: string; duration: string; completed: boolean; videoUrl?: string }[] }[];
-  reviews: { id: string; author: string; avatar: string; rating: number; comment: string; date: string }[];
-  similar: { id: string; title: string; thumbnail: string; price: number; rating: number; instructor: string }[];
-}> = {
-  f1: {
-    title: "Investissement immobilier : de 0 a expert",
-    description: "Cette formation complète vous guide pas à pas dans l'univers de l'investissement immobilier. De la recherche du bien idéal au financement, en passant par la négociation et la gestion locative, vous acquerrez toutes les compétences nécessaires pour réussir vos investissements.",
-    category: "Immobilier", level: "debutant", price: 299, duration: "12h",
-    thumbnail: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop",
-    previewVideo: "",
-    rating: 4.9, studentCount: 1240,
-    modules: [
-      { id: "m1", title: "Introduction a l'investissement immobilier", lessons: [
-        { id: "l1", title: "Pourquoi investir dans l'immobilier", duration: "15 min", completed: true },
-        { id: "l2", title: "Les differents types d'investissement", duration: "20 min", completed: true },
-        { id: "l3", title: "Le marche immobilier suisse", duration: "25 min", completed: false },
-      ]},
-      { id: "m2", title: "Financement et fiscalite", lessons: [
-        { id: "l4", title: "Les options de financement", duration: "30 min", completed: false },
-        { id: "l5", title: "Optimisation fiscale", duration: "25 min", completed: false },
-      ]},
-      { id: "m3", title: "Recherche et analyse de biens", lessons: [
-        { id: "l6", title: "Criteres de selection", duration: "20 min", completed: false },
-        { id: "l7", title: "Analyse de rentabilite", duration: "35 min", completed: false },
-        { id: "l8", title: "Due diligence", duration: "25 min", completed: false },
-      ]},
-      { id: "m4", title: "Negociation et acquisition", lessons: [
-        { id: "l9", title: "Techniques de negociation", duration: "30 min", completed: false },
-        { id: "l10", title: "Le processus d'achat", duration: "20 min", completed: false },
-      ]},
-      { id: "m5", title: "Gestion locative", lessons: [
-        { id: "l11", title: "Trouver et gerer les locataires", duration: "25 min", completed: false },
-        { id: "l12", title: "Entretien et renovation", duration: "20 min", completed: false },
-      ]},
-    ],
-    reviews: [
-      { id: "r1", author: "Pierre Müller", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop", rating: 5, comment: "Formation exceptionnelle. Tres complete et bien structuree. J'ai pu acheter mon premier bien 3 mois apres.", date: "2025-11-15" },
-      { id: "r2", author: "Marie Laurent", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 5, comment: "Sophie explique de maniere tres claire et pratique. Je recommande vivement.", date: "2025-10-22" },
-      { id: "r3", author: "Lucas Favre", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 4, comment: "Bon contenu, j'aurais aime plus d'exemples concrets sur le marche romand.", date: "2025-09-30" },
-    ],
-    similar: [
-      { id: "f2", title: "Gestion locative avancee", thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=250&fit=crop", price: 199, rating: 4.8, instructor: "Marc Dupont" },
-      { id: "f5", title: "Analyse financiere pour investisseurs", thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=250&fit=crop", price: 349, rating: 4.9, instructor: "Marc Dupont" },
-    ],
-  },
-};
-
-const DEFAULT_FORMATION = FORMATION_DATA.f1;
 
 const LEVEL_LABELS: Record<string, string> = { debutant: "Débutant", intermediaire: "Intermédiaire", avance: "Avancé" };
 
@@ -87,7 +101,20 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
   const { id } = use(params);
   const { formatPrice } = useApp();
 
-  const formation = FORMATION_DATA[id] ?? DEFAULT_FORMATION;
+  const resolvedFormation = resolveFormation(id);
+
+  if (!resolvedFormation) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <p className="text-[var(--text-muted)]">Formation introuvable.</p>
+      </div>
+    );
+  }
+
+  const formation = resolvedFormation;
+  const instructor = formation.instructor;
+  const reviews = FORMATION_REVIEWS[formation.id] || [];
+  const similarFormations = getSimilarFormations(formation);
 
   const [openModules, setOpenModules] = useState<Set<string>>(new Set([formation.modules[0]?.id]));
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(() => {
@@ -137,7 +164,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
           <div className="flex flex-wrap items-center gap-4 text-white/80 text-sm">
             <span>{LEVEL_LABELS[formation.level]}</span>
             <span>{formation.duration}</span>
-            <span>{formation.studentCount} etudiants</span>
+            <span>{formation.studentCount} étudiants</span>
             <Stars rating={formation.rating} />
             <span className="text-[#C4956A] font-bold text-lg">{formatPrice(formation.price)}</span>
           </div>
@@ -155,7 +182,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
           <div className="lg:col-span-2 space-y-8">
             {/* Description */}
             <section>
-              <h2 className="text-xl font-semibold mb-3">A propos de cette formation</h2>
+              <h2 className="text-xl font-semibold mb-3">À propos de cette formation</h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">{formation.description}</p>
             </section>
 
@@ -188,7 +215,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                         <span className="w-8 h-8 flex items-center justify-center bg-[#C4956A]/20 text-[#C4956A] rounded-lg text-sm font-bold">{mi + 1}</span>
                         <div>
                           <h3 className="font-medium">{mod.title}</h3>
-                          <span className="text-xs text-[var(--text-muted)]">{mod.lessons.length} lecons</span>
+                          <span className="text-xs text-[var(--text-muted)]">{mod.lessons.length} leçons</span>
                         </div>
                       </div>
                       <svg className={`w-5 h-5 text-[var(--text-muted)] transition-transform ${openModules.has(mod.id) ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +253,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
               <div className="bg-black rounded-2xl aspect-video flex items-center justify-center relative">
                 <div className="text-center text-white/60">
                   <svg className="w-16 h-16 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                  <p className="text-sm">Lecteur video</p>
+                  <p className="text-sm">Lecteur vidéo</p>
                   <p className="text-xs text-white/40 mt-1">{formation.modules.flatMap(m => m.lessons).find(l => l.id === playingLesson)?.title}</p>
                 </div>
                 <button onClick={() => setPlayingLesson(null)} className="absolute top-3 right-3 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20">
@@ -237,9 +264,9 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
 
             {/* ── Reviews ───────────────────────────────────────────────── */}
             <section>
-              <h2 className="text-xl font-semibold mb-4">Avis des etudiants</h2>
+              <h2 className="text-xl font-semibold mb-4">Avis des étudiants</h2>
               <div className="space-y-4">
-                {formation.reviews.map((review) => (
+                {reviews.map((review) => (
                   <div key={review.id} className="p-4 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl">
                     <div className="flex items-center gap-3 mb-2">
                       <img src={review.avatar} alt={review.author} className="w-10 h-10 rounded-full object-cover" />
@@ -263,7 +290,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
               <div className="text-3xl font-bold text-[#C4956A]">{formatPrice(formation.price)}</div>
               {enrollState === "idle" && (
                 <button onClick={handleEnroll} className="w-full py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
-                  S&apos;inscrire a la formation
+                  S&apos;inscrire à la formation
                 </button>
               )}
               {enrollState === "loading" && (
@@ -289,19 +316,18 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
             </div>
 
             {/* Instructor Card */}
-            <Link href={`/profil/${INSTRUCTOR.id}`} className="block p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#C4956A]/40 transition-colors group">
+            <Link href={`/profil/${instructor.id}`} className="block p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#C4956A]/40 transition-colors group">
               <div className="flex items-center gap-3 mb-3">
-                <img src={INSTRUCTOR.avatar} alt={INSTRUCTOR.name} className="w-14 h-14 rounded-full object-cover" />
+                <img src={instructor.avatar} alt={`${instructor.firstName} ${instructor.lastName}`} className="w-14 h-14 rounded-full object-cover" />
                 <div>
-                  <h3 className="font-semibold group-hover:text-[#C4956A] transition-colors">{INSTRUCTOR.name}</h3>
+                  <h3 className="font-semibold group-hover:text-[#C4956A] transition-colors">{instructor.firstName} {instructor.lastName}</h3>
                   <span className="text-sm text-[var(--text-muted)]">Formateur</span>
                 </div>
               </div>
-              <p className="text-sm text-[var(--text-secondary)] mb-3">{INSTRUCTOR.bio}</p>
+              <p className="text-sm text-[var(--text-secondary)] mb-3">{instructor.bio}</p>
               <div className="flex gap-4 text-xs text-[var(--text-muted)]">
-                <span>{INSTRUCTOR.students} etudiants</span>
-                <span>{INSTRUCTOR.formations} formations</span>
-                <span className="text-[#C4956A]">{INSTRUCTOR.rating} ★</span>
+                <span>{instructor.stats.followers} abonnés</span>
+                <span className="text-[#C4956A]">{instructor.stats.rating} ★</span>
               </div>
             </Link>
 
@@ -309,12 +335,12 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
             <div>
               <h3 className="font-semibold mb-3">Formations similaires</h3>
               <div className="space-y-3">
-                {formation.similar.map((s) => (
+                {similarFormations.map((s) => (
                   <Link key={s.id} href={`/formations/${s.id}`} className="flex gap-3 p-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl hover:border-[#C4956A]/40 transition-colors group">
                     <img src={s.thumbnail} alt={s.title} className="w-20 h-14 rounded-lg object-cover flex-shrink-0" />
                     <div className="min-w-0">
                       <h4 className="text-sm font-medium truncate group-hover:text-[#C4956A] transition-colors">{s.title}</h4>
-                      <p className="text-xs text-[var(--text-muted)]">{s.instructor}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{s.instructor.firstName} {s.instructor.lastName}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-sm font-bold text-[#C4956A]">{formatPrice(s.price)}</span>
                         <span className="text-xs text-[var(--text-muted)]">{s.rating} ★</span>
@@ -337,13 +363,13 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold mb-2">Felicitations !</h2>
-            <p className="text-[var(--text-secondary)] mb-4">Vous avez complete la formation <strong>&quot;{formation.title}&quot;</strong>. Votre certificat est pret.</p>
+            <h2 className="text-2xl font-bold mb-2">Félicitations !</h2>
+            <p className="text-[var(--text-secondary)] mb-4">Vous avez complété la formation <strong>&quot;{formation.title}&quot;</strong>. Votre certificat est prêt.</p>
             <div className="p-6 border-2 border-dashed border-[#C4956A]/40 rounded-xl mb-6">
-              <p className="text-xs text-[var(--text-muted)] mb-1">CERTIFICAT DE COMPLETION</p>
+              <p className="text-xs text-[var(--text-muted)] mb-1">CERTIFICAT DE COMPLÉTION</p>
               <p className="text-lg font-bold text-[#C4956A]">{formation.title}</p>
-              <p className="text-sm text-[var(--text-secondary)] mt-2">Delivre le {new Date().toLocaleDateString("fr-CH")}</p>
-              <p className="text-sm text-[var(--text-secondary)]">Formateur : {INSTRUCTOR.name}</p>
+              <p className="text-sm text-[var(--text-secondary)] mt-2">Délivré le {new Date().toLocaleDateString("fr-CH")}</p>
+              <p className="text-sm text-[var(--text-secondary)]">Formateur : {instructor.firstName} {instructor.lastName}</p>
             </div>
             <div className="flex gap-3">
               <button onClick={() => setShowCertificate(false)} className="flex-1 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">

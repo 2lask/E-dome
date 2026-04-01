@@ -6,25 +6,25 @@ import { useApp } from "@/lib/context";
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
 const UPCOMING_LIVES = [
-  { id: "L1", titre: "Investir dans l'immobilier suisse en 2026", speaker: "Marc Bonnard", role: "Formateur", date: "2026-04-05 18:00", inscrits: 124 },
-  { id: "L2", titre: "Visite virtuelle: Villa Montreux", speaker: "Sophie Meier", role: "Agence", date: "2026-04-08 14:00", inscrits: 87 },
-  { id: "L3", titre: "Optimiser son annonce immobiliere", speaker: "Laura Fischer", role: "Hote", date: "2026-04-12 10:00", inscrits: 56 },
+  { id: "L1", titre: "Investir dans l'immobilier suisse en 2026", speaker: "Marc Bonnard", role: "Formateur", date: "5 avril 2026 à 18h00", inscrits: 124 },
+  { id: "L2", titre: "Visite virtuelle : Villa Montreux", speaker: "Sophie Meier", role: "Agence", date: "8 avril 2026 à 14h00", inscrits: 87 },
+  { id: "L3", titre: "Optimiser son annonce immobilière", speaker: "Laura Fischer", role: "Hôte", date: "12 avril 2026 à 10h00", inscrits: 56 },
 ];
 
 const PAST_REPLAYS = [
-  { id: "R1", titre: "Les tendances du marche Q1 2026", speaker: "Jean-Pierre Dumont", date: "2026-03-20", vues: 1240, duree: "1h12" },
-  { id: "R2", titre: "Comment fixer le bon prix de location", speaker: "Nadia Silva", date: "2026-03-15", vues: 890, duree: "45min" },
-  { id: "R3", titre: "Fiscalite immobiliere en Suisse", speaker: "Patrick Leroy", date: "2026-03-10", vues: 2100, duree: "1h30" },
-  { id: "R4", titre: "Home staging: avant/apres", speaker: "Amina Kone", date: "2026-03-05", vues: 670, duree: "38min" },
-  { id: "R5", titre: "Droit du bail: vos obligations", speaker: "Thomas Roth", date: "2026-02-28", vues: 1560, duree: "55min" },
-  { id: "R6", titre: "Photographie immobiliere pro", speaker: "Amina Kone", date: "2026-02-20", vues: 780, duree: "42min" },
+  { id: "R1", titre: "Les tendances du marché Q1 2026", speaker: "Jean-Pierre Dumont", date: "20 mars 2026", vues: 1240, duree: "1h12" },
+  { id: "R2", titre: "Comment fixer le bon prix de location", speaker: "Nadia Silva", date: "15 mars 2026", vues: 890, duree: "45min" },
+  { id: "R3", titre: "Fiscalité immobilière en Suisse", speaker: "Patrick Leroy", date: "10 mars 2026", vues: 2100, duree: "1h30" },
+  { id: "R4", titre: "Home staging : avant/après", speaker: "Amina Koné", date: "5 mars 2026", vues: 670, duree: "38min" },
+  { id: "R5", titre: "Droit du bail : vos obligations", speaker: "Thomas Roth", date: "28 février 2026", vues: 1560, duree: "55min" },
+  { id: "R6", titre: "Photographie immobilière pro", speaker: "Amina Koné", date: "20 février 2026", vues: 780, duree: "42min" },
 ];
 
 const MOCK_CHAT = [
-  { user: "Marc D.", message: "Tres interessant, merci pour ces chiffres !", time: "18:02" },
-  { user: "Sophie M.", message: "Quelle est la meilleure region pour investir ?", time: "18:04" },
-  { user: "Laura F.", message: "Les rendements a Lausanne sont encore bons ?", time: "18:05" },
-  { user: "Jean P.", message: "Merci pour la presentation !", time: "18:07" },
+  { user: "Marc D.", message: "Très intéressant, merci pour ces chiffres !", time: "18:02" },
+  { user: "Sophie M.", message: "Quelle est la meilleure région pour investir ?", time: "18:04" },
+  { user: "Laura F.", message: "Les rendements à Lausanne sont encore bons ?", time: "18:05" },
+  { user: "Jean P.", message: "Merci pour la présentation !", time: "18:07" },
   { user: "Nadia S.", message: "Est-ce que vous pouvez parler du Valais ?", time: "18:08" },
 ];
 
@@ -68,8 +68,15 @@ export default function LivePage() {
   const nextLiveCountdown = (() => {
     if (isLive) return null;
     const now = new Date();
+    // Parse French date format "5 avril 2026 à 18h00"
+    const parseFrDate = (d: string) => {
+      const months: Record<string, number> = { janvier: 0, "février": 1, mars: 2, avril: 3, mai: 4, juin: 5, juillet: 6, "août": 7, septembre: 8, octobre: 9, novembre: 10, "décembre": 11 };
+      const m = d.match(/(\d+)\s+(\w+)\s+(\d{4})(?:\s+à\s+(\d{2})h(\d{2}))?/);
+      if (!m) return new Date(0);
+      return new Date(+m[3], months[m[2].toLowerCase()] ?? 0, +m[1], +(m[4] ?? 0), +(m[5] ?? 0));
+    };
     const upcoming = UPCOMING_LIVES
-      .map((l) => ({ ...l, dateObj: new Date(l.date.replace(" ", "T")) }))
+      .map((l) => ({ ...l, dateObj: parseFrDate(l.date) }))
       .filter((l) => l.dateObj > now)
       .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
     if (upcoming.length === 0) return null;
@@ -88,7 +95,7 @@ export default function LivePage() {
 
   const handleShare = () => {
     navigator.clipboard.writeText("https://edome.world/live/current");
-    alert("Lien copie dans le presse-papiers !");
+    alert("Lien copié dans le presse-papiers !");
   };
 
   const replayItem = viewingReplay ? PAST_REPLAYS.find((r) => r.id === viewingReplay) : null;
@@ -117,7 +124,7 @@ export default function LivePage() {
                 <span className="px-2 py-1 rounded bg-red-600 text-white text-xs font-bold animate-pulse">LIVE</span>
                 <span className="px-2 py-1 rounded bg-black/50 text-white text-xs">247 spectateurs</span>
               </div>
-              <p className="text-white/50 text-lg">Video en direct</p>
+              <p className="text-white/50 text-lg">Vidéo en direct</p>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
@@ -131,7 +138,7 @@ export default function LivePage() {
                     handRaised ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]"
                   }`}
                 >
-                  {handRaised ? "Main levee" : "Lever la main"}
+                  {handRaised ? "Main levée" : "Lever la main"}
                 </button>
                 <button
                   onClick={handleShare}
