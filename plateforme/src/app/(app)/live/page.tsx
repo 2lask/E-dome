@@ -38,11 +38,47 @@ export default function LivePage() {
   const [chatMessage, setChatMessage] = useState("");
   const [chatMessages, setChatMessages] = useState(MOCK_CHAT);
   const [handRaised, setHandRaised] = useState(false);
+  const [inscriptions, setInscriptions] = useState<Set<string>>(new Set());
+  const [liveInscrits, setLiveInscrits] = useState<Record<string, number>>(() => {
+    const map: Record<string, number> = {};
+    UPCOMING_LIVES.forEach((l) => { map[l.id] = l.inscrits; });
+    return map;
+  });
 
   // Create modal state
   const [newLive, setNewLive] = useState({ titre: "", type: "webinaire", date: "", description: "" });
 
   const canCreateLive = activeRole === "formateur" || activeRole === "agence";
+
+  const handleInscription = (liveId: string) => {
+    setInscriptions((prev) => {
+      const next = new Set(prev);
+      if (next.has(liveId)) {
+        next.delete(liveId);
+        setLiveInscrits((p) => ({ ...p, [liveId]: (p[liveId] ?? 0) - 1 }));
+      } else {
+        next.add(liveId);
+        setLiveInscrits((p) => ({ ...p, [liveId]: (p[liveId] ?? 0) + 1 }));
+      }
+      return next;
+    });
+  };
+
+  // Countdown to next live
+  const nextLiveCountdown = (() => {
+    if (isLive) return null;
+    const now = new Date();
+    const upcoming = UPCOMING_LIVES
+      .map((l) => ({ ...l, dateObj: new Date(l.date.replace(" ", "T")) }))
+      .filter((l) => l.dateObj > now)
+      .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
+    if (upcoming.length === 0) return null;
+    const diff = upcoming[0].dateObj.getTime() - now.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    if (days > 0) return `Prochain live dans ${days} jour${days > 1 ? "s" : ""} et ${hours}h`;
+    return `Prochain live dans ${hours}h`;
+  })();
 
   const handleSendChat = () => {
     if (!chatMessage.trim()) return;
@@ -66,7 +102,7 @@ export default function LivePage() {
             onClick={() => setShowCreateModal(true)}
             className="px-4 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
           >
-            Creer un live
+            Programmer un live
           </button>
         )}
       </div>
@@ -145,8 +181,11 @@ export default function LivePage() {
           <div className="text-6xl">📡</div>
           <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun live en cours</h2>
           <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-            Il n&apos;y a pas de diffusion en direct pour le moment. Consultez les prochains lives programmes ou regardez les replays.
+            Il n&apos;y a pas de diffusion en direct pour le moment. Consultez les prochains lives programm&eacute;s ou regardez les replays.
           </p>
+          {nextLiveCountdown && (
+            <p className="text-[#C4956A] font-medium text-lg">{nextLiveCountdown}</p>
+          )}
         </section>
       )}
 
@@ -160,11 +199,23 @@ export default function LivePage() {
               <p className="text-sm text-[var(--text-secondary)]">{live.speaker} — {live.role}</p>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[var(--text-muted)]">{live.date}</span>
-                <span className="text-[#C4956A] font-medium">{live.inscrits} inscrits</span>
+                <span className="text-[#C4956A] font-medium">{liveInscrits[live.id] ?? live.inscrits} inscrits</span>
               </div>
-              <button className="w-full px-4 py-2 rounded-lg border border-[#C4956A] text-[#C4956A] text-sm font-medium hover:bg-[#C4956A]/10 transition">
-                S&apos;inscrire
-              </button>
+              {inscriptions.has(live.id) ? (
+                <button
+                  onClick={() => handleInscription(live.id)}
+                  className="w-full px-4 py-2 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium hover:bg-green-500/30 transition"
+                >
+                  Inscrit ✓
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleInscription(live.id)}
+                  className="w-full px-4 py-2 rounded-lg border border-[#C4956A] text-[#C4956A] text-sm font-medium hover:bg-[#C4956A]/10 transition"
+                >
+                  S&apos;inscrire
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -228,7 +279,7 @@ export default function LivePage() {
             className="w-full max-w-lg mx-4 p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-5 animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl font-semibold text-[var(--foreground)]">Creer un live</h2>
+            <h2 className="text-xl font-semibold text-[var(--foreground)]">Cr&eacute;er un live</h2>
             <div className="space-y-4">
               <div className="space-y-1">
                 <label className="text-sm text-[var(--text-secondary)]">Titre</label>
@@ -267,7 +318,7 @@ export default function LivePage() {
                 <textarea
                   value={newLive.description}
                   onChange={(e) => setNewLive({ ...newLive, description: e.target.value })}
-                  placeholder="Decrivez votre live..."
+                  placeholder="Décrivez votre live..."
                   rows={3}
                   className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition resize-none"
                 />
@@ -281,7 +332,7 @@ export default function LivePage() {
                 Annuler
               </button>
               <button
-                onClick={() => { alert("Live cree (demo)"); setShowCreateModal(false); }}
+                onClick={() => { alert("Live créé (démo)"); setShowCreateModal(false); }}
                 className="px-4 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
               >
                 Programmer le live

@@ -105,11 +105,29 @@ export default function PublierPage() {
     return (
       <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
         <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+          <div className="w-20 h-20 bg-[#C4956A]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-10 h-10 text-[#C4956A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
           </div>
-          <h1 className="text-2xl font-bold mb-2">Acces restreint</h1>
-          <p className="text-[var(--text-secondary)]">Vous devez avoir le role Hote, Agence, Promoteur ou Proprietaire pour publier un bien.</p>
+          <h1 className="text-2xl font-bold mb-2">Acc&egrave;s restreint</h1>
+          <p className="text-[var(--text-secondary)] mb-4">
+            La publication de biens est r&eacute;serv&eacute;e aux r&ocirc;les suivants :
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {["H\u00f4te", "Agence", "Promoteur", "Propri\u00e9taire"].map((role) => (
+              <span key={role} className="px-3 py-1.5 bg-[var(--card)] border border-[var(--card-border)] rounded-full text-sm text-[var(--text-secondary)]">
+                {role}
+              </span>
+            ))}
+          </div>
+          <p className="text-sm text-[var(--text-muted)] mb-6">
+            Activez l&apos;un de ces r&ocirc;les dans vos param&egrave;tres pour commencer &agrave; publier vos biens sur E-Dome.
+          </p>
+          <a
+            href="/parametres"
+            className="inline-block px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors"
+          >
+            Activer le r&ocirc;le H&ocirc;te
+          </a>
         </div>
       </div>
     );
@@ -313,7 +331,7 @@ export default function PublierPage() {
               <div><label className={labelCls}>Surface (m2)</label><input type="number" className={inputCls} value={form.surface || ""} onChange={(e) => update("surface", Number(e.target.value))} /></div>
             </div>
             <div><label className={labelCls}>Titre de l&apos;annonce</label><input className={inputCls} placeholder="Ex: Magnifique appartement avec vue lac" value={form.titre} onChange={(e) => update("titre", e.target.value)} /></div>
-            <div><label className={labelCls}>Description</label><textarea className={`${inputCls} min-h-[150px] resize-y`} placeholder="Decrivez votre bien en detail..." value={form.description} onChange={(e) => update("description", e.target.value)} /></div>
+            <div><label className={labelCls}>Description</label><textarea className={`${inputCls} min-h-[150px] resize-y`} placeholder="Décrivez votre bien en détail..." value={form.description} onChange={(e) => update("description", e.target.value)} /></div>
             <div className="flex justify-between">
               <button onClick={() => setStep(1)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
               <button onClick={() => setStep(3)} className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>

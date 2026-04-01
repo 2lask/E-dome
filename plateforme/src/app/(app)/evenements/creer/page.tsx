@@ -21,7 +21,9 @@ interface EventForm {
   prix: number;
 }
 
-const TYPES = ["Webinaire", "Conference", "Atelier", "Networking", "Formation live"];
+const TYPES = ["Webinaire", "Conférence", "Atelier", "Networking", "Formation live"];
+
+const ALLOWED_ROLES = ["hote", "agence", "promoteur", "formateur"];
 
 const emptyForm: EventForm = {
   titre: "", type: "", date: "", heure: "", duree: "", enLigne: false, lieu: "", description: "", image: "",
@@ -34,9 +36,29 @@ const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5"
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function CreerEvenementPage() {
-  const { formatPrice } = useApp();
+  const { formatPrice, activeRole } = useApp();
   const [form, setForm] = useState<EventForm>(emptyForm);
   const [published, setPublished] = useState(false);
+
+  if (!ALLOWED_ROLES.includes(activeRole)) {
+    return (
+      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-[#C4956A]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-10 h-10 text-[#C4956A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+          </div>
+          <h1 className="text-2xl font-bold mb-2">Accès restreint</h1>
+          <p className="text-[var(--text-secondary)] mb-6">
+            La création d&apos;événements est réservée aux hôtes, agences, promoteurs et formateurs.
+            Changez votre rôle actif dans les paramètres pour accéder à cette fonctionnalité.
+          </p>
+          <a href="/parametres" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
+            Gérer mes rôles
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   const update = <K extends keyof EventForm>(key: K, value: EventForm[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -53,10 +75,10 @@ export default function CreerEvenementPage() {
           <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
-          <h1 className="text-2xl font-bold mb-2">Evenement publie !</h1>
-          <p className="text-[var(--text-secondary)] mb-6">Votre evenement &quot;{form.titre}&quot; est maintenant visible.</p>
+          <h1 className="text-2xl font-bold mb-2">Événement publié !</h1>
+          <p className="text-[var(--text-secondary)] mb-6">Votre événement &quot;{form.titre}&quot; est maintenant visible.</p>
           <a href="/evenements" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
-            Voir les evenements
+            Voir les événements
           </a>
         </div>
       </div>
@@ -66,17 +88,17 @@ export default function CreerEvenementPage() {
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Creer un evenement</h1>
-        <p className="text-[var(--text-secondary)] mb-8">Remplissez les informations de votre evenement</p>
+        <h1 className="text-3xl font-bold mb-2">Créer un événement</h1>
+        <p className="text-[var(--text-secondary)] mb-8">Remplissez les informations de votre événement</p>
 
         <div className="space-y-5">
           <div>
-            <label className={labelCls}>Titre de l&apos;evenement</label>
+            <label className={labelCls}>Titre de l&apos;événement</label>
             <input className={inputCls} placeholder="Ex: Webinaire immobilier 2026" value={form.titre} onChange={(e) => update("titre", e.target.value)} />
           </div>
 
           <div>
-            <label className={labelCls}>Type d&apos;evenement</label>
+            <label className={labelCls}>Type d&apos;événement</label>
             <div className="flex flex-wrap gap-2">
               {TYPES.map((t) => (
                 <button key={t} onClick={() => update("type", t)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${form.type === t ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
@@ -96,7 +118,7 @@ export default function CreerEvenementPage() {
               <input type="time" className={inputCls} value={form.heure} onChange={(e) => update("heure", e.target.value)} />
             </div>
             <div>
-              <label className={labelCls}>Duree</label>
+              <label className={labelCls}>Durée</label>
               <input className={inputCls} placeholder="Ex: 2h" value={form.duree} onChange={(e) => update("duree", e.target.value)} />
             </div>
           </div>
@@ -114,12 +136,12 @@ export default function CreerEvenementPage() {
             {!form.enLigne && (
               <input className={inputCls} placeholder="Adresse du lieu" value={form.lieu} onChange={(e) => update("lieu", e.target.value)} />
             )}
-            {form.enLigne && <p className="text-sm text-[#C4956A]">L&apos;evenement se deroulera en ligne. Un lien sera envoye aux participants.</p>}
+            {form.enLigne && <p className="text-sm text-[#C4956A]">L&apos;événement se déroulera en ligne. Un lien sera envoyé aux participants.</p>}
           </div>
 
           <div>
             <label className={labelCls}>Description</label>
-            <textarea className={`${inputCls} min-h-[120px] resize-y`} placeholder="Decrivez votre evenement..." value={form.description} onChange={(e) => update("description", e.target.value)} />
+            <textarea className={`${inputCls} min-h-[120px] resize-y`} placeholder="Décrivez votre événement..." value={form.description} onChange={(e) => update("description", e.target.value)} />
           </div>
 
           <div>
@@ -155,7 +177,7 @@ export default function CreerEvenementPage() {
           </div>
 
           <button onClick={handlePublish} className="w-full py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors mt-4">
-            Publier l&apos;evenement
+            Publier l&apos;événement
           </button>
         </div>
       </div>

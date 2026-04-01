@@ -37,7 +37,7 @@ const SECTIONS = [
   },
   {
     id: "conservation",
-    title: "7. Duree de conservation",
+    title: "7. Durée de conservation",
     content: `Vos donnees sont conservees pour la duree strictement necessaire aux finalites pour lesquelles elles ont ete collectees :\n- Donnees de compte : pendant la duree de votre inscription + 2 ans apres suppression.\n- Donnees de transaction : 10 ans (obligations legales suisses).\n- Donnees d'utilisation : 26 mois maximum.\n- Messages : 5 ans apres le dernier message.\n- Cookies : voir la section dediee ci-dessous.`,
   },
   {

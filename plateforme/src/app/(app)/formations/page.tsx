@@ -24,7 +24,7 @@ const FORMATIONS = [
   { id: "f6", title: "Home staging professionnel", category: "Design", level: "debutant" as const, instructor: INSTRUCTORS[2], thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", price: 129, rating: 4.5, studentCount: 340, duration: "5h", progress: 0, enrolled: false, featured: false, modules: 4 },
 ];
 
-const LEVEL_LABELS: Record<string, string> = { debutant: "Debutant", intermediaire: "Intermediaire", avance: "Avance" };
+const LEVEL_LABELS: Record<string, string> = { debutant: "Débutant", intermediaire: "Intermédiaire", avance: "Avancé" };
 const LEVEL_COLORS: Record<string, string> = { debutant: "bg-green-500/20 text-green-400", intermediaire: "bg-yellow-500/20 text-yellow-400", avance: "bg-red-500/20 text-red-400" };
 
 /* ─── Stars ──────────────────────────────────────────────────────────────── */
@@ -69,7 +69,7 @@ export default function FormationsPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold">Formations</h1>
-            <p className="text-[var(--text-secondary)] mt-1">Developpez vos competences immobilieres</p>
+            <p className="text-[var(--text-secondary)] mt-1">Développez vos compétences immobilières</p>
           </div>
           {activeRole === "formateur" && (
             <Link href="/formations/creer" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">

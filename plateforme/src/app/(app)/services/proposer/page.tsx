@@ -82,7 +82,7 @@ export default function ProposerServicePage() {
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-2">Proposer un service</h1>
-        <p className="text-[var(--text-secondary)] mb-8">Decrivez le service que vous souhaitez proposer</p>
+        <p className="text-[var(--text-secondary)] mb-8">Décrivez le service que vous souhaitez proposer</p>
 
         <div className="space-y-5">
           <div>
@@ -103,7 +103,7 @@ export default function ProposerServicePage() {
 
           <div>
             <label className={labelCls}>Description</label>
-            <textarea className={`${inputCls} min-h-[120px] resize-y`} placeholder="Decrivez votre service en detail..." value={form.description} onChange={(e) => update("description", e.target.value)} />
+            <textarea className={`${inputCls} min-h-[120px] resize-y`} placeholder="Décrivez votre service en détail..." value={form.description} onChange={(e) => update("description", e.target.value)} />
           </div>
 
           <div>

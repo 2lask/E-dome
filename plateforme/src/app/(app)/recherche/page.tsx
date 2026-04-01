@@ -17,10 +17,10 @@ const ALL_RESULTS = {
     { id: "B7", titre: "Maison Neuchatel", prix: 680000, type: "Maison", ville: "Neuchatel" },
   ],
   formations: [
-    { id: "F1", titre: "Investir dans l'immobilier", instructeur: "Marc Bonnard", prix: 299, niveau: "Debutant" },
-    { id: "F2", titre: "Photographie immobiliere", instructeur: "Amina Kone", prix: 199, niveau: "Intermediaire" },
-    { id: "F3", titre: "Droit du bail suisse", instructeur: "Thomas Roth", prix: 349, niveau: "Avance" },
-    { id: "F4", titre: "Home staging efficace", instructeur: "Laura Fischer", prix: 149, niveau: "Debutant" },
+    { id: "F1", titre: "Investir dans l'immobilier", instructeur: "Marc Bonnard", prix: 299, niveau: "Débutant" },
+    { id: "F2", titre: "Photographie immobilière", instructeur: "Amina Kone", prix: 199, niveau: "Intermédiaire" },
+    { id: "F3", titre: "Droit du bail suisse", instructeur: "Thomas Roth", prix: 349, niveau: "Avancé" },
+    { id: "F4", titre: "Home staging efficace", instructeur: "Laura Fischer", prix: 149, niveau: "Débutant" },
   ],
   utilisateurs: [
     { id: "U1", nom: "Marie Dupont", role: "Hote", ville: "Lausanne" },
@@ -32,7 +32,7 @@ const ALL_RESULTS = {
   evenements: [
     { id: "E1", titre: "Salon de l'immobilier Geneve", date: "2026-05-15", lieu: "Palexpo, Geneve" },
     { id: "E2", titre: "Workshop investissement Lausanne", date: "2026-04-20", lieu: "SwissTech, Lausanne" },
-    { id: "E3", titre: "Conference PropTech Zurich", date: "2026-06-10", lieu: "Zurich Convention Center" },
+    { id: "E3", titre: "Conférence PropTech Zurich", date: "2026-06-10", lieu: "Zurich Convention Center" },
   ],
 };
 
@@ -61,7 +61,7 @@ function SearchResults() {
         <div className="text-6xl">🔍</div>
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Rechercher sur E-Dome</h2>
         <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-          Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou evenements.
+          Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou événements.
         </p>
       </div>
     );
@@ -153,11 +153,11 @@ function SearchResults() {
         </section>
       )}
 
-      {/* Evenements */}
+      {/* Événements */}
       {results.evenements.length > 0 && (
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">
-            Evenements <span className="text-sm text-[var(--text-muted)] font-normal">({results.evenements.length})</span>
+            Événements <span className="text-sm text-[var(--text-muted)] font-normal">({results.evenements.length})</span>
           </h2>
           <div className="space-y-2">
             {results.evenements.map((e) => (

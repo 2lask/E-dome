@@ -28,9 +28,9 @@ export default function ContactPage() {
       <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
         <div className="text-center py-16 space-y-4 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
           <div className="text-6xl">✅</div>
-          <h2 className="text-2xl font-bold text-[var(--foreground)]">Message envoye !</h2>
+          <h2 className="text-2xl font-bold text-[var(--foreground)]">Message envoyé !</h2>
           <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-            Merci pour votre message. Notre equipe vous repondra dans les plus brefs delais, generalement sous 24 heures.
+            Merci pour votre message. Notre équipe vous répondra dans les plus brefs délais, généralement sous 24 heures.
           </p>
           <button
             onClick={() => { setSubmitted(false); setForm({ sujet: "", nom: "", email: "", message: "" }); }}
@@ -101,7 +101,7 @@ export default function ContactPage() {
                 value={form.message}
                 onChange={(e) => handleChange("message", e.target.value)}
                 required
-                placeholder="Decrivez votre demande..."
+                placeholder="Décrivez votre demande..."
                 rows={5}
                 className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition resize-none"
               />

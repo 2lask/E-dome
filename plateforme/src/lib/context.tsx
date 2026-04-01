@@ -50,6 +50,7 @@ const AppContext = createContext<AppContextValue | null>(null);
 const DEFAULT_ROLE: Role = "client";
 const DEFAULT_ROLES: Role[] = ["client", "hote"];
 const DEFAULT_CURRENCY: Currency = "CHF";
+const DEFAULT_FAVORITES: string[] = ["p1", "p3", "p4"];
 const STORAGE_PREFIX = "edome_";
 
 // ─── Provider ───────────────────────────────────────────────────────────────
@@ -58,7 +59,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [activeRole, setActiveRoleState] = useState<Role>(DEFAULT_ROLE);
   const [availableRoles, setAvailableRoles] = useState<Role[]>(DEFAULT_ROLES);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [favorites, setFavorites] = useState<Set<string>>(new Set(DEFAULT_FAVORITES));
   const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
 

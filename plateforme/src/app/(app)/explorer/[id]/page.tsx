@@ -27,11 +27,14 @@ import type { Review } from "@/lib/mock-data";
 // ─── Paid options (applicable to location-ct) ───────────────────────────────
 
 const PAID_OPTIONS = [
-  { id: "o1", label: "Nettoyage professionnel", price: 150 },
-  { id: "o2", label: "Transfert aéroport", price: 80 },
-  { id: "o3", label: "Panier de bienvenue", price: 45 },
-  { id: "o4", label: "Late checkout (14h)", price: 60 },
-  { id: "o5", label: "Chef privé (dîner)", price: 350 },
+  { id: "o1", emoji: "\u2615", label: "Café de bienvenue", price: 0, included: true },
+  { id: "o2", emoji: "\uD83C\uDF7E", label: "Champagne à l'arrivée", price: 50 },
+  { id: "o3", emoji: "\uD83D\uDC86", label: "Massage 1h en villa", price: 80 },
+  { id: "o4", emoji: "\uD83D\uDC68\u200D\uD83C\uDF73", label: "Chef privé (dîner)", price: 200 },
+  { id: "o5", emoji: "\uD83D\uDE97", label: "Transfert aéroport", price: 60 },
+  { id: "o6", emoji: "\uD83E\uDDF9", label: "Nettoyage professionnel", price: 150 },
+  { id: "o7", emoji: "\u23F0", label: "Late checkout (14h)", price: 60 },
+  { id: "o8", emoji: "\uD83E\uDDFA", label: "Pack linge premium", price: 35 },
 ];
 
 // ─── Resolve property by ID (handles multiple ID formats) ───────────────────
@@ -210,7 +213,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
     );
   }
 
-  const optionsTotal = PAID_OPTIONS.filter((o) => selectedOptions.has(o.id)).reduce((sum, o) => sum + o.price, 0);
+  const optionsTotal = PAID_OPTIONS.filter((o) => selectedOptions.has(o.id) && !o.included).reduce((sum, o) => sum + o.price, 0);
 
   // Calendar
   const getDaysInMonth = (month: number, year: number) => new Date(year, month + 1, 0).getDate();
@@ -591,38 +594,55 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           {/* Paid options */}
           {property.transactionType === "location-ct" && (
             <div className="mb-8">
-              <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">Options supplémentaires</h2>
+              <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">Options & services</h2>
               <div className="space-y-2">
-                {PAID_OPTIONS.map((opt) => (
-                  <label
-                    key={opt.id}
-                    className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-colors ${
-                      selectedOptions.has(opt.id)
-                        ? "border-[#C4956A] bg-[#C4956A]/10"
-                        : "border-[var(--card-border)] bg-[var(--card)] hover:border-[var(--text-muted)]"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedOptions.has(opt.id)}
-                        onChange={() => {
-                          setSelectedOptions((prev) => {
-                            const next = new Set(prev);
-                            if (next.has(opt.id)) next.delete(opt.id);
-                            else next.add(opt.id);
-                            return next;
-                          });
-                        }}
-                        className="w-4 h-4 rounded accent-[#C4956A]"
-                      />
-                      <span className="text-sm text-[var(--foreground)]">{opt.label}</span>
+                {PAID_OPTIONS.map((opt) => {
+                  const isSelected = selectedOptions.has(opt.id);
+                  const isIncluded = !!(opt as { included?: boolean }).included;
+                  return (
+                    <div
+                      key={opt.id}
+                      className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                        isSelected || isIncluded
+                          ? "border-[#C4956A] bg-[#C4956A]/10"
+                          : "border-[var(--card-border)] bg-[var(--card)] hover:border-[var(--text-muted)]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">{opt.emoji}</span>
+                        <div>
+                          <span className="text-sm font-medium text-[var(--foreground)]">{opt.label}</span>
+                          <span className="ml-2 text-sm text-[var(--text-muted)]">
+                            {isIncluded ? "— Gratuit / Inclus" : `— +${formatPrice(opt.price, property.currency)}`}
+                          </span>
+                        </div>
+                      </div>
+                      {isIncluded ? (
+                        <span className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                          Inclus
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setSelectedOptions((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(opt.id)) next.delete(opt.id);
+                              else next.add(opt.id);
+                              return next;
+                            });
+                          }}
+                          className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                            isSelected
+                              ? "bg-[#C4956A] text-white"
+                              : "border border-[#C4956A] text-[#C4956A] hover:bg-[#C4956A]/10"
+                          }`}
+                        >
+                          {isSelected ? "Ajouté \u2713" : "Ajouter"}
+                        </button>
+                      )}
                     </div>
-                    <span className="text-sm font-medium text-[#C4956A]">
-                      {formatPrice(opt.price, property.currency)}
-                    </span>
-                  </label>
-                ))}
+                  );
+                })}
               </div>
               {selectedOptions.size > 0 && (
                 <div className="mt-3 p-4 rounded-xl bg-[var(--hover-bg)] flex items-center justify-between">
@@ -1119,16 +1139,27 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Message (optionnel)</label>
+                <textarea
+                  value={requestMessage}
+                  onChange={(e) => setRequestMessage(e.target.value)}
+                  placeholder="Précisez vos disponibilités ou questions..."
+                  rows={3}
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#C4956A]"
+                />
+              </div>
               <button
                 onClick={() => {
                   if (!visitDate) { addToast("Veuillez sélectionner une date.", "warning"); return; }
                   addToast("Demande de visite envoyée avec succès !", "success");
                   setShowVisitModal(false);
                   setVisitDate("");
+                  setRequestMessage("");
                 }}
                 className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
               >
-                Confirmer la visite
+                Envoyer la demande
               </button>
             </div>
           </div>
@@ -1171,7 +1202,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 }}
                 className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
               >
-                Envoyer l&apos;offre
+                Soumettre l&apos;offre
               </button>
             </div>
           </div>

@@ -35,32 +35,32 @@ const currentUser = {
 const kpiData = [
   {
     label: "Revenus",
-    value: 24850,
-    prev: 21200,
+    value: 12450,
+    prev: 10800,
     isCurrency: true,
-    sparkline: [12, 18, 14, 22, 19, 25, 24],
+    sparkline: [8, 9, 10, 11, 10, 12, 12.4],
   },
   {
-    label: "Reservations",
-    value: 47,
-    prev: 38,
+    label: "Réservations",
+    value: 34,
+    prev: 28,
     isCurrency: false,
-    sparkline: [5, 7, 6, 8, 7, 9, 5],
+    sparkline: [4, 5, 4, 6, 5, 7, 5],
   },
   {
-    label: "Taux d'occupation",
-    value: 82,
-    prev: 75,
+    label: "Apports",
+    value: 8200,
+    prev: 6500,
+    isCurrency: true,
+    sparkline: [5, 6, 5.5, 7, 6.8, 8, 8.2],
+  },
+  {
+    label: "Conversion",
+    value: 78,
+    prev: 72,
     isCurrency: false,
     suffix: "%",
-    sparkline: [70, 74, 78, 80, 76, 84, 82],
-  },
-  {
-    label: "Note moyenne",
-    value: 4.8,
-    prev: 4.6,
-    isCurrency: false,
-    sparkline: [4.5, 4.6, 4.7, 4.6, 4.8, 4.7, 4.8],
+    sparkline: [65, 68, 70, 72, 74, 76, 78],
   },
 ];
 
@@ -104,8 +104,8 @@ const mockAppointments = [
 
 const shortcuts = [
   { label: "Publier", href: "/publier", icon: "+" },
-  { label: "Creer formation", href: "/formations/creer", icon: "B" },
-  { label: "Creer evenement", href: "/evenements/creer", icon: "C" },
+  { label: "Créer formation", href: "/formations/creer", icon: "B" },
+  { label: "Créer événement", href: "/evenements/creer", icon: "C" },
   { label: "Proposer service", href: "/services/proposer", icon: "S" },
   { label: "Statistiques", href: "/statistiques", icon: "G" },
 ];
@@ -276,10 +276,10 @@ function ClientDashboard() {
         </div>
       </div>
 
-      {/* Evenements inscrits */}
+      {/* Événements inscrits */}
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">Evenements inscrits</h2>
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">Événements inscrits</h2>
           <Link href="/evenements" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
         </div>
         <div className="space-y-3">

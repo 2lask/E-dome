@@ -108,13 +108,13 @@ export default function ProfilPage() {
         { key: "biens" as const, label: "Biens sauvegardés" },
         { key: "publications" as const, label: "Publications" },
         { key: "avis" as const, label: "Avis" },
-        { key: "apropos" as const, label: "A propos" },
+        { key: "apropos" as const, label: "À propos" },
       ]
     : [
         { key: "biens" as const, label: "Mes Biens" },
         { key: "publications" as const, label: "Publications" },
         { key: "avis" as const, label: "Avis" },
-        { key: "apropos" as const, label: "A propos" },
+        { key: "apropos" as const, label: "À propos" },
       ];
 
   return (
@@ -340,6 +340,10 @@ export default function ProfilPage() {
                   <p className="text-sm text-[var(--text-secondary)]">{currentUser.responseTime}</p>
                 </div>
               )}
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Membre depuis</h3>
+                <p className="text-sm text-[var(--text-secondary)]">Janvier 2024</p>
+              </div>
             </div>
           )}
         </div>

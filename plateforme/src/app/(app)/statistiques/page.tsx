@@ -98,14 +98,59 @@ export default function StatistiquesPage() {
   const allowedRoles = ["hote", "agence", "promoteur", "proprietaire", "courtier"];
 
   if (!allowedRoles.includes(activeRole)) {
+    const previewKpis = [
+      { label: "Vues totales", value: "5\u2019200" },
+      { label: "Visiteurs uniques", value: "3\u2019800" },
+      { label: "Conversions", value: "95" },
+      { label: "Revenus", value: "CHF 18\u2019500" },
+    ];
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
-          <div className="text-5xl mb-4">🔒</div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Acces restreint</h2>
-          <p className="text-[var(--text-secondary)]">
-            Les statistiques sont accessibles aux hotes, agences, promoteurs, proprietaires et courtiers.
-          </p>
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 animate-fade-in relative">
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">Statistiques</h1>
+
+        {/* Blurred preview */}
+        <div className="relative">
+          <div className="filter blur-sm pointer-events-none select-none opacity-60">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {previewKpis.map((kpi, idx) => (
+                <div key={idx} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-2">
+                  <p className="text-sm text-[var(--text-muted)]">{kpi.label}</p>
+                  <p className="text-2xl font-bold text-[var(--foreground)]">{kpi.value}</p>
+                </div>
+              ))}
+            </div>
+            <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] mb-6">
+              <div className="space-y-3">
+                {["Villa Montreux", "Penthouse Zurich", "Chalet Verbier", "Appartement Lausanne"].map((name, idx) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <span className="text-sm text-[var(--text-secondary)] w-44 truncate">{name}</span>
+                    <div className="flex-1 h-6 bg-[var(--hover-bg)] rounded overflow-hidden">
+                      <div className="h-full bg-[#C4956A]/80 rounded" style={{ width: `${80 - idx * 15}%` }} />
+                    </div>
+                    <span className="text-sm text-[var(--foreground)] font-medium w-16 text-right">{1400 - idx * 300}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] h-48" />
+          </div>
+
+          {/* Overlay banner */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center p-8 rounded-2xl bg-[var(--card)] backdrop-blur-sm border border-[var(--card-border)] shadow-xl max-w-md">
+              <div className="text-5xl mb-4">🔒</div>
+              <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Acc&egrave;s restreint</h2>
+              <p className="text-[var(--text-secondary)] mb-4">
+                Activez le r&ocirc;le H&ocirc;te pour d&eacute;bloquer vos statistiques et suivre la performance de vos biens.
+              </p>
+              <a
+                href="/parametres"
+                className="inline-block px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors"
+              >
+                Activer le r&ocirc;le H&ocirc;te
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     );

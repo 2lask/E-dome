@@ -1576,6 +1576,145 @@ export const formations: Formation[] = [
     studentCount: 312,
     previewVideo: '/videos/formation-preview-8.mp4',
   },
+  {
+    id: 'form-009',
+    title: 'Investir en Tha\u00eflande',
+    description:
+      'D\u00e9couvrez les opportunit\u00e9s d\u2019investissement immobilier en Tha\u00eflande : march\u00e9 local, r\u00e9glementation \u00e9trang\u00e8re, zones cl\u00e9s (Bangkok, Phuket, Chiang Mai), rentabilit\u00e9 et fiscalit\u00e9.',
+    category: 'Investissement',
+    level: 'intermediaire' as const,
+    instructor: users[2],
+    thumbnail: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=800&h=600&fit=crop',
+    price: 397,
+    currency: 'CHF' as const,
+    duration: '7h',
+    modules: [
+      {
+        id: 'mod-026',
+        title: 'Le march\u00e9 immobilier tha\u00eflandais',
+        duration: '2h30',
+        lessons: [
+          { id: 'les-064', title: 'Panorama du march\u00e9 et zones cl\u00e9s', duration: '1h' },
+          { id: 'les-065', title: 'R\u00e9glementation pour les \u00e9trangers', duration: '45min' },
+          { id: 'les-066', title: 'Structures juridiques (leasehold, freehold)', duration: '45min' },
+        ],
+      },
+      {
+        id: 'mod-027',
+        title: 'Strat\u00e9gies d\u2019investissement',
+        duration: '2h30',
+        lessons: [
+          { id: 'les-067', title: 'Condos et villas : rendements compar\u00e9s', duration: '1h' },
+          { id: 'les-068', title: 'Location touristique et gestion \u00e0 distance', duration: '1h' },
+          { id: 'les-069', title: '\u00c9tudes de cas r\u00e9els', duration: '30min' },
+        ],
+      },
+      {
+        id: 'mod-028',
+        title: 'Fiscalit\u00e9 et rapatriement',
+        duration: '2h',
+        lessons: [
+          { id: 'les-070', title: 'Fiscalit\u00e9 locale et conventions', duration: '1h' },
+          { id: 'les-071', title: 'Rapatriement des fonds et risques', duration: '1h' },
+        ],
+      },
+    ],
+    rating: 4.6,
+    studentCount: 98,
+  },
+  {
+    id: 'form-010',
+    title: 'Le march\u00e9 immobilier \u00e0 Duba\u00ef',
+    description:
+      'Ma\u00eetrisez le march\u00e9 immobilier de Duba\u00ef : zones franches, off-plan, Golden Visa, rendements locatifs et strat\u00e9gies d\u2019entr\u00e9e pour investisseurs francophones.',
+    category: 'Investissement',
+    level: 'intermediaire' as const,
+    instructor: users[5],
+    thumbnail: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop',
+    price: 497,
+    currency: 'CHF' as const,
+    duration: '8h',
+    modules: [
+      {
+        id: 'mod-029',
+        title: 'Duba\u00ef : march\u00e9 et r\u00e9glementation',
+        duration: '3h',
+        lessons: [
+          { id: 'les-072', title: 'Panorama du march\u00e9 de Duba\u00ef', duration: '1h' },
+          { id: 'les-073', title: 'Zones freehold et r\u00e9glementation', duration: '1h' },
+          { id: 'les-074', title: 'Golden Visa et r\u00e9sidence', duration: '1h' },
+        ],
+      },
+      {
+        id: 'mod-030',
+        title: 'Strat\u00e9gies d\u2019achat',
+        duration: '3h',
+        lessons: [
+          { id: 'les-075', title: 'Off-plan vs. march\u00e9 secondaire', duration: '1h' },
+          { id: 'les-076', title: 'Rendements locatifs par zone', duration: '1h' },
+          { id: 'les-077', title: 'Due diligence et promoteurs', duration: '1h' },
+        ],
+      },
+      {
+        id: 'mod-031',
+        title: 'Gestion et fiscalit\u00e9',
+        duration: '2h',
+        lessons: [
+          { id: 'les-078', title: 'Gestion locative \u00e0 distance', duration: '1h' },
+          { id: 'les-079', title: 'Fiscalit\u00e9 z\u00e9ro et implications suisses', duration: '1h' },
+        ],
+      },
+    ],
+    rating: 4.8,
+    studentCount: 156,
+  },
+  {
+    id: 'form-011',
+    title: 'Bootcamp Apporteur Pro (30j)',
+    description:
+      'Programme intensif de 30 jours pour devenir apporteur d\u2019affaires immobilier professionnel. Prospection, r\u00e9seau, closing et automatisation de votre activit\u00e9.',
+    category: 'Marketing',
+    level: 'avance' as const,
+    instructor: users[9],
+    thumbnail: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop',
+    price: 697,
+    currency: 'CHF' as const,
+    duration: '15h',
+    modules: [
+      {
+        id: 'mod-032',
+        title: 'Semaine 1 : Fondations',
+        duration: '4h',
+        lessons: [
+          { id: 'les-080', title: 'Le m\u00e9tier d\u2019apporteur d\u2019affaires', duration: '1h' },
+          { id: 'les-081', title: 'Construire son r\u00e9seau de z\u00e9ro', duration: '1h30' },
+          { id: 'les-082', title: 'Outils et CRM', duration: '1h30' },
+        ],
+      },
+      {
+        id: 'mod-033',
+        title: 'Semaine 2-3 : Prospection avanc\u00e9e',
+        duration: '6h',
+        lessons: [
+          { id: 'les-083', title: 'Prospection LinkedIn et r\u00e9seaux sociaux', duration: '2h' },
+          { id: 'les-084', title: 'Email outreach et s\u00e9quences', duration: '2h' },
+          { id: 'les-085', title: 'Partenariats strat\u00e9giques', duration: '2h' },
+        ],
+      },
+      {
+        id: 'mod-034',
+        title: 'Semaine 4 : Closing et scaling',
+        duration: '5h',
+        lessons: [
+          { id: 'les-086', title: 'N\u00e9gociation et closing', duration: '2h' },
+          { id: 'les-087', title: 'Automatisation et d\u00e9l\u00e9gation', duration: '1h30' },
+          { id: 'les-088', title: 'Construire un revenu r\u00e9current', duration: '1h30' },
+        ],
+      },
+    ],
+    rating: 4.7,
+    studentCount: 67,
+  },
 ];
 
 // ─── EVENTS (6) ─────────────────────────────────────────────────────────────

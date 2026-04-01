@@ -21,7 +21,7 @@ const FORMATION_DATA: Record<string, {
 }> = {
   f1: {
     title: "Investissement immobilier : de 0 a expert",
-    description: "Cette formation complete vous guide pas a pas dans l'univers de l'investissement immobilier. De la recherche du bien ideal au financement, en passant par la negociation et la gestion locative, vous acquerrez toutes les competences necessaires pour reussir vos investissements.",
+    description: "Cette formation complète vous guide pas à pas dans l'univers de l'investissement immobilier. De la recherche du bien idéal au financement, en passant par la négociation et la gestion locative, vous acquerrez toutes les compétences nécessaires pour réussir vos investissements.",
     category: "Immobilier", level: "debutant", price: 299, duration: "12h",
     thumbnail: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop",
     previewVideo: "",
@@ -64,7 +64,7 @@ const FORMATION_DATA: Record<string, {
 
 const DEFAULT_FORMATION = FORMATION_DATA.f1;
 
-const LEVEL_LABELS: Record<string, string> = { debutant: "Debutant", intermediaire: "Intermediaire", avance: "Avance" };
+const LEVEL_LABELS: Record<string, string> = { debutant: "Débutant", intermediaire: "Intermédiaire", avance: "Avancé" };
 
 /* ─── Stars ──────────────────────────────────────────────────────────────── */
 
@@ -279,11 +279,11 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                 </button>
               )}
               <div className="space-y-3 text-sm text-[var(--text-secondary)]">
-                <div className="flex justify-between"><span>Duree</span><span className="font-medium text-[var(--foreground)]">{formation.duration}</span></div>
+                <div className="flex justify-between"><span>Durée</span><span className="font-medium text-[var(--foreground)]">{formation.duration}</span></div>
                 <div className="flex justify-between"><span>Modules</span><span className="font-medium text-[var(--foreground)]">{formation.modules.length}</span></div>
-                <div className="flex justify-between"><span>Lecons</span><span className="font-medium text-[var(--foreground)]">{totalLessons}</span></div>
+                <div className="flex justify-between"><span>Leçons</span><span className="font-medium text-[var(--foreground)]">{totalLessons}</span></div>
                 <div className="flex justify-between"><span>Niveau</span><span className="font-medium text-[var(--foreground)]">{LEVEL_LABELS[formation.level]}</span></div>
-                <div className="flex justify-between"><span>Etudiants</span><span className="font-medium text-[var(--foreground)]">{formation.studentCount}</span></div>
+                <div className="flex justify-between"><span>Étudiants</span><span className="font-medium text-[var(--foreground)]">{formation.studentCount}</span></div>
                 <div className="flex justify-between"><span>Note</span><span className="font-medium text-[#C4956A]">{formation.rating}/5</span></div>
               </div>
             </div>

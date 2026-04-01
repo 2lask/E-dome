@@ -43,7 +43,7 @@ const SERVICES = [
 
 const STEPS = [
   { number: "1", title: "Choisissez un service", desc: "Parcourez notre catalogue de prestataires verifies et selectionnez le service adapte a vos besoins." },
-  { number: "2", title: "Demandez un devis", desc: "Decrivez votre projet et recevez un devis personnalise directement du prestataire." },
+  { number: "2", title: "Demandez un devis", desc: "Décrivez votre projet et recevez un devis personnalisé directement du prestataire." },
   { number: "3", title: "Profitez du service", desc: "Le prestataire realise la mission. Payez en toute securite via la plateforme." },
 ];
 
@@ -70,7 +70,12 @@ export default function ServicesPage() {
   const [category, setCategory] = useState("Tous");
   const [devisOpenId, setDevisOpenId] = useState<string | null>(null);
   const [devisMessage, setDevisMessage] = useState("");
+  const [devisDate, setDevisDate] = useState("");
+  const [devisNom, setDevisNom] = useState("");
+  const [devisEmail, setDevisEmail] = useState("");
+  const [devisTel, setDevisTel] = useState("");
   const [devisSent, setDevisSent] = useState<Set<string>>(new Set());
+  const [toastVisible, setToastVisible] = useState(false);
 
   const filtered = useMemo(() => {
     return SERVICES.filter((s) => {
@@ -84,6 +89,12 @@ export default function ServicesPage() {
     setDevisSent((prev) => { const n = new Set(prev); n.add(serviceId); return n; });
     setDevisOpenId(null);
     setDevisMessage("");
+    setDevisDate("");
+    setDevisNom("");
+    setDevisEmail("");
+    setDevisTel("");
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 3000);
   };
 
   return (
@@ -141,7 +152,7 @@ export default function ServicesPage() {
                     <span className="text-xs text-[var(--text-muted)]"> {service.unit}</span>
                   </div>
                   {devisSent.has(service.id) ? (
-                    <span className="px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">Devis envoye</span>
+                    <span className="px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">Devis envoy&eacute; ✓</span>
                   ) : devisOpenId === service.id ? (
                     <button onClick={() => setDevisOpenId(null)} className="px-3 py-1.5 border border-[var(--card-border)] rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
                       Annuler
@@ -158,12 +169,40 @@ export default function ServicesPage() {
                   <div className="pt-3 border-t border-[var(--card-border)] space-y-3 animate-fade-in">
                     <textarea
                       className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 min-h-[80px] resize-y transition-colors"
-                      placeholder="Decrivez votre besoin..."
+                      placeholder="Description du besoin..."
                       value={devisMessage}
                       onChange={(e) => setDevisMessage(e.target.value)}
                     />
+                    <input
+                      type="date"
+                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] focus:outline-none focus:border-[#C4956A]/50 transition-colors"
+                      value={devisDate}
+                      onChange={(e) => setDevisDate(e.target.value)}
+                      placeholder="Date souhait&eacute;e"
+                    />
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors"
+                      placeholder="Votre nom"
+                      value={devisNom}
+                      onChange={(e) => setDevisNom(e.target.value)}
+                    />
+                    <input
+                      type="email"
+                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors"
+                      placeholder="Email"
+                      value={devisEmail}
+                      onChange={(e) => setDevisEmail(e.target.value)}
+                    />
+                    <input
+                      type="tel"
+                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors"
+                      placeholder="T&eacute;l&eacute;phone"
+                      value={devisTel}
+                      onChange={(e) => setDevisTel(e.target.value)}
+                    />
                     <button onClick={() => handleSendDevis(service.id)} className="w-full py-2 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-lg text-sm font-medium transition-colors">
-                      Envoyer la demande
+                      Envoyer
                     </button>
                   </div>
                 )}
@@ -175,9 +214,16 @@ export default function ServicesPage() {
           <p className="text-center text-[var(--text-muted)] py-12">Aucun service trouve.</p>
         )}
 
+        {/* Toast notification */}
+        {toastVisible && (
+          <div className="fixed bottom-6 right-6 z-50 px-5 py-3 bg-green-600 text-white rounded-xl shadow-lg text-sm font-medium animate-fade-in">
+            Demande de devis envoy&eacute;e avec succ&egrave;s !
+          </div>
+        )}
+
         {/* ── Comment ca marche ───────────────────────────────────────── */}
         <section className="py-10">
-          <h2 className="text-2xl font-bold text-center mb-8">Comment ca marche</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">Comment &ccedil;a marche</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {STEPS.map((step) => (
               <div key={step.number} className="text-center p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl">

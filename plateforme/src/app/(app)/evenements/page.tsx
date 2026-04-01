@@ -6,24 +6,24 @@ import { useApp } from "@/lib/context";
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
 const EVENTS = [
-  { id: "e1", titre: "Salon de l'immobilier Suisse 2026", type: "Conference", date: "2026-05-15", heure: "09:00", duree: "8h", lieu: "Palexpo, Geneve", description: "Le plus grand salon immobilier de Suisse romande.", thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop", spots: 500, spotsRemaining: 127, prix: 45, featured: true, intervenant: "Plusieurs experts" },
+  { id: "e1", titre: "Salon de l'immobilier Suisse 2026", type: "Conférence", date: "2026-05-15", heure: "09:00", duree: "8h", lieu: "Palexpo, Geneve", description: "Le plus grand salon immobilier de Suisse romande.", thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop", spots: 500, spotsRemaining: 127, prix: 45, featured: true, intervenant: "Plusieurs experts" },
   { id: "e2", titre: "Webinaire : Optimiser son rendement locatif", type: "Webinaire", date: "2026-04-20", heure: "18:00", duree: "1h30", lieu: "En ligne", description: "Strategies pour maximiser la rentabilite de vos biens.", thumbnail: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600&h=400&fit=crop", spots: 200, spotsRemaining: 84, prix: 0, featured: false, intervenant: "Sophie Martin" },
   { id: "e3", titre: "Atelier : Home staging pratique", type: "Atelier", date: "2026-04-10", heure: "14:00", duree: "3h", lieu: "Lausanne, Centre Flon", description: "Apprenez les techniques de home staging pour vendre plus vite.", thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", spots: 30, spotsRemaining: 8, prix: 89, featured: false, intervenant: "Claire Bernard" },
   { id: "e4", titre: "Networking investisseurs romands", type: "Networking", date: "2026-04-05", heure: "19:00", duree: "2h", lieu: "Hotel Royal, Montreux", description: "Rencontrez les investisseurs les plus actifs de la region.", thumbnail: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=400&fit=crop", spots: 80, spotsRemaining: 22, prix: 35, featured: false, intervenant: "Marc Dupont" },
   { id: "e5", titre: "Formation live : Fiscalite immobiliere", type: "Formation live", date: "2026-03-20", heure: "10:00", duree: "4h", lieu: "En ligne", description: "Comprendre la fiscalite liee aux investissements immobiliers.", thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop", spots: 150, spotsRemaining: 0, prix: 120, featured: false, intervenant: "Jean Leroy" },
-  { id: "e6", titre: "Conference : Marche immobilier 2026", type: "Conference", date: "2026-03-10", heure: "17:00", duree: "2h", lieu: "EPFL, Lausanne", description: "Analyse et perspectives du marche immobilier suisse.", thumbnail: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=400&fit=crop", spots: 300, spotsRemaining: 0, prix: 0, featured: false, intervenant: "Prof. A. Blanc" },
+  { id: "e6", titre: "Conference : Marche immobilier 2026", type: "Conférence", date: "2026-03-10", heure: "17:00", duree: "2h", lieu: "EPFL, Lausanne", description: "Analyse et perspectives du marche immobilier suisse.", thumbnail: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=400&fit=crop", spots: 300, spotsRemaining: 0, prix: 0, featured: false, intervenant: "Prof. A. Blanc" },
 ];
 
 const TYPE_COLORS: Record<string, string> = {
   "Webinaire": "bg-blue-500/20 text-blue-400",
-  "Conference": "bg-purple-500/20 text-purple-400",
+  "Conférence": "bg-purple-500/20 text-purple-400",
   "Atelier": "bg-green-500/20 text-green-400",
   "Networking": "bg-amber-500/20 text-amber-400",
   "Formation live": "bg-rose-500/20 text-rose-400",
 };
 
-const TABS = ["A venir", "En cours", "Passes"];
-const MONTHS = ["Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"];
+const TABS = ["À venir", "En cours", "Passés"];
+const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
@@ -32,9 +32,9 @@ function getTab(dateStr: string): string {
   const d = new Date(dateStr);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  if (d > today) return "A venir";
+  if (d > today) return "À venir";
   if (d.toDateString() === today.toDateString()) return "En cours";
-  return "Passes";
+  return "Passés";
 }
 
 function formatDateBadge(dateStr: string) {
@@ -45,11 +45,11 @@ function formatDateBadge(dateStr: string) {
 /* ─── Share helpers ──────────────────────────────────────────────────────── */
 
 function shareWhatsApp(title: string) {
-  window.open(`https://wa.me/?text=${encodeURIComponent(`Decouvrez cet evenement : ${title} sur E-Dome!`)}`, "_blank");
+  window.open(`https://wa.me/?text=${encodeURIComponent(`Découvrez cet événement : ${title} sur E-Dome!`)}`, "_blank");
 }
 
 function shareEmail(title: string) {
-  window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`Decouvrez cet evenement sur E-Dome: ${title}`)}`, "_blank");
+  window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`Découvrez cet événement sur E-Dome: ${title}`)}`, "_blank");
 }
 
 function copyLink(id: string) {
@@ -59,13 +59,15 @@ function copyLink(id: string) {
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function EvenementsPage() {
-  const { formatPrice } = useApp();
-  const [activeTab, setActiveTab] = useState("A venir");
+  const { formatPrice, activeRole } = useApp();
+  const canCreateEvent = ["hote", "agence", "promoteur", "formateur"].includes(activeRole);
+  const [activeTab, setActiveTab] = useState("À venir");
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [calendarMonth, setCalendarMonth] = useState(() => { const d = new Date(); return { month: d.getMonth(), year: d.getFullYear() }; });
   const [registeringId, setRegisteringId] = useState<string | null>(null);
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
   const [shareOpenId, setShareOpenId] = useState<string | null>(null);
+  const [spotsUsed, setSpotsUsed] = useState<Record<string, number>>({});
 
   const filtered = useMemo(() => EVENTS.filter((e) => getTab(e.date) === activeTab), [activeTab]);
 
@@ -90,6 +92,7 @@ export default function EvenementsPage() {
 
   const handleRegister = (eventId: string) => {
     setRegisteredIds((prev) => { const n = new Set(prev); n.add(eventId); return n; });
+    setSpotsUsed((prev) => ({ ...prev, [eventId]: (prev[eventId] ?? 0) + 1 }));
     setRegisteringId(null);
   };
 
@@ -100,8 +103,8 @@ export default function EvenementsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Evenements</h1>
-            <p className="text-[var(--text-secondary)] mt-1">Decouvrez les evenements de la communaute</p>
+            <h1 className="text-3xl font-bold">Événements</h1>
+            <p className="text-[var(--text-secondary)] mt-1">Découvrez les événements de la communauté</p>
           </div>
           <div className="flex gap-2">
             <button onClick={() => setViewMode("list")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "list" ? "bg-[#C4956A] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
@@ -110,9 +113,11 @@ export default function EvenementsPage() {
             <button onClick={() => setViewMode("calendar")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "calendar" ? "bg-[#C4956A] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
               Calendrier
             </button>
-            <a href="/evenements/creer" className="px-4 py-2 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl text-sm font-medium transition-colors">
-              + Creer
-            </a>
+            {canCreateEvent && (
+              <a href="/evenements/creer" className="px-4 py-2 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl text-sm font-medium transition-colors">
+                + Cr&eacute;er
+              </a>
+            )}
           </div>
         </div>
 
@@ -148,8 +153,9 @@ export default function EvenementsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((ev) => {
                 const db = formatDateBadge(ev.date);
-                const spotsPercent = ((ev.spots - ev.spotsRemaining) / ev.spots) * 100;
-                const isFull = ev.spotsRemaining === 0;
+                const effectiveRemaining = Math.max(0, ev.spotsRemaining - (spotsUsed[ev.id] ?? 0));
+                const spotsPercent = ((ev.spots - effectiveRemaining) / ev.spots) * 100;
+                const isFull = effectiveRemaining === 0;
                 const isRegistered = registeredIds.has(ev.id);
                 return (
                   <div key={ev.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#C4956A]/40 transition-colors relative">
@@ -178,8 +184,8 @@ export default function EvenementsPage() {
                       {/* Spots progress */}
                       <div>
                         <div className="flex justify-between text-xs text-[var(--text-muted)] mb-1">
-                          <span>{ev.spotsRemaining} places restantes</span>
-                          <span>{ev.spots - ev.spotsRemaining}/{ev.spots}</span>
+                          <span>{effectiveRemaining} places restantes</span>
+                          <span>{ev.spots - effectiveRemaining}/{ev.spots}</span>
                         </div>
                         <div className="w-full h-1.5 bg-[var(--background)] rounded-full overflow-hidden">
                           <div className={`h-full rounded-full transition-all ${isFull ? "bg-red-500" : "bg-[#C4956A]"}`} style={{ width: `${spotsPercent}%` }} />
@@ -203,7 +209,7 @@ export default function EvenementsPage() {
                           </div>
                           {/* Register */}
                           {isRegistered ? (
-                            <span className="px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">Inscrit</span>
+                            <span className="px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">Inscrit ✓</span>
                           ) : isFull ? (
                             <span className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium">Complet</span>
                           ) : (
@@ -219,7 +225,7 @@ export default function EvenementsPage() {
               })}
             </div>
             {filtered.length === 0 && (
-              <p className="text-center text-[var(--text-muted)] py-12">Aucun evenement dans cette categorie.</p>
+              <p className="text-center text-[var(--text-muted)] py-12">Aucun événement dans cette catégorie.</p>
             )}
           </>
         )}
@@ -267,7 +273,7 @@ export default function EvenementsPage() {
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full animate-scale-in">
-              <h2 className="text-xl font-bold mb-2">S&apos;inscrire a l&apos;evenement</h2>
+              <h2 className="text-xl font-bold mb-2">S&apos;inscrire à l&apos;événement</h2>
               <h3 className="text-[#C4956A] font-medium mb-4">{ev.titre}</h3>
               <div className="space-y-2 text-sm text-[var(--text-secondary)] mb-6">
                 <p>Date : {new Date(ev.date).toLocaleDateString("fr-CH")} a {ev.heure}</p>

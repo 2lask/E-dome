@@ -34,9 +34,9 @@ const STORAGE_KEY = "edome_formation_draft";
 
 const CATEGORIES = ["Immobilier", "Finance", "Marketing", "Juridique", "Design", "Gestion locative", "Investissement"];
 const NIVEAUX = [
-  { value: "debutant", label: "Debutant" },
-  { value: "intermediaire", label: "Intermediaire" },
-  { value: "avance", label: "Avance" },
+  { value: "debutant", label: "Débutant" },
+  { value: "intermediaire", label: "Intermédiaire" },
+  { value: "avance", label: "Avancé" },
 ];
 
 const emptyForm: FormData = {
@@ -212,7 +212,7 @@ export default function CreerFormationPage() {
                 </select>
               </div>
             </div>
-            <div><label className={labelCls}>Description</label><textarea className={`${inputCls} min-h-[120px] resize-y`} placeholder="Decrivez votre formation..." value={form.description} onChange={(e) => updateField("description", e.target.value)} /></div>
+            <div><label className={labelCls}>Description</label><textarea className={`${inputCls} min-h-[120px] resize-y`} placeholder="Décrivez votre formation..." value={form.description} onChange={(e) => updateField("description", e.target.value)} /></div>
             <div><label className={labelCls}>Image de couverture (URL)</label><input className={inputCls} placeholder="https://..." value={form.image} onChange={(e) => updateField("image", e.target.value)} /></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
@@ -220,7 +220,7 @@ export default function CreerFormationPage() {
                 <input type="number" className={inputCls} placeholder="0" value={form.prix || ""} onChange={(e) => updateField("prix", Number(e.target.value))} />
                 {form.prix > 0 && <p className="text-xs text-[var(--text-muted)] mt-1">Affiche : {formatPrice(form.prix)}</p>}
               </div>
-              <div><label className={labelCls}>Duree estimee</label><input className={inputCls} placeholder="Ex: 12h" value={form.duree} onChange={(e) => updateField("duree", e.target.value)} /></div>
+              <div><label className={labelCls}>Durée estimée</label><input className={inputCls} placeholder="Ex: 12h" value={form.duree} onChange={(e) => updateField("duree", e.target.value)} /></div>
             </div>
             <div className="flex justify-end">
               <button onClick={() => setStep(2)} className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
@@ -246,12 +246,12 @@ export default function CreerFormationPage() {
                 <div className="ml-11 space-y-2">
                   {mod.lessons.map((les) => (
                     <div key={les.id} className="flex items-center gap-2">
-                      <input className={`${inputCls} flex-1`} placeholder="Titre de la lecon" value={les.title} onChange={(e) => updateLesson(mod.id, les.id, "title", e.target.value)} />
-                      <input className={`${inputCls} w-28`} placeholder="Duree" value={les.duration} onChange={(e) => updateLesson(mod.id, les.id, "duration", e.target.value)} />
+                      <input className={`${inputCls} flex-1`} placeholder="Titre de la leçon" value={les.title} onChange={(e) => updateLesson(mod.id, les.id, "title", e.target.value)} />
+                      <input className={`${inputCls} w-28`} placeholder="Durée" value={les.duration} onChange={(e) => updateLesson(mod.id, les.id, "duration", e.target.value)} />
                       <button onClick={() => removeLesson(mod.id, les.id)} className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors flex-shrink-0"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
                     </div>
                   ))}
-                  <button onClick={() => addLesson(mod.id)} className="text-sm text-[#C4956A] hover:text-[#b8845a] transition-colors">+ Ajouter une lecon</button>
+                  <button onClick={() => addLesson(mod.id)} className="text-sm text-[#C4956A] hover:text-[#b8845a] transition-colors">+ Ajouter une leçon</button>
                 </div>
               </div>
             ))}

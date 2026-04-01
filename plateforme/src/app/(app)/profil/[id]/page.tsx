@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useApp } from "@/lib/context";
 import { roleLabels } from "@/lib/types";
 import type { Property, User } from "@/lib/types";
+import type { SocialPost } from "@/lib/types";
 import { formatCount, timeAgo } from "@/lib/utils";
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
@@ -67,6 +68,27 @@ const mockReviews: Record<string, { id: string; author: string; rating: number; 
   ],
 };
 
+const mockPosts: Record<string, SocialPost[]> = {
+  u1: [
+    {
+      id: "sp10", author: mockUsers.u1, content: "Nouvelle vente conclue à Genève ! Un magnifique penthouse avec vue sur le jet d'eau.",
+      media: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=400&fit=crop"],
+      type: "post", likes: 64, comments: [], createdAt: "2026-03-22T10:00:00",
+    },
+    {
+      id: "sp11", author: mockUsers.u1, content: "Ravie de participer au salon de l'immobilier de Genève cette année. Venez me rencontrer au stand 12 !",
+      media: [], type: "post", likes: 38, comments: [], createdAt: "2026-03-15T14:00:00",
+    },
+  ],
+  u2: [
+    {
+      id: "sp20", author: mockUsers.u2, content: "Lancement de notre nouveau projet résidentiel à Zürich. 24 appartements haut standing, livraison 2027.",
+      media: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop"],
+      type: "post", likes: 112, comments: [], createdAt: "2026-03-20T09:00:00",
+    },
+  ],
+};
+
 const ratingBreakdowns: Record<string, { stars: number; count: number }[]> = {
   u1: [{ stars: 5, count: 35 }, { stars: 4, count: 5 }, { stars: 3, count: 2 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
   u2: [{ stars: 5, count: 50 }, { stars: 4, count: 20 }, { stars: 3, count: 5 }, { stars: 2, count: 2 }, { stars: 1, count: 1 }],
@@ -99,7 +121,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
     { key: "biens" as const, label: "Biens" },
     { key: "publications" as const, label: "Publications" },
     { key: "avis" as const, label: "Avis" },
-    { key: "apropos" as const, label: "A propos" },
+    { key: "apropos" as const, label: "À propos" },
   ];
 
   return (
@@ -206,7 +228,24 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
           )}
 
           {tab === "publications" && (
-            <div className="text-center py-12 text-[var(--text-muted)]">Aucune publication pour le moment.</div>
+            <div className="space-y-4">
+              {(mockPosts[id] || []).length === 0 ? (
+                <div className="text-center py-12 text-[var(--text-muted)]">Aucune publication pour le moment.</div>
+              ) : (
+                (mockPosts[id] || []).map((post) => (
+                  <div key={post.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+                    <p className="text-sm text-[var(--foreground)]">{post.content}</p>
+                    {post.media.length > 0 && (
+                      <img src={post.media[0]} alt="" className="w-full h-48 object-cover rounded-lg mt-3" />
+                    )}
+                    <div className="flex items-center gap-4 mt-3 text-xs text-[var(--text-muted)]">
+                      <span>{post.likes} likes</span>
+                      <span>{timeAgo(post.createdAt)}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           )}
 
           {tab === "avis" && (
@@ -288,6 +327,10 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
                   <p className="text-sm text-[var(--text-secondary)]">{user.responseTime}</p>
                 </div>
               )}
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Membre depuis</h3>
+                <p className="text-sm text-[var(--text-secondary)]">{id === "u1" ? "Mars 2023" : "Juin 2022"}</p>
+              </div>
             </div>
           )}
         </div>

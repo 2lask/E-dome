@@ -9,53 +9,55 @@ const REFERRAL_ID = "AP-7291";
 
 const REFERRAL_LINKS = [
   {
-    label: "Amener un hote",
+    label: "Amener un hôte",
     url: `edome.world/ref/hote/${REFERRAL_ID}`,
-    description: "Partagez ce lien pour inviter un proprietaire a publier ses biens sur E-Dome.",
-    clicks: 234,
-    conversions: 18,
+    description: "Partagez ce lien pour inviter un propriétaire à publier ses biens sur E-Dome. Commission : 100 CHF par hôte activé.",
+    commission: "100 CHF / hôte activé",
+    clicks: 23,
+    conversions: 8,
     color: "bg-amber-500/20 text-amber-400",
   },
   {
     label: "Amener un client",
     url: `edome.world/ref/client/${REFERRAL_ID}`,
-    description: "Invitez des locataires ou acheteurs potentiels a rejoindre la plateforme.",
-    clicks: 412,
-    conversions: 37,
+    description: "Invitez des locataires ou acheteurs potentiels à rejoindre la plateforme. Commission : 5% de la réservation.",
+    commission: "5% de la réservation",
+    clicks: 23,
+    conversions: 8,
     color: "bg-blue-500/20 text-blue-400",
   },
   {
     label: "Amener un bien",
     url: `edome.world/ref/bien/${REFERRAL_ID}`,
-    description: "Recommandez un bien specifique et touchez une commission sur la transaction.",
-    clicks: 156,
-    conversions: 9,
+    description: "Recommandez un bien spécifique et touchez une commission sur la transaction. Commission : 2% de la vente.",
+    commission: "2% de la vente",
+    clicks: 23,
+    conversions: 8,
     color: "bg-emerald-500/20 text-emerald-400",
   },
 ];
 
 const APPORT_TYPES = [
-  { title: "Bien / Mandat", desc: "Apportez un bien immobilier ou un mandat de gestion", icon: "🏠", commission: "2-5%" },
-  { title: "Client qualifie", desc: "Presentez un acheteur ou locataire qualifie", icon: "👤", commission: "1-3%" },
-  { title: "Prestataire", desc: "Recommandez un photographe, architecte, notaire...", icon: "📷", commission: "100-500 CHF" },
-  { title: "Partenariat local", desc: "Connectez E-Dome avec un acteur local", icon: "🤝", commission: "Variable" },
-  { title: "Audience ciblee", desc: "Amenez du trafic qualifie via votre reseau", icon: "📢", commission: "CPA" },
-  { title: "Parrainage reseau", desc: "Parrainez d'autres apporteurs d'affaires", icon: "🔗", commission: "10% indirect" },
+  { title: "Amener un hôte", desc: "Invitez un propriétaire à publier ses biens sur E-Dome", icon: "\uD83C\uDFE0", commission: "100 CHF / hôte activé" },
+  { title: "Amener un client", desc: "Présentez un acheteur ou locataire qualifié", icon: "\uD83D\uDC64", commission: "5% de la réservation" },
+  { title: "Amener un bien", desc: "Recommandez un bien spécifique pour la vente", icon: "\uD83C\uDFD7\uFE0F", commission: "2% de la vente" },
+  { title: "Prestataire", desc: "Recommandez un photographe, architecte, notaire...", icon: "\uD83D\uDCF7", commission: "100-500 CHF" },
+  { title: "Partenariat local", desc: "Connectez E-Dome avec un acteur local", icon: "\uD83E\uDD1D", commission: "Variable" },
+  { title: "Parrainage réseau", desc: "Parrainez d'autres apporteurs d'affaires", icon: "\uD83D\uDD17", commission: "10% indirect" },
 ];
 
 const MOCK_APPORTS = [
-  { id: "A-001", type: "Client qualifie", ref: "Marc Dupont", date: "2026-03-15", status: "converti", commission: 1500 },
-  { id: "A-002", type: "Bien / Mandat", ref: "Villa Montreux", date: "2026-03-10", status: "en_cours", commission: 0 },
-  { id: "A-003", type: "Prestataire", ref: "Photo Pro Sarl", date: "2026-02-28", status: "converti", commission: 300 },
-  { id: "A-004", type: "Client qualifie", ref: "Sophie Meier", date: "2026-02-20", status: "expire", commission: 0 },
-  { id: "A-005", type: "Partenariat local", ref: "Agence Riviera", date: "2026-02-15", status: "converti", commission: 2200 },
-  { id: "A-006", type: "Audience ciblee", ref: "Campagne LinkedIn", date: "2026-01-30", status: "converti", commission: 800 },
+  { id: "A-001", type: "Amener un hôte", ref: "Marc Dupont", date: "2026-03-15", status: "converti", commission: 100 },
+  { id: "A-002", type: "Amener un bien", ref: "Villa Montreux", date: "2026-03-10", status: "en_cours", commission: 0 },
+  { id: "A-003", type: "Amener un client", ref: "Sophie Meier", date: "2026-02-28", status: "converti", commission: 450 },
+  { id: "A-004", type: "Amener un hôte", ref: "Pierre Blanc", date: "2026-02-20", status: "converti", commission: 100 },
+  { id: "A-005", type: "Amener un bien", ref: "Appartement Lausanne", date: "2026-02-15", status: "converti", commission: 1400 },
+  { id: "A-006", type: "Amener un client", ref: "Nadia Schmid", date: "2026-01-30", status: "converti", commission: 350 },
 ];
 
 const MOCK_VERSEMENTS = [
-  { id: "V-001", date: "2026-03-01", montant: 4800, methode: "Virement IBAN", statut: "verse" },
-  { id: "V-002", date: "2026-02-01", montant: 3200, methode: "Virement IBAN", statut: "verse" },
-  { id: "V-003", date: "2026-01-01", montant: 1500, methode: "Virement IBAN", statut: "verse" },
+  { id: "V-001", date: "2026-03-01", montant: 1400, methode: "Virement IBAN", statut: "verse" },
+  { id: "V-002", date: "2026-02-01", montant: 650, methode: "Virement IBAN", statut: "verse" },
 ];
 
 const LEADERBOARD = [
@@ -146,6 +148,9 @@ export default function ApporteursPage() {
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${link.color}`}>{link.label}</span>
             </div>
             <p className="text-sm text-[var(--text-secondary)]">{link.description}</p>
+            <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#C4956A]/20 text-[#C4956A]">
+              {link.commission}
+            </span>
             <div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
               <span className="text-xs text-[var(--text-muted)] truncate flex-1">{link.url}</span>
             </div>
