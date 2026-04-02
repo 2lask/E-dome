@@ -71,12 +71,13 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
     ];
     const hoursAgo = (i + 1) * 3 + Math.floor(Math.random() * 10);
     const date = new Date(Date.now() - hoursAgo * 3600000).toISOString();
+    const isReel = i % 5 === 2; // Every 5th post (index 2) is a reel
     return {
       id,
       author: user,
       content: contents[i % contents.length],
-      media: mediaOptions[i % mediaOptions.length],
-      type: "post" as const,
+      media: isReel ? ["youtube:_DtWLPqqnwU"] : mediaOptions[i % mediaOptions.length],
+      type: isReel ? "reel" as const : "post" as const,
       likes: Math.floor(Math.random() * 500) + 10,
       comments: [
         {
@@ -697,7 +698,14 @@ export default function FeedPage() {
                   >
                     {post.media.map((src, mi) => (
                       <div key={mi} className="relative aspect-video bg-[var(--background)]">
-                        {src.includes("video") ? (
+                        {src.startsWith("youtube:") ? (
+                          <iframe
+                            className="w-full h-full"
+                            src={`https://www.youtube.com/embed/${src.replace("youtube:", "")}`}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        ) : src.includes("video") ? (
                           <div className="w-full h-full flex items-center justify-center">
                             <video src={src} className="w-full h-full object-cover" />
                             <button className="absolute inset-0 flex items-center justify-center bg-black/30">

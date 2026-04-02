@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft, Heart, Share2, Star, MapPin, Bed, Bath, Maximize,
-  ChevronLeft, ChevronRight, X, Play, Pause, Printer,
+  ChevronLeft, ChevronRight, X, Printer,
   Calendar as CalendarIcon, ChevronDown, ChevronUp,
   TrendingUp, BarChart3, Shield, Check, Send, Flag,
   Facebook, Mail, Copy, Phone, MessageCircle, Users,
@@ -109,8 +109,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   // Description
   const [descExpanded, setDescExpanded] = useState(false);
 
-  // Video
-  const [videoPlaying, setVideoPlaying] = useState(false);
+  // Video (YouTube embed — no local state needed)
 
   // Investment simulator
   const [simApport, setSimApport] = useState(0);
@@ -563,23 +562,13 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           {property.videos && property.videos.length > 0 && property.videos.some((v) => v && !v.includes("example.com")) && (
             <div className="mb-8">
               <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">Visite virtuelle</h2>
-              <div className="relative aspect-video rounded-xl overflow-hidden bg-[var(--card)] border border-[var(--card-border)]">
-                <video
-                  src={property.videos[0]}
-                  className="w-full h-full object-cover"
-                  controls={videoPlaying}
-                  poster={property.images[0]}
+              <div className="relative rounded-xl overflow-hidden bg-[var(--card)] border border-[var(--card-border)]">
+                <iframe
+                  className="w-full aspect-video rounded-xl"
+                  src="https://www.youtube.com/embed/FqjDgXlE2nQ"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
                 />
-                {!videoPlaying && (
-                  <button
-                    onClick={() => setVideoPlaying(true)}
-                    className="absolute inset-0 flex items-center justify-center bg-black/40"
-                  >
-                    <div className="w-16 h-16 rounded-full bg-[#C4956A] flex items-center justify-center">
-                      <Play className="w-7 h-7 text-white ml-1" />
-                    </div>
-                  </button>
-                )}
               </div>
             </div>
           )}

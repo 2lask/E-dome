@@ -32,6 +32,9 @@ interface PublishForm {
   etatGeneral: string;
   potentielPlusValue: number;
   tauxOccupation: number;
+  // Apporteurs
+  autoriserApporteurs: boolean;
+  commissionApporteur: number;
   // Options
   optionMiseEnAvant: boolean;
   optionPhotosPro: boolean;
@@ -76,6 +79,7 @@ const emptyForm: PublishForm = {
   photos: [], video: "", equipements: [], documents: [],
   rendementBrut: 0, dpe: "C", roi5ans: 0, roi10ans: 0, chargesAnnuelles: 0,
   anneeConstruction: 2000, etatGeneral: "Bon", potentielPlusValue: 0, tauxOccupation: 0,
+  autoriserApporteurs: true, commissionApporteur: 15,
   optionMiseEnAvant: false, optionPhotosPro: false, optionVisite3D: false, termsAccepted: false,
 };
 
@@ -96,7 +100,8 @@ export default function PublierPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const isVente = form.transactionType === "vente";
-  const totalSteps = isVente ? 5 : 4;
+  const totalSteps = isVente ? 7 : 6;
+  const [toastMsg, setToastMsg] = useState("");
 
   // Load form + drafts
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -167,7 +172,9 @@ export default function PublierPage() {
 
   const handlePublish = () => {
     setShowConfetti(true);
-    setTimeout(() => { setPublished(true); try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ } }, 1500);
+    setToastMsg("Bien publie avec succes ! Il est maintenant visible dans l'Explorer. (demonstration)");
+    setTimeout(() => { setPublished(true); try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ } }, 2500);
+    setTimeout(() => setToastMsg(""), 5000);
   };
 
   /* ── Published success ──────────────────────────────────────────────── */
@@ -203,8 +210,8 @@ export default function PublierPage() {
   /* ── Step labels ─────────────────────────────────────────────────────── */
 
   const stepLabels = isVente
-    ? ["Type & Adresse", "Details", "Medias", "Analytics", "Options & Publication"]
-    : ["Type & Adresse", "Details", "Medias", "Options & Publication"];
+    ? ["Type & Adresse", "Details", "Medias", "Analytics", "Equipements", "Apporteurs", "Options & Publication"]
+    : ["Type & Adresse", "Details", "Medias", "Equipements", "Apporteurs", "Options & Publication"];
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -343,18 +350,6 @@ export default function PublierPage() {
               <input className={inputCls} placeholder="https://youtube.com/..." value={form.video} onChange={(e) => update("video", e.target.value)} />
             </div>
 
-            {/* Equipements */}
-            <div>
-              <label className={labelCls}>Equipements</label>
-              <div className="flex flex-wrap gap-2">
-                {EQUIPEMENTS.map((eq) => (
-                  <button key={eq} onClick={() => toggleEquipement(eq)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${form.equipements.includes(eq) ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
-                    {eq}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Documents */}
             <div>
               <label className={labelCls}>Documents (URLs)</label>
@@ -372,12 +367,29 @@ export default function PublierPage() {
 
             <div className="flex justify-between">
               <button onClick={() => setStep(2)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(isVente ? 4 : totalSteps)} className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(4)} className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
 
-        {/* ── Step 4: Analytics (vente only) ──────────────────────────── */}
+        {/* ── Step 4: Equipements (non-vente) or Analytics (vente) ──── */}
+        {step === 4 && !isVente && (
+          <div className="space-y-5 animate-fade-in">
+            <h2 className="text-xl font-semibold">Equipements</h2>
+            <div className="flex flex-wrap gap-2">
+              {EQUIPEMENTS.map((eq) => (
+                <button key={eq} onClick={() => toggleEquipement(eq)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${form.equipements.includes(eq) ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
+                  {eq}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-between">
+              <button onClick={() => setStep(3)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
+              <button onClick={() => setStep(5)} className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
+            </div>
+          </div>
+        )}
+
         {step === 4 && isVente && (
           <div className="space-y-5 animate-fade-in">
             <h2 className="text-xl font-semibold">Donnees analytiques</h2>
@@ -409,6 +421,78 @@ export default function PublierPage() {
             <div className="flex justify-between">
               <button onClick={() => setStep(3)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
               <button onClick={() => setStep(5)} className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 5: Equipements (vente path) ───────────────────────── */}
+        {step === 5 && isVente && (
+          <div className="space-y-5 animate-fade-in">
+            <h2 className="text-xl font-semibold">Equipements</h2>
+            <div className="flex flex-wrap gap-2">
+              {EQUIPEMENTS.map((eq) => (
+                <button key={eq} onClick={() => toggleEquipement(eq)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${form.equipements.includes(eq) ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
+                  {eq}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-between">
+              <button onClick={() => setStep(4)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
+              <button onClick={() => setStep(6)} className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 5/6: Apporteurs (non-vente=5, vente=6) ────────────── */}
+        {step === (isVente ? 6 : 5) && (
+          <div className="space-y-6 animate-fade-in">
+            <h2 className="text-xl font-semibold">Apporteurs d&apos;affaires</h2>
+            <p className="text-sm text-[var(--text-secondary)]">Permettez aux apporteurs d&apos;affaires de promouvoir votre bien et recevez plus de visibilite.</p>
+
+            {/* Toggle autoriser */}
+            <button
+              onClick={() => update("autoriserApporteurs", !form.autoriserApporteurs)}
+              className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form.autoriserApporteurs ? "bg-[#C4956A]/10 border-[#C4956A]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[#C4956A]/40"}`}
+            >
+              <div className="text-left">
+                <h3 className="font-medium">Autoriser les apporteurs</h3>
+                <p className="text-xs text-[var(--text-muted)]">Les apporteurs pourront partager votre annonce via leur lien personnel</p>
+              </div>
+              <div className={`w-12 h-6 rounded-full transition-colors relative ${form.autoriserApporteurs ? "bg-[#C4956A]" : "bg-[var(--card-border)]"}`}>
+                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${form.autoriserApporteurs ? "translate-x-6" : "translate-x-0.5"}`} />
+              </div>
+            </button>
+
+            {/* Commission slider */}
+            {form.autoriserApporteurs && (
+              <div className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-[var(--text-secondary)]">Commission apporteur</label>
+                  <span className="text-lg font-bold text-[#C4956A]">{form.commissionApporteur}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={5}
+                  max={15}
+                  step={1}
+                  value={form.commissionApporteur}
+                  onChange={(e) => update("commissionApporteur", Number(e.target.value))}
+                  className="w-full accent-[#C4956A]"
+                />
+                <div className="flex justify-between text-xs text-[var(--text-muted)]">
+                  <span>5%</span>
+                  <span>10%</span>
+                  <span>15%</span>
+                </div>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Cette commission est prelevee sur la part plateforme E-Dome. Aucun cout supplementaire pour vous.
+                </p>
+              </div>
+            )}
+
+            <div className="flex justify-between">
+              <button onClick={() => setStep(isVente ? 5 : 4)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
+              <button onClick={() => setStep(totalSteps)} className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -465,11 +549,18 @@ export default function PublierPage() {
             </label>
 
             <div className="flex justify-between">
-              <button onClick={() => setStep(isVente ? 4 : 3)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
+              <button onClick={() => setStep(isVente ? 6 : 5)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
               <button onClick={handlePublish} disabled={!form.termsAccepted} className={`px-8 py-3 rounded-xl font-medium transition-colors ${form.termsAccepted ? "bg-[#C4956A] hover:bg-[#b8845a] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}>
                 Publier le bien
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Toast */}
+        {toastMsg && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-green-600 text-white rounded-xl shadow-lg text-sm font-medium animate-fade-in">
+            {toastMsg}
           </div>
         )}
       </div>

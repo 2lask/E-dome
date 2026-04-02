@@ -76,8 +76,14 @@ export default function ConfidentialitePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
+      {/* Demo disclaimer */}
+      <div className="p-4 rounded-xl border border-[#C4956A]/40 bg-[#C4956A]/5 text-xs text-[var(--text-secondary)] leading-relaxed">
+        <span className="mr-1">&#9888;&#65039;</span>
+        Ce document est fourni a titre indicatif dans le cadre de la maquette de demonstration E-Dome. Il ne constitue pas un document legal contraignant.
+      </div>
+
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Politique de Confidentialité</h1>
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">Politique de Confidentialite</h1>
         <p className="text-[var(--text-secondary)]">Dernière mise à jour : 1er janvier 2026</p>
       </div>
 

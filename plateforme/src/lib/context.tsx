@@ -50,7 +50,7 @@ const AppContext = createContext<AppContextValue | null>(null);
 const DEFAULT_ROLE: Role = "client";
 const DEFAULT_ROLES: Role[] = ["client", "hote", "formateur", "apporteur", "investisseur", "agence"];
 const DEFAULT_CURRENCY: Currency = "CHF";
-const DEFAULT_FAVORITES: string[] = ["p1", "p3", "p4"];
+const DEFAULT_FAVORITES: string[] = ["prop-002", "prop-003", "prop-005", "prop-009"];
 const STORAGE_PREFIX = "edome_";
 
 // ─── Provider ───────────────────────────────────────────────────────────────

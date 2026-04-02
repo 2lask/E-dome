@@ -170,7 +170,10 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
           </div>
         </div>
         {/* Play button */}
-        <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
+        <button
+          onClick={() => setPlayingLesson(formation.modules[0]?.lessons[0]?.id || "preview")}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+        >
           <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
         </button>
       </div>
@@ -250,13 +253,14 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
 
             {/* ── Video player area ─────────────────────────────────────── */}
             {playingLesson && (
-              <div className="bg-black rounded-2xl aspect-video flex items-center justify-center relative">
-                <div className="text-center text-white/60">
-                  <svg className="w-16 h-16 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                  <p className="text-sm">Lecteur vidéo</p>
-                  <p className="text-xs text-white/40 mt-1">{formation.modules.flatMap(m => m.lessons).find(l => l.id === playingLesson)?.title}</p>
-                </div>
-                <button onClick={() => setPlayingLesson(null)} className="absolute top-3 right-3 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20">
+              <div className="bg-black rounded-2xl overflow-hidden relative">
+                <iframe
+                  className="w-full aspect-video rounded-2xl"
+                  src="https://www.youtube.com/embed/E0dyHPjiJDo?autoplay=1"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+                <button onClick={() => setPlayingLesson(null)} className="absolute top-3 right-3 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 z-10">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>

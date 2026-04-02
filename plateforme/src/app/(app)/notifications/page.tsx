@@ -8,16 +8,16 @@ import { formatDate } from "@/lib/utils";
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
 const initialNotifications: Notification[] = [
-  { id: "n1", type: "reservation", title: "Nouvelle réservation", message: "Sophie Martin a réservé le Chalet Alpin du 10 au 17 juillet.", read: false, createdAt: "2026-04-01T09:00:00", href: "/reservations" },
-  { id: "n2", type: "message", title: "Nouveau message", message: "Jean Dupont vous a envoyé un message.", read: false, createdAt: "2026-04-01T08:30:00", href: "/messages" },
-  { id: "n3", type: "payment", title: "Paiement reçu", message: "Vous avez reçu un paiement de 1'200 CHF.", read: false, createdAt: "2026-03-31T16:00:00", href: "/dashboard" },
-  { id: "n4", type: "review", title: "Nouvel avis", message: "Marie Leroy a laissé un avis 5 étoiles.", read: true, createdAt: "2026-03-31T10:00:00", href: "/profil" },
-  { id: "n5", type: "follow", title: "Nouvel abonné", message: "Paul Moreau vous suit maintenant.", read: true, createdAt: "2026-03-30T14:00:00", href: "/profil" },
-  { id: "n6", type: "system", title: "Mise à jour", message: "Nouvelle fonctionnalité : export CSV disponible dans le dashboard.", read: true, createdAt: "2026-03-30T09:00:00", href: "/dashboard" },
-  { id: "n7", type: "reservation", title: "Réservation confirmée", message: "Votre réservation #R-2024-005 a été confirmée.", read: true, createdAt: "2026-03-29T11:00:00", href: "/reservations" },
-  { id: "n8", type: "message", title: "Nouveau message", message: "Claire Richard vous a envoyé un message.", read: false, createdAt: "2026-03-29T08:00:00", href: "/messages" },
-  { id: "n9", type: "system", title: "Maintenance prévue", message: "Une maintenance est prévue le 5 avril de 2h à 4h.", read: true, createdAt: "2026-03-28T15:00:00", href: "/dashboard" },
-  { id: "n10", type: "reservation", title: "Annulation", message: "La réservation #R-2024-042 a été annulée.", read: true, createdAt: "2026-03-27T10:00:00", href: "/reservations" },
+  { id: "n1", type: "review", title: "Sophie Martin a aime votre post", message: "Sophie Martin a aime votre publication sur le Chalet Verbier.", read: false, createdAt: "2026-04-02T09:30:00", href: "/profil" },
+  { id: "n2", type: "message", title: "Marc Dupont a commente votre publication", message: "Marc Dupont : \"Superbe bien, je suis interesse !\"", read: false, createdAt: "2026-04-02T09:00:00", href: "/messages" },
+  { id: "n3", type: "reservation", title: "Nouvelle demande de reservation", message: "Nouvelle demande de reservation de Jean-Marc D. pour l'Appartement Montreux du 15 au 22 juillet.", read: false, createdAt: "2026-04-02T08:00:00", href: "/reservations" },
+  { id: "n4", type: "payment", title: "Commission recue : 84 CHF", message: "Vous avez recu une commission de 84 CHF suite a la reservation generee via votre lien apporteur.", read: false, createdAt: "2026-04-02T07:00:00", href: "/dashboard" },
+  { id: "n5", type: "follow", title: "Thomas Weber vous suit maintenant", message: "Thomas Weber a commence a vous suivre.", read: false, createdAt: "2026-04-02T05:00:00", href: "/profil" },
+  { id: "n6", type: "reservation", title: "Reservation confirmee", message: "Votre reservation #R-2026-018 a ete confirmee par l'hote.", read: true, createdAt: "2026-04-01T14:00:00", href: "/reservations" },
+  { id: "n7", type: "system", title: "Mise a jour plateforme", message: "Nouvelle fonctionnalite : export CSV disponible dans le dashboard.", read: true, createdAt: "2026-04-01T09:00:00", href: "/dashboard" },
+  { id: "n8", type: "message", title: "Nouveau message", message: "Claire Richard vous a envoye un message concernant le Penthouse Zurich.", read: true, createdAt: "2026-03-31T16:00:00", href: "/messages" },
+  { id: "n9", type: "payment", title: "Paiement recu", message: "Vous avez recu un paiement de 1'200 CHF pour la location du Studio Lausanne.", read: true, createdAt: "2026-03-31T10:00:00", href: "/dashboard" },
+  { id: "n10", type: "system", title: "Verification d'identite validee", message: "Votre piece d'identite a ete verifiee avec succes. Votre profil est desormais certifie.", read: true, createdAt: "2026-03-30T11:00:00", href: "/profil" },
 ];
 
 type FilterType = "all" | "reservation" | "message" | "follow" | "review" | "system" | "payment";
@@ -84,12 +84,12 @@ export default function NotificationsPage() {
   );
 
   const typeIcons: Record<Notification["type"], string> = {
-    message: "💬",
-    reservation: "📋",
-    review: "⭐",
-    follow: "👤",
-    system: "🔔",
-    payment: "💰",
+    message: "\u{1F4AC}",
+    reservation: "\u{1F4C5}",
+    review: "\u{2764}\u{FE0F}",
+    follow: "\u{1F464}",
+    system: "\u{1F514}",
+    payment: "\u{1F4B0}",
   };
 
   return (

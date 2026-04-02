@@ -12,12 +12,12 @@ const UPCOMING_LIVES = [
 ];
 
 const PAST_REPLAYS = [
-  { id: "R1", titre: "Les tendances du marché Q1 2026", speaker: "Jean-Pierre Dumont", date: "20 mars 2026", vues: 1240, duree: "1h12" },
-  { id: "R2", titre: "Comment fixer le bon prix de location", speaker: "Nadia Silva", date: "15 mars 2026", vues: 890, duree: "45min" },
-  { id: "R3", titre: "Fiscalité immobilière en Suisse", speaker: "Patrick Leroy", date: "10 mars 2026", vues: 2100, duree: "1h30" },
-  { id: "R4", titre: "Home staging : avant/après", speaker: "Amina Koné", date: "5 mars 2026", vues: 670, duree: "38min" },
-  { id: "R5", titre: "Droit du bail : vos obligations", speaker: "Thomas Roth", date: "28 février 2026", vues: 1560, duree: "55min" },
-  { id: "R6", titre: "Photographie immobilière pro", speaker: "Amina Koné", date: "20 février 2026", vues: 780, duree: "42min" },
+  { id: "R1", titre: "Les tendances du marché Q1 2026", speaker: "Jean-Pierre Dumont", date: "20 mars 2026", vues: 1240, duree: "1h12", youtubeId: "FqjDgXlE2nQ" },
+  { id: "R2", titre: "Comment fixer le bon prix de location", speaker: "Nadia Silva", date: "15 mars 2026", vues: 890, duree: "45min", youtubeId: "E0dyHPjiJDo" },
+  { id: "R3", titre: "Fiscalité immobilière en Suisse", speaker: "Patrick Leroy", date: "10 mars 2026", vues: 2100, duree: "1h30", youtubeId: "_DtWLPqqnwU" },
+  { id: "R4", titre: "Home staging : avant/après", speaker: "Amina Koné", date: "5 mars 2026", vues: 670, duree: "38min", youtubeId: "p5Kk_HBASHg" },
+  { id: "R5", titre: "Droit du bail : vos obligations", speaker: "Thomas Roth", date: "28 février 2026", vues: 1560, duree: "55min", youtubeId: "NBjn9FkvpCQ" },
+  { id: "R6", titre: "Photographie immobilière pro", speaker: "Amina Koné", date: "20 février 2026", vues: 780, duree: "42min", youtubeId: "FqjDgXlE2nQ" },
 ];
 
 const MOCK_CHAT = [
@@ -240,11 +240,13 @@ export default function LivePage() {
               Fermer
             </button>
           </div>
-          <div className="aspect-video rounded-xl bg-gray-900 flex items-center justify-center">
-            <div className="text-center space-y-2">
-              <div className="text-4xl">▶</div>
-              <p className="text-white/50">Lecture du replay — {replayItem.duree}</p>
-            </div>
+          <div className="rounded-xl overflow-hidden bg-gray-900">
+            <iframe
+              className="w-full aspect-video rounded-xl"
+              src={`https://www.youtube.com/embed/${replayItem.youtubeId}?autoplay=1`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
           <p className="text-sm text-[var(--text-secondary)]">
             Par {replayItem.speaker} — {replayItem.date} — {replayItem.vues.toLocaleString("fr-CH")} vues
