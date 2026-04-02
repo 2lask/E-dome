@@ -187,6 +187,7 @@ export default function FeedPage() {
   const [replyTo, setReplyTo] = useState<Record<string, string>>({});
   const [shareMenuPost, setShareMenuPost] = useState<string | null>(null);
   const [moreMenuPost, setMoreMenuPost] = useState<string | null>(null);
+  const [feedToast, setFeedToast] = useState<string | null>(null);
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
 
@@ -304,6 +305,8 @@ export default function FeedPage() {
     setNewPostContent("");
     setNewPostLocation("");
     setShowLocationInput(false);
+    setFeedToast("Publication publiée !");
+    setTimeout(() => setFeedToast(null), 3000);
   };
 
   const deletePost = (postId: string) => {
@@ -349,6 +352,12 @@ export default function FeedPage() {
 
   return (
     <div className="max-w-3xl mx-auto relative">
+      {/* Toast */}
+      {feedToast && (
+        <div className="fixed top-6 right-6 z-[60] px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
+          ✓ {feedToast}
+        </div>
+      )}
       {/* Stories bar */}
       <div className="mb-6 overflow-x-auto no-scrollbar">
         <div className="flex gap-4 pb-2">

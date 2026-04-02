@@ -106,7 +106,7 @@ const mockUsers: Record<string, User> = {
     avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop",
     city: "Marrakech", country: "Maroc", roles: ["agence"], activeRole: "agence",
     stats: { followers: 1500, following: 320, properties: 12, reviews: 45, rating: 4.8, transactions: 60, revenue: 280000 },
-    bio: "Agence spécialisée dans l'immobilier de prestige au Maroc.",
+    bio: "Agence spécialisée dans l'immobilier de prestige au Maroc. 10 ans d'expérience en gestion de riads et villas de luxe.",
     languages: ["Français", "Arabe", "Anglais"],
     certifications: ["Agence agréée FNPI"],
     responseTime: "< 1 heure",

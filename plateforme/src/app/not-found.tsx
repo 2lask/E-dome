@@ -15,16 +15,28 @@ export default function NotFound() {
       <p style={{ color: "var(--text-muted)" }}>
         La page que vous recherchez n&apos;existe pas ou a été déplacée.
       </p>
-      <Link
-        href="/feed"
-        className="mt-4 px-6 py-3 rounded-xl font-medium transition-colors"
-        style={{
-          background: "var(--gold)",
-          color: "#000",
-        }}
-      >
-        Retour au feed
-      </Link>
+      <div className="mt-4 flex gap-4">
+        <Link
+          href="/feed"
+          className="px-6 py-3 rounded-xl font-medium transition-colors"
+          style={{
+            background: "var(--gold)",
+            color: "#000",
+          }}
+        >
+          Retour au feed
+        </Link>
+        <Link
+          href="/explorer"
+          className="px-6 py-3 rounded-xl font-medium transition-colors border"
+          style={{
+            borderColor: "var(--gold)",
+            color: "var(--gold)",
+          }}
+        >
+          Explorer
+        </Link>
+      </div>
     </div>
   );
 }
