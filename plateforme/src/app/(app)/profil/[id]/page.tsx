@@ -86,7 +86,7 @@ const mockUsers: Record<string, User> = {
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
     city: "Genève", country: "Suisse", roles: ["hote", "courtier"], activeRole: "hote",
     stats: { followers: 890, following: 210, properties: 5, reviews: 42, rating: 4.9, transactions: 89, revenue: 120000 },
-    bio: "Agente immobilière passionnée avec 10 ans d'expérience à Genève et environs. Spécialisée dans les biens de luxe.",
+    bio: "Courtière immobilière indépendante avec 12 ans d'expérience sur l'arc lémanique. Spécialisée dans les biens de standing et l'accompagnement personnalisé de chaque client.",
     languages: ["Français", "Anglais", "Italien"],
     certifications: ["Courtière certifiée USPI", "Experte en estimation"],
     responseTime: "< 30 min",
@@ -294,6 +294,7 @@ const mockReviews: Record<string, { id: string; author: string; rating: number; 
   u1: [
     { id: "r10", author: "Marc T.", rating: 5, text: "Sophie est incroyable, très professionnelle.", date: "2026-03-18", reply: null },
     { id: "r11", author: "Laura K.", rating: 5, text: "Service impeccable du début à la fin.", date: "2026-03-10", reply: "Merci beaucoup Laura !" },
+    { id: "r12", author: "Jean-Pierre V.", rating: 5, text: "Courtière de confiance, elle connaît parfaitement le marché lémanique. Vente conclue en 3 semaines.", date: "2026-02-25", reply: "Merci Jean-Pierre, ravie d'avoir pu vous accompagner !" },
   ],
   u2: [
     { id: "r20", author: "Pierre N.", rating: 5, text: "Marc est un excellent formateur, ses analyses financières sont très pertinentes.", date: "2026-03-12", reply: null },

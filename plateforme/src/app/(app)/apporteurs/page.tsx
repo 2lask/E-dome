@@ -13,8 +13,9 @@ const REFERRAL_LINKS = [
     url: `edome.world/ref/hote/${REFERRAL_ID}`,
     description: "Partagez ce lien pour inviter un propriétaire à publier ses biens sur E-Dome. Commission : 100 CHF par hôte activé.",
     commission: "100 CHF / hôte activé",
-    clicks: 23,
-    conversions: 8,
+    clicks: 8,
+    conversions: 2,
+    earned: 200,
     color: "bg-amber-500/20 text-amber-400",
   },
   {
@@ -22,8 +23,9 @@ const REFERRAL_LINKS = [
     url: `edome.world/ref/client/${REFERRAL_ID}`,
     description: "Invitez des locataires ou acheteurs potentiels à rejoindre la plateforme. Commission : 5% de la réservation.",
     commission: "5% de la réservation",
-    clicks: 23,
-    conversions: 8,
+    clicks: 12,
+    conversions: 5,
+    earned: 1800,
     color: "bg-blue-500/20 text-blue-400",
   },
   {
@@ -31,8 +33,9 @@ const REFERRAL_LINKS = [
     url: `edome.world/ref/bien/${REFERRAL_ID}`,
     description: "Recommandez un bien spécifique et touchez une commission sur la transaction. Commission : 2% de la vente.",
     commission: "2% de la vente",
-    clicks: 23,
-    conversions: 8,
+    clicks: 3,
+    conversions: 1,
+    earned: 400,
     color: "bg-emerald-500/20 text-emerald-400",
   },
 ];
@@ -145,7 +148,7 @@ export default function ApporteursPage() {
                 onClick={() => handleCopy(link.url, idx)}
                 className="flex-1 px-3 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
               >
-                {copiedIdx === idx ? "Copié !" : "Copier"}
+                {copiedIdx === idx ? "\u2713 Copié" : "Copier"}
               </button>
               <button
                 onClick={() => shareWhatsApp(link.url)}
@@ -178,7 +181,8 @@ export default function ApporteursPage() {
             )}
             <div className="flex justify-between text-sm">
               <span className="text-[var(--text-muted)]">Clics: <span className="text-[var(--foreground)] font-medium">{link.clicks}</span></span>
-              <span className="text-[var(--text-muted)]">Conversions: <span className="text-[var(--foreground)] font-medium">{link.conversions}</span></span>
+              <span className="text-[var(--text-muted)]">Conv.: <span className="text-[var(--foreground)] font-medium">{link.conversions}</span></span>
+              <span className="text-[var(--text-muted)]">Gagné: <span className="text-emerald-400 font-medium">{formatPrice(link.earned)}</span></span>
             </div>
           </div>
         ))}

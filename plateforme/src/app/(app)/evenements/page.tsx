@@ -170,7 +170,7 @@ export default function EvenementsPage() {
                       <span className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium ${TYPE_COLORS[ev.type] || "bg-gray-500/20 text-gray-400"}`}>{ev.type}</span>
                     </div>
                     <div className="p-4 space-y-3">
-                      <h3 className="font-semibold line-clamp-2">{ev.titre}</h3>
+                      <a href={`/evenements/${ev.id}`} className="font-semibold line-clamp-2 hover:text-[#C4956A] transition-colors block">{ev.titre}</a>
                       <div className="space-y-1 text-sm text-[var(--text-secondary)]">
                         <div className="flex items-center gap-2">
                           <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>

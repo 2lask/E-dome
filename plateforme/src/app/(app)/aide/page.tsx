@@ -126,7 +126,7 @@ export default function AidePage() {
       {/* FAQ Accordion */}
       {filteredFaqs.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-[var(--text-muted)]">Aucun resultat pour votre recherche.</p>
+          <p className="text-[var(--text-muted)]">Aucun résultat pour votre recherche.</p>
         </div>
       ) : (
         <div className="space-y-8">

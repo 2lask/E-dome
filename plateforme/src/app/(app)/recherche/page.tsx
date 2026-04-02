@@ -10,7 +10,7 @@ const ALL_RESULTS = {
   biens: [
     { id: "B1", titre: "Appartement 3p Lausanne", prix: 450000, type: "Appartement", ville: "Lausanne", pays: "Suisse" },
     { id: "B2", titre: "Villa Montreux vue lac", prix: 1250000, type: "Villa", ville: "Montreux", pays: "Suisse" },
-    { id: "B3", titre: "Studio Geneve centre", prix: 285000, type: "Studio", ville: "Geneve", pays: "Suisse" },
+    { id: "B3", titre: "Studio Genève centre", prix: 285000, type: "Studio", ville: "Genève", pays: "Suisse" },
     { id: "B4", titre: "Chalet Verbier luxe", prix: 890000, type: "Chalet", ville: "Verbier", pays: "Suisse" },
     { id: "B5", titre: "Penthouse Zurich", prix: 2100000, type: "Penthouse", ville: "Zurich", pays: "Suisse" },
     { id: "B6", titre: "Loft Berne centre", prix: 520000, type: "Loft", ville: "Berne", pays: "Suisse" },
@@ -18,26 +18,26 @@ const ALL_RESULTS = {
     { id: "B8", titre: "Riad Marrakech", prix: 380000, type: "Riad", ville: "Marrakech", pays: "Maroc" },
   ],
   formations: [
-    { id: "F1", titre: "Investir dans l'immobilier", instructeur: "Marc Bonnard", prix: 299, niveau: "Debutant" },
-    { id: "F2", titre: "Photographie immobiliere", instructeur: "Amina Kone", prix: 199, niveau: "Intermediaire" },
-    { id: "F3", titre: "Droit du bail suisse", instructeur: "Thomas Roth", prix: 349, niveau: "Avance" },
-    { id: "F4", titre: "Home staging efficace", instructeur: "Laura Fischer", prix: 149, niveau: "Debutant" },
+    { id: "F1", titre: "Investir dans l'immobilier", instructeur: "Marc Bonnard", prix: 299, niveau: "Débutant" },
+    { id: "F2", titre: "Photographie immobilière", instructeur: "Amina Koné", prix: 199, niveau: "Intermédiaire" },
+    { id: "F3", titre: "Droit du bail suisse", instructeur: "Thomas Roth", prix: 349, niveau: "Avancé" },
+    { id: "F4", titre: "Home staging efficace", instructeur: "Laura Fischer", prix: 149, niveau: "Débutant" },
   ],
   utilisateurs: [
     { id: "U1", nom: "Marie Dupont", role: "Hote", ville: "Lausanne" },
-    { id: "U2", nom: "Jean Martin", role: "Client", ville: "Geneve" },
+    { id: "U2", nom: "Jean Martin", role: "Client", ville: "Genève" },
     { id: "U3", nom: "Sophie Meier", role: "Agence", ville: "Zurich" },
     { id: "U4", nom: "Leo Martin", role: "Apporteur", ville: "Montreux" },
     { id: "U5", nom: "Laura Fischer", role: "Investisseur", ville: "Berne" },
   ],
   evenements: [
-    { id: "E1", titre: "Salon de l'immobilier Geneve", date: "2026-05-15", lieu: "Palexpo, Geneve" },
+    { id: "E1", titre: "Salon de l'immobilier Genève", date: "2026-05-15", lieu: "Palexpo, Genève" },
     { id: "E2", titre: "Workshop investissement Lausanne", date: "2026-04-20", lieu: "SwissTech, Lausanne" },
     { id: "E3", titre: "Conference PropTech Zurich", date: "2026-06-10", lieu: "Zurich Convention Center" },
   ],
   services: [
-    { id: "S1", titre: "Estimation immobiliere", description: "Estimation professionnelle de votre bien", prix: 150 },
-    { id: "S2", titre: "Photographie immobiliere pro", description: "Seance photo HDR + drone", prix: 450 },
+    { id: "S1", titre: "Estimation immobilière", description: "Estimation professionnelle de votre bien", prix: 150 },
+    { id: "S2", titre: "Photographie immobilière pro", description: "Séance photo HDR + drone", prix: 450 },
     { id: "S3", titre: "Home staging virtuel", description: "Mise en scene 3D de votre bien", prix: 299 },
     { id: "S4", titre: "Accompagnement juridique", description: "Conseil juridique pour transactions", prix: 200 },
   ],
@@ -45,10 +45,10 @@ const ALL_RESULTS = {
 
 const POPULAR_SEARCHES = [
   "Villa Lausanne",
-  "Appartement Geneve",
+  "Appartement Genève",
   "Chalet Verbier",
   "Investissement immobilier",
-  "Location courte duree",
+  "Location courte durée",
   "Marrakech",
   "Studio Zurich",
   "Penthouse",
@@ -63,7 +63,7 @@ const CATEGORY_TABS: { key: CategoryKey; label: string }[] = [
   { key: "biens", label: "Biens" },
   { key: "profils", label: "Profils" },
   { key: "formations", label: "Formations" },
-  { key: "evenements", label: "Evenements" },
+  { key: "evenements", label: "Événements" },
   { key: "services", label: "Services" },
 ];
 
@@ -136,7 +136,7 @@ function SearchResults() {
         <div className="text-6xl">🔍</div>
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Rechercher sur E-Dome</h2>
         <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-          Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou evenements.
+          Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou événements.
         </p>
         <div className="max-w-lg mx-auto">
           <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-3">Recherches populaires</h3>
@@ -162,9 +162,9 @@ function SearchResults() {
       <div className="space-y-8">
         <div className="text-center py-16 space-y-4">
           <div className="text-6xl">😕</div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun resultat</h2>
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun résultat</h2>
           <p className="text-[var(--text-secondary)]">
-            Aucun resultat pour &laquo;{query}&raquo;. Essayez avec d&apos;autres termes.
+            Aucun résultat pour &laquo;{query}&raquo;. Essayez avec d&apos;autres termes.
           </p>
         </div>
         <div className="max-w-lg mx-auto text-center">
@@ -194,7 +194,7 @@ function SearchResults() {
   return (
     <div className="space-y-6">
       <p className="text-[var(--text-secondary)]">
-        {counts.tous} resultat{counts.tous > 1 ? "s" : ""} pour &laquo;<span className="text-[var(--foreground)] font-medium">{query}</span>&raquo;
+        {counts.tous} résultat{counts.tous > 1 ? "s" : ""} pour &laquo;<span className="text-[var(--foreground)] font-medium">{query}</span>&raquo;
       </p>
 
       {/* Category tabs */}
@@ -294,12 +294,12 @@ function SearchResults() {
       {showEvenements && (
         <section className="space-y-3 animate-fade-in">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">
-            Evenements <span className="text-sm text-[var(--text-muted)] font-normal">({results!.evenements.length})</span>
+            Événements <span className="text-sm text-[var(--text-muted)] font-normal">({results!.evenements.length})</span>
           </h2>
           <div className="space-y-2">
             {results!.evenements.map((e) => (
               <div key={e.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition cursor-pointer"
-                onClick={() => router.push("/evenements")}>
+                onClick={() => router.push(`/evenements/${e.id}`)}>
                 <h3 className="font-medium text-[var(--foreground)]">{e.titre}</h3>
                 <div className="flex items-center gap-4 mt-1 text-sm text-[var(--text-secondary)]">
                   <span>{e.date}</span>

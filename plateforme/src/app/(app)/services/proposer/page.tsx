@@ -87,11 +87,11 @@ export default function ProposerServicePage() {
         <div className="space-y-5">
           <div>
             <label className={labelCls}>Titre du service</label>
-            <input className={inputCls} placeholder="Ex: Photographie immobiliere professionnelle" value={form.titre} onChange={(e) => update("titre", e.target.value)} />
+            <input className={inputCls} placeholder="Ex: Photographie immobilière professionnelle" value={form.titre} onChange={(e) => update("titre", e.target.value)} />
           </div>
 
           <div>
-            <label className={labelCls}>Categorie</label>
+            <label className={labelCls}>Catégorie</label>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((c) => (
                 <button key={c} onClick={() => update("categorie", c)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${form.categorie === c ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
@@ -108,7 +108,7 @@ export default function ProposerServicePage() {
 
           <div>
             <label className={labelCls}>Zone d&apos;intervention</label>
-            <input className={inputCls} placeholder="Ex: Suisse romande, Geneve, Lausanne..." value={form.zone} onChange={(e) => update("zone", e.target.value)} />
+            <input className={inputCls} placeholder="Ex: Suisse romande, Genève, Lausanne..." value={form.zone} onChange={(e) => update("zone", e.target.value)} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
