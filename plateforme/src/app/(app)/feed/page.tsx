@@ -47,22 +47,23 @@ const MOCK_USERS: User[] = [
 ];
 
 const MOCK_STORIES = [
-  { id: "s1", user: MOCK_USERS[0], image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400", viewed: false },
-  { id: "s2", user: MOCK_USERS[1], image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400", viewed: false },
-  { id: "s3", user: MOCK_USERS[2], image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400", viewed: true },
-  { id: "s4", user: MOCK_USERS[3], image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400", viewed: false },
+  { id: "s1", user: MOCK_USERS[0], image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400", storyImage: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=1067&fit=crop", viewed: false },
+  { id: "s2", user: MOCK_USERS[1], image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400", storyImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=1067&fit=crop", viewed: false },
+  { id: "s3", user: MOCK_USERS[2], image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=400", storyImage: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=600&h=1067&fit=crop", viewed: true },
+  { id: "s4", user: MOCK_USERS[3], image: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=400", storyImage: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=600&h=1067&fit=crop", viewed: false },
 ];
 
 const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
   Array.from({ length: count }, (_, i) => {
-    const user = MOCK_USERS[i % MOCK_USERS.length];
+    // Avoid duplicate Sophie posts: index 4 uses Amira instead of cycling back to Sophie
+    const user = i % MOCK_USERS.length === 0 && i > 0 ? MOCK_USERS[2] : MOCK_USERS[i % MOCK_USERS.length];
     const id = `p${startId + i}`;
     const contents = [
       `Nouvelle villa exceptionnelle disponible en #location-courte-duree à ${user.city}! \n\nVue panoramique, piscine privée et finitions haut de gamme. Idéal pour un séjour de luxe. @${MOCK_USERS[(i + 1) % MOCK_USERS.length].firstName.toLowerCase()} qu'en penses-tu ? \n\n#immobilier #luxe #${user.city.toLowerCase()}`,
       `Le marché immobilier en ${user.country} continue de montrer des signes positifs. Les investissements dans le #luxe restent solides avec un rendement moyen de 6.2%. @${MOCK_USERS[(i + 2) % MOCK_USERS.length].firstName.toLowerCase()} intéressant non ? \n\n#investissement #immobilier #tendances`,
       `Visite exclusive de ce penthouse au cœur de ${user.city}. 280m², terrasse de 60m², vue à 360°. Un bien d'exception. \n\n#penthouse #immobilier #${user.city.toLowerCase()} #luxe`,
       `Formation sur la gestion locative optimisée. Apprenez à maximiser vos revenus tout en offrant un service 5 étoiles à vos locataires. \n\n#formation #gestionlocative #revenus`,
-      `Retour d'expérience : comment j'ai augmenté mon taux d'occupation de 65% à 92% en 3 mois grâce à E-Dome. Thread \n\n#AirbnbSuisse #LocationCourte #Conseils`,
+      `Nouveau riad disponible à la vente en Médina ! 200m², patio central, 4 suites, hammam privé. Rentabilité locative exceptionnelle : 9.5% brut. #riad #marrakech #investissement`,
     ];
     const mediaOptions = [
       ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800"],
@@ -143,8 +144,8 @@ const TRENDING_HASHTAGS = [
 ];
 
 const UPCOMING_EVENTS = [
-  { id: "e1", title: "Salon immobilier Genève", date: "15 avril 2026", location: "Palexpo, Genève" },
-  { id: "e2", title: "Webinar investissement", date: "22 avril 2026", location: "En ligne" },
+  { id: "e1", title: "Networking investisseurs romands", date: "5 mai 2026", location: "Hôtel Royal, Montreux" },
+  { id: "e2", title: "Webinaire : Optimiser son rendement locatif", date: "20 mai 2026", location: "En ligne" },
 ];
 
 const CURRENT_USER_ID = "u1";
@@ -399,12 +400,14 @@ export default function FeedPage() {
               {MOCK_STORIES[showStoryViewer].user.firstName} {MOCK_STORIES[showStoryViewer].user.lastName}
             </span>
           </div>
-          {/* Story image */}
-          <img
-            src={MOCK_STORIES[showStoryViewer].image}
-            alt=""
-            className="max-h-[80vh] max-w-full object-contain rounded-xl"
-          />
+          {/* Story image — immersive 9:16 */}
+          <div className="relative w-[340px] max-w-[90vw] rounded-2xl overflow-hidden" style={{ aspectRatio: "9/16" }}>
+            <img
+              src={MOCK_STORIES[showStoryViewer].storyImage}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       )}
 

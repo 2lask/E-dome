@@ -13,9 +13,9 @@ import { formatCount, timeAgo } from "@/lib/utils";
 const mockUsers: Record<string, User> = {
   "user-001": {
     id: "user-001", firstName: "Léo", lastName: "Martin", email: "leo.martin@edome.ch",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200",
     city: "Lausanne", country: "Suisse", roles: ["hote", "formateur", "apporteur"], activeRole: "hote",
-    stats: { followers: 2340, following: 812, properties: 14, reviews: 87, rating: 4.8, transactions: 52, revenue: 485000 },
+    stats: { followers: 2340, following: 812, properties: 4, reviews: 87, rating: 4.8, transactions: 52, revenue: 485000 },
     bio: "Expert immobilier certifié USPI. Spécialiste des investissements locatifs en Suisse romande et à l'international. Passionné par l'innovation proptech.",
     languages: ["Français", "Anglais", "Arabe"],
     certifications: ["Expert Immobilier USPI (2024)", "Courtier Fédéral (2022)"],

@@ -29,13 +29,25 @@ import type { Review } from "@/lib/mock-data";
 const PAID_OPTIONS = [
   { id: "o1", emoji: "\u2615", label: "Café de bienvenue", price: 0, included: true },
   { id: "o2", emoji: "\uD83C\uDF7E", label: "Champagne à l'arrivée", price: 50 },
-  { id: "o3", emoji: "\uD83D\uDC86", label: "Massage 1h en villa", price: 80 },
+  { id: "o3", emoji: "\uD83D\uDC86", label: "Massage 1h à domicile", price: 80 },
   { id: "o4", emoji: "\uD83D\uDC68\u200D\uD83C\uDF73", label: "Chef privé (dîner)", price: 200 },
   { id: "o5", emoji: "\uD83D\uDE97", label: "Transfert aéroport", price: 60 },
   { id: "o6", emoji: "\uD83E\uDDF9", label: "Nettoyage professionnel", price: 150 },
   { id: "o7", emoji: "\u23F0", label: "Late checkout (14h)", price: 60 },
   { id: "o8", emoji: "\uD83E\uDDFA", label: "Pack linge premium", price: 35 },
 ];
+
+// ─── Floor plans per property ──────────────────────────────────────────────────
+
+const FLOOR_PLANS: Record<string, { rooms: { name: string; area: number }[]; levels?: string[] }> = {
+  prop1: { rooms: [{ name: "Salon/Séjour", area: 45 }, { name: "Cuisine", area: 15 }, { name: "Ch.1", area: 18 }, { name: "Ch.2", area: 16 }, { name: "Ch.3", area: 14 }, { name: "SDB", area: 12 }, { name: "WC", area: 4 }, { name: "Entrée", area: 6 }, { name: "Balcon", area: 5 }] },
+  prop2: { rooms: [{ name: "Pièce principale", area: 22 }, { name: "Cuisine ouverte", area: 5 }, { name: "SDB", area: 4 }, { name: "Entrée", area: 1 }] },
+  prop3: { rooms: [{ name: "Salon", area: 55 }, { name: "Cuisine", area: 25 }, { name: "Ch. amis", area: 20 }, { name: "SDB", area: 10 }, { name: "Garage", area: 40 }, { name: "Ch. maître", area: 30 }, { name: "Dressing", area: 12 }, { name: "SDB suite", area: 14 }, { name: "Ch.2", area: 18 }, { name: "Ch.3", area: 16 }, { name: "Terrasse", area: 40 }], levels: ["RDC", "Étage"] },
+  prop4: { rooms: [{ name: "Patio central", area: 30 }, { name: "Salon", area: 35 }, { name: "Cuisine", area: 20 }, { name: "Suite 1", area: 25 }, { name: "Suite 2", area: 22 }, { name: "Suite 3", area: 20 }, { name: "Suite 4", area: 18 }, { name: "Hammam", area: 15 }, { name: "Terrasse", area: 35 }] },
+  prop5: { rooms: [{ name: "Salon", area: 60 }, { name: "Cuisine", area: 30 }, { name: "Ch.1", area: 25 }, { name: "SDB", area: 15 }, { name: "Ski room", area: 20 }, { name: "Ch.2", area: 20 }, { name: "Ch.3", area: 18 }, { name: "Ch.4", area: 20 }, { name: "Ch. maître", area: 30 }, { name: "Sauna", area: 10 }, { name: "Terrasse", area: 50 }], levels: ["RDC", "Étage 1", "Étage 2"] },
+  prop6: { rooms: [{ name: "Salon", area: 80 }, { name: "Salle à manger", area: 40 }, { name: "Cuisine", area: 30 }, { name: "Bureau", area: 25 }, { name: "Ch. maître", area: 50 }, { name: "Dressing", area: 20 }, { name: "SDB suite", area: 25 }, { name: "Ch.2", area: 30 }, { name: "Ch.3", area: 28 }, { name: "Piscine privée", area: 40 }, { name: "Terrasse", area: 67 }], levels: ["Niveau 41", "Niveau 42", "Rooftop"] },
+  prop7: { rooms: [{ name: "Séjour", area: 28 }, { name: "Cuisine", area: 12 }, { name: "Ch.1", area: 15 }, { name: "Ch.2", area: 13 }, { name: "SDB", area: 8 }, { name: "WC", area: 3 }, { name: "Balcon", area: 6 }] },
+};
 
 // ─── Resolve property by ID (handles multiple ID formats) ───────────────────
 
@@ -153,6 +165,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   // Share
   const [showShare, setShowShare] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState(false);
 
   // Boost modal
   const [showBoostModal, setShowBoostModal] = useState(false);
@@ -370,7 +383,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 </span>
                 <span className="flex items-center gap-1 text-[#C4956A]">
                   <Star className="w-4 h-4 fill-[#C4956A]" />
-                  {reviews.length > 0 ? averageRating : property.rating} ({reviews.length > 0 ? reviews.length : property.reviewCount} avis)
+                  {property.rating} ({reviews.length > 0 ? reviews.length : property.reviewCount} avis)
                 </span>
               </div>
             </div>
@@ -504,61 +517,27 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
 
-          {/* Floor plan - only for properties with bedrooms >= 2 */}
-          {property.bedrooms >= 2 && (
+          {/* Floor plan - dynamic per property */}
+          {FLOOR_PLANS[property.id] && (
             <div className="mb-8">
               <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">Plan du bien</h2>
-              <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 overflow-x-auto">
-                <svg viewBox="0 0 600 400" className="w-full max-w-[600px] mx-auto" style={{ minWidth: 400 }}>
-                  {/* Background */}
-                  <rect x="0" y="0" width="600" height="400" fill="white" rx="8" />
-
-                  {/* Outer walls */}
-                  <rect x="20" y="20" width="560" height="360" fill="none" stroke="#9ca3af" strokeWidth="2" />
-
-                  {/* SALON - large room left */}
-                  <rect x="20" y="20" width="280" height="220" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
-                  <text x="160" y="120" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">SALON</text>
-                  <text x="160" y="140" textAnchor="middle" fontSize="11" fill="#6b7280">42m²</text>
-
-                  {/* CUISINE - top right */}
-                  <rect x="300" y="20" width="280" height="130" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
-                  <text x="440" y="80" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">CUISINE</text>
-                  <text x="440" y="100" textAnchor="middle" fontSize="11" fill="#6b7280">18m²</text>
-
-                  {/* CH.1 - middle right */}
-                  <rect x="300" y="150" width="155" height="140" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
-                  <text x="377" y="215" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">CH.1</text>
-                  <text x="377" y="235" textAnchor="middle" fontSize="11" fill="#6b7280">16m²</text>
-
-                  {/* CH.2 - far right */}
-                  <rect x="455" y="150" width="125" height="140" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
-                  <text x="517" y="215" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">CH.2</text>
-                  <text x="517" y="235" textAnchor="middle" fontSize="11" fill="#6b7280">14m²</text>
-
-                  {/* SDB - bottom right */}
-                  <rect x="380" y="290" width="200" height="90" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
-                  <text x="480" y="335" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">SDB</text>
-                  <text x="480" y="355" textAnchor="middle" fontSize="11" fill="#6b7280">8m²</text>
-
-                  {/* ENTREE - bottom left */}
-                  <rect x="20" y="240" width="280" height="140" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
-                  <text x="160" y="305" textAnchor="middle" fontSize="13" fontWeight="600" fill="#C4956A">ENTREE</text>
-
-                  {/* Couloir / passage */}
-                  <rect x="300" y="290" width="80" height="90" fill="white" stroke="#9ca3af" strokeWidth="1.5" />
-
-                  {/* Door indicators (small arcs) */}
-                  <path d="M 300 310 Q 310 320 310 330" fill="none" stroke="#C4956A" strokeWidth="1" />
-                  <path d="M 160 240 Q 170 250 170 260" fill="none" stroke="#C4956A" strokeWidth="1" />
-                  <path d="M 300 85 Q 290 75 280 85" fill="none" stroke="#C4956A" strokeWidth="1" />
-
-                  {/* Scale indicator */}
-                  <line x1="30" y1="390" x2="130" y2="390" stroke="#9ca3af" strokeWidth="1" />
-                  <line x1="30" y1="386" x2="30" y2="394" stroke="#9ca3af" strokeWidth="1" />
-                  <line x1="130" y1="386" x2="130" y2="394" stroke="#9ca3af" strokeWidth="1" />
-                  <text x="80" y="399" textAnchor="middle" fontSize="9" fill="#9ca3af">5m</text>
-                </svg>
+              <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6">
+                <div className="space-y-3">
+                  {FLOOR_PLANS[property.id].levels && (
+                    <p className="text-xs text-[var(--text-muted)]">{FLOOR_PLANS[property.id].levels!.join(" · ")}</p>
+                  )}
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {FLOOR_PLANS[property.id].rooms.map((room) => (
+                      <div key={room.name} className="p-3 rounded-xl border border-[var(--card-border)] bg-[var(--background)] text-center">
+                        <p className="text-xs font-semibold text-[var(--foreground)]">{room.name}</p>
+                        <p className="text-[10px] text-[#C4956A] font-medium">{room.area} m²</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Surface totale : {FLOOR_PLANS[property.id].rooms.reduce((s, r) => s + r.area, 0)} m²
+                  </p>
+                </div>
                 <p className="text-xs text-[var(--text-muted)] text-center mt-3">
                   Plan indicatif — Les surfaces sont approximatives
                 </p>
@@ -873,6 +852,53 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Section Apporteurs */}
+          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 space-y-4 mb-8">
+            <h3 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
+              🤝 Devenez apporteur sur ce bien
+            </h3>
+            <p className="text-sm text-[var(--text-secondary)]">
+              Partagez ce bien avec votre réseau et touchez une commission automatique si une transaction se conclut via votre lien.
+            </p>
+
+            {/* Lien de parrainage */}
+            <div className="flex items-center gap-2">
+              <div className="flex-1 px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-xs text-[var(--text-secondary)] truncate">
+                edome.world/ref/bien/AP-{Math.floor(Math.random()*9000+1000)}/{property.id}
+              </div>
+              <button onClick={() => { navigator.clipboard.writeText(`edome.world/ref/bien/${property.id}`); setCopyFeedback(true); setTimeout(() => setCopyFeedback(false), 2000); }} className="px-3 py-2 rounded-lg bg-[#C4956A] text-white text-xs font-medium hover:bg-[#b8845a]">
+                {copyFeedback ? "✓ Copié" : "📋 Copier"}
+              </button>
+            </div>
+
+            {/* Share buttons */}
+            <div className="flex gap-2">
+              <a href={`https://wa.me/?text=${encodeURIComponent("Je vous recommande ce bien sur E-Dome : edome.world/ref/bien/" + property.id)}`} target="_blank" className="px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">💬 WhatsApp</a>
+              <a href={`mailto:?subject=Bien E-Dome&body=${encodeURIComponent("Découvrez ce bien : edome.world/ref/bien/" + property.id)}`} className="px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">📧 Email</a>
+              <button className="px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">📱 QR Code</button>
+            </div>
+
+            {/* Commission info */}
+            <div className="p-4 rounded-xl bg-[#C4956A]/5 border border-[#C4956A]/20">
+              <p className="text-sm font-medium text-[#C4956A]">
+                💰 Commission : {property.transactionType === "vente" ? "2% de la vente" : "5% de la réservation"} · prélevée sur la part E-Dome
+              </p>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">
+                {property.transactionType === "vente"
+                  ? `→ Sur ce bien (${formatPrice(property.price, property.currency as any)}) = potentiellement ${formatPrice(Math.round(property.price * 0.02), property.currency as any)} pour vous`
+                  : `→ Sur une réservation de 7 nuits (${formatPrice(property.price * 7, property.currency as any)}) = ${formatPrice(Math.round(property.price * 7 * 0.05), property.currency as any)} pour vous`
+                }
+              </p>
+              <p className="text-[10px] text-[var(--text-muted)] mt-2">
+                ℹ️ La commission est prélevée sur la commission E-Dome. Aucun coût supplémentaire pour l'hôte ou le client.
+              </p>
+            </div>
+
+            <a href="/apporteurs" className="text-xs text-[#C4956A] hover:underline">
+              En savoir plus sur le programme →
+            </a>
           </div>
 
           {/* Similar properties */}

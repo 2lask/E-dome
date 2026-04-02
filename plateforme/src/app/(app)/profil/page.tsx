@@ -13,17 +13,17 @@ const currentUser: User = {
   firstName: "Léo",
   lastName: "Martin",
   email: "leo@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
+  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200",
   city: "Lausanne",
   country: "Suisse",
   roles: ["hote", "formateur", "apporteur", "investisseur"],
   activeRole: "hote",
   stats: {
-    followers: 1200,
-    following: 320,
-    properties: 8,
+    followers: 2340,
+    following: 812,
+    properties: 4,
     reviews: 56,
-    rating: 4.9,
+    rating: 4.8,
     transactions: 124,
     revenue: 185000,
   },
@@ -200,12 +200,10 @@ export default function ProfilPage() {
         {/* Stats */}
         <div className="flex gap-6 mt-6 flex-wrap">
           {[
-            { label: "Biens", value: propertyCount },
+            { label: "Biens", value: currentUser.stats.properties },
             { label: "Abonn\u00E9s", value: currentUser.stats.followers },
             { label: "Suivis", value: currentUser.stats.following },
             { label: "Note", value: `${currentUser.stats.rating}/5` },
-            { label: "\u00C9tudiants", value: 2130 },
-            { label: "Commissions", value: "2\u2009400 CHF" },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-lg font-bold text-[var(--foreground)]">
