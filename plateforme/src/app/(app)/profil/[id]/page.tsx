@@ -92,7 +92,7 @@ const mockUsers: Record<string, User> = {
     responseTime: "< 30 min",
   },
   u2: {
-    id: "u2", firstName: "Marc", lastName: "Dupont", email: "marc@e-dome.ch",
+    id: "u2", firstName: "Marc", lastName: "Dubois", email: "marc@e-dome.ch",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
     city: "Zürich", country: "Suisse", roles: ["investisseur", "formateur"], activeRole: "investisseur",
     stats: { followers: 2100, following: 150, properties: 15, reviews: 78, rating: 4.7, transactions: 200, revenue: 450000 },
@@ -150,6 +150,16 @@ const mockUsers: Record<string, User> = {
     languages: ["Français", "Anglais"],
     certifications: [],
     responseTime: "< 5 heures",
+  },
+  "carlos-001": {
+    id: "carlos-001", firstName: "Carlos", lastName: "Rivera", email: "carlos.rivera@edome.ch",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop",
+    city: "Barcelone", country: "Espagne", roles: ["formateur", "photographe"] as any, activeRole: "formateur" as any,
+    stats: { followers: 1400, following: 520, properties: 2, reviews: 38, rating: 4.7, transactions: 18, revenue: 95000 },
+    bio: "Photographe immobilier professionnel et formateur. Spécialiste de la photographie d'architecture et du home staging visuel. Basé à Barcelone.",
+    languages: ["Español", "Français", "English"],
+    certifications: ["Photographe certifié FIABCI", "Formateur Matterport"],
+    responseTime: "< 3 heures",
   },
 };
 
@@ -260,6 +270,14 @@ const mockProperties: Record<string, Property[]> = {
       host: mockUsers.u4, bedrooms: 4, bathrooms: 2, area: 120, amenities: [], rating: 4.7, reviewCount: 8,
     },
   ],
+  "carlos-001": [
+    {
+      id: "prop-c1", title: "Loft industriel Barcelone", description: "", type: "appartement" as any, transactionType: "location-ct",
+      price: 165, currency: "EUR", location: { city: "Barcelone", country: "Espagne" },
+      images: ["https://images.unsplash.com/photo-1617806118233-18e1de247200?w=400&h=300&fit=crop"],
+      host: mockUsers["carlos-001"], bedrooms: 2, bathrooms: 1, area: 120, amenities: [], rating: 4.8, reviewCount: 24,
+    },
+  ],
 };
 
 const mockReviews: Record<string, { id: string; author: string; rating: number; text: string; date: string; reply: string | null }[]> = {
@@ -316,6 +334,10 @@ const mockReviews: Record<string, { id: string; author: string; rating: number; 
   ],
   g3: [
     { id: "r70", author: "Agent C.", rating: 5, text: "Marie sait exactement ce qu'elle veut. Collaboration très agréable.", date: "2026-03-01", reply: null },
+  ],
+  "carlos-001": [
+    { id: "r-c1", author: "Léo M.", rating: 5, text: "Carlos est un photographe exceptionnel. Ses photos ont transformé l'annonce de ma villa.", date: "2026-03-28", reply: null },
+    { id: "r-c2", author: "Sophie D.", rating: 5, text: "Formation photo très complète. Carlos maîtrise parfaitement son sujet.", date: "2026-03-18", reply: "Merci Sophie !" },
   ],
 };
 
@@ -400,6 +422,13 @@ const mockPosts: Record<string, SocialPost[]> = {
       type: "post", likes: 95, comments: [], createdAt: "2026-03-16T08:00:00",
     },
   ],
+  "carlos-001": [
+    {
+      id: "sp-c1", author: mockUsers["carlos-001"], content: "Nouveau shooting photo pour une villa d'exception à Barcelone. La lumière méditerranéenne fait toute la différence !",
+      media: ["https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&h=400&fit=crop"],
+      type: "post", likes: 67, comments: [], createdAt: "2026-03-26T10:00:00",
+    },
+  ],
 };
 
 const ratingBreakdowns: Record<string, { stars: number; count: number }[]> = {
@@ -415,6 +444,7 @@ const ratingBreakdowns: Record<string, { stars: number; count: number }[]> = {
   g1: [{ stars: 5, count: 4 }, { stars: 4, count: 1 }, { stars: 3, count: 0 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
   g2: [{ stars: 5, count: 1 }, { stars: 4, count: 2 }, { stars: 3, count: 0 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
   g3: [{ stars: 5, count: 5 }, { stars: 4, count: 2 }, { stars: 3, count: 0 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
+  "carlos-001": [{ stars: 5, count: 28 }, { stars: 4, count: 8 }, { stars: 3, count: 2 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
 };
 
 // ─── Component ──────────────────────────────────────────────────────────────

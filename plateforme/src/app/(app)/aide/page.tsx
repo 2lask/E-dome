@@ -82,7 +82,7 @@ export default function AidePage() {
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
       <div className="text-center space-y-3">
         <h1 className="text-3xl font-bold text-[var(--foreground)]">Centre d&apos;aide</h1>
-        <p className="text-[var(--text-secondary)]">Trouvez rapidement des reponses a vos questions</p>
+        <p className="text-[var(--text-secondary)]">Trouvez rapidement des réponses à vos questions</p>
       </div>
 
       {/* Search */}
@@ -160,9 +160,9 @@ export default function AidePage() {
 
       {/* Contact CTA */}
       <section className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">Vous n&apos;avez pas trouve votre reponse ?</h2>
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Vous n&apos;avez pas trouvé votre réponse ?</h2>
         <p className="text-[var(--text-secondary)]">
-          Notre equipe support est disponible du lundi au vendredi, de 9h a 18h (CET).
+          Notre équipe support est disponible du lundi au vendredi, de 9h à 18h (CET).
         </p>
         <a
           href="/contact"

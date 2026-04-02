@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft, Heart, Share2, Star, MapPin, Bed, Bath, Maximize,
-  ChevronLeft, ChevronRight, X, Printer,
+  ChevronLeft, ChevronRight, X, Printer, PenSquare,
   Calendar as CalendarIcon, ChevronDown, ChevronUp,
   TrendingUp, BarChart3, Shield, Check, Send, Flag,
   Facebook, Mail, Copy, Phone, MessageCircle, Users,
@@ -47,6 +47,9 @@ const FLOOR_PLANS: Record<string, { rooms: { name: string; area: number }[]; lev
   prop5: { rooms: [{ name: "Salon", area: 60 }, { name: "Cuisine", area: 30 }, { name: "Ch.1", area: 25 }, { name: "SDB", area: 15 }, { name: "Ski room", area: 20 }, { name: "Ch.2", area: 20 }, { name: "Ch.3", area: 18 }, { name: "Ch.4", area: 20 }, { name: "Ch. maître", area: 30 }, { name: "Sauna", area: 10 }, { name: "Terrasse", area: 50 }], levels: ["RDC", "Étage 1", "Étage 2"] },
   prop6: { rooms: [{ name: "Salon", area: 80 }, { name: "Salle à manger", area: 40 }, { name: "Cuisine", area: 30 }, { name: "Bureau", area: 25 }, { name: "Ch. maître", area: 50 }, { name: "Dressing", area: 20 }, { name: "SDB suite", area: 25 }, { name: "Ch.2", area: 30 }, { name: "Ch.3", area: 28 }, { name: "Piscine privée", area: 40 }, { name: "Terrasse", area: 67 }], levels: ["Niveau 41", "Niveau 42", "Rooftop"] },
   prop7: { rooms: [{ name: "Séjour", area: 28 }, { name: "Cuisine", area: 12 }, { name: "Ch.1", area: 15 }, { name: "Ch.2", area: 13 }, { name: "SDB", area: 8 }, { name: "WC", area: 3 }, { name: "Balcon", area: 6 }] },
+  prop8: { rooms: [{ name: "Salon", area: 45 }, { name: "Cuisine", area: 20 }, { name: "Ch.1", area: 25 }, { name: "Ch.2", area: 20 }, { name: "Ch.3", area: 18 }, { name: "Ch.4", area: 16 }, { name: "SDB1", area: 12 }, { name: "SDB2", area: 10 }, { name: "SDB3", area: 8 }, { name: "Terrasse", area: 46 }], levels: ["RDC", "Étage"] },
+  prop9: { rooms: [{ name: "Salon", area: 35 }, { name: "Cuisine", area: 18 }, { name: "Ch.1", area: 22 }, { name: "Ch.2", area: 18 }, { name: "Ch.3", area: 15 }, { name: "SDB1", area: 10 }, { name: "SDB2", area: 8 }, { name: "Terrasse caldera", area: 54 }] },
+  prop12: { rooms: [{ name: "Salon", area: 35 }, { name: "Cuisine", area: 18 }, { name: "Ch.1", area: 22 }, { name: "Ch.2", area: 18 }, { name: "Ch.3", area: 15 }, { name: "SDB1", area: 10 }, { name: "SDB2", area: 8 }, { name: "Terrasse caldera", area: 54 }] },
 };
 
 // ─── Resolve property by ID (handles multiple ID formats) ───────────────────
@@ -458,6 +461,13 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             >
               <Printer className="w-4 h-4" /> Imprimer
             </button>
+            <Link
+              href={`/feed?bien=${property.id}`}
+              onClick={() => addToast(`Partagez "${property.title}" avec votre communauté.`, "info")}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--card-border)] bg-[var(--card)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors"
+            >
+              <PenSquare className="w-4 h-4" /> Publier un post
+            </Link>
             {(activeRole === "hote" || activeRole === "agence" || activeRole === "promoteur") && (
               <button
                 onClick={() => setShowBoostModal(true)}

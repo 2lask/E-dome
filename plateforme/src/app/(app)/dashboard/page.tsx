@@ -147,7 +147,7 @@ export default function DashboardPage() {
   const [showInvite, setShowInvite] = useState(false);
   const [goals, setGoals] = useState<{ label: string; target: number; current: number }[]>([
     { label: "Revenus mensuels", target: 10000, current: 6800 },
-    { label: "Reservations", target: 20, current: 14 },
+    { label: "Réservations", target: 20, current: 14 },
     { label: "Note moyenne", target: 5, current: 4.8 },
   ]);
   const [editGoalIdx, setEditGoalIdx] = useState<number | null>(null);
@@ -184,7 +184,7 @@ export default function DashboardPage() {
   const chartMax = Math.max(...mockRevenueData.map((d) => d.revenue));
 
   const exportCSV = useCallback(() => {
-    const header = "Mois,Revenus,Reservations,Occupation\n";
+    const header = "Mois,Revenus,Réservations,Occupation\n";
     const rows = mockRevenueData
       .map((d) => `${d.month},${d.revenue},${d.bookings},${d.occupancy}`)
       .join("\n");
@@ -575,7 +575,7 @@ export default function DashboardPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--card-border)]">
-                {["Apporteur", "Bien", "Reservations", "Commissions"].map((h) => (
+                {["Apporteur", "Bien", "Réservations", "Commissions"].map((h) => (
                   <th key={h} className="text-left py-3 px-2 text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">{h}</th>
                 ))}
               </tr>

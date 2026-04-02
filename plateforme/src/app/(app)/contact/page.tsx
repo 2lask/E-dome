@@ -76,12 +76,12 @@ export default function ContactPage() {
               </svg>
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-[var(--foreground)]">Message envoye !</h2>
+          <h2 className="text-2xl font-bold text-[var(--foreground)]">Message envoyé !</h2>
           <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-            Votre message a ete envoye. Nous vous repondrons sous 24-48h.
+            Votre message a été envoyé. Nous vous répondrons sous 24-48h.
           </p>
           <p className="text-sm text-[var(--text-muted)] max-w-sm mx-auto">
-            Un email de confirmation a ete envoye a <span className="text-[var(--foreground)] font-medium">{form.email || "votre adresse"}</span>.
+            Un email de confirmation a été envoyé à <span className="text-[var(--foreground)] font-medium">{form.email || "votre adresse"}</span>.
           </p>
           <button
             onClick={handleReset}

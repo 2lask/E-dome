@@ -70,7 +70,7 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
           href={`/formations/${id}`}
           className="inline-block px-5 py-2.5 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
         >
-          Retour a la formation
+          Retour à la formation
         </Link>
       </div>
     );
@@ -83,7 +83,7 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
         href={`/formations/${id}`}
         className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--foreground)] transition mb-6"
       >
-        &larr; Retour a la formation
+        &larr; Retour à la formation
       </Link>
 
       <div className="flex flex-col lg:flex-row gap-8">
