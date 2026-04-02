@@ -53,11 +53,8 @@ export default function HomePage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center text-xs text-[var(--text-muted)] space-y-2">
+        <div className="text-center text-xs text-[var(--text-muted)]">
           <p>E-Dome — Maquette fictive · contact@edome.world · © 2026</p>
-          <a href="https://2lask.github.io/E-dome/" target="_blank" rel="noopener noreferrer" className="text-[#C4956A] hover:underline">
-            Voir le projet complet →
-          </a>
         </div>
       </div>
     </div>

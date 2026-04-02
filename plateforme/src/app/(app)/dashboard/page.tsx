@@ -486,6 +486,117 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Réservations récentes */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Reservations recentes</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[var(--card-border)]">
+                {["Bien", "Client", "Dates", "Nuits", "Montant", "Statut", "Actions"].map((h) => (
+                  <th key={h} className="text-left py-3 px-2 text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { bien: "Chalet Alpin Premium", client: "Sophie B.", dates: "10-17 juil.", nuits: 7, montant: 2450, statut: "confirmed" },
+                { bien: "Appart. Vue Lac", client: "Jean-Marc D.", dates: "15-20 avr.", nuits: 5, montant: 900, statut: "pending" },
+                { bien: "Chalet Alpin Premium", client: "Marie L.", dates: "20-25 mai", nuits: 5, montant: 1750, statut: "pending" },
+              ].map((r, i) => (
+                <tr key={i} className="border-b border-[var(--card-border)] last:border-0 hover:bg-[var(--hover-bg)] transition-colors">
+                  <td className="py-3 px-2 font-medium text-[var(--foreground)]">{r.bien}</td>
+                  <td className="py-3 px-2 text-[var(--text-secondary)]">{r.client}</td>
+                  <td className="py-3 px-2 text-[var(--text-secondary)]">{r.dates}</td>
+                  <td className="py-3 px-2 text-[var(--text-secondary)]">{r.nuits}</td>
+                  <td className="py-3 px-2 font-medium text-[var(--foreground)]">{formatPrice(r.montant)}</td>
+                  <td className="py-3 px-2">
+                    {r.statut === "confirmed" ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-emerald-400/10 text-emerald-400">Confirmee</span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-amber-400/10 text-amber-400">En attente</span>
+                    )}
+                  </td>
+                  <td className="py-3 px-2">
+                    <div className="flex gap-2">
+                      {r.statut === "pending" && (
+                        <button className="px-3 py-1 text-xs rounded-lg bg-[#C4956A] text-white hover:bg-[#b8845a] transition-colors">Confirmer</button>
+                      )}
+                      <button className="px-3 py-1 text-xs rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Contacter</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Mes biens — Performance */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Mes biens — Performance</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            { name: "Chalet Alpin Premium", occupation: 87, vues: 234, revenus: 4200 },
+            { name: "Appart. Vue Lac", occupation: 72, vues: 156, revenus: 2800 },
+            { name: "Studio Centre-Ville", occupation: 65, vues: 98, revenus: 1450 },
+          ].map((prop) => (
+            <div key={prop.name} className="border border-[var(--card-border)] rounded-xl p-4 space-y-3">
+              <h3 className="text-sm font-semibold text-[var(--foreground)]">{prop.name}</h3>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-[var(--text-muted)]">Taux d&apos;occupation</span>
+                  <span className="text-[var(--foreground)] font-medium">{prop.occupation}%</span>
+                </div>
+                <div className="w-full h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full bg-[#C4956A] transition-all duration-500" style={{ width: `${prop.occupation}%` }} />
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[var(--text-muted)]">Vues cette semaine</span>
+                <span className="text-[var(--foreground)] font-medium">{prop.vues}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[var(--text-muted)]">Revenus du mois</span>
+                <span className="text-[#C4956A] font-medium">{formatPrice(prop.revenus)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Apporteurs actifs sur mes biens */}
+      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Apporteurs actifs sur mes biens</h2>
+        <p className="text-sm text-[var(--text-secondary)] mb-4">
+          3 apporteurs actifs · 8 reservations generees · {formatPrice(342)} de commissions versees
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[var(--card-border)]">
+                {["Apporteur", "Bien", "Reservations", "Commissions"].map((h) => (
+                  <th key={h} className="text-left py-3 px-2 text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { apporteur: "Jean M.", bien: "Chalet Alpin", reservations: 3, commissions: 126 },
+                { apporteur: "Sara L.", bien: "Appart. Lac", reservations: 1, commissions: 36 },
+              ].map((a, i) => (
+                <tr key={i} className="border-b border-[var(--card-border)] last:border-0 hover:bg-[var(--hover-bg)] transition-colors">
+                  <td className="py-3 px-2 font-medium text-[var(--foreground)]">{a.apporteur}</td>
+                  <td className="py-3 px-2 text-[var(--text-secondary)]">{a.bien}</td>
+                  <td className="py-3 px-2 text-[var(--text-secondary)]">{a.reservations}</td>
+                  <td className="py-3 px-2 font-medium text-[#C4956A]">{formatPrice(a.commissions)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Shortcuts */}
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
         <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Raccourcis</h2>

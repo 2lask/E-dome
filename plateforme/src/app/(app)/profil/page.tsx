@@ -52,6 +52,12 @@ const mockProperties: Property[] = [
     images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop"],
     host: currentUser, bedrooms: 6, bathrooms: 4, area: 320, amenities: [], rating: 5.0, reviewCount: 8,
   },
+  {
+    id: "p4", title: "Studio Zurich Centre", description: "", type: "appartement", transactionType: "location-ct",
+    price: 180, currency: "CHF", location: { city: "Zurich", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop"],
+    host: currentUser, bedrooms: 1, bathrooms: 1, area: 45, amenities: [], rating: 4.6, reviewCount: 12,
+  },
 ];
 
 const mockPosts: SocialPost[] = [
@@ -174,13 +180,32 @@ export default function ProfilPage() {
           </button>
         </div>
 
+        {/* Certifications / Badges */}
+        <div className="flex flex-wrap gap-2 mt-4">
+          {[
+            { emoji: "\u{1F3C6}", label: "Superh\u00F4te E-Dome" },
+            { emoji: "\u2705", label: "Identit\u00E9 v\u00E9rifi\u00E9e" },
+            { emoji: "\u{1F4DA}", label: "Formateur certifi\u00E9" },
+            { emoji: "\u{1F91D}", label: "Apporteur Bronze" },
+          ].map((b) => (
+            <span
+              key={b.label}
+              className="px-3 py-1 text-xs font-medium rounded-full bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)]"
+            >
+              {b.emoji} {b.label}
+            </span>
+          ))}
+        </div>
+
         {/* Stats */}
         <div className="flex gap-6 mt-6 flex-wrap">
           {[
             { label: "Biens", value: propertyCount },
-            { label: "Abonnés", value: currentUser.stats.followers },
+            { label: "Abonn\u00E9s", value: currentUser.stats.followers },
             { label: "Suivis", value: currentUser.stats.following },
             { label: "Note", value: `${currentUser.stats.rating}/5` },
+            { label: "\u00C9tudiants", value: 2130 },
+            { label: "Commissions", value: "2\u2009400 CHF" },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-lg font-bold text-[var(--foreground)]">
