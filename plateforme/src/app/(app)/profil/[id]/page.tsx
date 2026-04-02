@@ -11,6 +11,56 @@ import { formatCount, timeAgo } from "@/lib/utils";
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
 const mockUsers: Record<string, User> = {
+  "user-001": {
+    id: "user-001", firstName: "Léo", lastName: "Martin", email: "leo.martin@edome.ch",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
+    city: "Lausanne", country: "Suisse", roles: ["hote", "formateur", "apporteur"], activeRole: "hote",
+    stats: { followers: 2340, following: 812, properties: 14, reviews: 87, rating: 4.8, transactions: 52, revenue: 485000 },
+    bio: "Expert immobilier certifié USPI. Spécialiste des investissements locatifs en Suisse romande et à l'international. Passionné par l'innovation proptech.",
+    languages: ["Français", "Anglais", "Arabe"],
+    certifications: ["Expert Immobilier USPI (2024)", "Courtier Fédéral (2022)"],
+    responseTime: "< 2 heures",
+  },
+  "user-002": {
+    id: "user-002", firstName: "Sophie", lastName: "Durand", email: "sophie.durand@edome.ch",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop",
+    city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote",
+    stats: { followers: 890, following: 210, properties: 5, reviews: 42, rating: 4.8, transactions: 78, revenue: 920000 },
+    bio: "Hôte passionnée spécialisée dans l'immobilier de standing en Suisse romande.",
+    languages: ["Français", "Deutsch", "Anglais"],
+    certifications: ["Courtière Brevet Fédéral (2019)"],
+    responseTime: "< 1 heure",
+  },
+  "user-003": {
+    id: "user-003", firstName: "Marc", lastName: "Favre", email: "marc.favre@edome.ch",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop",
+    city: "Genève", country: "Suisse", roles: ["hote", "courtier"], activeRole: "hote",
+    stats: { followers: 640, following: 340, properties: 8, reviews: 42, rating: 4.7, transactions: 31, revenue: 1250000 },
+    bio: "Agent immobilier et hôte actif à Genève. Spécialiste de la location courte durée.",
+    languages: ["Français", "Anglais", "Portugais"],
+    certifications: ["CFA Level II (2018)"],
+    responseTime: "< 4 heures",
+  },
+  "user-004": {
+    id: "user-004", firstName: "Amina", lastName: "El Idrissi", email: "amina.elidrissi@edome.ch",
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop",
+    city: "Marrakech", country: "Maroc", roles: ["formateur", "hote"], activeRole: "formateur",
+    stats: { followers: 1200, following: 610, properties: 6, reviews: 98, rating: 4.9, transactions: 45, revenue: 340000 },
+    bio: "Formatrice et hôte au Maroc. Experte en investissement locatif dans les marchés émergents.",
+    languages: ["Français", "Arabe", "Anglais"],
+    certifications: ["Gestion Hôtelière (ISCAE 2020)"],
+    responseTime: "< 3 heures",
+  },
+  "user-005": {
+    id: "user-005", firstName: "Lucas", lastName: "Renaud", email: "lucas.renaud@edome.ch",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop",
+    city: "Nice", country: "France", roles: ["promoteur"], activeRole: "promoteur",
+    stats: { followers: 520, following: 430, properties: 4, reviews: 56, rating: 4.6, transactions: 28, revenue: 195000 },
+    bio: "Promoteur immobilier sur la Côte d'Azur. Spécialiste des villas de prestige.",
+    languages: ["Français", "Anglais", "Italien"],
+    certifications: ["Pilote Drone (DGAC 2023)"],
+    responseTime: "< 2 heures",
+  },
   u1: {
     id: "u1", firstName: "Sophie", lastName: "Martin", email: "sophie@e-dome.ch",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
@@ -84,15 +134,55 @@ const mockUsers: Record<string, User> = {
 };
 
 const mockProperties: Record<string, Property[]> = {
+  "user-001": [
+    {
+      id: "prop7", title: "Loft moderne Neuchâtel", description: "", type: "appartement", transactionType: "location-ct",
+      price: 150, currency: "CHF", location: { city: "Neuchâtel", country: "Suisse" },
+      images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop"],
+      host: mockUsers["user-001"], bedrooms: 2, bathrooms: 1, area: 85, amenities: [], rating: 4.8, reviewCount: 34,
+    },
+  ],
+  "user-002": [
+    {
+      id: "prop1", title: "Appartement standing Lausanne", description: "", type: "appartement", transactionType: "vente",
+      price: 1450000, currency: "CHF", location: { city: "Lausanne", country: "Suisse" },
+      images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop"],
+      host: mockUsers["user-002"], bedrooms: 3, bathrooms: 2, area: 120, amenities: [], rating: 4.8, reviewCount: 18,
+    },
+  ],
+  "user-003": [
+    {
+      id: "prop2", title: "Duplex vue lac Genève", description: "", type: "appartement", transactionType: "location-ct",
+      price: 200, currency: "CHF", location: { city: "Genève", country: "Suisse" },
+      images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop"],
+      host: mockUsers["user-003"], bedrooms: 3, bathrooms: 2, area: 110, amenities: [], rating: 4.7, reviewCount: 15,
+    },
+  ],
+  "user-004": [
+    {
+      id: "prop4", title: "Riad traditionnel Marrakech", description: "", type: "riad", transactionType: "location-ct",
+      price: 180, currency: "EUR", location: { city: "Marrakech", country: "Maroc" },
+      images: ["https://images.unsplash.com/photo-1590059390258-ea0456c8548a?w=400&h=300&fit=crop"],
+      host: mockUsers["user-004"], bedrooms: 4, bathrooms: 3, area: 250, amenities: [], rating: 4.9, reviewCount: 42,
+    },
+  ],
+  "user-005": [
+    {
+      id: "prop3", title: "Villa prestige Nice", description: "", type: "villa", transactionType: "vente",
+      price: 2200000, currency: "EUR", location: { city: "Nice", country: "France" },
+      images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop"],
+      host: mockUsers["user-005"], bedrooms: 5, bathrooms: 4, area: 300, amenities: [], rating: 4.6, reviewCount: 8,
+    },
+  ],
   u1: [
     {
-      id: "p10", title: "Penthouse Genève", description: "", type: "penthouse", transactionType: "vente",
+      id: "prop3", title: "Penthouse Genève", description: "", type: "penthouse", transactionType: "vente",
       price: 2800000, currency: "CHF", location: { city: "Genève", country: "Suisse" },
       images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop"],
       host: mockUsers.u1, bedrooms: 4, bathrooms: 3, area: 200, amenities: [], rating: 4.9, reviewCount: 12,
     },
     {
-      id: "p11", title: "Studio Carouge", description: "", type: "studio", transactionType: "location-ct",
+      id: "prop4", title: "Studio Carouge", description: "", type: "studio", transactionType: "location-ct",
       price: 120, currency: "CHF", location: { city: "Carouge", country: "Suisse" },
       images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop"],
       host: mockUsers.u1, bedrooms: 1, bathrooms: 1, area: 35, amenities: [], rating: 4.6, reviewCount: 22,
@@ -100,7 +190,7 @@ const mockProperties: Record<string, Property[]> = {
   ],
   u2: [
     {
-      id: "p20", title: "Résidence Neuve Zürich", description: "", type: "appartement", transactionType: "vente",
+      id: "prop11", title: "Résidence Neuve Zürich", description: "", type: "appartement", transactionType: "vente",
       price: 980000, currency: "CHF", location: { city: "Zürich", country: "Suisse" },
       images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop"],
       host: mockUsers.u2, bedrooms: 3, bathrooms: 2, area: 95, amenities: [], rating: 4.8, reviewCount: 5,
@@ -108,7 +198,7 @@ const mockProperties: Record<string, Property[]> = {
   ],
   u3: [
     {
-      id: "p30", title: "Riad de prestige Marrakech", description: "", type: "riad", transactionType: "vente",
+      id: "prop4", title: "Riad de prestige Marrakech", description: "", type: "riad", transactionType: "vente",
       price: 450000, currency: "EUR", location: { city: "Marrakech", country: "Maroc" },
       images: ["https://images.unsplash.com/photo-1590059390258-ea0456c8548a?w=400&h=300&fit=crop"],
       host: mockUsers.u3, bedrooms: 5, bathrooms: 4, area: 320, amenities: [], rating: 4.9, reviewCount: 18,
@@ -116,7 +206,7 @@ const mockProperties: Record<string, Property[]> = {
   ],
   u4: [
     {
-      id: "p40", title: "Projet résidentiel Zurich Nord", description: "", type: "appartement", transactionType: "vente",
+      id: "prop10", title: "Projet résidentiel Zurich Nord", description: "", type: "appartement", transactionType: "vente",
       price: 1250000, currency: "CHF", location: { city: "Zurich", country: "Suisse" },
       images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop"],
       host: mockUsers.u4, bedrooms: 4, bathrooms: 2, area: 120, amenities: [], rating: 4.7, reviewCount: 8,
@@ -125,6 +215,26 @@ const mockProperties: Record<string, Property[]> = {
 };
 
 const mockReviews: Record<string, { id: string; author: string; rating: number; text: string; date: string; reply: string | null }[]> = {
+  "user-001": [
+    { id: "r01", author: "Sophie D.", rating: 5, text: "Léo est un excellent hôte et formateur. Très professionnel.", date: "2026-03-20", reply: null },
+    { id: "r02", author: "Marc F.", rating: 5, text: "Investisseur passionné, toujours de bons conseils.", date: "2026-03-12", reply: "Merci Marc !" },
+  ],
+  "user-002": [
+    { id: "r03", author: "Léo M.", rating: 5, text: "Sophie offre un service impeccable. Biens de très grande qualité.", date: "2026-03-18", reply: null },
+    { id: "r04", author: "Claire B.", rating: 4, text: "Très bonne expérience, communication fluide.", date: "2026-03-05", reply: "Merci Claire !" },
+  ],
+  "user-003": [
+    { id: "r05", author: "Amina E.", rating: 5, text: "Marc connaît parfaitement le marché genevois. Recommandé.", date: "2026-03-15", reply: null },
+    { id: "r06", author: "Lucas R.", rating: 4, text: "Agent fiable et réactif. Bonne collaboration.", date: "2026-02-28", reply: null },
+  ],
+  "user-004": [
+    { id: "r07", author: "Sophie D.", rating: 5, text: "Amina est une formatrice exceptionnelle. Contenu de qualité.", date: "2026-03-22", reply: null },
+    { id: "r08", author: "Léo M.", rating: 5, text: "Experte en marché marocain. Ses formations sont incontournables.", date: "2026-03-10", reply: "Merci Léo, ravie !" },
+  ],
+  "user-005": [
+    { id: "r09", author: "Marc F.", rating: 5, text: "Lucas livre des villas exceptionnelles sur la Côte d'Azur.", date: "2026-03-14", reply: null },
+    { id: "r10b", author: "Amina E.", rating: 4, text: "Très beau projet, finitions soignées.", date: "2026-02-20", reply: null },
+  ],
   u1: [
     { id: "r10", author: "Marc T.", rating: 5, text: "Sophie est incroyable, très professionnelle.", date: "2026-03-18", reply: null },
     { id: "r11", author: "Laura K.", rating: 5, text: "Service impeccable du début à la fin.", date: "2026-03-10", reply: "Merci beaucoup Laura !" },
@@ -153,6 +263,40 @@ const mockReviews: Record<string, { id: string; author: string; rating: number; 
 };
 
 const mockPosts: Record<string, SocialPost[]> = {
+  "user-001": [
+    {
+      id: "sp01", author: mockUsers["user-001"], content: "Nouvelle formation en ligne sur l'investissement locatif. Inscrivez-vous dès maintenant sur E-Dome !",
+      media: ["https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=600&h=400&fit=crop"],
+      type: "post", likes: 85, comments: [], createdAt: "2026-03-25T09:00:00",
+    },
+  ],
+  "user-002": [
+    {
+      id: "sp02", author: mockUsers["user-002"], content: "Ravie d'accueillir mes premiers hôtes dans le nouvel appartement à Lausanne. Vue imprenable sur le lac !",
+      media: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=400&fit=crop"],
+      type: "post", likes: 52, comments: [], createdAt: "2026-03-20T14:00:00",
+    },
+  ],
+  "user-003": [
+    {
+      id: "sp03", author: mockUsers["user-003"], content: "Le marché immobilier genevois reste dynamique en 2026. Analyse complète disponible sur mon profil.",
+      media: [], type: "post", likes: 41, comments: [], createdAt: "2026-03-18T10:00:00",
+    },
+  ],
+  "user-004": [
+    {
+      id: "sp04", author: mockUsers["user-004"], content: "Session de formation en direct depuis Marrakech ce week-end. Investissement locatif dans les marchés émergents.",
+      media: ["https://images.unsplash.com/photo-1590059390258-ea0456c8548a?w=600&h=400&fit=crop"],
+      type: "post", likes: 73, comments: [], createdAt: "2026-03-22T11:00:00",
+    },
+  ],
+  "user-005": [
+    {
+      id: "sp05", author: mockUsers["user-005"], content: "Nouveau projet de villa de prestige à Nice. Livraison prévue fin 2026. Contactez-moi pour plus de détails.",
+      media: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop"],
+      type: "post", likes: 36, comments: [], createdAt: "2026-03-19T15:00:00",
+    },
+  ],
   u1: [
     {
       id: "sp10", author: mockUsers.u1, content: "Nouvelle vente conclue à Genève ! Un magnifique penthouse avec vue sur le jet d'eau.",
@@ -188,6 +332,11 @@ const mockPosts: Record<string, SocialPost[]> = {
 };
 
 const ratingBreakdowns: Record<string, { stars: number; count: number }[]> = {
+  "user-001": [{ stars: 5, count: 60 }, { stars: 4, count: 20 }, { stars: 3, count: 5 }, { stars: 2, count: 2 }, { stars: 1, count: 0 }],
+  "user-002": [{ stars: 5, count: 28 }, { stars: 4, count: 10 }, { stars: 3, count: 3 }, { stars: 2, count: 1 }, { stars: 1, count: 0 }],
+  "user-003": [{ stars: 5, count: 25 }, { stars: 4, count: 12 }, { stars: 3, count: 4 }, { stars: 2, count: 1 }, { stars: 1, count: 0 }],
+  "user-004": [{ stars: 5, count: 70 }, { stars: 4, count: 20 }, { stars: 3, count: 6 }, { stars: 2, count: 2 }, { stars: 1, count: 0 }],
+  "user-005": [{ stars: 5, count: 35 }, { stars: 4, count: 15 }, { stars: 3, count: 4 }, { stars: 2, count: 2 }, { stars: 1, count: 0 }],
   u1: [{ stars: 5, count: 35 }, { stars: 4, count: 5 }, { stars: 3, count: 2 }, { stars: 2, count: 0 }, { stars: 1, count: 0 }],
   u2: [{ stars: 5, count: 50 }, { stars: 4, count: 20 }, { stars: 3, count: 5 }, { stars: 2, count: 2 }, { stars: 1, count: 1 }],
   u3: [{ stars: 5, count: 30 }, { stars: 4, count: 10 }, { stars: 3, count: 4 }, { stars: 2, count: 1 }, { stars: 1, count: 0 }],
@@ -433,7 +582,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
               <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Membre depuis</h3>
                 <p className="text-sm text-[var(--text-secondary)]">
-                  {{ u1: "Mars 2023", u2: "Juin 2022", u3: "Janvier 2024", u4: "Septembre 2023", g1: "Février 2025", g2: "Mai 2025", g3: "Novembre 2024" }[id] || "Janvier 2025"}
+                  {{ "user-001": "Janvier 2022", "user-002": "Mars 2023", "user-003": "Juin 2022", "user-004": "Janvier 2024", "user-005": "Septembre 2023", u1: "Mars 2023", u2: "Juin 2022", u3: "Janvier 2024", u4: "Septembre 2023", g1: "Février 2025", g2: "Mai 2025", g3: "Novembre 2024" }[id] || "Janvier 2025"}
                 </p>
               </div>
             </div>

@@ -35,25 +35,25 @@ const currentUser: User = {
 
 const mockProperties: Property[] = [
   {
-    id: "p1", title: "Chalet Alpin Premium", description: "", type: "chalet", transactionType: "location-ct",
+    id: "prop1", title: "Chalet Alpin Premium", description: "", type: "chalet", transactionType: "location-ct",
     price: 350, currency: "CHF", location: { city: "Verbier", country: "Suisse" },
     images: ["https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=300&fit=crop"],
     host: currentUser, bedrooms: 4, bathrooms: 3, area: 180, amenities: [], rating: 4.9, reviewCount: 28,
   },
   {
-    id: "p2", title: "Appartement Vue Lac", description: "", type: "appartement", transactionType: "vente",
+    id: "prop2", title: "Appartement Vue Lac", description: "", type: "appartement", transactionType: "vente",
     price: 1250000, currency: "CHF", location: { city: "Montreux", country: "Suisse" },
     images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop"],
     host: currentUser, bedrooms: 3, bathrooms: 2, area: 120, amenities: [], rating: 4.7, reviewCount: 15,
   },
   {
-    id: "p3", title: "Villa Prestige", description: "", type: "villa", transactionType: "vente",
+    id: "prop3", title: "Villa Prestige", description: "", type: "villa", transactionType: "vente",
     price: 3200000, currency: "CHF", location: { city: "Lausanne", country: "Suisse" },
     images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop"],
     host: currentUser, bedrooms: 6, bathrooms: 4, area: 320, amenities: [], rating: 5.0, reviewCount: 8,
   },
   {
-    id: "p4", title: "Studio Zurich Centre", description: "", type: "appartement", transactionType: "location-ct",
+    id: "prop4", title: "Studio Zurich Centre", description: "", type: "appartement", transactionType: "location-ct",
     price: 180, currency: "CHF", location: { city: "Zurich", country: "Suisse" },
     images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop"],
     host: currentUser, bedrooms: 1, bathrooms: 1, area: 45, amenities: [], rating: 4.6, reviewCount: 12,

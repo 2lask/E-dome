@@ -62,12 +62,14 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
       `Le marché immobilier en ${user.country} continue de montrer des signes positifs. Les investissements dans le #luxe restent solides avec un rendement moyen de 6.2%. @${MOCK_USERS[(i + 2) % MOCK_USERS.length].firstName.toLowerCase()} intéressant non ? \n\n#investissement #immobilier #tendances`,
       `Visite exclusive de ce penthouse au cœur de ${user.city}. 280m², terrasse de 60m², vue à 360°. Un bien d'exception. \n\n#penthouse #immobilier #${user.city.toLowerCase()} #luxe`,
       `Formation sur la gestion locative optimisée. Apprenez à maximiser vos revenus tout en offrant un service 5 étoiles à vos locataires. \n\n#formation #gestionlocative #revenus`,
+      `Retour d'expérience : comment j'ai augmenté mon taux d'occupation de 65% à 92% en 3 mois grâce à E-Dome. Thread \n\n#AirbnbSuisse #LocationCourte #Conseils`,
     ];
     const mediaOptions = [
       ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800"],
       ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800", "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800"],
       ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800"],
       [],
+      ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800"],
     ];
     const hoursAgo = (i + 1) * 3 + Math.floor(Math.random() * 10);
     const date = new Date(Date.now() - hoursAgo * 3600000).toISOString();
@@ -99,7 +101,7 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
       location: `${user.city}, ${user.country}`,
       property: i % 3 === 0
         ? {
-            id: `prop-${String(((i / 3) % 14) + 1).padStart(3, "0")}`,
+            id: `prop${((i / 3) % 14) + 1}`,
             title: `Villa de luxe à ${user.city}`,
             description: "Villa exceptionnelle",
             type: "villa",

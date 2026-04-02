@@ -61,10 +61,10 @@ const MOCK_VERSEMENTS = [
 ];
 
 const LEADERBOARD = [
-  { rank: 1, nom: "Léo M.", apports: 47, commissions: 18500 },
-  { rank: 2, nom: "Laura M.", apports: 39, commissions: 15200 },
-  { rank: 3, nom: "Jean-Pierre D.", apports: 34, commissions: 12800 },
-  { rank: 4, nom: "Vous", apports: 28, commissions: 9500, isYou: true },
+  { rank: 1, nom: "Sarah K.", apports: 52, commissions: 21300 },
+  { rank: 2, nom: "Jean-Pierre D.", apports: 41, commissions: 16800 },
+  { rank: 3, nom: "Laura M.", apports: 39, commissions: 15200 },
+  { rank: 4, nom: "Léo M. (Vous)", apports: 28, commissions: 9500, isYou: true },
   { rank: 5, nom: "Nadia S.", apports: 25, commissions: 8700 },
   { rank: 6, nom: "Thomas R.", apports: 22, commissions: 7400 },
   { rank: 7, nom: "Amina K.", apports: 19, commissions: 6100 },

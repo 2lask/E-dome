@@ -9,10 +9,12 @@ import { useApp } from "@/lib/context";
 const CATEGORIES = ["Tous", "Immobilier", "Finance", "Marketing", "Juridique", "Design", "Gestion locative", "Investissement"];
 
 const INSTRUCTORS = [
-  { id: "u1", name: "Sophie Martin", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop", specialty: "Immobilier", students: 1240, rating: 4.9 },
-  { id: "u2", name: "Marc Dupont", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop", specialty: "Finance", students: 890, rating: 4.8 },
+  { id: "user-001", name: "Léo Martin", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop", specialty: "Investissement", students: 1240, rating: 4.8 },
+  { id: "user-004", name: "Amina El Idrissi", avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop", specialty: "Location", students: 1200, rating: 4.9 },
   { id: "u3", name: "Claire Bernard", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop", specialty: "Marketing", students: 670, rating: 4.7 },
   { id: "u4", name: "Jean Leroy", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop", specialty: "Juridique", students: 530, rating: 4.6 },
+  { id: "u2", name: "Marc Dupont", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop", specialty: "Finance", students: 890, rating: 4.8 },
+  { id: "u1", name: "Sophie Martin", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop", specialty: "Immobilier", students: 1240, rating: 4.9 },
 ];
 
 const FORMATIONS = [
@@ -20,8 +22,8 @@ const FORMATIONS = [
   { id: "f2", title: "Gestion locative avancee", category: "Gestion locative", level: "avance" as const, instructor: INSTRUCTORS[1], thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop", price: 199, rating: 4.8, studentCount: 890, duration: "8h", progress: 30, enrolled: true, featured: false, modules: 6 },
   { id: "f3", title: "Marketing digital immobilier", category: "Marketing", level: "intermediaire" as const, instructor: INSTRUCTORS[2], thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop", price: 149, rating: 4.7, studentCount: 670, duration: "6h", progress: 0, enrolled: false, featured: false, modules: 5 },
   { id: "f4", title: "Droit immobilier suisse", category: "Juridique", level: "intermediaire" as const, instructor: INSTRUCTORS[3], thumbnail: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=400&fit=crop", price: 249, rating: 4.6, studentCount: 530, duration: "10h", progress: 0, enrolled: false, featured: false, modules: 7 },
-  { id: "f5", title: "Analyse financiere pour investisseurs", category: "Finance", level: "avance" as const, instructor: INSTRUCTORS[1], thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop", price: 349, rating: 4.9, studentCount: 420, duration: "14h", progress: 0, enrolled: false, featured: false, modules: 10 },
-  { id: "f6", title: "Home staging professionnel", category: "Design", level: "debutant" as const, instructor: INSTRUCTORS[2], thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", price: 129, rating: 4.5, studentCount: 340, duration: "5h", progress: 0, enrolled: false, featured: false, modules: 4 },
+  { id: "f5", title: "Analyse financiere pour investisseurs", category: "Finance", level: "avance" as const, instructor: INSTRUCTORS[4], thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop", price: 349, rating: 4.9, studentCount: 420, duration: "14h", progress: 0, enrolled: false, featured: false, modules: 10 },
+  { id: "f6", title: "Home staging professionnel", category: "Design", level: "debutant" as const, instructor: INSTRUCTORS[5], thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", price: 129, rating: 4.5, studentCount: 340, duration: "5h", progress: 0, enrolled: false, featured: false, modules: 4 },
 ];
 
 const LEVEL_LABELS: Record<string, string> = { debutant: "Débutant", intermediaire: "Intermédiaire", avance: "Avancé" };

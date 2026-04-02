@@ -303,7 +303,7 @@ export function getUserById(id: string): User | undefined {
 export const properties: Property[] = [
   // 1 — Vente, Appartement, Lausanne
   {
-    id: 'prop-001',
+    id: 'prop1',
     title: 'Magnifique 4.5 pi\u00e8ces avec vue sur le Lac L\u00e9man',
     description:
       'Superbe appartement de 4.5 pi\u00e8ces enti\u00e8rement r\u00e9nov\u00e9, situ\u00e9 au 6\u00e8me \u00e9tage avec une vue imprenable sur le lac et les Alpes. Finitions haut de gamme, cuisine \u00e9quip\u00e9e Bulthaup, parquet ch\u00eane massif. Deux places de parking incluses.',
@@ -344,7 +344,7 @@ export const properties: Property[] = [
   },
   // 2 — Location-ct, Studio, Gen\u00e8ve
   {
-    id: 'prop-002',
+    id: 'prop2',
     title: 'Studio meubl\u00e9 design au c\u0153ur de Gen\u00e8ve',
     description:
       'Studio contemporain de 32m\u00b2 enti\u00e8rement meubl\u00e9, id\u00e9al pour s\u00e9jours courte dur\u00e9e. Cuisine \u00e9quip\u00e9e, literie premium, WiFi fibre. \u00c0 5 minutes de la gare Cornavin.',
@@ -373,7 +373,7 @@ export const properties: Property[] = [
   },
   // 3 — Vente, Villa, Nice
   {
-    id: 'prop-003',
+    id: 'prop3',
     title: 'Villa contemporaine avec piscine \u00e0 d\u00e9bordement',
     description:
       'Magnifique villa d\u2019architecte de 280m\u00b2 sur un terrain de 1200m\u00b2. Piscine \u00e0 d\u00e9bordement avec vue mer panoramique. 5 chambres, 3 salles de bains, double garage. Quartier r\u00e9sidentiel calme.',
@@ -414,7 +414,7 @@ export const properties: Property[] = [
   },
   // 4 — Vente, Riad, Marrakech
   {
-    id: 'prop-004',
+    id: 'prop4',
     title: 'Riad traditionnel r\u00e9nov\u00e9 en M\u00e9dina',
     description:
       'Authentique riad de 200m\u00b2 enti\u00e8rement restaur\u00e9 avec mat\u00e9riaux nobles. Patio avec fontaine, 4 suites avec salle de bain, terrasse panoramique. Exploit\u00e9 en maison d\u2019h\u00f4tes avec excellente rentabilit\u00e9.',
@@ -454,7 +454,7 @@ export const properties: Property[] = [
   },
   // 5 — Location-ct, Chalet, Verbier
   {
-    id: 'prop-005',
+    id: 'prop5',
     title: 'Chalet de luxe au pied des pistes \u00e0 Verbier',
     description:
       'Chalet exceptionnel de 350m\u00b2 avec acc\u00e8s ski-in/ski-out. Espace wellness priv\u00e9 (sauna, jacuzzi), chemin\u00e9e, 6 chambres. Vue imprenable sur les sommets. Service de concierge inclus.',
@@ -482,7 +482,7 @@ export const properties: Property[] = [
   },
   // 6 — Vente, Penthouse, Dubai
   {
-    id: 'prop-006',
+    id: 'prop6',
     title: 'Penthouse ultra-luxe sur Palm Jumeirah',
     description:
       'Penthouse d\u2019exception de 450m\u00b2 au dernier \u00e9tage avec vue 360\u00b0 sur le Golfe et la Marina. Piscine priv\u00e9e sur le toit, ascenseur priv\u00e9, 4 suites. Finitions Armani Casa.',
@@ -523,7 +523,7 @@ export const properties: Property[] = [
   },
   // 7 — Location-lt, Appartement, Neuch\u00e2tel
   {
-    id: 'prop-007',
+    id: 'prop7',
     title: '3.5 pi\u00e8ces lumineux au bord du lac',
     description:
       'Bel appartement de 3.5 pi\u00e8ces au 4\u00e8me \u00e9tage avec vue d\u00e9gag\u00e9e sur le lac de Neuch\u00e2tel. R\u00e9cemment r\u00e9nov\u00e9, cuisine ouverte, balcon orient\u00e9 sud. Proche commerces et transports.',
@@ -552,7 +552,7 @@ export const properties: Property[] = [
   },
   // 8 — Vente, Maison, Lisbonne
   {
-    id: 'prop-008',
+    id: 'prop8',
     title: 'Maison de ville r\u00e9nov\u00e9e \u00e0 Alfama',
     description:
       'Charmante maison de ville sur 3 niveaux dans le quartier historique d\u2019Alfama. 160m\u00b2 habitables, terrasse sur le toit avec vue Tage, patio int\u00e9rieur. Id\u00e9al investissement Golden Visa.',
@@ -592,14 +592,14 @@ export const properties: Property[] = [
   },
   // 9 — Location-ct, Villa, Phuket
   {
-    id: 'prop-009',
+    id: 'prop9',
     title: 'Villa tropicale avec piscine \u00e0 Phuket',
     description:
       'Villa de luxe de 220m\u00b2 avec piscine infinity et vue oc\u00e9an. 4 chambres, cuisine ext\u00e9rieure, sala tha\u00ef. Personnel de maison inclus. Location \u00e0 la semaine.',
     type: 'villa',
     transactionType: 'location-ct',
-    price: 380,
-    currency: 'THB',
+    price: 285,
+    currency: 'CHF',
     location: { city: 'Phuket', country: 'Tha\u00eflande', address: 'Kamala Beach Road 88', lat: 7.9519, lng: 98.2817 },
     images: [
       'https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=800&h=600&fit=crop',
@@ -620,7 +620,7 @@ export const properties: Property[] = [
   },
   // 10 — Vente, Terrain, Marrakech
   {
-    id: 'prop-010',
+    id: 'prop10',
     title: 'Terrain constructible 5000m\u00b2 Palmeraie',
     description:
       'Terrain viabilis\u00e9 de 5000m\u00b2 dans la Palmeraie de Marrakech. Permis de construire obtenu pour villa de 600m\u00b2. Acc\u00e8s route goudronn\u00e9e, proximit\u00e9 golfs et h\u00f4tels 5 \u00e9toiles.',
@@ -660,7 +660,7 @@ export const properties: Property[] = [
   },
   // 11 — Vente, Bureau, Gen\u00e8ve
   {
-    id: 'prop-011',
+    id: 'prop11',
     title: 'Bureaux standing \u00e0 Gen\u00e8ve Eaux-Vives',
     description:
       'Surface de bureaux de 180m\u00b2 au 2\u00e8me \u00e9tage d\u2019un immeuble r\u00e9cent. Open space am\u00e9nageable, 2 salles de r\u00e9union, kitchenette. Fibre optique, climatisation r\u00e9versible. Proche gare des Eaux-Vives.',
@@ -701,7 +701,7 @@ export const properties: Property[] = [
   },
   // 12 — Location-ct, Villa, Gr\u00e8ce
   {
-    id: 'prop-012',
+    id: 'prop12',
     title: 'Villa blanche avec vue caldera \u00e0 Santorin',
     description:
       'Villa cycladique de 150m\u00b2 perch\u00e9e sur la caldera d\u2019Oia. 3 chambres, piscine priv\u00e9e, terrasses multiples. Vue coucher de soleil l\u00e9gendaire. Service de concierge et chef priv\u00e9 disponibles.',
@@ -729,7 +729,7 @@ export const properties: Property[] = [
   },
   // 13 — Vente, Appartement, Barcelone
   {
-    id: 'prop-013',
+    id: 'prop13',
     title: 'Loft industriel r\u00e9nov\u00e9 \u00e0 El Born',
     description:
       'Superbe loft de 120m\u00b2 dans un ancien atelier du quartier El Born. Hauteur sous plafond 4m, briques apparentes, verrerie industrielle. Mezzanine, terrasse priv\u00e9e 25m\u00b2.',
@@ -739,7 +739,7 @@ export const properties: Property[] = [
     currency: 'EUR',
     location: { city: 'Barcelone', country: 'Espagne', address: 'Carrer del Rec 28', lat: 41.3851, lng: 2.183 },
     images: [
-      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1600210491369-e753d80a41f3?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1560448075-cbc16bb4af8e?w=800&h=600&fit=crop',
@@ -770,7 +770,7 @@ export const properties: Property[] = [
   },
   // 14 — Location-lt, Appartement, Neuch\u00e2tel
   {
-    id: 'prop-014',
+    id: 'prop14',
     title: '2.5 pi\u00e8ces meubl\u00e9 proche universit\u00e9',
     description:
       'Appartement de 2.5 pi\u00e8ces enti\u00e8rement meubl\u00e9, id\u00e9al pour \u00e9tudiants ou jeunes professionnels. \u00c0 10 minutes \u00e0 pied de l\u2019Universit\u00e9 de Neuch\u00e2tel. Charges comprises.',
@@ -1899,7 +1899,7 @@ export const notifications: Notification[] = [
     message: 'Marc Favre a laiss\u00e9 un avis 5 \u00e9toiles sur la villa de Phuket.',
     read: true,
     createdAt: '2026-03-29T16:00:00Z',
-    href: '/properties/prop-009#reviews',
+    href: '/properties/prop9#reviews',
   },
   {
     id: 'notif-005',
@@ -2110,10 +2110,10 @@ export interface Review {
 }
 
 export const mockReviews: Review[] = [
-  // ─── prop-001 (appartement, vente, Lausanne) ─────────────────────────────
+  // ─── prop1 (appartement, vente, Lausanne) ─────────────────────────────
   {
     id: 'rev-001',
-    propertyId: 'prop-001',
+    propertyId: 'prop1',
     author: users[11],
     rating: 4,
     comment: 'Appartement avec une vue incroyable sur le lac. Très bien équipé. Seul bémol : le parking est un peu étroit.',
@@ -2121,7 +2121,7 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-002',
-    propertyId: 'prop-001',
+    propertyId: 'prop1',
     author: users[2],
     rating: 5,
     comment: 'Emplacement idéal, proche du centre. Le balcon vue lac est magique. Finitions haut de gamme, on sent la qualité.',
@@ -2129,16 +2129,16 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-003',
-    propertyId: 'prop-001',
+    propertyId: 'prop1',
     author: users[8],
     rating: 5,
     comment: 'Séjour parfait. Appartement propre, moderne et lumineux. La vue sur le Léman depuis le salon est à couper le souffle.',
     createdAt: '2026-01-20T11:00:00Z',
   },
-  // ─── prop-002 (studio, location-ct, Genève) ─────────────────────────────
+  // ─── prop2 (studio, location-ct, Genève) ─────────────────────────────
   {
     id: 'rev-004',
-    propertyId: 'prop-002',
+    propertyId: 'prop2',
     author: users[11],
     rating: 5,
     comment: 'Studio parfait pour un séjour à Genève. Tout est fonctionnel, propre et bien situé. Le WiFi fibre est un vrai plus.',
@@ -2146,7 +2146,7 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-005',
-    propertyId: 'prop-002',
+    propertyId: 'prop2',
     author: users[6],
     rating: 4,
     comment: 'Très bon rapport qualité-prix. Proche de la gare, idéal pour les déplacements professionnels. Cuisine bien équipée.',
@@ -2154,16 +2154,16 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-006',
-    propertyId: 'prop-002',
+    propertyId: 'prop2',
     author: users[13],
     rating: 5,
     comment: 'Petit studio mais très bien agencé. La literie est excellente. Je recommande vivement pour un court séjour.',
     createdAt: '2026-01-28T10:00:00Z',
   },
-  // ─── prop-003 (villa, vente, Nice) ───────────────────────────────────────
+  // ─── prop3 (villa, vente, Nice) ───────────────────────────────────────
   {
     id: 'rev-007',
-    propertyId: 'prop-003',
+    propertyId: 'prop3',
     author: users[5],
     rating: 5,
     comment: 'Villa d\'architecte magnifique. La piscine à débordement avec vue mer est un rêve. Quartier très calme et résidentiel.',
@@ -2171,16 +2171,16 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-008',
-    propertyId: 'prop-003',
+    propertyId: 'prop3',
     author: users[2],
     rating: 5,
     comment: 'Propriété exceptionnelle sur la Côte d\'Azur. Les finitions sont impeccables, le jardin est un vrai havre de paix.',
     createdAt: '2026-02-10T12:00:00Z',
   },
-  // ─── prop-004 (riad, vente, Marrakech) ───────────────────────────────────
+  // ─── prop4 (riad, vente, Marrakech) ───────────────────────────────────
   {
     id: 'rev-009',
-    propertyId: 'prop-004',
+    propertyId: 'prop4',
     author: users[6],
     rating: 5,
     comment: 'Un riad magnifique, authentique et parfaitement rénové. L\u2019accueil d\u2019Amina est chaleureux. Le petit-déjeuner sur la terrasse est un moment magique.',
@@ -2188,16 +2188,16 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-010',
-    propertyId: 'prop-004',
+    propertyId: 'prop4',
     author: users[0],
     rating: 5,
     comment: 'Riad d\'exception dans la médina. Chaque détail est soigné, de la mosaïque au mobilier. Une pépite immobilière.',
     createdAt: '2026-02-18T09:00:00Z',
   },
-  // ─── prop-005 (chalet, location-ct, Verbier) ────────────────────────────
+  // ─── prop5 (chalet, location-ct, Verbier) ────────────────────────────
   {
     id: 'rev-011',
-    propertyId: 'prop-005',
+    propertyId: 'prop5',
     author: users[2],
     rating: 5,
     comment: 'Chalet absolument exceptionnel ! Vue à couper le souffle, service impeccable. Le spa privé est un vrai plus. On reviendra sans hésiter.',
@@ -2205,7 +2205,7 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-012',
-    propertyId: 'prop-005',
+    propertyId: 'prop5',
     author: users[11],
     rating: 5,
     comment: 'Chalet authentique et chaleureux. Le sauna et le jacuzzi sont parfaits après le ski. Les enfants ont adoré.',
@@ -2213,16 +2213,16 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-013',
-    propertyId: 'prop-005',
+    propertyId: 'prop5',
     author: users[8],
     rating: 4,
     comment: 'Superbe chalet avec tout le confort moderne. L\'emplacement est idéal pour les pistes. Seul point : le check-in un peu tard.',
     createdAt: '2026-03-01T11:00:00Z',
   },
-  // ─── prop-006 (penthouse, vente, Dubai) ──────────────────────────────────
+  // ─── prop6 (penthouse, vente, Dubai) ──────────────────────────────────
   {
     id: 'rev-014',
-    propertyId: 'prop-006',
+    propertyId: 'prop6',
     author: users[10],
     rating: 5,
     comment: 'Penthouse spectaculaire avec vue panoramique sur la marina. Les finitions sont dignes d\'un palace. Un investissement sûr.',
@@ -2230,16 +2230,16 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-015',
-    propertyId: 'prop-006',
+    propertyId: 'prop6',
     author: users[2],
     rating: 5,
     comment: 'Yasmin a parfaitement géré la transaction. Le penthouse dépasse toutes les attentes en termes de luxe et de confort.',
     createdAt: '2026-02-25T10:00:00Z',
   },
-  // ─── prop-007 (appartement, location-lt, Neuchâtel) ─────────────────────
+  // ─── prop7 (appartement, location-lt, Neuchâtel) ─────────────────────
   {
     id: 'rev-016',
-    propertyId: 'prop-007',
+    propertyId: 'prop7',
     author: users[11],
     rating: 5,
     comment: 'Appartement lumineux et très bien situé au bord du lac. Le propriétaire est réactif et attentionné.',
@@ -2247,16 +2247,16 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-017',
-    propertyId: 'prop-007',
+    propertyId: 'prop7',
     author: users[7],
     rating: 4,
     comment: 'Bel appartement avec une vue agréable. Quartier calme, idéal pour une location longue durée. Bon rapport qualité-prix.',
     createdAt: '2026-02-20T15:00:00Z',
   },
-  // ─── prop-009 (villa, location-ct, Phuket) ──────────────────────────────
+  // ─── prop9 (villa, location-ct, Phuket) ──────────────────────────────
   {
     id: 'rev-018',
-    propertyId: 'prop-009',
+    propertyId: 'prop9',
     author: users[2],
     rating: 5,
     comment: 'Villa de rêve à Phuket ! Le personnel est aux petits soins, la piscine infinity est spectaculaire. Deux semaines de pur bonheur.',
@@ -2264,16 +2264,16 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-019',
-    propertyId: 'prop-009',
+    propertyId: 'prop9',
     author: users[5],
     rating: 5,
     comment: 'Expérience inoubliable. La villa est encore plus belle qu\'en photos. Le chef privé prépare des plats extraordinaires.',
     createdAt: '2026-02-08T16:00:00Z',
   },
-  // ─── prop-012 (villa, location-ct, Santorin) ────────────────────────────
+  // ─── prop12 (villa, location-ct, Santorin) ────────────────────────────
   {
     id: 'rev-020',
-    propertyId: 'prop-012',
+    propertyId: 'prop12',
     author: users[0],
     rating: 5,
     comment: 'Santorin comme dans les rêves. La villa est parfaitement située pour le coucher de soleil. Elena est une hôtesse exceptionnelle.',
@@ -2281,25 +2281,25 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-021',
-    propertyId: 'prop-012',
+    propertyId: 'prop12',
     author: users[11],
     rating: 5,
     comment: 'Vue à couper le souffle sur la caldeira. La piscine privée est un vrai luxe. On se sent comme dans un film.',
     createdAt: '2026-02-12T14:00:00Z',
   },
-  // ─── prop-013 (appartement, vente, Marrakech) ───────────────────────────
+  // ─── prop13 (appartement, vente, Marrakech) ───────────────────────────
   {
     id: 'rev-022',
-    propertyId: 'prop-013',
+    propertyId: 'prop13',
     author: users[6],
     rating: 4,
     comment: 'Bel appartement dans un quartier en plein développement. Bon potentiel d\'investissement. Les espaces communs sont soignés.',
     createdAt: '2026-03-02T10:00:00Z',
   },
-  // ─── prop-014 (appartement, location-lt, Lisbonne) ──────────────────────
+  // ─── prop14 (appartement, location-lt, Lisbonne) ──────────────────────
   {
     id: 'rev-023',
-    propertyId: 'prop-014',
+    propertyId: 'prop14',
     author: users[13],
     rating: 5,
     comment: 'Appartement charmant dans le quartier de l\'Alfama. Pierre est un hôte formidable, toujours disponible et de bon conseil.',
@@ -2307,7 +2307,7 @@ export const mockReviews: Review[] = [
   },
   {
     id: 'rev-024',
-    propertyId: 'prop-014',
+    propertyId: 'prop14',
     author: users[9],
     rating: 4,
     comment: 'Très bon appartement, bien rénové avec goût. Quartier vivant et authentique. Transports à proximité.',
@@ -2371,7 +2371,7 @@ export const storyUsers: StoryUser[] = [
 
 // ─── FAVORITES ──────────────────────────────────────────────────────────────
 
-export const favoritePropertyIds: string[] = ['prop-001', 'prop-003', 'prop-005', 'prop-006', 'prop-012'];
+export const favoritePropertyIds: string[] = ['prop1', 'prop3', 'prop5', 'prop6', 'prop12'];
 export const favoritePostIds: string[] = ['post-001', 'post-003', 'post-005', 'post-007'];
 
 // ─── APPOINTMENTS ───────────────────────────────────────────────────────────
@@ -2391,7 +2391,7 @@ export const upcomingAppointments: Appointment[] = [
   {
     id: 'apt-001',
     title: 'Visite appartement Neuch\u00e2tel',
-    propertyId: 'prop-007',
+    propertyId: 'prop7',
     propertyTitle: '3.5 pi\u00e8ces lumineux au bord du lac',
     clientName: 'Cl\u00e9mence Moreau',
     date: '2026-04-05',
@@ -2401,7 +2401,7 @@ export const upcomingAppointments: Appointment[] = [
   {
     id: 'apt-002',
     title: 'Signature acte de vente',
-    propertyId: 'prop-001',
+    propertyId: 'prop1',
     propertyTitle: 'Magnifique 4.5 pi\u00e8ces avec vue sur le Lac L\u00e9man',
     clientName: 'Marc Favre',
     date: '2026-04-10',

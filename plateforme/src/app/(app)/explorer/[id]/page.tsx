@@ -40,16 +40,15 @@ const PAID_OPTIONS = [
 // ─── Resolve property by ID (handles multiple ID formats) ───────────────────
 
 function resolveProperty(id: string): Property | undefined {
-  // 1) Direct lookup (e.g. "prop-001")
+  // 1) Direct lookup (e.g. "prop1")
   let found = getPropertyById(id);
   if (found) return found;
 
-  // 2) Map short IDs like "prop1" -> "prop-001", "prop14" -> "prop-014"
-  const shortMatch = id.match(/^prop(\d+)$/);
-  if (shortMatch) {
-    const num = parseInt(shortMatch[1], 10);
-    const paddedId = `prop-${String(num).padStart(3, "0")}`;
-    found = getPropertyById(paddedId);
+  // 2) Map legacy IDs like "prop-001" -> "prop1"
+  const legacyMatch = id.match(/^prop-0*(\d+)$/);
+  if (legacyMatch) {
+    const num = parseInt(legacyMatch[1], 10);
+    found = getPropertyById(`prop${num}`);
     if (found) return found;
 
     // 3) Fallback: find by index (1-based)
@@ -58,7 +57,16 @@ function resolveProperty(id: string): Property | undefined {
     }
   }
 
-  // 4) Search by partial match
+  // 4) Map short IDs like "prop1" -> index lookup
+  const shortMatch = id.match(/^prop(\d+)$/);
+  if (shortMatch) {
+    const num = parseInt(shortMatch[1], 10);
+    if (num >= 1 && num <= allProperties.length) {
+      return allProperties[num - 1];
+    }
+  }
+
+  // 5) Search by partial match
   return allProperties.find((p) => p.id.includes(id) || id.includes(p.id));
 }
 
