@@ -39,13 +39,12 @@ const KPI_DATA: Record<Period, { vues: number; visiteurs: number; conversions: n
 };
 
 const VIEWS_BY_PROPERTY = [
-  { nom: "Appartement 3p Lausanne", vues: 845, visiteurs: 620, taux: 4.2 },
-  { nom: "Villa Montreux vue lac", vues: 1230, visiteurs: 890, taux: 6.1 },
-  { nom: "Studio Geneve centre", vues: 560, visiteurs: 410, taux: 3.5 },
+  { nom: "Appartement Lausanne", vues: 1450, visiteurs: 1050, taux: 7.8 },
+  { nom: "Studio Genève", vues: 1230, visiteurs: 890, taux: 6.1 },
   { nom: "Chalet Verbier", vues: 920, visiteurs: 680, taux: 5.3 },
-  { nom: "Penthouse Zurich", vues: 1450, visiteurs: 1050, taux: 7.8 },
-  { nom: "Loft Berne", vues: 340, visiteurs: 250, taux: 2.1 },
-  { nom: "Maison Neuchatel", vues: 670, visiteurs: 480, taux: 3.9 },
+  { nom: "Villa Nice", vues: 845, visiteurs: 620, taux: 4.2 },
+  { nom: "Penthouse Genève", vues: 670, visiteurs: 480, taux: 3.9 },
+  { nom: "Studio Zurich", vues: 560, visiteurs: 410, taux: 3.5 },
 ];
 
 const TRAFFIC_SOURCES = [

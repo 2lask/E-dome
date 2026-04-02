@@ -53,8 +53,20 @@ export default function HomePage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center text-xs text-[var(--text-muted)]">
+        <div className="text-center text-xs text-[var(--text-muted)] space-y-2">
           <p>E-Dome — Maquette fictive · contact@edome.world · © 2026</p>
+          <p>Toutes les données présentées sont fictives et à titre illustratif uniquement.</p>
+          <p>
+            Explorer :{" "}
+            <Link href="/feed" className="underline hover:text-[#C4956A] transition-colors">Feed</Link> ·{" "}
+            <Link href="/explorer" className="underline hover:text-[#C4956A] transition-colors">Marketplace</Link> ·{" "}
+            <Link href="/dashboard" className="underline hover:text-[#C4956A] transition-colors">Dashboard</Link> ·{" "}
+            <Link href="/formations" className="underline hover:text-[#C4956A] transition-colors">Formations</Link> ·{" "}
+            <Link href="/live" className="underline hover:text-[#C4956A] transition-colors">Live</Link> ·{" "}
+            <Link href="/apporteurs" className="underline hover:text-[#C4956A] transition-colors">Apporteurs</Link> ·{" "}
+            <Link href="/reservations" className="underline hover:text-[#C4956A] transition-colors">Réservations</Link> ·{" "}
+            <Link href="/dashboard" className="underline hover:text-[#C4956A] transition-colors">Statistiques</Link>
+          </p>
         </div>
       </div>
     </div>

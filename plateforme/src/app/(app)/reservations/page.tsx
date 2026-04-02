@@ -86,7 +86,7 @@ export default function ReservationsPage() {
     const pending = reservations.filter((r) => r.status === "pending").length;
     const revenue = reservations
       .filter((r) => r.status === "confirmed" || r.status === "completed")
-      .reduce((s, r) => s + r.totalPrice, 0);
+      .reduce((s, r) => s + Math.round(r.totalPrice * 0.92), 0);
     return { total, confirmed, pending, revenue };
   }, [reservations]);
 
@@ -169,7 +169,7 @@ export default function ReservationsPage() {
           { label: "Total", value: stats.total },
           { label: "Confirmées", value: stats.confirmed },
           { label: "En attente", value: stats.pending },
-          { label: "Revenus", value: formatPrice(stats.revenue), isFormatted: true },
+          { label: "Revenus nets confirmés", value: formatPrice(stats.revenue), isFormatted: true },
         ].map((s) => (
           <div key={s.label} className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4">
             <div className="text-xs text-[var(--text-muted)]">{s.label}</div>

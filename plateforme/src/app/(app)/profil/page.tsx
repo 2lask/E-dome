@@ -27,9 +27,9 @@ const currentUser: User = {
     transactions: 124,
     revenue: 185000,
   },
-  bio: "Passionné d'immobilier depuis 15 ans. Spécialisé dans les biens de prestige en Suisse romande et sur la Riviera. Toujours à la recherche de nouvelles opportunités pour mes clients.",
-  languages: ["Français", "Anglais", "Allemand"],
-  certifications: ["Courtier certifié USPI", "Expert immobilier diplômé", "Formation continue 2025"],
+  bio: "Passionné d'immobilier depuis 15 ans. Hôte actif en Suisse romande, formateur certifié USPI et apporteur d'affaires. Spécialiste des investissements locatifs et de la location courte durée haut de gamme.",
+  languages: ["🇫🇷 Français", "🇬🇧 Anglais", "🇩🇪 Allemand (bases)"],
+  certifications: ["🎓 Investissement locatif — Certifié E-Dome · Mars 2024", "🎓 Location courte durée Pro — Certifié E-Dome · Juin 2024"],
   responseTime: "< 1 heure",
 };
 
@@ -73,18 +73,18 @@ const mockPosts: SocialPost[] = [
 ];
 
 const mockReviews = [
-  { id: "r1", author: "Sophie B.", rating: 5, text: "Expérience parfaite ! Léo est très professionnel et réactif.", date: "2026-03-20", reply: "Merci Sophie, ce fut un plaisir !" },
-  { id: "r2", author: "Jean D.", rating: 5, text: "Le chalet était magnifique et très bien entretenu.", date: "2026-03-15", reply: null },
-  { id: "r3", author: "Marie L.", rating: 4, text: "Très bon service. La communication pourrait être un peu plus rapide.", date: "2026-03-10", reply: "Merci Marie, je prends note pour m'améliorer." },
-  { id: "r4", author: "Paul M.", rating: 5, text: "Excellent ! Je recommande vivement.", date: "2026-03-05", reply: null },
-  { id: "r5", author: "Claire R.", rating: 4, text: "Bonne expérience globale, bien situé.", date: "2026-02-28", reply: null },
+  { id: "r1", author: "Jean-Pierre M.", rating: 5, text: "Hôte exceptionnel, chalet magnifique et communication parfaite.", date: "15 mars 2026", reply: null },
+  { id: "r2", author: "Marie L.", rating: 5, text: "Formation très claire et actionnable. J'ai investi 3 mois après.", date: "28 fév. 2026", reply: null },
+  { id: "r3", author: "Thomas K.", rating: 5, text: "Appartement propre, moderne et lumineux. Vue sur le Léman à couper le souffle.", date: "10 jan. 2026", reply: null },
+  { id: "r4", author: "Amira B.", rating: 5, text: "Formation investissement top niveau. Les modules fiscalité sont très utiles.", date: "5 jan. 2026", reply: null },
+  { id: "r5", author: "Pierre S.", rating: 4, text: "Apporteur fiable et sérieux. Commission versée rapidement.", date: "20 déc. 2025", reply: null },
 ];
 
 const ratingBreakdown = [
-  { stars: 5, count: 42 },
-  { stars: 4, count: 10 },
-  { stars: 3, count: 3 },
-  { stars: 2, count: 1 },
+  { stars: 5, count: 4 },
+  { stars: 4, count: 1 },
+  { stars: 3, count: 0 },
+  { stars: 2, count: 0 },
   { stars: 1, count: 0 },
 ];
 
@@ -391,6 +391,26 @@ export default function ProfilPage() {
                   </ul>
                 </div>
               )}
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Zones</h3>
+                <div className="flex flex-wrap gap-2">
+                  {["Suisse romande", "Côte d'Azur", "Maroc"].map((z) => (
+                    <span key={z} className="px-3 py-1 text-xs rounded-full bg-[#C4956A]/10 text-[#C4956A]">
+                      {z}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Spécialités</h3>
+                <div className="flex flex-wrap gap-2">
+                  {["Location courte durée premium", "Investissement immobilier", "Formation"].map((s) => (
+                    <span key={s} className="px-3 py-1 text-xs rounded-full bg-[#C4956A]/10 text-[#C4956A]">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
               {currentUser.responseTime && (
                 <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
                   <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Temps de réponse</h3>

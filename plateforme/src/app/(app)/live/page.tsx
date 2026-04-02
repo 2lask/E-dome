@@ -46,8 +46,9 @@ export default function LivePage() {
   });
 
   // Create modal state
-  const [newLive, setNewLive] = useState({ titre: "", type: "webinaire", date: "", description: "" });
+  const [newLive, setNewLive] = useState({ titre: "", type: "webinaire", date: "", duree: "60", description: "", prix: "0" });
 
+  const [toastVisible, setToastVisible] = useState(false);
   const canCreateLive = activeRole === "formateur" || activeRole === "agence";
 
   const handleInscription = (liveId: string) => {
@@ -102,16 +103,21 @@ export default function LivePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
+      {/* Toast */}
+      {toastVisible && (
+        <div className="fixed top-6 right-6 z-[60] px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
+          ✓ Live programmé ! (démonstration)
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-bold text-[var(--foreground)]">Live</h1>
-        {canCreateLive && (
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
-          >
-            Programmer un live
-          </button>
-        )}
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="px-4 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
+        >
+          📡 Programmer un live
+        </button>
       </div>
 
       {/* Live Viewer (when live) */}
@@ -288,7 +294,7 @@ export default function LivePage() {
             className="w-full max-w-lg mx-4 p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-5 animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl font-semibold text-[var(--foreground)]">Créer un live</h2>
+            <h2 className="text-xl font-semibold text-[var(--foreground)]">📡 Programmer un live</h2>
             <div className="space-y-4">
               <div className="space-y-1">
                 <label className="text-sm text-[var(--text-secondary)]">Titre</label>
@@ -300,27 +306,27 @@ export default function LivePage() {
                   className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition"
                 />
               </div>
-              <div className="space-y-1">
-                <label className="text-sm text-[var(--text-secondary)]">Type</label>
-                <select
-                  value={newLive.type}
-                  onChange={(e) => setNewLive({ ...newLive, type: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
-                >
-                  <option value="webinaire">Webinaire</option>
-                  <option value="visite">Visite virtuelle</option>
-                  <option value="formation">Formation</option>
-                  <option value="qa">Questions / Réponses</option>
-                </select>
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm text-[var(--text-secondary)]">Date et heure</label>
-                <input
-                  type="datetime-local"
-                  value={newLive.date}
-                  onChange={(e) => setNewLive({ ...newLive, date: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-sm text-[var(--text-secondary)]">Date / Heure</label>
+                  <input
+                    type="datetime-local"
+                    value={newLive.date}
+                    onChange={(e) => setNewLive({ ...newLive, date: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm text-[var(--text-secondary)]">Durée (minutes)</label>
+                  <input
+                    type="number"
+                    min="15"
+                    step="15"
+                    value={newLive.duree}
+                    onChange={(e) => setNewLive({ ...newLive, duree: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
+                  />
+                </div>
               </div>
               <div className="space-y-1">
                 <label className="text-sm text-[var(--text-secondary)]">Description</label>
@@ -332,6 +338,20 @@ export default function LivePage() {
                   className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition resize-none"
                 />
               </div>
+              <div className="space-y-1">
+                <label className="text-sm text-[var(--text-secondary)]">Prix (CHF) — 0 = Gratuit</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="5"
+                  value={newLive.prix}
+                  onChange={(e) => setNewLive({ ...newLive, prix: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
+                />
+                {newLive.prix === "0" && (
+                  <p className="text-xs text-green-500 mt-1">Gratuit</p>
+                )}
+              </div>
             </div>
             <div className="flex gap-3 justify-end">
               <button
@@ -341,10 +361,14 @@ export default function LivePage() {
                 Annuler
               </button>
               <button
-                onClick={() => { alert("Live créé (démo)"); setShowCreateModal(false); }}
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setToastVisible(true);
+                  setTimeout(() => setToastVisible(false), 3000);
+                }}
                 className="px-4 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
               >
-                Programmer le live
+                Publier
               </button>
             </div>
           </div>
