@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
@@ -49,7 +50,8 @@ export default function LivePage() {
   const [newLive, setNewLive] = useState({ titre: "", type: "webinaire", date: "", duree: "60", description: "", prix: "0" });
 
   const [toastVisible, setToastVisible] = useState(false);
-  const canCreateLive = activeRole === "formateur" || activeRole === "agence";
+  // Button visible to all users in demo mode
+  const canCreateLive = true;
 
   const handleInscription = (liveId: string) => {
     setInscriptions((prev) => {
@@ -264,11 +266,11 @@ export default function LivePage() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Replays</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {PAST_REPLAYS.map((replay) => (
-            <div
+          {PAST_REPLAYS.map((replay, idx) => (
+            <Link
               key={replay.id}
-              className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden hover:border-[#C4956A]/40 transition cursor-pointer"
-              onClick={() => setViewingReplay(replay.id)}
+              href={`/live/replay/${idx + 1}`}
+              className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden hover:border-[#C4956A]/40 transition cursor-pointer block"
             >
               <div className="aspect-video bg-gray-800 flex items-center justify-center relative">
                 <div className="text-3xl text-white/40">▶</div>
@@ -282,7 +284,7 @@ export default function LivePage() {
                   <span>{replay.vues.toLocaleString("fr-CH")} vues</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

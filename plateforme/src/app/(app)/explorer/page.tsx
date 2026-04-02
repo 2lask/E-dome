@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import {
   Search, SlidersHorizontal, Heart, MapPin, Bed, Bath, Maximize,
@@ -108,6 +108,21 @@ const PROPERTY_TYPES: { value: PropertyType | ""; label: string }[] = [
 
 const COUNTRIES = ["", "Suisse", "Maroc", "France"];
 
+const CITY_COORDS: Record<string, [number, number]> = {
+  "Lausanne": [46.5197, 6.6323],
+  "Genève": [46.2044, 6.1432],
+  "Montreux": [46.4312, 6.9107],
+  "Verbier": [46.0967, 7.2286],
+  "Zurich": [47.3769, 8.5417],
+  "Neuchâtel": [46.9920, 6.9311],
+  "Bâle": [47.5596, 7.5886],
+  "Nice": [43.7102, 7.2620],
+  "Marrakech": [31.6295, -7.9811],
+  "Tanger": [35.7595, -5.8340],
+  "Phuket": [7.8804, 98.3923],
+  "Dubai": [25.2048, 55.2708],
+};
+
 const TRANSACTION_TABS: { value: TransactionType | "all" | "terrains"; label: string }[] = [
   { value: "all", label: "Tout" },
   { value: "location-ct", label: "Location CT" },
@@ -152,6 +167,10 @@ export default function ExplorerPage() {
     } catch { /* ignore */ }
   }, []);
 
+  // ─── Leaflet map ref (useEffect is after filtered useMemo) ───────
+  const mapInstanceRef = useRef<any>(null);
+  // Leaflet useEffect is placed after filtered declaration below
+
   const saveSearch = () => {
     if (!search.trim()) return;
     const updated = [search, ...savedSearches.filter((s) => s !== search)].slice(0, 5);
@@ -195,6 +214,37 @@ export default function ExplorerPage() {
 
     return results;
   }, [search, filterType, filterTransaction, filterCountry, filterPriceMin, filterPriceMax, filterBedrooms, sortBy]);
+
+  // ─── Leaflet map useEffect ────────────────────────────────────────
+  useEffect(() => {
+    if (!showMap) return;
+    let cancelled = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const initMap = (L: any) => {
+      if (cancelled) return;
+      const container = document.getElementById("leaflet-map");
+      if (!container) return;
+      const map = L.map("leaflet-map").setView([46.8, 8.2], 5);
+      mapInstanceRef.current = map;
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap" }).addTo(map);
+      const goldIcon = L.divIcon({ className: "", html: `<div style="width:32px;height:32px;background:linear-gradient(135deg,#C4956A,#d4a574);border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`, iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -34] });
+      filtered.forEach((prop) => {
+        const coords = CITY_COORDS[prop.location.city];
+        if (!coords) return;
+        const suffix = prop.transactionType === "location-ct" ? "/nuit" : prop.transactionType === "location-lt" ? "/mois" : "";
+        L.marker(coords, { icon: goldIcon }).addTo(map).bindPopup(`<div style="font-family:system-ui;min-width:180px"><p style="font-weight:600;margin:0 0 4px;font-size:14px">${prop.title}</p><p style="color:#C4956A;font-weight:700;margin:0 0 4px;font-size:13px">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix ? ` <span style="font-weight:400;color:#888;font-size:11px">${suffix}</span>` : ""}</p><p style="color:#888;margin:0 0 6px;font-size:12px">${prop.location.city}${prop.rating ? ` · ★ ${prop.rating}` : ""}</p><a href="/explorer/${prop.id}" style="color:#C4956A;text-decoration:none;font-size:12px;font-weight:600">Voir →</a></div>`, { closeButton: false });
+      });
+      const validCoords = filtered.map((p) => CITY_COORDS[p.location.city]).filter(Boolean);
+      if (validCoords.length > 1) map.fitBounds(validCoords as [number, number][], { padding: [40, 40] });
+      setTimeout(() => map.invalidateSize(), 300);
+    };
+    const L = (window as unknown as Record<string, unknown>).L;
+    if (L) { setTimeout(() => initMap(L), 50); } else {
+      const linkEl = document.createElement("link"); linkEl.rel = "stylesheet"; linkEl.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.appendChild(linkEl);
+      const scriptEl = document.createElement("script"); scriptEl.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"; scriptEl.onload = () => initMap((window as unknown as Record<string, unknown>).L); document.body.appendChild(scriptEl);
+    }
+    return () => { cancelled = true; if (mapInstanceRef.current) { mapInstanceRef.current.remove(); mapInstanceRef.current = null; } };
+  }, [showMap, filtered, formatPrice]);
 
   const visibleProperties = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
@@ -585,7 +635,7 @@ export default function ExplorerPage() {
 
       {/* Map floating button */}
       <button
-        onClick={() => setShowMap(true)}
+        onClick={() => setShowMap((v) => !v)}
         className="fixed bottom-20 md:bottom-8 right-6 z-30 px-5 py-3 rounded-full font-medium flex items-center gap-2 shadow-xl text-white hover:opacity-90 transition-opacity"
         style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}
       >
@@ -593,76 +643,30 @@ export default function ExplorerPage() {
         Carte
       </button>
 
-      {/* Map modal */}
+      {/* Map modal — Leaflet interactive */}
       {showMap && (
-        <div className="fixed inset-0 z-50 bg-[var(--overlay)] flex items-center justify-center p-4" onClick={() => setShowMap(false)}>
-          <div
-            className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden animate-scale-in flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-[var(--card-border)]">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}>
-                  🗺
-                </div>
-                <div>
-                  <h3 className="font-semibold text-[var(--foreground)]">Carte des biens</h3>
-                  <p className="text-xs text-[var(--text-muted)]">{filtered.length} bien{filtered.length > 1 ? "s" : ""} disponible{filtered.length > 1 ? "s" : ""}</p>
-                </div>
+        <div className="fixed inset-0 z-50 flex flex-col bg-[var(--background)]">
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--card-border)] bg-[var(--card)] shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base" style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}>
+                🗺
               </div>
-              <button onClick={() => setShowMap(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
-                <X className="w-5 h-5" />
-              </button>
+              <div>
+                <h3 className="font-semibold text-[var(--foreground)] text-sm">Carte des biens</h3>
+                <p className="text-xs text-[var(--text-muted)]">{filtered.length} bien{filtered.length > 1 ? "s" : ""} disponible{filtered.length > 1 ? "s" : ""}</p>
+              </div>
             </div>
-
-            {/* Properties grouped by country */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-6">
-              {Object.entries(
-                filtered.reduce<Record<string, typeof filtered>>((acc, prop) => {
-                  const country = prop.location.country;
-                  if (!acc[country]) acc[country] = [];
-                  acc[country].push(prop);
-                  return acc;
-                }, {})
-              ).map(([country, props]) => (
-                <div key={country}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <MapPin className="w-4 h-4 text-[#C4956A]" />
-                    <h4 className="text-sm font-semibold text-[var(--foreground)]">{country}</h4>
-                    <span className="text-xs text-[var(--text-muted)]">({props.length} bien{props.length > 1 ? "s" : ""})</span>
-                  </div>
-                  <div className="space-y-2">
-                    {props.map((prop) => (
-                      <Link
-                        key={prop.id}
-                        href={`/explorer/${prop.id}`}
-                        onClick={() => setShowMap(false)}
-                        className="flex items-center gap-3 p-3 rounded-xl border border-[var(--card-border)] hover:border-[#C4956A]/40 hover:bg-[#C4956A]/5 transition-colors"
-                      >
-                        <img src={prop.images[0]} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[var(--foreground)] truncate">{prop.title}</p>
-                          <p className="text-xs text-[var(--text-muted)] flex items-center gap-1 mt-0.5">
-                            <MapPin className="w-3 h-3" /> {prop.location.city}
-                          </p>
-                        </div>
-                        <p className="text-sm font-bold text-[#C4956A] shrink-0">
-                          {formatPrice(prop.price, prop.currency)}
-                          {prop.transactionType === "location-ct" && <span className="text-xs font-normal text-[var(--text-muted)]">/nuit</span>}
-                          {prop.transactionType === "location-lt" && <span className="text-xs font-normal text-[var(--text-muted)]">/mois</span>}
-                        </p>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Footer note */}
-            <div className="p-4 border-t border-[var(--card-border)] text-center">
-              <p className="text-xs text-[var(--text-muted)] italic">Carte interactive disponible prochainement</p>
-            </div>
+            <button
+              onClick={() => setShowMap(false)}
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          {/* Map container */}
+          <div className="flex-1 relative">
+            <div id="leaflet-map" className="absolute inset-0" />
           </div>
         </div>
       )}

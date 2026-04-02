@@ -365,7 +365,7 @@ export const properties: Property[] = [
     bedrooms: 0,
     bathrooms: 1,
     area: 32,
-    floor: 3,
+    floor: 4,
     amenities: ['WiFi', 'Meubl\u00e9', 'Cuisine \u00e9quip\u00e9e', 'Machine \u00e0 laver', 'Climatisation'],
     rating: 4.6,
     reviewCount: 58,
