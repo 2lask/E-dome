@@ -55,25 +55,11 @@ const REPORTS = [
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function InvestisseursPage() {
-  const { activeRole, formatPrice } = useApp();
+  const { formatPrice } = useApp();
   const [kpis, setKpis] = useState(DEFAULT_KPIS);
   const [projections, setProjections] = useState(DEFAULT_PROJECTIONS);
   const [editingKpi, setEditingKpi] = useState<number | null>(null);
   const [editingCell, setEditingCell] = useState<{ row: number; col: string } | null>(null);
-
-  if (activeRole !== "investisseur") {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
-          <div className="text-5xl mb-4">🔒</div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Accès restreint</h2>
-          <p className="text-[var(--text-secondary)]">
-            Cette page est réservée aux investisseurs. Activez le role &laquo;Investisseur&raquo; dans vos paramètres.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const maxGrowth = Math.max(...GROWTH_DATA.map((d) => d.value));
 

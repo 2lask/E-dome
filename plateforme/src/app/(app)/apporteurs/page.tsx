@@ -100,23 +100,9 @@ const statusLabels: Record<string, string> = {
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function ApporteursPage() {
-  const { activeRole, formatPrice } = useApp();
+  const { formatPrice } = useApp();
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [showQR, setShowQR] = useState<number | null>(null);
-
-  if (activeRole !== "apporteur") {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
-          <div className="text-5xl mb-4">🔒</div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Accès restreint</h2>
-          <p className="text-[var(--text-secondary)]">
-            Cette page est réservée aux apporteurs d&apos;affaires. Activez le role &laquo;Apporteur&raquo; dans vos paramètres.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const totalCommissions = MOCK_APPORTS.reduce((s, a) => s + a.commission, 0);
   const totalVersements = MOCK_VERSEMENTS.reduce((s, v) => s + v.montant, 0);

@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useApp } from "@/lib/context";
-import { roleLabels } from "@/lib/types";
 import type { Property, User, SocialPost } from "@/lib/types";
 import { formatCount, timeAgo } from "@/lib/utils";
 
@@ -17,14 +16,14 @@ const currentUser: User = {
   avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
   city: "Lausanne",
   country: "Suisse",
-  roles: ["hote", "apporteur"],
+  roles: ["hote", "formateur", "apporteur", "investisseur"],
   activeRole: "hote",
   stats: {
-    followers: 1240,
+    followers: 1200,
     following: 320,
     properties: 8,
     reviews: 56,
-    rating: 4.8,
+    rating: 4.9,
     transactions: 124,
     revenue: 185000,
   },
@@ -86,8 +85,8 @@ const ratingBreakdown = [
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function ProfilPage() {
-  const { activeRole, formatPrice } = useApp();
-  const [tab, setTab] = useState<"biens" | "publications" | "avis" | "apropos">("biens");
+  const { formatPrice } = useApp();
+  const [tab, setTab] = useState<"biens" | "publications" | "formations" | "avis" | "apropos">("biens");
   const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState({
     photo: currentUser.avatar,
@@ -100,22 +99,41 @@ export default function ProfilPage() {
   });
 
   const totalReviews = ratingBreakdown.reduce((s, r) => s + r.count, 0);
-  const isClient = activeRole === "client";
   const propertyCount = mockProperties.length;
 
-  const tabs = isClient
-    ? [
-        { key: "biens" as const, label: "Biens sauvegardés" },
-        { key: "publications" as const, label: "Publications" },
-        { key: "avis" as const, label: "Avis" },
-        { key: "apropos" as const, label: "À propos" },
-      ]
-    : [
-        { key: "biens" as const, label: "Mes Biens" },
-        { key: "publications" as const, label: "Publications" },
-        { key: "avis" as const, label: "Avis" },
-        { key: "apropos" as const, label: "À propos" },
-      ];
+  const roleBadges = [
+    { key: "hote", label: "Hôte" },
+    { key: "formateur", label: "Formateur" },
+    { key: "apporteur", label: "Apporteur" },
+    { key: "investisseur", label: "Investisseur" },
+  ];
+
+  const tabs = [
+    { key: "biens" as const, label: "Mes Biens" },
+    { key: "publications" as const, label: "Publications" },
+    { key: "formations" as const, label: "Formations" },
+    { key: "avis" as const, label: "Avis" },
+    { key: "apropos" as const, label: "À propos" },
+  ];
+
+  const mockFormations = [
+    {
+      id: "mf1",
+      title: "Investir en Suisse romande",
+      students: 1280,
+      rating: 4.9,
+      price: 197,
+      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+    },
+    {
+      id: "mf2",
+      title: "Gestion locative avancée",
+      students: 850,
+      rating: 4.8,
+      price: 149,
+      image: "https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=400&h=300&fit=crop",
+    },
+  ];
 
   return (
     <div className="max-w-4xl mx-auto pb-12 animate-fade-in">
@@ -135,8 +153,18 @@ export default function ProfilPage() {
               {currentUser.firstName} {currentUser.lastName}
             </h1>
             <p className="text-sm text-[var(--text-secondary)]">
-              {roleLabels[activeRole]} - {currentUser.city}, {currentUser.country}
+              {currentUser.city}, {currentUser.country}
             </p>
+            <div className="flex flex-wrap gap-1.5 mt-1.5">
+              {roleBadges.map((r) => (
+                <span
+                  key={r.key}
+                  className="px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-[#C4956A]/10 text-[#C4956A]"
+                >
+                  {r.label}
+                </span>
+              ))}
+            </div>
           </div>
           <button
             onClick={() => setShowEditModal(true)}
@@ -149,10 +177,10 @@ export default function ProfilPage() {
         {/* Stats */}
         <div className="flex gap-6 mt-6 flex-wrap">
           {[
-            ...(!isClient ? [{ label: "Biens", value: propertyCount }] : []),
+            { label: "Biens", value: propertyCount },
             { label: "Abonnés", value: currentUser.stats.followers },
             { label: "Suivis", value: currentUser.stats.following },
-            ...(isClient ? [{ label: "Note voyageur", value: `4.8/5` }] : totalReviews > 0 ? [{ label: "Note", value: `${currentUser.stats.rating}/5` }] : []),
+            { label: "Note", value: `${currentUser.stats.rating}/5` },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-lg font-bold text-[var(--foreground)]">
@@ -187,7 +215,7 @@ export default function ProfilPage() {
 
         {/* Tab Content */}
         <div className="mt-6">
-          {tab === "biens" && !isClient && (
+          {tab === "biens" && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {mockProperties.map((p) => (
                 <Link
@@ -196,38 +224,6 @@ export default function ProfilPage() {
                   className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#C4956A]/30 transition-colors"
                 >
                   <img src={p.images[0]} alt={p.title} className="w-full h-40 object-cover" />
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-[var(--foreground)] truncate">{p.title}</h3>
-                    <p className="text-xs text-[var(--text-muted)] mt-1">
-                      {p.location.city}, {p.location.country}
-                    </p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-bold text-[#C4956A]">
-                        {formatPrice(p.price, p.currency)}
-                        {p.transactionType === "location-ct" ? "/nuit" : ""}
-                      </span>
-                      <span className="text-xs text-[var(--text-muted)]">
-                        {p.rating} ({p.reviewCount})
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {tab === "biens" && isClient && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mockProperties.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/explorer/${p.id}`}
-                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#C4956A]/30 transition-colors"
-                >
-                  <div className="relative">
-                    <img src={p.images[0]} alt={p.title} className="w-full h-40 object-cover" />
-                    <span className="absolute top-2 right-2 px-2 py-0.5 bg-red-500/90 text-white text-[10px] rounded-full">❤️ Sauvegardé</span>
-                  </div>
                   <div className="p-4">
                     <h3 className="text-sm font-semibold text-[var(--foreground)] truncate">{p.title}</h3>
                     <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -261,6 +257,30 @@ export default function ProfilPage() {
                     <span>{timeAgo(post.createdAt)}</span>
                   </div>
                 </div>
+              ))}
+            </div>
+          )}
+
+          {tab === "formations" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {mockFormations.map((f) => (
+                <Link
+                  key={f.id}
+                  href={`/formations/${f.id}`}
+                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#C4956A]/30 transition-colors"
+                >
+                  <img src={f.image} alt={f.title} className="w-full h-40 object-cover" />
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-[var(--foreground)]">{f.title}</h3>
+                    <div className="flex items-center gap-3 mt-2 text-xs text-[var(--text-muted)]">
+                      <span>{f.students} étudiants</span>
+                      <span>★ {f.rating}</span>
+                    </div>
+                    <div className="mt-2 text-sm font-bold text-[#C4956A]">
+                      {formatPrice(f.price)}
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           )}

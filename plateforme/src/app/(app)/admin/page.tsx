@@ -46,7 +46,7 @@ const MOCK_SIGNALEMENTS = [
 type Tab = "utilisateurs" | "biens" | "signalements" | "parametres";
 
 export default function AdminPage() {
-  const { activeRole, formatPrice } = useApp();
+  const { formatPrice } = useApp();
   const [activeTab, setActiveTab] = useState<Tab>("utilisateurs");
   const [search, setSearch] = useState("");
   const [biens, setBiens] = useState(MOCK_BIENS);
@@ -55,20 +55,6 @@ export default function AdminPage() {
   const [commissionLocation, setCommissionLocation] = useState("8");
   const [commissionApporteur, setCommissionApporteur] = useState("15");
   const [maintenanceMode, setMaintenanceMode] = useState(false);
-
-  if (activeRole !== "agence" && activeRole !== "admin") {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
-          <div className="text-5xl mb-4">🔒</div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">Accès restreint</h2>
-          <p className="text-[var(--text-secondary)]">
-            Cette page est reservee aux administrateurs et agences.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const filteredUsers = MOCK_USERS.filter(
     (u) =>

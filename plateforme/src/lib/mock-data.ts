@@ -33,7 +33,7 @@ export const currentUser: User = {
   avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
   city: 'Neuchâtel',
   country: 'Suisse',
-  roles: ['hote', 'apporteur', 'formateur'] as Role[],
+  roles: ['hote', 'formateur', 'apporteur', 'investisseur', 'agence', 'client'] as Role[],
   activeRole: 'hote' as Role,
   stats: {
     followers: 2340,

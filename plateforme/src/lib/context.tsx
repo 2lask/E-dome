@@ -48,7 +48,7 @@ const AppContext = createContext<AppContextValue | null>(null);
 // ─── Default values ─────────────────────────────────────────────────────────
 
 const DEFAULT_ROLE: Role = "client";
-const DEFAULT_ROLES: Role[] = ["client", "hote"];
+const DEFAULT_ROLES: Role[] = ["client", "hote", "formateur", "apporteur", "investisseur", "agence"];
 const DEFAULT_CURRENCY: Currency = "CHF";
 const DEFAULT_FAVORITES: string[] = ["p1", "p3", "p4"];
 const STORAGE_PREFIX = "edome_";

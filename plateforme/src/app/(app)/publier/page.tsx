@@ -70,8 +70,6 @@ const EQUIPEMENTS = [
 const DPE_OPTIONS = ["A", "B", "C", "D", "E", "F", "G"];
 const ETAT_OPTIONS = ["Neuf", "Excellent", "Bon", "A renover", "A restaurer"];
 
-const ALLOWED_ROLES = ["hote", "agence", "promoteur", "proprietaire"];
-
 const emptyForm: PublishForm = {
   transactionType: "", propertyType: "", adresse: "", ville: "", codePostal: "", prix: 0,
   chambres: 1, sallesDeBain: 1, surface: 0, titre: "", description: "",
@@ -87,7 +85,7 @@ const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5"
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function PublierPage() {
-  const { formatPrice, activeRole } = useApp();
+  const { formatPrice } = useApp();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<PublishForm>(emptyForm);
   const [published, setPublished] = useState(false);
@@ -99,69 +97,6 @@ export default function PublierPage() {
 
   const isVente = form.transactionType === "vente";
   const totalSteps = isVente ? 5 : 4;
-
-  // Role gate
-  if (!ALLOWED_ROLES.includes(activeRole)) {
-    const roleCards = [
-      { icon: "🏡", title: "Hôte", desc: "Location courte et longue durée" },
-      { icon: "🏢", title: "Agence", desc: "Mandats multi-biens" },
-      { icon: "🏗️", title: "Promoteur", desc: "Projets neufs" },
-      { icon: "🏠", title: "Propriétaire", desc: "Vente et gestion" },
-    ];
-
-    return (
-      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full">
-          {/* Hero */}
-          <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#C4956A] to-[#b8845a] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold mb-3">Publiez vos biens sur E-Dome</h1>
-            <p className="text-[var(--text-secondary)] text-lg max-w-md mx-auto">
-              Rejoignez des milliers de professionnels et particuliers qui publient leurs biens sur notre plateforme.
-            </p>
-          </div>
-
-          {/* Role cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-            {roleCards.map((role) => (
-              <div
-                key={role.title}
-                className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-5 hover:border-[#C4956A]/30 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <span className="text-3xl">{role.icon}</span>
-                  <div>
-                    <h3 className="font-semibold text-[var(--foreground)]">{role.title}</h3>
-                    <p className="text-sm text-[var(--text-muted)]">{role.desc}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* CTA */}
-          <div className="text-center">
-            <p className="text-sm text-[var(--text-muted)] mb-4">
-              Activez l'un de ces rôles dans vos paramètres pour commencer à publier.
-            </p>
-            <a
-              href="/parametres"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors shadow-lg shadow-[#C4956A]/20"
-            >
-              Activer un rôle dans mes paramètres
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Load form + drafts
   // eslint-disable-next-line react-hooks/rules-of-hooks

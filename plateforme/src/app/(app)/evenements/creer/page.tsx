@@ -23,8 +23,6 @@ interface EventForm {
 
 const TYPES = ["Webinaire", "Conférence", "Atelier", "Networking", "Formation live"];
 
-const ALLOWED_ROLES = ["hote", "agence", "promoteur", "formateur"];
-
 const emptyForm: EventForm = {
   titre: "", type: "", date: "", heure: "", duree: "", enLigne: false, lieu: "", description: "", image: "",
   intervenantNom: "", intervenantBio: "", places: 0, prix: 0,
@@ -36,29 +34,9 @@ const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5"
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function CreerEvenementPage() {
-  const { formatPrice, activeRole } = useApp();
+  const { formatPrice } = useApp();
   const [form, setForm] = useState<EventForm>(emptyForm);
   const [published, setPublished] = useState(false);
-
-  if (!ALLOWED_ROLES.includes(activeRole)) {
-    return (
-      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-[#C4956A]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-10 h-10 text-[#C4956A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-          </div>
-          <h1 className="text-2xl font-bold mb-2">Accès restreint</h1>
-          <p className="text-[var(--text-secondary)] mb-6">
-            La création d&apos;événements est réservée aux hôtes, agences, promoteurs et formateurs.
-            Changez votre rôle actif dans les paramètres pour accéder à cette fonctionnalité.
-          </p>
-          <a href="/parametres" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
-            Gérer mes rôles
-          </a>
-        </div>
-      </div>
-    );
-  }
 
   const update = <K extends keyof EventForm>(key: K, value: EventForm[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
