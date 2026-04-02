@@ -397,7 +397,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold cursor-pointer"
             style={{ background: "var(--gold)", color: "#000" }}
           >
-            LD
+            LM
           </button>
           {showUser && (
             <div style={dropdownStyle}>
@@ -433,7 +433,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
               >
                 <Settings size={16} />
-                Parametres
+                Paramètres
               </button>
               <button
                 onClick={() => {

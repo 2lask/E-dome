@@ -18,11 +18,11 @@ const INSTRUCTORS = [
 ];
 
 const FORMATIONS = [
-  { id: "f1", title: "Investissement immobilier : de 0 a expert", category: "Immobilier", level: "debutant" as const, instructor: INSTRUCTORS[0], thumbnail: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&h=400&fit=crop", price: 299, rating: 4.9, studentCount: 1240, duration: "12h", progress: 65, enrolled: true, featured: true, modules: 5 },
-  { id: "f2", title: "Gestion locative avancee", category: "Gestion locative", level: "avance" as const, instructor: INSTRUCTORS[1], thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop", price: 199, rating: 4.8, studentCount: 890, duration: "8h", progress: 30, enrolled: true, featured: false, modules: 6 },
+  { id: "f1", title: "Investissement immobilier : de 0 à expert", category: "Immobilier", level: "debutant" as const, instructor: INSTRUCTORS[0], thumbnail: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&h=400&fit=crop", price: 299, rating: 4.9, studentCount: 1240, duration: "12h", progress: 65, enrolled: true, featured: true, modules: 5 },
+  { id: "f2", title: "Gestion locative avancée", category: "Gestion locative", level: "avance" as const, instructor: INSTRUCTORS[1], thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop", price: 199, rating: 4.8, studentCount: 890, duration: "8h", progress: 30, enrolled: true, featured: false, modules: 6 },
   { id: "f3", title: "Marketing digital immobilier", category: "Marketing", level: "intermediaire" as const, instructor: INSTRUCTORS[2], thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop", price: 149, rating: 4.7, studentCount: 670, duration: "6h", progress: 0, enrolled: false, featured: false, modules: 5 },
   { id: "f4", title: "Droit immobilier suisse", category: "Juridique", level: "intermediaire" as const, instructor: INSTRUCTORS[3], thumbnail: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=400&fit=crop", price: 249, rating: 4.6, studentCount: 530, duration: "10h", progress: 0, enrolled: false, featured: false, modules: 7 },
-  { id: "f5", title: "Analyse financiere pour investisseurs", category: "Finance", level: "avance" as const, instructor: INSTRUCTORS[4], thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop", price: 349, rating: 4.9, studentCount: 420, duration: "14h", progress: 0, enrolled: false, featured: false, modules: 10 },
+  { id: "f5", title: "Analyse financière pour investisseurs", category: "Finance", level: "avance" as const, instructor: INSTRUCTORS[4], thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop", price: 349, rating: 4.9, studentCount: 420, duration: "14h", progress: 0, enrolled: false, featured: false, modules: 10 },
   { id: "f6", title: "Home staging professionnel", category: "Design", level: "debutant" as const, instructor: INSTRUCTORS[5], thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", price: 129, rating: 4.5, studentCount: 340, duration: "5h", progress: 0, enrolled: false, featured: false, modules: 4 },
 ];
 
@@ -75,7 +75,7 @@ export default function FormationsPage() {
           </div>
           {activeRole === "formateur" && (
             <Link href="/formations/creer" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
-              + Creer une formation
+              + Créer une formation
             </Link>
           )}
         </div>
@@ -117,7 +117,7 @@ export default function FormationsPage() {
               <h2 className="text-2xl font-bold text-white mb-1">{featured.title}</h2>
               <div className="flex items-center gap-4 text-white/80 text-sm">
                 <span>{featured.instructor.name}</span>
-                <span>{featured.studentCount} etudiants</span>
+                <span>{featured.studentCount} étudiants</span>
                 <Stars rating={featured.rating} />
                 <span className="font-semibold text-[#C4956A]">{formatPrice(featured.price)}</span>
               </div>
@@ -186,7 +186,7 @@ export default function FormationsPage() {
             ))}
           </div>
           {filtered.length === 0 && (
-            <p className="text-center text-[var(--text-muted)] py-12">Aucune formation trouvee.</p>
+            <p className="text-center text-[var(--text-muted)] py-12">Aucune formation trouvée.</p>
           )}
         </section>
 
@@ -200,7 +200,7 @@ export default function FormationsPage() {
                 <h3 className="font-medium text-[var(--foreground)] group-hover:text-[#C4956A] transition-colors text-center">{inst.name}</h3>
                 <span className="text-sm text-[var(--text-muted)]">{inst.specialty}</span>
                 <div className="flex items-center gap-3 mt-2 text-xs text-[var(--text-secondary)]">
-                  <span>{inst.students} etudiants</span>
+                  <span>{inst.students} étudiants</span>
                   <span className="text-[#C4956A]">{inst.rating.toFixed(1)} ★</span>
                 </div>
               </Link>

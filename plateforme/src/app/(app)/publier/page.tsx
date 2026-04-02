@@ -210,8 +210,8 @@ export default function PublierPage() {
   /* ── Step labels ─────────────────────────────────────────────────────── */
 
   const stepLabels = isVente
-    ? ["Type & Adresse", "Details", "Medias", "Analytics", "Equipements", "Apporteurs", "Options & Publication"]
-    : ["Type & Adresse", "Details", "Medias", "Equipements", "Apporteurs", "Options & Publication"];
+    ? ["Type & Adresse", "Détails", "Médias", "Analytics", "Équipements", "Apporteurs", "Options & Publication"]
+    : ["Type & Adresse", "Détails", "Médias", "Équipements", "Apporteurs", "Options & Publication"];
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -375,7 +375,7 @@ export default function PublierPage() {
         {/* ── Step 4: Equipements (non-vente) or Analytics (vente) ──── */}
         {step === 4 && !isVente && (
           <div className="space-y-5 animate-fade-in">
-            <h2 className="text-xl font-semibold">Equipements</h2>
+            <h2 className="text-xl font-semibold">Équipements</h2>
             <div className="flex flex-wrap gap-2">
               {EQUIPEMENTS.map((eq) => (
                 <button key={eq} onClick={() => toggleEquipement(eq)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${form.equipements.includes(eq) ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
@@ -428,7 +428,7 @@ export default function PublierPage() {
         {/* ── Step 5: Equipements (vente path) ───────────────────────── */}
         {step === 5 && isVente && (
           <div className="space-y-5 animate-fade-in">
-            <h2 className="text-xl font-semibold">Equipements</h2>
+            <h2 className="text-xl font-semibold">Équipements</h2>
             <div className="flex flex-wrap gap-2">
               {EQUIPEMENTS.map((eq) => (
                 <button key={eq} onClick={() => toggleEquipement(eq)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${form.equipements.includes(eq) ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>

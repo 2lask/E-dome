@@ -17,14 +17,14 @@ const mockConversations: Conversation[] = [
       bio: "",
     },
     messages: [
-      { id: "m1", senderId: "u1", content: "Bonjour, le chalet est-il disponible en juillet ?", timestamp: "2026-03-31T10:00:00", read: true },
-      { id: "m2", senderId: currentUserId, content: "Bonjour Sophie ! Oui, il est disponible du 5 au 25 juillet.", timestamp: "2026-03-31T10:05:00", read: true },
-      { id: "m3", senderId: "u1", content: "Parfait, je voudrais réserver du 10 au 17 juillet pour 4 personnes.", timestamp: "2026-03-31T10:10:00", read: true },
-      { id: "m4", senderId: currentUserId, content: "Très bien ! Je vous envoie le devis tout de suite.", timestamp: "2026-03-31T10:15:00", read: true },
-      { id: "m5", senderId: "u1", content: "Merci beaucoup ! Quel est le prix total ?", timestamp: "2026-04-01T08:30:00", read: false },
+      { id: "m1", senderId: "u1", content: "Bonjour Léo ! Je suis intéressée par le Chalet Alpin.", timestamp: "2026-03-31T10:00:00", read: true },
+      { id: "m2", senderId: currentUserId, content: "Bonjour Sophie ! Merci pour votre intérêt. Le chalet est disponible dès le 15 avril.", timestamp: "2026-03-31T10:05:00", read: true },
+      { id: "m3", senderId: "u1", content: "Parfait ! Quel est le tarif pour une semaine ?", timestamp: "2026-03-31T10:10:00", read: true },
+      { id: "m4", senderId: currentUserId, content: "Le tarif est de 1 800 CHF la semaine, petit-déjeuner inclus.", timestamp: "2026-03-31T10:15:00", read: true },
+      { id: "m5", senderId: "u1", content: "Super, je voudrais réserver du 15 au 22 avril pour 4 personnes.", timestamp: "2026-04-01T08:30:00", read: false },
     ],
     unreadCount: 1,
-    lastMessage: "Merci beaucoup ! Quel est le prix total ?",
+    lastMessage: "Super, je voudrais réserver du 15 au 22 avril pour 4 personnes.",
     isOnline: true,
   },
   {
@@ -36,11 +36,13 @@ const mockConversations: Conversation[] = [
       bio: "",
     },
     messages: [
-      { id: "m6", senderId: "u2", content: "Bonjour, je suis intéressé par la villa à Montreux.", timestamp: "2026-03-30T14:00:00", read: true },
-      { id: "m7", senderId: currentUserId, content: "Bonjour Jean ! Avec plaisir, souhaitez-vous organiser une visite ?", timestamp: "2026-03-30T14:30:00", read: true },
+      { id: "m6", senderId: "u2", content: "Bonjour, je cherche une villa avec piscine à Montreux.", timestamp: "2026-03-30T14:00:00", read: true },
+      { id: "m7", senderId: currentUserId, content: "Bonjour Jean ! Je suis disponible pour organiser une visite. Quel créneau vous convient ?", timestamp: "2026-03-30T14:30:00", read: true },
+      { id: "m8", senderId: "u2", content: "Samedi matin serait idéal, vers 10h.", timestamp: "2026-03-30T15:00:00", read: true },
+      { id: "m9", senderId: currentUserId, content: "C'est noté ! Je vous envoie la confirmation par email.", timestamp: "2026-03-30T15:10:00", read: true },
     ],
     unreadCount: 0,
-    lastMessage: "Bonjour Jean ! Avec plaisir, souhaitez-vous organiser une visite ?",
+    lastMessage: "C'est noté ! Je vous envoie la confirmation par email.",
     isOnline: false,
   },
   {
@@ -52,12 +54,13 @@ const mockConversations: Conversation[] = [
       bio: "",
     },
     messages: [
-      { id: "m8", senderId: "u3", content: "Avez-vous des biens à proposer dans le canton de Vaud ?", timestamp: "2026-03-29T09:00:00", read: true },
-      { id: "m9", senderId: currentUserId, content: "Oui, j'ai 3 biens disponibles. Je vous envoie les détails.", timestamp: "2026-03-29T09:15:00", read: true },
-      { id: "m10", senderId: "u3", content: "Super, j'attends vos propositions !", timestamp: "2026-03-29T09:20:00", read: true },
+      { id: "m10", senderId: "u3", content: "Bonjour Léo, je cherche un appartement pour 3 mois à Lausanne.", timestamp: "2026-03-29T09:00:00", read: true },
+      { id: "m11", senderId: currentUserId, content: "Bonjour Marie ! J'ai plusieurs biens disponibles en location moyenne durée.", timestamp: "2026-03-29T09:15:00", read: true },
+      { id: "m12", senderId: "u3", content: "Idéal, pouvez-vous m'envoyer les détails ?", timestamp: "2026-03-29T09:20:00", read: true },
+      { id: "m13", senderId: currentUserId, content: "Bien sûr ! Je vous prépare une sélection personnalisée.", timestamp: "2026-03-29T09:25:00", read: true },
     ],
     unreadCount: 0,
-    lastMessage: "Super, j'attends vos propositions !",
+    lastMessage: "Bien sûr ! Je vous prépare une sélection personnalisée.",
     isOnline: true,
   },
 ];
@@ -84,6 +87,8 @@ export default function MessagesPage() {
   const [typing, setTyping] = useState(false);
   const [deletedMessages, setDeletedMessages] = useState<Set<string>>(new Set());
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [showNewConv, setShowNewConv] = useState(false);
+  const [newConvSearch, setNewConvSearch] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const callIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -181,7 +186,19 @@ export default function MessagesPage() {
         } md:flex flex-col w-full md:w-80 lg:w-96 border-r border-[var(--card-border)] bg-[var(--background)]`}
       >
         <div className="p-4 border-b border-[var(--card-border)]">
-          <h1 className="text-xl font-bold text-[var(--foreground)] mb-3">Messages</h1>
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-xl font-bold text-[var(--foreground)]">Messages</h1>
+            <button
+              onClick={() => setShowNewConv(true)}
+              className="w-8 h-8 rounded-full bg-[#C4956A] text-white flex items-center justify-center hover:bg-[#b8845a] transition-colors"
+              title="Nouvelle conversation"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+          </div>
           <input
             type="text"
             placeholder="Rechercher..."
@@ -448,6 +465,81 @@ export default function MessagesPage() {
           </div>
         )}
       </div>
+
+      {/* New Conversation Modal */}
+      {showNewConv && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl w-full max-w-md shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b border-[var(--card-border)]">
+              <h3 className="text-base font-semibold text-[var(--foreground)]">Nouvelle conversation</h3>
+              <button
+                onClick={() => { setShowNewConv(false); setNewConvSearch(""); }}
+                className="p-1 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)]"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4">
+              <input
+                type="text"
+                value={newConvSearch}
+                onChange={(e) => setNewConvSearch(e.target.value)}
+                placeholder="Rechercher un utilisateur..."
+                className="w-full px-4 py-2.5 text-sm rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)]"
+                autoFocus
+              />
+            </div>
+            <div className="max-h-64 overflow-y-auto px-2 pb-4">
+              {[
+                { id: "u10", firstName: "Alain", lastName: "Bernard", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop", city: "Berne" },
+                { id: "u11", firstName: "Clara", lastName: "Fischer", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop", city: "Bâle" },
+                { id: "u12", firstName: "David", lastName: "Müller", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop", city: "Lucerne" },
+              ]
+                .filter((u) =>
+                  `${u.firstName} ${u.lastName}`.toLowerCase().includes(newConvSearch.toLowerCase())
+                )
+                .map((user) => (
+                  <button
+                    key={user.id}
+                    onClick={() => {
+                      const newConv: Conversation = {
+                        id: `c-new-${Date.now()}`,
+                        participant: {
+                          id: user.id, firstName: user.firstName, lastName: user.lastName,
+                          email: `${user.firstName.toLowerCase()}@e-dome.ch`,
+                          avatar: user.avatar, city: user.city, country: "Suisse",
+                          roles: ["client"], activeRole: "client",
+                          stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 },
+                          bio: "",
+                        },
+                        messages: [],
+                        unreadCount: 0,
+                        lastMessage: "",
+                        isOnline: Math.random() > 0.5,
+                      };
+                      setConversations((prev) => [newConv, ...prev]);
+                      setActiveConvId(newConv.id);
+                      setShowNewConv(false);
+                      setNewConvSearch("");
+                    }}
+                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--hover-bg)] transition-colors"
+                  >
+                    <img src={user.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-[var(--foreground)]">
+                        {user.firstName} {user.lastName}
+                      </div>
+                      <div className="text-xs text-[var(--text-muted)]">{user.city}, Suisse</div>
+                    </div>
+                  </button>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Video Call Overlay */}
       {showVideoCall && activeConv && (

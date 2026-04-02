@@ -17,7 +17,7 @@ const PERIODS = [
 type DashboardTab = "hote" | "formateur" | "apporteur" | "investisseur" | "agence";
 
 const dashboardTabs: { key: DashboardTab; label: string; icon: string }[] = [
-  { key: "hote", label: "Hote", icon: "\uD83C\uDFE1" },
+  { key: "hote", label: "Hôte", icon: "\uD83C\uDFE1" },
   { key: "formateur", label: "Formateur", icon: "\uD83D\uDCDA" },
   { key: "apporteur", label: "Apporteur", icon: "\uD83E\uDD1D" },
   { key: "investisseur", label: "Investisseur", icon: "\uD83D\uDCC8" },
@@ -444,7 +444,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Activity */}
         <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-          <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Activite recente</h2>
+          <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Activité récente</h2>
           <div className="space-y-3">
             {mockActivity.map((a) => (
               <Link
@@ -488,7 +488,7 @@ export default function DashboardPage() {
 
       {/* Réservations récentes */}
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Reservations recentes</h2>
+        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Réservations récentes</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -569,7 +569,7 @@ export default function DashboardPage() {
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
         <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Apporteurs actifs sur mes biens</h2>
         <p className="text-sm text-[var(--text-secondary)] mb-4">
-          3 apporteurs actifs · 8 reservations generees · {formatPrice(342)} de commissions versees
+          3 apporteurs actifs · 8 réservations générées · {formatPrice(342)} de commissions versées
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

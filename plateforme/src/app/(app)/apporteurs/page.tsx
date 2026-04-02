@@ -94,7 +94,7 @@ const statusStyles: Record<string, string> = {
 const statusLabels: Record<string, string> = {
   converti: "Converti",
   en_cours: "En cours",
-  expire: "Expire",
+  expire: "Expiré",
 };
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
@@ -122,7 +122,7 @@ export default function ApporteursPage() {
           Programme Apporteurs d&apos;Affaires
         </h1>
         <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-          Générez des revenus en recommandant E-Dome a votre réseau. Chaque conversion vous rapporte une commission prelevee sur la part plateforme, sans surcharge pour les utilisateurs.
+          Générez des revenus en recommandant E-Dome à votre réseau. Chaque conversion vous rapporte une commission prélevée sur la part plateforme, sans surcharge pour les utilisateurs.
         </p>
       </section>
 
@@ -145,7 +145,7 @@ export default function ApporteursPage() {
                 onClick={() => handleCopy(link.url, idx)}
                 className="flex-1 px-3 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
               >
-                {copiedIdx === idx ? "Copie !" : "Copier"}
+                {copiedIdx === idx ? "Copié !" : "Copier"}
               </button>
               <button
                 onClick={() => shareWhatsApp(link.url)}
@@ -205,12 +205,12 @@ export default function ApporteursPage() {
 
       {/* Commission Flow */}
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">Comment ca fonctionne</h2>
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Comment ça fonctionne</h2>
         <div className="flex flex-col md:flex-row items-center gap-4">
           {[
-            { step: "1", title: "Lien clique", desc: "Un prospect clique sur votre lien de parrainage" },
+            { step: "1", title: "Lien cliqué", desc: "Un prospect clique sur votre lien de parrainage" },
             { step: "2", title: "Conversion confirmée", desc: "Le prospect s'inscrit et réalise une transaction" },
-            { step: "3", title: "Commission versee", desc: "Votre commission est calculee et viree mensuellement" },
+            { step: "3", title: "Commission versée", desc: "Votre commission est calculée et virée mensuellement" },
           ].map((s, idx) => (
             <React.Fragment key={idx}>
               {idx > 0 && <div className="hidden md:block text-[var(--text-muted)] text-2xl">→</div>}
@@ -225,7 +225,7 @@ export default function ApporteursPage() {
           ))}
         </div>
         <p className="text-sm text-[var(--text-muted)] text-center italic">
-          La commission est prelevee sur la part plateforme E-Dome. Aucun cout supplementaire pour l&apos;hote ou le client.
+          La commission est prélevée sur la part plateforme E-Dome. Aucun coût supplémentaire pour l&apos;hôte ou le client.
         </p>
       </section>
 
@@ -238,7 +238,7 @@ export default function ApporteursPage() {
               <tr className="border-b border-[var(--card-border)]">
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">ID</th>
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Type</th>
-                <th className="text-left p-4 text-[var(--text-muted)] font-medium">Reference</th>
+                <th className="text-left p-4 text-[var(--text-muted)] font-medium">Référence</th>
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Date</th>
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Statut</th>
                 <th className="text-right p-4 text-[var(--text-muted)] font-medium">Commission</th>
@@ -270,14 +270,14 @@ export default function ApporteursPage() {
       <section className="grid md:grid-cols-2 gap-6">
         {/* Summary */}
         <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
-          <h3 className="font-semibold text-[var(--foreground)]">Resume des commissions</h3>
+          <h3 className="font-semibold text-[var(--foreground)]">Résumé des commissions</h3>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-[var(--text-secondary)]">Total gagne</span>
+              <span className="text-[var(--text-secondary)]">Total gagné</span>
               <span className="text-[var(--foreground)] font-bold text-lg">{formatPrice(totalCommissions)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--text-secondary)]">Deja verse</span>
+              <span className="text-[var(--text-secondary)]">Déjà versé</span>
               <span className="text-emerald-400 font-medium">{formatPrice(totalVersements)}</span>
             </div>
             <div className="flex justify-between border-t border-[var(--card-border)] pt-3">
@@ -299,7 +299,7 @@ export default function ApporteursPage() {
                 </div>
                 <div className="text-right">
                   <p className="font-medium text-emerald-400">{formatPrice(v.montant)}</p>
-                  <p className="text-xs text-emerald-400/60">Verse</p>
+                  <p className="text-xs text-emerald-400/60">Versé</p>
                 </div>
               </div>
             ))}

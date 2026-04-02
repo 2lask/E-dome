@@ -50,7 +50,7 @@ const VIEWS_BY_PROPERTY = [
 
 const TRAFFIC_SOURCES = [
   { source: "Recherche directe", value: 35, color: "#C4956A" },
-  { source: "Reseaux sociaux", value: 25, color: "#60a5fa" },
+  { source: "Réseaux sociaux", value: 25, color: "#60a5fa" },
   { source: "Referral", value: 20, color: "#34d399" },
   { source: "Email", value: 12, color: "#a78bfa" },
   { source: "Autre", value: 8, color: "#f87171" },
@@ -271,7 +271,7 @@ export default function StatistiquesPage() {
 
       {/* Activity Heatmap */}
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">Carte d&apos;activite</h2>
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Carte d&apos;activité</h2>
         <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-x-auto">
           <div className="min-w-[600px]">
             <div className="flex gap-1 mb-1 ml-10">
