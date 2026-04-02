@@ -2313,6 +2313,31 @@ export const mockReviews: Review[] = [
     comment: 'Très bon appartement, bien rénové avec goût. Quartier vivant et authentique. Transports à proximité.',
     createdAt: '2026-02-05T08:00:00Z',
   },
+  // ─── prop11 (bureau, vente, Genève) ─────────────────────────────────
+  {
+    id: 'rev-025',
+    propertyId: 'prop11',
+    author: users[5],
+    rating: 5,
+    comment: 'Bureaux modernes et lumineux, parfaitement agencés. La fibre optique et la climatisation réversible sont de vrais atouts. Quartier des Eaux-Vives très dynamique.',
+    createdAt: '2026-03-22T10:00:00Z',
+  },
+  {
+    id: 'rev-026',
+    propertyId: 'prop11',
+    author: users[8],
+    rating: 5,
+    comment: 'Excellent investissement. Les salles de réunion sont spacieuses, l\'open space se prête à toutes les configurations. Accès handicapé impeccable.',
+    createdAt: '2026-02-28T14:00:00Z',
+  },
+  {
+    id: 'rev-027',
+    propertyId: 'prop11',
+    author: users[11],
+    rating: 4,
+    comment: 'Très beaux bureaux dans un immeuble récent. Proche de la gare des Eaux-Vives, idéal pour les collaborateurs. Seul bémol : le parking est un peu limité.',
+    createdAt: '2026-01-18T09:00:00Z',
+  },
 ];
 
 // ─── SUGGESTED USERS, TRENDING, STORIES ─────────────────────────────────────

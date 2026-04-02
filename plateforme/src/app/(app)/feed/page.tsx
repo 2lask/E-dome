@@ -6,7 +6,7 @@ import {
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send,
   MapPin, Image as ImageIcon, Video, X, ChevronUp, Plus,
   Edit3, Trash2, Flag, EyeOff, Copy, Play, Pause,
-  TrendingUp, Calendar, Users, Upload, Building2, GraduationCap,
+  TrendingUp, Calendar, Users, Building2, GraduationCap,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { timeAgo, formatCount } from "@/lib/utils";
@@ -171,6 +171,8 @@ export default function FeedPage() {
   const [storyProgress, setStoryProgress] = useState(0);
   const [viewedStories, setViewedStories] = useState<Set<string>>(() => new Set(MOCK_STORIES.filter((s) => s.viewed).map((s) => s.id)));
   const [showStoryUpload, setShowStoryUpload] = useState(false);
+  const [storyText, setStoryText] = useState("");
+  const [storyGradient, setStoryGradient] = useState("linear-gradient(135deg, #f6d365, #fda085)");
 
   // Create post
   const [newPostContent, setNewPostContent] = useState("");
@@ -446,11 +448,11 @@ export default function FeedPage() {
         </div>
       )}
 
-      {/* Story upload overlay */}
+      {/* Story creator overlay */}
       {showStoryUpload && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
-          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl w-[90vw] max-w-md p-6 animate-scale-in">
-            <div className="flex items-center justify-between mb-6">
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setShowStoryUpload(false)}>
+          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl w-full max-w-lg p-6 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-semibold text-[var(--foreground)]">Créer une story</h3>
               <button
                 onClick={() => setShowStoryUpload(false)}
@@ -459,22 +461,77 @@ export default function FeedPage() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="relative border-2 border-dashed border-[var(--card-border)] rounded-xl p-10 text-center hover:border-[#C4956A]/50 transition-colors cursor-pointer">
-              <Upload className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-              <p className="text-sm font-medium text-[var(--foreground)] mb-1">
-                Glissez une image ou cliquez pour sélectionner
-              </p>
-              <p className="text-xs text-[var(--text-muted)]">JPG, PNG ou WEBP — max 10 Mo</p>
-              <input
-                type="file"
-                accept="image/*"
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                onChange={() => setShowStoryUpload(false)}
-              />
+
+            {/* Background selector */}
+            <div className="mb-4">
+              <p className="text-xs text-[var(--text-muted)] mb-2">Arrière-plan</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                {POST_GRADIENTS.map((g) => (
+                  <button
+                    key={g.name}
+                    onClick={() => setStoryGradient(g.value)}
+                    className={`w-9 h-9 rounded-full border-2 transition-all shrink-0 ${storyGradient === g.value ? "border-[#C4956A] scale-110 ring-2 ring-[#C4956A]/30" : "border-transparent hover:border-[#C4956A]/40"}`}
+                    style={{ background: g.value }}
+                    title={g.name}
+                  />
+                ))}
+              </div>
             </div>
+
+            {/* Preview area (9:16 aspect ratio) */}
+            <div
+              className="relative mx-auto rounded-2xl overflow-hidden flex items-center justify-center"
+              style={{
+                background: storyGradient,
+                aspectRatio: "9 / 16",
+                maxHeight: "420px",
+                width: "auto",
+              }}
+            >
+              {/* Text overlay on the story */}
+              <div className="absolute inset-0 flex items-center justify-center p-6">
+                <p
+                  className="text-center font-bold text-lg leading-relaxed break-words max-w-full"
+                  style={{
+                    color: storyGradient.includes("#0c0c0c") || storyGradient.includes("#667eea") || storyGradient.includes("#f5576c") ? "#ffffff" : "#1a1a1a",
+                    textShadow: "0 1px 4px rgba(0,0,0,0.15)",
+                  }}
+                >
+                  {storyText || "Votre texte ici..."}
+                </p>
+              </div>
+              {/* E-Dome watermark */}
+              <div className="absolute bottom-3 left-0 right-0 text-center">
+                <span className="text-[10px] font-medium opacity-40" style={{
+                  color: storyGradient.includes("#0c0c0c") || storyGradient.includes("#667eea") || storyGradient.includes("#f5576c") ? "#ffffff" : "#1a1a1a",
+                }}>
+                  E-Dome
+                </span>
+              </div>
+            </div>
+
+            {/* Text input */}
+            <div className="mt-4">
+              <textarea
+                value={storyText}
+                onChange={(e) => setStoryText(e.target.value)}
+                placeholder="Écrivez le texte de votre story..."
+                maxLength={200}
+                rows={2}
+                className="w-full px-4 py-3 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors text-sm resize-none"
+              />
+              <p className="text-[10px] text-[var(--text-muted)] text-right mt-1">{storyText.length}/200</p>
+            </div>
+
+            {/* Publish button */}
             <button
-              onClick={() => setShowStoryUpload(false)}
-              className="w-full mt-4 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors"
+              onClick={() => {
+                setShowStoryUpload(false);
+                setStoryText("");
+                setFeedToast("Story publiée ! (démonstration)");
+                setTimeout(() => setFeedToast(null), 3000);
+              }}
+              className="w-full mt-3 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors"
             >
               Publier la story
             </button>
