@@ -542,6 +542,31 @@ export default function ParametresPage() {
           {/* ─── Facturation ──────────────────────────────────────── */}
           {section === "facturation" && (
             <div className="space-y-6">
+              {/* Portefeuille */}
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6">
+                <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Portefeuille</h2>
+                <div className="flex items-center justify-between p-5 rounded-xl bg-gradient-to-br from-[#C4956A]/15 to-[#C4956A]/5 border border-[#C4956A]/20">
+                  <div>
+                    <p className="text-sm text-[var(--text-muted)]">Solde disponible</p>
+                    <p className="text-3xl font-bold text-[var(--foreground)] mt-1">{formatPrice(350)}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => showToast("Rechargement en cours...")}
+                      className="px-4 py-2 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a] transition-colors"
+                    >
+                      Recharger
+                    </button>
+                    <button
+                      onClick={() => showToast("Retrait en cours...")}
+                      className="px-4 py-2 text-sm rounded-xl border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors"
+                    >
+                      Retirer
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6">
                 <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Plan actuel</h2>
                 <div className="flex items-center justify-between p-4 bg-[#C4956A]/10 border border-[#C4956A]/20 rounded-xl">

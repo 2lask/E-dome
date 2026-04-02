@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useApp } from "@/lib/context";
-import type { Property, User, SocialPost } from "@/lib/types";
-import { formatCount, timeAgo } from "@/lib/utils";
+import type { Property, User } from "@/lib/types";
+import { formatCount } from "@/lib/utils";
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
@@ -60,16 +60,13 @@ const mockProperties: Property[] = [
   },
 ];
 
-const mockPosts: SocialPost[] = [
-  {
-    id: "sp1", author: currentUser, content: "Nouvelle acquisition exceptionnelle sur les hauts de Lausanne ! Vue panoramique à couper le souffle.",
-    media: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&h=400&fit=crop"],
-    type: "post", likes: 87, comments: [], createdAt: "2026-03-28T14:00:00",
-  },
-  {
-    id: "sp2", author: currentUser, content: "Visite exclusive du nouveau projet immobilier à Montreux. Places limitées !",
-    media: [], type: "post", likes: 42, comments: [], createdAt: "2026-03-25T09:00:00",
-  },
+const publicationPhotos = [
+  { id: "pub1", src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop", label: "Villa avec piscine" },
+  { id: "pub2", src: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=400&h=300&fit=crop", label: "Chalet sous la neige" },
+  { id: "pub3", src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop", label: "Intérieur moderne" },
+  { id: "pub4", src: "https://images.unsplash.com/photo-1590073242678-70ee818e55fb?w=400&h=300&fit=crop", label: "Riad avec patio" },
+  { id: "pub5", src: "https://images.unsplash.com/photo-1600047509807-ba7fdd402464?w=400&h=300&fit=crop", label: "Vue mer" },
+  { id: "pub6", src: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=400&h=300&fit=crop", label: "Graphique immobilier" },
 ];
 
 const mockReviews = [
@@ -124,19 +121,19 @@ export default function ProfilPage() {
 
   const mockFormations = [
     {
-      id: "mf1",
-      title: "Investir en Suisse romande",
-      students: 1280,
+      id: "form-001",
+      title: "Investissement locatif : de zéro à rentier",
+      students: 342,
       rating: 4.9,
-      price: 197,
+      price: 497,
       image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
     },
     {
-      id: "mf2",
-      title: "Gestion locative avancée",
-      students: 850,
+      id: "form-002",
+      title: "Maîtriser la gestion locative CT",
+      students: 178,
       rating: 4.8,
-      price: 149,
+      price: 397,
       image: "https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=400&h=300&fit=crop",
     },
   ];
@@ -268,16 +265,18 @@ export default function ProfilPage() {
           )}
 
           {tab === "publications" && (
-            <div className="space-y-4">
-              {mockPosts.map((post) => (
-                <div key={post.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                  <p className="text-sm text-[var(--foreground)]">{post.content}</p>
-                  {post.media.length > 0 && (
-                    <img src={post.media[0]} alt="" className="w-full h-48 object-cover rounded-lg mt-3" />
-                  )}
-                  <div className="flex items-center gap-4 mt-3 text-xs text-[var(--text-muted)]">
-                    <span>{post.likes} likes</span>
-                    <span>{timeAgo(post.createdAt)}</span>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {publicationPhotos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#C4956A]/30 transition-colors group"
+                >
+                  <div className="relative">
+                    <img src={photo.src} alt={photo.label} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="p-3">
+                    <p className="text-xs font-medium text-[var(--text-secondary)] truncate">{photo.label}</p>
                   </div>
                 </div>
               ))}

@@ -97,6 +97,20 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
           createdAt: new Date(Date.now() - (hoursAgo - 2) * 3600000).toISOString(),
           likes: Math.floor(Math.random() * 15),
         },
+        // Pre-loaded contextual comment per post
+        ...(i === 0 ? [{
+          id: `c${id}-3`,
+          author: MOCK_USERS[1], // Marc Dubois
+          content: "Belle propriété ! La vue lac est un argument de vente redoutable \uD83C\uDFAF",
+          createdAt: new Date(Date.now() - (hoursAgo - 2.5) * 3600000).toISOString(),
+          likes: 14,
+        }] : i === 2 ? [{
+          id: `c${id}-3`,
+          author: MOCK_USERS[3], // Thomas Weber
+          content: "Marrakech affiche des rendements imbattables en ce moment. À surveiller \uD83D\uDD25",
+          createdAt: new Date(Date.now() - (hoursAgo - 2.5) * 3600000).toISOString(),
+          likes: 22,
+        }] : []),
       ],
       createdAt: date,
       location: `${user.city}, ${user.country}`,

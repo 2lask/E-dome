@@ -61,6 +61,26 @@ const mockUsers: Record<string, User> = {
     certifications: ["Pilote Drone (DGAC 2023)"],
     responseTime: "< 2 heures",
   },
+  "user-006": {
+    id: "user-006", firstName: "Yasmin", lastName: "Al Maktoum", email: "yasmin@edome.ch",
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop",
+    city: "Dubaï", country: "EAU", roles: ["agence"], activeRole: "agence",
+    stats: { followers: 3500, following: 480, properties: 9, reviews: 64, rating: 4.8, transactions: 72, revenue: 2100000 },
+    bio: "Agence immobilière premium à Dubaï. Spécialiste des résidences de luxe.",
+    languages: ["Français", "Anglais", "Arabe"],
+    certifications: ["RERA Licensed Broker (2021)", "Luxury Real Estate Specialist"],
+    responseTime: "< 1 heure",
+  },
+  "user-015": {
+    id: "user-015", firstName: "Jean-Luc", lastName: "Hartmann", email: "jeanluc@edome.ch",
+    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop",
+    city: "Neuchâtel", country: "Suisse", roles: ["agence"], activeRole: "agence",
+    stats: { followers: 280, following: 150, properties: 3, reviews: 22, rating: 4.5, transactions: 35, revenue: 420000 },
+    bio: "Agent immobilier indépendant à Neuchâtel. 20 ans d'expérience.",
+    languages: ["Français", "Allemand"],
+    certifications: ["Brevet fédéral de courtier (2006)", "Expert USPI Neuchâtel"],
+    responseTime: "< 2 heures",
+  },
   u1: {
     id: "u1", firstName: "Sophie", lastName: "Martin", email: "sophie@e-dome.ch",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
@@ -174,6 +194,34 @@ const mockProperties: Record<string, Property[]> = {
       host: mockUsers["user-005"], bedrooms: 5, bathrooms: 4, area: 300, amenities: [], rating: 4.6, reviewCount: 8,
     },
   ],
+  "user-006": [
+    {
+      id: "prop-d1", title: "Penthouse Marina Dubaï", description: "", type: "penthouse", transactionType: "vente",
+      price: 4500000, currency: "CHF", location: { city: "Dubaï", country: "EAU" },
+      images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop"],
+      host: mockUsers["user-006"], bedrooms: 5, bathrooms: 4, area: 350, amenities: [], rating: 4.9, reviewCount: 18,
+    },
+    {
+      id: "prop-d2", title: "Villa Palm Jumeirah", description: "", type: "villa", transactionType: "vente",
+      price: 8200000, currency: "CHF", location: { city: "Dubaï", country: "EAU" },
+      images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop"],
+      host: mockUsers["user-006"], bedrooms: 7, bathrooms: 6, area: 600, amenities: [], rating: 5.0, reviewCount: 9,
+    },
+  ],
+  "user-015": [
+    {
+      id: "prop-n1", title: "Appartement vue lac Neuchâtel", description: "", type: "appartement", transactionType: "vente",
+      price: 680000, currency: "CHF", location: { city: "Neuchâtel", country: "Suisse" },
+      images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop"],
+      host: mockUsers["user-015"], bedrooms: 3, bathrooms: 2, area: 95, amenities: [], rating: 4.6, reviewCount: 7,
+    },
+    {
+      id: "prop-n2", title: "Studio centre-ville Neuchâtel", description: "", type: "studio", transactionType: "location-ct",
+      price: 110, currency: "CHF", location: { city: "Neuchâtel", country: "Suisse" },
+      images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop"],
+      host: mockUsers["user-015"], bedrooms: 1, bathrooms: 1, area: 38, amenities: [], rating: 4.4, reviewCount: 14,
+    },
+  ],
   u1: [
     {
       id: "prop3", title: "Penthouse Genève", description: "", type: "penthouse", transactionType: "vente",
@@ -235,6 +283,14 @@ const mockReviews: Record<string, { id: string; author: string; rating: number; 
     { id: "r09", author: "Marc F.", rating: 5, text: "Lucas livre des villas exceptionnelles sur la Côte d'Azur.", date: "2026-03-14", reply: null },
     { id: "r10b", author: "Amina E.", rating: 4, text: "Très beau projet, finitions soignées.", date: "2026-02-20", reply: null },
   ],
+  "user-006": [
+    { id: "r-d1", author: "Khalid M.", rating: 5, text: "Yasmin connaît parfaitement le marché de Dubaï. Service impeccable.", date: "2026-03-25", reply: null },
+    { id: "r-d2", author: "Sophie D.", rating: 5, text: "Agence très professionnelle. Villa exceptionnelle à Palm Jumeirah.", date: "2026-03-15", reply: "Merci Sophie !" },
+  ],
+  "user-015": [
+    { id: "r-n1", author: "Pierre M.", rating: 5, text: "Jean-Luc est un agent de confiance. 20 ans d'expérience, ça se voit.", date: "2026-03-20", reply: null },
+    { id: "r-n2", author: "Marie L.", rating: 4, text: "Bonne connaissance du marché neuchâtelois. Réactif et honnête.", date: "2026-03-10", reply: "Merci Marie !" },
+  ],
   u1: [
     { id: "r10", author: "Marc T.", rating: 5, text: "Sophie est incroyable, très professionnelle.", date: "2026-03-18", reply: null },
     { id: "r11", author: "Laura K.", rating: 5, text: "Service impeccable du début à la fin.", date: "2026-03-10", reply: "Merci beaucoup Laura !" },
@@ -295,6 +351,20 @@ const mockPosts: Record<string, SocialPost[]> = {
       id: "sp05", author: mockUsers["user-005"], content: "Nouveau projet de villa de prestige à Nice. Livraison prévue fin 2026. Contactez-moi pour plus de détails.",
       media: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop"],
       type: "post", likes: 36, comments: [], createdAt: "2026-03-19T15:00:00",
+    },
+  ],
+  "user-006": [
+    {
+      id: "sp06", author: mockUsers["user-006"], content: "Nouvelle résidence de luxe disponible à Dubai Marina. Vue panoramique sur la skyline.",
+      media: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=400&fit=crop"],
+      type: "post", likes: 124, comments: [], createdAt: "2026-03-27T12:00:00",
+    },
+  ],
+  "user-015": [
+    {
+      id: "sp15", author: mockUsers["user-015"], content: "Bel appartement avec vue sur le lac de Neuchâtel, idéal pour un premier investissement.",
+      media: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop"],
+      type: "post", likes: 28, comments: [], createdAt: "2026-03-24T09:00:00",
     },
   ],
   u1: [

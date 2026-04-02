@@ -7,34 +7,54 @@ import type { Property } from "@/lib/types";
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
+const emptyHost = (id: string, name: string, city: string) => ({
+  id, firstName: name.split(" ")[0], lastName: name.split(" ")[1] || "", email: "", avatar: "", city, country: "Suisse",
+  roles: ["hote" as const], activeRole: "hote" as const,
+  stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "",
+});
+
 const allProperties: Property[] = [
   {
-    id: "p1", title: "Chalet Alpin Premium", description: "Un chalet de luxe à Verbier.", type: "chalet", transactionType: "location-ct",
-    price: 350, currency: "CHF", location: { city: "Verbier", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=300&fit=crop"],
-    host: { id: "h1", firstName: "Léo", lastName: "Martin", email: "", avatar: "", city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 4, bathrooms: 3, area: 180, amenities: ["WiFi", "Cheminée"], rating: 4.9, reviewCount: 28,
-  },
-  {
-    id: "p2", title: "Appartement Vue Lac", description: "", type: "appartement", transactionType: "vente",
+    id: "prop2", title: "Appartement Vue Lac", description: "", type: "appartement", transactionType: "vente",
     price: 1250000, currency: "CHF", location: { city: "Montreux", country: "Suisse" },
     images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop"],
-    host: { id: "h2", firstName: "Sophie", lastName: "Martin", email: "", avatar: "", city: "Genève", country: "Suisse", roles: ["agence"], activeRole: "agence", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    host: emptyHost("h2", "Sophie Martin", "Genève"),
     bedrooms: 3, bathrooms: 2, area: 120, amenities: ["Vue lac", "Parking"], rating: 4.7, reviewCount: 15,
   },
   {
-    id: "p3", title: "Villa Prestige", description: "", type: "villa", transactionType: "vente",
+    id: "prop3", title: "Villa Prestige", description: "", type: "villa", transactionType: "vente",
     price: 3200000, currency: "CHF", location: { city: "Lausanne", country: "Suisse" },
     images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop"],
-    host: { id: "h1", firstName: "Léo", lastName: "Martin", email: "", avatar: "", city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    host: emptyHost("h1", "Léo Martin", "Lausanne"),
     bedrooms: 6, bathrooms: 4, area: 320, amenities: ["Piscine", "Jardin"], rating: 5.0, reviewCount: 8,
   },
   {
-    id: "p4", title: "Studio Moderne", description: "", type: "studio", transactionType: "location-ct",
+    id: "prop5", title: "Chalet Alpin Premium", description: "Un chalet de luxe à Verbier.", type: "chalet", transactionType: "location-ct",
+    price: 350, currency: "CHF", location: { city: "Verbier", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=300&fit=crop"],
+    host: emptyHost("h1", "Léo Martin", "Lausanne"),
+    bedrooms: 4, bathrooms: 3, area: 180, amenities: ["WiFi", "Cheminée"], rating: 4.9, reviewCount: 28,
+  },
+  {
+    id: "prop9", title: "Studio Moderne Zürich", description: "", type: "studio", transactionType: "location-ct",
     price: 89, currency: "CHF", location: { city: "Zürich", country: "Suisse" },
     images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop"],
-    host: { id: "h3", firstName: "Jean", lastName: "Dupont", email: "", avatar: "", city: "Zürich", country: "Suisse", roles: ["proprietaire"], activeRole: "proprietaire", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    host: emptyHost("h3", "Jean Dupont", "Zürich"),
     bedrooms: 1, bathrooms: 1, area: 35, amenities: ["WiFi"], rating: 4.3, reviewCount: 42,
+  },
+  {
+    id: "prop1", title: "Penthouse Genève", description: "", type: "penthouse", transactionType: "vente",
+    price: 2800000, currency: "CHF", location: { city: "Genève", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop"],
+    host: emptyHost("h4", "Marc Favre", "Genève"),
+    bedrooms: 4, bathrooms: 3, area: 200, amenities: ["Terrasse", "Vue lac"], rating: 4.9, reviewCount: 12,
+  },
+  {
+    id: "prop4", title: "Riad Marrakech", description: "", type: "villa", transactionType: "location-ct",
+    price: 180, currency: "EUR", location: { city: "Marrakech", country: "Maroc" },
+    images: ["https://images.unsplash.com/photo-1590059390258-ea0456c8548a?w=400&h=300&fit=crop"],
+    host: emptyHost("h5", "Amira El Fassi", "Marrakech"),
+    bedrooms: 4, bathrooms: 3, area: 250, amenities: ["Piscine", "Jardin"], rating: 4.8, reviewCount: 22,
   },
 ];
 
