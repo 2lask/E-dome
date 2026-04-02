@@ -157,7 +157,7 @@ export default function CreerFormationPage() {
           <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
-          <h1 className="text-2xl font-bold mb-2">Formation publiee !</h1>
+          <h1 className="text-2xl font-bold mb-2">Formation publiée !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre formation &quot;{form.titre}&quot; est maintenant disponible.</p>
           <a href="/formations" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
             Voir mes formations
@@ -169,13 +169,13 @@ export default function CreerFormationPage() {
 
   /* ── Step indicators ─────────────────────────────────────────────────── */
 
-  const STEPS = ["Informations", "Modules", "Quiz", "Apercu"];
+  const STEPS = ["Informations", "Modules", "Quiz", "Aperçu"];
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Creer une formation</h1>
-        <p className="text-[var(--text-secondary)] mb-8">Etape {step} sur 4</p>
+        <h1 className="text-3xl font-bold mb-2">Créer une formation</h1>
+        <p className="text-[var(--text-secondary)] mb-8">Étape {step} sur 4</p>
 
         {/* Steps indicator */}
         <div className="flex items-center gap-2 mb-8">
@@ -196,10 +196,10 @@ export default function CreerFormationPage() {
         {/* ── Step 1: Informations ─────────────────────────────────────── */}
         {step === 1 && (
           <div className="space-y-5 animate-fade-in">
-            <div><label className={labelCls}>Titre de la formation</label><input className={inputCls} placeholder="Ex: Investissement immobilier pour debutants" value={form.titre} onChange={(e) => updateField("titre", e.target.value)} /></div>
+            <div><label className={labelCls}>Titre de la formation</label><input className={inputCls} placeholder="Ex: Investissement immobilier pour débutants" value={form.titre} onChange={(e) => updateField("titre", e.target.value)} /></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className={labelCls}>Categorie</label>
+                <label className={labelCls}>Catégorie</label>
                 <select className={inputCls} value={form.categorie} onChange={(e) => updateField("categorie", e.target.value)}>
                   <option value="">Choisir...</option>
                   {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -268,7 +268,7 @@ export default function CreerFormationPage() {
         {/* ── Step 3: Quiz (optional) ──────────────────────────────────── */}
         {step === 3 && (
           <div className="space-y-6 animate-fade-in">
-            <p className="text-[var(--text-secondary)]">Ajoutez un quiz optionnel pour evaluer les etudiants.</p>
+            <p className="text-[var(--text-secondary)]">Ajoutez un quiz optionnel pour évaluer les étudiants.</p>
             {form.quiz.map((q, qi) => (
               <div key={q.id} className="p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl space-y-3">
                 <div className="flex items-center gap-3">
@@ -301,7 +301,7 @@ export default function CreerFormationPage() {
         {/* ── Step 4: Preview + Publish ────────────────────────────────── */}
         {step === 4 && (
           <div className="space-y-6 animate-fade-in">
-            <h2 className="text-xl font-semibold">Apercu de votre formation</h2>
+            <h2 className="text-xl font-semibold">Aperçu de votre formation</h2>
 
             {/* Preview card */}
             <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden">
@@ -316,7 +316,7 @@ export default function CreerFormationPage() {
                 <p className="text-[var(--text-secondary)] text-sm">{form.description || "Pas de description."}</p>
                 <div className="flex items-center justify-between pt-2 border-t border-[var(--card-border)]">
                   <span className="font-bold text-[#C4956A] text-lg">{form.prix > 0 ? formatPrice(form.prix) : "Gratuit"}</span>
-                  <span className="text-sm text-[var(--text-muted)]">{form.modules.length} modules &middot; {form.modules.reduce((a, m) => a + m.lessons.length, 0)} lecons</span>
+                  <span className="text-sm text-[var(--text-muted)]">{form.modules.length} modules &middot; {form.modules.reduce((a, m) => a + m.lessons.length, 0)} leçons</span>
                 </div>
               </div>
             </div>
@@ -328,7 +328,7 @@ export default function CreerFormationPage() {
                 <div key={mod.id} className="flex items-center gap-3 px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-sm">
                   <span className="text-[#C4956A] font-bold">{mi + 1}.</span>
                   <span>{mod.title || "Module sans titre"}</span>
-                  <span className="text-[var(--text-muted)] ml-auto">{mod.lessons.length} lecons</span>
+                  <span className="text-[var(--text-muted)] ml-auto">{mod.lessons.length} leçons</span>
                 </div>
               ))}
             </div>

@@ -463,9 +463,9 @@ export default function PublierPage() {
               </div>
             </button>
 
-            {/* Commission slider */}
+            {/* Commission slider + calculations */}
             {form.autoriserApporteurs && (
-              <div className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
+              <div className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-5">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-[var(--text-secondary)]">Commission apporteur</label>
                   <span className="text-lg font-bold text-[#C4956A]">{form.commissionApporteur}%</span>
@@ -473,7 +473,7 @@ export default function PublierPage() {
                 <input
                   type="range"
                   min={5}
-                  max={15}
+                  max={25}
                   step={1}
                   value={form.commissionApporteur}
                   onChange={(e) => update("commissionApporteur", Number(e.target.value))}
@@ -483,10 +483,53 @@ export default function PublierPage() {
                   <span>5%</span>
                   <span>10%</span>
                   <span>15%</span>
+                  <span>20%</span>
+                  <span>25%</span>
                 </div>
-                <p className="text-xs text-[var(--text-muted)]">
-                  Cette commission est prélevée sur la part plateforme E-Dome. Aucun coût supplémentaire pour vous.
-                </p>
+
+                {/* Real-time calculation example */}
+                {form.prix > 0 && (
+                  <div className="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-2.5">
+                    <h4 className="text-sm font-semibold text-[var(--foreground)] mb-3">Simulation pour votre bien</h4>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-[var(--text-secondary)]">Prix du bien</span>
+                      <span className="font-medium text-[var(--foreground)]">{formatPrice(form.prix)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-[var(--text-secondary)]">Commission E-Dome standard : 8%</span>
+                      <span className="font-medium text-[var(--foreground)]">{formatPrice(form.prix * 0.08)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-[var(--text-secondary)]">Part apporteur ({form.commissionApporteur}%)</span>
+                      <span className="font-medium text-[#C4956A]">{formatPrice(form.prix * 0.08 * form.commissionApporteur / 100)}</span>
+                    </div>
+                    <div className="h-px bg-[var(--card-border)] my-1" />
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-[var(--text-secondary)] font-medium">Votre revenu net</span>
+                      <span className="font-bold text-green-400">{formatPrice(form.prix - form.prix * 0.08)}</span>
+                    </div>
+                    <p className="text-xs text-green-400/80 italic">(identique avec ou sans apporteur)</p>
+                  </div>
+                )}
+
+                {/* Info text */}
+                <div className="p-3 rounded-lg bg-[#C4956A]/5 border border-[#C4956A]/20">
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                    La commission apporteur est prélevée sur la part E-Dome. Aucun coût supplémentaire pour vous.
+                  </p>
+                </div>
+
+                {/* Tracking details */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-center">
+                    <p className="text-xs text-[var(--text-muted)] mb-1">Durée du cookie de tracking</p>
+                    <p className="text-sm font-semibold text-[var(--foreground)]">30 jours</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-center">
+                    <p className="text-xs text-[var(--text-muted)] mb-1">Attribution</p>
+                    <p className="text-sm font-semibold text-[var(--foreground)]">Premier clic</p>
+                  </div>
+                </div>
               </div>
             )}
 

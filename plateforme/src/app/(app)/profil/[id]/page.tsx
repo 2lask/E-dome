@@ -33,7 +33,7 @@ const mockUsers: Record<string, User> = {
   },
   "user-003": {
     id: "user-003", firstName: "Marc", lastName: "Favre", email: "marc.favre@edome.ch",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1519345182560-cabd3c3338a3?w=200&h=200&fit=crop",
     city: "Genève", country: "Suisse", roles: ["hote", "courtier"], activeRole: "hote",
     stats: { followers: 640, following: 340, properties: 8, reviews: 42, rating: 4.7, transactions: 31, revenue: 1250000 },
     bio: "Agent immobilier et hôte actif à Genève. Spécialiste de la location courte durée.",
@@ -133,7 +133,7 @@ const mockUsers: Record<string, User> = {
   },
   g2: {
     id: "g2", firstName: "Jean-Marc", lastName: "Dupont", email: "jeanmarc@e-dome.ch",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop",
     city: "Zurich", country: "Suisse", roles: ["client"], activeRole: "client",
     stats: { followers: 95, following: 60, properties: 0, reviews: 3, rating: 4.2, transactions: 1, revenue: 0 },
     bio: "Cadre dans la finance, en quête d'un premier investissement immobilier en Suisse alémanique.",

@@ -74,13 +74,12 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
     ];
     const hoursAgo = (i + 1) * 3 + Math.floor(Math.random() * 10);
     const date = new Date(Date.now() - hoursAgo * 3600000).toISOString();
-    const isReel = i % 5 === 2; // Every 5th post (index 2) is a reel
     return {
       id,
       author: user,
       content: contents[i % contents.length],
-      media: isReel ? ["youtube:_DtWLPqqnwU"] : mediaOptions[i % mediaOptions.length],
-      type: isReel ? "reel" as const : "post" as const,
+      media: mediaOptions[i % mediaOptions.length],
+      type: "post" as const,
       likes: Math.floor(Math.random() * 500) + 10,
       comments: [
         {
@@ -178,6 +177,18 @@ export default function FeedPage() {
   const [newPostLocation, setNewPostLocation] = useState("");
   const [showLocationInput, setShowLocationInput] = useState(false);
   const [newPostType, setNewPostType] = useState<"post" | "reel">("post");
+  const [selectedGradient, setSelectedGradient] = useState<string | null>(null);
+
+  const POST_GRADIENTS = [
+    { name: "Beige E-Dome", value: "linear-gradient(135deg, #f5f0e8, #e8dcc8)" },
+    { name: "Or Premium", value: "linear-gradient(135deg, #f6d365, #fda085)" },
+    { name: "Bleu Ciel", value: "linear-gradient(135deg, #84fab0, #8fd3f4)" },
+    { name: "Nuit", value: "linear-gradient(135deg, #0c0c0c, #1a1a2e)" },
+    { name: "Coucher de soleil", value: "linear-gradient(135deg, #fa709a, #fee140)" },
+    { name: "Vert Nature", value: "linear-gradient(135deg, #43e97b, #38f9d7)" },
+    { name: "Violet Royal", value: "linear-gradient(135deg, #667eea, #764ba2)" },
+    { name: "Rose Luxe", value: "linear-gradient(135deg, #f093fb, #f5576c)" },
+  ];
 
   // Post interactions
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
@@ -305,7 +316,8 @@ export default function FeedPage() {
     setNewPostContent("");
     setNewPostLocation("");
     setShowLocationInput(false);
-    setFeedToast("Publication publiée !");
+    setSelectedGradient(null);
+    setFeedToast("Post publié ! (démonstration)");
     setTimeout(() => setFeedToast(null), 3000);
   };
 
@@ -479,14 +491,64 @@ export default function FeedPage() {
             className="w-10 h-10 rounded-full object-cover shrink-0"
           />
           <div className="flex-1">
-            <textarea
-              value={newPostContent}
-              onChange={(e) => setNewPostContent(e.target.value)}
-              placeholder="Partagez une actualité, un bien, une idée..."
-              maxLength={2000}
-              rows={3}
-              className="w-full bg-transparent text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none outline-none text-sm"
-            />
+            <div className="flex gap-4">
+              {/* Left: editor */}
+              <div className="flex-1 min-w-0">
+                <textarea
+                  value={newPostContent}
+                  onChange={(e) => setNewPostContent(e.target.value)}
+                  placeholder="Partagez une actualité, un bien, une idée..."
+                  maxLength={2000}
+                  rows={3}
+                  className="w-full bg-transparent text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none outline-none text-sm"
+                />
+                {/* Gradient selector */}
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-xs text-[var(--text-muted)] shrink-0">Fond :</span>
+                  <div className="flex items-center gap-1.5">
+                    {/* No gradient option */}
+                    <button
+                      onClick={() => setSelectedGradient(null)}
+                      className={`w-7 h-7 rounded-full border-2 transition-all shrink-0 bg-[var(--card)] ${selectedGradient === null ? "border-[#C4956A] scale-110" : "border-[var(--card-border)] hover:border-[#C4956A]/40"}`}
+                      title="Aucun fond"
+                    >
+                      <span className="text-[10px] text-[var(--text-muted)] flex items-center justify-center h-full">Aa</span>
+                    </button>
+                    {POST_GRADIENTS.map((g) => (
+                      <button
+                        key={g.name}
+                        onClick={() => setSelectedGradient(g.value)}
+                        className={`w-7 h-7 rounded-full border-2 transition-all shrink-0 ${selectedGradient === g.value ? "border-[#C4956A] scale-110" : "border-transparent hover:border-[#C4956A]/40"}`}
+                        style={{ background: g.value }}
+                        title={g.name}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              {/* Right: live preview (desktop only) */}
+              {newPostContent.trim() && (
+                <div className="hidden lg:block w-56 shrink-0">
+                  <p className="text-[10px] text-[var(--text-muted)] mb-1.5 uppercase tracking-wider">Aperçu</p>
+                  <div
+                    className="rounded-xl border border-[var(--card-border)] overflow-hidden"
+                    style={{ background: selectedGradient || "var(--card)" }}
+                  >
+                    <div className="p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <img src={MOCK_USERS[0].avatar} alt="" className="w-5 h-5 rounded-full object-cover" />
+                        <span className={`text-[10px] font-semibold ${selectedGradient?.includes("#0c0c0c") ? "text-white" : "text-[var(--foreground)]"}`}>
+                          {MOCK_USERS[0].firstName} {MOCK_USERS[0].lastName}
+                        </span>
+                      </div>
+                      <p className={`text-xs whitespace-pre-line leading-relaxed line-clamp-6 ${selectedGradient?.includes("#0c0c0c") ? "text-white" : "text-[var(--foreground)]"}`}>
+                        {newPostContent}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="flex items-center justify-between mt-3">
               <div className="flex items-center gap-2">
                 <button className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors">
@@ -718,22 +780,15 @@ export default function FeedPage() {
                 </div>
 
                 {/* Media grid */}
-                {post.media.length > 0 && (
+                {post.media.filter((s) => !s.startsWith("youtube:")).length > 0 && (
                   <div
                     className={`grid gap-0.5 ${
-                      post.media.length === 1 ? "grid-cols-1" : "grid-cols-2"
+                      post.media.filter((s) => !s.startsWith("youtube:")).length === 1 ? "grid-cols-1" : "grid-cols-2"
                     }`}
                   >
-                    {post.media.map((src, mi) => (
+                    {post.media.filter((s) => !s.startsWith("youtube:")).map((src, mi) => (
                       <div key={mi} className="relative aspect-video bg-[var(--background)]">
-                        {src.startsWith("youtube:") ? (
-                          <iframe
-                            className="w-full h-full"
-                            src={`https://www.youtube.com/embed/${src.replace("youtube:", "")}`}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        ) : src.includes("video") ? (
+                        {src.includes("video") ? (
                           <div className="w-full h-full flex items-center justify-center">
                             <video src={src} className="w-full h-full object-cover" />
                             <button className="absolute inset-0 flex items-center justify-center bg-black/30">
