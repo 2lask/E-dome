@@ -47,8 +47,8 @@ const DRAFTS_KEY = "edome_publish_drafts";
 
 const TRANSACTION_TYPES: { value: TransactionType; label: string }[] = [
   { value: "vente", label: "Vente" },
-  { value: "location-ct", label: "Location courte duree" },
-  { value: "location-lt", label: "Location longue duree" },
+  { value: "location-ct", label: "Location courte durée" },
+  { value: "location-lt", label: "Location longue durée" },
 ];
 
 const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
@@ -66,8 +66,8 @@ const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
 
 const EQUIPEMENTS = [
   "Parking", "Balcon", "Terrasse", "Jardin", "Piscine", "Cave", "Ascenseur",
-  "Lave-vaisselle", "Machine a laver", "Climatisation", "Cheminee", "Sauna",
-  "Wifi", "Vue lac", "Vue montagne", "Meuble",
+  "Lave-vaisselle", "Machine à laver", "Climatisation", "Cheminée", "Sauna",
+  "Wifi", "Vue lac", "Vue montagne", "Meublé",
 ];
 
 const DPE_OPTIONS = ["A", "B", "C", "D", "E", "F", "G"];
@@ -172,7 +172,7 @@ export default function PublierPage() {
 
   const handlePublish = () => {
     setShowConfetti(true);
-    setToastMsg("Bien publie avec succes ! Il est maintenant visible dans l'Explorer. (demonstration)");
+    setToastMsg("Bien publié avec succès ! Il est maintenant visible dans l'Explorer. (démonstration)");
     setTimeout(() => { setPublished(true); try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ } }, 2500);
     setTimeout(() => setToastMsg(""), 5000);
   };
@@ -186,7 +186,7 @@ export default function PublierPage() {
           <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
-          <h1 className="text-2xl font-bold mb-2">Bien publie avec succes !</h1>
+          <h1 className="text-2xl font-bold mb-2">Bien publié avec succès !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre annonce &quot;{form.titre}&quot; est maintenant en ligne.</p>
           <a href="/explorer" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
             Voir l&apos;annonce
@@ -220,7 +220,7 @@ export default function PublierPage() {
         <div className="flex items-start justify-between mb-2">
           <div>
             <h1 className="text-3xl font-bold">Publier un bien</h1>
-            <p className="text-[var(--text-secondary)] mt-1">Etape {step} sur {totalSteps}</p>
+            <p className="text-[var(--text-secondary)] mt-1">Étape {step} sur {totalSteps}</p>
           </div>
           <button onClick={saveDraft} className="px-4 py-2 border border-[var(--card-border)] rounded-xl text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
             Sauvegarder brouillon
@@ -280,7 +280,7 @@ export default function PublierPage() {
             </div>
             <div><label className={labelCls}>Adresse</label><input className={inputCls} placeholder="Rue et numero" value={form.adresse} onChange={(e) => update("adresse", e.target.value)} /></div>
             <div className="grid grid-cols-2 gap-4">
-              <div><label className={labelCls}>Ville</label><input className={inputCls} placeholder="Geneve" value={form.ville} onChange={(e) => update("ville", e.target.value)} /></div>
+              <div><label className={labelCls}>Ville</label><input className={inputCls} placeholder="Genève" value={form.ville} onChange={(e) => update("ville", e.target.value)} /></div>
               <div><label className={labelCls}>Code postal</label><input className={inputCls} placeholder="1200" value={form.codePostal} onChange={(e) => update("codePostal", e.target.value)} /></div>
             </div>
             <div>
@@ -322,7 +322,7 @@ export default function PublierPage() {
                 <button onClick={addPhoto} className="px-4 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Ajouter</button>
               </div>
               {/* Drag-reorder hint */}
-              {form.photos.length > 1 && <p className="text-xs text-[var(--text-muted)] mb-2">Cliquez sur les fleches pour reordonner.</p>}
+              {form.photos.length > 1 && <p className="text-xs text-[var(--text-muted)] mb-2">Cliquez sur les flèches pour réordonner.</p>}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {form.photos.map((url, i) => (
                   <div key={i} className="relative group">
@@ -338,7 +338,7 @@ export default function PublierPage() {
                 {/* Drop zone placeholder */}
                 <button onClick={() => fileRef.current?.click()} className="h-28 border-2 border-dashed border-[var(--card-border)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[#C4956A]/40 transition-colors">
                   <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                  <span className="text-xs">Glisser-deposer</span>
+                  <span className="text-xs">Glisser-déposer</span>
                 </button>
               </div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" />
@@ -392,7 +392,7 @@ export default function PublierPage() {
 
         {step === 4 && isVente && (
           <div className="space-y-5 animate-fade-in">
-            <h2 className="text-xl font-semibold">Donnees analytiques</h2>
+            <h2 className="text-xl font-semibold">Données analytiques</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><label className={labelCls}>Rendement brut (%)</label><input type="number" className={inputCls} value={form.rendementBrut || ""} onChange={(e) => update("rendementBrut", Number(e.target.value))} /></div>
               <div>
@@ -447,7 +447,7 @@ export default function PublierPage() {
         {step === (isVente ? 6 : 5) && (
           <div className="space-y-6 animate-fade-in">
             <h2 className="text-xl font-semibold">Apporteurs d&apos;affaires</h2>
-            <p className="text-sm text-[var(--text-secondary)]">Permettez aux apporteurs d&apos;affaires de promouvoir votre bien et recevez plus de visibilite.</p>
+            <p className="text-sm text-[var(--text-secondary)]">Permettez aux apporteurs d&apos;affaires de promouvoir votre bien et recevez plus de visibilité.</p>
 
             {/* Toggle autoriser */}
             <button
@@ -485,7 +485,7 @@ export default function PublierPage() {
                   <span>15%</span>
                 </div>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Cette commission est prelevee sur la part plateforme E-Dome. Aucun cout supplementaire pour vous.
+                  Cette commission est prélevée sur la part plateforme E-Dome. Aucun coût supplémentaire pour vous.
                 </p>
               </div>
             )}
@@ -505,9 +505,9 @@ export default function PublierPage() {
               <h2 className="text-xl font-semibold mb-4">Options payantes</h2>
               <div className="space-y-3">
                 {[
-                  { key: "optionMiseEnAvant" as const, label: "Mise en avant", desc: "Votre annonce apparait en tete des resultats", price: 29 },
+                  { key: "optionMiseEnAvant" as const, label: "Mise en avant", desc: "Votre annonce apparaît en tête des résultats", price: 29 },
                   { key: "optionPhotosPro" as const, label: "Photos professionnelles", desc: "Un photographe professionnel viendra sur place", price: 199 },
-                  { key: "optionVisite3D" as const, label: "Visite 3D", desc: "Creation d'une visite virtuelle 360°", price: 349 },
+                  { key: "optionVisite3D" as const, label: "Visite 3D", desc: "Création d'une visite virtuelle 360°", price: 349 },
                 ].map((opt) => (
                   <button key={opt.key} onClick={() => update(opt.key, !form[opt.key])} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form[opt.key] ? "bg-[#C4956A]/10 border-[#C4956A]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[#C4956A]/40"}`}>
                     <div className="text-left">
@@ -524,7 +524,7 @@ export default function PublierPage() {
 
             {/* Preview card */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Apercu</h2>
+              <h2 className="text-xl font-semibold mb-4">Aperçu</h2>
               <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden">
                 {form.photos.length > 0 && <img src={form.photos[0]} alt={form.titre} className="w-full h-48 object-cover" />}
                 <div className="p-5 space-y-2">
@@ -535,7 +535,7 @@ export default function PublierPage() {
                     {form.sallesDeBain > 0 && <span>{form.sallesDeBain} sdb.</span>}
                     {form.surface > 0 && <span>{form.surface} m2</span>}
                   </div>
-                  <p className="font-bold text-xl text-[#C4956A]">{form.prix > 0 ? formatPrice(form.prix) : "Prix a definir"}</p>
+                  <p className="font-bold text-xl text-[#C4956A]">{form.prix > 0 ? formatPrice(form.prix) : "Prix à définir"}</p>
                 </div>
               </div>
             </div>
@@ -545,7 +545,7 @@ export default function PublierPage() {
               <button onClick={() => update("termsAccepted", !form.termsAccepted)} className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${form.termsAccepted ? "bg-[#C4956A] border-[#C4956A]" : "border-[var(--text-muted)]"}`}>
                 {form.termsAccepted && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
               </button>
-              <span className="text-sm text-[var(--text-secondary)]">J&apos;accepte les conditions generales d&apos;utilisation et la politique de confidentialite d&apos;E-Dome.</span>
+              <span className="text-sm text-[var(--text-secondary)]">J&apos;accepte les conditions générales d&apos;utilisation et la politique de confidentialité d&apos;E-Dome.</span>
             </label>
 
             <div className="flex justify-between">

@@ -8,16 +8,16 @@ import { formatDate } from "@/lib/utils";
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
 const initialNotifications: Notification[] = [
-  { id: "n1", type: "review", title: "Sophie Martin a aime votre post", message: "Sophie Martin a aime votre publication sur le Chalet Verbier.", read: false, createdAt: "2026-04-02T09:30:00", href: "/profil" },
-  { id: "n2", type: "message", title: "Marc Dupont a commente votre publication", message: "Marc Dupont : \"Superbe bien, je suis interesse !\"", read: false, createdAt: "2026-04-02T09:00:00", href: "/messages" },
-  { id: "n3", type: "reservation", title: "Nouvelle demande de reservation", message: "Nouvelle demande de reservation de Jean-Marc D. pour l'Appartement Montreux du 15 au 22 juillet.", read: false, createdAt: "2026-04-02T08:00:00", href: "/reservations" },
-  { id: "n4", type: "payment", title: "Commission recue : 84 CHF", message: "Vous avez recu une commission de 84 CHF suite a la reservation generee via votre lien apporteur.", read: false, createdAt: "2026-04-02T07:00:00", href: "/dashboard" },
-  { id: "n5", type: "follow", title: "Thomas Weber vous suit maintenant", message: "Thomas Weber a commence a vous suivre.", read: false, createdAt: "2026-04-02T05:00:00", href: "/profil" },
-  { id: "n6", type: "reservation", title: "Reservation confirmee", message: "Votre reservation #R-2026-018 a ete confirmee par l'hote.", read: true, createdAt: "2026-04-01T14:00:00", href: "/reservations" },
-  { id: "n7", type: "system", title: "Mise a jour plateforme", message: "Nouvelle fonctionnalite : export CSV disponible dans le dashboard.", read: true, createdAt: "2026-04-01T09:00:00", href: "/dashboard" },
-  { id: "n8", type: "message", title: "Nouveau message", message: "Claire Richard vous a envoye un message concernant le Penthouse Zurich.", read: true, createdAt: "2026-03-31T16:00:00", href: "/messages" },
-  { id: "n9", type: "payment", title: "Paiement recu", message: "Vous avez recu un paiement de 1'200 CHF pour la location du Studio Lausanne.", read: true, createdAt: "2026-03-31T10:00:00", href: "/dashboard" },
-  { id: "n10", type: "system", title: "Verification d'identite validee", message: "Votre piece d'identite a ete verifiee avec succes. Votre profil est desormais certifie.", read: true, createdAt: "2026-03-30T11:00:00", href: "/profil" },
+  { id: "n1", type: "review", title: "Sophie Martin a aimé votre post", message: "Sophie Martin a aimé votre publication sur le Chalet Verbier.", read: false, createdAt: "2026-04-02T09:30:00", href: "/profil" },
+  { id: "n2", type: "message", title: "Marc Dupont a commenté votre publication", message: "Marc Dupont : \"Superbe bien, je suis intéressé !\"", read: false, createdAt: "2026-04-02T09:00:00", href: "/messages" },
+  { id: "n3", type: "reservation", title: "Nouvelle demande de réservation", message: "Nouvelle demande de réservation de Jean-Marc D. pour l'Appartement Montreux du 15 au 22 juillet.", read: false, createdAt: "2026-04-02T08:00:00", href: "/reservations" },
+  { id: "n4", type: "payment", title: "Commission reçue : 84 CHF", message: "Vous avez reçu une commission de 84 CHF suite à la réservation générée via votre lien apporteur.", read: false, createdAt: "2026-04-02T07:00:00", href: "/dashboard" },
+  { id: "n5", type: "follow", title: "Thomas Weber vous suit maintenant", message: "Thomas Weber a commencé à vous suivre.", read: false, createdAt: "2026-04-02T05:00:00", href: "/profil" },
+  { id: "n6", type: "reservation", title: "Réservation confirmée", message: "Votre réservation #R-2026-018 a été confirmée par l'hôte.", read: true, createdAt: "2026-04-01T14:00:00", href: "/reservations" },
+  { id: "n7", type: "system", title: "Mise à jour plateforme", message: "Nouvelle fonctionnalité : export CSV disponible dans le dashboard.", read: true, createdAt: "2026-04-01T09:00:00", href: "/dashboard" },
+  { id: "n8", type: "message", title: "Nouveau message", message: "Claire Richard vous a envoyé un message concernant le Penthouse Zurich.", read: true, createdAt: "2026-03-31T16:00:00", href: "/messages" },
+  { id: "n9", type: "payment", title: "Paiement reçu", message: "Vous avez reçu un paiement de 1'200 CHF pour la location du Studio Lausanne.", read: true, createdAt: "2026-03-31T10:00:00", href: "/dashboard" },
+  { id: "n10", type: "system", title: "Vérification d'identité validée", message: "Votre pièce d'identité a été vérifiée avec succès. Votre profil est désormais certifié.", read: true, createdAt: "2026-03-30T11:00:00", href: "/profil" },
 ];
 
 type FilterType = "all" | "reservation" | "message" | "follow" | "review" | "system" | "payment";

@@ -77,11 +77,11 @@ export default function ConditionsPage() {
       {/* Demo disclaimer */}
       <div className="p-4 rounded-xl border border-[#C4956A]/40 bg-[#C4956A]/5 text-xs text-[var(--text-secondary)] leading-relaxed">
         <span className="mr-1">&#9888;&#65039;</span>
-        Ce document est fourni a titre indicatif dans le cadre de la maquette de demonstration E-Dome. Il ne constitue pas un document legal contraignant.
+        Ce document est fourni à titre indicatif dans le cadre de la maquette de démonstration E-Dome. Il ne constitue pas un document légal contraignant.
       </div>
 
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Conditions Generales d&apos;Utilisation</h1>
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">Conditions Générales d&apos;Utilisation</h1>
         <p className="text-[var(--text-secondary)]">Dernière mise à jour : 1er janvier 2026</p>
       </div>
 
