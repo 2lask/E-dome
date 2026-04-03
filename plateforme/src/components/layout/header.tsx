@@ -20,6 +20,7 @@ import { useTheme } from "@/lib/theme-context";
 import { useLanguage, type Language } from "@/lib/i18n";
 import { roleLabels, roleBadgeColors } from "@/lib/types";
 import type { Currency, Role } from "@/lib/types";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 const CURRENCIES: { code: Currency; label: string }[] = [
   { code: "CHF", label: "CHF - Franc suisse" },
@@ -139,7 +140,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
         className="md:hidden p-2 rounded-lg cursor-pointer"
         style={{ color: "var(--text-secondary)" }}
       >
-        <Menu size={20} />
+        <LottiePlayer src="/lottie/lottieflow-menu-nav-03-000000-easey.json" width={24} height={24} />
       </button>
 
       {/* Search */}

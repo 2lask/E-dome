@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Home, Search, Plus, MessageCircle, User } from "lucide-react";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 interface MobileNavItem {
   href: string;
@@ -110,7 +111,11 @@ export function MobileNav() {
                     transform: menuOpen ? "rotate(45deg)" : "rotate(0deg)",
                   }}
                 >
-                  <Icon size={22} color="#000" />
+                  {menuOpen ? (
+                    <LottiePlayer src="/lottie/lottieflow-menu-nav-09-000000-easey.json" width={24} height={24} />
+                  ) : (
+                    <Icon size={22} color="#000" />
+                  )}
                 </div>
                 <span
                   className="text-[10px]"

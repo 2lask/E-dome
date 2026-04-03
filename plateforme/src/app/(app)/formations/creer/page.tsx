@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useApp } from "@/lib/context";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -213,7 +214,13 @@ export default function CreerFormationPage() {
               </div>
             </div>
             <div><label className={labelCls}>Description</label><textarea className={`${inputCls} min-h-[120px] resize-y`} placeholder="Décrivez votre formation..." value={form.description} onChange={(e) => updateField("description", e.target.value)} /></div>
-            <div><label className={labelCls}>Image de couverture (URL)</label><input className={inputCls} placeholder="https://..." value={form.image} onChange={(e) => updateField("image", e.target.value)} /></div>
+            <div>
+              <label className={labelCls}>Image de couverture (URL)</label>
+              <div className="flex items-center gap-3">
+                <LottiePlayer src="/lottie/lottieflow-multimedia-8-1-000000-easey.json" width={60} height={60} className="flex-shrink-0" />
+                <input className={`${inputCls} flex-1`} placeholder="https://..." value={form.image} onChange={(e) => updateField("image", e.target.value)} />
+              </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className={labelCls}>Prix</label>

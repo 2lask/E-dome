@@ -206,16 +206,16 @@ export default function MessagesPage() {
       >
         <div className="p-4 border-b border-[var(--card-border)]">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-[var(--foreground)]">Messages</h1>
+            <div className="flex items-center gap-2">
+              <LottiePlayer src="/lottie/lottieflow-chat-17-9-000000-easey.json" width={32} height={32} />
+              <h1 className="text-xl font-bold text-[var(--foreground)]">Messages</h1>
+            </div>
             <button
               onClick={() => setShowNewConv(true)}
               className="w-8 h-8 rounded-full bg-[#C4956A] text-white flex items-center justify-center hover:bg-[#b8845a] transition-colors"
               title="Nouvelle conversation"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
+              <LottiePlayer src="/lottie/lottieflow-chat-17-1-000000-easey.json" width={24} height={24} />
             </button>
           </div>
           <input

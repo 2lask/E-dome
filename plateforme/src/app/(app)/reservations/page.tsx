@@ -7,6 +7,7 @@ import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
 import type { Reservation, User, Property } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
@@ -71,6 +72,7 @@ export default function ReservationsPage() {
   const [reviewModal, setReviewModal] = useState<string | null>(null);
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
+  const [invoiceModal, setInvoiceModal] = useState(false);
   const [calMonth, setCalMonth] = useState(new Date().getMonth());
   const [calYear, setCalYear] = useState(new Date().getFullYear());
 
@@ -108,7 +110,11 @@ export default function ReservationsPage() {
   }, [addToast]);
 
   const handleInvoice = useCallback(() => {
-    addToast("Facture téléchargée", "success");
+    setInvoiceModal(true);
+    setTimeout(() => {
+      setInvoiceModal(false);
+      addToast("Facture téléchargée", "success");
+    }, 2000);
   }, [addToast]);
 
   const handleReviewSubmit = useCallback(() => {
@@ -269,6 +275,7 @@ export default function ReservationsPage() {
         <div className="space-y-4">
           {filtered.length === 0 ? (
             <div className="text-center py-20">
+              <LottiePlayer src="/lottie/lottieflow-ecommerce-14-9-000000-easey.json" width={120} height={120} loop={false} className="mx-auto mb-4" />
               <p className="text-[var(--text-muted)]">Aucune réservation trouvée.</p>
             </div>
           ) : (
@@ -491,6 +498,16 @@ export default function ReservationsPage() {
                 Publier
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Invoice animation modal */}
+      {invoiceModal && (
+        <div className="fixed inset-0 bg-[var(--overlay)] flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-8 animate-scale-in text-center">
+            <LottiePlayer src="/lottie/lottieflow-ecommerce-14-13-000000-easey.json" width={120} height={120} loop={false} className="mx-auto mb-3" />
+            <p className="text-sm text-[var(--text-secondary)]">Génération de la facture...</p>
           </div>
         </div>
       )}

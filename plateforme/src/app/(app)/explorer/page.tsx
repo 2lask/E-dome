@@ -8,6 +8,7 @@ import {
   X, Loader2, SortAsc, Building2, TrendingUp, Rocket,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
 
 // ─── Mock properties ──────────────────────────────────────────────────────
@@ -427,6 +428,8 @@ export default function ExplorerPage() {
         </p>
         <div className="flex items-center gap-3">
           {/* Sort */}
+          <div className="flex items-center gap-1">
+            <LottiePlayer src="/lottie/lottieflow-dropdown-02-000000-easey.json" width={20} height={20} />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
@@ -436,6 +439,7 @@ export default function ExplorerPage() {
             <option value="price-asc">Prix croissant</option>
             <option value="price-desc">Prix décroissant</option>
           </select>
+          </div>
           {/* View toggle */}
           <div className="flex rounded-lg border border-[var(--card-border)] overflow-hidden">
             <button
@@ -625,7 +629,10 @@ export default function ExplorerPage() {
             {loadingMore ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              "Charger plus"
+              <>
+                <span>Charger plus</span>
+                <LottiePlayer src="/lottie/lottieflow-arrow-02-000000-easey.json" width={24} height={24} />
+              </>
             )}
           </button>
         ) : filtered.length > 0 ? (

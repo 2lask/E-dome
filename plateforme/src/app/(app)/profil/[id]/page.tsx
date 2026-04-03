@@ -7,6 +7,7 @@ import { roleLabels } from "@/lib/types";
 import type { Property, User } from "@/lib/types";
 import type { SocialPost } from "@/lib/types";
 import { formatCount, timeAgo } from "@/lib/utils";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
@@ -505,12 +506,13 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
           <div className="flex gap-2 self-start md:self-auto">
             <button
               onClick={() => toggleFollow(id)}
-              className={`px-5 py-2 text-sm rounded-xl transition-colors ${
+              className={`px-5 py-2 text-sm rounded-xl transition-colors flex items-center gap-1.5 ${
                 following
                   ? "bg-[var(--card)] border border-[#C4956A] text-[#C4956A]"
                   : "bg-[#C4956A] text-white hover:bg-[#b8845a]"
               }`}
             >
+              <LottiePlayer src="/lottie/lottieflow-social-networks-15-4-000000-easey.json" width={24} height={24} />
               {following ? "Suivi" : "Suivre"}
             </button>
             <Link

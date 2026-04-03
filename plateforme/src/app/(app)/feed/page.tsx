@@ -9,6 +9,7 @@ import {
   TrendingUp, Calendar, Users, Building2, GraduationCap,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 import { timeAgo, formatCount } from "@/lib/utils";
 import { roleBadgeColors, roleLabels } from "@/lib/types";
 import type { User, SocialPost, Comment, Role } from "@/lib/types";
@@ -1121,15 +1122,7 @@ export default function FeedPage() {
           {/* Infinite scroll loader */}
           <div ref={loaderRef} className="py-8 flex justify-center">
             {loadingMore && (
-              <div className="flex gap-1">
-                {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="w-2 h-2 rounded-full bg-[#C4956A] animate-bounce"
-                    style={{ animationDelay: `${i * 150}ms` }}
-                  />
-                ))}
-              </div>
+              <LottiePlayer src="/lottie/lottieflow-scrolling-07-1-000000-easey.json" width={40} height={40} />
             )}
           </div>
         </div>
@@ -1138,7 +1131,10 @@ export default function FeedPage() {
         <aside className="hidden lg:block w-72 shrink-0 space-y-6">
           {/* Suggestions */}
           <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Suggestions</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <LottiePlayer src="/lottie/lottieflow-social-networks-15-11-000000-easey.json" width={32} height={32} />
+              <h3 className="text-sm font-semibold text-[var(--foreground)]">Suggestions</h3>
+            </div>
             <div className="space-y-3">
               {MOCK_USERS.slice(1).map((user) => (
                 <div key={user.id} className="flex items-center gap-3">
