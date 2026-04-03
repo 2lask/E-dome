@@ -182,12 +182,6 @@ export default function EvenementDetailPage() {
                 <div className="text-sm text-[var(--text-muted)] mb-2">Partager</div>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Découvrez : ${event.titre} sur E-Dome!`)}`, "_blank")}
-                    className="flex-1 py-2 bg-[var(--background)] hover:bg-[var(--hover-bg)] rounded-lg text-sm text-[var(--text-secondary)] transition-colors"
-                  >
-                    WhatsApp
-                  </button>
-                  <button
                     onClick={() => window.open(`mailto:?subject=${encodeURIComponent(event.titre)}&body=${encodeURIComponent(`Découvrez cet événement sur E-Dome: ${event.titre}`)}`, "_blank")}
                     className="flex-1 py-2 bg-[var(--background)] hover:bg-[var(--hover-bg)] rounded-lg text-sm text-[var(--text-secondary)] transition-colors"
                   >

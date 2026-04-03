@@ -8,7 +8,7 @@ import {
   ChevronLeft, ChevronRight, X, Printer, PenSquare,
   Calendar as CalendarIcon, ChevronDown, ChevronUp,
   TrendingUp, BarChart3, Shield, Check, Send, Flag,
-  Facebook, Mail, Copy, Phone, MessageCircle, Users,
+  Mail, Copy, Phone, MessageCircle, Users,
   Building2, Layers, DollarSign, Percent, Award, Rocket,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
@@ -440,12 +440,6 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               </button>
               {showShare && (
                 <div className="absolute top-12 left-0 w-52 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden">
-                  <button onClick={() => { window.open(`https://www.facebook.com/sharer.php?u=${encodeURIComponent(window.location.href)}`); setShowShare(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)]">
-                    <Facebook className="w-4 h-4" /> Facebook
-                  </button>
-                  <button onClick={() => { window.open(`https://wa.me/?text=${encodeURIComponent(property.title + " " + window.location.href)}`); setShowShare(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)]">
-                    <MessageCircle className="w-4 h-4" /> WhatsApp
-                  </button>
                   <button onClick={() => { window.open(`mailto:?subject=${encodeURIComponent(property.title)}&body=${encodeURIComponent(window.location.href)}`); setShowShare(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)]">
                     <Mail className="w-4 h-4" /> Email
                   </button>
@@ -885,7 +879,6 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
             {/* Share buttons */}
             <div className="flex gap-2">
-              <a href={`https://wa.me/?text=${encodeURIComponent("Je vous recommande ce bien sur E-Dome : edome.world/ref/bien/" + property.id)}`} target="_blank" className="px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">💬 WhatsApp</a>
               <a href={`mailto:?subject=Bien E-Dome&body=${encodeURIComponent("Découvrez ce bien : edome.world/ref/bien/" + property.id)}`} className="px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">📧 Email</a>
               <button className="px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">📱 QR Code</button>
             </div>

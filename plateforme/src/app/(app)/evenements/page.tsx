@@ -44,10 +44,6 @@ function formatDateBadge(dateStr: string) {
 
 /* ─── Share helpers ──────────────────────────────────────────────────────── */
 
-function shareWhatsApp(title: string) {
-  window.open(`https://wa.me/?text=${encodeURIComponent(`Découvrez cet événement : ${title} sur E-Dome!`)}`, "_blank");
-}
-
 function shareEmail(title: string) {
   window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`Découvrez cet événement sur E-Dome: ${title}`)}`, "_blank");
 }
@@ -201,7 +197,6 @@ export default function EvenementsPage() {
                             </button>
                             {shareOpenId === ev.id && (
                               <div className="absolute right-0 top-full mt-1 bg-[var(--card)] border border-[var(--card-border)] rounded-xl shadow-lg py-1 z-10 min-w-[150px] animate-scale-in">
-                                <button onClick={() => { shareWhatsApp(ev.titre); setShareOpenId(null); }} className="w-full px-4 py-2 text-sm text-left hover:bg-[var(--hover-bg)] text-[var(--foreground)]">WhatsApp</button>
                                 <button onClick={() => { shareEmail(ev.titre); setShareOpenId(null); }} className="w-full px-4 py-2 text-sm text-left hover:bg-[var(--hover-bg)] text-[var(--foreground)]">Email</button>
                                 <button onClick={() => { copyLink(ev.id); setShareOpenId(null); }} className="w-full px-4 py-2 text-sm text-left hover:bg-[var(--hover-bg)] text-[var(--foreground)]">Copier le lien</button>
                               </div>

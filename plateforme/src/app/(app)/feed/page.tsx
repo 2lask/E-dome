@@ -114,7 +114,38 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
       ],
       createdAt: date,
       location: `${user.city}, ${user.country}`,
-      property: i % 3 === 0
+      property: i === 0
+        ? {
+            id: "prop1",
+            title: "Appartement Lausanne",
+            description: "Appartement moderne avec vue sur le lac",
+            type: "appartement",
+            transactionType: "vente",
+            price: 1450000,
+            currency: "CHF",
+            location: { city: "Lausanne", country: "Suisse" },
+            images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400"],
+            host: user,
+            bedrooms: 3,
+            bathrooms: 2,
+            area: 135,
+            amenities: [],
+            rating: 4.8,
+            reviewCount: 24,
+            analytics: {
+              rendementBrut: 5.2,
+              rendementNet: 3.8,
+              prixM2: 10741,
+              dpe: "B",
+              etatGeneral: "Excellent",
+              anneeConstruction: 2020,
+              potentielPlusValue: 15,
+              roi5ans: 30,
+              roi10ans: 68,
+              tauxOccupation: 92,
+            },
+          }
+        : (i % 3 === 0 && i !== 3)
         ? {
             id: `prop${((i / 3) % 14) + 1}`,
             title: `Villa de luxe à ${user.city}`,
@@ -145,6 +176,9 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
               tauxOccupation: 85 + (i % 10),
             },
           }
+        : undefined,
+      formation: i === 3
+        ? { id: "form-002", title: "Gestion locative avancée", instructor: "Amina El Idrissi", price: 199, students: 890, thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop" }
         : undefined,
     };
   });
@@ -945,6 +979,33 @@ export default function FeedPage() {
                   </div>
                 )}
 
+                {/* Formation link card */}
+                {post.formation && (
+                  <div className="mx-4 my-3 rounded-xl border border-[var(--card-border)] overflow-hidden hover:border-[#C4956A]/30 transition-colors">
+                    <Link href={`/formations/${post.formation.id}`} className="flex gap-3 p-3">
+                      <img
+                        src={post.formation.thumbnail}
+                        alt=""
+                        className="w-20 h-20 rounded-lg object-cover shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="px-2 py-0.5 bg-[#C4956A]/20 text-[#C4956A] text-[10px] font-medium rounded-full">Formation</span>
+                        </div>
+                        <p className="text-sm font-medium text-[var(--foreground)] truncate">
+                          {post.formation.title}
+                        </p>
+                        <p className="text-xs text-[var(--text-muted)] mt-1">
+                          {post.formation.instructor} · {post.formation.students} étudiants
+                        </p>
+                        <p className="text-sm font-bold text-[#C4956A] mt-1">
+                          {formatPrice(post.formation.price)}
+                        </p>
+                      </div>
+                    </Link>
+                  </div>
+                )}
+
                 {/* Engagement bar */}
                 <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--card-border)]">
                   <div className="flex items-center gap-1">
@@ -987,7 +1048,6 @@ export default function FeedPage() {
                         <div className="absolute left-0 bottom-10 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden">
                           {[
                             { label: "Republier", icon: Share2 },
-                            { label: "WhatsApp", icon: Send },
                             { label: "Email", icon: Send },
                             { label: "Copier le lien", icon: Copy },
                           ].map(({ label, icon: Icon }) => (

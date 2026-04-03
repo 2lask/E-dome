@@ -157,6 +157,7 @@ export interface SocialPost {
   createdAt: string;
   location?: string;
   property?: Property;
+  formation?: { id: string; title: string; instructor: string; price: number; students: number; thumbnail: string };
 }
 
 // ─── Messaging ───────────────────────────────────────────────────────────────

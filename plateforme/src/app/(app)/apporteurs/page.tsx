@@ -81,10 +81,6 @@ function copyToClipboard(text: string) {
   navigator.clipboard.writeText(`https://${text}`);
 }
 
-function shareWhatsApp(url: string) {
-  window.open(`https://wa.me/?text=${encodeURIComponent(`https://${url}`)}`, "_blank");
-}
-
 function shareEmail(url: string, label: string) {
   window.open(`mailto:?subject=E-Dome - ${label}&body=${encodeURIComponent(`https://${url}`)}`, "_blank");
 }
@@ -151,13 +147,6 @@ export default function ApporteursPage() {
                 className="flex-1 px-3 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
               >
                 {copiedIdx === idx ? "\u2713 Copié" : "Copier"}
-              </button>
-              <button
-                onClick={() => shareWhatsApp(link.url)}
-                className="px-3 py-2 rounded-lg bg-green-600/20 text-green-400 text-sm hover:bg-green-600/30 transition"
-                title="WhatsApp"
-              >
-                WA
               </button>
               <button
                 onClick={() => shareEmail(link.url, link.label)}
