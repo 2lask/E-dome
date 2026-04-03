@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useApp } from "@/lib/context";
 
@@ -67,28 +67,39 @@ export default function LivePage() {
     });
   };
 
-  // Countdown to next live
-  const nextLiveCountdown = (() => {
-    if (isLive) return null;
-    const now = new Date();
-    // Parse French date format "5 avril 2026 à 18h00"
-    const parseFrDate = (d: string) => {
-      const months: Record<string, number> = { janvier: 0, "février": 1, mars: 2, avril: 3, mai: 4, juin: 5, juillet: 6, "août": 7, septembre: 8, octobre: 9, novembre: 10, "décembre": 11 };
-      const m = d.match(/(\d+)\s+(\w+)\s+(\d{4})(?:\s+à\s+(\d{2})h(\d{2}))?/);
-      if (!m) return new Date(0);
-      return new Date(+m[3], months[m[2].toLowerCase()] ?? 0, +m[1], +(m[4] ?? 0), +(m[5] ?? 0));
+  // Parse French date format helper
+  const parseFrDate = (d: string) => {
+    const months: Record<string, number> = { janvier: 0, "février": 1, mars: 2, avril: 3, mai: 4, juin: 5, juillet: 6, "août": 7, septembre: 8, octobre: 9, novembre: 10, "décembre": 11 };
+    const m = d.match(/(\d+)\s+(\w+)\s+(\d{4})(?:\s+à\s+(\d{2})h(\d{2}))?/);
+    if (!m) return new Date(0);
+    return new Date(+m[3], months[m[2].toLowerCase()] ?? 0, +m[1], +(m[4] ?? 0), +(m[5] ?? 0));
+  };
+
+  // Live countdown with real-time ticking
+  const [countdown, setCountdown] = useState<{ days: number; hours: number; minutes: number; seconds: number; title: string } | null>(null);
+
+  useEffect(() => {
+    if (isLive) return;
+    const tick = () => {
+      const now = new Date();
+      const upcoming = UPCOMING_LIVES
+        .map((l) => ({ ...l, dateObj: parseFrDate(l.date) }))
+        .filter((l) => l.dateObj > now)
+        .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
+      if (upcoming.length === 0) { setCountdown(null); return; }
+      const diff = upcoming[0].dateObj.getTime() - now.getTime();
+      setCountdown({
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff % 86400000) / 3600000),
+        minutes: Math.floor((diff % 3600000) / 60000),
+        seconds: Math.floor((diff % 60000) / 1000),
+        title: upcoming[0].titre,
+      });
     };
-    const upcoming = UPCOMING_LIVES
-      .map((l) => ({ ...l, dateObj: parseFrDate(l.date) }))
-      .filter((l) => l.dateObj > now)
-      .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
-    if (upcoming.length === 0) return null;
-    const diff = upcoming[0].dateObj.getTime() - now.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    if (days > 0) return `Prochain live dans ${days} jour${days > 1 ? "s" : ""} et ${hours}h`;
-    return `Prochain live dans ${hours}h`;
-  })();
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [isLive]);
 
   const handleSendChat = () => {
     if (!chatMessage.trim()) return;
@@ -191,16 +202,77 @@ export default function LivePage() {
           </div>
         </section>
       ) : (
-        /* Empty state when no live */
-        <section className="text-center py-12 space-y-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-          <div className="text-6xl">📡</div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun live en cours</h2>
-          <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-            Il n&apos;y a pas de diffusion en direct pour le moment. Consultez les prochains lives programm&eacute;s ou regardez les replays.
-          </p>
-          {nextLiveCountdown && (
-            <p className="text-[#C4956A] font-medium text-lg">{nextLiveCountdown}</p>
+        /* Empty state when no live + Countdown Banner */
+        <section className="space-y-6">
+          {/* Countdown Banner */}
+          {countdown && (
+            <div
+              className="relative overflow-hidden rounded-2xl p-8 md:p-10 text-center"
+              style={{ background: "linear-gradient(135deg, #C4956A 0%, #d4a574 40%, #e8c9a0 70%, #C4956A 100%)" }}
+            >
+              {/* Decorative circles */}
+              <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-2xl" />
+              <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-white/10 blur-2xl" />
+
+              <p className="text-white/80 text-sm font-medium uppercase tracking-widest mb-2">Prochain Live E-Dome</p>
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-1">{countdown.title}</h2>
+              <p className="text-white/70 text-sm mb-6">Investir dans l&apos;immobilier suisse en 2026</p>
+
+              {/* Countdown numbers */}
+              <div className="flex items-center justify-center gap-3 md:gap-6 mb-8">
+                {[
+                  { value: countdown.days, label: "Jours" },
+                  { value: countdown.hours, label: "Heures" },
+                  { value: countdown.minutes, label: "Minutes" },
+                  { value: countdown.seconds, label: "Secondes" },
+                ].map((unit, i) => (
+                  <React.Fragment key={unit.label}>
+                    {i > 0 && <span className="text-white/60 text-2xl md:text-3xl font-light -mt-4">:</span>}
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg">
+                        <span className="text-2xl md:text-4xl font-bold text-white tabular-nums" style={{ fontVariantNumeric: "tabular-nums" }}>
+                          {String(unit.value).padStart(2, "0")}
+                        </span>
+                      </div>
+                      <span className="text-white/70 text-xs mt-1.5 font-medium">{unit.label}</span>
+                    </div>
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  onClick={() => {
+                    const firstLive = UPCOMING_LIVES[0];
+                    if (firstLive && !inscriptions.has(firstLive.id)) handleInscription(firstLive.id);
+                  }}
+                  className="px-6 py-3 rounded-xl bg-white text-[#C4956A] font-semibold text-sm hover:bg-white/90 transition shadow-lg flex items-center gap-2"
+                >
+                  🔔 S&apos;inscrire
+                </button>
+                <button
+                  onClick={() => {
+                    const calDate = "20260405T180000";
+                    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent("Live E-Dome: " + (countdown?.title || ""))}&dates=${calDate}/${calDate}`;
+                    window.open(url, "_blank");
+                  }}
+                  className="px-6 py-3 rounded-xl bg-white/20 backdrop-blur-sm text-white font-semibold text-sm hover:bg-white/30 transition border border-white/30 flex items-center gap-2"
+                >
+                  📅 Ajouter au calendrier
+                </button>
+              </div>
+            </div>
           )}
+
+          {/* Standard empty state */}
+          <div className="text-center py-10 space-y-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+            <div className="text-5xl">📡</div>
+            <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun live en cours</h2>
+            <p className="text-[var(--text-secondary)] max-w-md mx-auto text-sm">
+              Il n&apos;y a pas de diffusion en direct pour le moment. Consultez les prochains lives programm&eacute;s ou regardez les replays.
+            </p>
+          </div>
         </section>
       )}
 

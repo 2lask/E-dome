@@ -1032,7 +1032,7 @@ export default function FeedPage() {
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--hover-bg)] transition-colors"
                     >
                       <MessageCircle className="w-5 h-5" />
-                      <span className="text-sm">{post.comments.length}</span>
+                      <span className="text-sm">{formatCount(post.comments.length)}</span>
                     </button>
                     {/* Share */}
                     <div className="relative">

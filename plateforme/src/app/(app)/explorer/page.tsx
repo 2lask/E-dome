@@ -317,6 +317,45 @@ export default function ExplorerPage() {
         </div>
       )}
 
+      {/* Interactive Property Type Selector */}
+      <div className="mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          {[
+            { type: "appartement" as PropertyType, label: "Appartement", subtitle: "Urbain & pratique", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=250&fit=crop" },
+            { type: "villa" as PropertyType, label: "Villa", subtitle: "Espace & confort", img: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=250&fit=crop" },
+            { type: "chalet" as PropertyType, label: "Chalet", subtitle: "Montagne & charme", img: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=400&h=250&fit=crop" },
+            { type: "riad" as PropertyType, label: "Riad", subtitle: "Tradition & art", img: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=400&h=250&fit=crop" },
+            { type: "penthouse" as PropertyType, label: "Penthouse", subtitle: "Luxe & panorama", img: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=250&fit=crop" },
+          ].map((item) => (
+            <button
+              key={item.type}
+              onClick={() => setFilterType(filterType === item.type ? "" : item.type)}
+              className={`relative rounded-2xl overflow-hidden aspect-[3/2] group transition-all duration-300 ${
+                filterType === item.type
+                  ? "ring-2 ring-[#C4956A] ring-offset-2 ring-offset-[var(--background)] scale-[1.02]"
+                  : "hover:scale-[1.03]"
+              }`}
+            >
+              <img src={item.img} alt={item.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className={`absolute inset-0 transition-colors duration-300 ${
+                filterType === item.type
+                  ? "bg-gradient-to-t from-[#C4956A]/90 via-[#C4956A]/40 to-transparent"
+                  : "bg-gradient-to-t from-black/70 via-black/30 to-transparent"
+              }`} />
+              <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
+                <p className="text-white font-semibold text-sm drop-shadow-lg">{item.label}</p>
+                <p className="text-white/70 text-xs drop-shadow">{item.subtitle}</p>
+              </div>
+              {filterType === item.type && (
+                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#C4956A] flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                  ✓
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Search bar */}
       <div className="flex gap-3 mb-4">
         <div className="flex-1 relative">
@@ -523,6 +562,24 @@ export default function ExplorerPage() {
                 >
                   <Heart className={`w-5 h-5 ${isFavorite(prop.id) ? "fill-red-400 text-red-400" : ""}`} />
                 </button>
+                {/* Rendement badge */}
+                {prop.analytics && prop.analytics.rendementBrut > 0 && prop.transactionType === "vente" && (
+                  <span
+                    className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold backdrop-blur-sm flex items-center gap-1"
+                    style={{
+                      background: prop.analytics.rendementBrut > 7
+                        ? "linear-gradient(135deg, #C4956A, #d4a574)"
+                        : prop.analytics.rendementBrut >= 5
+                        ? "rgba(34,197,94,0.85)"
+                        : prop.analytics.rendementBrut >= 3
+                        ? "rgba(59,130,246,0.85)"
+                        : "rgba(107,114,128,0.85)",
+                      color: "white",
+                    }}
+                  >
+                    📈 {prop.analytics.rendementBrut.toFixed(1)}%
+                  </span>
+                )}
               </div>
 
               {/* Info */}
@@ -604,6 +661,24 @@ export default function ExplorerPage() {
                 >
                   <Heart className={`w-4 h-4 ${isFavorite(prop.id) ? "fill-red-400 text-red-400" : ""}`} />
                 </button>
+                {/* Rendement badge */}
+                {prop.analytics && prop.analytics.rendementBrut > 0 && prop.transactionType === "vente" && (
+                  <span
+                    className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold backdrop-blur-sm flex items-center gap-1"
+                    style={{
+                      background: prop.analytics.rendementBrut > 7
+                        ? "linear-gradient(135deg, #C4956A, #d4a574)"
+                        : prop.analytics.rendementBrut >= 5
+                        ? "rgba(34,197,94,0.85)"
+                        : prop.analytics.rendementBrut >= 3
+                        ? "rgba(59,130,246,0.85)"
+                        : "rgba(107,114,128,0.85)",
+                      color: "white",
+                    }}
+                  >
+                    📈 {prop.analytics.rendementBrut.toFixed(1)}%
+                  </span>
+                )}
               </div>
               <div className="flex-1 p-4">
                 <div className="flex items-start justify-between">
