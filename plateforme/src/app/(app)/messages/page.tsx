@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { Conversation, Message } from "@/lib/types";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
@@ -473,11 +474,7 @@ export default function MessagesPage() {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[var(--card)] flex items-center justify-center mx-auto mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5">
-                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                </svg>
-              </div>
+              <LottiePlayer src="/lottie/lottieflow-chat-17-10-000000-easey.json" width={160} height={160} className="mx-auto mb-4" />
               <p className="text-[var(--text-muted)]">Sélectionnez une conversation</p>
             </div>
           </div>

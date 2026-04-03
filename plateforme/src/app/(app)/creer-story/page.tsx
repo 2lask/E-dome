@@ -8,6 +8,7 @@ import {
   Bold, ChevronDown, Trash2, Move,
 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface TextBlock {
@@ -476,7 +477,7 @@ export default function CreerStoryPage() {
                       cursor: "pointer", border: "1px solid rgba(196,149,106,0.3)",
                     }}
                   >
-                    <Upload size={12} /> Image
+                    <LottiePlayer src="/lottie/lottieflow-multimedia-8-5-000000-easey.json" width={20} height={20} /> Image
                     <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} />
                   </label>
                 </div>

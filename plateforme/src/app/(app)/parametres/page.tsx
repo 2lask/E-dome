@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import { useApp } from "@/lib/context";
 import { roleLabels } from "@/lib/types";
 import type { Role } from "@/lib/types";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 // ─── Alert types ────────────────────────────────────────────────────────────
 
@@ -547,6 +548,7 @@ export default function ParametresPage() {
                 <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Portefeuille</h2>
                 <div className="flex items-center justify-between p-5 rounded-xl bg-gradient-to-br from-[#C4956A]/15 to-[#C4956A]/5 border border-[#C4956A]/20">
                   <div>
+                    <LottiePlayer src="/lottie/lottieflow-ecommerce-14-20-000000-easey.json" width={80} height={80} />
                     <p className="text-sm text-[var(--text-muted)]">Solde disponible</p>
                     <p className="text-3xl font-bold text-[var(--foreground)] mt-1">{formatPrice(350)}</p>
                   </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 export default function NotFound() {
   return (
@@ -6,6 +7,7 @@ export default function NotFound() {
       className="min-h-screen flex flex-col items-center justify-center gap-6"
       style={{ background: "var(--background)", color: "var(--foreground)" }}
     >
+      <LottiePlayer src="/lottie/lottieflow-404-12-7-000000-easey.json" width={300} height={138} />
       <h1 className="text-6xl font-bold" style={{ color: "var(--gold)" }}>
         404
       </h1>

@@ -8,6 +8,7 @@ import {
   Link2, ChevronRight, Film, Clock, FileVideo,
 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3;
@@ -236,13 +237,7 @@ export default function CreerReelPage() {
                     cursor: "pointer", transition: "all 0.3s", gap: 16,
                   }}
                 >
-                  <div style={{
-                    width: 64, height: 64, borderRadius: "50%",
-                    background: "rgba(196,149,106,0.15)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}>
-                    <Upload size={28} color="#C4956A" />
-                  </div>
+                  <LottiePlayer src="/lottie/lottieflow-multimedia-8-5-000000-easey.json" width={80} height={80} />
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>
                       Glissez votre video ici

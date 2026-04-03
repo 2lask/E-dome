@@ -10,6 +10,7 @@ import {
   Upload, Image as ImageIcon, Trash2, Check,
 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -1602,7 +1603,7 @@ export default function CreerPostPage() {
                 color: GOLD,
                 gap: 2,
               }}>
-                <Plus size={20} />
+                <LottiePlayer src="/lottie/lottieflow-multimedia-8-5-000000-easey.json" width={40} height={40} />
                 <span style={{ fontSize: 10 }}>{photos.length}/10</span>
               </div>
             </button>

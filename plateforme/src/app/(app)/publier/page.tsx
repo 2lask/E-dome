@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useApp } from "@/lib/context";
 import type { TransactionType, PropertyType } from "@/lib/types";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -337,7 +338,7 @@ export default function PublierPage() {
                 ))}
                 {/* Drop zone placeholder */}
                 <button onClick={() => fileRef.current?.click()} className="h-28 border-2 border-dashed border-[var(--card-border)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[#C4956A]/40 transition-colors">
-                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                  <LottiePlayer src="/lottie/lottieflow-multimedia-8-5-000000-easey.json" width={40} height={40} />
                   <span className="text-xs">Glisser-déposer</span>
                 </button>
               </div>

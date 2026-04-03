@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LottiePlayer } from "@/components/ui/lottie-player";
 
 export default function HomePage() {
   return (
@@ -50,6 +51,11 @@ export default function HomePage() {
             <h3 className="font-semibold text-[var(--foreground)] group-hover:text-[#C4956A] transition-colors">Formations & Lives</h3>
             <p className="text-xs text-[var(--text-secondary)] mt-1">Consultez le catalogue de formations, les replays et les événements.</p>
           </Link>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="flex justify-center my-6">
+          <LottiePlayer src="/lottie/lottieflow-scroll-down-04-1-000000-easey.json" width={40} height={40} />
         </div>
 
         {/* Footer */}
