@@ -103,11 +103,11 @@ const mockAppointments = [
 ];
 
 const shortcuts = [
-  { label: "Publier", href: "/publier", icon: "+" },
-  { label: "Créer formation", href: "/formations/creer", icon: "B" },
-  { label: "Créer événement", href: "/evenements/creer", icon: "C" },
-  { label: "Proposer service", href: "/services/proposer", icon: "S" },
-  { label: "Statistiques", href: "/statistiques", icon: "G" },
+  { label: "Publier", href: "/publier", icon: "\uD83C\uDFE0" },
+  { label: "Créer formation", href: "/formations/creer", icon: "\uD83D\uDCDA" },
+  { label: "Créer événement", href: "/evenements/creer", icon: "\uD83D\uDCC5" },
+  { label: "Proposer service", href: "/services/proposer", icon: "\uD83D\uDECE\uFE0F" },
+  { label: "Statistiques", href: "/statistiques", icon: "\uD83D\uDCCA" },
 ];
 
 // ─── Helpers ────────────────────────────────────────────────────────────────

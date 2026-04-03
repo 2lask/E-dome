@@ -63,6 +63,24 @@ const mockConversations: Conversation[] = [
     lastMessage: "Bien sûr ! Je vous prépare une sélection personnalisée.",
     isOnline: true,
   },
+  {
+    id: "c4",
+    participant: {
+      id: "u4", firstName: "Amira", lastName: "El Fassi", email: "a@e.ch", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
+      city: "Marrakech", country: "Maroc", roles: ["hote"], activeRole: "hote",
+      stats: { followers: 180, following: 90, properties: 5, reviews: 32, rating: 4.7, transactions: 12, revenue: 42000 },
+      bio: "",
+    },
+    messages: [
+      { id: "m14", senderId: "u4", content: "Bonjour Léo ! Je cherche un apporteur pour un riad à Marrakech.", timestamp: "2026-04-02T11:00:00", read: true },
+      { id: "m15", senderId: currentUserId, content: "Bonjour Amira ! Je suis très intéressé. Quelles sont les conditions ?", timestamp: "2026-04-02T11:10:00", read: true },
+      { id: "m16", senderId: "u4", content: "Commission 12%, tracking 30j. Bien à 480 000 CHF.", timestamp: "2026-04-02T11:15:00", read: false },
+      { id: "m17", senderId: currentUserId, content: "Parfait, j'active mon lien dès maintenant.", timestamp: "2026-04-02T11:20:00", read: true },
+    ],
+    unreadCount: 1,
+    lastMessage: "Parfait, j'active mon lien dès maintenant.",
+    isOnline: false,
+  },
 ];
 
 const EMOJIS = [

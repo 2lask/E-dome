@@ -22,8 +22,8 @@ const guests: User[] = [
 ];
 
 const properties: Property[] = [
-  { id: "rp1", title: "Chalet Alpin Premium", description: "", type: "chalet", transactionType: "location-ct", price: 350, currency: "CHF", location: { city: "Verbier", country: "Suisse" }, images: ["https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=300&fit=crop"], host: mockHost, bedrooms: 4, bathrooms: 3, area: 180, amenities: [], rating: 4.9, reviewCount: 28 },
-  { id: "rp2", title: "Appartement Vue Lac", description: "", type: "appartement", transactionType: "location-ct", price: 180, currency: "CHF", location: { city: "Montreux", country: "Suisse" }, images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop"], host: mockHost, bedrooms: 2, bathrooms: 1, area: 75, amenities: [], rating: 4.7, reviewCount: 15 },
+  { id: "rp1", title: "Chalet de luxe Verbier", description: "", type: "chalet", transactionType: "location-ct", price: 350, currency: "CHF", location: { city: "Verbier", country: "Suisse" }, images: ["https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=300&fit=crop"], host: mockHost, bedrooms: 4, bathrooms: 3, area: 180, amenities: [], rating: 4.9, reviewCount: 28 },
+  { id: "rp2", title: "Studio Genève Centre", description: "", type: "appartement", transactionType: "location-ct", price: 180, currency: "CHF", location: { city: "Genève", country: "Suisse" }, images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop"], host: mockHost, bedrooms: 2, bathrooms: 1, area: 75, amenities: [], rating: 4.7, reviewCount: 15 },
   { id: "rp3", title: "Studio Moderne", description: "", type: "studio", transactionType: "location-ct", price: 89, currency: "CHF", location: { city: "Lausanne", country: "Suisse" }, images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop"], host: mockHost, bedrooms: 1, bathrooms: 1, area: 35, amenities: [], rating: 4.5, reviewCount: 42 },
 ];
 
