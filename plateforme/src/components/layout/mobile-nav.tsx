@@ -21,6 +21,9 @@ const navItems: MobileNavItem[] = [
 ];
 
 const publishMenuItems = [
+  { emoji: "\u{1F4DD}", label: "Publier un post", href: "/creer-post" },
+  { emoji: "\u{1F4F1}", label: "Créer une story", href: "/creer-story" },
+  { emoji: "\u{1F3AC}", label: "Créer un Reel", href: "/creer-reel" },
   { emoji: "\u{1F3E0}", label: "Publier un bien", href: "/publier" },
   { emoji: "\u{1F4DA}", label: "Créer une formation", href: "/formations/creer" },
   { emoji: "\u{1F4E1}", label: "Programmer un live", href: "/live" },
