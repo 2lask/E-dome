@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useApp } from "@/lib/context";
 import type { Transaction, MonthlyRevenue } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -97,6 +98,21 @@ const mockActivity = [
   { id: "a5", text: "Formation \"Investir en Suisse\" publiée", href: "/formations", time: "Il y a 3j" },
 ];
 
+const revenusData = [
+  { month: "Jan", revenus: 2100, commissions: 180 },
+  { month: "Fév", revenus: 1800, commissions: 220 },
+  { month: "Mar", revenus: 3200, commissions: 250 },
+  { month: "Avr", revenus: 4100, commissions: 310 },
+  { month: "Mai", revenus: 3900, commissions: 290 },
+  { month: "Juin", revenus: 4800, commissions: 380 },
+  { month: "Juil", revenus: 5200, commissions: 420 },
+  { month: "Août", revenus: 6100, commissions: 510 },
+  { month: "Sep", revenus: 4300, commissions: 340 },
+  { month: "Oct", revenus: 3700, commissions: 280 },
+  { month: "Nov", revenus: 3200, commissions: 250 },
+  { month: "Déc", revenus: 2900, commissions: 210 },
+];
+
 const mockAppointments = [
   { id: "ap1", title: "Visite - Appartement Lausanne", date: "2026-04-03", time: "10:00" },
   { id: "ap2", title: "Signature - Villa Montreux", date: "2026-04-05", time: "14:30" },
@@ -153,7 +169,7 @@ export default function DashboardPage() {
   ]);
   const [editGoalIdx, setEditGoalIdx] = useState<number | null>(null);
   const [editGoalVal, setEditGoalVal] = useState("");
-  const [tooltipIdx, setTooltipIdx] = useState<number | null>(null);
+
 
   // Load goals from localStorage
   useEffect(() => {
@@ -180,9 +196,6 @@ export default function DashboardPage() {
     if (txFilter === "all") return mockTransactions;
     return mockTransactions.filter((t) => t.type === txFilter);
   }, [txFilter]);
-
-  // Revenue chart dimensions
-  const chartMax = Math.max(...mockRevenueData.map((d) => d.revenue));
 
   const exportCSV = useCallback(() => {
     const header = "Mois,Revenus,Réservations,Occupation\n";
@@ -373,30 +386,26 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
-          <div className="flex items-end gap-2 h-48 relative">
-            {mockRevenueData.map((d, i) => {
-              const h = (d.revenue / chartMax) * 100;
-              return (
-                <div
-                  key={d.month}
-                  className="flex-1 flex flex-col items-center justify-end relative"
-                  onMouseEnter={() => setTooltipIdx(i)}
-                  onMouseLeave={() => setTooltipIdx(null)}
-                >
-                  {tooltipIdx === i && (
-                    <div className="absolute -top-14 bg-[var(--foreground)] text-[var(--background)] text-xs px-3 py-1.5 rounded-lg whitespace-nowrap z-10">
-                      {formatPrice(d.revenue)} - {d.bookings} res.
-                    </div>
-                  )}
-                  <div
-                    className="w-full rounded-t-md bg-[#C4956A]/80 hover:bg-[#C4956A] transition-colors cursor-pointer"
-                    style={{ height: `${h}%` }}
-                  />
-                  <span className="text-[10px] text-[var(--text-muted)] mt-1">{d.month}</span>
-                </div>
-              );
-            })}
-          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={revenusData}>
+              <defs>
+                <linearGradient id="colorRevenus" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="colorCommissions" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--card-border)" />
+              <XAxis dataKey="month" stroke="var(--text-muted)" fontSize={12} />
+              <YAxis stroke="var(--text-muted)" fontSize={12} />
+              <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--card-border)", borderRadius: 12 }} />
+              <Area type="monotone" dataKey="revenus" stroke="#6366f1" fill="url(#colorRevenus)" strokeWidth={2} />
+              <Area type="monotone" dataKey="commissions" stroke="#10b981" fill="url(#colorCommissions)" strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
 
         {/* Transactions */}

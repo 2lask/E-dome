@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import Link from "next/link";
 import {
   Search, SlidersHorizontal, Heart, MapPin, Bed, Bath, Maximize,
@@ -168,9 +170,8 @@ export default function ExplorerPage() {
     } catch { /* ignore */ }
   }, []);
 
-  // ─── Leaflet map ref (useEffect is after filtered useMemo) ───────
-  const mapInstanceRef = useRef<any>(null);
-  // Leaflet useEffect is placed after filtered declaration below
+  // ─── MapLibre map ref ───────
+  const mapInstanceRef = useRef<maplibregl.Map | null>(null);
 
   const saveSearch = () => {
     if (!search.trim()) return;
@@ -216,35 +217,59 @@ export default function ExplorerPage() {
     return results;
   }, [search, filterType, filterTransaction, filterCountry, filterPriceMin, filterPriceMax, filterBedrooms, sortBy]);
 
-  // ─── Leaflet map useEffect ────────────────────────────────────────
+  // ─── MapLibre map useEffect ────────────────────────────────────────
   useEffect(() => {
     if (!showMap) return;
-    let cancelled = false;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const initMap = (L: any) => {
-      if (cancelled) return;
-      const container = document.getElementById("leaflet-map");
-      if (!container) return;
-      const map = L.map("leaflet-map").setView([46.8, 8.2], 5);
-      mapInstanceRef.current = map;
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap" }).addTo(map);
-      const goldIcon = L.divIcon({ className: "", html: `<div style="width:32px;height:32px;background:linear-gradient(135deg,#C4956A,#d4a574);border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`, iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -34] });
-      filtered.forEach((prop) => {
-        const coords = CITY_COORDS[prop.location.city];
-        if (!coords) return;
-        const suffix = prop.transactionType === "location-ct" ? "/nuit" : prop.transactionType === "location-lt" ? "/mois" : "";
-        L.marker(coords, { icon: goldIcon }).addTo(map).bindPopup(`<div style="font-family:system-ui;min-width:180px"><p style="font-weight:600;margin:0 0 4px;font-size:14px">${prop.title}</p><p style="color:#C4956A;font-weight:700;margin:0 0 4px;font-size:13px">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix ? ` <span style="font-weight:400;color:#888;font-size:11px">${suffix}</span>` : ""}</p><p style="color:#888;margin:0 0 6px;font-size:12px">${prop.location.city}${prop.rating ? ` · ★ ${prop.rating}` : ""}</p><a href="/explorer/${prop.id}" style="color:#C4956A;text-decoration:none;font-size:12px;font-weight:600">Voir →</a></div>`, { closeButton: false });
-      });
-      const validCoords = filtered.map((p) => CITY_COORDS[p.location.city]).filter(Boolean);
-      if (validCoords.length > 1) map.fitBounds(validCoords as [number, number][], { padding: [40, 40] });
-      setTimeout(() => map.invalidateSize(), 300);
-    };
-    const L = (window as unknown as Record<string, unknown>).L;
-    if (L) { setTimeout(() => initMap(L), 50); } else {
-      const linkEl = document.createElement("link"); linkEl.rel = "stylesheet"; linkEl.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.appendChild(linkEl);
-      const scriptEl = document.createElement("script"); scriptEl.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"; scriptEl.onload = () => initMap((window as unknown as Record<string, unknown>).L); document.body.appendChild(scriptEl);
+    const container = document.getElementById("map-container");
+    if (!container) return;
+
+    const map = new maplibregl.Map({
+      container,
+      style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+      center: [8.2, 46.8],
+      zoom: 4,
+    });
+
+    map.addControl(new maplibregl.NavigationControl(), "bottom-right");
+
+    filtered.forEach((prop) => {
+      const coords = CITY_COORDS[prop.location.city];
+      if (!coords) return;
+
+      const suffix = prop.transactionType === "location-ct" ? "/nuit" : prop.transactionType === "location-lt" ? "/mois" : "";
+
+      const el = document.createElement("div");
+      el.className = "map-marker";
+      el.innerHTML = `<span style="background:#C4956A;color:white;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2)">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix}</span>`;
+
+      const popup = new maplibregl.Popup({ offset: 25, closeButton: false }).setHTML(
+        `<div style="font-family:system-ui;min-width:200px">
+          <img src="${prop.images[0]}" style="width:100%;height:120px;object-fit:cover;border-radius:8px 8px 0 0" />
+          <div style="padding:8px">
+            <p style="font-weight:600;margin:0">${prop.title}</p>
+            <p style="color:#C4956A;font-weight:700;margin:4px 0">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix ? ` <span style="font-weight:400;color:#888;font-size:11px">${suffix}</span>` : ""}</p>
+            <p style="color:#888;font-size:12px;margin:0">${prop.location.city}${prop.rating ? ` · ★ ${prop.rating}` : ""}</p>
+            <a href="/explorer/${prop.id}" style="display:block;margin-top:8px;color:#C4956A;font-size:12px;font-weight:600;text-decoration:none">Voir le bien →</a>
+          </div>
+        </div>`
+      );
+
+      new maplibregl.Marker({ element: el })
+        .setLngLat([coords[1], coords[0]])
+        .setPopup(popup)
+        .addTo(map);
+    });
+
+    // Fit bounds
+    const validCoords = filtered.map((p) => CITY_COORDS[p.location.city]).filter(Boolean);
+    if (validCoords.length > 1) {
+      const bounds = new maplibregl.LngLatBounds();
+      validCoords.forEach((c) => bounds.extend([c![1], c![0]]));
+      map.fitBounds(bounds, { padding: 50 });
     }
-    return () => { cancelled = true; if (mapInstanceRef.current) { mapInstanceRef.current.remove(); mapInstanceRef.current = null; } };
+
+    mapInstanceRef.current = map;
+    return () => { map.remove(); mapInstanceRef.current = null; };
   }, [showMap, filtered, formatPrice]);
 
   const visibleProperties = filtered.slice(0, visibleCount);
@@ -650,7 +675,7 @@ export default function ExplorerPage() {
         Carte
       </button>
 
-      {/* Map modal — Leaflet interactive */}
+      {/* Map modal — MapLibre interactive */}
       {showMap && (
         <div className="fixed inset-0 z-50 flex flex-col bg-[var(--background)]">
           {/* Header */}
@@ -673,7 +698,7 @@ export default function ExplorerPage() {
           </div>
           {/* Map container */}
           <div className="flex-1 relative">
-            <div id="leaflet-map" className="absolute inset-0" />
+            <div id="map-container" className="absolute inset-0" style={{ borderRadius: "inherit" }} />
           </div>
         </div>
       )}
