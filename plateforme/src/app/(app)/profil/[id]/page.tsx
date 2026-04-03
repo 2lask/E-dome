@@ -431,6 +431,8 @@ const mockPosts: Record<string, SocialPost[]> = {
   ],
 };
 
+const FONDATEUR_BADGES: Record<string, number> = { u1: 2, u2: 3, u3: 4, u4: 5 };
+
 const ratingBreakdowns: Record<string, { stars: number; count: number }[]> = {
   "user-001": [{ stars: 5, count: 60 }, { stars: 4, count: 20 }, { stars: 3, count: 5 }, { stars: 2, count: 2 }, { stars: 1, count: 0 }],
   "user-002": [{ stars: 5, count: 28 }, { stars: 4, count: 10 }, { stars: 3, count: 3 }, { stars: 2, count: 1 }, { stars: 1, count: 0 }],
@@ -491,6 +493,11 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
             <h1 className="text-2xl font-bold text-[var(--foreground)]">
               {user.firstName} {user.lastName}
             </h1>
+            {FONDATEUR_BADGES[id] && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style={{ background: "linear-gradient(135deg, #d4a832, #f5d679, #c9961e)", color: "#3d2b00", border: "1px solid rgba(212,168,50,0.4)", boxShadow: "0 2px 8px rgba(212,168,50,0.3)" }}>
+                🏅 Membre Fondateur #{FONDATEUR_BADGES[id]}
+              </span>
+            )}
             <p className="text-sm text-[var(--text-secondary)]">
               {roleLabels[user.activeRole]} - {user.city}, {user.country}
             </p>

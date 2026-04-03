@@ -161,6 +161,8 @@ const UPCOMING_EVENTS = [
   { id: "e2", title: "Webinaire : Optimiser son rendement locatif", date: "20 mai 2026", location: "En ligne" },
 ];
 
+const FONDATEUR_NUMBERS: Record<string, number> = { "Léo": 1, "Sophie": 2, "Marc": 3, "Amira": 4, "Thomas": 5 };
+
 const CURRENT_USER_ID = "u1";
 
 export default function FeedPage() {
@@ -180,6 +182,7 @@ export default function FeedPage() {
   const [showLocationInput, setShowLocationInput] = useState(false);
   const [newPostType, setNewPostType] = useState<"post" | "reel">("post");
   const [selectedGradient, setSelectedGradient] = useState<string | null>(null);
+  const [createTab, setCreateTab] = useState<"post" | "story" | "reel">("post");
 
   const POST_GRADIENTS = [
     { name: "Beige E-Dome", value: "linear-gradient(135deg, #f5f0e8, #e8dcc8)" },
@@ -540,140 +543,184 @@ export default function FeedPage() {
       )}
 
       {/* Create post */}
-      <div className="mb-6 p-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)]">
-        <div className="flex gap-3">
-          <img
-            src={MOCK_USERS[0].avatar}
-            alt=""
-            className="w-10 h-10 rounded-full object-cover shrink-0"
-          />
-          <div className="flex-1">
-            <div className="flex gap-4">
-              {/* Left: editor */}
-              <div className="flex-1 min-w-0">
-                <textarea
-                  value={newPostContent}
-                  onChange={(e) => setNewPostContent(e.target.value)}
-                  placeholder="Partagez une actualité, un bien, une idée..."
-                  maxLength={2000}
-                  rows={3}
-                  className="w-full bg-transparent text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none outline-none text-sm"
-                />
-                {/* Gradient selector */}
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs text-[var(--text-muted)] shrink-0">Fond :</span>
-                  <div className="flex items-center gap-1.5">
-                    {/* No gradient option */}
-                    <button
-                      onClick={() => setSelectedGradient(null)}
-                      className={`w-7 h-7 rounded-full border-2 transition-all shrink-0 bg-[var(--card)] ${selectedGradient === null ? "border-[#C4956A] scale-110" : "border-[var(--card-border)] hover:border-[#C4956A]/40"}`}
-                      title="Aucun fond"
-                    >
-                      <span className="text-[10px] text-[var(--text-muted)] flex items-center justify-center h-full">Aa</span>
-                    </button>
-                    {POST_GRADIENTS.map((g) => (
-                      <button
-                        key={g.name}
-                        onClick={() => setSelectedGradient(g.value)}
-                        className={`w-7 h-7 rounded-full border-2 transition-all shrink-0 ${selectedGradient === g.value ? "border-[#C4956A] scale-110" : "border-transparent hover:border-[#C4956A]/40"}`}
-                        style={{ background: g.value }}
-                        title={g.name}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              {/* Right: live preview (desktop only) */}
-              {newPostContent.trim() && (
-                <div className="hidden lg:block w-56 shrink-0">
-                  <p className="text-[10px] text-[var(--text-muted)] mb-1.5 uppercase tracking-wider">Aperçu</p>
-                  <div
-                    className="rounded-xl border border-[var(--card-border)] overflow-hidden"
-                    style={{ background: selectedGradient || "var(--card)" }}
-                  >
-                    <div className="p-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <img src={MOCK_USERS[0].avatar} alt="" className="w-5 h-5 rounded-full object-cover" />
-                        <span className={`text-[10px] font-semibold ${selectedGradient?.includes("#0c0c0c") ? "text-white" : "text-[var(--foreground)]"}`}>
-                          {MOCK_USERS[0].firstName} {MOCK_USERS[0].lastName}
-                        </span>
+      <div className="mb-6 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden">
+        {/* Tabs: Post / Story / Reel */}
+        <div className="flex border-b border-[var(--card-border)]">
+          {([
+            { key: "post" as const, label: "📝 Post" },
+            { key: "story" as const, label: "📱 Story" },
+            { key: "reel" as const, label: "🎬 Reel" },
+          ]).map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setCreateTab(t.key)}
+              className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
+                createTab === t.key
+                  ? "text-[#C4956A]"
+                  : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {t.label}
+              {createTab === t.key && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4956A] rounded-full" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div className="p-5">
+          {createTab === "post" && (
+            <div className="flex gap-3">
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=88&h=88&fit=crop"
+                alt=""
+                className="w-10 h-10 rounded-full object-cover shrink-0"
+              />
+              <div className="flex-1">
+                <div className="flex gap-4">
+                  {/* Left: editor */}
+                  <div className="flex-1 min-w-0">
+                    <textarea
+                      value={newPostContent}
+                      onChange={(e) => setNewPostContent(e.target.value)}
+                      placeholder="Partagez une actualité, un bien, une idée..."
+                      maxLength={2000}
+                      rows={3}
+                      className="w-full bg-transparent text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none outline-none text-sm"
+                    />
+                    {/* Gradient selector — rectangular thumbnails */}
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs text-[var(--text-muted)] shrink-0">Fond :</span>
+                      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                        {/* No gradient option */}
+                        <button
+                          onClick={() => setSelectedGradient(null)}
+                          className={`w-12 h-12 rounded-lg border-2 transition-all shrink-0 bg-[var(--card)] flex items-center justify-center ${selectedGradient === null ? "border-[#C4956A] scale-105" : "border-[var(--card-border)] hover:border-[#C4956A]/40"}`}
+                          title="Aucun fond"
+                        >
+                          <span className="text-[11px] text-[var(--text-muted)]">Aa</span>
+                        </button>
+                        {POST_GRADIENTS.map((g) => (
+                          <button
+                            key={g.name}
+                            onClick={() => setSelectedGradient(g.value)}
+                            className={`w-12 h-12 rounded-lg border-2 transition-all shrink-0 ${selectedGradient === g.value ? "border-[#C4956A] scale-105" : "border-transparent hover:border-[#C4956A]/40"}`}
+                            style={{ background: g.value }}
+                            title={g.name}
+                          />
+                        ))}
                       </div>
-                      <p className={`text-xs whitespace-pre-line leading-relaxed line-clamp-6 ${selectedGradient?.includes("#0c0c0c") ? "text-white" : "text-[var(--foreground)]"}`}>
-                        {newPostContent}
-                      </p>
                     </div>
                   </div>
+                  {/* Right: live preview (desktop only) */}
+                  {newPostContent.trim() && (
+                    <div className="hidden lg:block w-56 shrink-0">
+                      <p className="text-[10px] text-[var(--text-muted)] mb-1.5 uppercase tracking-wider">Aperçu</p>
+                      <div
+                        className="rounded-xl border border-[var(--card-border)] overflow-hidden"
+                        style={{ background: selectedGradient || "var(--card)" }}
+                      >
+                        <div className="p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=88&h=88&fit=crop" alt="" className="w-5 h-5 rounded-full object-cover" />
+                            <span className={`text-[10px] font-semibold ${selectedGradient?.includes("#0c0c0c") ? "text-white" : "text-[var(--foreground)]"}`}>
+                              Léo Martin
+                            </span>
+                          </div>
+                          <p className={`text-xs whitespace-pre-line leading-relaxed line-clamp-6 ${selectedGradient?.includes("#0c0c0c") ? "text-white" : "text-[var(--foreground)]"}`}>
+                            {newPostContent}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="flex items-center justify-between mt-3">
-              <div className="flex items-center gap-2">
-                <button className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors">
-                  <ImageIcon className="w-5 h-5" />
-                </button>
-                <button className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors">
-                  <Video className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setShowLocationInput(!showLocationInput)}
-                  className={`p-2 rounded-lg transition-colors ${
-                    showLocationInput ? "bg-[#C4956A]/10 text-[#C4956A]" : "hover:bg-[var(--hover-bg)] text-[var(--text-muted)]"
-                  }`}
-                >
-                  <MapPin className="w-5 h-5" />
-                </button>
-                {/* Post type selector */}
-                <select
-                  value={newPostType}
-                  onChange={(e) => setNewPostType(e.target.value as "post" | "reel")}
-                  className="text-xs bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg px-2 py-1 text-[var(--text-secondary)] outline-none"
-                >
-                  <option value="post">Post</option>
-                  <option value="reel">Reel</option>
-                </select>
-                {/* Role-based options */}
-                {(activeRole === "hote" || activeRole === "agence" || activeRole === "promoteur") && (
-                  <button
-                    className="flex items-center gap-1 p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors"
-                    title="Attacher un bien"
-                  >
-                    <Building2 className="w-5 h-5" />
-                    <span className="text-xs hidden sm:inline">Bien</span>
-                  </button>
-                )}
-                {activeRole === "formateur" && (
-                  <button
-                    className="flex items-center gap-1 p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors"
-                    title="Attacher une formation"
-                  >
-                    <GraduationCap className="w-5 h-5" />
-                    <span className="text-xs hidden sm:inline">Formation</span>
-                  </button>
+                {/* Media icons row */}
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center gap-1 flex-wrap">
+                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
+                      <span>📷</span> Photo
+                    </button>
+                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
+                      <span>🏠</span> Bien
+                    </button>
+                    <button
+                      onClick={() => setShowLocationInput(!showLocationInput)}
+                      className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-colors text-xs ${
+                        showLocationInput ? "bg-[#C4956A]/10 text-[#C4956A]" : "hover:bg-[var(--hover-bg)] text-[var(--text-muted)]"
+                      }`}
+                    >
+                      <span>📍</span> Lieu
+                    </button>
+                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
+                      <span>#️⃣</span> Tag
+                    </button>
+                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
+                      <span>👤</span> Mention
+                    </button>
+                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
+                      <span>📊</span> Sondage
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-xs text-[var(--text-muted)]">
+                      {newPostContent.length}/2000
+                    </span>
+                    <button
+                      onClick={createPost}
+                      disabled={!newPostContent.trim()}
+                      className="px-4 py-2 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors disabled:opacity-40"
+                    >
+                      Publier
+                    </button>
+                  </div>
+                </div>
+                {showLocationInput && (
+                  <input
+                    type="text"
+                    value={newPostLocation}
+                    onChange={(e) => setNewPostLocation(e.target.value)}
+                    placeholder="Ajouter un lieu..."
+                    className="mt-2 w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A]"
+                  />
                 )}
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-[var(--text-muted)]">
-                  {newPostContent.length}/2000
-                </span>
-                <button
-                  onClick={createPost}
-                  disabled={!newPostContent.trim()}
-                  className="px-4 py-2 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors disabled:opacity-40"
-                >
-                  Publier
-                </button>
-              </div>
             </div>
-            {showLocationInput && (
-              <input
-                type="text"
-                value={newPostLocation}
-                onChange={(e) => setNewPostLocation(e.target.value)}
-                placeholder="Ajouter un lieu..."
-                className="mt-2 w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A]"
-              />
-            )}
-          </div>
+          )}
+
+          {createTab === "story" && (
+            <div className="flex flex-col items-center gap-4 py-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C4956A] to-[#e8c89e] flex items-center justify-center">
+                <span className="text-2xl">📱</span>
+              </div>
+              <p className="text-sm text-[var(--text-secondary)] text-center">
+                Créez une story visuelle avec texte, arrière-plan et effets.
+              </p>
+              <Link
+                href="/creer-story"
+                className="px-6 py-2.5 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors"
+              >
+                Ouvrir l&apos;éditeur de story →
+              </Link>
+            </div>
+          )}
+
+          {createTab === "reel" && (
+            <div className="flex flex-col items-center gap-4 py-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C4956A] to-[#e8c89e] flex items-center justify-center">
+                <span className="text-2xl">🎬</span>
+              </div>
+              <p className="text-sm text-[var(--text-secondary)] text-center">
+                Créez un reel immobilier captivant avec musique et effets.
+              </p>
+              <Link
+                href="/creer-reel"
+                className="px-6 py-2.5 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors"
+              >
+                Ouvrir l&apos;éditeur de reel →
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
@@ -740,6 +787,14 @@ export default function FeedPage() {
                         >
                           {roleLabels[post.author.activeRole]}
                         </span>
+                        {FONDATEUR_NUMBERS[post.author.firstName] && (
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
+                            style={{ background: "linear-gradient(135deg, #d4a832, #f5d679)", color: "#3d2b00" }}
+                          >
+                            🏅 #{FONDATEUR_NUMBERS[post.author.firstName]}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                         {post.location && (

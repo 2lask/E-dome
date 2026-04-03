@@ -155,6 +155,9 @@ export default function ProfilPage() {
             <h1 className="text-2xl font-bold text-[var(--foreground)]">
               {currentUser.firstName} {currentUser.lastName}
             </h1>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style={{ background: "linear-gradient(135deg, #d4a832, #f5d679, #c9961e)", color: "#3d2b00", border: "1px solid rgba(212,168,50,0.4)", boxShadow: "0 2px 8px rgba(212,168,50,0.3)" }}>
+              🏅 Membre Fondateur #1
+            </span>
             <p className="text-sm text-[var(--text-secondary)]">
               {currentUser.city}, {currentUser.country}
             </p>

@@ -265,6 +265,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               >
                 Hôte · Formateur · Apporteur
               </p>
+              <span className="text-[9px] font-bold" style={{ background: "linear-gradient(135deg, #d4a832, #f5d679)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                🏅 Membre Fondateur #1
+              </span>
             </div>
           </div>
         </div>
