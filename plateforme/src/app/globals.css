@@ -37,9 +37,9 @@ html:not(.light) {
 
 /* ─── Mobile app behavior ─────────────────────────────────────────────────── */
 
-html, body {
-  overscroll-behavior: none;
+body {
   overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
 * {
@@ -242,6 +242,14 @@ html.light .card-hover:hover {
   .no-print,
   header {
     display: none !important;
+  }
+}
+
+/* ─── Mobile layout fix: override sidebar margin on small screens ────────── */
+
+@media (max-width: 767px) {
+  .main-content {
+    margin-left: 0 !important;
   }
 }
 
