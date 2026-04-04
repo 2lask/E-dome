@@ -35,6 +35,23 @@ html:not(.light) {
   --divider: rgba(255, 255, 255, 0.06);
 }
 
+/* ─── Mobile app behavior ─────────────────────────────────────────────────── */
+
+html, body {
+  overscroll-behavior: none;
+  overflow-x: hidden;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@supports (min-height: 100dvh) {
+  .min-h-screen {
+    min-height: 100dvh !important;
+  }
+}
+
 /* ─── Base ─────────────────────────────────────────────────────────────────── */
 
 body {

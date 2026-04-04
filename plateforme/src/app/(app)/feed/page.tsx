@@ -419,6 +419,21 @@ export default function FeedPage() {
         <Link href="/creer-reel" className="text-lg">🎬</Link>
       </div>
 
+      {/* Refresh button */}
+      <button
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          const el = document.getElementById("refresh-indicator");
+          if (el) { el.style.display = "flex"; setTimeout(() => { el.style.display = "none"; }, 1200); }
+        }}
+        className="w-full py-2 text-xs text-[var(--text-muted)] hover:text-[#C4956A] transition-colors text-center"
+      >
+        ↻ Actualiser le feed
+      </button>
+      <div id="refresh-indicator" className="hidden items-center justify-center py-3">
+        <div className="w-5 h-5 border-2 border-[#C4956A] border-t-transparent rounded-full animate-spin" />
+      </div>
+
       {/* Stories bar */}
       <div className="mb-6 overflow-x-auto no-scrollbar">
         <div className="flex gap-4 pb-2">
