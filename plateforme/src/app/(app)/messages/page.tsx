@@ -197,7 +197,7 @@ export default function MessagesPage() {
   const showList = !activeConvId;
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] overflow-hidden animate-fade-in">
+    <div className="flex h-[calc(100dvh-8rem)] md:h-[calc(100dvh-4rem)] overflow-hidden animate-fade-in">
       {/* Conversation List */}
       <div
         className={`${

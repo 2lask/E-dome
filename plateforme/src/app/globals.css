@@ -245,14 +245,6 @@ html.light .card-hover:hover {
   }
 }
 
-/* ─── Mobile layout fix: override sidebar margin on small screens ────────── */
-
-@media (max-width: 767px) {
-  .main-content {
-    margin-left: 0 !important;
-  }
-}
-
 /* PWA Safe Areas */
 .bottom-nav {
   padding-bottom: env(safe-area-inset-bottom, 0px);
