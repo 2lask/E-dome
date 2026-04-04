@@ -227,3 +227,14 @@ html.light .card-hover:hover {
     display: none !important;
   }
 }
+
+/* PWA Safe Areas */
+.bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .page-content {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+}
