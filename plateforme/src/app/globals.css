@@ -37,19 +37,18 @@ html:not(.light) {
 
 /* ─── Mobile app behavior ─────────────────────────────────────────────────── */
 
+html {
+  overflow-x: clip;
+}
+
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: auto;
   overscroll-behavior-y: none;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
-}
-
-@supports (min-height: 100dvh) {
-  .min-h-screen {
-    min-height: 100dvh !important;
-  }
 }
 
 /* ─── Base ─────────────────────────────────────────────────────────────────── */

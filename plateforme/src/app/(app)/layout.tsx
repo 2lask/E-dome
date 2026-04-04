@@ -13,55 +13,67 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const sidebarWidth = sidebarCollapsed ? 72 : 260;
+
   return (
     <AppProvider>
       <ThemeProvider>
         <LanguageProvider>
           <ToastProvider>
-            <div className="flex min-h-screen">
-              {/* Sidebar - desktop */}
-              <div className="hidden md:block">
-                <Sidebar
-                  collapsed={sidebarCollapsed}
-                  onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+            {/* Sidebar - desktop only (fixed, outside flow) */}
+            <div className="hidden md:block">
+              <Sidebar
+                collapsed={sidebarCollapsed}
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+              />
+            </div>
+
+            {/* Mobile sidebar overlay */}
+            {mobileMenuOpen && (
+              <div className="fixed inset-0 z-50 md:hidden">
+                <div
+                  className="absolute inset-0 bg-black/60"
+                  onClick={() => setMobileMenuOpen(false)}
                 />
-              </div>
-
-              {/* Mobile sidebar overlay */}
-              {mobileMenuOpen && (
-                <div className="fixed inset-0 z-50 md:hidden">
-                  <div
-                    className="absolute inset-0 bg-black/60"
-                    onClick={() => setMobileMenuOpen(false)}
+                <div className="relative z-10 h-full w-[280px]">
+                  <Sidebar
+                    collapsed={false}
+                    onToggle={() => setMobileMenuOpen(false)}
                   />
-                  <div className="relative z-10 h-full w-[280px]">
-                    <Sidebar
-                      collapsed={false}
-                      onToggle={() => setMobileMenuOpen(false)}
-                    />
-                  </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Main content */}
-              <div
-                className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${sidebarCollapsed ? "md:ml-[72px]" : "md:ml-[260px]"}`}
-              >
+            {/* Main content area */}
+            <div
+              className="min-h-screen flex flex-col transition-[margin] duration-300"
+              style={{ marginLeft: undefined }}
+            >
+              {/* Desktop margin via style (sidebar is fixed) */}
+              <style>{`
+                @media (min-width: 768px) {
+                  #app-main { margin-left: ${sidebarWidth}px; }
+                }
+              `}</style>
+
+              <div id="app-main" className="min-h-screen flex flex-col">
                 {/* Demo banner */}
-                <div className="w-full px-4 py-1.5 bg-[#C4956A]/10 border-b border-[#C4956A]/20 text-center text-xs text-[#C4956A]">
-                  🛠️ Maquette de démonstration — Toutes les données sont fictives · <a href="/" className="underline hover:opacity-80" title="Retour à la page d'accueil de la maquette E-Dome">En savoir plus</a>
+                <div className="w-full px-4 py-1.5 bg-[#C4956A]/10 border-b border-[#C4956A]/20 text-center text-xs text-[#C4956A] shrink-0">
+                  🛠️ Maquette de démonstration — Toutes les données sont fictives · <a href="/" className="underline hover:opacity-80">En savoir plus</a>
                 </div>
+
                 <Header
                   onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
                 />
-                <main className="flex-1 px-4 py-6 md:px-6 pb-20 md:pb-6">
+
+                <main className="flex-1 px-4 py-6 md:px-6 pb-24 md:pb-6">
                   {children}
                 </main>
               </div>
-
-              {/* Mobile bottom nav */}
-              <MobileNav />
             </div>
+
+            {/* Mobile bottom nav (fixed) */}
+            <MobileNav />
           </ToastProvider>
         </LanguageProvider>
       </ThemeProvider>
