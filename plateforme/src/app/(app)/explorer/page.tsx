@@ -11,8 +11,89 @@ import {
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { LottiePlayer } from "@/components/ui/lottie-player";
-import { properties as MOCK_PROPERTIES } from "@/lib/mock-data";
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
+
+// ─── Mock properties ──────────────────────────────────────────────────────
+
+const MOCK_PROPERTIES: Property[] = [
+  {
+    id: "prop1", title: "Villa moderne avec piscine", description: "Magnifique villa contemporaine",
+    type: "villa", transactionType: "vente", price: 1850000, currency: "CHF",
+    location: { city: "Lausanne", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600", "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"],
+    host: { id: "u1", firstName: "Sophie", lastName: "Martin", email: "", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100", city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    bedrooms: 5, bathrooms: 3, area: 320, amenities: ["Piscine", "Jardin", "Garage"], rating: 4.9, reviewCount: 24, featured: true,
+    analytics: { rendementBrut: 5.2, rendementNet: 3.8, prixM2: 5781, dpe: "A", etatGeneral: "Neuf", anneeConstruction: 2023, potentielPlusValue: 15, roi5ans: 32, roi10ans: 72, tauxOccupation: 95 },
+  },
+  {
+    id: "prop2", title: "Appartement vue lac", description: "Superbe appartement avec vue imprenable",
+    type: "appartement", transactionType: "location-ct", price: 250, currency: "CHF",
+    location: { city: "Montreux", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600"],
+    host: { id: "u2", firstName: "Marc", lastName: "Dubois", email: "", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", city: "Genève", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    bedrooms: 3, bathrooms: 2, area: 120, amenities: ["Vue lac", "Balcon", "Parking"], rating: 4.7, reviewCount: 56,
+  },
+  {
+    id: "prop3", title: "Riad traditionnel Marrakech", description: "Authentique riad avec cour intérieure",
+    type: "riad", transactionType: "vente", price: 380000, currency: "EUR",
+    location: { city: "Marrakech", country: "Maroc" },
+    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600"],
+    host: { id: "u3", firstName: "Amira", lastName: "El Fassi", email: "", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100", city: "Marrakech", country: "Maroc", roles: ["agence"], activeRole: "agence", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    bedrooms: 4, bathrooms: 4, area: 250, amenities: ["Piscine", "Hammam", "Terrasse"], rating: 4.8, reviewCount: 89,
+    analytics: { rendementBrut: 7.5, rendementNet: 5.2, prixM2: 1520, dpe: "C", etatGeneral: "Rénové", anneeConstruction: 1920, potentielPlusValue: 20, roi5ans: 45, roi10ans: 95, tauxOccupation: 78 },
+  },
+  {
+    id: "prop4", title: "Penthouse panoramique", description: "Penthouse de luxe au dernier étage",
+    type: "penthouse", transactionType: "vente", price: 3200000, currency: "CHF",
+    location: { city: "Genève", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"],
+    host: { id: "u4", firstName: "Thomas", lastName: "Weber", email: "", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100", city: "Zurich", country: "Suisse", roles: ["promoteur"], activeRole: "promoteur", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    bedrooms: 4, bathrooms: 3, area: 280, amenities: ["Terrasse", "Spa", "Cave à vin"], rating: 5.0, reviewCount: 12, featured: true,
+    analytics: { rendementBrut: 3.8, rendementNet: 2.5, prixM2: 11428, dpe: "A", etatGeneral: "Neuf", anneeConstruction: 2024, potentielPlusValue: 10, roi5ans: 22, roi10ans: 50, tauxOccupation: 90 },
+  },
+  {
+    id: "prop5", title: "Chalet alpin authentique", description: "Charmant chalet en bois",
+    type: "chalet", transactionType: "location-ct", price: 350, currency: "CHF",
+    location: { city: "Verbier", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"],
+    host: { id: "u1", firstName: "Sophie", lastName: "Martin", email: "", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100", city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    bedrooms: 6, bathrooms: 4, area: 400, amenities: ["Jacuzzi", "Sauna", "Cheminée", "Ski-in/ski-out"], rating: 4.9, reviewCount: 134,
+  },
+  {
+    id: "prop6", title: "Studio centre-ville", description: "Studio rénové idéalement situé",
+    type: "studio", transactionType: "location-lt", price: 1200, currency: "CHF",
+    location: { city: "Zurich", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"],
+    host: { id: "u2", firstName: "Marc", lastName: "Dubois", email: "", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", city: "Genève", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    bedrooms: 1, bathrooms: 1, area: 35, amenities: ["Meublé", "Buanderie"], rating: 4.3, reviewCount: 28,
+  },
+  {
+    id: "prop7", title: "Terrain constructible vue mer", description: "Magnifique terrain en bord de mer",
+    type: "terrain", transactionType: "vente", price: 450000, currency: "EUR",
+    location: { city: "Tanger", country: "Maroc" },
+    images: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600"],
+    host: { id: "u3", firstName: "Amira", lastName: "El Fassi", email: "", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100", city: "Marrakech", country: "Maroc", roles: ["agence"], activeRole: "agence", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    bedrooms: 0, bathrooms: 0, area: 2000, amenities: ["Vue mer", "Viabilisé"], rating: 4.5, reviewCount: 5,
+    analytics: { rendementBrut: 0, rendementNet: 0, prixM2: 225, dpe: "N/A", etatGeneral: "Terrain", anneeConstruction: 0, potentielPlusValue: 35, roi5ans: 50, roi10ans: 120, tauxOccupation: 0 },
+  },
+  {
+    id: "prop8", title: "Maison familiale avec jardin", description: "Belle maison pour famille",
+    type: "maison", transactionType: "vente", price: 980000, currency: "CHF",
+    location: { city: "Neuchâtel", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"],
+    host: { id: "u4", firstName: "Thomas", lastName: "Weber", email: "", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100", city: "Zurich", country: "Suisse", roles: ["promoteur"], activeRole: "promoteur", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    bedrooms: 4, bathrooms: 2, area: 180, amenities: ["Jardin", "Garage double", "Cave"], rating: 4.6, reviewCount: 18,
+    analytics: { rendementBrut: 4.1, rendementNet: 2.9, prixM2: 5444, dpe: "B", etatGeneral: "Bon", anneeConstruction: 2010, potentielPlusValue: 8, roi5ans: 18, roi10ans: 40, tauxOccupation: 100 },
+  },
+  {
+    id: "prop9", title: "Bureau moderne open-space", description: "Espace de bureau contemporain",
+    type: "bureau", transactionType: "location-lt", price: 3500, currency: "CHF",
+    location: { city: "Bâle", country: "Suisse" },
+    images: ["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"],
+    host: { id: "u2", firstName: "Marc", lastName: "Dubois", email: "", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", city: "Genève", country: "Suisse", roles: ["investisseur"], activeRole: "investisseur", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
+    bedrooms: 0, bathrooms: 2, area: 150, amenities: ["Climatisation", "Salle de réunion", "Parking"], rating: 4.4, reviewCount: 8,
+  },
+];
 
 const PROPERTY_TYPES: { value: PropertyType | ""; label: string }[] = [
   { value: "", label: "Tout type" },
@@ -28,7 +109,7 @@ const PROPERTY_TYPES: { value: PropertyType | ""; label: string }[] = [
   { value: "riad", label: "Riad" },
 ];
 
-const COUNTRIES = ["", "Suisse", "France", "Maroc", "Émirats Arabes Unis", "Portugal", "Thaïlande", "Grèce", "Espagne"];
+const COUNTRIES = ["", "Suisse", "Maroc", "France"];
 
 const CITY_COORDS: Record<string, [number, number]> = {
   "Lausanne": [46.5197, 6.6323],
@@ -43,9 +124,6 @@ const CITY_COORDS: Record<string, [number, number]> = {
   "Tanger": [35.7595, -5.8340],
   "Phuket": [7.8804, 98.3923],
   "Dubai": [25.2048, 55.2708],
-  "Lisbonne": [38.7103, -9.1302],
-  "Santorin": [36.4618, 25.3753],
-  "Barcelone": [41.3851, 2.1830],
 };
 
 const TRANSACTION_TABS: { value: TransactionType | "all" | "terrains"; label: string }[] = [
@@ -155,7 +233,7 @@ export default function ExplorerPage() {
     map.addControl(new maplibregl.NavigationControl(), "bottom-right");
 
     filtered.forEach((prop) => {
-      const coords = (prop.location.lat && prop.location.lng) ? [prop.location.lat, prop.location.lng] as [number, number] : CITY_COORDS[prop.location.city];
+      const coords = CITY_COORDS[prop.location.city];
       if (!coords) return;
 
       const suffix = prop.transactionType === "location-ct" ? "/nuit" : prop.transactionType === "location-lt" ? "/mois" : "";

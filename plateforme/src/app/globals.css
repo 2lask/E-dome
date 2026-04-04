@@ -35,22 +35,6 @@ html:not(.light) {
   --divider: rgba(255, 255, 255, 0.06);
 }
 
-/* ─── Mobile app behavior ─────────────────────────────────────────────────── */
-
-html {
-  overflow-x: clip;
-}
-
-body {
-  overflow-x: clip;
-  overflow-y: auto;
-  overscroll-behavior-y: none;
-}
-
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
 /* ─── Base ─────────────────────────────────────────────────────────────────── */
 
 body {
@@ -241,24 +225,5 @@ html.light .card-hover:hover {
   .no-print,
   header {
     display: none !important;
-  }
-}
-
-/* ─── Mobile: reset sidebar margin ──────────────────────────────────────── */
-@media (max-width: 767px) {
-  .app-content {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-}
-
-/* PWA Safe Areas */
-.bottom-nav {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .page-content {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   }
 }

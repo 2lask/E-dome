@@ -56,7 +56,7 @@ export function MobileNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 md:hidden flex items-center justify-around h-16 px-2 bottom-nav"
+      className="fixed bottom-0 left-0 right-0 z-40 md:hidden flex items-center justify-around h-16 px-2"
       style={{
         background: "var(--card)",
         borderTop: "1px solid var(--card-border)",

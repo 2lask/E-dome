@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { PWARegister } from "@/components/pwa-register";
@@ -8,12 +8,6 @@ const inter = Inter({
   variable: "--font-inter",
   display: "swap",
 });
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-};
 
 export const metadata: Metadata = {
   title: "E-Dome - Plateforme immobilière",

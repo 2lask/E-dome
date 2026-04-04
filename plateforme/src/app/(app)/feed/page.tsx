@@ -178,7 +178,7 @@ const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
           }
         : undefined,
       formation: i === 3
-        ? { id: "f2", title: "Gestion locative avancée", instructor: "Amina El Idrissi", price: 199, students: 890, thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop" }
+        ? { id: "form-002", title: "Gestion locative avancée", instructor: "Amina El Idrissi", price: 199, students: 890, thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop" }
         : undefined,
     };
   });
@@ -410,30 +410,6 @@ export default function FeedPage() {
           ✓ {feedToast}
         </div>
       )}
-      {/* Mobile creation bar */}
-      <div className="md:hidden sticky top-0 z-20 flex items-center gap-3 px-4 py-3" style={{ background: "var(--card)", borderBottom: "1px solid var(--card-border)" }}>
-        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=72" className="w-9 h-9 rounded-full object-cover" alt="Léo" />
-        <Link href="/creer-post" className="flex-1 px-3 py-2 rounded-full text-sm" style={{ background: "var(--background)", color: "var(--text-muted)" }}>Quoi de neuf ?</Link>
-        <Link href="/creer-post" className="text-lg">📝</Link>
-        <Link href="/creer-story" className="text-lg">📱</Link>
-        <Link href="/creer-reel" className="text-lg">🎬</Link>
-      </div>
-
-      {/* Refresh button */}
-      <button
-        onClick={() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          const el = document.getElementById("refresh-indicator");
-          if (el) { el.style.display = "flex"; setTimeout(() => { el.style.display = "none"; }, 1200); }
-        }}
-        className="w-full py-2 text-xs text-[var(--text-muted)] hover:text-[#C4956A] transition-colors text-center"
-      >
-        ↻ Actualiser le feed
-      </button>
-      <div id="refresh-indicator" className="hidden items-center justify-center py-3">
-        <div className="w-5 h-5 border-2 border-[#C4956A] border-t-transparent rounded-full animate-spin" />
-      </div>
-
       {/* Stories bar */}
       <div className="mb-6 overflow-x-auto no-scrollbar">
         <div className="flex gap-4 pb-2">
@@ -602,7 +578,7 @@ export default function FeedPage() {
       )}
 
       {/* Create post */}
-      <div className="hidden md:block mb-6 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden">
+      <div className="mb-6 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden">
         {/* Tabs: Post / Story / Reel */}
         <div className="flex border-b border-[var(--card-border)]">
           {([
@@ -1215,7 +1191,10 @@ export default function FeedPage() {
         <aside className="hidden lg:block w-72 shrink-0 space-y-6">
           {/* Suggestions */}
           <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Suggestions</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <LottiePlayer src="/lottie/lottieflow-social-networks-15-11-000000-easey.json" width={32} height={32} />
+              <h3 className="text-sm font-semibold text-[var(--foreground)]">Suggestions</h3>
+            </div>
             <div className="space-y-3">
               {MOCK_USERS.slice(1).map((user) => (
                 <div key={user.id} className="flex items-center gap-3">

@@ -18,51 +18,54 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <ThemeProvider>
         <LanguageProvider>
           <ToastProvider>
-            {/* Sidebar - desktop only (position: fixed) */}
-            <div className="hidden md:block">
-              <Sidebar
-                collapsed={sidebarCollapsed}
-                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-              />
-            </div>
-
-            {/* Mobile sidebar overlay */}
-            {mobileMenuOpen && (
-              <div className="fixed inset-0 z-50 md:hidden">
-                <div
-                  className="absolute inset-0 bg-black/60"
-                  onClick={() => setMobileMenuOpen(false)}
+            <div className="flex min-h-screen">
+              {/* Sidebar - desktop */}
+              <div className="hidden md:block">
+                <Sidebar
+                  collapsed={sidebarCollapsed}
+                  onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
                 />
-                <div className="relative z-10 h-full w-[280px]">
-                  <Sidebar
-                    collapsed={false}
-                    onToggle={() => setMobileMenuOpen(false)}
+              </div>
+
+              {/* Mobile sidebar overlay */}
+              {mobileMenuOpen && (
+                <div className="fixed inset-0 z-50 md:hidden">
+                  <div
+                    className="absolute inset-0 bg-black/60"
+                    onClick={() => setMobileMenuOpen(false)}
                   />
+                  <div className="relative z-10 h-full w-[280px]">
+                    <Sidebar
+                      collapsed={false}
+                      onToggle={() => setMobileMenuOpen(false)}
+                    />
+                  </div>
                 </div>
+              )}
+
+              {/* Main content */}
+              <div
+                className="flex-1 flex flex-col min-h-screen transition-all duration-300"
+                style={{
+                  marginLeft: sidebarCollapsed ? "72px" : "260px",
+                }}
+              >
+                <div className="md:hidden" style={{ marginLeft: 0 }} />
+                {/* Demo banner */}
+                <div className="w-full px-4 py-1.5 bg-[#C4956A]/10 border-b border-[#C4956A]/20 text-center text-xs text-[#C4956A]">
+                  🛠️ Maquette de démonstration — Toutes les données sont fictives · <a href="/" className="underline hover:opacity-80" title="Retour à la page d'accueil de la maquette E-Dome">En savoir plus</a>
+                </div>
+                <Header
+                  onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+                />
+                <main className="flex-1 px-4 py-6 md:px-6 pb-20 md:pb-6">
+                  {children}
+                </main>
               </div>
-            )}
 
-            {/* Page content */}
-            <div
-              className="app-content min-h-screen flex flex-col"
-              style={{ marginLeft: sidebarCollapsed ? 72 : 260 }}
-            >
-              {/* Demo banner */}
-              <div className="w-full px-4 py-1.5 bg-[#C4956A]/10 border-b border-[#C4956A]/20 text-center text-xs text-[#C4956A] shrink-0">
-                🛠️ Maquette de démonstration — Toutes les données sont fictives · <a href="/" className="underline hover:opacity-80">En savoir plus</a>
-              </div>
-
-              <Header
-                onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
-              />
-
-              <main className="flex-1 px-4 py-6 md:px-6 pb-24 md:pb-6">
-                {children}
-              </main>
+              {/* Mobile bottom nav */}
+              <MobileNav />
             </div>
-
-            {/* Mobile bottom nav */}
-            <MobileNav />
           </ToastProvider>
         </LanguageProvider>
       </ThemeProvider>
