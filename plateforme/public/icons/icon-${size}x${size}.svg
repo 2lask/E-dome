@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#080808"/>
+  <rect x="40" y="40" width="432" height="432" rx="60" fill="none" stroke="#C4956A" stroke-width="8"/>
+  <text x="256" y="220" text-anchor="middle" fill="#ffffff" font-family="system-ui,sans-serif" font-size="120" font-weight="800">E</text>
+  <text x="256" y="340" text-anchor="middle" fill="#C4956A" font-family="system-ui,sans-serif" font-size="60" font-weight="700">DOME</text>
+</svg>
