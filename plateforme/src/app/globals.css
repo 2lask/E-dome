@@ -213,6 +213,14 @@ html.light .card-hover:hover {
   }
 }
 
+/* ─── Mobile: reset sidebar margin ──────────────────────────────────────── */
+@media (max-width: 767px) {
+  .app-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
 /* ─── Print styles ───────────────────────────────────────────────────────── */
 
 @media print {
