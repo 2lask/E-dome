@@ -2,44 +2,56 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { ArrowUpRight, Home, Users, GraduationCap, Handshake } from "lucide-react";
+import { ArrowUpRight, Home, Users, GraduationCap, Handshake, Radio, Briefcase } from "lucide-react";
 
 const features = [
   {
-    tag: "Réseau social",
+    tag: "Réseau social immobilier",
     title: "Feed, Stories & Reels",
     description:
-      "Partagez vos biens, vos réussites et vos conseils avec une communauté d'investisseurs et de professionnels. Stories éphémères, reels immobiliers, posts avec mentions et hashtags — un Instagram conçu pour l'immobilier.",
+      "Un fil d'actualité conçu pour l'immobilier : partagez vos biens, vos visites, vos analyses de marché. Stories éphémères, reels de propriétés, mentions, hashtags — toute l'interaction d'Instagram, orientée vers le professionnel de l'immobilier.",
     icon: Users,
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4",
+    video: "/videos/reel-1.mp4",
   },
   {
-    tag: "Marketplace",
-    title: "Explorer & Réserver",
+    tag: "Marketplace & Réservations",
+    title: "Explorer, comparer, réserver",
     description:
-      "Achat, location courte durée, location longue durée — parcourez les annonces avec carte interactive, filtres avancés, calcul de rendement et réservation intégrée. De la Suisse à Dubai en passant par Marrakech.",
+      "Carte interactive MapLibre, filtres avancés par type, pays, budget. Chaque bien affiche son rendement brut et net, son prix au m², sa note énergétique et sa projection ROI à 5 et 10 ans. Réservation intégrée avec gestion des calendriers et paiements sécurisés.",
     icon: Home,
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260324_151826_c7218672-6e92-402c-9e45-f1e0f454bdc4.mp4",
+    video: "/videos/reel-2.mp4",
   },
   {
-    tag: "Formation",
-    title: "Apprendre & Certifier",
+    tag: "Formation & Certification",
+    title: "Se former avec les meilleurs",
     description:
-      "Des formations vidéo par des experts : investissement locatif, analyse financière, fiscalité internationale, gestion Airbnb. Progressez du niveau débutant à expert avec des certifications reconnues.",
+      "Catalogue de formations vidéo par des experts du secteur : investissement locatif, gestion Airbnb, analyse financière, fiscalité internationale. De 199 à 497 CHF par formation, avec modules structurés et certifications à la clé.",
     icon: GraduationCap,
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4",
+    video: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4",
   },
   {
-    tag: "Apporteurs d'affaires",
-    title: "Parrainer & Gagner",
+    tag: "Système de commissions",
+    title: "L'apporteur d'affaires intégré",
     description:
-      "Générez des revenus passifs en recommandant E-Dome. 8% sur les locations courte durée, 3.5% sur les ventes, 20% sur les formations. Suivez vos commissions en temps réel depuis votre dashboard personnalisé.",
+      "Le cœur économique d'E-Dome : chaque utilisateur peut devenir apporteur d'affaires. 8% sur les locations courte durée, 3.5% sur les ventes, 20% sur les formations, 50% du premier mois en location longue durée. Liens traçables, dashboard de suivi, paiements automatiques.",
     icon: Handshake,
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_074625_a81f018a-956b-43fb-9aee-4d1508e30e6a.mp4",
+    video: "/videos/reel-4.mp4",
+  },
+  {
+    tag: "Live & Événements",
+    title: "Webinaires et conférences en direct",
+    description:
+      "Programmez des lives de visites de biens, des webinaires d'analyse de marché, des Q&A avec des experts. Système de replays, inscription avec notifications, et intégration avec le calendrier d'événements physiques et virtuels.",
+    icon: Radio,
+    video: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4",
+  },
+  {
+    tag: "Services professionnels",
+    title: "Marketplace de services",
+    description:
+      "Photographes immobiliers, home stagers, gestionnaires de clés, rénovateurs, notaires, courtiers en financement — trouvez et réservez des prestataires qualifiés directement depuis la plateforme. Demandes de devis intégrées.",
+    icon: Briefcase,
+    video: "/videos/reel-3.mp4",
   },
 ];
 
@@ -50,6 +62,15 @@ export function ServicesSection() {
   return (
     <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.02)_0%,_transparent_60%)]" />
+      {/* Villa background */}
+      <div
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=30')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.div
@@ -59,26 +80,22 @@ export function ServicesSection() {
           className="flex items-start md:items-center justify-between mb-12 md:mb-16 flex-col md:flex-row gap-4"
         >
           <div>
-            <p className="text-white/40 text-sm tracking-widest uppercase mb-3">
-              Fonctionnalités
-            </p>
+            <p className="text-white/40 text-sm tracking-widest uppercase mb-3">Fonctionnalités</p>
             <h2 className="text-3xl md:text-5xl text-white tracking-tight">
               Tout-en-un,{" "}
-              <em
-                className="not-italic text-white/40"
-                style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}
-              >
-                vraiment
+              <em className="not-italic text-white/40" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
+                sans compromis
               </em>
             </h2>
           </div>
           <p className="text-white/40 text-sm max-w-sm leading-relaxed">
-            5 rôles — Hôte, Formateur, Apporteur, Investisseur, Agence — chacun
-            avec son dashboard et ses outils dédiés.
+            13 profils métiers interchangeables — Hôte, Agent, Promoteur, Investisseur,
+            Formateur, Apporteur, Photographe, Courtier, Notaire, Architecte, Agence,
+            Client et Admin.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => {
             const Icon = feature.icon;
             return (
@@ -86,7 +103,7 @@ export function ServicesSection() {
                 key={feature.tag}
                 initial={{ opacity: 0, y: 50 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.8, delay: i * 0.12 }}
+                transition={{ duration: 0.8, delay: i * 0.1 }}
                 className="liquid-glass rounded-3xl overflow-hidden group"
               >
                 <div className="aspect-video overflow-hidden relative">
@@ -101,27 +118,20 @@ export function ServicesSection() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 </div>
-
-                <div className="p-6 md:p-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="liquid-glass rounded-full p-2.5">
-                        <Icon size={16} className="text-white/70" />
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="liquid-glass rounded-full p-2">
+                        <Icon size={14} className="text-white/70" />
                       </div>
-                      <p className="uppercase tracking-widest text-white/40 text-xs">
-                        {feature.tag}
-                      </p>
+                      <p className="uppercase tracking-widest text-white/40 text-[10px]">{feature.tag}</p>
                     </div>
-                    <div className="liquid-glass rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowUpRight size={16} className="text-white" />
+                    <div className="liquid-glass rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowUpRight size={14} className="text-white" />
                     </div>
                   </div>
-                  <h3 className="text-white text-xl md:text-2xl mb-3 tracking-tight">
-                    {feature.title}
-                  </h3>
-                  <p className="text-white/50 text-sm leading-relaxed">
-                    {feature.description}
-                  </p>
+                  <h3 className="text-white text-lg mb-2 tracking-tight">{feature.title}</h3>
+                  <p className="text-white/45 text-sm leading-relaxed">{feature.description}</p>
                 </div>
               </motion.div>
             );

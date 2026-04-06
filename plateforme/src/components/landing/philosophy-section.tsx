@@ -8,8 +8,18 @@ export function PhilosophySection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden">
-      <div className="max-w-6xl mx-auto">
+    <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
+      {/* Architectural background */}
+      <div
+        className="absolute inset-0 opacity-[0.025]"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=30')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+
+      <div className="max-w-6xl mx-auto relative">
         <motion.h2
           initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -17,13 +27,8 @@ export function PhilosophySection() {
           className="text-5xl md:text-7xl lg:text-8xl text-white tracking-tight mb-16 md:mb-24"
         >
           Suisse{" "}
-          <em
-            className="not-italic text-white/40"
-            style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}
-          >
-            x
-          </em>{" "}
-          Monde
+          <em className="not-italic text-white/40" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>x</em>{" "}
+          International
         </motion.h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
@@ -35,12 +40,8 @@ export function PhilosophySection() {
           >
             <video
               className="w-full h-full object-cover"
-              muted
-              autoPlay
-              loop
-              playsInline
-              preload="auto"
-              src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4"
+              muted autoPlay loop playsInline preload="auto"
+              src="/videos/reel-4.mp4"
             />
           </motion.div>
 
@@ -51,42 +52,33 @@ export function PhilosophySection() {
             className="flex flex-col justify-center"
           >
             <div className="mb-8">
-              <p className="text-white/40 text-xs tracking-widest uppercase mb-4">
-                Couverture internationale
-              </p>
+              <p className="text-white/40 text-xs tracking-widest uppercase mb-4">Lancement prévu</p>
               <p className="text-white/70 text-base md:text-lg leading-relaxed">
-                Lausanne, Genève, Zurich, Verbier — mais aussi Nice, Marrakech,
-                Dubai, Phuket, Lisbonne, Santorin. E-Dome connecte les marchés
-                immobiliers les plus dynamiques du monde. Chaque bien est présenté
-                avec ses rendements, son analyse financière et sa projection sur 5
-                et 10 ans.
+                E-Dome sera lancé simultanément en <strong className="text-white">Suisse</strong> et
+                en <strong className="text-white">Thaïlande</strong>, deux marchés aux dynamiques
+                complémentaires. La Suisse pour sa stabilité, sa rigueur et son
+                pouvoir d&apos;achat. La Thaïlande pour son marché locatif en plein
+                essor et sa communauté d&apos;expatriés investisseurs.
               </p>
             </div>
-
             <div className="w-full h-px bg-white/10 my-6" />
-
             <div className="mb-8">
-              <p className="text-white/40 text-xs tracking-widest uppercase mb-4">
-                Multi-devises
-              </p>
+              <p className="text-white/40 text-xs tracking-widest uppercase mb-4">Multi-devises & multilingue</p>
               <p className="text-white/70 text-base md:text-lg leading-relaxed">
-                CHF, EUR, USD, GBP, AED, MAD, THB — les prix s&apos;affichent dans
-                la devise de votre choix. Que vous investissiez depuis Neuchâtel
-                dans un riad à Marrakech ou depuis Genève dans un penthouse à Dubai,
-                tout est transparent.
+                7 devises (CHF, EUR, USD, GBP, AED, MAD, THB) et 3 langues
+                (français, anglais, thaï). Les prix s&apos;affichent dans votre devise,
+                les contenus s&apos;adaptent à votre marché. Que vous soyez à
+                Neuchâtel, Bangkok, Marrakech ou Dubai — tout est transparent.
               </p>
             </div>
-
             <div className="w-full h-px bg-white/10 my-6" />
-
             <div>
-              <p className="text-white/40 text-xs tracking-widest uppercase mb-4">
-                Multilingue
-              </p>
+              <p className="text-white/40 text-xs tracking-widest uppercase mb-4">Expansion progressive</p>
               <p className="text-white/70 text-base md:text-lg leading-relaxed">
-                Interface disponible en français, anglais et thaï. Pensée pour
-                les investisseurs suisses qui opèrent à l&apos;international, avec
-                des contenus adaptés à chaque marché local.
+                Après le lancement Suisse-Thaïlande, expansion vers la France,
+                le Maroc, les Émirats, le Portugal, la Grèce et l&apos;Espagne.
+                Chaque marché s&apos;ouvre avec des partenaires locaux et des
+                contenus adaptés.
               </p>
             </div>
           </motion.div>

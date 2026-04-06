@@ -24,24 +24,23 @@ export function FeaturedVideoSection() {
           loop
           playsInline
           preload="auto"
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260402_054547_9875cfc5-155a-4229-8ec8-b7ba7125cbf8.mp4"
+          src="/videos/reel-3.mp4"
         />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div className="liquid-glass rounded-2xl p-6 md:p-8 max-w-md">
-              <p className="text-white/50 text-xs tracking-widest uppercase mb-3">
-                La plateforme
+            <div className="liquid-glass rounded-2xl p-6 md:p-8 max-w-lg">
+              <p className="text-white/50 text-xs tracking-widest uppercase mb-3">La plateforme</p>
+              <p className="text-white text-sm md:text-base leading-relaxed mb-2">
+                Plus de 30 pages fonctionnelles : feed social avec stories et reels,
+                marketplace avec carte interactive et calcul de rendement,
+                messagerie, dashboard adaptatif selon votre rôle, formations vidéo
+                par modules, système de commissions en temps réel, réservations
+                et gestion de paiements.
               </p>
-              <p className="text-white text-sm md:text-base leading-relaxed mb-1">
-                Plus de 30 pages fonctionnelles : feed social, explorer avec carte
-                interactive, messagerie, dashboard multi-rôle, formations vidéo,
-                système de commissions, réservations et paiements.
-              </p>
-              <p className="text-white/40 text-xs mt-3">
-                Maquette interactive — données fictives
+              <p className="text-white/30 text-xs mt-3">
+                Maquette interactive — données fictives à des fins de démonstration
               </p>
             </div>
 
@@ -51,8 +50,7 @@ export function FeaturedVideoSection() {
                 whileTap={{ scale: 0.95 }}
                 className="liquid-glass rounded-full px-8 py-3 text-white text-sm font-medium hover:bg-white/5 transition-colors flex items-center gap-2 cursor-pointer"
               >
-                Entrer dans la démo
-                <ArrowRight size={16} />
+                Entrer dans la démo <ArrowRight size={16} />
               </motion.div>
             </Link>
           </div>

@@ -2,70 +2,69 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Check, Loader2, Clock } from "lucide-react";
+import { Check, Loader2, Clock, ArrowRight, Users } from "lucide-react";
+import Link from "next/link";
 
 const phases = [
   {
     status: "done" as const,
     phase: "Phase 1",
     title: "Maquette interactive",
-    period: "Q1 2026",
+    period: "Q1 2026 — Terminé",
     items: [
       "30+ pages fonctionnelles",
       "Réseau social complet (feed, stories, reels)",
-      "Marketplace avec carte MapLibre",
-      "Dashboard multi-rôle (5 vues)",
-      "Système d'apporteurs d'affaires",
-      "Formations vidéo avec modules",
-      "Messagerie, réservations, événements",
-      "PWA installable sur mobile",
+      "Marketplace avec carte MapLibre et rendement",
+      "Dashboard multi-rôle (13 profils)",
+      "Système d'apporteurs avec 4 types de commissions",
+      "6+ formations vidéo avec modules",
+      "Messagerie, réservations, événements, services",
     ],
   },
   {
     status: "current" as const,
     phase: "Phase 2",
-    title: "Validation & Levée de fonds",
-    period: "Q2 2026",
+    title: "Validation du marché",
+    period: "Q2 2026 — En cours",
     items: [
-      "Présentation aux investisseurs",
-      "Tests utilisateurs (beta fermée)",
-      "Itérations UX/UI sur retours",
-      "Structuration juridique (Suisse)",
-      "Partenariats stratégiques immobiliers",
+      "Récolte de manifestations d'intérêt",
+      "Démonstrations auprès d'acteurs du secteur",
+      "Tests utilisateurs et itérations UX",
+      "Structuration juridique en Suisse",
+      "Premiers partenariats stratégiques",
     ],
   },
   {
     status: "upcoming" as const,
     phase: "Phase 3",
-    title: "Développement production",
+    title: "Développement & beta",
     period: "Q3-Q4 2026",
     items: [
-      "Backend & base de données",
-      "Authentification & gestion des rôles",
-      "Paiements sécurisés (Stripe)",
-      "Upload photos/vidéos réels",
-      "Système de commissions automatisé",
-      "Lancement beta publique Suisse",
+      "Backend, base de données, authentification",
+      "Paiements sécurisés et système d'escrow",
+      "Upload médias réels (photos, vidéos)",
+      "Commissions automatisées et traçables",
+      "Beta privée Suisse + Thaïlande",
     ],
   },
   {
     status: "upcoming" as const,
     phase: "Phase 4",
-    title: "Expansion internationale",
+    title: "Lancement & expansion",
     period: "2027",
     items: [
-      "Ouverture France, Maroc, EAU",
-      "Partenariats agences locales",
-      "App mobile native (iOS/Android)",
+      "Lancement public Suisse & Thaïlande",
+      "Expansion France, Maroc, EAU",
+      "App mobile native iOS & Android",
       "API pour intégrations tierces",
     ],
   },
 ];
 
 const statusConfig = {
-  done: { icon: Check, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", label: "Terminé" },
-  current: { icon: Loader2, color: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-400/20", label: "En cours" },
-  upcoming: { icon: Clock, color: "text-white/30", bg: "bg-white/5", border: "border-white/10", label: "À venir" },
+  done: { icon: Check, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", dot: "bg-emerald-400", label: "Terminé" },
+  current: { icon: Loader2, color: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-400/20", dot: "bg-amber-400", label: "En cours" },
+  upcoming: { icon: Clock, color: "text-white/30", bg: "bg-white/5", border: "border-white/10", dot: "bg-white/20", label: "À venir" },
 };
 
 export function RoadmapSection() {
@@ -83,26 +82,24 @@ export function RoadmapSection() {
           transition={{ duration: 0.7 }}
           className="mb-16 md:mb-24"
         >
-          <p className="text-white/40 text-sm tracking-widest uppercase mb-4">
-            Roadmap
-          </p>
+          <p className="text-white/40 text-sm tracking-widest uppercase mb-4">Roadmap</p>
           <h2 className="text-4xl md:text-6xl text-white tracking-tight mb-6">
             Où en{" "}
-            <em
-              className="not-italic text-white/60"
-              style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}
-            >
+            <em className="not-italic text-white/60" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
               sommes-nous ?
             </em>
           </h2>
-          <p className="text-white/50 text-base md:text-lg max-w-2xl leading-relaxed">
-            E-Dome est actuellement en phase de maquette interactive. Ce que vous
-            voyez ici est une démonstration fonctionnelle de toutes les
-            fonctionnalités prévues, avec des données fictives.
+          <p className="text-white/50 text-base md:text-lg max-w-3xl leading-relaxed">
+            La maquette est terminée. Nous sommes aujourd&apos;hui en phase de
+            validation : nous récoltons des <strong className="text-white/80">manifestations d&apos;intérêt</strong>{" "}
+            auprès d&apos;investisseurs, d&apos;agents, de formateurs et de futurs
+            utilisateurs pour prouver le besoin et la traction du marché avant
+            le développement technique.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Phases grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           {phases.map((phase, i) => {
             const config = statusConfig[phase.status];
             const Icon = config.icon;
@@ -111,7 +108,7 @@ export function RoadmapSection() {
                 key={phase.phase}
                 initial={{ opacity: 0, y: 40 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: i * 0.1 }}
+                transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
                 className={`liquid-glass rounded-3xl p-6 md:p-8 border ${config.border}`}
               >
                 <div className="flex items-center justify-between mb-5">
@@ -128,18 +125,11 @@ export function RoadmapSection() {
                     {config.label}
                   </span>
                 </div>
-
-                <h3 className="text-white text-xl mb-4 tracking-tight">
-                  {phase.title}
-                </h3>
-
+                <h3 className="text-white text-xl mb-4 tracking-tight">{phase.title}</h3>
                 <ul className="space-y-2">
                   {phase.items.map((item) => (
                     <li key={item} className="flex items-start gap-2.5">
-                      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
-                        phase.status === "done" ? "bg-emerald-400" :
-                        phase.status === "current" ? "bg-amber-400" : "bg-white/20"
-                      }`} />
+                      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
                       <span className="text-white/50 text-sm">{item}</span>
                     </li>
                   ))}
@@ -148,6 +138,44 @@ export function RoadmapSection() {
             );
           })}
         </div>
+
+        {/* CTA Manifestation d'intérêt */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.7 }}
+          className="liquid-glass rounded-3xl p-8 md:p-12 border border-[#C4956A]/15 text-center"
+        >
+          <div className="flex justify-center mb-4">
+            <div className="rounded-full p-3 bg-[#C4956A]/10">
+              <Users size={24} className="text-[#C4956A]" />
+            </div>
+          </div>
+          <h3 className="text-white text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
+            Manifestez votre intérêt
+          </h3>
+          <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-8">
+            Vous êtes agent, investisseur, formateur, photographe ou tout autre
+            acteur de l&apos;immobilier ? Rejoignez les premiers à manifester leur
+            intérêt pour E-Dome. Votre soutien est la preuve que le marché a
+            besoin d&apos;une solution unifiée — et il nous aide à construire la
+            plateforme qui vous correspond.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="mailto:contact@edome.world?subject=Manifestation d'intérêt E-Dome"
+              className="bg-[#C4956A] rounded-full px-8 py-3.5 text-black text-sm font-medium hover:bg-[#d4a57a] transition-colors flex items-center gap-2"
+            >
+              Je suis intéressé(e) <ArrowRight size={16} />
+            </a>
+            <Link
+              href="/feed"
+              className="liquid-glass rounded-full px-8 py-3.5 text-white text-sm font-medium hover:bg-white/5 transition-colors"
+            >
+              Explorer la démo d&apos;abord
+            </Link>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
