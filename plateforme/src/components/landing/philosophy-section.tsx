@@ -9,9 +9,10 @@ export function PhilosophySection() {
 
   return (
     <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
-      <div className="absolute inset-0 opacity-[0.025]"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=30')", backgroundSize: "cover", backgroundPosition: "center" }}
+      <div className="absolute inset-0 opacity-[0.06]"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30" />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.h2 initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }}

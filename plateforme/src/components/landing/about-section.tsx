@@ -11,9 +11,10 @@ export function AboutSection() {
     <section ref={ref} className="bg-black pt-32 md:pt-44 pb-16 md:pb-24 px-6 overflow-hidden relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(196,149,106,0.04)_0%,_transparent_70%)]" />
       <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=30')", backgroundSize: "cover", backgroundPosition: "center" }}
+        className="absolute inset-0 opacity-[0.06]"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30" />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.p initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6 }}
@@ -71,7 +72,7 @@ export function AboutSection() {
                 {r.label}
               </span>
             ))}
-            <span className="text-xs px-4 py-2 rounded-full border border-white/5 text-white/20">
+            <span className="text-xs px-4 py-2 rounded-full border border-white/15 text-white/70">
               et plus encore…
             </span>
           </div>

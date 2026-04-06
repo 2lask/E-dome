@@ -62,9 +62,10 @@ export function ServicesSection() {
   return (
     <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(196,149,106,0.02)_0%,_transparent_60%)]" />
-      <div className="absolute inset-0 opacity-[0.02]"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=30')", backgroundSize: "cover", backgroundPosition: "center" }}
+      <div className="absolute inset-0 opacity-[0.05]"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30" />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }}

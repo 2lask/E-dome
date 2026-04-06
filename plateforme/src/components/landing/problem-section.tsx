@@ -50,9 +50,10 @@ export function ProblemSection() {
   return (
     <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
       <div
-        className="absolute inset-0 opacity-[0.02]"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1920&q=30')", backgroundSize: "cover", backgroundPosition: "center" }}
+        className="absolute inset-0 opacity-[0.06]"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40" />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }} className="mb-16 md:mb-24">

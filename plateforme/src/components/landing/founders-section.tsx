@@ -10,9 +10,10 @@ export function FoundersSection() {
   return (
     <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(196,149,106,0.03)_0%,_transparent_70%)]" />
-      <div className="absolute inset-0 opacity-[0.02]"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=30')", backgroundSize: "cover", backgroundPosition: "center" }}
+      <div className="absolute inset-0 opacity-[0.06]"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30" />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.p initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6 }}
