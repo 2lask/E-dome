@@ -12,12 +12,12 @@ const phases = [
     title: "Maquette interactive",
     period: "Q1 2026 — Terminé",
     items: [
-      "30+ pages fonctionnelles",
+      "Plus de 30 pages fonctionnelles",
       "Réseau social complet (feed, stories, reels)",
-      "Marketplace avec carte MapLibre et rendement",
-      "Dashboard multi-rôle (13 profils)",
-      "Système d'apporteurs avec 4 types de commissions",
-      "6+ formations vidéo avec modules",
+      "Marketplace avec carte interactive et rendement",
+      "Dashboard adaptatif multi-rôle",
+      "Système d'apporteurs avec commissions",
+      "Formations vidéo avec modules structurés",
       "Messagerie, réservations, événements, services",
     ],
   },
@@ -28,8 +28,8 @@ const phases = [
     period: "Q2 2026 — En cours",
     items: [
       "Récolte de manifestations d'intérêt",
-      "Démonstrations auprès d'acteurs du secteur",
-      "Tests utilisateurs et itérations UX",
+      "Démonstrations auprès des acteurs du secteur",
+      "Tests utilisateurs et itérations UX/UI",
       "Structuration juridique en Suisse",
       "Premiers partenariats stratégiques",
     ],
@@ -37,13 +37,14 @@ const phases = [
   {
     status: "upcoming" as const,
     phase: "Phase 3",
-    title: "Développement & beta",
+    title: "Développement technique",
     period: "Q3-Q4 2026",
     items: [
       "Backend, base de données, authentification",
       "Paiements sécurisés et système d'escrow",
       "Upload médias réels (photos, vidéos)",
       "Commissions automatisées et traçables",
+      "Développement de l'application mobile (iOS & Android)",
       "Beta privée Suisse + Thaïlande",
     ],
   },
@@ -54,17 +55,18 @@ const phases = [
     period: "2027",
     items: [
       "Lancement public Suisse & Thaïlande",
+      "Publication de l'app mobile sur les stores",
       "Expansion France, Maroc, EAU",
-      "App mobile native iOS & Android",
       "API pour intégrations tierces",
+      "Programme ambassadeurs et apporteurs certifiés",
     ],
   },
 ];
 
 const statusConfig = {
-  done: { icon: Check, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", dot: "bg-emerald-400", label: "Terminé" },
-  current: { icon: Loader2, color: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-400/20", dot: "bg-amber-400", label: "En cours" },
-  upcoming: { icon: Clock, color: "text-white/30", bg: "bg-white/5", border: "border-white/10", dot: "bg-white/20", label: "À venir" },
+  done: { icon: Check, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/15", dot: "bg-emerald-400", label: "Terminé" },
+  current: { icon: Loader2, color: "text-[#C4956A]", bg: "bg-[#C4956A]/10", border: "border-[#C4956A]/20", dot: "bg-[#C4956A]", label: "En cours" },
+  upcoming: { icon: Clock, color: "text-white/25", bg: "bg-white/5", border: "border-white/8", dot: "bg-white/15", label: "À venir" },
 };
 
 export function RoadmapSection() {
@@ -73,44 +75,37 @@ export function RoadmapSection() {
 
   return (
     <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.02)_0%,_transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(196,149,106,0.02)_0%,_transparent_60%)]" />
 
       <div className="max-w-6xl mx-auto relative">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-          className="mb-16 md:mb-24"
-        >
-          <p className="text-white/40 text-sm tracking-widest uppercase mb-4">Roadmap</p>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }}
+          className="mb-16 md:mb-24">
+          <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">Roadmap</p>
           <h2 className="text-4xl md:text-6xl text-white tracking-tight mb-6">
             Où en{" "}
-            <em className="not-italic text-white/60" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
+            <em className="not-italic text-[#C4956A]/50" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
               sommes-nous ?
             </em>
           </h2>
-          <p className="text-white/50 text-base md:text-lg max-w-3xl leading-relaxed">
-            La maquette est terminée. Nous sommes aujourd&apos;hui en phase de
-            validation : nous récoltons des <strong className="text-white/80">manifestations d&apos;intérêt</strong>{" "}
-            auprès d&apos;investisseurs, d&apos;agents, de formateurs et de futurs
-            utilisateurs pour prouver le besoin et la traction du marché avant
-            le développement technique.
+          <p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
+            La maquette interactive est terminée. Nous sommes en phase de
+            validation : nous récoltons des{" "}
+            <strong className="text-white/70">manifestations d&apos;intérêt</strong>{" "}
+            auprès des acteurs du secteur — agents, investisseurs, formateurs,
+            prestataires — pour démontrer le besoin réel du marché et la
+            pertinence d&apos;une solution unifiée.
           </p>
         </motion.div>
 
-        {/* Phases grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           {phases.map((phase, i) => {
             const config = statusConfig[phase.status];
             const Icon = config.icon;
             return (
-              <motion.div
-                key={phase.phase}
-                initial={{ opacity: 0, y: 40 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
+              <motion.div key={phase.phase}
+                initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
-                className={`liquid-glass rounded-3xl p-6 md:p-8 border ${config.border}`}
-              >
+                className={`liquid-glass rounded-3xl p-6 md:p-8 border ${config.border}`}>
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
                     <div className={`rounded-full p-2 ${config.bg}`}>
@@ -118,7 +113,7 @@ export function RoadmapSection() {
                     </div>
                     <div>
                       <p className="text-white text-sm font-medium">{phase.phase}</p>
-                      <p className="text-white/30 text-xs">{phase.period}</p>
+                      <p className="text-white/25 text-xs">{phase.period}</p>
                     </div>
                   </div>
                   <span className={`text-xs px-3 py-1 rounded-full ${config.bg} ${config.color}`}>
@@ -130,7 +125,7 @@ export function RoadmapSection() {
                   {phase.items.map((item) => (
                     <li key={item} className="flex items-start gap-2.5">
                       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
-                      <span className="text-white/50 text-sm">{item}</span>
+                      <span className="text-white/40 text-sm">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -139,13 +134,9 @@ export function RoadmapSection() {
           })}
         </div>
 
-        {/* CTA Manifestation d'intérêt */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.7 }}
-          className="liquid-glass rounded-3xl p-8 md:p-12 border border-[#C4956A]/15 text-center"
-        >
+        {/* CTA */}
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
+          className="liquid-glass rounded-3xl p-8 md:p-12 border border-[#C4956A]/12 text-center">
           <div className="flex justify-center mb-4">
             <div className="rounded-full p-3 bg-[#C4956A]/10">
               <Users size={24} className="text-[#C4956A]" />
@@ -154,25 +145,21 @@ export function RoadmapSection() {
           <h3 className="text-white text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
             Manifestez votre intérêt
           </h3>
-          <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-8">
-            Vous êtes agent, investisseur, formateur, photographe ou tout autre
-            acteur de l&apos;immobilier ? Rejoignez les premiers à manifester leur
-            intérêt pour E-Dome. Votre soutien est la preuve que le marché a
-            besoin d&apos;une solution unifiée — et il nous aide à construire la
-            plateforme qui vous correspond.
+          <p className="text-white/40 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-8">
+            Vous êtes un acteur de l&apos;immobilier — agent, investisseur,
+            formateur, photographe, courtier ? Votre manifestation d&apos;intérêt
+            est la preuve que le marché a besoin d&apos;une solution unifiée.
+            Rejoignez les premiers à soutenir le projet et participez à
+            construire la plateforme qui vous correspond.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="mailto:contact@edome.world?subject=Manifestation d'intérêt E-Dome"
-              className="bg-[#C4956A] rounded-full px-8 py-3.5 text-black text-sm font-medium hover:bg-[#d4a57a] transition-colors flex items-center gap-2"
-            >
+            <a href="mailto:contact@edome.world?subject=Manifestation d'intérêt E-Dome"
+              className="bg-[#C4956A] rounded-full px-8 py-3.5 text-black text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
               Je suis intéressé(e) <ArrowRight size={16} />
             </a>
-            <Link
-              href="/feed"
-              className="liquid-glass rounded-full px-8 py-3.5 text-white text-sm font-medium hover:bg-white/5 transition-colors"
-            >
-              Explorer la démo d&apos;abord
+            <Link href="/feed"
+              className="liquid-glass rounded-full px-8 py-3.5 text-white/70 text-sm font-medium hover:bg-white/5 transition-colors border border-white/10">
+              Explorer la démo
             </Link>
           </div>
         </motion.div>
