@@ -11,7 +11,7 @@ const features = [
     description:
       "Un fil d'actualité pensé pour l'immobilier : partagez vos biens, vos visites, vos analyses de marché. Stories éphémères, reels de propriétés, mentions, hashtags — l'interaction sociale orientée vers le professionnel.",
     icon: Users,
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80",
+    media: { type: "video" as const, src: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" },
   },
   {
     tag: "Marketplace & Réservations",
@@ -19,7 +19,7 @@ const features = [
     description:
       "Carte interactive, filtres avancés par type, pays et budget. Rendement brut et net, prix au m², note énergétique, projection ROI à 5 et 10 ans. Réservation intégrée avec calendrier et paiements sécurisés.",
     icon: Home,
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+    media: { type: "video" as const, src: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260324_151826_c7218672-6e92-402c-9e45-f1e0f454bdc4.mp4" },
   },
   {
     tag: "Formation & Certification",
@@ -27,7 +27,7 @@ const features = [
     description:
       "Catalogue de formations vidéo par des experts du terrain : investissement locatif, gestion de biens, analyse financière, fiscalité internationale. Modules structurés et certifications.",
     icon: GraduationCap,
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
+    media: { type: "video" as const, src: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4" },
   },
   {
     tag: "Système de commissions",
@@ -35,7 +35,7 @@ const features = [
     description:
       "Le cœur économique d'E-Dome : chaque utilisateur peut devenir apporteur d'affaires. Commissions sur les locations, les ventes, les formations — liens traçables, dashboard de suivi, paiements automatiques.",
     icon: Handshake,
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
+    media: { type: "image" as const, src: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=800&q=80" },
   },
   {
     tag: "Live & Événements",
@@ -43,7 +43,7 @@ const features = [
     description:
       "Programmez des lives de visites virtuelles, des webinaires d'analyse de marché, des sessions Q&A. Replays disponibles, inscriptions avec notifications, événements physiques et virtuels.",
     icon: Radio,
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
+    media: { type: "image" as const, src: "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800&q=80" },
   },
   {
     tag: "Services professionnels",
@@ -51,7 +51,7 @@ const features = [
     description:
       "Photographes, home stagers, gestionnaires de clés, rénovateurs, notaires, courtiers — trouvez et sollicitez des prestataires qualifiés depuis la plateforme. Demandes de devis intégrées.",
     icon: Briefcase,
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80",
+    media: { type: "image" as const, src: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80" },
   },
 ];
 
@@ -91,11 +91,19 @@ export function ServicesSection() {
                 transition={{ duration: 0.8, delay: i * 0.1 }}
                 className="liquid-glass rounded-3xl overflow-hidden group border border-[#C4956A]/5 hover:border-[#C4956A]/15 transition-colors">
                 <div className="aspect-video overflow-hidden relative">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                  {feature.media.type === "video" ? (
+                    <video
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      muted autoPlay loop playsInline preload="auto"
+                      src={feature.media.src}
+                    />
+                  ) : (
+                    <img
+                      src={feature.media.src}
+                      alt={feature.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 </div>
                 <div className="p-6">
