@@ -30,16 +30,16 @@ export function FeaturedVideoSection() {
 
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div className="liquid-glass rounded-2xl p-6 md:p-8 max-w-lg">
-              <p className="text-white/50 text-xs tracking-widest uppercase mb-3">La plateforme</p>
-              <p className="text-white text-sm md:text-base leading-relaxed mb-2">
+            <div className="liquid-glass rounded-2xl p-6 md:p-8 max-w-lg" style={{ background: "rgba(0, 0, 0, 0.55)", backdropFilter: "blur(12px)" }}>
+              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">La plateforme</p>
+              <p className="text-white text-sm md:text-base leading-relaxed mb-2 font-light">
                 Plus de 30 pages fonctionnelles : feed social avec stories et reels,
                 marketplace avec carte interactive et calcul de rendement,
                 messagerie, dashboard adaptatif selon votre rôle, formations vidéo
                 par modules, système de commissions en temps réel, réservations
                 et gestion de paiements.
               </p>
-              <p className="text-white/30 text-xs mt-3">
+              <p className="text-white/50 text-xs mt-3">
                 Maquette interactive — données fictives à des fins de démonstration
               </p>
             </div>

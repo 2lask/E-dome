@@ -53,9 +53,22 @@ export function AboutSection() {
             Des profils qui s&apos;adaptent à chaque activité
           </p>
           <div className="flex flex-wrap gap-2">
-            {["Hôte", "Agence", "Agent", "Investisseur", "Formateur", "Apporteur", "Photographe", "Courtier", "Notaire", "Architecte", "Promoteur", "Client"].map((r) => (
-              <span key={r} className="text-xs px-4 py-2 rounded-full border border-[#C4956A]/10 text-white/40 hover:text-[#C4956A]/70 hover:border-[#C4956A]/25 transition-colors cursor-default">
-                {r}
+            {[
+              { label: "Hôte", color: "text-amber-400/80 border-amber-400/20" },
+              { label: "Agence", color: "text-blue-400/80 border-blue-400/20" },
+              { label: "Agent", color: "text-cyan-400/80 border-cyan-400/20" },
+              { label: "Investisseur", color: "text-emerald-400/80 border-emerald-400/20" },
+              { label: "Formateur", color: "text-purple-400/80 border-purple-400/20" },
+              { label: "Apporteur", color: "text-[#C4956A] border-[#C4956A]/25" },
+              { label: "Photographe", color: "text-pink-400/80 border-pink-400/20" },
+              { label: "Courtier", color: "text-teal-400/80 border-teal-400/20" },
+              { label: "Notaire", color: "text-indigo-400/80 border-indigo-400/20" },
+              { label: "Architecte", color: "text-orange-400/80 border-orange-400/20" },
+              { label: "Promoteur", color: "text-rose-400/80 border-rose-400/20" },
+              { label: "Client", color: "text-sky-400/80 border-sky-400/20" },
+            ].map((r) => (
+              <span key={r.label} className={`text-xs px-4 py-2 rounded-full border ${r.color} transition-colors cursor-default`}>
+                {r.label}
               </span>
             ))}
             <span className="text-xs px-4 py-2 rounded-full border border-white/5 text-white/20">

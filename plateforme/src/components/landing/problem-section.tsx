@@ -7,6 +7,8 @@ import { AlertTriangle, Clock, ArrowLeftRight, Brain } from "lucide-react";
 const stats = [
   {
     icon: ArrowLeftRight,
+    iconColor: "text-blue-400/70",
+    iconBg: "bg-blue-400/10",
     value: "12",
     unit: "outils en moyenne",
     description: "Un professionnel de l'immobilier utilise en moyenne une douzaine d'outils différents pour gérer son activité : annonces, réservations, comptabilité, communication, formation, prospection.",
@@ -14,6 +16,8 @@ const stats = [
   },
   {
     icon: Clock,
+    iconColor: "text-amber-400/70",
+    iconBg: "bg-amber-400/10",
     value: "40%",
     unit: "du temps en friction",
     description: "Près de la moitié du temps de travail des agents et gestionnaires immobiliers est consacré à des tâches administratives et à la navigation entre plateformes déconnectées.",
@@ -21,6 +25,8 @@ const stats = [
   },
   {
     icon: Brain,
+    iconColor: "text-purple-400/70",
+    iconBg: "bg-purple-400/10",
     value: "23 min",
     unit: "pour se reconcentrer",
     description: "Chaque interruption ou changement d'application nécessite en moyenne 23 minutes et 15 secondes pour retrouver un niveau de concentration équivalent.",
@@ -28,6 +34,8 @@ const stats = [
   },
   {
     icon: AlertTriangle,
+    iconColor: "text-red-400/70",
+    iconBg: "bg-red-400/10",
     value: "67%",
     unit: "d'abandons en ligne",
     description: "Deux tiers des parcours d'achat ou de réservation immobilière en ligne sont abandonnés lorsque l'utilisateur doit quitter la plateforme en cours de route pour compléter une étape ailleurs.",
@@ -74,8 +82,8 @@ export function ProblemSection() {
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
                 className="liquid-glass rounded-3xl p-6 md:p-8 border border-[#C4956A]/8 hover:border-[#C4956A]/15 transition-colors">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="rounded-full p-2.5 bg-[#C4956A]/10 shrink-0">
-                    <Icon size={18} className="text-[#C4956A]/60" />
+                  <div className={`rounded-full p-2.5 ${stat.iconBg} shrink-0`}>
+                    <Icon size={18} className={stat.iconColor} />
                   </div>
                   <div>
                     <p className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
@@ -94,7 +102,7 @@ export function ProblemSection() {
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="mt-16 text-center">
           <div className="liquid-glass rounded-full inline-flex items-center gap-3 px-8 py-4 border border-[#C4956A]/15">
-            <div className="w-2 h-2 rounded-full bg-[#C4956A] animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <p className="text-white/60 text-sm">
               E-Dome rassemble tout en un seul endroit.{" "}
               <span className="text-[#C4956A]/80 font-medium">Zéro friction, zéro dispersion.</span>
