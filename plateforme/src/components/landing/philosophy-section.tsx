@@ -2,38 +2,38 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Globe, UserCog, Eye, MessageCircle } from "lucide-react";
+import { Network, UserCog, Eye, MessageCircle } from "lucide-react";
 import GlowingBorder from "@/components/ui/glowing-border";
 
 const pillars = [
   {
-    icon: Globe,
-    iconColor: "text-emerald-400",
-    iconBg: "bg-emerald-400/10",
+    icon: Network,
+    iconColor: "text-cyan-400",
+    iconBg: "bg-cyan-400/10",
     title: "Un écosystème, pas un outil",
     description:
       "Aujourd'hui, un agent publie ses biens sur un portail, communique via un autre, gère ses réservations ailleurs et suit ses revenus sur un tableur. E-Dome supprime ces frontières : tout est connecté, tout communique, tout se gère depuis un seul tableau de bord.",
   },
   {
     icon: UserCog,
-    iconColor: "text-emerald-300",
-    iconBg: "bg-emerald-300/10",
+    iconColor: "text-amber-400",
+    iconBg: "bg-amber-400/10",
     title: "Des profils qui évoluent avec vous",
     description:
       "Vous démarrez comme apporteur d'affaires, puis vous devenez hôte, puis formateur. Sur E-Dome, votre profil s'adapte. Pas besoin de créer un nouveau compte ou de recommencer. Activez un rôle, désactivez-le — votre historique, vos contacts et vos données restent.",
   },
   {
     icon: Eye,
-    iconColor: "text-emerald-500",
-    iconBg: "bg-emerald-500/10",
+    iconColor: "text-emerald-400",
+    iconBg: "bg-emerald-400/10",
     title: "Commissions transparentes",
     description:
       "Chaque transaction est traçable. L'apporteur sait exactement combien il touche, l'hôte voit ce qui est prélevé, le formateur suit ses ventes en direct. Plus de zones d'ombre, plus de commissions cachées — chaque franc est documenté et vérifiable.",
   },
   {
     icon: MessageCircle,
-    iconColor: "text-emerald-400",
-    iconBg: "bg-emerald-400/10",
+    iconColor: "text-purple-400",
+    iconBg: "bg-purple-400/10",
     title: "Le social au service du business",
     description:
       "L'immobilier est un métier de réseau. Pourtant, aucune plateforme ne propose un vrai espace social dédié au secteur. E-Dome intègre un feed, des stories, des reels et de la messagerie — pensés pour générer des leads, pas juste des likes.",
