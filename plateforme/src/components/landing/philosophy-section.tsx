@@ -113,37 +113,52 @@ export function PhilosophySection() {
             muted autoPlay loop playsInline preload="auto"
             src="/videos/philosophy-bg.mp4"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-black/80" />
 
-          {/* Top right - title + tags */}
-          <div className="absolute top-0 right-0 p-6 md:p-10 text-right">
-            <p className="text-white text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight mb-5"
-              style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
-              Un seul espace pour<br />tout l&apos;immobilier.
-            </p>
-            <div className="flex flex-wrap justify-end gap-2">
-              <span className="text-xs px-3 py-1.5 rounded-full text-white/90 font-medium" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>Recherche</span>
-              <span className="text-xs px-3 py-1.5 rounded-full text-white/90 font-medium" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>Publication</span>
-              <span className="text-xs px-3 py-1.5 rounded-full text-white/90 font-medium" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>Réservation</span>
-              <span className="text-xs px-3 py-1.5 rounded-full text-[#C4956A] font-medium" style={{ background: "rgba(196,149,106,0.15)", backdropFilter: "blur(8px)" }}>Formation</span>
-              <span className="text-xs px-3 py-1.5 rounded-full text-[#C4956A] font-medium" style={{ background: "rgba(196,149,106,0.15)", backdropFilter: "blur(8px)" }}>Recommandation</span>
-              <span className="text-xs px-3 py-1.5 rounded-full text-[#C4956A] font-semibold" style={{ background: "rgba(196,149,106,0.2)", backdropFilter: "blur(8px)" }}>Rémunération</span>
+          {/* Top right - title block */}
+          <div className="absolute top-0 right-0 p-5 md:p-8 lg:p-10">
+            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5 text-right" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
+              <p className="text-[#C4956A]/60 text-[10px] md:text-xs tracking-[0.2em] uppercase mb-2">E-Dome</p>
+              <h3 className="text-white text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight leading-tight mb-4">
+                Un seul espace<br />
+                <span className="text-[#C4956A]">pour tout l&apos;immobilier.</span>
+              </h3>
+              <div className="flex flex-wrap justify-end gap-1.5 md:gap-2">
+                {[
+                  { label: "Recherche", gold: false },
+                  { label: "Publication", gold: false },
+                  { label: "Réservation", gold: false },
+                  { label: "Formation", gold: true },
+                  { label: "Recommandation", gold: true },
+                  { label: "Rémunération", gold: true },
+                ].map((tag) => (
+                  <span key={tag.label} className={`text-[10px] md:text-xs px-2.5 py-1 md:px-3 md:py-1.5 rounded-full font-medium border ${
+                    tag.gold
+                      ? "text-[#C4956A] border-[#C4956A]/30 bg-[#C4956A]/10"
+                      : "text-white/80 border-white/15 bg-white/5"
+                  }`}>
+                    {tag.label}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Bottom left - description */}
-          <div className="absolute bottom-0 left-0 p-6 md:p-10 max-w-xl">
-            <p className="text-white/90 text-sm md:text-base leading-relaxed font-light"
-              style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9)" }}>
-              Chercher un bien, publier une annonce, réserver une visite,
-              suivre une formation, recommander un contact et toucher sa
-              commission — sans jamais quitter la plateforme.
-            </p>
-            <p className="text-white/60 text-xs md:text-sm mt-3 leading-relaxed"
-              style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9)" }}>
-              E-Dome centralise chaque étape du parcours immobilier pour
-              que chaque acteur gagne en temps, en visibilité et en revenus.
-            </p>
+          {/* Bottom left - description block */}
+          <div className="absolute bottom-0 left-0 p-5 md:p-8 lg:p-10">
+            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5 max-w-md" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
+              <div className="w-8 h-0.5 bg-[#C4956A]/50 mb-4" />
+              <p className="text-white text-sm md:text-base leading-relaxed mb-3">
+                Chercher un bien, publier une annonce, réserver une visite,
+                suivre une formation, recommander un contact et toucher sa
+                commission.
+              </p>
+              <p className="text-white/50 text-xs md:text-sm leading-relaxed">
+                Sans jamais quitter la plateforme — E-Dome centralise chaque
+                étape du parcours pour que chaque acteur gagne en temps,
+                en visibilité et en revenus.
+              </p>
+            </div>
           </div>
         </motion.div>
       </div>
