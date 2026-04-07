@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { ArchBackground } from "@/components/landing/arch-background";
 
 export function FoundersSection() {
   const ref = useRef(null);
@@ -10,6 +11,7 @@ export function FoundersSection() {
   return (
     <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(196,149,106,0.03)_0%,_transparent_70%)]" />
+      <ArchBackground variant="building" />
       <div className="absolute inset-0 opacity-[0.06]"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />

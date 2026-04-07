@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { AlertTriangle, Clock, ArrowLeftRight, Brain } from "lucide-react";
+import { ArchBackground } from "@/components/landing/arch-background";
 import DotPattern from "@/components/ui/dot-pattern";
 
 function CountUpStat({ target, suffix = "", inView }: { target: number; suffix?: string; inView: boolean }) {
@@ -91,6 +92,7 @@ export function ProblemSection() {
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40" />
+      <ArchBackground variant="floorplan" />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }} className="mb-16 md:mb-24">

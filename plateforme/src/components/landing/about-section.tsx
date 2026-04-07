@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { ArchBackground } from "@/components/landing/arch-background";
 
 export function AboutSection() {
   const ref = useRef(null);
@@ -15,6 +16,7 @@ export function AboutSection() {
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30" />
+      <ArchBackground variant="villa" />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.p initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6 }}

@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Network, UserCog, Eye, MessageCircle } from "lucide-react";
+import { ArchBackground } from "@/components/landing/arch-background";
 import GlowingBorder from "@/components/ui/glowing-border";
 
 const pillars = [
@@ -50,6 +51,7 @@ export function PhilosophySection() {
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40" />
+      <ArchBackground variant="mixed" />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.div
