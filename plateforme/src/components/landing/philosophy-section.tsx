@@ -153,11 +153,14 @@ export function PhilosophySection() {
                 suivre une formation, recommander un contact et toucher sa
                 commission.
               </p>
-              <p className="text-white/50 text-xs md:text-sm leading-relaxed">
+              <p className="text-white/50 text-xs md:text-sm leading-relaxed mb-4">
                 Sans jamais quitter la plateforme — E-Dome centralise chaque
                 étape du parcours pour que chaque acteur gagne en temps,
                 en visibilité et en revenus.
               </p>
+              <a href="/feed" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-[#d4a57a] transition-colors ml-auto">
+                Voir la maquette
+              </a>
             </div>
           </div>
         </motion.div>
