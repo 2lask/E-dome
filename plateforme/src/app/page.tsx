@@ -116,7 +116,7 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-end">
             {/* Left */}
             <div>
-              <p className="text-[#C4956A]/70 text-xs sm:text-sm tracking-[0.25em] uppercase mb-4"
+              <p className="text-white text-xs sm:text-sm tracking-[0.25em] uppercase mb-4 font-medium"
                 style={{ opacity: subVisible ? 1 : 0, transition: "opacity 800ms ease" }}>
                 L&apos;écosystème immobilier
               </p>
@@ -156,47 +156,20 @@ export default function HomePage() {
                 </a>
               </div>
 
-              {/* Stats with count-up */}
-              <div
-                className="flex flex-wrap gap-8 sm:gap-12"
-                style={{ opacity: statsVisible ? 1 : 0, transition: "opacity 800ms ease" }}
-              >
-                <div>
-                  <p className="text-[#C4956A] text-3xl sm:text-4xl font-semibold tracking-tight">
-                    <CountUp target={30} suffix="+" delay={1800} />
-                  </p>
-                  <p className="text-white/35 text-xs mt-1">pages fonctionnelles</p>
-                </div>
-                <div>
-                  <p className="text-white text-3xl sm:text-4xl font-semibold tracking-tight">
-                    <CountUp target={7} delay={1900} />
-                  </p>
-                  <p className="text-white/35 text-xs mt-1">devises supportées</p>
-                </div>
-                <div>
-                  <p className="text-white text-3xl sm:text-4xl font-semibold tracking-tight">
-                    <CountUp target={6} suffix="+" delay={2000} />
-                  </p>
-                  <p className="text-white/35 text-xs mt-1">pays couverts</p>
-                </div>
-              </div>
             </div>
 
-            {/* Right - tag */}
+            {/* Right - CTA */}
             <div className="flex lg:justify-end lg:items-end">
-              <div
-                className="liquid-glass rounded-xl px-6 py-4 border border-[#C4956A]/20"
+              <Link
+                href="/feed"
+                className="bg-[#C4956A] text-black rounded-xl px-8 py-4 text-lg sm:text-xl font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-3"
                 style={{
                   opacity: tagVisible ? 1 : 0,
                   transition: "opacity 1000ms ease",
                 }}
               >
-                <p className="text-lg sm:text-2xl font-light">
-                  <span className="text-[#C4956A]">Social.</span>{" "}
-                  <span className="text-white">Marketplace.</span>{" "}
-                  <span className="text-[#C4956A]/70">Commissions.</span>
-                </p>
-              </div>
+                Voir la maquette <ArrowRight size={20} />
+              </Link>
             </div>
           </div>
         </div>

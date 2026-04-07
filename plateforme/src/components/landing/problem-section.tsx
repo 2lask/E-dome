@@ -1,8 +1,32 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { AlertTriangle, Clock, ArrowLeftRight, Brain } from "lucide-react";
+
+function CountUpStat({ target, suffix = "", inView }: { target: number; suffix?: string; inView: boolean }) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    if (inView && !started) setStarted(true);
+  }, [inView, started]);
+
+  useEffect(() => {
+    if (!started) return;
+    const duration = 1500;
+    const start = performance.now();
+    const step = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(target * eased));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [started, target]);
+
+  return <>{started ? count : 0}{suffix}</>;
+}
 
 const stats = [
   {
@@ -10,6 +34,8 @@ const stats = [
     iconColor: "text-blue-400/70",
     iconBg: "bg-blue-400/10",
     value: "12",
+    numValue: 12,
+    numSuffix: "",
     unit: "outils en moyenne",
     description: "Un professionnel de l'immobilier utilise en moyenne une douzaine d'outils différents pour gérer son activité : annonces, réservations, comptabilité, communication, formation, prospection.",
     source: "McKinsey Global Institute — Real Estate Technology Adoption, 2024",
@@ -19,6 +45,8 @@ const stats = [
     iconColor: "text-amber-400/70",
     iconBg: "bg-amber-400/10",
     value: "40%",
+    numValue: 40,
+    numSuffix: "%",
     unit: "du temps en friction",
     description: "Près de la moitié du temps de travail des agents et gestionnaires immobiliers est consacré à des tâches administratives et à la navigation entre plateformes déconnectées.",
     source: "National Association of Realtors — Technology Report, 2024",
@@ -28,6 +56,8 @@ const stats = [
     iconColor: "text-purple-400/70",
     iconBg: "bg-purple-400/10",
     value: "23 min",
+    numValue: 23,
+    numSuffix: " min",
     unit: "pour se reconcentrer",
     description: "Chaque interruption ou changement d'application nécessite en moyenne 23 minutes et 15 secondes pour retrouver un niveau de concentration équivalent.",
     source: "University of California, Irvine — Gloria Mark et al., 2023",
@@ -37,6 +67,8 @@ const stats = [
     iconColor: "text-red-400/70",
     iconBg: "bg-red-400/10",
     value: "67%",
+    numValue: 67,
+    numSuffix: "%",
     unit: "d'abandons en ligne",
     description: "Deux tiers des parcours d'achat ou de réservation immobilière en ligne sont abandonnés lorsque l'utilisateur doit quitter la plateforme en cours de route pour compléter une étape ailleurs.",
     source: "JLL — Digital Buyer Journey Report, 2024",
@@ -88,7 +120,7 @@ export function ProblemSection() {
                   </div>
                   <div>
                     <p className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
-                      {stat.value}
+                      <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
                       <span className="text-white/25 text-base ml-2 font-normal">{stat.unit}</span>
                     </p>
                   </div>
