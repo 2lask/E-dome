@@ -11,6 +11,7 @@ import { ServicesSection } from "@/components/landing/services-section";
 import { FoundersSection } from "@/components/landing/founders-section";
 import { RoadmapSection } from "@/components/landing/roadmap-section";
 import { FooterSection } from "@/components/landing/footer-section";
+import { ArchDivider } from "@/components/landing/arch-drawings";
 
 function AnimatedText({ text, delay = 200 }: { text: string; delay?: number }) {
   const [visible, setVisible] = useState(false);
@@ -187,11 +188,17 @@ export default function HomePage() {
       </section>
 
       <div id="vision"><AboutSection /></div>
+      <ArchDivider drawing="villa" />
       <FeaturedVideoSection />
+      <ArchDivider drawing="penthouse" flip />
       <div id="probleme"><ProblemSection /></div>
+      <ArchDivider drawing="chalet" />
       <div id="fonctionnalites"><ServicesSection /></div>
+      <ArchDivider drawing="villa" flip />
       <PhilosophySection />
+      <ArchDivider drawing="penthouse" />
       <div id="fondateurs"><FoundersSection /></div>
+      <ArchDivider drawing="chalet" flip />
       <div id="roadmap"><RoadmapSection /></div>
       <FooterSection />
     </div>
