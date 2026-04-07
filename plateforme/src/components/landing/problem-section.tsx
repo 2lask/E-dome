@@ -45,7 +45,7 @@ const stats = [
     icon: Clock,
     iconColor: "text-amber-400/70",
     iconBg: "bg-amber-400/10",
-    light: false,
+    light: "beige",
     value: "40%",
     numValue: 40,
     numSuffix: "%",
@@ -57,7 +57,7 @@ const stats = [
     icon: Brain,
     iconColor: "text-purple-400/70",
     iconBg: "bg-purple-400/10",
-    light: false,
+    light: "beige",
     value: "23 min",
     numValue: 23,
     numSuffix: " min",
@@ -117,25 +117,31 @@ export function ProblemSection() {
               <motion.div key={stat.value}
                 initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
-                className={`rounded-3xl p-6 md:p-8 border transition-colors ${
-                  stat.light
-                    ? "border-[#C4956A]/60 hover:border-[#C4956A]/80 border-2"
-                    : "border-[#C4956A]/40 hover:border-[#C4956A]/60 border-2 liquid-glass"
+                className={`rounded-3xl p-6 md:p-8 border-2 transition-colors ${
+                  stat.light === true
+                    ? "border-[#C4956A]/60 hover:border-[#C4956A]/80"
+                    : "border-[#C4956A]/40 hover:border-[#C4956A]/60"
                 }`}
-                style={{ background: stat.light ? "rgba(255, 255, 255, 0.92)" : undefined }}>
+                style={{
+                  background: stat.light === true
+                    ? "rgba(255, 255, 255, 0.92)"
+                    : stat.light === "beige"
+                    ? "rgba(196, 149, 106, 0.15)"
+                    : undefined,
+                }}>
                 <div className="flex items-start gap-4 mb-4">
                   <div className={`rounded-full p-2.5 ${stat.iconBg} shrink-0`}>
                     <Icon size={18} className={stat.iconColor} />
                   </div>
                   <div>
-                    <p className={`text-3xl md:text-4xl font-semibold tracking-tight ${stat.light ? "text-black" : "text-white"}`}>
+                    <p className={`text-3xl md:text-4xl font-semibold tracking-tight ${stat.light === true ? "text-black" : "text-white"}`}>
                       <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
-                      <span className={`text-base ml-2 font-normal ${stat.light ? "text-black/40" : "text-white/25"}`}>{stat.unit}</span>
+                      <span className={`text-base ml-2 font-normal ${stat.light === true ? "text-black/40" : "text-white/30"}`}>{stat.unit}</span>
                     </p>
                   </div>
                 </div>
-                <p className={`text-sm leading-relaxed mb-3 ${stat.light ? "text-black/60" : "text-white/45"}`}>{stat.description}</p>
-                <p className={`text-xs italic ${stat.light ? "text-black/30" : "text-white/15"}`}>{stat.source}</p>
+                <p className={`text-sm leading-relaxed mb-3 ${stat.light === true ? "text-black/60" : "text-white/60"}`}>{stat.description}</p>
+                <p className={`text-xs italic ${stat.light === true ? "text-black/30" : "text-white/25"}`}>{stat.source}</p>
               </motion.div>
             );
           })}
