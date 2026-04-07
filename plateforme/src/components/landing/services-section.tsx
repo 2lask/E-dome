@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowUpRight, Home, Users, GraduationCap, Handshake, Radio, Briefcase } from "lucide-react";
+import { MockFeedAnimation } from "@/components/landing/mock-feed-animation";
 
 const features = [
   {
@@ -11,7 +12,7 @@ const features = [
     description:
       "Un fil d'actualité pensé pour l'immobilier : partagez vos biens, vos visites, vos analyses de marché. Stories éphémères, reels de propriétés, mentions, hashtags — l'interaction sociale orientée vers le professionnel.",
     icon: Users,
-    media: { type: "video" as const, src: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" },
+    media: { type: "component" as const, src: "" },
   },
   {
     tag: "Marketplace & Réservations",
@@ -91,13 +92,15 @@ export function ServicesSection() {
                 initial={{ opacity: 0, y: 50 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.8, delay: i * 0.1 }}
                 className="liquid-glass rounded-3xl overflow-hidden group border border-[#C4956A]/5 hover:border-[#C4956A]/15 transition-colors">
-                <div className="aspect-video overflow-hidden relative">
+                <div className={`overflow-hidden relative ${feature.media.type === "component" ? "aspect-[3/4]" : "aspect-video"}`}>
                   {feature.media.type === "video" ? (
                     <video
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       muted autoPlay loop playsInline preload="auto"
                       src={feature.media.src}
                     />
+                  ) : feature.media.type === "component" ? (
+                    <MockFeedAnimation />
                   ) : (
                     <img
                       src={feature.media.src}
@@ -105,7 +108,9 @@ export function ServicesSection() {
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  {feature.media.type !== "component" && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  )}
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
