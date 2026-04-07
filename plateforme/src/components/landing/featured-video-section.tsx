@@ -50,7 +50,7 @@ export function FeaturedVideoSection() {
                 whileTap={{ scale: 0.95 }}
                 className="liquid-glass rounded-full px-8 py-3 text-white text-sm font-medium hover:bg-white/5 transition-colors flex items-center gap-2 cursor-pointer"
               >
-                Entrer dans la démo <ArrowRight size={16} />
+                <span className="text-[#C4956A]">Entrer dans la démo</span> <ArrowRight size={16} className="text-[#C4956A]" />
               </motion.div>
             </Link>
           </div>
