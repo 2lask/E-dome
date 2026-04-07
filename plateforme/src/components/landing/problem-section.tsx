@@ -33,7 +33,7 @@ const stats = [
     icon: ArrowLeftRight,
     iconColor: "text-blue-400/70",
     iconBg: "bg-blue-400/10",
-    cardBg: "",
+    light: true,
     value: "12",
     numValue: 12,
     numSuffix: "",
@@ -45,7 +45,7 @@ const stats = [
     icon: Clock,
     iconColor: "text-amber-400/70",
     iconBg: "bg-amber-400/10",
-    cardBg: "",
+    light: false,
     value: "40%",
     numValue: 40,
     numSuffix: "%",
@@ -57,7 +57,7 @@ const stats = [
     icon: Brain,
     iconColor: "text-purple-400/70",
     iconBg: "bg-purple-400/10",
-    cardBg: "",
+    light: false,
     value: "23 min",
     numValue: 23,
     numSuffix: " min",
@@ -69,7 +69,7 @@ const stats = [
     icon: AlertTriangle,
     iconColor: "text-red-400/70",
     iconBg: "bg-red-400/10",
-    cardBg: "",
+    light: true,
     value: "67%",
     numValue: 67,
     numSuffix: "%",
@@ -117,21 +117,25 @@ export function ProblemSection() {
               <motion.div key={stat.value}
                 initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
-                className="rounded-3xl p-6 md:p-8 border border-black/10 hover:border-[#C4956A]/30 transition-colors"
-                style={{ background: "rgba(255, 255, 255, 0.92)" }}>
+                className={`rounded-3xl p-6 md:p-8 border transition-colors ${
+                  stat.light
+                    ? "border-[#C4956A]/25 hover:border-[#C4956A]/40"
+                    : "border-[#C4956A]/15 hover:border-[#C4956A]/30 liquid-glass"
+                }`}
+                style={{ background: stat.light ? "rgba(255, 255, 255, 0.92)" : undefined }}>
                 <div className="flex items-start gap-4 mb-4">
                   <div className={`rounded-full p-2.5 ${stat.iconBg} shrink-0`}>
                     <Icon size={18} className={stat.iconColor} />
                   </div>
                   <div>
-                    <p className="text-black text-3xl md:text-4xl font-semibold tracking-tight">
+                    <p className={`text-3xl md:text-4xl font-semibold tracking-tight ${stat.light ? "text-black" : "text-white"}`}>
                       <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
-                      <span className="text-black/40 text-base ml-2 font-normal">{stat.unit}</span>
+                      <span className={`text-base ml-2 font-normal ${stat.light ? "text-black/40" : "text-white/25"}`}>{stat.unit}</span>
                     </p>
                   </div>
                 </div>
-                <p className="text-black/60 text-sm leading-relaxed mb-3">{stat.description}</p>
-                <p className="text-black/30 text-xs italic">{stat.source}</p>
+                <p className={`text-sm leading-relaxed mb-3 ${stat.light ? "text-black/60" : "text-white/45"}`}>{stat.description}</p>
+                <p className={`text-xs italic ${stat.light ? "text-black/30" : "text-white/15"}`}>{stat.source}</p>
               </motion.div>
             );
           })}
@@ -139,11 +143,11 @@ export function ProblemSection() {
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="mt-16 text-center">
-          <div className="rounded-full inline-flex items-center gap-3 px-8 py-4 border border-black/10" style={{ background: "rgba(255, 255, 255, 0.92)" }}>
+          <div className="rounded-full inline-flex items-center gap-3 px-8 py-4 border border-[#C4956A]/25" style={{ background: "rgba(255, 255, 255, 0.92)" }}>
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <p className="text-black/60 text-sm">
               E-Dome rassemble tout en un seul endroit.{" "}
-              <span className="text-black font-medium">Zéro friction, zéro dispersion.</span>
+              <span className="text-[#C4956A] font-medium">Zéro friction, zéro dispersion.</span>
             </p>
           </div>
         </motion.div>
