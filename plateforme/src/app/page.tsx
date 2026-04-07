@@ -6,6 +6,7 @@ import { ArrowRight, Mail } from "lucide-react";
 import { AboutSection } from "@/components/landing/about-section";
 import { ProblemSection } from "@/components/landing/problem-section";
 import { FeaturedVideoSection } from "@/components/landing/featured-video-section";
+import { PhilosophySection } from "@/components/landing/philosophy-section";
 import { ServicesSection } from "@/components/landing/services-section";
 import { FoundersSection } from "@/components/landing/founders-section";
 import { RoadmapSection } from "@/components/landing/roadmap-section";
@@ -153,6 +154,7 @@ export default function HomePage() {
       <FeaturedVideoSection />
       <div id="probleme"><ProblemSection /></div>
       <div id="fonctionnalites"><ServicesSection /></div>
+      <PhilosophySection />
       <div id="fondateurs"><FoundersSection /></div>
       <div id="roadmap"><RoadmapSection /></div>
       <FooterSection />
