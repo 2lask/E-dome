@@ -119,8 +119,8 @@ export function ProblemSection() {
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
                 className={`rounded-3xl p-6 md:p-8 border transition-colors ${
                   stat.light
-                    ? "border-[#C4956A]/25 hover:border-[#C4956A]/40"
-                    : "border-[#C4956A]/15 hover:border-[#C4956A]/30 liquid-glass"
+                    ? "border-[#C4956A]/60 hover:border-[#C4956A]/80 border-2"
+                    : "border-[#C4956A]/40 hover:border-[#C4956A]/60 border-2 liquid-glass"
                 }`}
                 style={{ background: stat.light ? "rgba(255, 255, 255, 0.92)" : undefined }}>
                 <div className="flex items-start gap-4 mb-4">
@@ -143,7 +143,7 @@ export function ProblemSection() {
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="mt-16 text-center">
-          <div className="rounded-full inline-flex items-center gap-3 px-8 py-4 border border-[#C4956A]/25" style={{ background: "rgba(255, 255, 255, 0.92)" }}>
+          <div className="rounded-full inline-flex items-center gap-3 px-8 py-4 border-2 border-[#C4956A]/50" style={{ background: "rgba(255, 255, 255, 0.92)" }}>
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <p className="text-black/60 text-sm">
               E-Dome rassemble tout en un seul endroit.{" "}
