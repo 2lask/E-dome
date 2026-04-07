@@ -19,7 +19,7 @@ const features = [
     description:
       "Carte interactive, filtres avancés par type, pays et budget. Rendement brut et net, prix au m², note énergétique, projection ROI à 5 et 10 ans. Réservation intégrée avec calendrier et paiements sécurisés.",
     icon: Home,
-    media: { type: "video" as const, src: "/videos/marketplace.mp4" },
+    media: { type: "video" as const, src: "/videos/marketplace.mp4", startTime: 5 },
   },
   {
     tag: "Formation & Certification",
@@ -92,7 +92,7 @@ export function ServicesSection() {
                 transition={{ duration: 0.8, delay: i * 0.1 }}
                 className="liquid-glass rounded-3xl overflow-hidden group border border-[#C4956A]/5 hover:border-[#C4956A]/15 transition-colors"
                 onMouseEnter={(e) => { const v = e.currentTarget.querySelector("video"); if (v) v.play(); }}
-                onMouseLeave={(e) => { const v = e.currentTarget.querySelector("video"); if (v) { v.pause(); v.currentTime = 0; } }}>
+                onMouseLeave={(e) => { const v = e.currentTarget.querySelector("video"); if (v) { v.pause(); v.currentTime = (v as HTMLVideoElement).dataset.startTime ? parseFloat((v as HTMLVideoElement).dataset.startTime!) : 0; } }}>
                 <div className="aspect-video overflow-hidden relative">
                   {feature.media.type === "video" ? (
                     <video
@@ -100,6 +100,11 @@ export function ServicesSection() {
                       muted loop playsInline preload="auto"
                       src={feature.media.src}
                       data-hover-video
+                      data-start-time={feature.media.startTime || 0}
+                      onLoadedMetadata={(e) => {
+                        const st = feature.media.startTime;
+                        if (st) e.currentTarget.currentTime = st;
+                      }}
                     />
                   ) : (
                     <img
