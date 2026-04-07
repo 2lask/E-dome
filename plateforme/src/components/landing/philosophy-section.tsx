@@ -115,15 +115,15 @@ export function PhilosophySection() {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-black/80" />
 
-          {/* Top right - title block */}
-          <div className="absolute top-0 right-0 p-5 md:p-8 lg:p-10">
-            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5 text-right" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
+          {/* Top left - title block */}
+          <div className="absolute top-0 left-0 p-5 md:p-8 lg:p-10">
+            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
               <p className="text-[#C4956A]/60 text-[10px] md:text-xs tracking-[0.2em] uppercase mb-2">E-Dome</p>
               <h3 className="text-white text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight leading-tight mb-4">
                 Un seul espace<br />
                 <span className="text-[#C4956A]">pour tout l&apos;immobilier.</span>
               </h3>
-              <div className="flex flex-wrap justify-end gap-1.5 md:gap-2">
+              <div className="flex flex-wrap gap-1.5 md:gap-2">
                 {[
                   { label: "Recherche", gold: false },
                   { label: "Publication", gold: false },
@@ -144,10 +144,10 @@ export function PhilosophySection() {
             </div>
           </div>
 
-          {/* Bottom left - description block */}
-          <div className="absolute bottom-0 left-0 p-5 md:p-8 lg:p-10">
-            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5 max-w-md" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
-              <div className="w-8 h-0.5 bg-[#C4956A]/50 mb-4" />
+          {/* Bottom right - description block */}
+          <div className="absolute bottom-0 right-0 p-5 md:p-8 lg:p-10">
+            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5 max-w-md text-right" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
+              <div className="w-8 h-0.5 bg-[#C4956A]/50 mb-4 ml-auto" />
               <p className="text-white text-sm md:text-base leading-relaxed mb-3">
                 Chercher un bien, publier une annonce, réserver une visite,
                 suivre une formation, recommander un contact et toucher sa
