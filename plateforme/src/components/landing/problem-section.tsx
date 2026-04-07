@@ -117,31 +117,21 @@ export function ProblemSection() {
               <motion.div key={stat.value}
                 initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
-                className={`rounded-3xl p-6 md:p-8 border-2 transition-colors ${
-                  stat.light === true
-                    ? "border-[#C4956A]/60 hover:border-[#C4956A]/80"
-                    : "border-[#C4956A]/40 hover:border-[#C4956A]/60"
-                }`}
-                style={{
-                  background: stat.light === true
-                    ? "rgba(255, 255, 255, 0.92)"
-                    : stat.light === "beige"
-                    ? "rgba(196, 149, 106, 0.15)"
-                    : undefined,
-                }}>
+                className="rounded-3xl p-6 md:p-8 border-2 border-red-500/40 hover:border-red-500/60 transition-colors"
+                style={{ background: "rgba(30, 15, 15, 0.85)" }}>
                 <div className="flex items-start gap-4 mb-4">
                   <div className={`rounded-full p-2.5 ${stat.iconBg} shrink-0`}>
                     <Icon size={18} className={stat.iconColor} />
                   </div>
                   <div>
-                    <p className={`text-3xl md:text-4xl font-semibold tracking-tight ${stat.light === true ? "text-black" : "text-white"}`}>
+                    <p className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
                       <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
-                      <span className={`text-base ml-2 font-normal ${stat.light === true ? "text-black/40" : "text-white/30"}`}>{stat.unit}</span>
+                      <span className="text-white/30 text-base ml-2 font-normal">{stat.unit}</span>
                     </p>
                   </div>
                 </div>
-                <p className={`text-sm leading-relaxed mb-3 ${stat.light === true ? "text-black/60" : "text-white/60"}`}>{stat.description}</p>
-                <p className={`text-xs italic ${stat.light === true ? "text-black/30" : "text-white/25"}`}>{stat.source}</p>
+                <p className="text-white/60 text-sm leading-relaxed mb-3">{stat.description}</p>
+                <p className="text-white/25 text-xs italic">{stat.source}</p>
               </motion.div>
             );
           })}
@@ -149,11 +139,11 @@ export function ProblemSection() {
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="mt-16 text-center">
-          <div className="rounded-full inline-flex items-center gap-3 px-8 py-4 border-2 border-[#C4956A]/50" style={{ background: "rgba(235, 215, 195, 0.9)" }}>
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <p className="text-black/60 text-sm">
+          <div className="rounded-full inline-flex items-center gap-3 px-8 py-4 border-2 border-emerald-500/40" style={{ background: "rgba(15, 30, 15, 0.85)" }}>
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <p className="text-white/60 text-sm">
               E-Dome rassemble tout en un seul endroit.{" "}
-              <span className="text-black/80 font-medium">Zéro friction, zéro dispersion.</span>
+              <span className="text-emerald-400 font-medium">Zéro friction, zéro dispersion.</span>
             </p>
           </div>
         </motion.div>
