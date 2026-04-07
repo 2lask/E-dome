@@ -19,7 +19,7 @@ const features = [
     description:
       "Carte interactive, filtres avancés par type, pays et budget. Rendement brut et net, prix au m², note énergétique, projection ROI à 5 et 10 ans. Réservation intégrée avec calendrier et paiements sécurisés.",
     icon: Home,
-    media: { type: "video" as const, src: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260324_151826_c7218672-6e92-402c-9e45-f1e0f454bdc4.mp4" },
+    media: { type: "video" as const, src: "/videos/marketplace.mp4" },
   },
   {
     tag: "Formation & Certification",
