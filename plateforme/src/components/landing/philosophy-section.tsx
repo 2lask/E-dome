@@ -109,14 +109,28 @@ export function PhilosophySection() {
           <video
             className="w-full h-full object-cover"
             muted autoPlay loop playsInline preload="auto"
-            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4"
+            src="/videos/philosophy-bg.mp4"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
-            <p className="text-white/80 text-lg md:text-xl font-light max-w-xl">
-              Un seul espace pour chercher, publier, réserver, se former,
-              recommander et être rémunéré.
+            <p className="text-white text-xl md:text-2xl font-medium max-w-2xl mb-3 tracking-tight">
+              Un seul espace pour tout l&apos;immobilier.
             </p>
+            <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-2xl mb-4">
+              Chercher un bien, publier une annonce, réserver une visite, suivre
+              une formation, recommander un contact et toucher sa commission —
+              sans jamais quitter la plateforme. E-Dome centralise chaque étape
+              du parcours immobilier pour que chaque acteur gagne en temps,
+              en visibilité et en revenus.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Recherche</span>
+              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Publication</span>
+              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Réservation</span>
+              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Formation</span>
+              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Recommandation</span>
+              <span className="text-xs px-3 py-1.5 rounded-full border border-[#C4956A]/30 text-[#C4956A]">Rémunération</span>
+            </div>
           </div>
         </motion.div>
       </div>
