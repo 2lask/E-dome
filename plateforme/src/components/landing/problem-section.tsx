@@ -143,11 +143,11 @@ export function ProblemSection() {
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="mt-16 text-center">
-          <div className="rounded-full inline-flex items-center gap-3 px-8 py-4 border-2 border-[#C4956A]/50" style={{ background: "rgba(255, 255, 255, 0.92)" }}>
+          <div className="rounded-full inline-flex items-center gap-3 px-8 py-4 border-2 border-[#C4956A]/50" style={{ background: "rgba(196, 149, 106, 0.15)" }}>
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <p className="text-black/60 text-sm">
+            <p className="text-white/80 text-sm">
               E-Dome rassemble tout en un seul endroit.{" "}
-              <span className="text-[#C4956A] font-medium">Zéro friction, zéro dispersion.</span>
+              <span className="text-white font-medium">Zéro friction, zéro dispersion.</span>
             </p>
           </div>
         </motion.div>
