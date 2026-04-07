@@ -113,26 +113,37 @@ export function PhilosophySection() {
             muted autoPlay loop playsInline preload="auto"
             src="/videos/philosophy-bg.mp4"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
-            <p className="text-white text-xl md:text-2xl font-medium max-w-2xl mb-3 tracking-tight">
-              Un seul espace pour tout l&apos;immobilier.
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60" />
+
+          {/* Top right - title + tags */}
+          <div className="absolute top-0 right-0 p-6 md:p-10 text-right">
+            <p className="text-white text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight mb-5"
+              style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}>
+              Un seul espace pour<br />tout l&apos;immobilier.
             </p>
-            <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-2xl mb-4">
-              Chercher un bien, publier une annonce, réserver une visite, suivre
-              une formation, recommander un contact et toucher sa commission —
-              sans jamais quitter la plateforme. E-Dome centralise chaque étape
-              du parcours immobilier pour que chaque acteur gagne en temps,
-              en visibilité et en revenus.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Recherche</span>
-              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Publication</span>
-              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Réservation</span>
-              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Formation</span>
-              <span className="text-xs px-3 py-1.5 rounded-full border border-white/20 text-white/60">Recommandation</span>
-              <span className="text-xs px-3 py-1.5 rounded-full border border-[#C4956A]/30 text-[#C4956A]">Rémunération</span>
+            <div className="flex flex-wrap justify-end gap-2">
+              <span className="text-xs px-3 py-1.5 rounded-full text-white/90 font-medium" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>Recherche</span>
+              <span className="text-xs px-3 py-1.5 rounded-full text-white/90 font-medium" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>Publication</span>
+              <span className="text-xs px-3 py-1.5 rounded-full text-white/90 font-medium" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>Réservation</span>
+              <span className="text-xs px-3 py-1.5 rounded-full text-[#C4956A] font-medium" style={{ background: "rgba(196,149,106,0.15)", backdropFilter: "blur(8px)" }}>Formation</span>
+              <span className="text-xs px-3 py-1.5 rounded-full text-[#C4956A] font-medium" style={{ background: "rgba(196,149,106,0.15)", backdropFilter: "blur(8px)" }}>Recommandation</span>
+              <span className="text-xs px-3 py-1.5 rounded-full text-[#C4956A] font-semibold" style={{ background: "rgba(196,149,106,0.2)", backdropFilter: "blur(8px)" }}>Rémunération</span>
             </div>
+          </div>
+
+          {/* Bottom left - description */}
+          <div className="absolute bottom-0 left-0 p-6 md:p-10 max-w-xl">
+            <p className="text-white/90 text-sm md:text-base leading-relaxed font-light"
+              style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9)" }}>
+              Chercher un bien, publier une annonce, réserver une visite,
+              suivre une formation, recommander un contact et toucher sa
+              commission — sans jamais quitter la plateforme.
+            </p>
+            <p className="text-white/60 text-xs md:text-sm mt-3 leading-relaxed"
+              style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9)" }}>
+              E-Dome centralise chaque étape du parcours immobilier pour
+              que chaque acteur gagne en temps, en visibilité et en revenus.
+            </p>
           </div>
         </motion.div>
       </div>
