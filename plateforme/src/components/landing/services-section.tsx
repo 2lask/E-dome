@@ -27,7 +27,7 @@ const features = [
     description:
       "Catalogue de formations vidéo par des experts du terrain : investissement locatif, gestion de biens, analyse financière, fiscalité internationale. Modules structurés et certifications.",
     icon: GraduationCap,
-    media: { type: "video" as const, src: "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4" },
+    media: { type: "video" as const, src: "/videos/formation.mp4" },
   },
   {
     tag: "Système de commissions",
