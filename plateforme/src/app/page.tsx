@@ -188,17 +188,17 @@ export default function HomePage() {
       </section>
 
       <div id="vision"><AboutSection /></div>
-      <ArchDivider drawing="villa" />
+      <ArchDivider drawing="villa" animation="draw" />
       <FeaturedVideoSection />
-      <ArchDivider drawing="tower" flip />
+      <ArchDivider drawing="tower" flip animation="shimmer" />
       <div id="probleme"><ProblemSection /></div>
-      <ArchDivider drawing="chalet" />
+      <ArchDivider drawing="chalet" animation="draw" />
       <div id="fonctionnalites"><ServicesSection /></div>
-      <ArchDivider drawing="penthouse" flip />
+      <ArchDivider drawing="penthouse" flip animation="float" />
       <PhilosophySection />
-      <ArchDivider drawing="villa" />
+      <ArchDivider drawing="villa" flip animation="pulse" />
       <div id="fondateurs"><FoundersSection /></div>
-      <ArchDivider drawing="tower" flip />
+      <ArchDivider drawing="tower" flip animation="draw" />
       <div id="roadmap"><RoadmapSection /></div>
       <FooterSection />
     </div>
