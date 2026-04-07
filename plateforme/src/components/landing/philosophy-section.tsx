@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Layers, RefreshCw, Shield, Zap } from "lucide-react";
+import GlowingBorder from "@/components/ui/glowing-border";
 
 const pillars = [
   {
@@ -81,15 +82,18 @@ export function PhilosophySection() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
-                className="liquid-glass rounded-3xl p-6 md:p-8 border border-white/5 hover:border-[#C4956A]/15 transition-colors"
               >
-                <div className="flex items-center gap-3 mb-5">
-                  <div className={`rounded-full p-2.5 ${pillar.iconBg}`}>
-                    <Icon size={18} className={pillar.iconColor} />
+                <GlowingBorder>
+                  <div className="p-6 md:p-8">
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className={`rounded-full p-2.5 ${pillar.iconBg}`}>
+                        <Icon size={18} className={pillar.iconColor} />
+                      </div>
+                      <h3 className="text-white text-lg font-medium tracking-tight">{pillar.title}</h3>
+                    </div>
+                    <p className="text-white/55 text-sm leading-relaxed">{pillar.description}</p>
                   </div>
-                  <h3 className="text-white text-lg font-medium tracking-tight">{pillar.title}</h3>
-                </div>
-                <p className="text-white/45 text-sm leading-relaxed">{pillar.description}</p>
+                </GlowingBorder>
               </motion.div>
             );
           })}
