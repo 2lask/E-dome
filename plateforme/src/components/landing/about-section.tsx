@@ -24,9 +24,9 @@ export function AboutSection() {
 
         <motion.h2 initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.1 }}
           className="text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight mb-12">
-          Chaque acteur de l&apos;immobilier{" "}
+          Pensé pour chaque{" "}
           <em className="not-italic text-[#C4956A]/50" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
-            a sa place.
+            acteur de l&apos;immobilier.
           </em>
         </motion.h2>
 
