@@ -33,7 +33,7 @@ const stats = [
     icon: ArrowLeftRight,
     iconColor: "text-blue-400/70",
     iconBg: "bg-blue-400/10",
-    cardBg: "bg-blue-950/30",
+    cardBg: "bg-white/[0.04]",
     value: "12",
     numValue: 12,
     numSuffix: "",
@@ -69,7 +69,7 @@ const stats = [
     icon: AlertTriangle,
     iconColor: "text-red-400/70",
     iconBg: "bg-red-400/10",
-    cardBg: "bg-red-950/20",
+    cardBg: "bg-white/[0.04]",
     value: "67%",
     numValue: 67,
     numSuffix: "%",
@@ -138,7 +138,7 @@ export function ProblemSection() {
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="mt-16 text-center">
-          <div className="liquid-glass rounded-full inline-flex items-center gap-3 px-8 py-4 border border-emerald-500/20 bg-emerald-950/20">
+          <div className="liquid-glass rounded-full inline-flex items-center gap-3 px-8 py-4 border border-white/10 bg-white/[0.04]">
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <p className="text-white/60 text-sm">
               E-Dome rassemble tout en un seul endroit.{" "}
