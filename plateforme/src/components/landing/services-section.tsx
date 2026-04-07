@@ -51,7 +51,7 @@ const features = [
     description:
       "Photographes, home stagers, gestionnaires de clés, rénovateurs, notaires, courtiers — trouvez et sollicitez des prestataires qualifiés depuis la plateforme. Demandes de devis intégrées.",
     icon: Briefcase,
-    media: { type: "video" as const, src: "/videos/services.mp4" },
+    media: { type: "video" as const, src: "/videos/services.mp4", startTime: 5 },
   },
 ];
 
