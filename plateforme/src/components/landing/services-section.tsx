@@ -95,8 +95,10 @@ export function ServicesSection() {
                   {feature.media.type === "video" ? (
                     <video
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      muted autoPlay loop playsInline preload="auto"
+                      muted loop playsInline preload="auto"
                       src={feature.media.src}
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                      onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                     />
                   ) : (
                     <img
