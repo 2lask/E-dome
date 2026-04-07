@@ -90,15 +90,16 @@ export function ServicesSection() {
               <motion.div key={feature.tag}
                 initial={{ opacity: 0, y: 50 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.8, delay: i * 0.1 }}
-                className="liquid-glass rounded-3xl overflow-hidden group border border-[#C4956A]/5 hover:border-[#C4956A]/15 transition-colors">
+                className="liquid-glass rounded-3xl overflow-hidden group border border-[#C4956A]/5 hover:border-[#C4956A]/15 transition-colors"
+                onMouseEnter={(e) => { const v = e.currentTarget.querySelector("video"); if (v) v.play(); }}
+                onMouseLeave={(e) => { const v = e.currentTarget.querySelector("video"); if (v) { v.pause(); v.currentTime = 0; } }}>
                 <div className="aspect-video overflow-hidden relative">
                   {feature.media.type === "video" ? (
                     <video
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       muted loop playsInline preload="auto"
                       src={feature.media.src}
-                      onMouseEnter={(e) => e.currentTarget.play()}
-                      onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                      data-hover-video
                     />
                   ) : (
                     <img
