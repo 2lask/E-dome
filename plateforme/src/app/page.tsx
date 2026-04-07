@@ -190,15 +190,15 @@ export default function HomePage() {
       <div id="vision"><AboutSection /></div>
       <ArchDivider drawing="villa" />
       <FeaturedVideoSection />
-      <ArchDivider drawing="penthouse" flip />
+      <ArchDivider drawing="tower" flip />
       <div id="probleme"><ProblemSection /></div>
       <ArchDivider drawing="chalet" />
       <div id="fonctionnalites"><ServicesSection /></div>
-      <ArchDivider drawing="villa" flip />
+      <ArchDivider drawing="penthouse" flip />
       <PhilosophySection />
-      <ArchDivider drawing="penthouse" />
+      <ArchDivider drawing="villa" />
       <div id="fondateurs"><FoundersSection /></div>
-      <ArchDivider drawing="chalet" flip />
+      <ArchDivider drawing="tower" flip />
       <div id="roadmap"><RoadmapSection /></div>
       <FooterSection />
     </div>
