@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { AlertTriangle, Clock, ArrowLeftRight, Brain } from "lucide-react";
+import DotPattern from "@/components/ui/dot-pattern";
 
 function CountUpStat({ target, suffix = "", inView }: { target: number; suffix?: string; inView: boolean }) {
   const [count, setCount] = useState(0);
@@ -117,21 +118,30 @@ export function ProblemSection() {
               <motion.div key={stat.value}
                 initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
-                className="rounded-3xl p-6 md:p-8 border-2 border-red-500/40 hover:border-red-500/60 transition-colors"
-                style={{ background: "rgba(30, 15, 15, 0.85)" }}>
-                <div className="flex items-start gap-4 mb-4">
-                  <div className={`rounded-full p-2.5 ${stat.iconBg} shrink-0`}>
-                    <Icon size={18} className={stat.iconColor} />
+                className="relative border border-red-500/50 hover:border-red-500/70 transition-colors overflow-hidden"
+                style={{ background: "rgba(20, 10, 10, 0.9)" }}>
+                <DotPattern width={5} height={5} className="fill-red-500/10" />
+
+                <div className="absolute -left-1.5 -top-1.5 h-3 w-3 bg-red-500" />
+                <div className="absolute -bottom-1.5 -left-1.5 h-3 w-3 bg-red-500" />
+                <div className="absolute -right-1.5 -top-1.5 h-3 w-3 bg-red-500" />
+                <div className="absolute -bottom-1.5 -right-1.5 h-3 w-3 bg-red-500" />
+
+                <div className="relative z-10 p-6 md:p-8">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className={`rounded-full p-2.5 ${stat.iconBg} shrink-0`}>
+                      <Icon size={18} className={stat.iconColor} />
+                    </div>
+                    <div>
+                      <p className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
+                        <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
+                        <span className="text-white/30 text-base ml-2 font-normal">{stat.unit}</span>
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
-                      <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
-                      <span className="text-white/30 text-base ml-2 font-normal">{stat.unit}</span>
-                    </p>
-                  </div>
+                  <p className="text-white/60 text-sm leading-relaxed mb-3">{stat.description}</p>
+                  <p className="text-white/25 text-xs italic">{stat.source}</p>
                 </div>
-                <p className="text-white/60 text-sm leading-relaxed mb-3">{stat.description}</p>
-                <p className="text-white/25 text-xs italic">{stat.source}</p>
               </motion.div>
             );
           })}
