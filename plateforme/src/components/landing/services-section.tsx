@@ -43,7 +43,7 @@ const features = [
     description:
       "Programmez des lives de visites virtuelles, des webinaires d'analyse de marché, des sessions Q&A. Replays disponibles, inscriptions avec notifications, événements physiques et virtuels.",
     icon: Radio,
-    media: { type: "image" as const, src: "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800&q=80" },
+    media: { type: "video" as const, src: "/videos/live-events.mp4" },
   },
   {
     tag: "Services professionnels",
