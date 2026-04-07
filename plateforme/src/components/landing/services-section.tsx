@@ -35,7 +35,7 @@ const features = [
     description:
       "Le cœur économique d'E-Dome : chaque utilisateur peut devenir apporteur d'affaires. Commissions sur les locations, les ventes, les formations — liens traçables, dashboard de suivi, paiements automatiques.",
     icon: Handshake,
-    media: { type: "image" as const, src: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=800&q=80" },
+    media: { type: "video" as const, src: "/videos/commissions.mp4" },
   },
   {
     tag: "Live & Événements",
