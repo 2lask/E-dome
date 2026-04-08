@@ -82,6 +82,20 @@ export default function HomePage() {
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   }, []);
 
+  // Force video play on mobile (some browsers block autoplay until interaction)
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const tryPlay = () => {
+      v.play().catch(() => {});
+    };
+    tryPlay();
+    const onInteraction = () => { tryPlay(); document.removeEventListener("touchstart", onInteraction); document.removeEventListener("scroll", onInteraction); };
+    document.addEventListener("touchstart", onInteraction, { once: true });
+    document.addEventListener("scroll", onInteraction, { once: true });
+    return () => { document.removeEventListener("touchstart", onInteraction); document.removeEventListener("scroll", onInteraction); };
+  }, []);
+
   return (
     <div className="bg-black" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
       {/* ═══ HERO ═══ */}
