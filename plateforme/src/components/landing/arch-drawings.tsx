@@ -52,8 +52,8 @@ export function ArchDivider({ drawing, flip = false, animation = "draw" }: ArchD
   return (
     <div ref={ref} className="relative w-full overflow-hidden pointer-events-none" style={{ height: "clamp(280px, 32vw, 450px)" }}>
       <motion.div
-        className={`absolute ${flip ? "right-[-12%]" : "left-[-12%]"} top-1/2 -translate-y-1/2 w-[100%] md:w-[80%] text-white ${animClass}`}
-        style={{ y, opacity, x }}
+        className={`absolute ${flip ? "right-[-12%]" : "left-[-12%]"} top-1/2 -translate-y-1/2 w-[100%] md:w-[80%] text-white ${animClass} arch-gradient-tint`}
+        style={{ y, opacity, x, position: "relative" as const }}
       >
         <DrawingComponent />
       </motion.div>
