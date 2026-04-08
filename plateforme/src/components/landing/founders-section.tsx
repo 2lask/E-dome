@@ -33,22 +33,24 @@ export function FoundersSection() {
             <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">Fondateur & CEO</p>
             <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">Léonard Ansermet</h3>
             <p className="text-white/80 text-base md:text-lg leading-relaxed mb-4">
-              Mes premières transactions immobilières, je les ai faites
-              avec rien d&apos;autre que mon téléphone et la confiance des
-              gens autour de moi. Je connectais des acheteurs à des
-              vendeurs, je facilitais des deals que personne d&apos;autre
-              n&apos;aurait vu venir. Et à chaque fois, le même sentiment :
-              ce métier a un potentiel immense, mais personne ne lui
-              donne les moyens d&apos;exister vraiment.
+              L&apos;idée d&apos;E-Dome m&apos;est venue en vivant le quotidien
+              de l&apos;immobilier de l&apos;intérieur. En tant qu&apos;apporteur
+              d&apos;affaires, je passais mes journées à naviguer entre
+              des dizaines d&apos;outils différents, à chercher les bons
+              contacts sur une plateforme, les bons biens sur une autre,
+              à suivre mes commissions sur des fichiers manuels. Je
+              perdais un temps considérable — et je savais que tous les
+              acteurs du secteur vivaient la même chose.
             </p>
             <p className="text-white/60 text-sm md:text-base leading-relaxed">
-              J&apos;ai vu des professionnels talentueux rester dans l&apos;ombre
-              parce qu&apos;aucune plateforme ne valorisait leur travail.
-              J&apos;ai vu des opportunités se perdre entre des outils qui
-              ne communiquaient pas. Et j&apos;ai décidé que ça devait
-              changer. E-Dome, c&apos;est la plateforme que j&apos;aurais voulu
-              avoir dès le premier jour — et que je construis aujourd&apos;hui
-              pour tous ceux qui partagent cette vision.
+              Un soir, j&apos;ai ouvert une page blanche et j&apos;ai commencé
+              à dessiner ce que serait la plateforme idéale. Pas un outil
+              de plus — un endroit unique où chaque professionnel de
+              l&apos;immobilier retrouve tout ce dont il a besoin. Le réseau,
+              les annonces, la formation, les commissions, la visibilité.
+              Page après page, fonctionnalité après fonctionnalité,
+              E-Dome a pris forme. Aujourd&apos;hui, cette vision est devenue
+              une maquette de plus de 30 pages — et bientôt, une réalité.
             </p>
           </div>
         </motion.div>
