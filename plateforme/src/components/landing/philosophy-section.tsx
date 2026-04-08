@@ -48,7 +48,7 @@ export function PhilosophySection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
+    <section ref={ref} className="bg-black py-16 md:py-28 lg:py-40 px-6 overflow-hidden relative">
       <div className="absolute inset-0 opacity-[0.06]"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
       />
@@ -64,7 +64,7 @@ export function PhilosophySection() {
             text="Pourquoi ça change tout"
             direction="left"
             stagger={0.06}
-            className="text-5xl md:text-7xl lg:text-8xl text-white tracking-tight mb-6"
+            className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl text-white tracking-tight mb-6"
           />
           <BlurFade delay={0.4} inView>
             <p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
@@ -107,7 +107,7 @@ export function PhilosophySection() {
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.9, delay: 0.5 }}
-          className="rounded-3xl overflow-hidden aspect-video relative"
+          className="rounded-3xl overflow-hidden aspect-[4/5] md:aspect-video relative"
         >
           <video
             className="w-full h-full object-cover"
@@ -147,7 +147,7 @@ export function PhilosophySection() {
 
           {/* Bottom right - description block */}
           <div className="absolute bottom-0 right-0 p-5 md:p-8 lg:p-10">
-            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5 max-w-md text-right" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
+            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5 max-w-[280px] md:max-w-md text-right" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
               <div className="w-8 h-0.5 bg-[#C4956A]/50 mb-4 ml-auto" />
               <p className="text-white text-sm md:text-base leading-relaxed mb-3">
                 Chercher un bien, publier une annonce, réserver une visite,

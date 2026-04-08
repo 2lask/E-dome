@@ -4,6 +4,7 @@
 /* ─── Liquid Glass ─────────────────────────────────────────────────────────── */
 
 .liquid-glass {
+  contain: layout style paint;
   background: rgba(255, 255, 255, 0.01);
   background-blend-mode: luminosity;
   backdrop-filter: blur(4px);
@@ -72,7 +73,12 @@ html:not(.light) {
 
 /* ─── Base ─────────────────────────────────────────────────────────────────── */
 
-html, body {
+html {
+  height: auto !important;
+  overflow-x: hidden !important;
+}
+
+body {
   height: auto !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
@@ -286,6 +292,28 @@ html.light .card-hover:hover {
   stroke-dashoffset: 0;
 }
 
+@media (max-width: 767px) {
+  .arch-draw-in svg line,
+  .arch-draw-in svg path,
+  .arch-draw-in svg rect,
+  .arch-draw-in svg circle,
+  .arch-draw-in svg polygon,
+  .arch-draw-in svg polyline,
+  .arch-draw-in svg ellipse {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+  .arch-shimmer::after {
+    animation: none;
+  }
+  .arch-pulse svg line,
+  .arch-pulse svg path,
+  .arch-pulse svg rect {
+    animation: none;
+  }
+}
+
 /* Gradient color on strokes: white to beige */
 .arch-gradient-tint svg {
   color: white;
@@ -343,6 +371,7 @@ html.light .card-hover:hover {
 /* Float: gentle floating motion */
 .arch-float svg {
   animation: archFloat 8s ease-in-out infinite;
+  will-change: transform;
 }
 @keyframes archFloat {
   0%, 100% { transform: translateY(0px); }

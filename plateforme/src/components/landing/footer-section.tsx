@@ -27,10 +27,10 @@ export function FooterSection() {
   return (
     <footer className="bg-black border-t border-[#C4956A]/8 pt-16 pb-8 px-6 relative overflow-hidden">
       {/* Architectural drawings background */}
-      <div className="absolute left-[-15%] top-[-10%] w-[70%] md:w-[50%] text-white/[0.04] pointer-events-none">
+      <div className="hidden md:block absolute left-[-15%] top-[-10%] w-[70%] md:w-[50%] text-white/[0.04] pointer-events-none">
         <VillaLuxuryDrawing />
       </div>
-      <div className="absolute right-[-10%] bottom-[-15%] w-[60%] md:w-[40%] text-white/[0.04] pointer-events-none">
+      <div className="hidden md:block absolute right-[-10%] bottom-[-15%] w-[60%] md:w-[40%] text-white/[0.04] pointer-events-none">
         <ChaletAlpineDrawing />
       </div>
 
@@ -53,7 +53,7 @@ export function FooterSection() {
             <ul className="space-y-2.5">
               {demoLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors">{link.label}</Link>
+                  <Link href={link.href} className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -64,7 +64,7 @@ export function FooterSection() {
             <ul className="space-y-2.5">
               {platformLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors">{link.label}</Link>
+                  <Link href={link.href} className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -73,17 +73,17 @@ export function FooterSection() {
           <div>
             <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">À propos</p>
             <ul className="space-y-2.5">
-              <li><a href="#vision" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors">Notre vision</a></li>
-              <li><a href="#fonctionnalites" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors">Fonctionnalités</a></li>
-              <li><a href="#fondateurs" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors">Fondateurs</a></li>
-              <li><a href="#roadmap" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors">Roadmap</a></li>
-              <li><Link href="/conditions" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors">Conditions</Link></li>
-              <li><Link href="/confidentialite" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors">Confidentialité</Link></li>
+              <li><a href="#vision" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Notre vision</a></li>
+              <li><a href="#fonctionnalites" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Fonctionnalités</a></li>
+              <li><a href="#fondateurs" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Fondateurs</a></li>
+              <li><a href="#roadmap" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Roadmap</a></li>
+              <li><Link href="/conditions" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Conditions</Link></li>
+              <li><Link href="/confidentialite" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Confidentialité</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-white/15 text-xs">© 2026 E-Dome — Maquette de visualisation. Toutes les données sont fictives et servent à illustrer les fonctionnalités.</p>
           <Link href="/acces" className="liquid-glass rounded-full px-5 py-2 text-white/40 text-xs hover:text-[#C4956A]/70 hover:bg-white/5 transition-all border border-[#C4956A]/8">
             Accéder à la démo

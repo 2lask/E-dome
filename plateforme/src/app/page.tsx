@@ -25,7 +25,7 @@ function AnimatedText({ text, delay = 200 }: { text: string; delay?: number }) {
       {text.split("").map((char, i) => (
         <span
           key={i}
-          className="inline-block transition-all duration-500"
+          className="inline-block transition-[transform,opacity] duration-500"
           style={{
             transform: visible ? "translateX(0)" : "translateX(-18px)",
             opacity: visible ? 1 : 0,
@@ -106,7 +106,7 @@ export default function HomePage() {
               <a href="#fondateurs" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">Fondateurs</a>
               <a href="#roadmap" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">Roadmap</a>
             </div>
-            <Link href="/acces" className="bg-[#C4956A] text-black rounded-lg px-5 py-2 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
+            <Link href="/acces" className="bg-[#C4956A] text-black rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
               Voir la démo
             </Link>
           </div>
@@ -160,7 +160,7 @@ export default function HomePage() {
             </div>
 
             {/* Right - CTA */}
-            <div className="flex lg:justify-end lg:items-end">
+            <div className="hidden lg:flex lg:justify-end lg:items-end">
               <Link
                 href="/acces"
                 className="bg-[#C4956A] text-black rounded-xl px-8 py-4 text-lg sm:text-xl font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-3"

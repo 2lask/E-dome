@@ -71,7 +71,7 @@ export default function AccesPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-6">
+      <div className="min-h-dvh bg-black flex items-center justify-center px-6">
         <div className="max-w-md w-full text-center">
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
             <Check size={32} className="text-emerald-400" />
@@ -106,7 +106,7 @@ export default function AccesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-dvh bg-black flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-6">
         <Link href="/" className="flex items-center gap-2">
@@ -147,7 +147,7 @@ export default function AccesPage() {
               </p>
 
               <div className="space-y-5">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-white/40 text-xs mb-1.5 block">Prénom *</label>
                     <input
@@ -217,7 +217,7 @@ export default function AccesPage() {
                                 : [...prev.activites, a],
                             }));
                           }}
-                          className={`text-xs px-4 py-2.5 rounded-lg border transition-colors ${
+                          className={`text-xs px-4 py-3 rounded-lg border transition-colors ${
                             selected
                               ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
                               : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
@@ -238,7 +238,7 @@ export default function AccesPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-white/40 text-xs mb-1.5 block">Ville</label>
                     <input
@@ -261,12 +261,12 @@ export default function AccesPage() {
 
                 <div>
                   <label className="text-white/40 text-xs mb-1.5 block">Années d&apos;expérience dans l&apos;immobilier</label>
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-2 sm:flex gap-2">
                     {["Débutant", "1-3 ans", "3-10 ans", "10+ ans"].map((exp) => (
                       <button
                         key={exp}
                         onClick={() => update("experience", exp)}
-                        className={`text-xs px-4 py-2.5 rounded-lg border transition-colors flex-1 ${
+                        className={`text-xs px-4 py-2.5 rounded-lg border transition-colors ${
                           form.experience === exp
                             ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
                             : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
@@ -328,7 +328,7 @@ export default function AccesPage() {
                       <button
                         key={s}
                         onClick={() => update("source", s)}
-                        className={`text-xs px-3 py-2 rounded-lg border transition-colors ${
+                        className={`text-xs px-3 py-3 rounded-lg border transition-colors ${
                           form.source === s
                             ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
                             : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
@@ -385,7 +385,7 @@ export default function AccesPage() {
             {step < totalSteps ? (
               <button
                 onClick={() => canNext() && setStep(step + 1)}
-                className={`flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-colors ${
+                className={`flex items-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold transition-colors ${
                   canNext()
                     ? "bg-[#C4956A] text-black hover:bg-[#d4a57a]"
                     : "bg-white/10 text-white/30 cursor-not-allowed"
@@ -396,7 +396,7 @@ export default function AccesPage() {
             ) : (
               <button
                 onClick={handleSubmit}
-                className="flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-6 py-3 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
+                className="flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-6 py-3.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
               >
                 Accéder à la maquette <ArrowRight size={16} />
               </button>

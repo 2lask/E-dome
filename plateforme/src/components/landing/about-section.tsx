@@ -12,7 +12,7 @@ export function AboutSection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="bg-black pt-32 md:pt-44 pb-16 md:pb-24 px-6 overflow-hidden relative">
+    <section ref={ref} className="bg-black pt-20 md:pt-44 pb-16 md:pb-24 px-6 overflow-hidden relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(196,149,106,0.04)_0%,_transparent_70%)]" />
       <div
         className="absolute inset-0 opacity-[0.06]"
@@ -31,19 +31,19 @@ export function AboutSection() {
           text="Pensé pour chaque acteur de l'immobilier."
           direction="bottom"
           stagger={0.04}
-          className="text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight mb-12"
+          className="text-3xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight mb-8 md:mb-12"
         />
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-16">
-          <BlurFade delay={0.4} inView><p className="text-white/75 text-base md:text-lg leading-relaxed">
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-10 md:mb-16">
+          <BlurFade delay={0.4} inView><p className="text-white/80 text-base md:text-lg leading-relaxed">
             E-Dome n&apos;est pas une plateforme de plus. C&apos;est un écosystème
             où chaque professionnel — hôte, agent, promoteur, photographe,
             courtier, notaire, architecte, formateur — dispose d&apos;un espace
             pensé pour son métier. Un compte unique, un profil configurable
             qui s&apos;adapte à votre activité du moment.
           </p></BlurFade>
-          <BlurFade delay={0.6} inView><p className="text-white/75 text-base md:text-lg leading-relaxed">
+          <BlurFade delay={0.6} inView><p className="text-white/80 text-base md:text-lg leading-relaxed">
             Au cœur du modèle : un système de commissions transparent qui
             rémunère chaque maillon de la chaîne. L&apos;apporteur d&apos;affaires
             touche sa part, le formateur monétise son expertise, l&apos;hôte
@@ -54,7 +54,7 @@ export function AboutSection() {
 
         {/* Roles - visual strip */}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.5 }}>
-          <p className="text-white/40 text-sm mb-6">
+          <p className="text-white/50 text-sm mb-6">
             Des profils interchangeables qui s&apos;adaptent à chaque métier de l&apos;immobilier — un seul compte pour toutes vos activités.
           </p>
           <div className="flex flex-wrap gap-2">

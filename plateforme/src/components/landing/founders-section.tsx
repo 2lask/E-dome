@@ -13,7 +13,7 @@ export function FoundersSection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="bg-black py-28 md:py-44 px-6 overflow-hidden relative">
+    <section ref={ref} className="bg-black py-16 md:py-44 px-6 overflow-hidden relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(196,149,106,0.03)_0%,_transparent_60%)]" />
       <ArchBackground variant="building" />
 
@@ -24,9 +24,9 @@ export function FoundersSection() {
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.9 }}
-          className="flex flex-col md:flex-row items-center gap-10 md:gap-16 mb-28"
+          className="flex flex-col md:flex-row items-center gap-10 md:gap-16 mb-16 md:mb-28"
         >
-          <div className="w-48 md:w-64 shrink-0">
+          <div className="w-36 sm:w-48 md:w-64 shrink-0">
             <div className="aspect-square rounded-full overflow-hidden border-4 border-[#C4956A]/30 shadow-[0_0_40px_rgba(196,149,106,0.15)]">
               <img src="/images/founders/leonard.jpg" alt="Léonard Ansermet" className="w-full h-full object-cover" />
             </div>
@@ -65,10 +65,10 @@ export function FoundersSection() {
         </motion.div>
 
         {/* Central quote */}
-        <div className="text-center mb-28 px-4">
+        <div className="text-center mb-16 md:mb-28 px-4">
           <div className="w-12 h-1 bg-[#C4956A] mx-auto mb-8" />
           <div
-            className="text-2xl md:text-4xl lg:text-5xl text-white leading-[1.3] tracking-tight"
+            className="text-xl sm:text-2xl md:text-4xl lg:text-5xl text-white leading-[1.3] tracking-tight"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             <VerticalCutReveal splitBy="words" staggerDuration={0.08} staggerFrom="center">
@@ -83,7 +83,7 @@ export function FoundersSection() {
           initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.9, delay: 0.3 }}
-          className="flex flex-col-reverse md:flex-row items-center gap-10 md:gap-16 mb-28"
+          className="flex flex-col-reverse md:flex-row items-center gap-10 md:gap-16 mb-16 md:mb-28"
         >
           <div className="flex-1 text-center md:text-right">
             <TextEffect per="word" preset="fade" delay={0.2} trigger={inView}
@@ -113,7 +113,7 @@ export function FoundersSection() {
               construis chaque jour pour E-Dome.
             </p>
           </div>
-          <div className="w-48 md:w-64 shrink-0">
+          <div className="w-36 sm:w-48 md:w-64 shrink-0">
             <div className="aspect-square rounded-full overflow-hidden border-4 border-[#C4956A]/30 shadow-[0_0_40px_rgba(196,149,106,0.15)]">
               <img src="/images/founders/jeanpierre.jpg" alt="Jean-Pierre Medard Garza" className="w-full h-full object-cover" />
             </div>

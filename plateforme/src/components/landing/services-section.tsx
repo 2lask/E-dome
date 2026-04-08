@@ -97,7 +97,7 @@ export function ServicesSection() {
                   {feature.media.type === "video" ? (
                     <video
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      muted loop playsInline preload="auto"
+                      autoPlay muted loop playsInline preload="metadata"
                       src={feature.media.src}
                       data-hover-video
                       data-start-time={feature.media.startTime || 0}
@@ -123,7 +123,7 @@ export function ServicesSection() {
                       </div>
                       <p className="uppercase tracking-widest text-[#C4956A]/40 text-[10px]">{feature.tag}</p>
                     </div>
-                    <div className="rounded-full p-1.5 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="rounded-full p-1.5 bg-white/5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <ArrowUpRight size={14} className="text-[#C4956A]" />
                     </div>
                   </div>

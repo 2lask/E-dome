@@ -85,10 +85,10 @@ const stats = [
 
 export function ProblemSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
+    <section ref={ref} className="bg-black py-16 md:py-40 px-6 overflow-hidden relative">
       <div
         className="absolute inset-0 opacity-[0.06]"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
@@ -97,7 +97,7 @@ export function ProblemSection() {
       <ArchBackground variant="floorplan" />
 
       <div className="max-w-6xl mx-auto relative">
-        <div className="mb-16 md:mb-24">
+        <div className="mb-10 md:mb-24">
           <TextEffect per="word" preset="slide" delay={0} trigger={inView}
             className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">
             Le constat
@@ -155,7 +155,7 @@ export function ProblemSection() {
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="mt-16 text-center">
-          <div className="rounded-full inline-flex items-center gap-3 px-8 py-4 border-2 border-emerald-500/40" style={{ background: "rgba(15, 30, 15, 0.85)" }}>
+          <div className="rounded-2xl md:rounded-full inline-flex items-center gap-3 px-5 md:px-8 py-4 border-2 border-emerald-500/40" style={{ background: "rgba(15, 30, 15, 0.85)" }}>
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <p className="text-white/60 text-sm">
               E-Dome rassemble tout en un seul endroit.{" "}

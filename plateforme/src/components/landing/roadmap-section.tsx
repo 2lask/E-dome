@@ -79,13 +79,13 @@ export function RoadmapSection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
+    <section ref={ref} className="bg-black py-16 md:py-40 px-6 overflow-hidden relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(196,149,106,0.05)_0%,_transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(16,185,129,0.03)_0%,_transparent_50%)]" />
       <ArchBackground variant="villa" />
 
       <div className="max-w-6xl mx-auto relative">
-        <div className="mb-16 md:mb-24">
+        <div className="mb-10 md:mb-24">
           <TextEffect per="char" preset="blur" delay={0} trigger={inView}
             className="text-[#C4956A] text-sm tracking-widest uppercase mb-4 font-medium">
             Roadmap
@@ -123,10 +123,10 @@ export function RoadmapSection() {
                 className={`rounded-3xl p-6 md:p-8 ${config.border} relative overflow-hidden`}
                 style={{ background: config.cardBg }}>
                 {phase.status === "current" && (
-                  <DotPattern width={8} height={8} cr={0.4} className="fill-[#C4956A]/10" />
+                  <DotPattern width={8} height={8} cr={0.4} className="hidden md:block fill-[#C4956A]/10" />
                 )}
                 {phase.status === "done" && (
-                  <DotPattern width={8} height={8} cr={0.4} className="fill-emerald-400/8" />
+                  <DotPattern width={8} height={8} cr={0.4} className="hidden md:block fill-emerald-400/8" />
                 )}
                 <div className="relative z-10 flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
@@ -159,9 +159,9 @@ export function RoadmapSection() {
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="rounded-3xl border-2 border-[#C4956A]/20 overflow-hidden relative"
           style={{ background: "rgba(196, 149, 106, 0.04)" }}>
-          <DotPattern width={10} height={10} cr={0.4} className="fill-[#C4956A]/5" />
+          <DotPattern width={10} height={10} cr={0.4} className="hidden md:block fill-[#C4956A]/5" />
 
-          <div className="relative z-10 p-8 md:p-12">
+          <div className="relative z-10 p-5 md:p-12">
             {/* Header */}
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-[#C4956A]/10 border border-[#C4956A]/20 mb-5">
@@ -241,11 +241,11 @@ export function RoadmapSection() {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/acces"
-                className="bg-[#C4956A] rounded-lg px-8 py-4 text-black text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
+                className="w-full sm:w-auto bg-[#C4956A] rounded-lg px-8 py-4 text-black text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center justify-center gap-2">
                 Je manifeste mon intérêt <ArrowRight size={16} />
               </Link>
               <Link href="/acces"
-                className="rounded-lg px-8 py-4 text-white/70 text-sm font-medium hover:bg-white/5 transition-colors border border-white/10">
+                className="w-full sm:w-auto rounded-lg px-8 py-4 text-white/70 text-sm font-medium hover:bg-white/5 transition-colors border border-white/10 flex items-center justify-center">
                 Explorer la démo d&apos;abord
               </Link>
             </div>
