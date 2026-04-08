@@ -80,20 +80,19 @@ export function RoadmapSection() {
       <div className="max-w-6xl mx-auto relative">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }}
           className="mb-16 md:mb-24">
-          <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">Roadmap</p>
+          <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-4 font-medium">Roadmap</p>
           <h2 className="text-4xl md:text-6xl text-white tracking-tight mb-6">
-            Où en{" "}
-            <em className="not-italic text-[#C4956A]/50" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
-              sommes-nous ?
-            </em>
+            Ce qui a été fait.{" "}
+            <span className="text-[#C4956A]">Ce qui arrive.</span>
           </h2>
-          <p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
-            La maquette interactive est terminée. Nous sommes en phase de
-            validation : nous récoltons des{" "}
-            <strong className="text-white/70">manifestations d&apos;intérêt</strong>{" "}
-            auprès des acteurs du secteur — agents, investisseurs, formateurs,
-            prestataires — pour démontrer le besoin réel du marché et la
-            pertinence d&apos;une solution unifiée.
+          <p className="text-white/60 text-base md:text-lg max-w-3xl leading-relaxed">
+            La maquette est en ligne, fonctionnelle, navigable. Aujourd&apos;hui,
+            nous ouvrons les portes à ceux qui veulent façonner la suite
+            avec nous. Votre{" "}
+            <strong className="text-white">manifestation d&apos;intérêt</strong>{" "}
+            est bien plus qu&apos;un formulaire — c&apos;est la preuve que le
+            marché attend une solution comme E-Dome, et c&apos;est ce qui
+            nous permet d&apos;avancer avec confiance.
           </p>
         </motion.div>
 
