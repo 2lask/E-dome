@@ -204,7 +204,7 @@ export function RoadmapSection() {
                 },
                 {
                   emoji: "🎁",
-                  title: "Tarifs fondateurs",
+                  title: "Avantages exclusifs",
                   desc: "Des conditions préférentielles sur les futures fonctionnalités premium, les formations et les outils de la plateforme.",
                 },
               ].map((item) => (
