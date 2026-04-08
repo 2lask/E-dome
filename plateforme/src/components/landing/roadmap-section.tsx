@@ -95,8 +95,9 @@ export function RoadmapSection() {
             qui donnera vie à la plateforme finale.
           </p>
           <p className="text-white/45 text-sm md:text-base max-w-3xl leading-relaxed">
-            Votre soutien aujourd&apos;hui n&apos;est pas symbolique.
-            Il est la condition pour que demain, E-Dome existe pour de vrai.
+            Chaque personne qui manifeste son intérêt aujourd&apos;hui
+            pose une pierre de ce qui deviendra demain la référence
+            de l&apos;immobilier connecté.
           </p>
         </motion.div>
 
