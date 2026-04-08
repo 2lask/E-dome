@@ -10,7 +10,7 @@ const phases = [
     status: "done" as const,
     phase: "Phase 1",
     title: "Concevoir & prouver le concept",
-    period: "Q1 2026 — Terminé",
+    period: "",
     items: [
       "Maquette interactive complète (30+ pages)",
       "Réseau social immobilier (feed, stories, reels)",
@@ -25,7 +25,7 @@ const phases = [
     status: "current" as const,
     phase: "Phase 2",
     title: "Valider le besoin & convaincre",
-    period: "Q2 2026 — En cours",
+    period: "",
     items: [
       "Récolte de manifestations d'intérêt auprès des acteurs du secteur",
       "Démonstrations et retours terrain",
@@ -38,7 +38,7 @@ const phases = [
     status: "upcoming" as const,
     phase: "Phase 3",
     title: "Lever les fonds & recruter",
-    period: "S2 2026",
+    period: "",
     items: [
       "Levée de fonds pour financer le développement",
       "Recrutement d'une équipe de développeurs",
@@ -52,7 +52,7 @@ const phases = [
     status: "upcoming" as const,
     phase: "Phase 4",
     title: "Lancer & s'étendre",
-    period: "2027",
+    period: "",
     items: [
       "Lancement public Suisse & Thaïlande",
       "Publication de l'app mobile sur les stores",
