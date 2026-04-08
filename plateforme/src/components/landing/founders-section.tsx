@@ -154,29 +154,6 @@ export function FoundersSection() {
             </div>
           </div>
 
-          {/* CTA block */}
-          <div className="rounded-2xl p-8 md:p-10 border-2 border-[#C4956A]/15 text-center" style={{ background: "rgba(196, 149, 106, 0.03)" }}>
-            <p
-              className="text-white text-xl md:text-2xl leading-[1.4] tracking-tight mb-4"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
-            >
-              L&apos;immobilier de demain ne se fera pas seul.
-              <br />
-              Il se fera{" "}
-              <em className="italic text-[#C4956A]">ensemble.</em>
-            </p>
-            <p className="text-white/55 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-8">
-              Chaque acteur qui croit en ce projet apporte plus qu&apos;un
-              soutien — il apporte son regard, son expérience, sa réalité
-              du terrain. C&apos;est cette intelligence collective qui fera
-              d&apos;E-Dome quelque chose que personne n&apos;a encore construit.
-              <span className="text-white font-medium">Une nouvelle ère de l&apos;immobilier commence ici</span>, et elle a
-              besoin de vous pour prendre forme.
-            </p>
-            <Link href="/feed" className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
-              Découvrir ce qu&apos;on construit <ArrowRight size={16} />
-            </Link>
-          </div>
         </motion.div>
 
       </div>
