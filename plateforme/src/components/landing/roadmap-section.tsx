@@ -166,11 +166,15 @@ export function RoadmapSection() {
                 <br />
                 <span className="text-[#C4956A]">Récoltez les premiers avantages.</span>
               </h3>
-              <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+              <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-2">
                 Les premiers à manifester leur intérêt ne rejoignent pas
                 simplement un projet — ils obtiennent une place privilégiée
                 dans l&apos;écosystème E-Dome, avec des avantages exclusifs
                 réservés aux membres fondateurs.
+              </p>
+              <p className="text-white/25 text-xs max-w-xl mx-auto">
+                La manifestation d&apos;intérêt est libre, gratuite et sans aucun
+                engagement. Elle nous aide à prouver le besoin du marché.
               </p>
             </div>
 

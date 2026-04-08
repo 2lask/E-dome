@@ -85,9 +85,14 @@ export default function AccesPage() {
               <span className="text-[#C4956A]"> Vous faites partie des premiers membres fondateurs.</span>
             )}
           </p>
-          <p className="text-white/40 text-sm mb-8">
+          <p className="text-white/40 text-sm mb-3">
             Vous pouvez maintenant explorer la maquette interactive d&apos;E-Dome
             avec toutes ses fonctionnalités.
+          </p>
+          <p className="text-white/25 text-xs mb-8">
+            Rappel : cette maquette est un modèle de visualisation avec des données
+            fictives. Elle permet de découvrir les fonctionnalités prévues pour la
+            plateforme finale.
           </p>
           <Link
             href="/feed"
@@ -131,9 +136,14 @@ export default function AccesPage() {
               <h2 className="text-white text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
                 Faisons connaissance.
               </h2>
-              <p className="text-white/50 text-sm mb-10">
+              <p className="text-white/50 text-sm mb-3">
                 Ces informations nous permettent de vous contacter et de
                 personnaliser votre expérience.
+              </p>
+              <p className="text-white/30 text-xs mb-10">
+                Ce formulaire est une manifestation d&apos;intérêt sans engagement
+                ni obligation. La maquette que vous allez explorer est un modèle
+                de visualisation — toutes les données présentées sont fictives.
               </p>
 
               <div className="space-y-5">

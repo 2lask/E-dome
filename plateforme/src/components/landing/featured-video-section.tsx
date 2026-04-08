@@ -41,7 +41,8 @@ export function FeaturedVideoSection() {
                 transport, décoration) et gestion de paiements.
               </p>
               <p className="text-white/50 text-xs mt-3">
-                Maquette interactive — données fictives à des fins de démonstration
+                Maquette de visualisation — les données présentées sont fictives
+                et servent uniquement à illustrer les fonctionnalités prévues
               </p>
             </div>
 
