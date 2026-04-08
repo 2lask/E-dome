@@ -104,7 +104,7 @@ export default function HomePage() {
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover"
           muted autoPlay loop playsInline preload="auto"
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260403_050628_c4e32401-fab4-4a27-b7a8-6e9291cd5959.mp4"
+          src="/videos/hero-bg.mp4"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
 
