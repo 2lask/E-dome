@@ -123,11 +123,13 @@ export function FoundersSection() {
                 <em className="italic text-[#C4956A]">connectés.</em>
               </p>
               <p className="text-white/60 text-sm leading-relaxed">
-                Aujourd&apos;hui, un agent et un photographe ne se croisent
-                que par hasard. Un apporteur d&apos;affaires n&apos;a aucun moyen
-                de prouver sa valeur. Un formateur partage son savoir sur
-                des plateformes qui n&apos;ont rien à voir avec l&apos;immobilier.
-                Nous refusons que ça continue.
+                Des milliers de professionnels compétents restent dans
+                l&apos;ombre faute d&apos;un espace qui les met en lumière. Des
+                opportunités se perdent chaque jour entre des outils qui
+                ne se parlent pas. Des commissions sont versées sans que
+                personne ne sache vraiment à qui ni pourquoi. Ce n&apos;est
+                pas une fatalité — c&apos;est un problème qu&apos;on a décidé
+                de résoudre.
               </p>
             </div>
 
