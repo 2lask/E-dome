@@ -59,8 +59,9 @@ export function FoundersSection() {
               d&apos;affaires. Pas d&apos;agence, pas de structure — juste du bouche à
               oreille, des mises en relation et des transactions qui se concluent
               grâce à la confiance. Ça fonctionne, mais un problème revient sans
-              cesse : il n&apos;existe aucun outil pensé pour ce rôle. L&apos;apporteur
-              est invisible dans l&apos;écosystème digital.
+              cesse : les rares outils qui existent sont rudimentaires et
+              sous-développés. L&apos;apporteur reste largement invisible
+              dans l&apos;écosystème digital immobilier.
             </p>
           </motion.div>
 
