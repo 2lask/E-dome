@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Check, Loader2, Clock, ArrowRight, Users } from "lucide-react";
 import Link from "next/link";
+import { ArchBackground } from "@/components/landing/arch-background";
+import DotPattern from "@/components/ui/dot-pattern";
 
 const phases = [
   {
@@ -64,9 +66,9 @@ const phases = [
 ];
 
 const statusConfig = {
-  done: { icon: Check, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/15", dot: "bg-emerald-400", label: "Terminé" },
-  current: { icon: Loader2, color: "text-[#C4956A]", bg: "bg-[#C4956A]/10", border: "border-[#C4956A]/20", dot: "bg-[#C4956A]", label: "En cours" },
-  upcoming: { icon: Clock, color: "text-white/25", bg: "bg-white/5", border: "border-white/8", dot: "bg-white/15", label: "À venir" },
+  done: { icon: Check, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-2 border-emerald-400/25", dot: "bg-emerald-400", label: "Terminé", cardBg: "rgba(16, 185, 129, 0.04)" },
+  current: { icon: Loader2, color: "text-[#C4956A]", bg: "bg-[#C4956A]/10", border: "border-2 border-[#C4956A]/30", dot: "bg-[#C4956A]", label: "En cours", cardBg: "rgba(196, 149, 106, 0.06)" },
+  upcoming: { icon: Clock, color: "text-white/35", bg: "bg-white/5", border: "border border-white/8", dot: "bg-white/20", label: "À venir", cardBg: "rgba(255, 255, 255, 0.02)" },
 };
 
 export function RoadmapSection() {
@@ -75,7 +77,9 @@ export function RoadmapSection() {
 
   return (
     <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(196,149,106,0.02)_0%,_transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(196,149,106,0.05)_0%,_transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(16,185,129,0.03)_0%,_transparent_50%)]" />
+      <ArchBackground variant="villa" />
 
       <div className="max-w-6xl mx-auto relative">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }}
@@ -109,23 +113,29 @@ export function RoadmapSection() {
               <motion.div key={phase.phase}
                 initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
-                className={`liquid-glass rounded-3xl p-6 md:p-8 border ${config.border}`}>
-                <div className="flex items-center justify-between mb-5">
+                className={`rounded-3xl p-6 md:p-8 ${config.border} relative overflow-hidden`}
+                style={{ background: config.cardBg }}>
+                {phase.status === "current" && (
+                  <DotPattern width={8} height={8} cr={0.4} className="fill-[#C4956A]/10" />
+                )}
+                {phase.status === "done" && (
+                  <DotPattern width={8} height={8} cr={0.4} className="fill-emerald-400/8" />
+                )}
+                <div className="relative z-10 flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
                     <div className={`rounded-full p-2 ${config.bg}`}>
                       <Icon size={16} className={config.color} />
                     </div>
                     <div>
                       <p className="text-white text-sm font-medium">{phase.phase}</p>
-                      <p className="text-white/25 text-xs">{phase.period}</p>
                     </div>
                   </div>
                   <span className={`text-xs px-3 py-1 rounded-full ${config.bg} ${config.color}`}>
                     {config.label}
                   </span>
                 </div>
-                <h3 className="text-white text-xl mb-4 tracking-tight">{phase.title}</h3>
-                <ul className="space-y-2">
+                <h3 className="relative z-10 text-white text-xl mb-4 tracking-tight">{phase.title}</h3>
+                <ul className="relative z-10 space-y-2">
                   {phase.items.map((item) => (
                     <li key={item} className="flex items-start gap-2.5">
                       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
