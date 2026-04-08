@@ -37,7 +37,8 @@ export function FeaturedVideoSection() {
                 marketplace avec carte interactive et calcul de rendement,
                 messagerie, dashboard adaptatif selon votre rôle, formations vidéo
                 par modules, système de commissions en temps réel, réservations
-                et gestion de paiements.
+                avec options personnalisables (conciergerie, petit-déjeuner,
+                transport, décoration) et gestion de paiements.
               </p>
               <p className="text-white/50 text-xs mt-3">
                 Maquette interactive — données fictives à des fins de démonstration

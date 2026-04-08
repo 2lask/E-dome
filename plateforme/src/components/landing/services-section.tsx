@@ -17,7 +17,7 @@ const features = [
     tag: "Marketplace & Réservations",
     title: "Explorer, comparer, réserver",
     description:
-      "Carte interactive, filtres avancés par type, pays et budget. Rendement brut et net, prix au m², note énergétique, projection ROI à 5 et 10 ans. Réservation intégrée avec calendrier et paiements sécurisés.",
+      "Carte interactive, filtres avancés par type, pays et budget. Rendement brut et net, prix au m², note énergétique, projection ROI à 5 et 10 ans. Réservation intégrée avec calendrier et paiements sécurisés. L'hôte peut aussi proposer des options à la réservation — décoration romantique, petit-déjeuner, carte des menus en chambre, transport, conciergerie — en gratuit ou en payant.",
     icon: Home,
     media: { type: "video" as const, src: "/videos/marketplace.mp4", startTime: 5 },
   },
