@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { VillaLuxuryDrawing } from "@/components/landing/drawings/villa-luxury";
 import { TowerResidenceDrawing } from "@/components/landing/drawings/tower-residence";
@@ -37,7 +37,7 @@ export function ArchDivider({ drawing, flip = false, animation = "draw" }: ArchD
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
-  const opacity = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0, 0.14, 0.14, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0, 0.25, 0.25, 0]);
   const x = useTransform(scrollYProgress, [0, 1], flip ? [40, -40] : [-40, 40]);
 
   const animClass = {

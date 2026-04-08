@@ -286,28 +286,15 @@ html.light .card-hover:hover {
   stroke-dashoffset: 0;
 }
 
-/* Gradient color tint on architectural drawings */
-.arch-gradient-tint {
-  -webkit-mask-image: linear-gradient(180deg, white 0%, white 100%);
-  mask-image: linear-gradient(180deg, white 0%, white 100%);
-}
+/* Gradient color on strokes: white to beige */
 .arch-gradient-tint svg {
-  filter: drop-shadow(0 0 8px rgba(196, 149, 106, 0.08));
+  color: white;
 }
-.arch-gradient-tint::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(196, 149, 106, 0.08) 30%,
-    transparent 50%,
-    rgba(196, 149, 106, 0.06) 70%,
-    rgba(255, 255, 255, 0.04) 100%
-  );
-  pointer-events: none;
-  mix-blend-mode: screen;
+.arch-gradient-tint svg line:nth-child(3n),
+.arch-gradient-tint svg path:nth-child(2n),
+.arch-gradient-tint svg rect:nth-child(4n),
+.arch-gradient-tint svg circle:nth-child(2n) {
+  color: #C4956A;
 }
 
 /* Pulse: lines gently pulse opacity */
