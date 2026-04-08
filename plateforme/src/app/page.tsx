@@ -150,7 +150,7 @@ export default function HomePage() {
                 }}
               >
                 <Link href="/acces" className="bg-[#C4956A] text-black rounded-lg px-6 py-3 text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
-                  Explorer la maquette <ArrowRight size={16} />
+                  Manifester mon intérêt <ArrowRight size={16} />
                 </Link>
                 <a href="#vision" className="liquid-glass rounded-lg px-6 py-3 text-white/80 text-sm font-medium border border-white/15 hover:bg-white/10 transition-colors">
                   En savoir plus
