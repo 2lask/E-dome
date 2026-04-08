@@ -33,18 +33,19 @@ export function FoundersSection() {
             <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">Fondateur & CEO</p>
             <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">Léonard Ansermet</h3>
             <p className="text-white/80 text-base md:text-lg leading-relaxed mb-4">
-              J&apos;ai commencé dans l&apos;immobilier comme apporteur d&apos;affaires,
-              en connectant les gens de bouche à oreille. Pas de bureau, pas
-              de licence — juste la conviction que mettre les bonnes personnes
-              en contact crée de la valeur. Mais plus j&apos;avançais, plus je
-              voyais un secteur brisé en morceaux.
+              Avant E-Dome, je faisais déjà de l&apos;immobilier sans le savoir.
+              Je mettais des gens en relation — un acheteur par ici, un
+              vendeur par là — et les transactions se faisaient naturellement,
+              par la confiance. Pas de structure, pas d&apos;outil. Juste du
+              concret et du bouche à oreille.
             </p>
             <p className="text-white/60 text-sm md:text-base leading-relaxed">
-              Des agents sans réseau social dédié. Des apporteurs sans outil.
-              Des photographes invisibles. Des formateurs déconnectés du terrain.
-              Chacun dans son coin, chacun sur ses propres plateformes. J&apos;ai
-              voulu créer l&apos;endroit qui manquait — celui qui donne à chaque
-              acteur la place qu&apos;il mérite.
+              C&apos;est en voulant professionnaliser cette activité que j&apos;ai
+              réalisé à quel point le secteur était éclaté. Chaque métier
+              avait ses propres outils, ses propres habitudes, ses propres
+              limites. Personne ne se parlait vraiment. J&apos;ai passé des mois
+              à dessiner ce que serait un écosystème où tout le monde aurait
+              sa place — et E-Dome est devenu cette obsession.
             </p>
           </div>
         </motion.div>
@@ -83,18 +84,21 @@ export function FoundersSection() {
             <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">Co-fondateur & COO</p>
             <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">Jean-Pierre Medard Garza</h3>
             <p className="text-white/80 text-base md:text-lg leading-relaxed mb-4">
-              Quand Léonard m&apos;a parlé d&apos;E-Dome, je n&apos;ai pas vu un
-              projet tech. J&apos;ai vu une opportunité de construire quelque chose
-              de juste. Un endroit où le travail de chacun est reconnu, où les
-              commissions sont claires, où un apporteur a autant de valeur
-              qu&apos;une agence.
+              Quand Léonard m&apos;a montré ce qu&apos;il avait en tête, j&apos;ai
+              tout de suite compris que ce n&apos;était pas juste une idée
+              d&apos;application. C&apos;était une réponse à un vrai problème —
+              un secteur où les gens créent de la valeur chaque jour mais
+              n&apos;ont aucun espace commun pour se retrouver, collaborer
+              et être reconnus.
             </p>
             <p className="text-white/60 text-sm md:text-base leading-relaxed">
-              Ma formation en commerce et ma rigueur opérationnelle servent
-              un seul objectif : que chaque décision fasse grandir l&apos;écosystème
-              dans la durée. Pas de raccourcis, pas de promesses creuses. Un plan
-              solide, des partenaires de confiance, et la certitude que le terrain
-              a toujours raison.
+              Mon rôle, c&apos;est de transformer cette vision en quelque
+              chose de solide. Structurer le modèle, trouver les bons
+              partenaires, s&apos;assurer que chaque décision sert le projet
+              sur le long terme. J&apos;ai appris dans le commerce qu&apos;un
+              bon produit ne suffit pas — il faut une exécution sans faille
+              et des fondations qui tiennent. C&apos;est ce que je construis
+              pour E-Dome.
             </p>
           </div>
           <div className="w-48 md:w-64 shrink-0">
