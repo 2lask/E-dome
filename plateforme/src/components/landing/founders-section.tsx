@@ -153,20 +153,27 @@ export function FoundersSection() {
             </div>
           </div>
 
-          {/* CTA bar */}
-          <div className="rounded-2xl p-6 md:p-8 border-2 border-[#C4956A]/15 flex flex-col md:flex-row items-center justify-between gap-6" style={{ background: "rgba(196, 149, 106, 0.03)" }}>
-            <div className="flex items-center gap-4">
-              <div className="flex -space-x-2">
-                <img src="/images/founders/leonard.jpg" alt="" className="w-11 h-11 rounded-full border-2 border-[#C4956A]/30 object-cover" />
-                <img src="/images/founders/jeanpierre.jpg" alt="" className="w-11 h-11 rounded-full border-2 border-[#C4956A]/30 object-cover" />
-              </div>
-              <div>
-                <p className="text-white text-sm font-medium">Léonard & Jean-Pierre</p>
-                <p className="text-white/40 text-xs">Prêts à écrire la suite avec vous.</p>
-              </div>
-            </div>
-            <Link href="/feed" className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-7 py-3.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors shrink-0">
-              Découvrir la maquette <ArrowRight size={16} />
+          {/* CTA block */}
+          <div className="rounded-2xl p-8 md:p-10 border-2 border-[#C4956A]/15 text-center" style={{ background: "rgba(196, 149, 106, 0.03)" }}>
+            <p
+              className="text-white text-xl md:text-2xl leading-[1.4] tracking-tight mb-4"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              L&apos;immobilier de demain ne se fera pas seul.
+              <br />
+              Il se fera{" "}
+              <em className="italic text-[#C4956A]">ensemble.</em>
+            </p>
+            <p className="text-white/55 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-8">
+              Chaque acteur qui croit en ce projet apporte plus qu&apos;un
+              soutien — il apporte son regard, son expérience, sa réalité
+              du terrain. C&apos;est cette intelligence collective qui fera
+              d&apos;E-Dome quelque chose que personne n&apos;a encore construit.
+              Une nouvelle ère de l&apos;immobilier commence ici, et elle a
+              besoin de vous pour prendre forme.
+            </p>
+            <Link href="/feed" className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
+              Découvrir ce qu&apos;on construit <ArrowRight size={16} />
             </Link>
           </div>
         </motion.div>
