@@ -38,7 +38,7 @@ export default function AccesPage() {
     nom: "",
     email: "",
     telephone: "",
-    activite: "",
+    activites: [] as string[],
     activiteAutre: "",
     ville: "",
     pays: "",
@@ -58,7 +58,7 @@ export default function AccesPage() {
 
   const canNext = () => {
     if (step === 1) return form.prenom && form.nom && form.email;
-    if (step === 2) return form.activite && form.pays;
+    if (step === 2) return form.activites.length > 0 && form.pays;
     return true;
   };
 
@@ -192,23 +192,33 @@ export default function AccesPage() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="text-white/40 text-xs mb-3 block">Votre activité principale *</label>
+                  <label className="text-white/40 text-xs mb-1.5 block">Vos activités * <span className="text-white/20">(plusieurs choix possibles)</span></label>
                   <div className="flex flex-wrap gap-2">
-                    {activites.map((a) => (
-                      <button
-                        key={a}
-                        onClick={() => update("activite", a)}
-                        className={`text-xs px-4 py-2.5 rounded-lg border transition-colors ${
-                          form.activite === a
-                            ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
-                            : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
-                        }`}
-                      >
-                        {a}
-                      </button>
-                    ))}
+                    {activites.map((a) => {
+                      const selected = form.activites.includes(a);
+                      return (
+                        <button
+                          key={a}
+                          onClick={() => {
+                            setForm((prev) => ({
+                              ...prev,
+                              activites: selected
+                                ? prev.activites.filter((x) => x !== a)
+                                : [...prev.activites, a],
+                            }));
+                          }}
+                          className={`text-xs px-4 py-2.5 rounded-lg border transition-colors ${
+                            selected
+                              ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
+                              : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
+                          }`}
+                        >
+                          {a}
+                        </button>
+                      );
+                    })}
                   </div>
-                  {form.activite === "Autre" && (
+                  {form.activites.includes("Autre") && (
                     <input
                       type="text" value={form.activiteAutre}
                       onChange={(e) => update("activiteAutre", e.target.value)}
