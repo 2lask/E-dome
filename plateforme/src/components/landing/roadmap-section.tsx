@@ -30,7 +30,7 @@ const phases = [
       "Récolte de manifestations d'intérêt auprès des acteurs du secteur",
       "Démonstrations et retours terrain",
       "Recherche d'investisseurs et préparation de la levée de fonds",
-      "Structuration juridique de la société en Suisse",
+      "Structuration juridique de la société",
       "Premiers partenariats stratégiques avec des agences et prestataires",
     ],
   },
