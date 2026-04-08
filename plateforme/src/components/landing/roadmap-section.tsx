@@ -9,55 +9,55 @@ const phases = [
   {
     status: "done" as const,
     phase: "Phase 1",
-    title: "Maquette interactive",
+    title: "Concevoir & prouver le concept",
     period: "Q1 2026 — Terminé",
     items: [
-      "Plus de 30 pages fonctionnelles",
-      "Réseau social complet (feed, stories, reels)",
-      "Marketplace avec carte interactive et rendement",
-      "Dashboard adaptatif multi-rôle",
-      "Système d'apporteurs avec commissions",
-      "Formations vidéo avec modules structurés",
-      "Messagerie, réservations, événements, services",
+      "Maquette interactive complète (30+ pages)",
+      "Réseau social immobilier (feed, stories, reels)",
+      "Marketplace avec carte, filtres et calcul de rendement",
+      "Dashboard adaptatif selon le profil métier",
+      "Système de commissions pour apporteurs d'affaires",
+      "Formations vidéo avec modules et certifications",
+      "Messagerie, réservations, événements et services",
     ],
   },
   {
     status: "current" as const,
     phase: "Phase 2",
-    title: "Validation du marché",
+    title: "Valider le besoin & convaincre",
     period: "Q2 2026 — En cours",
     items: [
-      "Récolte de manifestations d'intérêt",
-      "Démonstrations auprès des acteurs du secteur",
-      "Tests utilisateurs et itérations UX/UI",
-      "Structuration juridique en Suisse",
-      "Premiers partenariats stratégiques",
+      "Récolte de manifestations d'intérêt auprès des acteurs du secteur",
+      "Démonstrations et retours terrain",
+      "Recherche d'investisseurs et préparation de la levée de fonds",
+      "Structuration juridique de la société en Suisse",
+      "Premiers partenariats stratégiques avec des agences et prestataires",
     ],
   },
   {
     status: "upcoming" as const,
     phase: "Phase 3",
-    title: "Développement technique",
-    period: "Q3-Q4 2026",
+    title: "Lever les fonds & recruter",
+    period: "S2 2026",
     items: [
-      "Backend, base de données, authentification",
+      "Levée de fonds pour financer le développement",
+      "Recrutement d'une équipe de développeurs",
+      "Développement du site web et de l'application mobile (iOS & Android)",
       "Paiements sécurisés et système d'escrow",
-      "Upload médias réels (photos, vidéos)",
       "Commissions automatisées et traçables",
-      "Développement de l'application mobile (iOS & Android)",
       "Beta privée Suisse + Thaïlande",
     ],
   },
   {
     status: "upcoming" as const,
     phase: "Phase 4",
-    title: "Lancement & expansion",
+    title: "Lancer & s'étendre",
     period: "2027",
     items: [
       "Lancement public Suisse & Thaïlande",
       "Publication de l'app mobile sur les stores",
-      "Expansion France, Maroc, EAU",
-      "API pour intégrations tierces",
+      "Expansion vers la France, le Maroc et les EAU",
+      "Ouverture de l'API pour les intégrations tierces",
       "Programme ambassadeurs et apporteurs certifiés",
     ],
   },
@@ -82,21 +82,21 @@ export function RoadmapSection() {
           className="mb-16 md:mb-24">
           <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-4 font-medium">Roadmap</p>
           <h2 className="text-4xl md:text-6xl text-white tracking-tight mb-6">
-            Un projet en marche.{" "}
-            <span className="text-[#C4956A]">Une vision claire.</span>
+            De l&apos;idée{" "}
+            <span className="text-[#C4956A]">au lancement.</span>
           </h2>
           <p className="text-white/60 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
-            La première étape est derrière nous : une maquette complète,
-            fonctionnelle, qui prouve que le concept tient la route.
-            Maintenant, on passe aux choses sérieuses.
+            Le concept est prouvé. La maquette est en ligne. Maintenant,
+            chaque manifestation d&apos;intérêt que nous récoltons renforce
+            la preuve que le marché a besoin d&apos;E-Dome — et c&apos;est
+            cette traction qui nous permettra de{" "}
+            <strong className="text-white">convaincre des investisseurs</strong>,
+            lever les fonds nécessaires et constituer l&apos;équipe technique
+            qui donnera vie à la plateforme finale.
           </p>
-          <p className="text-white/50 text-sm md:text-base max-w-3xl leading-relaxed">
-            Avant de développer, on écoute. On récolte les retours de ceux
-            qui seront les premiers à utiliser E-Dome — parce qu&apos;une
-            plateforme construite sans le terrain est une plateforme
-            construite pour personne. Chaque{" "}
-            <strong className="text-white/80">manifestation d&apos;intérêt</strong>{" "}
-            confirme qu&apos;on va dans la bonne direction.
+          <p className="text-white/45 text-sm md:text-base max-w-3xl leading-relaxed">
+            Votre soutien aujourd&apos;hui n&apos;est pas symbolique.
+            Il est la condition pour que demain, E-Dome existe pour de vrai.
           </p>
         </motion.div>
 
