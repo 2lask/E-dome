@@ -82,17 +82,21 @@ export function RoadmapSection() {
           className="mb-16 md:mb-24">
           <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-4 font-medium">Roadmap</p>
           <h2 className="text-4xl md:text-6xl text-white tracking-tight mb-6">
-            Ce qui a été fait.{" "}
-            <span className="text-[#C4956A]">Ce qui arrive.</span>
+            Un projet en marche.{" "}
+            <span className="text-[#C4956A]">Une vision claire.</span>
           </h2>
-          <p className="text-white/60 text-base md:text-lg max-w-3xl leading-relaxed">
-            La maquette est en ligne, fonctionnelle, navigable. Aujourd&apos;hui,
-            nous ouvrons les portes à ceux qui veulent façonner la suite
-            avec nous. Votre{" "}
-            <strong className="text-white">manifestation d&apos;intérêt</strong>{" "}
-            est bien plus qu&apos;un formulaire — c&apos;est la preuve que le
-            marché attend une solution comme E-Dome, et c&apos;est ce qui
-            nous permet d&apos;avancer avec confiance.
+          <p className="text-white/60 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
+            La première étape est derrière nous : une maquette complète,
+            fonctionnelle, qui prouve que le concept tient la route.
+            Maintenant, on passe aux choses sérieuses.
+          </p>
+          <p className="text-white/50 text-sm md:text-base max-w-3xl leading-relaxed">
+            Avant de développer, on écoute. On récolte les retours de ceux
+            qui seront les premiers à utiliser E-Dome — parce qu&apos;une
+            plateforme construite sans le terrain est une plateforme
+            construite pour personne. Chaque{" "}
+            <strong className="text-white/80">manifestation d&apos;intérêt</strong>{" "}
+            confirme qu&apos;on va dans la bonne direction.
           </p>
         </motion.div>
 
