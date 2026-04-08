@@ -52,9 +52,8 @@ export function AboutSection() {
 
         {/* Roles - visual strip */}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.5 }}>
-          <p className="text-white/40 text-xs tracking-widest uppercase mb-6">
-            Des profils interchangeables qui s&apos;adaptent à chaque métier
-            de l&apos;immobilier — un seul compte pour toutes vos activités.
+          <p className="text-white/40 text-sm mb-6">
+            Des profils interchangeables qui s&apos;adaptent à chaque métier de l&apos;immobilier — un seul compte pour toutes vos activités.
           </p>
           <div className="flex flex-wrap gap-2">
             {[
