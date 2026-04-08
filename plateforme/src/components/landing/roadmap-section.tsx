@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Check, Loader2, Clock, ArrowRight, Users, Award, KeyRound, Star, Mic, Handshake, Gift } from "lucide-react";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { TextEffect } from "@/components/ui/text-effect";
+import { StaggerText } from "@/components/ui/stagger-text";
 import Link from "next/link";
 import { ArchBackground } from "@/components/landing/arch-background";
 import DotPattern from "@/components/ui/dot-pattern";
@@ -83,13 +85,17 @@ export function RoadmapSection() {
       <ArchBackground variant="villa" />
 
       <div className="max-w-6xl mx-auto relative">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }}
-          className="mb-16 md:mb-24">
-          <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-4 font-medium">Roadmap</p>
-          <h2 className="text-4xl md:text-6xl text-white tracking-tight mb-6">
-            De l&apos;idée{" "}
-            <span className="text-[#C4956A]">au lancement.</span>
-          </h2>
+        <div className="mb-16 md:mb-24">
+          <TextEffect per="char" preset="blur" delay={0} trigger={inView}
+            className="text-[#C4956A] text-sm tracking-widest uppercase mb-4 font-medium">
+            Roadmap
+          </TextEffect>
+          <StaggerText
+            text="De l'idée au lancement."
+            direction="right"
+            stagger={0.05}
+            className="text-4xl md:text-6xl text-white tracking-tight mb-6"
+          />
           <BlurFade delay={0.3} inView><p className="text-white/60 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
             Le concept est prouvé. La maquette est en ligne. Maintenant,
             chaque manifestation d&apos;intérêt que nous récoltons renforce
@@ -104,7 +110,7 @@ export function RoadmapSection() {
             pose une pierre de ce qui deviendra demain la référence
             de l&apos;immobilier connecté.
           </p></BlurFade>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           {phases.map((phase, i) => {

@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Network, UserCog, Eye, MessageCircle } from "lucide-react";
 import { ArchBackground } from "@/components/landing/arch-background";
+import { StaggerText } from "@/components/ui/stagger-text";
+import { BlurFade } from "@/components/ui/blur-fade";
 import GlowingBorder from "@/components/ui/glowing-border";
 
 const pillars = [
@@ -54,26 +56,25 @@ export function PhilosophySection() {
       <ArchBackground variant="mixed" />
 
       <div className="max-w-6xl mx-auto relative">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="mb-16 md:mb-24"
-        >
-          <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">Notre approche</p>
-          <h2 className="text-5xl md:text-7xl lg:text-8xl text-white tracking-tight mb-6">
-            Pourquoi{" "}
-            <em className="not-italic text-[#C4956A]/40" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
-              ça change tout
-            </em>
-          </h2>
-          <p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
-            E-Dome ne se contente pas de regrouper des outils. La plateforme
-            repense la façon dont les acteurs de l&apos;immobilier travaillent,
-            collaborent et se rémunèrent — en plaçant la connexion humaine
-            et la transparence au centre de chaque interaction.
-          </p>
-        </motion.div>
+        <div className="mb-16 md:mb-24">
+          <BlurFade delay={0} inView>
+            <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">Notre approche</p>
+          </BlurFade>
+          <StaggerText
+            text="Pourquoi ça change tout"
+            direction="left"
+            stagger={0.06}
+            className="text-5xl md:text-7xl lg:text-8xl text-white tracking-tight mb-6"
+          />
+          <BlurFade delay={0.4} inView>
+            <p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
+              E-Dome ne se contente pas de regrouper des outils. La plateforme
+              repense la façon dont les acteurs de l&apos;immobilier travaillent,
+              collaborent et se rémunèrent — en plaçant la connexion humaine
+              et la transparence au centre de chaque interaction.
+            </p>
+          </BlurFade>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16">
           {pillars.map((pillar, i) => {

@@ -5,6 +5,8 @@ import { motion, useInView } from "framer-motion";
 import { ArchBackground } from "@/components/landing/arch-background";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
+import { TextEffect } from "@/components/ui/text-effect";
 
 export function FoundersSection() {
   const ref = useRef(null);
@@ -30,8 +32,15 @@ export function FoundersSection() {
             </div>
           </div>
           <div className="flex-1 text-center md:text-left">
-            <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">Fondateur & CEO</p>
-            <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">Léonard Ansermet</h3>
+            <TextEffect per="word" preset="fade" delay={0.2} trigger={inView}
+              className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+              Fondateur et CEO
+            </TextEffect>
+            <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">
+              <VerticalCutReveal splitBy="words" staggerDuration={0.15} staggerFrom="first">
+                Léonard Ansermet
+              </VerticalCutReveal>
+            </h3>
             <p className="text-white/80 text-base md:text-lg leading-relaxed mb-4">
               L&apos;idée d&apos;E-Dome m&apos;est venue en vivant le quotidien
               de l&apos;immobilier de l&apos;intérieur. En tant qu&apos;apporteur
@@ -56,27 +65,18 @@ export function FoundersSection() {
         </motion.div>
 
         {/* Central quote */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={inView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-center mb-28 px-4"
-        >
+        <div className="text-center mb-28 px-4">
           <div className="w-12 h-1 bg-[#C4956A] mx-auto mb-8" />
-          <p
+          <div
             className="text-2xl md:text-4xl lg:text-5xl text-white leading-[1.3] tracking-tight"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
-            On ne veut pas juste créer une application.
-            <br />
-            On veut{" "}
-            <em className="italic text-[#C4956A]">changer la manière</em>
-            <br />
-            dont l&apos;immobilier{" "}
-            <em className="italic text-[#C4956A]">connecte les gens.</em>
-          </p>
+            <VerticalCutReveal splitBy="words" staggerDuration={0.08} staggerFrom="center">
+              On ne veut pas juste créer une application. On veut changer la manière dont l'immobilier connecte les gens.
+            </VerticalCutReveal>
+          </div>
           <div className="w-12 h-1 bg-[#C4956A] mx-auto mt-8" />
-        </motion.div>
+        </div>
 
         {/* Jean-Pierre - text left, photo right */}
         <motion.div
@@ -86,8 +86,15 @@ export function FoundersSection() {
           className="flex flex-col-reverse md:flex-row items-center gap-10 md:gap-16 mb-28"
         >
           <div className="flex-1 text-center md:text-right">
-            <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">Co-fondateur & COO</p>
-            <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">Jean-Pierre Medard Garza</h3>
+            <TextEffect per="word" preset="fade" delay={0.2} trigger={inView}
+              className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+              Co-fondateur et COO
+            </TextEffect>
+            <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">
+              <VerticalCutReveal splitBy="words" staggerDuration={0.15} staggerFrom="first">
+                Jean-Pierre Medard Garza
+              </VerticalCutReveal>
+            </h3>
             <p className="text-white/80 text-base md:text-lg leading-relaxed mb-4">
               Quand Léonard m&apos;a montré ce qu&apos;il avait en tête, j&apos;ai
               tout de suite compris que ce n&apos;était pas juste une idée

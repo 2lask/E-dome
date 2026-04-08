@@ -3,6 +3,8 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowUpRight, Home, Users, GraduationCap, Handshake, Radio, Briefcase } from "lucide-react";
+import { BlurFade } from "@/components/ui/blur-fade";
+import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
 
 const features = [
   {
@@ -68,16 +70,18 @@ export function ServicesSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30" />
 
       <div className="max-w-6xl mx-auto relative">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }}
-          className="flex items-start md:items-center justify-between mb-12 md:mb-16 flex-col md:flex-row gap-4">
+        <div className="flex items-start md:items-center justify-between mb-12 md:mb-16 flex-col md:flex-row gap-4">
           <div>
-            <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-3">Fonctionnalités</p>
+            <BlurFade delay={0.1} inView>
+              <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-3">Fonctionnalités</p>
+            </BlurFade>
             <h2 className="text-3xl md:text-5xl text-white tracking-tight">
-              Tout-en-un,{" "}
-              <em className="not-italic text-[#C4956A]/40" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>sans compromis</em>
+              <VerticalCutReveal splitBy="words" staggerDuration={0.12} staggerFrom="first">
+                Tout-en-un, sans compromis
+              </VerticalCutReveal>
             </h2>
           </div>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => {

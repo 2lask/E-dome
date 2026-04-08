@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { AlertTriangle, Clock, ArrowLeftRight, Brain } from "lucide-react";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { TextEffect } from "@/components/ui/text-effect";
 import { ArchBackground } from "@/components/landing/arch-background";
 import DotPattern from "@/components/ui/dot-pattern";
 
@@ -96,14 +97,16 @@ export function ProblemSection() {
       <ArchBackground variant="floorplan" />
 
       <div className="max-w-6xl mx-auto relative">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }} className="mb-16 md:mb-24">
-          <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">Le constat</p>
-          <h2 className="text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight mb-8">
-            Un secteur{" "}
-            <em className="not-italic text-[#C4956A]/40" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
-              dispersé.
-            </em>
-          </h2>
+        <div className="mb-16 md:mb-24">
+          <TextEffect per="word" preset="slide" delay={0} trigger={inView}
+            className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">
+            Le constat
+          </TextEffect>
+          <TextEffect per="word" preset="scale" delay={0.2} trigger={inView}
+            as="h2"
+            className="text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight mb-8">
+            Un secteur dispersé.
+          </TextEffect>
           <BlurFade delay={0.3} inView><p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
             Pour chercher un bien, un site. Pour réserver, un autre. Pour se former, encore
             un autre. Pour trouver un prestataire, un annuaire. Pour suivre ses
@@ -112,7 +115,7 @@ export function ProblemSection() {
             opportunités. Le parcours immobilier actuel est une succession de
             ruptures qui coûte cher à tous les acteurs.
           </p></BlurFade>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {stats.map((stat, i) => {
