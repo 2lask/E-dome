@@ -33,19 +33,22 @@ export function FoundersSection() {
             <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">Fondateur & CEO</p>
             <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">Léonard Ansermet</h3>
             <p className="text-white/80 text-base md:text-lg leading-relaxed mb-4">
-              Avant E-Dome, je faisais déjà de l&apos;immobilier sans le savoir.
-              Je mettais des gens en relation — un acheteur par ici, un
-              vendeur par là — et les transactions se faisaient naturellement,
-              par la confiance. Pas de structure, pas d&apos;outil. Juste du
-              concret et du bouche à oreille.
+              Mes premières transactions immobilières, je les ai faites
+              avec rien d&apos;autre que mon téléphone et la confiance des
+              gens autour de moi. Je connectais des acheteurs à des
+              vendeurs, je facilitais des deals que personne d&apos;autre
+              n&apos;aurait vu venir. Et à chaque fois, le même sentiment :
+              ce métier a un potentiel immense, mais personne ne lui
+              donne les moyens d&apos;exister vraiment.
             </p>
             <p className="text-white/60 text-sm md:text-base leading-relaxed">
-              C&apos;est en voulant professionnaliser cette activité que j&apos;ai
-              réalisé à quel point le secteur était éclaté. Chaque métier
-              avait ses propres outils, ses propres habitudes, ses propres
-              limites. Personne ne se parlait vraiment. J&apos;ai passé des mois
-              à dessiner ce que serait un écosystème où tout le monde aurait
-              sa place — et E-Dome est devenu cette obsession.
+              J&apos;ai vu des professionnels talentueux rester dans l&apos;ombre
+              parce qu&apos;aucune plateforme ne valorisait leur travail.
+              J&apos;ai vu des opportunités se perdre entre des outils qui
+              ne communiquaient pas. Et j&apos;ai décidé que ça devait
+              changer. E-Dome, c&apos;est la plateforme que j&apos;aurais voulu
+              avoir dès le premier jour — et que je construis aujourd&apos;hui
+              pour tous ceux qui partagent cette vision.
             </p>
           </div>
         </motion.div>
