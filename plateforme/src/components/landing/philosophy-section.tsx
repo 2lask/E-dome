@@ -158,7 +158,7 @@ export function PhilosophySection() {
                 étape du parcours pour que chaque acteur gagne en temps,
                 en visibilité et en revenus.
               </p>
-              <a href="/feed" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-[#d4a57a] transition-colors ml-auto">
+              <a href="/acces" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-[#d4a57a] transition-colors ml-auto">
                 Voir la maquette
               </a>
             </div>

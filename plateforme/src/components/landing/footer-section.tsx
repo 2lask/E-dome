@@ -85,7 +85,7 @@ export function FooterSection() {
 
         <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-white/15 text-xs">© 2026 E-Dome — Maquette de démonstration. Données fictives.</p>
-          <Link href="/feed" className="liquid-glass rounded-full px-5 py-2 text-white/40 text-xs hover:text-[#C4956A]/70 hover:bg-white/5 transition-all border border-[#C4956A]/8">
+          <Link href="/acces" className="liquid-glass rounded-full px-5 py-2 text-white/40 text-xs hover:text-[#C4956A]/70 hover:bg-white/5 transition-all border border-[#C4956A]/8">
             Accéder à la démo
           </Link>
         </div>

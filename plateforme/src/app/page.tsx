@@ -106,7 +106,7 @@ export default function HomePage() {
               <a href="#fondateurs" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">Fondateurs</a>
               <a href="#roadmap" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">Roadmap</a>
             </div>
-            <Link href="/feed" className="bg-[#C4956A] text-black rounded-lg px-5 py-2 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
+            <Link href="/acces" className="bg-[#C4956A] text-black rounded-lg px-5 py-2 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
               Voir la démo
             </Link>
           </div>
@@ -149,7 +149,7 @@ export default function HomePage() {
                   transition: "opacity 1000ms ease",
                 }}
               >
-                <Link href="/feed" className="bg-[#C4956A] text-black rounded-lg px-6 py-3 text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
+                <Link href="/acces" className="bg-[#C4956A] text-black rounded-lg px-6 py-3 text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
                   Explorer la maquette <ArrowRight size={16} />
                 </Link>
                 <a href="#vision" className="liquid-glass rounded-lg px-6 py-3 text-white/80 text-sm font-medium border border-white/15 hover:bg-white/10 transition-colors">
@@ -162,7 +162,7 @@ export default function HomePage() {
             {/* Right - CTA */}
             <div className="flex lg:justify-end lg:items-end">
               <Link
-                href="/feed"
+                href="/acces"
                 className="bg-[#C4956A] text-black rounded-xl px-8 py-4 text-lg sm:text-xl font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-3"
                 style={{
                   opacity: tagVisible ? 1 : 0,

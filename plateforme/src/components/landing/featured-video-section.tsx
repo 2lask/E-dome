@@ -44,7 +44,7 @@ export function FeaturedVideoSection() {
               </p>
             </div>
 
-            <Link href="/feed">
+            <Link href="/acces">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
