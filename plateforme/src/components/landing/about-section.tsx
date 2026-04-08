@@ -20,28 +20,28 @@ export function AboutSection() {
 
       <div className="max-w-6xl mx-auto relative">
         <motion.p initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6 }}
-          className="text-[#C4956A]/60 text-sm tracking-widest uppercase mb-8">
+          className="text-[#C4956A] text-sm tracking-widest uppercase mb-8 font-medium">
           Notre vision
         </motion.p>
 
         <motion.h2 initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.1 }}
           className="text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight mb-12">
           Pensé pour chaque{" "}
-          <em className="not-italic text-[#C4956A]/50" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
+          <em className="not-italic text-[#C4956A]/70" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>
             acteur de l&apos;immobilier.
           </em>
         </motion.h2>
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3 }}
           className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-16">
-          <p className="text-white/55 text-base md:text-lg leading-relaxed">
+          <p className="text-white/75 text-base md:text-lg leading-relaxed">
             E-Dome n&apos;est pas une plateforme de plus. C&apos;est un écosystème
             où chaque professionnel — hôte, agent, promoteur, photographe,
             courtier, notaire, architecte, formateur — dispose d&apos;un espace
             pensé pour son métier. Un compte unique, un profil configurable
             qui s&apos;adapte à votre activité du moment.
           </p>
-          <p className="text-white/55 text-base md:text-lg leading-relaxed">
+          <p className="text-white/75 text-base md:text-lg leading-relaxed">
             Au cœur du modèle : un système de commissions transparent qui
             rémunère chaque maillon de la chaîne. L&apos;apporteur d&apos;affaires
             touche sa part, le formateur monétise son expertise, l&apos;hôte

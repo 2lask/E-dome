@@ -33,7 +33,7 @@ export function ArchBackground({ variant, className = "" }: ArchBackgroundProps)
   return (
     <div ref={ref} className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
       {variant === "villa" && (
-        <motion.div className={`absolute right-[-15%] top-[0%] w-[95%] md:w-[75%] text-white/[0.2] arch-shimmer arch-gradient-tint ${drawClass}`}
+        <motion.div className={`absolute right-[-5%] top-[-15%] w-[75%] md:w-[55%] text-white/[0.15] arch-shimmer arch-gradient-tint ${drawClass}`}
           style={{ y: y1, opacity, x: x1, rotate: rotate1 }}>
           <VillaLuxuryDrawing />
         </motion.div>
