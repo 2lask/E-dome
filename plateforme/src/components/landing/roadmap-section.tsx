@@ -233,10 +233,10 @@ export function RoadmapSection() {
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="mailto:contact@edome.world?subject=Manifestation d'intérêt E-Dome"
+              <Link href="/acces"
                 className="bg-[#C4956A] rounded-lg px-8 py-4 text-black text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
                 Je manifeste mon intérêt <ArrowRight size={16} />
-              </a>
+              </Link>
               <Link href="/acces"
                 className="rounded-lg px-8 py-4 text-white/70 text-sm font-medium hover:bg-white/5 transition-colors border border-white/10">
                 Explorer la démo d&apos;abord
