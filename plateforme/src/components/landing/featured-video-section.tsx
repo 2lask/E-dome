@@ -15,7 +15,7 @@ export function FeaturedVideoSection() {
         initial={{ opacity: 0, y: 60 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.9 }}
-        className="max-w-6xl mx-auto rounded-3xl overflow-hidden aspect-video relative"
+        className="max-w-6xl mx-auto rounded-3xl overflow-hidden aspect-[4/5] md:aspect-video relative"
       >
         <video
           className="w-full h-full object-cover"
@@ -23,14 +23,14 @@ export function FeaturedVideoSection() {
           autoPlay
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           src="/videos/plateforme-bg.mp4"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div className="liquid-glass rounded-2xl p-6 md:p-8 max-w-lg" style={{ background: "rgba(0, 0, 0, 0.55)", backdropFilter: "blur(12px)" }}>
+            <div className="liquid-glass rounded-2xl p-6 md:p-8 max-w-lg" style={{ background: "rgba(0, 0, 0, 0.55)" }}>
               <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">La plateforme</p>
               <p className="text-white text-sm md:text-base leading-relaxed mb-2 font-light">
                 Plus de 30 pages fonctionnelles : feed social avec stories et reels,
@@ -40,7 +40,7 @@ export function FeaturedVideoSection() {
                 avec options personnalisables (conciergerie, petit-déjeuner,
                 transport, décoration) et gestion de paiements.
               </p>
-              <p className="text-white/50 text-xs mt-3">
+              <p className="hidden md:block text-white/50 text-xs mt-3">
                 Maquette de visualisation — les données présentées sont fictives
                 et servent uniquement à illustrer les fonctionnalités prévues
               </p>

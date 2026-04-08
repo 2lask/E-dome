@@ -31,7 +31,7 @@ export function ArchBackground({ variant, className = "" }: ArchBackgroundProps)
   const drawClass = `arch-draw-in ${isInView ? "visible" : ""}`;
 
   return (
-    <div ref={ref} className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+    <div ref={ref} className={`hidden md:block absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
       {variant === "villa" && (
         <motion.div className={`absolute right-[-5%] top-[-15%] w-[75%] md:w-[55%] text-white/[0.15] arch-shimmer arch-gradient-tint ${drawClass}`}
           style={{ y: y1, opacity, x: x1, rotate: rotate1 }}>
