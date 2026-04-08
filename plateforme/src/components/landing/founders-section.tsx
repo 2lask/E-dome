@@ -169,7 +169,7 @@ export function FoundersSection() {
               soutien — il apporte son regard, son expérience, sa réalité
               du terrain. C&apos;est cette intelligence collective qui fera
               d&apos;E-Dome quelque chose que personne n&apos;a encore construit.
-              Une nouvelle ère de l&apos;immobilier commence ici, et elle a
+              <span className="text-white font-medium">Une nouvelle ère de l&apos;immobilier commence ici</span>, et elle a
               besoin de vous pour prendre forme.
             </p>
             <Link href="/feed" className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
