@@ -148,33 +148,85 @@ export function RoadmapSection() {
           })}
         </div>
 
-        {/* CTA */}
+        {/* CTA + avantages early members */}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
-          className="liquid-glass rounded-3xl p-8 md:p-12 border border-[#C4956A]/12 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="rounded-full p-3 bg-[#C4956A]/10">
-              <Users size={24} className="text-[#C4956A]" />
+          className="rounded-3xl border-2 border-[#C4956A]/20 overflow-hidden relative"
+          style={{ background: "rgba(196, 149, 106, 0.04)" }}>
+          <DotPattern width={10} height={10} cr={0.4} className="fill-[#C4956A]/5" />
+
+          <div className="relative z-10 p-8 md:p-12">
+            {/* Header */}
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-[#C4956A]/10 border border-[#C4956A]/20 mb-5">
+                <div className="w-2 h-2 rounded-full bg-[#C4956A] animate-pulse" />
+                <span className="text-[#C4956A] text-xs font-medium">Inscriptions ouvertes</span>
+              </div>
+              <h3 className="text-white text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
+                Rejoignez les premiers membres.
+                <br />
+                <span className="text-[#C4956A]">Récoltez les premiers avantages.</span>
+              </h3>
+              <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+                Les premiers à manifester leur intérêt ne rejoignent pas
+                simplement un projet — ils obtiennent une place privilégiée
+                dans l&apos;écosystème E-Dome, avec des avantages exclusifs
+                réservés aux membres fondateurs.
+              </p>
             </div>
-          </div>
-          <h3 className="text-white text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
-            Manifestez votre intérêt
-          </h3>
-          <p className="text-white/40 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-8">
-            Vous êtes un acteur de l&apos;immobilier — agent, investisseur,
-            formateur, photographe, courtier ? Votre manifestation d&apos;intérêt
-            est la preuve que le marché a besoin d&apos;une solution unifiée.
-            Rejoignez les premiers à soutenir le projet et participez à
-            construire la plateforme qui vous correspond.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="mailto:contact@edome.world?subject=Manifestation d'intérêt E-Dome"
-              className="bg-[#C4956A] rounded-full px-8 py-3.5 text-black text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
-              Je suis intéressé(e) <ArrowRight size={16} />
-            </a>
-            <Link href="/feed"
-              className="liquid-glass rounded-full px-8 py-3.5 text-white/70 text-sm font-medium hover:bg-white/5 transition-colors border border-white/10">
-              Explorer la démo
-            </Link>
+
+            {/* Avantages grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+              {[
+                {
+                  emoji: "🏅",
+                  title: "Badge Membre Fondateur",
+                  desc: "Un badge permanent sur votre profil qui prouve que vous étiez là dès le début. Reconnaissance à vie dans l'écosystème.",
+                },
+                {
+                  emoji: "🔑",
+                  title: "Accès anticipé",
+                  desc: "Configurez votre compte, votre profil et vos préférences avant le lancement public. Soyez opérationnel dès le jour J.",
+                },
+                {
+                  emoji: "⭐",
+                  title: "Visibilité prioritaire",
+                  desc: "Votre profil mis en avant dans les résultats de recherche et les recommandations pendant les premiers mois.",
+                },
+                {
+                  emoji: "🎤",
+                  title: "Conférences exclusives",
+                  desc: "Accès à des sessions privées pour découvrir les fonctionnalités, donner votre avis et influencer les priorités de développement.",
+                },
+                {
+                  emoji: "🤝",
+                  title: "Réseau fondateur",
+                  desc: "Intégrez un groupe privé avec les autres premiers membres et les fondateurs. Échangez, collaborez, construisez ensemble.",
+                },
+                {
+                  emoji: "🎁",
+                  title: "Tarifs fondateurs",
+                  desc: "Des conditions préférentielles sur les futures fonctionnalités premium, les formations et les outils de la plateforme.",
+                },
+              ].map((item) => (
+                <div key={item.title} className="rounded-2xl p-5 border border-[#C4956A]/10 hover:border-[#C4956A]/25 transition-colors" style={{ background: "rgba(0, 0, 0, 0.4)" }}>
+                  <span className="text-2xl mb-3 block">{item.emoji}</span>
+                  <h4 className="text-white text-sm font-semibold mb-2">{item.title}</h4>
+                  <p className="text-white/45 text-xs leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a href="mailto:contact@edome.world?subject=Manifestation d'intérêt E-Dome"
+                className="bg-[#C4956A] rounded-lg px-8 py-4 text-black text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
+                Je manifeste mon intérêt <ArrowRight size={16} />
+              </a>
+              <Link href="/feed"
+                className="rounded-lg px-8 py-4 text-white/70 text-sm font-medium hover:bg-white/5 transition-colors border border-white/10">
+                Explorer la démo d&apos;abord
+              </Link>
+            </div>
           </div>
         </motion.div>
       </div>
