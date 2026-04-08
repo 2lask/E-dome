@@ -104,40 +104,71 @@ export function FoundersSection() {
           </div>
         </motion.div>
 
-        {/* Conviction block */}
+        {/* Vision commune */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.45 }}
-          className="rounded-3xl p-8 md:p-14 border-2 border-[#C4956A]/15 text-center"
-          style={{ background: "rgba(196, 149, 106, 0.03)" }}
         >
-          <h3 className="text-white text-xl md:text-2xl font-semibold mb-6">
-            Ce n&apos;est pas notre plateforme.
-            <span className="text-[#C4956A]"> C&apos;est la vôtre.</span>
-          </h3>
-          <p className="text-white/65 text-base md:text-lg leading-relaxed max-w-3xl mx-auto mb-4">
-            Chaque agent, chaque investisseur, chaque photographe, chaque
-            formateur qui manifeste son intérêt aujourd&apos;hui ne rejoint pas
-            une liste d&apos;attente. Il influence directement ce que sera E-Dome
-            demain. Vos retours façonnent le produit. Vos besoins définissent
-            les priorités. Votre expertise nourrit l&apos;écosystème.
-          </p>
-          <p className="text-white/45 text-sm leading-relaxed max-w-2xl mx-auto mb-8">
-            L&apos;immobilier de demain ne sera pas dicté par la technologie.
-            Il sera construit par les gens qui le vivent chaque jour.
-            Et ces gens, c&apos;est vous.
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Left card */}
+            <div className="rounded-2xl p-7 md:p-9 border-2 border-[#C4956A]/20" style={{ background: "rgba(196, 149, 106, 0.04)" }}>
+              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-4 font-medium">Notre conviction</p>
+              <p
+                className="text-white text-xl md:text-2xl leading-[1.3] mb-5 tracking-tight"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
+              >
+                L&apos;immobilier ne changera pas grâce à un outil de plus.
+                Il changera quand ses acteurs seront enfin{" "}
+                <em className="italic text-[#C4956A]">connectés.</em>
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed">
+                Aujourd&apos;hui, un agent et un photographe ne se croisent
+                que par hasard. Un apporteur d&apos;affaires n&apos;a aucun moyen
+                de prouver sa valeur. Un formateur partage son savoir sur
+                des plateformes qui n&apos;ont rien à voir avec l&apos;immobilier.
+                Nous refusons que ça continue.
+              </p>
+            </div>
 
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <img src="/images/founders/leonard.jpg" alt="" className="w-10 h-10 rounded-full border-2 border-[#C4956A]/30 object-cover" />
-            <img src="/images/founders/jeanpierre.jpg" alt="" className="w-10 h-10 rounded-full border-2 border-[#C4956A]/30 object-cover -ml-3" />
-            <span className="text-white/30 text-xs ml-3">Membres fondateurs #1 & #2</span>
+            {/* Right card */}
+            <div className="rounded-2xl p-7 md:p-9 border-2 border-white/8" style={{ background: "rgba(255, 255, 255, 0.02)" }}>
+              <p className="text-white/50 text-xs tracking-widest uppercase mb-4 font-medium">Notre engagement</p>
+              <p
+                className="text-white text-xl md:text-2xl leading-[1.3] mb-5 tracking-tight"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
+              >
+                Chaque personne qui nous rejoint ne devient pas un{" "}
+                <em className="italic text-white/50">utilisateur.</em>
+                {" "}Elle devient un{" "}
+                <em className="italic text-[#C4956A]">architecte</em> de ce qui vient.
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed">
+                E-Dome se construit avec le terrain, pas derrière un écran.
+                Vos retours, vos idées, votre expertise métier façonnent
+                chaque fonctionnalité. Les premiers à croire en ce projet
+                ne seront pas oubliés — ils seront ceux qui l&apos;auront rendu
+                possible.
+              </p>
+            </div>
           </div>
 
-          <Link href="/feed" className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
-            Faire partie de l&apos;histoire <ArrowRight size={16} />
-          </Link>
+          {/* CTA bar */}
+          <div className="rounded-2xl p-6 md:p-8 border-2 border-[#C4956A]/15 flex flex-col md:flex-row items-center justify-between gap-6" style={{ background: "rgba(196, 149, 106, 0.03)" }}>
+            <div className="flex items-center gap-4">
+              <div className="flex -space-x-2">
+                <img src="/images/founders/leonard.jpg" alt="" className="w-11 h-11 rounded-full border-2 border-[#C4956A]/30 object-cover" />
+                <img src="/images/founders/jeanpierre.jpg" alt="" className="w-11 h-11 rounded-full border-2 border-[#C4956A]/30 object-cover" />
+              </div>
+              <div>
+                <p className="text-white text-sm font-medium">Léonard & Jean-Pierre</p>
+                <p className="text-white/40 text-xs">Prêts à écrire la suite avec vous.</p>
+              </div>
+            </div>
+            <Link href="/feed" className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-7 py-3.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors shrink-0">
+              Découvrir la maquette <ArrowRight size={16} />
+            </Link>
+          </div>
         </motion.div>
 
       </div>
