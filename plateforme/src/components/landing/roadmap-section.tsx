@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Check, Loader2, Clock, ArrowRight, Users } from "lucide-react";
+import { Check, Loader2, Clock, ArrowRight, Users, Award, KeyRound, Star, Mic, Handshake, Gift } from "lucide-react";
 import Link from "next/link";
 import { ArchBackground } from "@/components/landing/arch-background";
 import DotPattern from "@/components/ui/dot-pattern";
@@ -178,42 +178,53 @@ export function RoadmapSection() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
               {[
                 {
-                  emoji: "🏅",
+                  icon: Award,
+                  iconColor: "text-[#C4956A]",
                   title: "Badge Membre Fondateur",
                   desc: "Un badge permanent sur votre profil qui prouve que vous étiez là dès le début. Reconnaissance à vie dans l'écosystème.",
                 },
                 {
-                  emoji: "🔑",
+                  icon: KeyRound,
+                  iconColor: "text-emerald-400",
                   title: "Accès anticipé",
                   desc: "Configurez votre compte, votre profil et vos préférences avant le lancement public. Soyez opérationnel dès le jour J.",
                 },
                 {
-                  emoji: "⭐",
+                  icon: Star,
+                  iconColor: "text-amber-400",
                   title: "Visibilité prioritaire",
                   desc: "Votre profil mis en avant dans les résultats de recherche et les recommandations pendant les premiers mois.",
                 },
                 {
-                  emoji: "🎤",
+                  icon: Mic,
+                  iconColor: "text-purple-400",
                   title: "Conférences exclusives",
                   desc: "Accès à des sessions privées pour découvrir les fonctionnalités, donner votre avis et influencer les priorités de développement.",
                 },
                 {
-                  emoji: "🤝",
+                  icon: Handshake,
+                  iconColor: "text-cyan-400",
                   title: "Réseau fondateur",
                   desc: "Intégrez un groupe privé avec les autres premiers membres et les fondateurs. Échangez, collaborez, construisez ensemble.",
                 },
                 {
-                  emoji: "🎁",
+                  icon: Gift,
+                  iconColor: "text-rose-400",
                   title: "Avantages exclusifs",
                   desc: "Des conditions préférentielles sur les futures fonctionnalités premium, les formations et les outils de la plateforme.",
                 },
-              ].map((item) => (
+              ].map((item) => {
+                const ItemIcon = item.icon;
+                return (
                 <div key={item.title} className="rounded-2xl p-5 border border-[#C4956A]/10 hover:border-[#C4956A]/25 transition-colors" style={{ background: "rgba(0, 0, 0, 0.4)" }}>
-                  <span className="text-2xl mb-3 block">{item.emoji}</span>
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-3">
+                    <ItemIcon size={20} className={item.iconColor} />
+                  </div>
                   <h4 className="text-white text-sm font-semibold mb-2">{item.title}</h4>
                   <p className="text-white/45 text-xs leading-relaxed">{item.desc}</p>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* CTA */}
