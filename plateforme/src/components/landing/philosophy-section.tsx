@@ -29,7 +29,7 @@ const pillars = [
     iconBg: "bg-emerald-400/10",
     title: "Commissions transparentes",
     description:
-      "Chaque transaction est traçable. L'apporteur sait exactement combien il touche, l'hôte voit ce qui est prélevé, le formateur suit ses ventes en direct. Plus de zones d'ombre, plus de commissions cachées — chaque franc est documenté et vérifiable.",
+      "Chaque acteur rémunéré dispose de son propre dashboard revenus. L'apporteur suit ses commissions en temps réel, l'hôte visualise ses réservations et gains, le formateur contrôle ses ventes. Tout est traçable, documenté et transparent — plus de zones d'ombre.",
   },
   {
     icon: MessageCircle,
