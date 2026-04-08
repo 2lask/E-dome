@@ -138,17 +138,16 @@ export function FoundersSection() {
                 className="text-white text-xl md:text-2xl leading-[1.3] mb-5 tracking-tight"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
-                Chaque personne qui nous rejoint ne devient pas un{" "}
-                <em className="italic text-white/50">utilisateur.</em>
-                {" "}Elle devient un{" "}
-                <em className="italic text-[#C4956A]">architecte</em> de ce qui vient.
+                On ne cherche pas des utilisateurs.
+                {" "}On cherche des{" "}
+                <em className="italic text-[#C4956A]">pionniers.</em>
               </p>
               <p className="text-white/60 text-sm leading-relaxed">
-                E-Dome se construit avec le terrain, pas derrière un écran.
-                Vos retours, vos idées, votre expertise métier façonnent
-                chaque fonctionnalité. Les premiers à croire en ce projet
-                ne seront pas oubliés — ils seront ceux qui l&apos;auront rendu
-                possible.
+                E-Dome grandit grâce à ceux qui le vivent au quotidien.
+                Chaque retour terrain, chaque idée partagée, chaque besoin
+                exprimé rend la plateforme plus forte. Les premiers à nous
+                faire confiance ne rejoignent pas un projet — ils en
+                écrivent les premières pages.
               </p>
             </div>
           </div>
