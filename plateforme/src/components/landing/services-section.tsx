@@ -77,10 +77,6 @@ export function ServicesSection() {
               <em className="not-italic text-[#C4956A]/40" style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic" }}>sans compromis</em>
             </h2>
           </div>
-          <p className="text-white/35 text-sm max-w-sm leading-relaxed">
-            Des profils interchangeables qui s&apos;adaptent à chaque métier
-            de l&apos;immobilier — un seul compte pour toutes vos activités.
-          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
