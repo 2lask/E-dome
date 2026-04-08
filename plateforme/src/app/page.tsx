@@ -100,11 +100,21 @@ export default function HomePage() {
     <div className="bg-black" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
       {/* ═══ HERO ═══ */}
       <section className="min-h-screen overflow-hidden relative flex flex-col">
+        {/* eslint-disable-next-line */}
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover"
-          muted autoPlay loop playsInline preload="auto"
+          muted={true}
+          autoPlay={true}
+          loop={true}
+          playsInline={true}
+          preload="auto"
           src="/videos/hero-bg.mp4"
+          // @ts-ignore
+          webkit-playsinline="true"
+          x-webkit-airplay="deny"
+          disablePictureInPicture
+          disableRemotePlayback
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
 
