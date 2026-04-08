@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { Globe } from "lucide-react";
+import { VillaLuxuryDrawing } from "@/components/landing/drawings/villa-luxury";
+import { ChaletAlpineDrawing } from "@/components/landing/drawings/chalet-alpine";
 
 const demoLinks = [
   { label: "Feed social", href: "/feed" },
@@ -23,8 +25,16 @@ const platformLinks = [
 
 export function FooterSection() {
   return (
-    <footer className="bg-black border-t border-[#C4956A]/8 pt-16 pb-8 px-6">
-      <div className="max-w-6xl mx-auto">
+    <footer className="bg-black border-t border-[#C4956A]/8 pt-16 pb-8 px-6 relative overflow-hidden">
+      {/* Architectural drawings background */}
+      <div className="absolute left-[-15%] top-[-10%] w-[70%] md:w-[50%] text-white/[0.04] pointer-events-none">
+        <VillaLuxuryDrawing />
+      </div>
+      <div className="absolute right-[-10%] bottom-[-15%] w-[60%] md:w-[40%] text-white/[0.04] pointer-events-none">
+        <ChaletAlpineDrawing />
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-16">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
