@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { AboutSection } from "@/components/landing/about-section";
 import { ProblemSection } from "@/components/landing/problem-section";
 import { FeaturedVideoSection } from "@/components/landing/featured-video-section";
@@ -175,16 +175,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Social icons */}
-        <div className="relative z-10 flex justify-center gap-4 pb-10">
-          <button className="liquid-glass rounded-full p-3 text-white/50 hover:text-[#C4956A] hover:bg-white/5 transition-all" aria-label="Instagram">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-          </button>
-          <button className="liquid-glass rounded-full p-3 text-white/50 hover:text-[#C4956A] hover:bg-white/5 transition-all" aria-label="LinkedIn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
-          </button>
-          <button className="liquid-glass rounded-full p-3 text-white/50 hover:text-[#C4956A] hover:bg-white/5 transition-all" aria-label="Email"><Mail size={18} /></button>
-        </div>
       </section>
 
       <div id="vision"><AboutSection /></div>

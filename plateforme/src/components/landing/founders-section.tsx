@@ -97,13 +97,13 @@ export function FoundersSection() {
               et être reconnus.
             </p>
             <p className="text-white/60 text-sm md:text-base leading-relaxed">
-              Mon rôle, c&apos;est de transformer cette vision en quelque
-              chose de solide. Structurer le modèle, trouver les bons
-              partenaires, s&apos;assurer que chaque décision sert le projet
-              sur le long terme. J&apos;ai appris dans le commerce qu&apos;un
-              bon produit ne suffit pas — il faut une exécution sans faille
-              et des fondations qui tiennent. C&apos;est ce que je construis
-              pour E-Dome.
+              Titulaire d&apos;un CFC d&apos;employé de commerce avec maturité
+              professionnelle, j&apos;ai appris qu&apos;un bon produit ne suffit
+              jamais — il faut une exécution rigoureuse et des fondations
+              solides. Mon rôle, c&apos;est de structurer le modèle, trouver
+              les bons partenaires et m&apos;assurer que chaque décision
+              sert la croissance durable du projet. C&apos;est ce que je
+              construis chaque jour pour E-Dome.
             </p>
           </div>
           <div className="w-48 md:w-64 shrink-0">
