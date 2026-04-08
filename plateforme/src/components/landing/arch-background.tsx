@@ -41,8 +41,8 @@ export function ArchBackground({ variant, className = "" }: ArchBackgroundProps)
 
       {variant === "floorplan" && (
         <>
-          <motion.div className={`absolute left-[-10%] top-[-5%] w-[85%] md:w-[60%] text-white/[0.18] arch-gradient-tint ${drawClass}`}
-            style={{ y: y2, opacity, x: x2, rotate: rotate2 }}>
+          <motion.div className={`absolute right-[-10%] top-[-5%] w-[85%] md:w-[60%] text-white/[0.18] arch-gradient-tint ${drawClass}`}
+            style={{ y: y2, opacity, x: x1, rotate: rotate2 }}>
             <ChaletAlpineDrawing />
           </motion.div>
           <motion.div className={`absolute right-[-15%] bottom-[-5%] w-[70%] md:w-[50%] text-white/[0.15] arch-pulse arch-gradient-tint`}
