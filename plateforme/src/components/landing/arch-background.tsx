@@ -61,11 +61,11 @@ export function ArchBackground({ variant, className = "" }: ArchBackgroundProps)
 
       {variant === "mixed" && (
         <>
-          <motion.div className={`absolute left-[-20%] bottom-[-15%] w-[60%] md:w-[40%] text-white/[0.07] arch-gradient-tint ${drawClass}`}
-            style={{ y: y2, opacity, x: x2, rotate: rotate2 }}>
+          <motion.div className={`absolute right-[-10%] top-[-10%] w-[55%] md:w-[40%] text-white/[0.08] arch-gradient-tint ${drawClass}`}
+            style={{ y: y2, opacity, x: x1, rotate: rotate2 }}>
             <InteriorPenthouseDrawing />
           </motion.div>
-          <motion.div className={`absolute right-[-15%] bottom-[-10%] w-[45%] md:w-[30%] text-white/[0.08] arch-shimmer arch-gradient-tint`}
+          <motion.div className={`absolute right-[-5%] bottom-[5%] w-[40%] md:w-[28%] text-white/[0.07] arch-shimmer arch-gradient-tint`}
             style={{ y: y1, opacity, x: x1, rotate: rotate1 }}>
             <TowerResidenceDrawing />
           </motion.div>
