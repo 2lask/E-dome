@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { AlertTriangle, Clock, ArrowLeftRight, Brain } from "lucide-react";
+import { BlurFade } from "@/components/ui/blur-fade";
 import { ArchBackground } from "@/components/landing/arch-background";
 import DotPattern from "@/components/ui/dot-pattern";
 
@@ -103,14 +104,14 @@ export function ProblemSection() {
               dispersé.
             </em>
           </h2>
-          <p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
+          <BlurFade delay={0.3} inView><p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
             Pour chercher un bien, un site. Pour réserver, un autre. Pour se former, encore
             un autre. Pour trouver un prestataire, un annuaire. Pour suivre ses
             commissions, un tableur. Chaque étape renvoie vers un outil différent —
             et à chaque transition, on perd du temps, de la concentration et des
             opportunités. Le parcours immobilier actuel est une succession de
             ruptures qui coûte cher à tous les acteurs.
-          </p>
+          </p></BlurFade>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

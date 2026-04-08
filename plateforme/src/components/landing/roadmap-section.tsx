@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Check, Loader2, Clock, ArrowRight, Users, Award, KeyRound, Star, Mic, Handshake, Gift } from "lucide-react";
+import { BlurFade } from "@/components/ui/blur-fade";
 import Link from "next/link";
 import { ArchBackground } from "@/components/landing/arch-background";
 import DotPattern from "@/components/ui/dot-pattern";
@@ -89,7 +90,7 @@ export function RoadmapSection() {
             De l&apos;idée{" "}
             <span className="text-[#C4956A]">au lancement.</span>
           </h2>
-          <p className="text-white/60 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
+          <BlurFade delay={0.3} inView><p className="text-white/60 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
             Le concept est prouvé. La maquette est en ligne. Maintenant,
             chaque manifestation d&apos;intérêt que nous récoltons renforce
             la preuve que le marché a besoin d&apos;E-Dome — et c&apos;est
@@ -102,7 +103,7 @@ export function RoadmapSection() {
             Chaque personne qui manifeste son intérêt aujourd&apos;hui
             pose une pierre de ce qui deviendra demain la référence
             de l&apos;immobilier connecté.
-          </p>
+          </p></BlurFade>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">

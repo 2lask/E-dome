@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { BlurFade } from "@/components/ui/blur-fade";
 import { ArchBackground } from "@/components/landing/arch-background";
 
 export function AboutSection() {
@@ -34,20 +35,20 @@ export function AboutSection() {
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3 }}
           className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-16">
-          <p className="text-white/75 text-base md:text-lg leading-relaxed">
+          <BlurFade delay={0.4} inView><p className="text-white/75 text-base md:text-lg leading-relaxed">
             E-Dome n&apos;est pas une plateforme de plus. C&apos;est un écosystème
             où chaque professionnel — hôte, agent, promoteur, photographe,
             courtier, notaire, architecte, formateur — dispose d&apos;un espace
             pensé pour son métier. Un compte unique, un profil configurable
             qui s&apos;adapte à votre activité du moment.
-          </p>
-          <p className="text-white/75 text-base md:text-lg leading-relaxed">
+          </p></BlurFade>
+          <BlurFade delay={0.6} inView><p className="text-white/75 text-base md:text-lg leading-relaxed">
             Au cœur du modèle : un système de commissions transparent qui
             rémunère chaque maillon de la chaîne. L&apos;apporteur d&apos;affaires
             touche sa part, le formateur monétise son expertise, l&apos;hôte
             gère ses réservations, le prestataire propose ses services —
             tout depuis un seul endroit, sans dispersion.
-          </p>
+          </p></BlurFade>
         </motion.div>
 
         {/* Roles - visual strip */}
