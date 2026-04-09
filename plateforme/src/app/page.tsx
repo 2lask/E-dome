@@ -155,9 +155,10 @@ export default function HomePage() {
                   transition: "opacity 1000ms ease",
                 }}
               >
-                Réseau social, marketplace, formations, commissions, services —
-                chaque acteur de l&apos;immobilier réuni en un seul endroit.
-                Un profil unique qui s&apos;adapte à votre activité.
+                Aidez-nous à prouver qu&apos;une solution unifiée pour
+                l&apos;immobilier est attendue. Manifestez votre intérêt en
+                répondant à notre questionnaire — c&apos;est gratuit, sans
+                engagement, et chaque réponse nous rapproche du lancement.
               </p>
 
               <div
