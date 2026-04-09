@@ -85,21 +85,55 @@ export default function AccesPage() {
               <span className="text-[#C4956A]"> Vous faites partie des premiers membres fondateurs.</span>
             )}
           </p>
-          <p className="text-white/40 text-sm mb-3">
-            Vous pouvez maintenant explorer la maquette interactive d&apos;E-Dome
-            avec toutes ses fonctionnalités.
-          </p>
-          <p className="text-white/25 text-xs mb-8">
-            Rappel : cette maquette est un modèle de visualisation avec des données
-            fictives. Elle permet de découvrir les fonctionnalités prévues pour la
-            plateforme finale.
-          </p>
-          <Link
-            href="/feed"
-            className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
-          >
-            Accéder à la maquette <ArrowRight size={16} />
-          </Link>
+
+          {/* Desktop: access demo */}
+          <div className="hidden md:block">
+            <p className="text-white/40 text-sm mb-3">
+              Vous pouvez maintenant explorer la maquette interactive d&apos;E-Dome
+              avec toutes ses fonctionnalités.
+            </p>
+            <p className="text-white/25 text-xs mb-8">
+              Rappel : cette maquette est un modèle de visualisation avec des données
+              fictives. Elle permet de découvrir les fonctionnalités prévues pour la
+              plateforme finale.
+            </p>
+            <Link
+              href="/feed"
+              className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
+            >
+              Accéder à la maquette <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          {/* Mobile: desktop only message */}
+          <div className="md:hidden">
+            <div className="rounded-2xl border border-[#C4956A]/20 p-6 mb-6" style={{ background: "rgba(196, 149, 106, 0.05)" }}>
+              <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#C4956A]">
+                  <rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </div>
+              <h2 className="text-white text-lg font-semibold mb-3">
+                Maquette disponible sur ordinateur
+              </h2>
+              <p className="text-white/50 text-sm leading-relaxed mb-2">
+                La maquette interactive d&apos;E-Dome est optimisée pour
+                un affichage sur ordinateur (PC ou Mac). Rendez-vous sur
+                votre navigateur desktop pour explorer toutes les
+                fonctionnalités.
+              </p>
+              <p className="text-white/30 text-xs">
+                edome-demo.vercel.app
+              </p>
+            </div>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-white/50 text-sm hover:text-white/80 transition-colors"
+            >
+              <ArrowLeft size={16} /> Retour au site
+            </Link>
+          </div>
+
         </div>
       </div>
     );
