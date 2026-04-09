@@ -53,21 +53,21 @@ export function AboutSection() {
           </p>
           <div className="flex flex-wrap gap-2">
             {[
-              { label: "Hôte", color: "text-amber-400/80 border-amber-400/20" },
-              { label: "Agence", color: "text-blue-400/80 border-blue-400/20" },
-              { label: "Agent", color: "text-cyan-400/80 border-cyan-400/20" },
-              { label: "Investisseur", color: "text-emerald-400/80 border-emerald-400/20" },
-              { label: "Formateur", color: "text-purple-400/80 border-purple-400/20" },
-              { label: "Apporteur", color: "text-[#C4956A] border-[#C4956A]/25" },
-              { label: "Photographe", color: "text-pink-400/80 border-pink-400/20" },
-              { label: "Courtier", color: "text-teal-400/80 border-teal-400/20" },
-              { label: "Notaire", color: "text-indigo-400/80 border-indigo-400/20" },
-              { label: "Architecte", color: "text-orange-400/80 border-orange-400/20" },
-              { label: "Promoteur", color: "text-rose-400/80 border-rose-400/20" },
-              { label: "Client", color: "text-sky-400/80 border-sky-400/20" },
+              { key: "about.role_hote", color: "text-amber-400/80 border-amber-400/20" },
+              { key: "about.role_agence", color: "text-blue-400/80 border-blue-400/20" },
+              { key: "about.role_agent", color: "text-cyan-400/80 border-cyan-400/20" },
+              { key: "about.role_investisseur", color: "text-emerald-400/80 border-emerald-400/20" },
+              { key: "about.role_formateur", color: "text-purple-400/80 border-purple-400/20" },
+              { key: "about.role_apporteur", color: "text-[#C4956A] border-[#C4956A]/25" },
+              { key: "about.role_photographe", color: "text-pink-400/80 border-pink-400/20" },
+              { key: "about.role_courtier", color: "text-teal-400/80 border-teal-400/20" },
+              { key: "about.role_notaire", color: "text-indigo-400/80 border-indigo-400/20" },
+              { key: "about.role_architecte", color: "text-orange-400/80 border-orange-400/20" },
+              { key: "about.role_promoteur", color: "text-rose-400/80 border-rose-400/20" },
+              { key: "about.role_client", color: "text-sky-400/80 border-sky-400/20" },
             ].map((r) => (
-              <span key={r.label} className={`text-xs px-4 py-2 rounded-full border ${r.color} transition-colors cursor-default`}>
-                {r.label}
+              <span key={r.key} className={`text-xs px-4 py-2 rounded-full border ${r.color} transition-colors cursor-default`}>
+                {t(r.key)}
               </span>
             ))}
             <span className="text-xs px-4 py-2 rounded-full border border-white/15 text-white/70">

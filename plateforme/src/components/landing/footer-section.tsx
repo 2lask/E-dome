@@ -4,26 +4,28 @@ import Link from "next/link";
 import { Globe } from "lucide-react";
 import { VillaLuxuryDrawing } from "@/components/landing/drawings/villa-luxury";
 import { ChaletAlpineDrawing } from "@/components/landing/drawings/chalet-alpine";
-
-const demoLinks = [
-  { label: "Feed social", href: "/feed" },
-  { label: "Marketplace", href: "/explorer" },
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Formations", href: "/formations" },
-  { label: "Live & Replays", href: "/live" },
-  { label: "Messages", href: "/messages" },
-];
-
-const platformLinks = [
-  { label: "Apporteurs", href: "/apporteurs" },
-  { label: "Réservations", href: "/reservations" },
-  { label: "Statistiques", href: "/statistiques" },
-  { label: "Événements", href: "/evenements" },
-  { label: "Services", href: "/services" },
-  { label: "Investisseurs", href: "/investisseurs" },
-];
+import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function FooterSection() {
+  const { t } = useLandingLang();
+
+  const demoLinks = [
+    { label: t("footer.link_feed"), href: "/feed" },
+    { label: t("footer.link_marketplace"), href: "/explorer" },
+    { label: t("footer.link_dashboard"), href: "/dashboard" },
+    { label: t("footer.link_formations"), href: "/formations" },
+    { label: t("footer.link_live"), href: "/live" },
+    { label: t("footer.link_messages"), href: "/messages" },
+  ];
+
+  const platformLinks = [
+    { label: t("footer.link_apporteurs"), href: "/apporteurs" },
+    { label: t("footer.link_reservations"), href: "/reservations" },
+    { label: t("footer.link_statistiques"), href: "/statistiques" },
+    { label: t("footer.link_evenements"), href: "/evenements" },
+    { label: t("footer.link_services"), href: "/services" },
+    { label: t("footer.link_investisseurs"), href: "/investisseurs" },
+  ];
   return (
     <footer className="bg-black border-t border-[#C4956A]/8 pt-16 pb-8 px-6 relative overflow-hidden">
       {/* Architectural drawings background */}
@@ -42,8 +44,7 @@ export function FooterSection() {
               <span className="text-white font-semibold text-lg">E-Dome</span>
             </div>
             <p className="text-white/35 text-sm leading-relaxed mb-4">
-              L&apos;écosystème immobilier international.
-              De la Suisse au monde entier.
+              {t("footer.desc")}
             </p>
             <div className="flex flex-col gap-2 mt-4">
               <a href="mailto:contact@edome.world" className="inline-flex items-center gap-2 text-white/30 text-xs hover:text-white/60 transition-colors">
@@ -62,7 +63,7 @@ export function FooterSection() {
           </div>
 
           <div>
-            <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">Explorer la démo</p>
+            <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">{t("footer.demo_label")}</p>
             <ul className="space-y-2.5">
               {demoLinks.map((link) => (
                 <li key={link.href}>
@@ -73,7 +74,7 @@ export function FooterSection() {
           </div>
 
           <div>
-            <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">Plateforme</p>
+            <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">{t("footer.platform_label")}</p>
             <ul className="space-y-2.5">
               {platformLinks.map((link) => (
                 <li key={link.href}>
@@ -84,22 +85,22 @@ export function FooterSection() {
           </div>
 
           <div>
-            <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">À propos</p>
+            <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">{t("footer.about_label")}</p>
             <ul className="space-y-2.5">
-              <li><a href="#vision" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Notre vision</a></li>
-              <li><a href="#fonctionnalites" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Fonctionnalités</a></li>
-              <li><a href="#fondateurs" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Fondateurs</a></li>
-              <li><a href="#roadmap" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Roadmap</a></li>
-              <li><Link href="/conditions" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Conditions</Link></li>
-              <li><Link href="/confidentialite" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">Confidentialité</Link></li>
+              <li><a href="#vision" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_vision")}</a></li>
+              <li><a href="#fonctionnalites" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_features")}</a></li>
+              <li><a href="#fondateurs" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_founders")}</a></li>
+              <li><a href="#roadmap" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_roadmap")}</a></li>
+              <li><Link href="/conditions" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_conditions")}</Link></li>
+              <li><Link href="/confidentialite" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_privacy")}</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <p className="text-white/15 text-xs">© 2026 E-Dome — Maquette de visualisation. Toutes les données sont fictives et servent à illustrer les fonctionnalités.</p>
+          <p className="text-white/15 text-xs">{t("footer.copyright")}</p>
           <Link href="#inscriptions" className="liquid-glass rounded-full px-5 py-2.5 text-white/40 text-xs hover:text-[#C4956A]/70 hover:bg-white/5 transition-all border border-[#C4956A]/8">
-            Accéder à la démo
+            {t("footer.access")}
           </Link>
         </div>
       </div>

@@ -135,10 +135,10 @@ function HomePageContent() {
               <a href="#roadmap" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.roadmap")}</a>
             </div>
             <button
-              onClick={() => setLang(lang === "fr" ? "en" : "fr")}
+              onClick={() => setLang(lang === "fr" ? "en" : lang === "en" ? "th" : "fr")}
               className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 transition-colors uppercase"
             >
-              {lang === "fr" ? "EN" : "FR"}
+              {lang === "fr" ? "EN" : lang === "en" ? "TH" : "FR"}
             </button>
             <Link href="#inscriptions" className="bg-[#C4956A] text-black rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
               {t("hero.demo")}
