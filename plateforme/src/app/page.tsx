@@ -100,21 +100,15 @@ export default function HomePage() {
     <div className="bg-black" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
       {/* ═══ HERO ═══ */}
       <section className="min-h-screen overflow-hidden relative flex flex-col">
-        {/* Desktop: video, Mobile: image */}
         <video
           ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover hidden md:block"
+          className="absolute inset-0 w-full h-full object-cover"
           muted
           autoPlay
           loop
           playsInline
           preload="auto"
           src="/videos/hero-bg-sm.mp4"
-        />
-        <img
-          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=70"
-          alt="E-Dome écosystème immobilier"
-          className="absolute inset-0 w-full h-full object-cover md:hidden"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
 

@@ -110,13 +110,9 @@ export function PhilosophySection() {
           className="rounded-3xl overflow-hidden aspect-[4/5] md:aspect-video relative"
         >
           <video
-            className="w-full h-full object-cover hidden md:block"
+            className="w-full h-full object-cover"
             muted autoPlay loop playsInline preload="auto"
             src="/videos/philosophy-bg.mp4"
-          />
-          <img
-            src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=70"
-            alt="E-Dome vision" className="w-full h-full object-cover md:hidden"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-black/80" />
 

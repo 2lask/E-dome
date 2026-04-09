@@ -93,23 +93,16 @@ export function ServicesSection() {
                 className="liquid-glass rounded-3xl overflow-hidden group border border-[#C4956A]/5 hover:border-[#C4956A]/15 transition-colors">
                 <div className="aspect-video overflow-hidden relative">
                   {feature.media.type === "video" ? (
-                    <>
-                      <video
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 hidden md:block"
-                        autoPlay muted loop playsInline preload="metadata"
-                        src={feature.media.src}
-                        data-start-time={feature.media.startTime || 0}
-                        onLoadedMetadata={(e) => {
-                          const st = feature.media.startTime;
-                          if (st) e.currentTarget.currentTime = st;
-                        }}
-                      />
-                      <img
-                        src={feature.media.poster || feature.media.src}
-                        alt={feature.title}
-                        className="w-full h-full object-cover md:hidden"
-                      />
-                    </>
+                    <video
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      autoPlay muted loop playsInline preload="metadata"
+                      src={feature.media.src}
+                      data-start-time={feature.media.startTime || 0}
+                      onLoadedMetadata={(e) => {
+                        const st = feature.media.startTime;
+                        if (st) e.currentTarget.currentTime = st;
+                      }}
+                    />
                   ) : (
                     <img
                       src={feature.media.src}
