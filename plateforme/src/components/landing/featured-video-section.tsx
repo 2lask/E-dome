@@ -18,13 +18,13 @@ export function FeaturedVideoSection() {
         className="max-w-6xl mx-auto rounded-3xl overflow-hidden aspect-[4/5] md:aspect-video relative"
       >
         <video
-          className="w-full h-full object-cover"
-          muted
-          autoPlay
-          loop
-          playsInline
-          preload="metadata"
+          className="w-full h-full object-cover hidden md:block"
+          muted autoPlay loop playsInline preload="metadata"
           src="/videos/plateforme-bg.mp4"
+        />
+        <img
+          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=70"
+          alt="" className="w-full h-full object-cover md:hidden"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
