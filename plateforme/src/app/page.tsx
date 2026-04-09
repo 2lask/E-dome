@@ -155,10 +155,10 @@ export default function HomePage() {
                   transition: "opacity 1000ms ease",
                 }}
               >
-                Aidez-nous à prouver qu&apos;une solution unifiée pour
-                l&apos;immobilier est attendue. Manifestez votre intérêt en
-                répondant à notre questionnaire — c&apos;est gratuit, sans
-                engagement, et chaque réponse nous rapproche du lancement.
+                Soutenez le projet en manifestant votre intérêt.
+                Un simple questionnaire, gratuit et sans engagement,
+                qui prouve une vraie demande sur le marché et nous
+                aide à construire la plateforme qui vous correspond.
               </p>
 
               <div
