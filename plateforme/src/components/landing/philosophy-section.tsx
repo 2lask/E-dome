@@ -114,17 +114,19 @@ export function PhilosophySection() {
             muted autoPlay loop playsInline preload="auto"
             src="/videos/philosophy-bg.mp4"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
 
-          {/* Top left - title block */}
-          <div className="absolute top-0 left-0 p-5 md:p-8 lg:p-10">
-            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
-              <p className="text-[#C4956A]/60 text-[10px] md:text-xs tracking-[0.2em] uppercase mb-2">E-Dome</p>
-              <h3 className="text-white text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight leading-tight mb-4">
+          {/* Mobile: single block at bottom. Desktop: two blocks */}
+
+          {/* Desktop only - top left title */}
+          <div className="absolute top-0 left-0 p-8 lg:p-10 hidden md:block">
+            <div className="rounded-2xl px-7 py-5" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
+              <p className="text-[#C4956A]/60 text-xs tracking-[0.2em] uppercase mb-2">E-Dome</p>
+              <h3 className="text-white text-2xl lg:text-3xl font-semibold tracking-tight leading-tight mb-4">
                 Un seul espace<br />
                 <span className="text-[#C4956A]">pour tout l&apos;immobilier.</span>
               </h3>
-              <div className="flex flex-wrap gap-1.5 md:gap-2">
+              <div className="flex flex-wrap gap-2">
                 {[
                   { label: "Recherche", gold: false },
                   { label: "Publication", gold: false },
@@ -133,7 +135,7 @@ export function PhilosophySection() {
                   { label: "Recommandation", gold: true },
                   { label: "Rémunération", gold: true },
                 ].map((tag) => (
-                  <span key={tag.label} className={`text-xs md:text-[10px] px-2.5 py-1 md:px-3 md:py-1.5 rounded-full font-medium border ${
+                  <span key={tag.label} className={`text-[10px] px-3 py-1.5 rounded-full font-medium border ${
                     tag.gold
                       ? "text-[#C4956A] border-[#C4956A]/30 bg-[#C4956A]/10"
                       : "text-white/80 border-white/15 bg-white/5"
@@ -145,16 +147,16 @@ export function PhilosophySection() {
             </div>
           </div>
 
-          {/* Bottom right - description block */}
-          <div className="absolute bottom-0 right-0 p-5 md:p-8 lg:p-10">
-            <div className="rounded-2xl px-5 py-4 md:px-7 md:py-5 max-w-[280px] md:max-w-md text-right" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
+          {/* Desktop only - bottom right description */}
+          <div className="absolute bottom-0 right-0 p-8 lg:p-10 hidden md:block">
+            <div className="rounded-2xl px-7 py-5 max-w-md text-right" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
               <div className="w-8 h-0.5 bg-[#C4956A]/50 mb-4 ml-auto" />
-              <p className="text-white text-sm md:text-base leading-relaxed mb-3">
+              <p className="text-white text-base leading-relaxed mb-3">
                 Chercher un bien, publier une annonce, réserver une visite,
                 suivre une formation, recommander un contact et toucher sa
                 commission.
               </p>
-              <p className="text-white/50 text-xs md:text-sm leading-relaxed mb-4">
+              <p className="text-white/50 text-sm leading-relaxed mb-4">
                 Sans jamais quitter la plateforme — E-Dome centralise chaque
                 étape du parcours pour que chaque acteur gagne en temps,
                 en visibilité et en revenus.
@@ -163,6 +165,21 @@ export function PhilosophySection() {
                 Voir la maquette
               </a>
             </div>
+          </div>
+
+          {/* Mobile only - single compact block at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 md:hidden">
+            <p className="text-[#C4956A]/60 text-[10px] tracking-[0.2em] uppercase mb-1">E-Dome</p>
+            <h3 className="text-white text-lg font-semibold tracking-tight leading-tight mb-2">
+              Un seul espace <span className="text-[#C4956A]">pour tout l&apos;immobilier.</span>
+            </h3>
+            <p className="text-white/70 text-xs leading-relaxed mb-3">
+              Chercher, publier, réserver, se former, recommander et être
+              rémunéré — sans jamais quitter la plateforme.
+            </p>
+            <a href="/acces" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-xs font-semibold px-4 py-2.5 rounded-lg hover:bg-[#d4a57a] transition-colors">
+              Voir la maquette
+            </a>
           </div>
         </motion.div>
       </div>
