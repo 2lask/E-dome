@@ -24,7 +24,7 @@ export function FeaturedVideoSection() {
         />
         <img
           src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=70"
-          alt="" className="w-full h-full object-cover md:hidden"
+          alt="Plateforme E-Dome" className="w-full h-full object-cover md:hidden"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
@@ -40,7 +40,7 @@ export function FeaturedVideoSection() {
                 avec options personnalisables (conciergerie, petit-déjeuner,
                 transport, décoration) et gestion de paiements.
               </p>
-              <p className="hidden md:block text-white/50 text-xs mt-3">
+              <p className="text-white/50 text-xs mt-3">
                 Maquette de visualisation — les données présentées sont fictives
                 et servent uniquement à illustrer les fonctionnalités prévues
               </p>

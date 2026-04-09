@@ -125,7 +125,7 @@ export function ServicesSection() {
                       <div className="rounded-full p-2 bg-[#C4956A]/10">
                         <Icon size={14} className="text-[#C4956A]/70" />
                       </div>
-                      <p className="uppercase tracking-widest text-[#C4956A]/40 text-[10px]">{feature.tag}</p>
+                      <p className="uppercase tracking-widest text-[#C4956A]/40 text-xs md:text-[10px]">{feature.tag}</p>
                     </div>
                     <div className="rounded-full p-1.5 bg-white/5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <ArrowUpRight size={14} className="text-[#C4956A]" />

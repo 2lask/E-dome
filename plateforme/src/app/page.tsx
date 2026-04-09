@@ -113,7 +113,7 @@ export default function HomePage() {
         />
         <img
           src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=70"
-          alt=""
+          alt="E-Dome écosystème immobilier"
           className="absolute inset-0 w-full h-full object-cover md:hidden"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />

@@ -116,7 +116,7 @@ export function PhilosophySection() {
           />
           <img
             src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=70"
-            alt="" className="w-full h-full object-cover md:hidden"
+            alt="E-Dome vision" className="w-full h-full object-cover md:hidden"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-black/80" />
 
@@ -137,7 +137,7 @@ export function PhilosophySection() {
                   { label: "Recommandation", gold: true },
                   { label: "Rémunération", gold: true },
                 ].map((tag) => (
-                  <span key={tag.label} className={`text-[10px] md:text-xs px-2.5 py-1 md:px-3 md:py-1.5 rounded-full font-medium border ${
+                  <span key={tag.label} className={`text-xs md:text-[10px] px-2.5 py-1 md:px-3 md:py-1.5 rounded-full font-medium border ${
                     tag.gold
                       ? "text-[#C4956A] border-[#C4956A]/30 bg-[#C4956A]/10"
                       : "text-white/80 border-white/15 bg-white/5"
@@ -163,7 +163,7 @@ export function PhilosophySection() {
                 étape du parcours pour que chaque acteur gagne en temps,
                 en visibilité et en revenus.
               </p>
-              <a href="/acces" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-[#d4a57a] transition-colors ml-auto">
+              <a href="/acces" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-sm font-semibold px-5 py-3 rounded-lg hover:bg-[#d4a57a] transition-colors ml-auto">
                 Voir la maquette
               </a>
             </div>
