@@ -9,74 +9,76 @@ import { StaggerText } from "@/components/ui/stagger-text";
 import Link from "next/link";
 import { ArchBackground } from "@/components/landing/arch-background";
 import DotPattern from "@/components/ui/dot-pattern";
-
-const phases = [
-  {
-    status: "done" as const,
-    phase: "Phase 1",
-    title: "Concevoir & prouver le concept",
-    period: "",
-    items: [
-      "Maquette interactive complète (30+ pages)",
-      "Réseau social immobilier (feed, stories, reels)",
-      "Marketplace avec carte, filtres et calcul de rendement",
-      "Dashboard adaptatif selon le profil métier",
-      "Système de commissions pour apporteurs d'affaires",
-      "Formations vidéo avec modules et certifications",
-      "Messagerie, réservations, événements et services",
-    ],
-  },
-  {
-    status: "current" as const,
-    phase: "Phase 2",
-    title: "Valider le besoin & convaincre",
-    period: "",
-    items: [
-      "Récolte de manifestations d'intérêt auprès des acteurs du secteur",
-      "Démonstrations et retours terrain",
-      "Recherche d'investisseurs et préparation de la levée de fonds",
-      "Structuration juridique de la société",
-      "Premiers partenariats stratégiques avec des agences et prestataires",
-    ],
-  },
-  {
-    status: "upcoming" as const,
-    phase: "Phase 3",
-    title: "Lever les fonds & recruter",
-    period: "",
-    items: [
-      "Levée de fonds pour financer le développement",
-      "Recrutement d'une équipe de développeurs",
-      "Développement du site web et de l'application mobile (iOS & Android)",
-      "Paiements sécurisés et système d'escrow",
-      "Commissions automatisées et traçables",
-      "Beta privée Suisse + Thaïlande",
-    ],
-  },
-  {
-    status: "upcoming" as const,
-    phase: "Phase 4",
-    title: "Lancer & s'étendre",
-    period: "",
-    items: [
-      "Lancement public Suisse & Thaïlande",
-      "Publication de l'app mobile sur les stores",
-      "Expansion vers la France, le Maroc et les EAU",
-      "Ouverture de l'API pour les intégrations tierces",
-      "Programme ambassadeurs et apporteurs certifiés",
-    ],
-  },
-];
-
-const statusConfig = {
-  done: { icon: Check, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-2 border-emerald-400/25", dot: "bg-emerald-400", label: "Terminé", cardBg: "rgba(16, 185, 129, 0.04)" },
-  current: { icon: Loader2, color: "text-[#C4956A]", bg: "bg-[#C4956A]/10", border: "border-2 border-[#C4956A]/30", dot: "bg-[#C4956A]", label: "En cours", cardBg: "rgba(196, 149, 106, 0.06)" },
-  upcoming: { icon: Clock, color: "text-white/35", bg: "bg-white/5", border: "border border-white/8", dot: "bg-white/20", label: "À venir", cardBg: "rgba(255, 255, 255, 0.02)" },
-};
+import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function RoadmapSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
+  const { t } = useLandingLang();
+
+  const phases = [
+    {
+      status: "done" as const,
+      phase: "Phase 1",
+      title: t("roadmap.phase1_title"),
+      period: "",
+      items: [
+        t("roadmap.phase1_item1"),
+        t("roadmap.phase1_item2"),
+        t("roadmap.phase1_item3"),
+        t("roadmap.phase1_item4"),
+        t("roadmap.phase1_item5"),
+        t("roadmap.phase1_item6"),
+        t("roadmap.phase1_item7"),
+      ],
+    },
+    {
+      status: "current" as const,
+      phase: "Phase 2",
+      title: t("roadmap.phase2_title"),
+      period: "",
+      items: [
+        t("roadmap.phase2_item1"),
+        t("roadmap.phase2_item2"),
+        t("roadmap.phase2_item3"),
+        t("roadmap.phase2_item4"),
+        t("roadmap.phase2_item5"),
+      ],
+    },
+    {
+      status: "upcoming" as const,
+      phase: "Phase 3",
+      title: t("roadmap.phase3_title"),
+      period: "",
+      items: [
+        t("roadmap.phase3_item1"),
+        t("roadmap.phase3_item2"),
+        t("roadmap.phase3_item3"),
+        t("roadmap.phase3_item4"),
+        t("roadmap.phase3_item5"),
+        t("roadmap.phase3_item6"),
+      ],
+    },
+    {
+      status: "upcoming" as const,
+      phase: "Phase 4",
+      title: t("roadmap.phase4_title"),
+      period: "",
+      items: [
+        t("roadmap.phase4_item1"),
+        t("roadmap.phase4_item2"),
+        t("roadmap.phase4_item3"),
+        t("roadmap.phase4_item4"),
+        t("roadmap.phase4_item5"),
+      ],
+    },
+  ];
+
+  const statusConfig = {
+    done: { icon: Check, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-2 border-emerald-400/25", dot: "bg-emerald-400", label: t("roadmap.status_done"), cardBg: "rgba(16, 185, 129, 0.04)" },
+    current: { icon: Loader2, color: "text-[#C4956A]", bg: "bg-[#C4956A]/10", border: "border-2 border-[#C4956A]/30", dot: "bg-[#C4956A]", label: t("roadmap.status_current"), cardBg: "rgba(196, 149, 106, 0.06)" },
+    upcoming: { icon: Clock, color: "text-white/35", bg: "bg-white/5", border: "border border-white/8", dot: "bg-white/20", label: t("roadmap.status_upcoming"), cardBg: "rgba(255, 255, 255, 0.02)" },
+  };
 
   return (
     <section ref={ref} className="bg-black py-16 md:py-40 px-6 overflow-hidden relative">
@@ -88,27 +90,19 @@ export function RoadmapSection() {
         <div className="mb-10 md:mb-24">
           <TextEffect per="char" preset="blur" delay={0} trigger={inView}
             className="text-[#C4956A] text-sm tracking-widest uppercase mb-4 font-medium">
-            Roadmap
+            {t("roadmap.label")}
           </TextEffect>
           <StaggerText
-            text="De l'idée au lancement."
+            text={`${t("roadmap.title1")} ${t("roadmap.title2")}`}
             direction="right"
             stagger={0.05}
             className="text-4xl md:text-6xl text-white tracking-tight mb-6"
           />
           <BlurFade delay={0.3} inView><p className="text-white/60 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
-            Le concept est prouvé. La maquette est en ligne. Maintenant,
-            chaque manifestation d&apos;intérêt que nous récoltons renforce
-            la preuve que le marché a besoin d&apos;E-Dome — et c&apos;est
-            cette traction qui nous permettra de{" "}
-            <strong className="text-white">convaincre des investisseurs</strong>,
-            lever les fonds nécessaires et constituer l&apos;équipe technique
-            qui donnera vie à la plateforme finale.
+            {t("roadmap.desc")}
           </p>
           <p className="text-white/45 text-sm md:text-base max-w-3xl leading-relaxed">
-            Chaque personne qui manifeste son intérêt aujourd&apos;hui
-            pose une pierre de ce qui deviendra demain la référence
-            de l&apos;immobilier connecté.
+            {t("roadmap.desc2")}
           </p></BlurFade>
         </div>
 
@@ -166,22 +160,18 @@ export function RoadmapSection() {
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 mb-5">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-emerald-400 text-xs font-medium">Inscriptions ouvertes</span>
+                <span className="text-emerald-400 text-xs font-medium">{t("roadmap.inscriptions_label")}</span>
               </div>
               <h3 className="text-white text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
-                Rejoignez les premiers membres.
+                {t("roadmap.cta_title1")}
                 <br />
-                <span className="text-[#C4956A]">Récoltez les premiers avantages.</span>
+                <span className="text-[#C4956A]">{t("roadmap.cta_title2")}</span>
               </h3>
               <p className="text-white/50 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-2">
-                Les premiers à manifester leur intérêt ne rejoignent pas
-                simplement un projet — ils obtiennent une place privilégiée
-                dans l&apos;écosystème E-Dome, avec des avantages exclusifs
-                réservés aux membres fondateurs.
+                {t("roadmap.cta_subtitle")}
               </p>
               <p className="text-white/25 text-xs max-w-xl mx-auto">
-                La manifestation d&apos;intérêt est libre, gratuite et sans aucun
-                engagement. Elle nous aide à prouver le besoin du marché.
+                {t("roadmap.cta_disclaimer")}
               </p>
             </div>
 
@@ -191,38 +181,38 @@ export function RoadmapSection() {
                 {
                   icon: Award,
                   iconColor: "text-[#C4956A]",
-                  title: "Badge Membre Fondateur",
-                  desc: "Un badge permanent sur votre profil qui prouve que vous étiez là dès le début. Reconnaissance à vie dans l'écosystème.",
+                  title: t("roadmap.benefit1_title"),
+                  desc: t("roadmap.benefit1_desc"),
                 },
                 {
                   icon: KeyRound,
                   iconColor: "text-emerald-400",
-                  title: "Accès anticipé",
-                  desc: "Configurez votre compte, votre profil et vos préférences avant le lancement public. Soyez opérationnel dès le jour J.",
+                  title: t("roadmap.benefit2_title"),
+                  desc: t("roadmap.benefit2_desc"),
                 },
                 {
                   icon: Star,
                   iconColor: "text-amber-400",
-                  title: "Visibilité prioritaire",
-                  desc: "Votre profil mis en avant dans les résultats de recherche et les recommandations pendant les premiers mois.",
+                  title: t("roadmap.benefit3_title"),
+                  desc: t("roadmap.benefit3_desc"),
                 },
                 {
                   icon: Mic,
                   iconColor: "text-purple-400",
-                  title: "Conférences exclusives",
-                  desc: "Accès à des sessions privées pour découvrir les fonctionnalités, donner votre avis et influencer les priorités de développement.",
+                  title: t("roadmap.benefit4_title"),
+                  desc: t("roadmap.benefit4_desc"),
                 },
                 {
                   icon: Handshake,
                   iconColor: "text-cyan-400",
-                  title: "Réseau fondateur",
-                  desc: "Intégrez un groupe privé avec les autres premiers membres et les fondateurs. Échangez, collaborez, construisez ensemble.",
+                  title: t("roadmap.benefit5_title"),
+                  desc: t("roadmap.benefit5_desc"),
                 },
                 {
                   icon: Gift,
                   iconColor: "text-rose-400",
-                  title: "Avantages exclusifs",
-                  desc: "Des conditions préférentielles sur les futures fonctionnalités premium, les formations et les outils de la plateforme.",
+                  title: t("roadmap.benefit6_title"),
+                  desc: t("roadmap.benefit6_desc"),
                 },
               ].map((item) => {
                 const ItemIcon = item.icon;

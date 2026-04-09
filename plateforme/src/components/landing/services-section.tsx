@@ -5,61 +5,57 @@ import { motion, useInView } from "framer-motion";
 import { ArrowUpRight, Home, Users, GraduationCap, Handshake, Radio, Briefcase } from "lucide-react";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
-
-const features = [
-  {
-    tag: "Réseau social immobilier",
-    title: "Feed, Stories & Reels",
-    description:
-      "Un fil d'actualité pensé pour l'immobilier : partagez vos biens, vos visites, vos analyses de marché. Stories éphémères, reels de propriétés, mentions, hashtags — l'interaction sociale orientée vers le professionnel.",
-    icon: Users,
-    media: { type: "video" as const, src: "/videos/social-feed.mp4", poster: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=70" },
-  },
-  {
-    tag: "Marketplace & Réservations",
-    title: "Explorer, comparer, réserver",
-    description:
-      "Carte interactive, filtres avancés par type, pays et budget. Rendement brut et net, prix au m², note énergétique, projection ROI à 5 et 10 ans. Réservation intégrée avec calendrier et paiements sécurisés. L'hôte peut aussi proposer des options à la réservation — décoration romantique, petit-déjeuner, carte des menus en chambre, transport, conciergerie — en gratuit ou en payant.",
-    icon: Home,
-    media: { type: "video" as const, src: "/videos/marketplace.mp4", startTime: 5, poster: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=70" },
-  },
-  {
-    tag: "Formation & Certification",
-    title: "Se former avec les meilleurs",
-    description:
-      "Catalogue de formations vidéo par des experts du terrain : investissement locatif, gestion de biens, analyse financière, fiscalité internationale. Modules structurés et certifications.",
-    icon: GraduationCap,
-    media: { type: "video" as const, src: "/videos/formation.mp4", poster: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=70" },
-  },
-  {
-    tag: "Système de commissions",
-    title: "Apporter, recommander, gagner",
-    description:
-      "Le cœur économique d'E-Dome : chaque utilisateur peut devenir apporteur d'affaires. Commissions sur les locations, les ventes, les formations — liens traçables, dashboard de suivi, paiements automatiques.",
-    icon: Handshake,
-    media: { type: "video" as const, src: "/videos/commissions.mp4", poster: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=70" },
-  },
-  {
-    tag: "Live & Événements",
-    title: "Webinaires et conférences",
-    description:
-      "Programmez des lives de visites virtuelles, des webinaires d'analyse de marché, des sessions Q&A. Replays disponibles, inscriptions avec notifications, événements physiques et virtuels.",
-    icon: Radio,
-    media: { type: "video" as const, src: "/videos/live-events.mp4", poster: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=70" },
-  },
-  {
-    tag: "Services professionnels",
-    title: "Marketplace de prestataires",
-    description:
-      "Photographes, home stagers, gestionnaires de clés, rénovateurs, notaires, courtiers — trouvez et sollicitez des prestataires qualifiés depuis la plateforme. Demandes de devis intégrées.",
-    icon: Briefcase,
-    media: { type: "video" as const, src: "/videos/services.mp4", startTime: 5, poster: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=70" },
-  },
-];
+import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function ServicesSection() {
+  const { t } = useLandingLang();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  const features = [
+    {
+      tag: t("services.f1_tag"),
+      title: t("services.f1_title"),
+      description: t("services.f1_desc"),
+      icon: Users,
+      media: { type: "video" as const, src: "/videos/social-feed.mp4", poster: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=70" },
+    },
+    {
+      tag: t("services.f2_tag"),
+      title: t("services.f2_title"),
+      description: t("services.f2_desc"),
+      icon: Home,
+      media: { type: "video" as const, src: "/videos/marketplace.mp4", startTime: 5, poster: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=70" },
+    },
+    {
+      tag: t("services.f3_tag"),
+      title: t("services.f3_title"),
+      description: t("services.f3_desc"),
+      icon: GraduationCap,
+      media: { type: "video" as const, src: "/videos/formation.mp4", poster: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=70" },
+    },
+    {
+      tag: t("services.f4_tag"),
+      title: t("services.f4_title"),
+      description: t("services.f4_desc"),
+      icon: Handshake,
+      media: { type: "video" as const, src: "/videos/commissions.mp4", poster: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=70" },
+    },
+    {
+      tag: t("services.f5_tag"),
+      title: t("services.f5_title"),
+      description: t("services.f5_desc"),
+      icon: Radio,
+      media: { type: "video" as const, src: "/videos/live-events.mp4", poster: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=70" },
+    },
+    {
+      tag: t("services.f6_tag"),
+      title: t("services.f6_title"),
+      description: t("services.f6_desc"),
+      icon: Briefcase,
+      media: { type: "video" as const, src: "/videos/services.mp4", startTime: 5, poster: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=70" },
+    },
+  ];
 
   return (
     <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
@@ -73,11 +69,11 @@ export function ServicesSection() {
         <div className="flex items-start md:items-center justify-between mb-12 md:mb-16 flex-col md:flex-row gap-4">
           <div>
             <BlurFade delay={0.1} inView>
-              <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-3">Fonctionnalités</p>
+              <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-3">{t("services.label")}</p>
             </BlurFade>
             <h2 className="text-3xl md:text-5xl text-white tracking-tight">
               <VerticalCutReveal splitBy="words" staggerDuration={0.12} staggerFrom="first">
-                Tout-en-un, sans compromis
+                {t("services.title1")} {t("services.title2")}
               </VerticalCutReveal>
             </h2>
           </div>

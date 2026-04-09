@@ -4,8 +4,10 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function FeaturedVideoSection() {
+  const { t } = useLandingLang();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -30,18 +32,12 @@ export function FeaturedVideoSection() {
           <div className="absolute bottom-0 left-0 right-0 p-10 hidden md:block">
             <div className="flex items-end justify-between gap-6">
               <div className="liquid-glass rounded-2xl p-8 max-w-lg" style={{ background: "rgba(0, 0, 0, 0.55)" }}>
-                <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">La plateforme</p>
+                <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">{t("featured.label")}</p>
                 <p className="text-white text-base leading-relaxed mb-2 font-light">
-                  Plus de 30 pages fonctionnelles : feed social avec stories et reels,
-                  marketplace avec carte interactive et calcul de rendement,
-                  messagerie, dashboard adaptatif selon votre rôle, formations vidéo
-                  par modules, système de commissions en temps réel, réservations
-                  avec options personnalisables (conciergerie, petit-déjeuner,
-                  transport, décoration) et gestion de paiements.
+                  {t("featured.desc")}
                 </p>
                 <p className="text-white/50 text-xs mt-3">
-                  Maquette de visualisation — les données présentées sont fictives
-                  et servent uniquement à illustrer les fonctionnalités prévues
+                  {t("featured.disclaimer")}
                 </p>
               </div>
               <Link href="#inscriptions">
@@ -50,7 +46,7 @@ export function FeaturedVideoSection() {
                   whileTap={{ scale: 0.95 }}
                   className="liquid-glass rounded-full px-8 py-3 text-sm font-medium hover:bg-white/5 transition-colors flex items-center gap-2 cursor-pointer shrink-0"
                 >
-                  <span className="text-[#C4956A]">Entrer dans la démo</span>
+                  <span className="text-[#C4956A]">{t("featured.cta")}</span>
                   <ArrowRight size={16} className="text-[#C4956A]" />
                 </motion.div>
               </Link>
@@ -60,18 +56,15 @@ export function FeaturedVideoSection() {
 
         {/* Mobile - text below video */}
         <div className="md:hidden mt-5">
-          <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">La plateforme</p>
+          <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">{t("featured.label")}</p>
           <p className="text-white/80 text-sm leading-relaxed mb-3">
-            Plus de 30 pages fonctionnelles : feed social, marketplace avec
-            carte interactive, messagerie, dashboard multi-rôle, formations
-            vidéo, système de commissions, réservations avec options
-            personnalisables et gestion de paiements.
+            {t("featured.mobile_desc")}
           </p>
           <p className="text-white/30 text-xs mb-4">
-            Maquette de visualisation — données fictives
+            {t("featured.mobile_disclaimer")}
           </p>
           <Link href="#inscriptions" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-sm font-semibold px-5 py-3 rounded-lg hover:bg-[#d4a57a] transition-colors">
-            Entrer dans la démo <ArrowRight size={14} />
+            {t("featured.cta")} <ArrowRight size={14} />
           </Link>
         </div>
       </motion.div>

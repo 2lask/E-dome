@@ -6,8 +6,10 @@ import { BlurFade } from "@/components/ui/blur-fade";
 import { TextEffect } from "@/components/ui/text-effect";
 import { StaggerText } from "@/components/ui/stagger-text";
 import { ArchBackground } from "@/components/landing/arch-background";
+import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function AboutSection() {
+  const { t } = useLandingLang();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -24,11 +26,11 @@ export function AboutSection() {
       <div className="max-w-6xl mx-auto relative">
         <TextEffect per="char" preset="blur" delay={0.1} trigger={inView}
           className="text-[#C4956A] text-sm tracking-widest uppercase mb-8 font-medium">
-          Notre vision
+          {t("about.label")}
         </TextEffect>
 
         <StaggerText
-          text="Pensé pour chaque acteur de l'immobilier."
+          text={`${t("about.title1")} ${t("about.title2")}`}
           direction="bottom"
           stagger={0.04}
           className="text-3xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight mb-8 md:mb-12"
@@ -37,25 +39,17 @@ export function AboutSection() {
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3 }}
           className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-10 md:mb-16">
           <BlurFade delay={0.4} inView><p className="text-white/80 text-base md:text-lg leading-relaxed">
-            E-Dome n&apos;est pas une plateforme de plus. C&apos;est un écosystème
-            où chaque professionnel — hôte, agent, promoteur, photographe,
-            courtier, notaire, architecte, formateur — dispose d&apos;un espace
-            pensé pour son métier. Un compte unique, un profil configurable
-            qui s&apos;adapte à votre activité du moment.
+            {t("about.p1")}
           </p></BlurFade>
           <BlurFade delay={0.6} inView><p className="text-white/80 text-base md:text-lg leading-relaxed">
-            Au cœur du modèle : un système de commissions transparent qui
-            rémunère chaque maillon de la chaîne. L&apos;apporteur d&apos;affaires
-            touche sa part, le formateur monétise son expertise, l&apos;hôte
-            gère ses réservations, le prestataire propose ses services —
-            tout depuis un seul endroit, sans dispersion.
+            {t("about.p2")}
           </p></BlurFade>
         </motion.div>
 
         {/* Roles - visual strip */}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.5 }}>
           <p className="text-white/50 text-sm mb-6">
-            Des profils interchangeables qui s&apos;adaptent à chaque métier de l&apos;immobilier — un seul compte pour toutes vos activités.
+            {t("about.roles_label")}
           </p>
           <div className="flex flex-wrap gap-2">
             {[
@@ -77,7 +71,7 @@ export function AboutSection() {
               </span>
             ))}
             <span className="text-xs px-4 py-2 rounded-full border border-white/15 text-white/70">
-              et plus encore…
+              {t("about.more")}
             </span>
           </div>
         </motion.div>

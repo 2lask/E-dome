@@ -7,45 +7,43 @@ import { ArchBackground } from "@/components/landing/arch-background";
 import { StaggerText } from "@/components/ui/stagger-text";
 import { BlurFade } from "@/components/ui/blur-fade";
 import GlowingBorder from "@/components/ui/glowing-border";
-
-const pillars = [
-  {
-    icon: Network,
-    iconColor: "text-cyan-400",
-    iconBg: "bg-cyan-400/10",
-    title: "Un écosystème, pas un outil",
-    description:
-      "Aujourd'hui, un agent publie ses biens sur un portail, communique via un autre, gère ses réservations ailleurs et suit ses revenus sur un tableur. E-Dome supprime ces frontières : tout est connecté, tout communique, tout se gère depuis un seul tableau de bord.",
-  },
-  {
-    icon: UserCog,
-    iconColor: "text-amber-400",
-    iconBg: "bg-amber-400/10",
-    title: "Des profils qui évoluent avec vous",
-    description:
-      "Vous démarrez comme apporteur d'affaires, puis vous devenez hôte, puis formateur. Sur E-Dome, votre profil s'adapte. Pas besoin de créer un nouveau compte ou de recommencer. Activez un rôle, désactivez-le — votre historique, vos contacts et vos données restent.",
-  },
-  {
-    icon: Eye,
-    iconColor: "text-emerald-400",
-    iconBg: "bg-emerald-400/10",
-    title: "Commissions transparentes",
-    description:
-      "Chaque acteur rémunéré dispose de son propre dashboard revenus. L'apporteur suit ses commissions en temps réel, l'hôte visualise ses réservations et gains, le formateur contrôle ses ventes. Tout est traçable, documenté et transparent — plus de zones d'ombre.",
-  },
-  {
-    icon: MessageCircle,
-    iconColor: "text-purple-400",
-    iconBg: "bg-purple-400/10",
-    title: "Le social au service du business",
-    description:
-      "L'immobilier est un métier de réseau. Pourtant, aucune plateforme ne propose un vrai espace social dédié au secteur. E-Dome intègre un feed, des stories, des reels et de la messagerie — pensés pour générer des leads, pas juste des likes.",
-  },
-];
+import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function PhilosophySection() {
+  const { t } = useLandingLang();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  const pillars = [
+    {
+      icon: Network,
+      iconColor: "text-cyan-400",
+      iconBg: "bg-cyan-400/10",
+      title: t("philosophy.p1_title"),
+      description: t("philosophy.p1_desc"),
+    },
+    {
+      icon: UserCog,
+      iconColor: "text-amber-400",
+      iconBg: "bg-amber-400/10",
+      title: t("philosophy.p2_title"),
+      description: t("philosophy.p2_desc"),
+    },
+    {
+      icon: Eye,
+      iconColor: "text-emerald-400",
+      iconBg: "bg-emerald-400/10",
+      title: t("philosophy.p3_title"),
+      description: t("philosophy.p3_desc"),
+    },
+    {
+      icon: MessageCircle,
+      iconColor: "text-purple-400",
+      iconBg: "bg-purple-400/10",
+      title: t("philosophy.p4_title"),
+      description: t("philosophy.p4_desc"),
+    },
+  ];
 
   return (
     <section ref={ref} className="bg-black py-16 md:py-28 lg:py-40 px-6 overflow-hidden relative">
@@ -58,20 +56,17 @@ export function PhilosophySection() {
       <div className="max-w-6xl mx-auto relative">
         <div className="mb-16 md:mb-24">
           <BlurFade delay={0} inView>
-            <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">Notre approche</p>
+            <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">{t("philosophy.label")}</p>
           </BlurFade>
           <StaggerText
-            text="Pourquoi ça change tout"
+            text={`${t("philosophy.title1")} ${t("philosophy.title2")}`}
             direction="left"
             stagger={0.06}
             className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl text-white tracking-tight mb-6"
           />
           <BlurFade delay={0.4} inView>
             <p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
-              E-Dome ne se contente pas de regrouper des outils. La plateforme
-              repense la façon dont les acteurs de l&apos;immobilier travaillent,
-              collaborent et se rémunèrent — en plaçant la connexion humaine
-              et la transparence au centre de chaque interaction.
+              {t("philosophy.desc")}
             </p>
           </BlurFade>
         </div>
@@ -121,19 +116,19 @@ export function PhilosophySection() {
           {/* Desktop only - top left title */}
           <div className="absolute top-0 left-0 p-8 lg:p-10 hidden md:block">
             <div className="rounded-2xl px-7 py-5" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
-              <p className="text-[#C4956A]/60 text-xs tracking-[0.2em] uppercase mb-2">E-Dome</p>
+              <p className="text-[#C4956A]/60 text-xs tracking-[0.2em] uppercase mb-2">{t("philosophy.video_label")}</p>
               <h3 className="text-white text-2xl lg:text-3xl font-semibold tracking-tight leading-tight mb-4">
-                Un seul espace<br />
-                <span className="text-[#C4956A]">pour tout l&apos;immobilier.</span>
+                {t("philosophy.video_title1")}<br />
+                <span className="text-[#C4956A]">{t("philosophy.video_title2")}</span>
               </h3>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { label: "Recherche", gold: false },
-                  { label: "Publication", gold: false },
-                  { label: "Réservation", gold: false },
-                  { label: "Formation", gold: true },
-                  { label: "Recommandation", gold: true },
-                  { label: "Rémunération", gold: true },
+                  { label: t("philosophy.tag_recherche"), gold: false },
+                  { label: t("philosophy.tag_publication"), gold: false },
+                  { label: t("philosophy.tag_reservation"), gold: false },
+                  { label: t("philosophy.tag_formation"), gold: true },
+                  { label: t("philosophy.tag_recommandation"), gold: true },
+                  { label: t("philosophy.tag_remuneration"), gold: true },
                 ].map((tag) => (
                   <span key={tag.label} className={`text-[10px] px-3 py-1.5 rounded-full font-medium border ${
                     tag.gold
@@ -152,33 +147,28 @@ export function PhilosophySection() {
             <div className="rounded-2xl px-7 py-5 max-w-md text-right" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(16px)" }}>
               <div className="w-8 h-0.5 bg-[#C4956A]/50 mb-4 ml-auto" />
               <p className="text-white text-base leading-relaxed mb-3">
-                Chercher un bien, publier une annonce, réserver une visite,
-                suivre une formation, recommander un contact et toucher sa
-                commission.
+                {t("philosophy.video_desktop_p1")}
               </p>
               <p className="text-white/50 text-sm leading-relaxed mb-4">
-                Sans jamais quitter la plateforme — E-Dome centralise chaque
-                étape du parcours pour que chaque acteur gagne en temps,
-                en visibilité et en revenus.
+                {t("philosophy.video_desktop_p2")}
               </p>
               <a href="#inscriptions" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-sm font-semibold px-5 py-3 rounded-lg hover:bg-[#d4a57a] transition-colors ml-auto">
-                Voir la maquette
+                {t("philosophy.video_cta")}
               </a>
             </div>
           </div>
 
           {/* Mobile only - single compact block at bottom */}
           <div className="absolute bottom-0 left-0 right-0 p-4 md:hidden">
-            <p className="text-[#C4956A]/60 text-[10px] tracking-[0.2em] uppercase mb-1">E-Dome</p>
+            <p className="text-[#C4956A]/60 text-[10px] tracking-[0.2em] uppercase mb-1">{t("philosophy.video_label")}</p>
             <h3 className="text-white text-lg font-semibold tracking-tight leading-tight mb-2">
-              Un seul espace <span className="text-[#C4956A]">pour tout l&apos;immobilier.</span>
+              {t("philosophy.video_title1")} <span className="text-[#C4956A]">{t("philosophy.video_title2")}</span>
             </h3>
             <p className="text-white/70 text-xs leading-relaxed mb-3">
-              Chercher, publier, réserver, se former, recommander et être
-              rémunéré — sans jamais quitter la plateforme.
+              {t("philosophy.video_mobile_desc")}
             </p>
             <a href="#inscriptions" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-xs font-semibold px-4 py-2.5 rounded-lg hover:bg-[#d4a57a] transition-colors">
-              Voir la maquette
+              {t("philosophy.video_cta")}
             </a>
           </div>
         </motion.div>

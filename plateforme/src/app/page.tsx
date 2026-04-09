@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AboutSection } from "@/components/landing/about-section";
@@ -12,6 +12,7 @@ import { FoundersSection } from "@/components/landing/founders-section";
 import { RoadmapSection } from "@/components/landing/roadmap-section";
 import { FooterSection } from "@/components/landing/footer-section";
 import { ArchDivider } from "@/components/landing/arch-drawings";
+import { LandingLanguageProvider, useLandingLang } from "@/components/landing/landing-i18n";
 
 function AnimatedText({ text, delay = 200 }: { text: string; delay?: number }) {
   const [visible, setVisible] = useState(false);
@@ -68,6 +69,15 @@ function CountUp({ target, suffix = "", delay = 1600, duration = 1500 }: { targe
 }
 
 export default function HomePage() {
+  return (
+    <LandingLanguageProvider>
+      <HomePageContent />
+    </LandingLanguageProvider>
+  );
+}
+
+function HomePageContent() {
+  const { lang, setLang, t } = useLandingLang();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [subVisible, setSubVisible] = useState(false);
   const [btnVisible, setBtnVisible] = useState(false);
@@ -119,13 +129,19 @@ export default function HomePage() {
               E-<span className="text-[#C4956A]">Dome</span>
             </span>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#vision" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">Vision</a>
-              <a href="#fonctionnalites" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">Fonctionnalités</a>
-              <a href="#fondateurs" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">Fondateurs</a>
-              <a href="#roadmap" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">Roadmap</a>
+              <a href="#vision" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.vision")}</a>
+              <a href="#fonctionnalites" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.features")}</a>
+              <a href="#fondateurs" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.founders")}</a>
+              <a href="#roadmap" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.roadmap")}</a>
             </div>
+            <button
+              onClick={() => setLang(lang === "fr" ? "en" : "fr")}
+              className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 transition-colors uppercase"
+            >
+              {lang === "fr" ? "EN" : "FR"}
+            </button>
             <Link href="#inscriptions" className="bg-[#C4956A] text-black rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
-              Voir la démo
+              {t("hero.demo")}
             </Link>
           </div>
         </nav>
@@ -137,15 +153,15 @@ export default function HomePage() {
             <div>
               <p className="text-white text-xs sm:text-sm tracking-[0.25em] uppercase mb-4 font-medium"
                 style={{ opacity: subVisible ? 1 : 0, transition: "opacity 800ms ease" }}>
-                L&apos;écosystème immobilier
+                {t("hero.label")}
               </p>
               <h1
                 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl text-white leading-[1.1] mb-6"
                 style={{ letterSpacing: "-0.04em" }}
               >
-                <AnimatedText text="L'immobilier" delay={200} />
+                <AnimatedText text={t("hero.title1")} delay={200} />
                 <br />
-                <span className="text-[#C4956A]"><AnimatedText text="sous un même toit." delay={400} /></span>
+                <span className="text-[#C4956A]"><AnimatedText text={t("hero.title2")} delay={400} /></span>
               </h1>
 
               <p
@@ -155,10 +171,7 @@ export default function HomePage() {
                   transition: "opacity 1000ms ease",
                 }}
               >
-                Soutenez le projet en manifestant votre intérêt.
-                Un simple questionnaire, gratuit et sans engagement,
-                qui prouve une vraie demande sur le marché et nous
-                aide à construire la plateforme qui vous correspond.
+                {t("hero.subtitle")}
               </p>
 
               <div
@@ -169,10 +182,10 @@ export default function HomePage() {
                 }}
               >
                 <Link href="#inscriptions" className="bg-[#C4956A] text-black rounded-lg px-6 py-3 text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
-                  Manifester mon intérêt <ArrowRight size={16} />
+                  {t("hero.cta")} <ArrowRight size={16} />
                 </Link>
                 <a href="#vision" className="liquid-glass rounded-lg px-6 py-3 text-white/80 text-sm font-medium border border-white/15 hover:bg-white/10 transition-colors">
-                  En savoir plus
+                  {t("hero.learn")}
                 </a>
               </div>
 
@@ -188,7 +201,7 @@ export default function HomePage() {
                   transition: "opacity 1000ms ease",
                 }}
               >
-                Voir la maquette <ArrowRight size={20} />
+                {t("hero.mockup")} <ArrowRight size={20} />
               </Link>
             </div>
           </div>

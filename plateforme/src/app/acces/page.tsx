@@ -4,34 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, ArrowLeft, Check, Globe } from "lucide-react";
 import Link from "next/link";
+import { useLandingLang, LandingLanguageProvider } from "@/components/landing/landing-i18n";
 
-const activites = [
-  "Agent immobilier",
-  "Hôte / Propriétaire",
-  "Investisseur",
-  "Apporteur d'affaires",
-  "Formateur",
-  "Photographe immobilier",
-  "Courtier / Financement",
-  "Notaire",
-  "Architecte",
-  "Promoteur",
-  "Home stager",
-  "Gestionnaire de biens",
-  "Autre",
-];
-
-const sources = [
-  "Réseaux sociaux",
-  "Bouche à oreille",
-  "Recherche Google",
-  "Recommandation professionnelle",
-  "Événement / Conférence",
-  "Autre",
-];
-
-export default function AccesPage() {
+function AccesPageContent() {
   const router = useRouter();
+  const { t } = useLandingLang();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     prenom: "",
@@ -52,6 +29,44 @@ export default function AccesPage() {
 
   const totalSteps = 3;
 
+  const activites = [
+    { key: "form.activity_agent", label: t("form.activity_agent") },
+    { key: "form.activity_hote", label: t("form.activity_hote") },
+    { key: "form.activity_investisseur", label: t("form.activity_investisseur") },
+    { key: "form.activity_apporteur", label: t("form.activity_apporteur") },
+    { key: "form.activity_formateur", label: t("form.activity_formateur") },
+    { key: "form.activity_photographe", label: t("form.activity_photographe") },
+    { key: "form.activity_courtier", label: t("form.activity_courtier") },
+    { key: "form.activity_notaire", label: t("form.activity_notaire") },
+    { key: "form.activity_architecte", label: t("form.activity_architecte") },
+    { key: "form.activity_promoteur", label: t("form.activity_promoteur") },
+    { key: "form.activity_home_stager", label: t("form.activity_home_stager") },
+    { key: "form.activity_gestionnaire", label: t("form.activity_gestionnaire") },
+    { key: "form.activity_autre", label: t("form.activity_autre") },
+  ];
+
+  const sources = [
+    { key: "form.source_social", label: t("form.source_social") },
+    { key: "form.source_word_of_mouth", label: t("form.source_word_of_mouth") },
+    { key: "form.source_google", label: t("form.source_google") },
+    { key: "form.source_recommendation", label: t("form.source_recommendation") },
+    { key: "form.source_event", label: t("form.source_event") },
+    { key: "form.source_other", label: t("form.source_other") },
+  ];
+
+  const experiences = [
+    { key: "form.experience_beginner", label: t("form.experience_beginner") },
+    { key: "form.experience_1_3", label: t("form.experience_1_3") },
+    { key: "form.experience_3_10", label: t("form.experience_3_10") },
+    { key: "form.experience_10_plus", label: t("form.experience_10_plus") },
+  ];
+
+  const memberOptions = [
+    { value: "oui", label: t("form.member_yes"), sub: t("form.member_yes_sub") },
+    { value: "peut-etre", label: t("form.member_maybe"), sub: t("form.member_maybe_sub") },
+    { value: "non", label: t("form.member_no"), sub: t("form.member_no_sub") },
+  ];
+
   const update = (field: string, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
@@ -69,6 +84,10 @@ export default function AccesPage() {
     setSubmitted(true);
   };
 
+  const stepOf = t("form.step_of")
+    .replace("{current}", String(step))
+    .replace("{total}", String(totalSteps));
+
   if (submitted) {
     return (
       <div className="min-h-dvh bg-black flex items-center justify-center px-6">
@@ -77,31 +96,28 @@ export default function AccesPage() {
             <Check size={32} className="text-emerald-400" />
           </div>
           <h1 className="text-white text-3xl font-semibold mb-4 tracking-tight">
-            Merci, {form.prenom} !
+            {t("form.success_title").replace("{name}", form.prenom)}
           </h1>
           <p className="text-white/60 text-base leading-relaxed mb-3">
-            Votre manifestation d&apos;intérêt a bien été enregistrée.
+            {t("form.success_desc")}
             {form.premierMembre === "oui" && (
-              <span className="text-[#C4956A]"> Vous faites partie des premiers membres fondateurs.</span>
+              <span className="text-[#C4956A]"> {t("form.success_founder")}</span>
             )}
           </p>
 
           {/* Desktop: access demo */}
           <div className="hidden md:block">
             <p className="text-white/40 text-sm mb-3">
-              Vous pouvez maintenant explorer la maquette interactive d&apos;E-Dome
-              avec toutes ses fonctionnalités.
+              {t("form.success_desktop_desc")}
             </p>
             <p className="text-white/25 text-xs mb-8">
-              Rappel : cette maquette est un modèle de visualisation avec des données
-              fictives. Elle permet de découvrir les fonctionnalités prévues pour la
-              plateforme finale.
+              {t("form.success_desktop_disclaimer")}
             </p>
             <Link
               href="/feed"
               className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
             >
-              Accéder à la maquette <ArrowRight size={16} />
+              {t("form.success_desktop_cta")} <ArrowRight size={16} />
             </Link>
           </div>
 
@@ -114,13 +130,10 @@ export default function AccesPage() {
                 </svg>
               </div>
               <h2 className="text-white text-lg font-semibold mb-3">
-                Maquette disponible sur ordinateur
+                {t("form.success_mobile_title")}
               </h2>
               <p className="text-white/50 text-sm leading-relaxed mb-2">
-                La maquette interactive d&apos;E-Dome est optimisée pour
-                un affichage sur ordinateur (PC ou Mac). Rendez-vous sur
-                votre navigateur desktop pour explorer toutes les
-                fonctionnalités.
+                {t("form.success_mobile_desc")}
               </p>
               <p className="text-white/30 text-xs">
                 edome-demo.vercel.app
@@ -130,7 +143,7 @@ export default function AccesPage() {
               href="/"
               className="inline-flex items-center gap-2 text-white/50 text-sm hover:text-white/80 transition-colors"
             >
-              <ArrowLeft size={16} /> Retour au site
+              <ArrowLeft size={16} /> {t("form.nav_back_site")}
             </Link>
           </div>
 
@@ -166,89 +179,90 @@ export default function AccesPage() {
           {/* Step 1: Contact */}
           {step === 1 && (
             <div>
-              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">Étape 1 / {totalSteps}</p>
+              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+                {t("form.step_of").replace("{current}", "1").replace("{total}", String(totalSteps))}
+              </p>
               <h2 className="text-white text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
-                Faisons connaissance.
+                {t("form.step1_title")}
               </h2>
               <p className="text-white/50 text-sm mb-3">
-                Ces informations nous permettent de vous contacter et de
-                personnaliser votre expérience.
+                {t("form.step1_desc")}
               </p>
               <p className="text-white/30 text-xs mb-10">
-                Ce formulaire est une manifestation d&apos;intérêt sans engagement
-                ni obligation. La maquette que vous allez explorer est un modèle
-                de visualisation — toutes les données présentées sont fictives.
+                {t("form.step1_disclaimer")}
               </p>
 
               <div className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-white/40 text-xs mb-1.5 block">Prénom *</label>
+                    <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_prenom")}</label>
                     <input
                       type="text" value={form.prenom}
                       onChange={(e) => update("prenom", e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
-                      placeholder="Votre prénom"
+                      placeholder={t("form.placeholder_prenom")}
                     />
                   </div>
                   <div>
-                    <label className="text-white/40 text-xs mb-1.5 block">Nom *</label>
+                    <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_nom")}</label>
                     <input
                       type="text" value={form.nom}
                       onChange={(e) => update("nom", e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
-                      placeholder="Votre nom"
+                      placeholder={t("form.placeholder_nom")}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="text-white/40 text-xs mb-1.5 block">Email *</label>
+                  <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_email")}</label>
                   <input
                     type="email" value={form.email}
                     onChange={(e) => update("email", e.target.value)}
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
-                    placeholder="votre@email.com"
+                    placeholder={t("form.placeholder_email")}
                   />
                 </div>
                 <div>
-                  <label className="text-white/40 text-xs mb-1.5 block">Téléphone</label>
+                  <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_telephone")}</label>
                   <input
                     type="tel" value={form.telephone}
                     onChange={(e) => update("telephone", e.target.value)}
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
-                    placeholder="+41 79 000 00 00"
+                    placeholder={t("form.placeholder_telephone")}
                   />
                 </div>
               </div>
             </div>
           )}
 
-          {/* Step 2: Activité */}
+          {/* Step 2: Activite */}
           {step === 2 && (
             <div>
-              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">Étape 2 / {totalSteps}</p>
+              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+                {t("form.step_of").replace("{current}", "2").replace("{total}", String(totalSteps))}
+              </p>
               <h2 className="text-white text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
-                Parlez-nous de vous.
+                {t("form.step2_title")}
               </h2>
               <p className="text-white/50 text-sm mb-10">
-                Votre profil nous aide à adapter E-Dome aux vrais besoins du terrain.
+                {t("form.step2_desc")}
               </p>
 
               <div className="space-y-6">
                 <div>
-                  <label className="text-white/40 text-xs mb-1.5 block">Vos activités * <span className="text-white/20">(plusieurs choix possibles)</span></label>
+                  <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_activites")} <span className="text-white/20">{t("form.label_activites_multi")}</span></label>
                   <div className="flex flex-wrap gap-2">
                     {activites.map((a) => {
-                      const selected = form.activites.includes(a);
+                      const selected = form.activites.includes(a.key);
                       return (
                         <button
-                          key={a}
+                          key={a.key}
                           onClick={() => {
                             setForm((prev) => ({
                               ...prev,
                               activites: selected
-                                ? prev.activites.filter((x) => x !== a)
-                                : [...prev.activites, a],
+                                ? prev.activites.filter((x) => x !== a.key)
+                                : [...prev.activites, a.key],
                             }));
                           }}
                           className={`text-xs px-4 py-3 rounded-lg border transition-colors ${
@@ -257,56 +271,56 @@ export default function AccesPage() {
                               : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
                           }`}
                         >
-                          {a}
+                          {a.label}
                         </button>
                       );
                     })}
                   </div>
-                  {form.activites.includes("Autre") && (
+                  {form.activites.includes("form.activity_autre") && (
                     <input
                       type="text" value={form.activiteAutre}
                       onChange={(e) => update("activiteAutre", e.target.value)}
                       className="w-full mt-3 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
-                      placeholder="Précisez votre activité"
+                      placeholder={t("form.label_activite_autre")}
                     />
                   )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-white/40 text-xs mb-1.5 block">Ville</label>
+                    <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_ville")}</label>
                     <input
                       type="text" value={form.ville}
                       onChange={(e) => update("ville", e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
-                      placeholder="Votre ville"
+                      placeholder={t("form.placeholder_ville")}
                     />
                   </div>
                   <div>
-                    <label className="text-white/40 text-xs mb-1.5 block">Pays *</label>
+                    <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_pays")}</label>
                     <input
                       type="text" value={form.pays}
                       onChange={(e) => update("pays", e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
-                      placeholder="Suisse, France..."
+                      placeholder={t("form.placeholder_pays")}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-white/40 text-xs mb-1.5 block">Années d&apos;expérience dans l&apos;immobilier</label>
+                  <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_experience")}</label>
                   <div className="grid grid-cols-2 sm:flex gap-2">
-                    {["Débutant", "1-3 ans", "3-10 ans", "10+ ans"].map((exp) => (
+                    {experiences.map((exp) => (
                       <button
-                        key={exp}
-                        onClick={() => update("experience", exp)}
+                        key={exp.key}
+                        onClick={() => update("experience", exp.key)}
                         className={`text-xs px-4 py-2.5 rounded-lg border transition-colors ${
-                          form.experience === exp
+                          form.experience === exp.key
                             ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
                             : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
                         }`}
                       >
-                        {exp}
+                        {exp.label}
                       </button>
                     ))}
                   </div>
@@ -318,25 +332,23 @@ export default function AccesPage() {
           {/* Step 3: Engagement */}
           {step === 3 && (
             <div>
-              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">Étape 3 / {totalSteps}</p>
+              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+                {t("form.step_of").replace("{current}", "3").replace("{total}", String(totalSteps))}
+              </p>
               <h2 className="text-white text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
-                Dernière étape.
+                {t("form.step3_title")}
               </h2>
               <p className="text-white/50 text-sm mb-10">
-                Dites-nous comment vous voyez votre place dans l&apos;écosystème E-Dome.
+                {t("form.step3_desc")}
               </p>
 
               <div className="space-y-6">
                 <div>
                   <label className="text-white/40 text-xs mb-3 block">
-                    Souhaitez-vous faire partie des premiers membres au lancement ?
+                    {t("form.label_premier_membre")}
                   </label>
                   <div className="space-y-2">
-                    {[
-                      { value: "oui", label: "Oui, je veux être parmi les premiers", sub: "Accès anticipé, badge fondateur, visibilité prioritaire" },
-                      { value: "peut-etre", label: "Peut-être, je veux d'abord en savoir plus", sub: "Recevez les actualités et décidez plus tard" },
-                      { value: "non", label: "Non, je souhaite juste explorer la maquette", sub: "Accès libre à la démonstration" },
-                    ].map((opt) => (
+                    {memberOptions.map((opt) => (
                       <button
                         key={opt.value}
                         onClick={() => update("premierMembre", opt.value)}
@@ -356,32 +368,32 @@ export default function AccesPage() {
                 </div>
 
                 <div>
-                  <label className="text-white/40 text-xs mb-1.5 block">Comment avez-vous entendu parler d&apos;E-Dome ?</label>
+                  <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_source")}</label>
                   <div className="flex flex-wrap gap-2">
                     {sources.map((s) => (
                       <button
-                        key={s}
-                        onClick={() => update("source", s)}
+                        key={s.key}
+                        onClick={() => update("source", s.key)}
                         className={`text-xs px-3 py-3 rounded-lg border transition-colors ${
-                          form.source === s
+                          form.source === s.key
                             ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
                             : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
                         }`}
                       >
-                        {s}
+                        {s.label}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-white/40 text-xs mb-1.5 block">Un message, une question, une idée ? (optionnel)</label>
+                  <label className="text-white/40 text-xs mb-1.5 block">{t("form.label_message")}</label>
                   <textarea
                     value={form.message}
                     onChange={(e) => update("message", e.target.value)}
                     rows={3}
                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20 resize-none"
-                    placeholder="Partagez-nous ce que vous pensez du projet..."
+                    placeholder={t("form.placeholder_message")}
                   />
                 </div>
 
@@ -393,8 +405,7 @@ export default function AccesPage() {
                     className="mt-1 accent-[#C4956A]"
                   />
                   <span className="text-white/50 text-xs leading-relaxed">
-                    Je souhaite recevoir les actualités d&apos;E-Dome et être informé(e)
-                    des prochaines étapes du projet.
+                    {t("form.label_newsletter")}
                   </span>
                 </label>
               </div>
@@ -408,11 +419,11 @@ export default function AccesPage() {
                 onClick={() => setStep(step - 1)}
                 className="flex items-center gap-2 text-white/50 text-sm hover:text-white/80 transition-colors"
               >
-                <ArrowLeft size={16} /> Retour
+                <ArrowLeft size={16} /> {t("form.nav_back")}
               </button>
             ) : (
               <Link href="/" className="flex items-center gap-2 text-white/50 text-sm hover:text-white/80 transition-colors">
-                <ArrowLeft size={16} /> Retour au site
+                <ArrowLeft size={16} /> {t("form.nav_back_site")}
               </Link>
             )}
 
@@ -425,19 +436,27 @@ export default function AccesPage() {
                     : "bg-white/10 text-white/30 cursor-not-allowed"
                 }`}
               >
-                Continuer <ArrowRight size={16} />
+                {t("form.nav_continue")} <ArrowRight size={16} />
               </button>
             ) : (
               <button
                 onClick={handleSubmit}
                 className="flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-6 py-3.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
               >
-                Accéder à la maquette <ArrowRight size={16} />
+                {t("form.nav_submit")} <ArrowRight size={16} />
               </button>
             )}
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AccesPage() {
+  return (
+    <LandingLanguageProvider>
+      <AccesPageContent />
+    </LandingLanguageProvider>
   );
 }

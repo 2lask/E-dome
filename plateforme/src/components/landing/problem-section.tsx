@@ -7,6 +7,7 @@ import { BlurFade } from "@/components/ui/blur-fade";
 import { TextEffect } from "@/components/ui/text-effect";
 import { ArchBackground } from "@/components/landing/arch-background";
 import DotPattern from "@/components/ui/dot-pattern";
+import { useLandingLang } from "@/components/landing/landing-i18n";
 
 function CountUpStat({ target, suffix = "", inView }: { target: number; suffix?: string; inView: boolean }) {
   const [count, setCount] = useState(0);
@@ -32,60 +33,61 @@ function CountUpStat({ target, suffix = "", inView }: { target: number; suffix?:
   return <>{started ? count : 0}{suffix}</>;
 }
 
-const stats = [
-  {
-    icon: ArrowLeftRight,
-    iconColor: "text-blue-400/70",
-    iconBg: "bg-blue-400/10",
-    light: true,
-    value: "12",
-    numValue: 12,
-    numSuffix: "",
-    unit: "outils en moyenne",
-    description: "Un professionnel de l'immobilier utilise en moyenne une douzaine d'outils différents pour gérer son activité : annonces, réservations, comptabilité, communication, formation, prospection.",
-    source: "McKinsey Global Institute — Real Estate Technology Adoption, 2024",
-  },
-  {
-    icon: Clock,
-    iconColor: "text-amber-400/70",
-    iconBg: "bg-amber-400/10",
-    light: "beige",
-    value: "40%",
-    numValue: 40,
-    numSuffix: "%",
-    unit: "du temps en friction",
-    description: "Près de la moitié du temps de travail des agents et gestionnaires immobiliers est consacré à des tâches administratives et à la navigation entre plateformes déconnectées.",
-    source: "National Association of Realtors — Technology Report, 2024",
-  },
-  {
-    icon: Brain,
-    iconColor: "text-purple-400/70",
-    iconBg: "bg-purple-400/10",
-    light: "beige",
-    value: "23 min",
-    numValue: 23,
-    numSuffix: " min",
-    unit: "pour se reconcentrer",
-    description: "Chaque interruption ou changement d'application nécessite en moyenne 23 minutes et 15 secondes pour retrouver un niveau de concentration équivalent.",
-    source: "University of California, Irvine — Gloria Mark et al., 2023",
-  },
-  {
-    icon: AlertTriangle,
-    iconColor: "text-red-400/70",
-    iconBg: "bg-red-400/10",
-    light: true,
-    value: "67%",
-    numValue: 67,
-    numSuffix: "%",
-    unit: "d'abandons en ligne",
-    description: "Deux tiers des parcours d'achat ou de réservation immobilière en ligne sont abandonnés lorsque l'utilisateur doit quitter la plateforme en cours de route pour compléter une étape ailleurs.",
-    source: "JLL — Digital Buyer Journey Report, 2024",
-  },
-];
-
 export function ProblemSection() {
+  const { t } = useLandingLang();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  const stats = [
+    {
+      icon: ArrowLeftRight,
+      iconColor: "text-blue-400/70",
+      iconBg: "bg-blue-400/10",
+      light: true,
+      value: t("problem.stat1_value"),
+      numValue: 12,
+      numSuffix: "",
+      unit: t("problem.stat1_unit"),
+      description: t("problem.stat1_desc"),
+      source: t("problem.stat1_source"),
+    },
+    {
+      icon: Clock,
+      iconColor: "text-amber-400/70",
+      iconBg: "bg-amber-400/10",
+      light: "beige",
+      value: t("problem.stat2_value"),
+      numValue: 40,
+      numSuffix: "%",
+      unit: t("problem.stat2_unit"),
+      description: t("problem.stat2_desc"),
+      source: t("problem.stat2_source"),
+    },
+    {
+      icon: Brain,
+      iconColor: "text-purple-400/70",
+      iconBg: "bg-purple-400/10",
+      light: "beige",
+      value: t("problem.stat3_value"),
+      numValue: 23,
+      numSuffix: " min",
+      unit: t("problem.stat3_unit"),
+      description: t("problem.stat3_desc"),
+      source: t("problem.stat3_source"),
+    },
+    {
+      icon: AlertTriangle,
+      iconColor: "text-red-400/70",
+      iconBg: "bg-red-400/10",
+      light: true,
+      value: t("problem.stat4_value"),
+      numValue: 67,
+      numSuffix: "%",
+      unit: t("problem.stat4_unit"),
+      description: t("problem.stat4_desc"),
+      source: t("problem.stat4_source"),
+    },
+  ];
 
   return (
     <section ref={ref} className="bg-black py-16 md:py-40 px-6 overflow-hidden relative">
@@ -100,20 +102,15 @@ export function ProblemSection() {
         <div className="mb-10 md:mb-24">
           <TextEffect per="word" preset="slide" delay={0} trigger={inView}
             className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">
-            Le constat
+            {t("problem.label")}
           </TextEffect>
           <TextEffect per="word" preset="scale" delay={0.2} trigger={inView}
             as="h2"
             className="text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight mb-8">
-            Un secteur dispersé.
+            {`${t("problem.title1")} ${t("problem.title2")}`}
           </TextEffect>
           <BlurFade delay={0.3} inView><p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
-            Pour chercher un bien, un site. Pour réserver, un autre. Pour se former, encore
-            un autre. Pour trouver un prestataire, un annuaire. Pour suivre ses
-            commissions, un tableur. Chaque étape renvoie vers un outil différent —
-            et à chaque transition, on perd du temps, de la concentration et des
-            opportunités. Le parcours immobilier actuel est une succession de
-            ruptures qui coûte cher à tous les acteurs.
+            {t("problem.desc")}
           </p></BlurFade>
         </div>
 
@@ -158,8 +155,8 @@ export function ProblemSection() {
           <div className="rounded-2xl md:rounded-full inline-flex items-center gap-3 px-5 md:px-8 py-4 border-2 border-emerald-500/40" style={{ background: "rgba(15, 30, 15, 0.85)" }}>
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <p className="text-white/60 text-sm">
-              E-Dome rassemble tout en un seul endroit.{" "}
-              <span className="text-emerald-400 font-medium">Zéro friction, zéro dispersion.</span>
+              {t("problem.pill")}{" "}
+              <span className="text-emerald-400 font-medium">{t("problem.pill_bold")}</span>
             </p>
           </div>
         </motion.div>
