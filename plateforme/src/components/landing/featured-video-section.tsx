@@ -44,7 +44,7 @@ export function FeaturedVideoSection() {
                   et servent uniquement à illustrer les fonctionnalités prévues
                 </p>
               </div>
-              <Link href="/acces">
+              <Link href="#inscriptions">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -70,7 +70,7 @@ export function FeaturedVideoSection() {
           <p className="text-white/30 text-xs mb-4">
             Maquette de visualisation — données fictives
           </p>
-          <Link href="/acces" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-sm font-semibold px-5 py-3 rounded-lg hover:bg-[#d4a57a] transition-colors">
+          <Link href="#inscriptions" className="inline-flex items-center gap-2 bg-[#C4956A] text-black text-sm font-semibold px-5 py-3 rounded-lg hover:bg-[#d4a57a] transition-colors">
             Entrer dans la démo <ArrowRight size={14} />
           </Link>
         </div>

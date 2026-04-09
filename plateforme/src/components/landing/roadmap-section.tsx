@@ -156,7 +156,7 @@ export function RoadmapSection() {
         </div>
 
         {/* CTA + avantages early members */}
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
+        <motion.div id="inscriptions" initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="rounded-3xl border-2 border-[#C4956A]/20 overflow-hidden relative"
           style={{ background: "rgba(196, 149, 106, 0.04)" }}>
           <DotPattern width={10} height={10} cr={0.4} className="hidden md:block fill-[#C4956A]/5" />
@@ -164,9 +164,9 @@ export function RoadmapSection() {
           <div className="relative z-10 p-5 md:p-12">
             {/* Header */}
             <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-[#C4956A]/10 border border-[#C4956A]/20 mb-5">
-                <div className="w-2 h-2 rounded-full bg-[#C4956A] animate-pulse" />
-                <span className="text-[#C4956A] text-xs font-medium">Inscriptions ouvertes</span>
+              <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 mb-5">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-emerald-400 text-xs font-medium">Inscriptions ouvertes</span>
               </div>
               <h3 className="text-white text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
                 Rejoignez les premiers membres.
