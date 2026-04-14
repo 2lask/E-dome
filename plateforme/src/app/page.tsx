@@ -174,26 +174,11 @@ function HomePageContent() {
                 {t("hero.subtitle")}
               </p>
 
-              <div
-                className="flex flex-wrap items-center gap-3 mb-10"
-                style={{
-                  opacity: btnVisible ? 1 : 0,
-                  transition: "opacity 1000ms ease",
-                }}
-              >
-                <Link href="#inscriptions" className="bg-[#C4956A] text-black rounded-lg px-6 py-3 text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
-                  {t("hero.cta")} <ArrowRight size={16} />
-                </Link>
-                <a href="#vision" className="liquid-glass rounded-lg px-6 py-3 text-white/80 text-sm font-medium border border-white/15 hover:bg-white/10 transition-colors">
-                  {t("hero.learn")}
-                </a>
-              </div>
-
               {/* Early member perks */}
               <div
-                className="flex flex-wrap gap-2"
+                className="flex flex-wrap gap-2 mb-6"
                 style={{
-                  opacity: btnVisible ? 1 : 0,
+                  opacity: subVisible ? 1 : 0,
                   transition: "opacity 1200ms ease",
                 }}
               >
@@ -216,6 +201,21 @@ function HomePageContent() {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                   {lang === "th" ? "สิทธิพิเศษ" : lang === "en" ? "Exclusive perks" : "Avantages exclusifs"}
                 </div>
+              </div>
+
+              <div
+                className="flex flex-wrap items-center gap-3"
+                style={{
+                  opacity: btnVisible ? 1 : 0,
+                  transition: "opacity 1000ms ease",
+                }}
+              >
+                <Link href="#inscriptions" className="bg-[#C4956A] text-black rounded-lg px-6 py-3 text-sm font-semibold hover:bg-[#d4a57a] transition-colors flex items-center gap-2">
+                  {t("hero.cta")} <ArrowRight size={16} />
+                </Link>
+                <a href="#vision" className="liquid-glass rounded-lg px-6 py-3 text-white/80 text-sm font-medium border border-white/15 hover:bg-white/10 transition-colors">
+                  {t("hero.learn")}
+                </a>
               </div>
 
             </div>
