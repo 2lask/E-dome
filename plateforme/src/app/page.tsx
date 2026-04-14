@@ -134,12 +134,21 @@ function HomePageContent() {
               <a href="#fondateurs" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.founders")}</a>
               <a href="#roadmap" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.roadmap")}</a>
             </div>
-            <button
-              onClick={() => setLang(lang === "fr" ? "en" : lang === "en" ? "th" : "fr")}
-              className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 transition-colors uppercase"
-            >
-              {lang === "fr" ? "EN" : lang === "en" ? "TH" : "FR"}
-            </button>
+            <div className="flex items-center gap-1 rounded-lg border border-white/10 overflow-hidden">
+              {(["fr", "en", "th"] as const).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  className={`text-xs font-medium px-2.5 py-1.5 transition-colors uppercase ${
+                    lang === l
+                      ? "bg-[#C4956A] text-black"
+                      : "text-white/50 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
             <Link href="#inscriptions" className="bg-[#C4956A] text-black rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors">
               {t("hero.demo")}
             </Link>
