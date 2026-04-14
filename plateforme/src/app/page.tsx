@@ -189,6 +189,35 @@ function HomePageContent() {
                 </a>
               </div>
 
+              {/* Early member perks */}
+              <div
+                className="flex flex-wrap gap-2"
+                style={{
+                  opacity: btnVisible ? 1 : 0,
+                  transition: "opacity 1200ms ease",
+                }}
+              >
+                <div className="flex items-center gap-1.5 text-emerald-400/80 text-[10px] sm:text-xs">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  {lang === "th" ? "แบดจ์ผู้ก่อตั้ง" : lang === "en" ? "Founder badge" : "Badge fondateur"}
+                </div>
+                <span className="text-white/15">·</span>
+                <div className="flex items-center gap-1.5 text-emerald-400/80 text-[10px] sm:text-xs">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  {lang === "th" ? "เข้าถึงก่อนใคร" : lang === "en" ? "Early access" : "Accès anticipé"}
+                </div>
+                <span className="text-white/15">·</span>
+                <div className="flex items-center gap-1.5 text-emerald-400/80 text-[10px] sm:text-xs">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  {lang === "th" ? "การมองเห็นสำคัญ" : lang === "en" ? "Priority visibility" : "Visibilité prioritaire"}
+                </div>
+                <span className="text-white/15 hidden sm:inline">·</span>
+                <div className="hidden sm:flex items-center gap-1.5 text-emerald-400/80 text-[10px] sm:text-xs">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  {lang === "th" ? "สิทธิพิเศษ" : lang === "en" ? "Exclusive perks" : "Avantages exclusifs"}
+                </div>
+              </div>
+
             </div>
 
             {/* Right - CTA */}
