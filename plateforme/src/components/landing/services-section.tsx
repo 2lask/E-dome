@@ -59,6 +59,33 @@ export function ServicesSection() {
 
   return (
     <section ref={ref} className="bg-white py-28 md:py-40 px-6 overflow-hidden relative">
+      {/* Decorative architectural window/floor plan corner */}
+      <svg
+        className="absolute left-6 bottom-24 w-32 md:w-44 opacity-[0.04] text-[#C4956A]/20 pointer-events-none"
+        viewBox="0 0 100 100"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.8"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Window outline with mullions */}
+        <rect x="10" y="10" width="80" height="80" rx="2" />
+        <rect x="15" y="15" width="70" height="70" rx="1" />
+        <line x1="50" y1="15" x2="50" y2="85" />
+        <line x1="15" y1="50" x2="85" y2="50" />
+        {/* Arched top detail */}
+        <path d="M15 40 Q50 8 85 40" />
+        {/* Corner brackets */}
+        <line x1="5" y1="5" x2="5" y2="25" />
+        <line x1="5" y1="5" x2="25" y2="5" />
+        <line x1="95" y1="5" x2="95" y2="25" />
+        <line x1="95" y1="5" x2="75" y2="5" />
+        <line x1="5" y1="95" x2="5" y2="75" />
+        <line x1="5" y1="95" x2="25" y2="95" />
+        <line x1="95" y1="95" x2="95" y2="75" />
+        <line x1="95" y1="95" x2="75" y2="95" />
+      </svg>
+
       <div className="max-w-6xl mx-auto relative">
         <div className="flex items-start md:items-center justify-between mb-12 md:mb-16 flex-col md:flex-row gap-4">
           <div>

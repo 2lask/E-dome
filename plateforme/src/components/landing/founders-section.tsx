@@ -64,6 +64,15 @@ export function FoundersSection() {
         {/* Central quote */}
         <div className="text-center mb-16 md:mb-28 px-4">
           <div className="w-12 h-1 bg-[#C4956A] mx-auto mb-8" />
+          {/* Decorative quote mark */}
+          <svg
+            className="mx-auto mb-4 w-10 h-10 md:w-14 md:h-14 text-[#C4956A] opacity-20"
+            viewBox="0 0 48 48"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M14 24c-3.3 0-6-2.7-6-6s2.7-6 6-6c1 0 2 .3 2.8.7C18.8 10.3 20 7.3 22 5l2 1.5c-3 3.5-5 7.5-5 11.5 0 3.3-2.2 6-5 6zm20 0c-3.3 0-6-2.7-6-6s2.7-6 6-6c1 0 2 .3 2.8.7C38.8 10.3 40 7.3 42 5l2 1.5c-3 3.5-5 7.5-5 11.5 0 3.3-2.2 6-5 6z" />
+          </svg>
           <div
             className="text-xl sm:text-2xl md:text-4xl lg:text-5xl text-gray-900 leading-[1.3] tracking-tight italic"
             style={{ fontFamily: "'Instrument Serif', serif" }}

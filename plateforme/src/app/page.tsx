@@ -80,15 +80,11 @@ function HomePageContent() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [subVisible, setSubVisible] = useState(false);
   const [btnVisible, setBtnVisible] = useState(false);
-  const [tagVisible, setTagVisible] = useState(false);
-  const [statsVisible, setStatsVisible] = useState(false);
 
   useEffect(() => {
     const t1 = setTimeout(() => setSubVisible(true), 800);
     const t2 = setTimeout(() => setBtnVisible(true), 1200);
-    const t3 = setTimeout(() => setTagVisible(true), 1400);
-    const t4 = setTimeout(() => setStatsVisible(true), 1600);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
   // Force video play on mobile (some browsers block autoplay until interaction)
@@ -119,23 +115,22 @@ function HomePageContent() {
           preload="auto"
           src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260402_143803_f635b644-d959-4f16-9d29-cedaeb5c6de0.mp4"
         />
-        {/* Light overlay instead of dark gradient */}
-        <div className="absolute inset-0 bg-white/60" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/50" />
+        {/* Subtle dark gradient overlay - video stays visible */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/60" />
 
         {/* Navbar */}
         <nav className="relative z-20 px-4 sm:px-6 py-6">
-          <div className="liquid-glass-light rounded-2xl max-w-6xl mx-auto px-5 sm:px-6 py-3.5 flex items-center justify-between">
-            <span className="text-gray-900 font-semibold text-2xl tracking-tight">
+          <div className="backdrop-blur-xl bg-black/20 border border-white/10 rounded-2xl max-w-6xl mx-auto px-5 sm:px-6 py-3.5 flex items-center justify-between">
+            <span className="text-white font-semibold text-2xl tracking-tight">
               E-<span className="text-[#C4956A]">Dome</span>
             </span>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#vision" className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.vision")}</a>
-              <a href="#fonctionnalites" className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.features")}</a>
-              <a href="#fondateurs" className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.founders")}</a>
-              <a href="#roadmap" className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.roadmap")}</a>
+              <a href="#vision" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.vision")}</a>
+              <a href="#fonctionnalites" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.features")}</a>
+              <a href="#fondateurs" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.founders")}</a>
+              <a href="#roadmap" className="text-white/70 hover:text-[#C4956A] text-sm font-medium transition-colors">{t("nav.roadmap")}</a>
             </div>
-            <div className="flex items-center gap-1 rounded-lg border border-gray-200 overflow-hidden">
+            <div className="flex items-center gap-1 rounded-lg border border-white/20 overflow-hidden">
               {(["fr", "en", "th"] as const).map((l) => (
                 <button
                   key={l}
@@ -143,7 +138,7 @@ function HomePageContent() {
                   className={`text-xs font-medium px-2.5 py-1.5 transition-colors uppercase ${
                     lang === l
                       ? "bg-[#C4956A] text-white"
-                      : "text-gray-400 hover:text-gray-700 hover:bg-gray-50"
+                      : "text-white/60 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {l}
@@ -156,110 +151,133 @@ function HomePageContent() {
           </div>
         </nav>
 
-        {/* Hero content */}
-        <div className="relative z-10 flex-1 flex items-center px-6 sm:px-10">
-          <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            {/* Left */}
-            <div>
-              <p className="text-[#C4956A] text-xs sm:text-sm tracking-[0.25em] uppercase mb-4 font-semibold"
-                style={{ opacity: subVisible ? 1 : 0, transition: "opacity 800ms ease" }}>
-                {t("hero.label")}
-              </p>
-              <h1
-                className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl text-gray-900 leading-[1.1] mb-6"
-                style={{ letterSpacing: "-0.04em" }}
-              >
-                <AnimatedText text={t("hero.title1")} delay={200} />
-                <br />
-                <span className="text-[#C4956A]"><AnimatedText text={t("hero.title2")} delay={400} /></span>
-              </h1>
+        {/* Hero content - centered */}
+        <div className="relative z-10 flex-1 flex items-center justify-center px-6 sm:px-10">
+          <div className="max-w-4xl mx-auto w-full text-center">
+            <p
+              className="text-[#C4956A] text-xs sm:text-sm tracking-[0.3em] uppercase mb-6 font-semibold"
+              style={{
+                opacity: subVisible ? 1 : 0,
+                transform: subVisible ? "translateY(0)" : "translateY(12px)",
+                transition: "opacity 800ms ease, transform 800ms ease",
+              }}
+            >
+              {t("hero.label")}
+            </p>
+            <h1
+              className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl text-white leading-[1.05] mb-6"
+              style={{ letterSpacing: "-0.04em", fontFamily: "'Instrument Serif', 'Georgia', serif" }}
+            >
+              <AnimatedText text={t("hero.title1")} delay={200} />
+              <br />
+              <span className="text-[#C4956A]"><AnimatedText text={t("hero.title2")} delay={400} /></span>
+            </h1>
 
-              <p
-                className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-xl mb-8 font-light"
-                style={{
-                  opacity: subVisible ? 1 : 0,
-                  transition: "opacity 1000ms ease",
-                }}
-              >
-                {t("hero.subtitle")}
-              </p>
+            <p
+              className="text-white/75 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-8 font-light"
+              style={{
+                opacity: subVisible ? 1 : 0,
+                transform: subVisible ? "translateY(0)" : "translateY(16px)",
+                transition: "opacity 1000ms ease, transform 1000ms ease",
+              }}
+            >
+              {t("hero.subtitle")}
+            </p>
 
-              {/* Early member perks */}
-              <div
-                className="flex flex-wrap gap-2 mb-6"
-                style={{
-                  opacity: subVisible ? 1 : 0,
-                  transition: "opacity 1200ms ease",
-                }}
-              >
-                <div className="flex items-center gap-1.5 text-emerald-600 text-[10px] sm:text-xs font-medium">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  {lang === "th" ? "แบดจ์ผู้ก่อตั้ง" : lang === "en" ? "Founder badge" : "Badge fondateur"}
-                </div>
-                <span className="text-gray-300">·</span>
-                <div className="flex items-center gap-1.5 text-emerald-600 text-[10px] sm:text-xs font-medium">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  {lang === "th" ? "เข้าถึงก่อนใคร" : lang === "en" ? "Early access" : "Accès anticipé"}
-                </div>
-                <span className="text-gray-300">·</span>
-                <div className="flex items-center gap-1.5 text-emerald-600 text-[10px] sm:text-xs font-medium">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  {lang === "th" ? "การมองเห็นสำคัญ" : lang === "en" ? "Priority visibility" : "Visibilité prioritaire"}
-                </div>
-                <span className="text-gray-300 hidden sm:inline">·</span>
-                <div className="hidden sm:flex items-center gap-1.5 text-emerald-600 text-[10px] sm:text-xs font-medium">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  {lang === "th" ? "สิทธิพิเศษ" : lang === "en" ? "Exclusive perks" : "Avantages exclusifs"}
-                </div>
+            {/* Early member perks */}
+            <div
+              className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-8"
+              style={{
+                opacity: subVisible ? 1 : 0,
+                transform: subVisible ? "translateY(0)" : "translateY(12px)",
+                transition: "opacity 1200ms ease, transform 1200ms ease",
+              }}
+            >
+              <div className="flex items-center gap-1.5 text-emerald-400 text-[11px] sm:text-xs font-medium">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span className="text-white/70">{lang === "th" ? "แบดจ์ผู้ก่อตั้ง" : lang === "en" ? "Founder badge" : "Badge fondateur"}</span>
               </div>
-
-              <div
-                className="flex flex-wrap items-center gap-3"
-                style={{
-                  opacity: btnVisible ? 1 : 0,
-                  transition: "opacity 1000ms ease",
-                }}
-              >
-                <Link href="#inscriptions" className="bg-[#C4956A] text-white rounded-lg px-6 py-3 text-sm font-semibold hover:bg-[#b8856a] transition-colors flex items-center gap-2 shadow-lg shadow-[#C4956A]/20">
-                  {t("hero.cta")} <ArrowRight size={16} />
-                </Link>
-                <a href="#vision" className="rounded-lg px-6 py-3 text-gray-700 text-sm font-medium border border-gray-300 bg-white/80 hover:bg-white hover:border-gray-400 transition-colors">
-                  {t("hero.learn")}
-                </a>
+              <div className="flex items-center gap-1.5 text-emerald-400 text-[11px] sm:text-xs font-medium">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span className="text-white/70">{lang === "th" ? "เข้าถึงก่อนใคร" : lang === "en" ? "Early access" : "Accès anticipé"}</span>
               </div>
-
+              <div className="flex items-center gap-1.5 text-emerald-400 text-[11px] sm:text-xs font-medium">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span className="text-white/70">{lang === "th" ? "การมองเห็นสำคัญ" : lang === "en" ? "Priority visibility" : "Visibilité prioritaire"}</span>
+              </div>
+              <div className="hidden sm:flex items-center gap-1.5 text-emerald-400 text-[11px] sm:text-xs font-medium">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span className="text-white/70">{lang === "th" ? "สิทธิพิเศษ" : lang === "en" ? "Exclusive perks" : "Avantages exclusifs"}</span>
+              </div>
             </div>
 
-            {/* Right - CTA */}
-            <div className="hidden lg:flex lg:justify-end lg:items-center">
-              <Link
-                href="#inscriptions"
-                className="bg-[#C4956A] text-white rounded-2xl px-8 py-4 text-lg sm:text-xl font-semibold hover:bg-[#b8856a] transition-colors flex items-center gap-3 shadow-xl shadow-[#C4956A]/25"
-                style={{
-                  opacity: tagVisible ? 1 : 0,
-                  transition: "opacity 1000ms ease",
-                }}
-              >
-                {t("hero.mockup")} <ArrowRight size={20} />
+            {/* CTA buttons */}
+            <div
+              className="flex flex-wrap items-center justify-center gap-4"
+              style={{
+                opacity: btnVisible ? 1 : 0,
+                transform: btnVisible ? "translateY(0)" : "translateY(16px)",
+                transition: "opacity 1000ms ease, transform 1000ms ease",
+              }}
+            >
+              <Link href="#inscriptions" className="bg-[#C4956A] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#b8856a] transition-all flex items-center gap-2 shadow-lg shadow-[#C4956A]/25 hover:shadow-xl hover:shadow-[#C4956A]/30 hover:scale-[1.02]">
+                {t("hero.cta")} <ArrowRight size={16} />
               </Link>
+              <a href="#vision" className="rounded-xl px-8 py-3.5 text-white text-sm font-medium border border-white/25 backdrop-blur-sm bg-white/10 hover:bg-white/20 hover:border-white/40 transition-all hover:scale-[1.02]">
+                {t("hero.learn")}
+              </a>
             </div>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="relative z-10 flex justify-center pb-8">
+          <div className="flex flex-col items-center gap-2 animate-bounce">
+            <span className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-medium">Scroll</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/40">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
           </div>
         </div>
 
       </section>
 
       <div id="vision"><AboutSection /></div>
-      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent max-w-4xl mx-auto" />
+      <div className="flex items-center gap-4 max-w-xs mx-auto py-8">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200" />
+        <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200" />
+      </div>
       <FeaturedVideoSection />
-      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent max-w-4xl mx-auto" />
+      <div className="flex items-center gap-4 max-w-xs mx-auto py-8">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200" />
+        <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200" />
+      </div>
       <div id="probleme"><ProblemSection /></div>
-      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent max-w-4xl mx-auto" />
+      <div className="flex items-center gap-4 max-w-xs mx-auto py-8">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200" />
+        <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200" />
+      </div>
       <div id="fonctionnalites"><ServicesSection /></div>
-      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent max-w-4xl mx-auto" />
+      <div className="flex items-center gap-4 max-w-xs mx-auto py-8">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200" />
+        <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200" />
+      </div>
       <PhilosophySection />
-      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent max-w-4xl mx-auto" />
+      <div className="flex items-center gap-4 max-w-xs mx-auto py-8">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200" />
+        <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200" />
+      </div>
       <div id="fondateurs"><FoundersSection /></div>
-      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent max-w-4xl mx-auto" />
+      <div className="flex items-center gap-4 max-w-xs mx-auto py-8">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200" />
+        <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200" />
+      </div>
       <div id="roadmap"><RoadmapSection /></div>
       <FooterSection />
     </div>

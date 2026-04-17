@@ -17,6 +17,30 @@ export function AboutSection() {
       {/* Subtle warm radial glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(196,149,106,0.06)_0%,_transparent_70%)]" />
 
+      {/* Decorative architectural silhouette */}
+      <svg
+        className="absolute right-6 top-24 w-32 md:w-48 opacity-[0.04] text-[#C4956A]/20 pointer-events-none"
+        viewBox="0 0 120 140"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.8"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Simple house/building outline */}
+        <rect x="10" y="50" width="100" height="80" rx="2" />
+        <line x1="10" y1="80" x2="110" y2="80" />
+        <polygon points="60,10 10,50 110,50" />
+        <rect x="25" y="58" width="18" height="16" rx="1" />
+        <rect x="77" y="58" width="18" height="16" rx="1" />
+        <rect x="25" y="88" width="18" height="16" rx="1" />
+        <rect x="77" y="88" width="18" height="16" rx="1" />
+        <rect x="46" y="100" width="28" height="30" rx="1" />
+        <line x1="60" y1="100" x2="60" y2="130" />
+        <circle cx="60" cy="28" r="3" />
+        <line x1="10" y1="50" x2="10" y2="130" />
+        <line x1="110" y1="50" x2="110" y2="130" />
+      </svg>
+
       <div className="max-w-6xl mx-auto relative">
         <TextEffect per="char" preset="blur" delay={0.1} trigger={inView}
           className="text-[#C4956A] text-sm tracking-widest uppercase mb-8 font-medium">
