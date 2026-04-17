@@ -9,63 +9,80 @@ export function FeaturedVideoSection() {
   const { t } = useLandingLang();
 
   return (
-    <section className="bg-[#FAFAFA] pt-6 md:pt-10 pb-20 md:pb-32 px-6 overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.7 }}
-        className="max-w-6xl mx-auto"
+    <section className="bg-[#FAFAF8] py-20 md:py-32 px-6 overflow-hidden relative">
+      {/* Architectural SVG decoration */}
+      <svg
+        className="absolute top-12 right-12 opacity-[0.04] pointer-events-none hidden md:block"
+        width="120"
+        height="120"
+        viewBox="0 0 120 120"
+        fill="none"
       >
+        <rect x="10" y="10" width="100" height="100" stroke="#C4956A" strokeWidth="1" />
+        <rect x="30" y="30" width="60" height="60" stroke="#C4956A" strokeWidth="1" />
+        <line x1="10" y1="10" x2="30" y2="30" stroke="#C4956A" strokeWidth="1" />
+        <line x1="110" y1="10" x2="90" y2="30" stroke="#C4956A" strokeWidth="1" />
+        <line x1="10" y1="110" x2="30" y2="90" stroke="#C4956A" strokeWidth="1" />
+        <line x1="110" y1="110" x2="90" y2="90" stroke="#C4956A" strokeWidth="1" />
+      </svg>
+
+      <div className="max-w-5xl mx-auto">
         {/* Video container */}
-        <div className="rounded-3xl overflow-hidden aspect-video relative shadow-xl">
-          <video
-            className="w-full h-full object-cover"
-            muted autoPlay loop playsInline preload="metadata"
-            src="/videos/plateforme-bg.mp4"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
-          {/* Desktop overlay - text on video */}
-          <div className="absolute bottom-0 left-0 right-0 p-10 hidden md:block">
-            <div className="flex items-end justify-between gap-6">
-              <div className="rounded-2xl p-8 max-w-lg backdrop-blur-xl bg-white/80 border border-white/50 shadow-lg">
-                <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">{t("featured.label")}</p>
-                <p className="text-gray-800 text-base leading-relaxed mb-2 font-light">
-                  {t("featured.desc")}
-                </p>
-                <p className="text-gray-500 text-xs mt-3">
-                  {t("featured.disclaimer")}
-                </p>
-              </div>
-              <Link href="#inscriptions">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="rounded-full px-8 py-3 text-sm font-medium bg-white/80 backdrop-blur-xl border border-white/50 shadow-lg hover:bg-white/90 transition-colors flex items-center gap-2 cursor-pointer shrink-0"
-                >
-                  <span className="text-[#C4956A]">{t("featured.cta")}</span>
-                  <ArrowRight size={16} className="text-[#C4956A]" />
-                </motion.div>
-              </Link>
-            </div>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="rounded-3xl overflow-hidden shadow-2xl"
+        >
+          <div className="aspect-video relative">
+            <video
+              className="w-full h-full object-cover"
+              muted
+              autoPlay
+              loop
+              playsInline
+              preload="metadata"
+              src="/videos/plateforme-bg.mp4"
+            />
           </div>
-        </div>
+        </motion.div>
 
-        {/* Mobile - text below video */}
-        <div className="md:hidden mt-5">
-          <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">{t("featured.label")}</p>
-          <p className="text-gray-700 text-sm leading-relaxed mb-3">
-            {t("featured.mobile_desc")}
+        {/* Text block below video */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="mt-10 md:mt-14 max-w-2xl mx-auto text-center"
+        >
+          <p
+            className="text-[#C4956A] text-xs tracking-[0.2em] uppercase mb-4 font-medium"
+            style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
+          >
+            {t("featured.label")}
           </p>
-          <p className="text-gray-400 text-xs mb-4">
-            {t("featured.mobile_disclaimer")}
+
+          <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-4">
+            {t("featured.desc")}
           </p>
-          <Link href="#inscriptions" className="inline-flex items-center gap-2 bg-[#C4956A] text-white text-sm font-semibold px-5 py-3 rounded-lg hover:bg-[#d4a57a] transition-colors">
-            {t("featured.cta")} <ArrowRight size={14} />
+
+          <p className="text-gray-400 text-xs leading-relaxed mb-8">
+            {t("featured.disclaimer")}
+          </p>
+
+          <Link href="#inscriptions">
+            <motion.span
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-2.5 bg-[#C4956A] text-white text-sm font-semibold px-7 py-3.5 rounded-xl hover:bg-[#b8875e] transition-colors cursor-pointer shadow-md shadow-[#C4956A]/20"
+            >
+              {t("featured.cta")}
+              <ArrowRight size={16} />
+            </motion.span>
           </Link>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </section>
   );
 }

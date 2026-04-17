@@ -2,10 +2,21 @@
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
-import { AlertTriangle, Clock, ArrowLeftRight, Brain } from "lucide-react";
+import { ArrowLeftRight, Clock, Brain, AlertTriangle } from "lucide-react";
 import { useLandingLang } from "@/components/landing/landing-i18n";
 
-function CountUpStat({ target, suffix = "", inView }: { target: number; suffix?: string; inView: boolean }) {
+/* ------------------------------------------------------------------ */
+/*  CountUpStat – animated number that counts up when scrolled into view */
+/* ------------------------------------------------------------------ */
+function CountUpStat({
+  target,
+  suffix = "",
+  inView,
+}: {
+  target: number;
+  suffix?: string;
+  inView: boolean;
+}) {
   const [count, setCount] = useState(0);
   const [started, setStarted] = useState(false);
 
@@ -26,137 +37,185 @@ function CountUpStat({ target, suffix = "", inView }: { target: number; suffix?:
     requestAnimationFrame(step);
   }, [started, target]);
 
-  return <>{started ? count : 0}{suffix}</>;
+  return (
+    <>
+      {started ? count : 0}
+      {suffix}
+    </>
+  );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Fade-up preset                                                     */
+/* ------------------------------------------------------------------ */
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-80px" as const },
+};
+
+/* ------------------------------------------------------------------ */
+/*  Stats data                                                         */
+/* ------------------------------------------------------------------ */
+const statsConfig = [
+  {
+    icon: ArrowLeftRight,
+    iconColor: "text-blue-500",
+    iconBg: "bg-blue-50",
+    numValue: 12,
+    numSuffix: "",
+    valueKey: "problem.stat1_value",
+    unitKey: "problem.stat1_unit",
+    descKey: "problem.stat1_desc",
+    sourceKey: "problem.stat1_source",
+  },
+  {
+    icon: Clock,
+    iconColor: "text-amber-500",
+    iconBg: "bg-amber-50",
+    numValue: 40,
+    numSuffix: "%",
+    valueKey: "problem.stat2_value",
+    unitKey: "problem.stat2_unit",
+    descKey: "problem.stat2_desc",
+    sourceKey: "problem.stat2_source",
+  },
+  {
+    icon: Brain,
+    iconColor: "text-purple-500",
+    iconBg: "bg-purple-50",
+    numValue: 23,
+    numSuffix: " min",
+    valueKey: "problem.stat3_value",
+    unitKey: "problem.stat3_unit",
+    descKey: "problem.stat3_desc",
+    sourceKey: "problem.stat3_source",
+  },
+  {
+    icon: AlertTriangle,
+    iconColor: "text-red-400",
+    iconBg: "bg-red-50",
+    numValue: 67,
+    numSuffix: "%",
+    valueKey: "problem.stat4_value",
+    unitKey: "problem.stat4_unit",
+    descKey: "problem.stat4_desc",
+    sourceKey: "problem.stat4_source",
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/*  ProblemSection                                                     */
+/* ------------------------------------------------------------------ */
 export function ProblemSection() {
   const { t } = useLandingLang();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
-  const stats = [
-    {
-      icon: ArrowLeftRight,
-      iconColor: "text-blue-500",
-      iconBg: "bg-blue-50",
-      value: t("problem.stat1_value"),
-      numValue: 12,
-      numSuffix: "",
-      unit: t("problem.stat1_unit"),
-      description: t("problem.stat1_desc"),
-      source: t("problem.stat1_source"),
-    },
-    {
-      icon: Clock,
-      iconColor: "text-amber-500",
-      iconBg: "bg-amber-50",
-      value: t("problem.stat2_value"),
-      numValue: 40,
-      numSuffix: "%",
-      unit: t("problem.stat2_unit"),
-      description: t("problem.stat2_desc"),
-      source: t("problem.stat2_source"),
-    },
-    {
-      icon: Brain,
-      iconColor: "text-purple-500",
-      iconBg: "bg-purple-50",
-      value: t("problem.stat3_value"),
-      numValue: 23,
-      numSuffix: " min",
-      unit: t("problem.stat3_unit"),
-      description: t("problem.stat3_desc"),
-      source: t("problem.stat3_source"),
-    },
-    {
-      icon: AlertTriangle,
-      iconColor: "text-red-400",
-      iconBg: "bg-red-50",
-      value: t("problem.stat4_value"),
-      numValue: 67,
-      numSuffix: "%",
-      unit: t("problem.stat4_unit"),
-      description: t("problem.stat4_desc"),
-      source: t("problem.stat4_source"),
-    },
-  ];
-
   return (
-    <section ref={ref} className="bg-white py-16 md:py-40 px-6 overflow-hidden relative">
-      <div className="max-w-6xl mx-auto relative">
-        <div className="mb-10 md:mb-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7 }}
+    <section ref={ref} className="relative bg-white py-24 md:py-40 px-6 overflow-hidden">
+      {/* Decorative architectural SVG - minimal building on right */}
+      <svg
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-[240px] md:w-[360px] opacity-[0.05] pointer-events-none"
+        viewBox="0 0 200 260"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.8"
+      >
+        <rect x="30" y="60" width="60" height="180" />
+        <rect x="110" y="100" width="60" height="140" />
+        <rect x="45" y="80" width="14" height="20" />
+        <rect x="65" y="80" width="14" height="20" />
+        <rect x="45" y="120" width="14" height="20" />
+        <rect x="65" y="120" width="14" height="20" />
+        <rect x="45" y="160" width="14" height="20" />
+        <rect x="65" y="160" width="14" height="20" />
+        <rect x="125" y="120" width="14" height="20" />
+        <rect x="145" y="120" width="14" height="20" />
+        <rect x="125" y="160" width="14" height="20" />
+        <rect x="145" y="160" width="14" height="20" />
+        <rect x="125" y="200" width="14" height="20" />
+        <rect x="145" y="200" width="14" height="20" />
+        <line x1="60" y1="60" x2="60" y2="40" />
+        <line x1="55" y1="40" x2="65" y2="40" />
+      </svg>
+
+      <div className="relative max-w-6xl mx-auto">
+        {/* Header block */}
+        <div className="mb-16 md:mb-24">
+          <motion.p
+            {...fadeUp}
+            transition={{ duration: 0.6 }}
+            className="text-[#C4956A] text-xs md:text-sm font-medium tracking-widest uppercase mb-6"
           >
-            <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-6">
-              {t("problem.label")}
-            </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, delay: 0.1 }}
+            {t("problem.label")}
+          </motion.p>
+
+          <motion.h2
+            {...fadeUp}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-3xl md:text-5xl lg:text-6xl text-gray-900 leading-[1.1] tracking-tight mb-8"
+            style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
           >
-            <h2 className="text-4xl md:text-6xl lg:text-7xl text-gray-900 leading-[1.1] tracking-tight mb-10">
-              {t("problem.title1")} {t("problem.title2")}
-            </h2>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            {t("problem.title1")}{" "}
+            <span className="italic text-[#C4956A]">{t("problem.title2")}</span>
+          </motion.h2>
+
+          <motion.p
+            {...fadeUp}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-gray-500 text-base md:text-lg max-w-3xl leading-relaxed"
           >
-            <p className="text-gray-500 text-base md:text-lg max-w-3xl leading-relaxed">
-              {t("problem.desc")}
-            </p>
-          </motion.div>
+            {t("problem.desc")}
+          </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {stats.map((stat, i) => {
+        {/* 2x2 stat cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {statsConfig.map((stat, i) => {
             const Icon = stat.icon;
             return (
-              <motion.div key={stat.value}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.7, delay: i * 0.1 }}
-                className="relative bg-white border border-gray-200 rounded-2xl hover:shadow-lg transition-all overflow-hidden">
-
-                <div className="relative z-10 p-6 md:p-8">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className={`rounded-full p-2.5 ${stat.iconBg} shrink-0`}>
-                      <Icon size={18} className={stat.iconColor} />
-                    </div>
-                    <div>
-                      <p className="text-gray-900 text-3xl md:text-4xl font-semibold tracking-tight">
-                        <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
-                        <span className="text-gray-400 text-base ml-2 font-normal">{stat.unit}</span>
-                      </p>
-                    </div>
+              <motion.div
+                key={stat.valueKey}
+                {...fadeUp}
+                transition={{ duration: 0.6, delay: 0.1 * i }}
+                className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-6 md:p-8"
+              >
+                {/* Icon + number */}
+                <div className="flex items-start gap-4 mb-4">
+                  <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${stat.iconBg}`}>
+                    <Icon size={18} className={stat.iconColor} />
                   </div>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-3">{stat.description}</p>
-                  <p className="text-gray-400 text-xs italic">{stat.source}</p>
+                  <div>
+                    <p className="text-gray-900 text-3xl md:text-4xl font-semibold tracking-tight leading-none">
+                      <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
+                    </p>
+                    <p className="text-gray-400 text-sm mt-1">{t(stat.unitKey)}</p>
+                  </div>
                 </div>
+
+                {/* Description */}
+                <p className="text-gray-600 text-sm leading-relaxed mb-3">
+                  {t(stat.descKey)}
+                </p>
+
+                {/* Source */}
+                <p className="text-gray-400 text-xs italic">
+                  {t(stat.sourceKey)}
+                </p>
               </motion.div>
             );
           })}
         </div>
 
+        {/* Green pill */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="mt-16 text-center"
+          {...fadeUp}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-16 md:mt-20 text-center"
         >
-          <div className="rounded-2xl md:rounded-full inline-flex items-center gap-3 px-5 md:px-8 py-4 border-2 border-emerald-200 bg-emerald-50">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="inline-flex items-center gap-3 rounded-2xl md:rounded-full px-6 md:px-8 py-4 border-2 border-emerald-200 bg-emerald-50">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
             <p className="text-gray-600 text-sm">
               {t("problem.pill")}{" "}
               <span className="text-emerald-600 font-medium">{t("problem.pill_bold")}</span>

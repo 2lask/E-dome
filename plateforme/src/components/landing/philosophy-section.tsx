@@ -39,17 +39,45 @@ export function PhilosophySection() {
   ];
 
   return (
-    <section className="bg-black/40 backdrop-blur-xl py-16 md:py-28 lg:py-40 px-6 overflow-hidden relative">
+    <section className="bg-[#FAFAF8] py-24 md:py-36 px-6 overflow-hidden relative">
+      {/* Architectural SVG decorations */}
+      <svg
+        className="absolute top-20 right-16 opacity-[0.04] pointer-events-none hidden lg:block"
+        width="140"
+        height="140"
+        viewBox="0 0 140 140"
+        fill="none"
+      >
+        <circle cx="70" cy="70" r="65" stroke="#C4956A" strokeWidth="1" />
+        <circle cx="70" cy="70" r="45" stroke="#C4956A" strokeWidth="1" />
+        <circle cx="70" cy="70" r="25" stroke="#C4956A" strokeWidth="1" />
+        <line x1="70" y1="5" x2="70" y2="135" stroke="#C4956A" strokeWidth="0.5" />
+        <line x1="5" y1="70" x2="135" y2="70" stroke="#C4956A" strokeWidth="0.5" />
+      </svg>
+      <svg
+        className="absolute bottom-32 left-10 opacity-[0.04] pointer-events-none hidden lg:block"
+        width="60"
+        height="120"
+        viewBox="0 0 60 120"
+        fill="none"
+      >
+        <rect x="5" y="5" width="50" height="50" stroke="#C4956A" strokeWidth="1" />
+        <rect x="15" y="65" width="30" height="50" stroke="#C4956A" strokeWidth="1" />
+        <line x1="30" y1="55" x2="30" y2="65" stroke="#C4956A" strokeWidth="1" />
+      </svg>
 
       <div className="max-w-6xl mx-auto relative">
-        <div className="mb-16 md:mb-24">
+        {/* Header */}
+        <div className="mb-14 md:mb-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-6">{t("philosophy.label")}</p>
+            <p className="text-[#C4956A] text-xs tracking-[0.2em] uppercase mb-4 font-medium">
+              {t("philosophy.label")}
+            </p>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -57,8 +85,12 @@ export function PhilosophySection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            <h2 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl text-white tracking-tight mb-8">
-              {t("philosophy.title1")} {t("philosophy.title2")}
+            <h2
+              className="text-3xl md:text-5xl lg:text-6xl text-gray-900 tracking-tight mb-6"
+              style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
+            >
+              {t("philosophy.title1")}{" "}
+              <span className="text-[#C4956A]">{t("philosophy.title2")}</span>
             </h2>
           </motion.div>
           <motion.div
@@ -67,13 +99,14 @@ export function PhilosophySection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
+            <p className="text-gray-500 text-base md:text-lg max-w-3xl leading-relaxed">
               {t("philosophy.desc")}
             </p>
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16">
+        {/* Pillar cards - 2x2 grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16 md:mb-24">
           {pillars.map((pillar, i) => {
             const Icon = pillar.icon;
             return (
@@ -81,17 +114,24 @@ export function PhilosophySection() {
                 key={pillar.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.7, delay: i * 0.1 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
               >
-                <div className="bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 shadow-none hover:shadow-xl hover:border-white/10 transition-all duration-300 p-6 md:p-8">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 p-6 md:p-8">
                   <div className="flex items-center gap-3 mb-5">
                     <div className={`rounded-full p-2.5 ${pillar.iconBg}`}>
                       <Icon size={18} className={pillar.iconColor} />
                     </div>
-                    <h3 className="text-white text-lg font-medium tracking-tight">{pillar.title}</h3>
+                    <h3
+                      className="text-gray-900 text-lg font-medium tracking-tight"
+                      style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
+                    >
+                      {pillar.title}
+                    </h3>
                   </div>
-                  <p className="text-white/70 text-sm leading-relaxed">{pillar.description}</p>
+                  <p className="text-gray-500 text-sm leading-relaxed">
+                    {pillar.description}
+                  </p>
                 </div>
               </motion.div>
             );
@@ -100,74 +140,101 @@ export function PhilosophySection() {
 
         {/* Video showcase */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="rounded-3xl overflow-hidden aspect-[4/5] md:aspect-video relative"
+          transition={{ duration: 0.8 }}
+          className="rounded-3xl overflow-hidden shadow-2xl relative"
         >
-          <video
-            className="w-full h-full object-cover"
-            muted autoPlay loop playsInline preload="auto"
-            src="/videos/philosophy-bg.mp4"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10" />
+          <div className="aspect-[4/5] md:aspect-video relative">
+            <video
+              className="w-full h-full object-cover"
+              muted
+              autoPlay
+              loop
+              playsInline
+              preload="auto"
+              src="/videos/philosophy-bg.mp4"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-black/5" />
 
-          {/* Desktop only - top left title */}
-          <div className="absolute top-0 left-0 p-8 lg:p-10 hidden md:block">
-            <div className="rounded-2xl px-7 py-5 bg-white/80 backdrop-blur-xl border border-white/50 shadow-lg">
-              <p className="text-[#C4956A] text-xs tracking-[0.2em] uppercase mb-2">{t("philosophy.video_label")}</p>
-              <h3 className="text-white text-2xl lg:text-3xl font-semibold tracking-tight leading-tight mb-4">
-                {t("philosophy.video_title1")}<br />
-                <span className="text-[#C4956A] italic">{t("philosophy.video_title2")}</span>
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { label: t("philosophy.tag_recherche"), gold: false },
-                  { label: t("philosophy.tag_publication"), gold: false },
-                  { label: t("philosophy.tag_reservation"), gold: false },
-                  { label: t("philosophy.tag_formation"), gold: true },
-                  { label: t("philosophy.tag_recommandation"), gold: true },
-                  { label: t("philosophy.tag_remuneration"), gold: true },
-                ].map((tag) => (
-                  <span key={tag.label} className={`text-[10px] px-3 py-1.5 rounded-full font-medium border ${
-                    tag.gold
-                      ? "text-[#C4956A] border-[#C4956A]/30 bg-[#C4956A]/10"
-                      : "text-white/80 border-white/10 bg-white/5"
-                  }`}>
-                    {tag.label}
-                  </span>
-                ))}
+            {/* Desktop overlay cards */}
+            <div className="absolute top-0 left-0 p-8 lg:p-10 hidden md:block">
+              <div className="rounded-2xl px-7 py-5 bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg">
+                <p className="text-[#C4956A] text-xs tracking-[0.2em] uppercase mb-2 font-medium">
+                  {t("philosophy.video_label")}
+                </p>
+                <h3
+                  className="text-gray-900 text-2xl lg:text-3xl tracking-tight leading-tight mb-4"
+                  style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
+                >
+                  {t("philosophy.video_title1")}
+                  <br />
+                  <span className="text-[#C4956A] italic">{t("philosophy.video_title2")}</span>
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: t("philosophy.tag_recherche"), gold: false },
+                    { label: t("philosophy.tag_publication"), gold: false },
+                    { label: t("philosophy.tag_reservation"), gold: false },
+                    { label: t("philosophy.tag_formation"), gold: true },
+                    { label: t("philosophy.tag_recommandation"), gold: true },
+                    { label: t("philosophy.tag_remuneration"), gold: true },
+                  ].map((tag) => (
+                    <span
+                      key={tag.label}
+                      className={`text-[10px] px-3 py-1.5 rounded-full font-medium border ${
+                        tag.gold
+                          ? "text-[#C4956A] border-[#C4956A]/30 bg-[#C4956A]/10"
+                          : "text-gray-600 border-gray-200 bg-white/60"
+                      }`}
+                    >
+                      {tag.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop overlay - bottom right */}
+            <div className="absolute bottom-0 right-0 p-8 lg:p-10 hidden md:block">
+              <div className="rounded-2xl px-7 py-5 max-w-md text-right bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg">
+                <div className="w-8 h-0.5 bg-[#C4956A] mb-4 ml-auto" />
+                <p className="text-gray-900 text-base leading-relaxed mb-3">
+                  {t("philosophy.video_desktop_p1")}
+                </p>
+                <p className="text-gray-500 text-sm leading-relaxed mb-4">
+                  {t("philosophy.video_desktop_p2")}
+                </p>
+                <a
+                  href="#inscriptions"
+                  className="inline-flex items-center gap-2 bg-[#C4956A] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#b8875e] transition-colors ml-auto shadow-md shadow-[#C4956A]/20"
+                >
+                  {t("philosophy.video_cta")}
+                </a>
               </div>
             </div>
           </div>
 
-          {/* Desktop only - bottom right description */}
-          <div className="absolute bottom-0 right-0 p-8 lg:p-10 hidden md:block">
-            <div className="rounded-2xl px-7 py-5 max-w-md text-right bg-white/80 backdrop-blur-xl border border-white/50 shadow-lg">
-              <div className="w-8 h-0.5 bg-[#C4956A] mb-4 ml-auto" />
-              <p className="text-white text-base leading-relaxed mb-3">
-                {t("philosophy.video_desktop_p1")}
-              </p>
-              <p className="text-white/70 text-sm leading-relaxed mb-4">
-                {t("philosophy.video_desktop_p2")}
-              </p>
-              <a href="#inscriptions" className="inline-flex items-center gap-2 bg-[#C4956A] text-white text-sm font-semibold px-5 py-3 rounded-lg hover:bg-[#d4a57a] transition-colors ml-auto">
-                {t("philosophy.video_cta")}
-              </a>
-            </div>
-          </div>
-
-          {/* Mobile only - single compact block at bottom (darker overlay on video) */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 md:hidden">
-            <p className="text-[#C4956A]/80 text-[10px] tracking-[0.2em] uppercase mb-1">{t("philosophy.video_label")}</p>
-            <h3 className="text-white text-lg font-semibold tracking-tight leading-tight mb-2">
-              {t("philosophy.video_title1")} <span className="text-[#C4956A]">{t("philosophy.video_title2")}</span>
+          {/* Mobile - text below video */}
+          <div className="md:hidden bg-white p-6">
+            <p className="text-[#C4956A] text-[10px] tracking-[0.2em] uppercase mb-2 font-medium">
+              {t("philosophy.video_label")}
+            </p>
+            <h3
+              className="text-gray-900 text-xl tracking-tight leading-tight mb-3"
+              style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
+            >
+              {t("philosophy.video_title1")}{" "}
+              <span className="text-[#C4956A] italic">{t("philosophy.video_title2")}</span>
             </h3>
-            <p className="text-white/70 text-xs leading-relaxed mb-3">
+            <p className="text-gray-500 text-sm leading-relaxed mb-4">
               {t("philosophy.video_mobile_desc")}
             </p>
-            <a href="#inscriptions" className="inline-flex items-center gap-2 bg-[#C4956A] text-white text-xs font-semibold px-4 py-2.5 rounded-lg hover:bg-[#d4a57a] transition-colors">
+            <a
+              href="#inscriptions"
+              className="inline-flex items-center gap-2 bg-[#C4956A] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#b8875e] transition-colors shadow-md shadow-[#C4956A]/20"
+            >
               {t("philosophy.video_cta")}
             </a>
           </div>
