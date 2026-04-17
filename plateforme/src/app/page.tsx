@@ -1,17 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { AboutSection } from "@/components/landing/about-section";
-import { FeaturedVideoSection } from "@/components/landing/featured-video-section";
-import { ProblemSection } from "@/components/landing/problem-section";
-import { ServicesSection } from "@/components/landing/services-section";
-import { PhilosophySection } from "@/components/landing/philosophy-section";
-import { FoundersSection } from "@/components/landing/founders-section";
-import { RoadmapSection } from "@/components/landing/roadmap-section";
-import { FooterSection } from "@/components/landing/footer-section";
-import { LandingLanguageProvider, useLandingLang } from "@/components/landing/landing-i18n";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Clock,
+  Eye,
+  Gift,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Sparkles,
+  Star,
+  Users,
+  Layers,
+  TrendingUp,
+  Video,
+  Briefcase,
+  GraduationCap,
+  Handshake,
+} from "lucide-react";
+import { AnimatedMarqueeHero } from "@/components/ui/hero-marquee";
+import SkewCards from "@/components/ui/gradient-card-showcase";
+import {
+  LandingLanguageProvider,
+  useLandingLang,
+} from "@/components/landing/landing-i18n";
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  ROOT                                                               */
+/* ═══════════════════════════════════════════════════════════════════ */
 
 export default function HomePage() {
   return (
@@ -21,39 +41,57 @@ export default function HomePage() {
   );
 }
 
-/* ───────────────────────── Gold Dot Divider ───────────────────────── */
+/* ───────────────────────── Shared animation config ────────────────── */
 
-function DotDivider() {
+const fadeUpViewport = { once: true, margin: "-80px" as const } as const;
+const fadeUp = {
+  initial: { opacity: 0, y: 30 } as const,
+  whileInView: { opacity: 1, y: 0 } as const,
+  viewport: fadeUpViewport,
+  transition: { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] } as const,
+};
+
+function SectionHeading({
+  label,
+  title1,
+  title2,
+  description,
+}: {
+  label: string;
+  title1: string;
+  title2: string;
+  description?: string;
+}) {
   return (
-    <div className="flex items-center gap-4 max-w-xs mx-auto py-12">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#C4956A]/15" />
-      <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
-      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#C4956A]/15" />
+    <div className="text-center max-w-3xl mx-auto mb-16">
+      <motion.div {...fadeUp} className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+        {label}
+      </motion.div>
+      <motion.h2
+        {...fadeUp}
+        className="text-4xl sm:text-5xl md:text-6xl leading-[1.1] mb-6"
+        style={{ fontFamily: "'Instrument Serif', serif" }}
+      >
+        {title1}
+        <br />
+        <span className="text-[#C4956A]">{title2}</span>
+      </motion.h2>
+      {description && (
+        <motion.div {...fadeUp} className="text-gray-500 text-base sm:text-lg leading-relaxed font-light">
+          {description}
+        </motion.div>
+      )}
     </div>
   );
 }
 
-/* ───────────────────────── Fade-in wrapper ───────────────────────── */
-
-function FadeIn({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
+function DotDivider() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.7, delay, ease: [0.25, 0.1, 0.25, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <div className="flex items-center gap-4 max-w-xs mx-auto py-14">
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#C4956A]/15" />
+      <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#C4956A]/15" />
+    </div>
   );
 }
 
@@ -64,55 +102,109 @@ function FadeIn({
 function HomePageContent() {
   const { lang, setLang, t } = useLandingLang();
 
-  const perks = [
-    lang === "th" ? "แบดจ์ผู้ก่อตั้ง" : lang === "en" ? "Founder badge" : "Badge fondateur",
-    lang === "th" ? "เข้าถึงก่อนใคร" : lang === "en" ? "Early access" : "Accès anticipé",
-    lang === "th" ? "การมองเห็นสำคัญ" : lang === "en" ? "Priority visibility" : "Visibilité prioritaire",
-    lang === "th" ? "สิทธิพิเศษ" : lang === "en" ? "Exclusive perks" : "Avantages exclusifs",
+  /* ── Hero images (Unsplash) ──────────────────────────────────────── */
+  const heroImages = [
+    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80",
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80",
+    "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80",
+    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80",
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80",
+    "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600&q=80",
+    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&q=80",
+    "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80",
+  ];
+
+  /* ── Service cards data ──────────────────────────────────────────── */
+  const services = [
+    { icon: <Layers size={22} />, tagKey: "services.f1_tag", titleKey: "services.f1_title", descKey: "services.f1_desc" },
+    { icon: <MapPin size={22} />, tagKey: "services.f2_tag", titleKey: "services.f2_title", descKey: "services.f2_desc" },
+    { icon: <GraduationCap size={22} />, tagKey: "services.f3_tag", titleKey: "services.f3_title", descKey: "services.f3_desc" },
+    { icon: <TrendingUp size={22} />, tagKey: "services.f4_tag", titleKey: "services.f4_title", descKey: "services.f4_desc" },
+    { icon: <Video size={22} />, tagKey: "services.f5_tag", titleKey: "services.f5_title", descKey: "services.f5_desc" },
+    { icon: <Briefcase size={22} />, tagKey: "services.f6_tag", titleKey: "services.f6_title", descKey: "services.f6_desc" },
+  ];
+
+  /* ── Philosophy points ───────────────────────────────────────────── */
+  const philosophyPoints = [
+    { titleKey: "philosophy.p1_title", descKey: "philosophy.p1_desc" },
+    { titleKey: "philosophy.p2_title", descKey: "philosophy.p2_desc" },
+    { titleKey: "philosophy.p3_title", descKey: "philosophy.p3_desc" },
+    { titleKey: "philosophy.p4_title", descKey: "philosophy.p4_desc" },
+  ];
+
+  /* ── Roadmap phases ──────────────────────────────────────────────── */
+  const phases = [
+    {
+      titleKey: "roadmap.phase1_title",
+      status: t("roadmap.status_done"),
+      statusColor: "bg-emerald-100 text-emerald-700",
+      items: [1, 2, 3, 4, 5, 6, 7].map((n) => `roadmap.phase1_item${n}`),
+    },
+    {
+      titleKey: "roadmap.phase2_title",
+      status: t("roadmap.status_current"),
+      statusColor: "bg-amber-100 text-amber-700",
+      items: [1, 2, 3, 4, 5].map((n) => `roadmap.phase2_item${n}`),
+    },
+    {
+      titleKey: "roadmap.phase3_title",
+      status: t("roadmap.status_upcoming"),
+      statusColor: "bg-gray-100 text-gray-500",
+      items: [1, 2, 3, 4, 5, 6].map((n) => `roadmap.phase3_item${n}`),
+    },
+    {
+      titleKey: "roadmap.phase4_title",
+      status: t("roadmap.status_upcoming"),
+      statusColor: "bg-gray-100 text-gray-500",
+      items: [1, 2, 3, 4, 5].map((n) => `roadmap.phase4_item${n}`),
+    },
+  ];
+
+  /* ── Benefits ────────────────────────────────────────────────────── */
+  const benefits = [
+    { icon: <BadgeCheck size={20} />, titleKey: "roadmap.benefit1_title", descKey: "roadmap.benefit1_desc" },
+    { icon: <Clock size={20} />, titleKey: "roadmap.benefit2_title", descKey: "roadmap.benefit2_desc" },
+    { icon: <Eye size={20} />, titleKey: "roadmap.benefit3_title", descKey: "roadmap.benefit3_desc" },
+    { icon: <Star size={20} />, titleKey: "roadmap.benefit4_title", descKey: "roadmap.benefit4_desc" },
+    { icon: <Users size={20} />, titleKey: "roadmap.benefit5_title", descKey: "roadmap.benefit5_desc" },
+    { icon: <Gift size={20} />, titleKey: "roadmap.benefit6_title", descKey: "roadmap.benefit6_desc" },
+  ];
+
+  /* ── Roles ───────────────────────────────────────────────────────── */
+  const roles = [
+    "about.role_hote", "about.role_agence", "about.role_agent",
+    "about.role_investisseur", "about.role_formateur", "about.role_apporteur",
+    "about.role_photographe", "about.role_courtier", "about.role_notaire",
+    "about.role_architecte", "about.role_promoteur", "about.role_client",
   ];
 
   return (
-    <div
-      className="bg-[#FAFAF8] text-gray-900 antialiased"
-      style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
-    >
-      {/* ═══ NAVBAR ═══ */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-3.5 flex items-center justify-between">
-          {/* Logo */}
-          <a href="#" className="text-gray-900 font-semibold text-2xl tracking-tight">
+    <div className="bg-[#FAFAF8] text-gray-900 antialiased" style={{ fontFamily: "'Poppins', system-ui, sans-serif" }}>
+
+      {/* ═══════════════════════ NAVBAR ═══════════════════════ */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+          <a href="#" className="font-semibold text-2xl tracking-tight">
             E-<span className="text-[#C4956A]">Dome</span>
           </a>
 
-          {/* Nav links */}
-          <div className="hidden md:flex items-center gap-8">
-            <a
-              href="#vision"
-              className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors"
-            >
-              {t("nav.vision")}
-            </a>
-            <a
-              href="#fonctionnalites"
-              className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors"
-            >
-              {t("nav.features")}
-            </a>
-            <a
-              href="#fondateurs"
-              className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors"
-            >
-              {t("nav.founders")}
-            </a>
-            <a
-              href="#roadmap"
-              className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors"
-            >
-              {t("nav.roadmap")}
-            </a>
+          <div className="hidden md:flex gap-8">
+            {[
+              { href: "#vision", label: t("nav.vision") },
+              { href: "#fonctionnalites", label: t("nav.features") },
+              { href: "#fondateurs", label: t("nav.founders") },
+              { href: "#roadmap", label: t("nav.roadmap") },
+            ].map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
           </div>
 
-          {/* Right side: lang + CTA */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-0.5 rounded-lg border border-gray-200 overflow-hidden">
               {(["fr", "en", "th"] as const).map((l) => (
@@ -133,165 +225,639 @@ function HomePageContent() {
               href="#inscriptions"
               className="hidden sm:inline-flex bg-[#C4956A] text-white rounded-lg px-5 py-2 text-sm font-semibold hover:bg-[#b8856a] transition-colors"
             >
-              {t("hero.demo")}
+              {t("hero.cta")}
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* ═══ HERO SECTION ═══ */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 pt-20 overflow-hidden bg-gradient-to-b from-white via-[#FAFAF8] to-[#F5F3EF]">
-        {/* Decorative architectural SVG */}
-        <svg
-          viewBox="0 0 400 300"
-          fill="none"
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-64 md:w-96 opacity-[0.06] text-[#C4956A] pointer-events-none"
-          stroke="currentColor"
-          strokeWidth="0.5"
-        >
-          <rect x="50" y="100" width="120" height="150" />
-          <rect x="190" y="130" width="160" height="120" />
-          <line x1="30" y1="100" x2="190" y2="100" />
-          <path d="M30 100 L110 40 L190 100" />
-          <rect x="80" y="130" width="30" height="40" />
-          <rect x="120" y="130" width="30" height="40" />
-          <rect x="220" y="160" width="40" height="30" />
-          <rect x="280" y="160" width="40" height="30" />
-          <rect x="250" y="210" width="30" height="40" />
-          <line x1="50" y1="250" x2="350" y2="250" />
-        </svg>
+      {/* ═══════════════════════ HERO ═══════════════════════ */}
+      <AnimatedMarqueeHero
+        tagline={t("hero.label")}
+        title={
+          <>
+            <span>{t("hero.title1")}</span>{" "}
+            <span className="text-[#C4956A]">{t("hero.title2")}</span>
+          </>
+        }
+        description={t("hero.subtitle")}
+        ctaText={t("hero.cta")}
+        ctaHref="#inscriptions"
+        secondaryCtaText={t("hero.learn")}
+        secondaryCtaHref="#vision"
+        images={heroImages}
+        className="bg-[#FAFAF8]"
+      />
 
-        {/* Mirror SVG on left, even more subtle */}
-        <svg
-          viewBox="0 0 400 300"
-          fill="none"
-          className="absolute left-0 bottom-16 w-48 md:w-72 opacity-[0.03] text-[#C4956A] pointer-events-none rotate-6"
-          stroke="currentColor"
-          strokeWidth="0.5"
-        >
-          <rect x="80" y="80" width="100" height="120" />
-          <path d="M60 80 L130 30 L200 80" />
-          <rect x="100" y="110" width="25" height="35" />
-          <rect x="140" y="110" width="25" height="35" />
-          <line x1="60" y1="200" x2="300" y2="200" />
-          <rect x="220" y="100" width="80" height="100" />
-          <rect x="240" y="120" width="20" height="25" />
-          <rect x="270" y="120" width="20" height="25" />
-        </svg>
+      <DotDivider />
 
-        <div className="max-w-4xl text-center relative z-10">
-          <FadeIn>
-            <p className="text-[#C4956A] text-xs sm:text-sm tracking-[0.3em] uppercase mb-6 font-semibold">
-              {t("hero.label")}
-            </p>
-          </FadeIn>
+      {/* ═══════════════════════ VISION ═══════════════════════ */}
+      <section id="vision" className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <SectionHeading
+            label={t("about.label")}
+            title1={t("about.title1")}
+            title2={t("about.title2")}
+          />
 
-          <FadeIn delay={0.1}>
-            <h1
-              className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl text-gray-900 leading-[1.05] mb-6"
-              style={{
-                letterSpacing: "-0.04em",
-                fontFamily: "'Instrument Serif', serif",
-              }}
-            >
-              {t("hero.title1")}
-              <br />
-              <span className="text-[#C4956A]">{t("hero.title2")}</span>
-            </h1>
-          </FadeIn>
+          <div className="grid md:grid-cols-2 gap-12 mb-16">
+            <motion.div {...fadeUp} className="text-gray-500 leading-relaxed font-light">
+              {t("about.p1")}
+            </motion.div>
+            <motion.div {...fadeUp} className="text-gray-500 leading-relaxed font-light">
+              {t("about.p2")}
+            </motion.div>
+          </div>
 
-          <FadeIn delay={0.2}>
-            <p className="text-gray-500 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-8 font-light">
-              {t("hero.subtitle")}
-            </p>
-          </FadeIn>
-
-          <FadeIn delay={0.3}>
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-10">
-              {perks.map((p) => (
-                <div key={p} className="flex items-center gap-1.5 text-emerald-600 text-xs">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  <span className="text-gray-500">{p}</span>
-                </div>
+          {/* Roles pills */}
+          <motion.div {...fadeUp} className="text-center">
+            <p className="text-sm text-gray-400 mb-6">{t("about.roles_label")}</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {roles.map((roleKey) => (
+                <span
+                  key={roleKey}
+                  className="px-4 py-1.5 rounded-full bg-white border border-gray-100 text-sm text-gray-600 shadow-sm"
+                >
+                  {t(roleKey)}
+                </span>
               ))}
+              <span className="px-4 py-1.5 rounded-full bg-[#C4956A]/5 border border-[#C4956A]/20 text-sm text-[#C4956A] font-medium">
+                {t("about.more")}
+              </span>
             </div>
-          </FadeIn>
-
-          <FadeIn delay={0.4}>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href="#inscriptions"
-                className="bg-[#C4956A] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#b8856a] transition-all flex items-center gap-2 shadow-lg shadow-[#C4956A]/20"
-              >
-                {t("hero.cta")} <ArrowRight size={16} />
-              </Link>
-              <a
-                href="#vision"
-                className="rounded-xl px-8 py-3.5 text-gray-600 text-sm font-medium border border-gray-200 hover:border-[#C4956A]/40 hover:text-[#C4956A] transition-all bg-white"
-              >
-                {t("hero.learn")}
-              </a>
-            </div>
-          </FadeIn>
+          </motion.div>
         </div>
       </section>
 
       <DotDivider />
 
-      {/* ═══ ABOUT / VISION ═══ */}
-      <div id="vision">
-        <AboutSection />
-      </div>
+      {/* ═══════════════════════ VIDEO PLATEFORME ═══════════════════════ */}
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <SectionHeading
+            label={t("featured.label")}
+            title1="E-Dome"
+            title2={t("featured.label")}
+            description={t("featured.desc")}
+          />
+
+          <motion.div {...fadeUp} className="rounded-3xl overflow-hidden shadow-2xl max-w-5xl mx-auto">
+            <video
+              className="w-full"
+              muted
+              autoPlay
+              loop
+              playsInline
+              src="/videos/plateforme-bg.mp4"
+            />
+          </motion.div>
+
+          <motion.div {...fadeUp} className="text-center text-xs text-gray-400 mt-6 max-w-xl mx-auto">
+            {t("featured.disclaimer")}
+          </motion.div>
+
+          <motion.div {...fadeUp} className="text-center mt-8">
+            <Link
+              href="/acces"
+              className="inline-flex items-center gap-2 bg-[#C4956A] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#b8856a] transition-all shadow-lg shadow-[#C4956A]/20"
+            >
+              {t("featured.cta")} <ArrowRight size={16} />
+            </Link>
+          </motion.div>
+        </div>
+      </section>
 
       <DotDivider />
 
-      {/* ═══ FEATURED VIDEO ═══ */}
-      <FeaturedVideoSection />
+      {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
+      <section id="probleme" className="py-20 px-6 bg-[#F5F3EF]">
+        <div className="max-w-5xl mx-auto">
+          <SectionHeading
+            label={t("problem.label")}
+            title1={t("problem.title1")}
+            title2={t("problem.title2")}
+            description={t("problem.desc")}
+          />
+
+          <SkewCards
+            cards={[
+              {
+                title: `${t("problem.stat1_value")} ${t("problem.stat1_unit")}`,
+                desc: t("problem.stat1_desc"),
+                gradientFrom: "#C4956A",
+                gradientTo: "#e8c9a0",
+              },
+              {
+                title: `${t("problem.stat2_value")} ${t("problem.stat2_unit")}`,
+                desc: t("problem.stat2_desc"),
+                gradientFrom: "#50afb6",
+                gradientTo: "#84d2e2",
+              },
+              {
+                title: `${t("problem.stat3_value")} ${t("problem.stat3_unit")}`,
+                desc: t("problem.stat3_desc"),
+                gradientFrom: "#e670ab",
+                gradientTo: "#f3a0ca",
+              },
+            ]}
+          />
+
+          <motion.div {...fadeUp} className="text-center mt-8">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 shadow-sm border border-gray-100">
+              <Sparkles size={16} className="text-[#C4956A]" />
+              <span className="text-gray-500 text-sm">
+                {t("problem.pill")}{" "}
+                <span className="font-semibold text-gray-900">{t("problem.pill_bold")}</span>
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
       <DotDivider />
 
-      {/* ═══ PROBLEM ═══ */}
-      <div id="probleme">
-        <ProblemSection />
-      </div>
+      {/* ═══════════════════════ FONCTIONNALITES ═══════════════════════ */}
+      <section id="fonctionnalites" className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <SectionHeading
+            label={t("services.label")}
+            title1={t("services.title1")}
+            title2={t("services.title2")}
+            description={t("services.subtitle")}
+          />
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((s, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.6, delay: i * 0.08 }}
+                className="bg-white rounded-2xl p-8 border border-gray-100 hover:border-[#C4956A]/30 hover:shadow-lg transition-all group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-[#C4956A]/10 text-[#C4956A] flex items-center justify-center mb-4 group-hover:bg-[#C4956A] group-hover:text-white transition-colors">
+                  {s.icon}
+                </div>
+                <p className="text-[#C4956A] text-xs tracking-wider uppercase font-medium mb-2">
+                  {t(s.tagKey)}
+                </p>
+                <h3 className="text-lg font-semibold mb-3 text-gray-900">{t(s.titleKey)}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed font-light">{t(s.descKey)}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <DotDivider />
 
-      {/* ═══ SERVICES ═══ */}
-      <div id="fonctionnalites">
-        <ServicesSection />
-      </div>
+      {/* ═══════════════════════ POURQUOI E-DOME ═══════════════════════ */}
+      <section className="py-20 px-6 bg-[#F5F3EF]">
+        <div className="max-w-5xl mx-auto">
+          <SectionHeading
+            label={t("philosophy.label")}
+            title1={t("philosophy.title1")}
+            title2={t("philosophy.title2")}
+            description={t("philosophy.desc")}
+          />
+
+          <div className="grid md:grid-cols-2 gap-8 mb-16">
+            {philosophyPoints.map((p, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                className="bg-white rounded-2xl p-8 border border-gray-100"
+              >
+                <h3 className="text-lg font-semibold mb-3 text-gray-900">{t(p.titleKey)}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed font-light">{t(p.descKey)}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Philosophy video */}
+          <motion.div {...fadeUp} className="text-center mb-8">
+            <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-3">
+              {t("philosophy.video_label")}
+            </p>
+            <h3
+              className="text-3xl sm:text-4xl mb-4"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              {t("philosophy.video_title1")}{" "}
+              <span className="text-[#C4956A]">{t("philosophy.video_title2")}</span>
+            </h3>
+            <p className="text-gray-500 text-sm max-w-xl mx-auto mb-2 font-light">
+              {t("philosophy.video_desktop_p1")}
+            </p>
+            <p className="text-gray-500 text-sm max-w-xl mx-auto font-light">
+              {t("philosophy.video_desktop_p2")}
+            </p>
+          </motion.div>
+
+          <motion.div {...fadeUp} className="rounded-3xl overflow-hidden shadow-2xl max-w-5xl mx-auto">
+            <video
+              className="w-full"
+              muted
+              autoPlay
+              loop
+              playsInline
+              src="/videos/philosophy-bg.mp4"
+            />
+          </motion.div>
+
+          <motion.div {...fadeUp} className="flex flex-wrap justify-center gap-2 mt-8">
+            {[
+              "philosophy.tag_recherche",
+              "philosophy.tag_publication",
+              "philosophy.tag_reservation",
+              "philosophy.tag_formation",
+              "philosophy.tag_recommandation",
+              "philosophy.tag_remuneration",
+            ].map((key) => (
+              <span
+                key={key}
+                className="px-4 py-1.5 rounded-full bg-white border border-gray-100 text-sm text-gray-600 shadow-sm"
+              >
+                {t(key)}
+              </span>
+            ))}
+          </motion.div>
+
+          <motion.div {...fadeUp} className="text-center mt-8">
+            <Link
+              href="/acces"
+              className="inline-flex items-center gap-2 border border-[#C4956A]/30 text-[#C4956A] rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#C4956A] hover:text-white transition-all"
+            >
+              {t("philosophy.video_cta")} <ArrowRight size={16} />
+            </Link>
+          </motion.div>
+        </div>
+      </section>
 
       <DotDivider />
 
-      {/* ═══ PHILOSOPHY ═══ */}
-      <PhilosophySection />
+      {/* ═══════════════════════ FONDATEURS ═══════════════════════ */}
+      <section id="fondateurs" className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <motion.div {...fadeUp} className="text-center mb-16">
+            <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+              {lang === "th" ? "ผู้ก่อตั้ง" : lang === "en" ? "Founders" : "Fondateurs"}
+            </p>
+            <h2
+              className="text-4xl sm:text-5xl md:text-6xl leading-[1.1]"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              {lang === "th" ? "เบื้องหลัง" : lang === "en" ? "Behind" : "Derriere"}{" "}
+              <span className="text-[#C4956A]">E-Dome</span>
+            </h2>
+          </motion.div>
+
+          {/* Leonard */}
+          <motion.div {...fadeUp} className="grid md:grid-cols-[280px_1fr] gap-10 mb-16 items-start">
+            <div className="text-center md:text-left">
+              <div className="w-48 h-48 mx-auto md:mx-0 rounded-2xl overflow-hidden shadow-lg mb-4">
+                <img
+                  src="/images/founders/leonard.jpg"
+                  alt="Leonard"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="text-xl font-semibold">Leonard Ansermet</h3>
+              <p className="text-[#C4956A] text-sm font-medium">{t("founders.label_leo")}</p>
+              <div className="flex items-center justify-center md:justify-start gap-3 mt-3">
+                <a
+                  href="https://wa.me/41786091880"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-green-600 transition-colors"
+                >
+                  <MessageCircle size={14} /> {t("founders.whatsapp")}
+                </a>
+                <a
+                  href="mailto:leonard@edome.world"
+                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#C4956A] transition-colors"
+                >
+                  <Mail size={14} /> Email
+                </a>
+              </div>
+            </div>
+            <div>
+              <p className="text-gray-500 leading-relaxed font-light mb-4">{t("founders.leo_p1")}</p>
+              <p className="text-gray-500 leading-relaxed font-light">{t("founders.leo_p2")}</p>
+            </div>
+          </motion.div>
+
+          {/* Jean-Pierre */}
+          <motion.div {...fadeUp} className="grid md:grid-cols-[280px_1fr] gap-10 mb-16 items-start">
+            <div className="text-center md:text-left">
+              <div className="w-48 h-48 mx-auto md:mx-0 rounded-2xl overflow-hidden shadow-lg mb-4">
+                <img
+                  src="/images/founders/jeanpierre.jpg"
+                  alt="Jean-Pierre"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="text-xl font-semibold">Jean-Pierre Fallet</h3>
+              <p className="text-[#C4956A] text-sm font-medium">{t("founders.label_jp")}</p>
+              <div className="flex items-center justify-center md:justify-start gap-3 mt-3">
+                <a
+                  href="https://wa.me/41798267542"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-green-600 transition-colors"
+                >
+                  <MessageCircle size={14} /> {t("founders.whatsapp")}
+                </a>
+                <a
+                  href="mailto:jeanpierre@edome.world"
+                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#C4956A] transition-colors"
+                >
+                  <Mail size={14} /> Email
+                </a>
+              </div>
+            </div>
+            <div>
+              <p className="text-gray-500 leading-relaxed font-light mb-4">{t("founders.jp_p1")}</p>
+              <p className="text-gray-500 leading-relaxed font-light">{t("founders.jp_p2")}</p>
+            </div>
+          </motion.div>
+
+          {/* Quote */}
+          <motion.blockquote
+            {...fadeUp}
+            className="text-center max-w-3xl mx-auto mb-16"
+          >
+            <p
+              className="text-2xl sm:text-3xl text-gray-800 italic leading-snug"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              &ldquo;{t("founders.quote")}&rdquo;
+            </p>
+          </motion.blockquote>
+
+          {/* Conviction + Engagement */}
+          <div className="grid md:grid-cols-2 gap-8">
+            <motion.div {...fadeUp} className="bg-[#F5F3EF] rounded-2xl p-8">
+              <p className="text-[#C4956A] text-xs tracking-wider uppercase font-semibold mb-3">
+                {t("founders.conviction_label")}
+              </p>
+              <h4 className="text-lg font-semibold mb-3">{t("founders.conviction_title")}</h4>
+              <p className="text-gray-500 text-sm leading-relaxed font-light">{t("founders.conviction_desc")}</p>
+            </motion.div>
+            <motion.div {...fadeUp} className="bg-[#F5F3EF] rounded-2xl p-8">
+              <p className="text-[#C4956A] text-xs tracking-wider uppercase font-semibold mb-3">
+                {t("founders.engagement_label")}
+              </p>
+              <h4 className="text-lg font-semibold mb-3">{t("founders.engagement_title")}</h4>
+              <p className="text-gray-500 text-sm leading-relaxed font-light">{t("founders.engagement_desc")}</p>
+            </motion.div>
+          </div>
+
+          {/* Contact */}
+          <motion.div {...fadeUp} className="flex items-center justify-center gap-6 mt-12">
+            <a
+              href="mailto:contact@edome.world"
+              className="flex items-center gap-2 text-sm text-gray-500 hover:text-[#C4956A] transition-colors"
+            >
+              <Mail size={16} /> {t("founders.email_label")}
+            </a>
+          </motion.div>
+        </div>
+      </section>
 
       <DotDivider />
 
-      {/* ═══ FOUNDERS ═══ */}
-      <div id="fondateurs">
-        <FoundersSection />
-      </div>
+      {/* ═══════════════════════ ROADMAP ═══════════════════════ */}
+      <section id="roadmap" className="py-20 px-6 bg-[#F5F3EF]">
+        <div className="max-w-5xl mx-auto">
+          <SectionHeading
+            label={t("roadmap.label")}
+            title1={t("roadmap.title1")}
+            title2={t("roadmap.title2")}
+            description={t("roadmap.desc")}
+          />
 
-      <DotDivider />
+          <motion.div {...fadeUp} className="text-center text-gray-500 text-sm font-light mb-16 max-w-2xl mx-auto">
+            {t("roadmap.desc2")}
+          </motion.div>
 
-      {/* ═══ ROADMAP ═══ */}
-      <div id="roadmap">
-        <RoadmapSection />
-      </div>
+          {/* Phases */}
+          <div className="space-y-8 mb-20">
+            {phases.map((phase, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                className="bg-white rounded-2xl p-8 border border-gray-100"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-sm font-bold text-gray-300">0{i + 1}</span>
+                  <h3 className="text-lg font-semibold flex-1">{t(phase.titleKey)}</h3>
+                  <span className={`text-xs font-medium px-3 py-1 rounded-full ${phase.statusColor}`}>
+                    {phase.status}
+                  </span>
+                </div>
+                <ul className="grid sm:grid-cols-2 gap-2">
+                  {phase.items.map((itemKey) => (
+                    <li key={itemKey} className="flex items-start gap-2 text-sm text-gray-500 font-light">
+                      <span className="w-1 h-1 rounded-full bg-[#C4956A] mt-2 flex-shrink-0" />
+                      {t(itemKey)}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
 
-      {/* ═══ FOOTER ═══ */}
-      <FooterSection />
+          {/* ─── CTA INSCRIPTIONS ─── */}
+          <div id="inscriptions">
+            <motion.div {...fadeUp} className="text-center mb-12">
+              <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+                {t("roadmap.inscriptions_label")}
+              </p>
+              <h2
+                className="text-3xl sm:text-4xl md:text-5xl leading-[1.1] mb-4"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
+              >
+                {t("roadmap.cta_title1")}
+                <br />
+                <span className="text-[#C4956A]">{t("roadmap.cta_title2")}</span>
+              </h2>
+              <p className="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
+                {t("roadmap.cta_subtitle")}
+              </p>
+            </motion.div>
+
+            {/* Benefits grid */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
+              {benefits.map((b, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.5, delay: i * 0.06 }}
+                  className="bg-white rounded-xl p-6 border border-gray-100"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-[#C4956A]/10 text-[#C4956A] flex items-center justify-center mb-3">
+                    {b.icon}
+                  </div>
+                  <h4 className="text-sm font-semibold mb-1">{t(b.titleKey)}</h4>
+                  <p className="text-gray-400 text-xs leading-relaxed font-light">{t(b.descKey)}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* CTA buttons */}
+            <motion.div {...fadeUp} className="flex flex-wrap items-center justify-center gap-4 mb-6">
+              <Link
+                href="/acces"
+                className="inline-flex items-center gap-2 bg-[#C4956A] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#b8856a] transition-all shadow-lg shadow-[#C4956A]/20"
+              >
+                {t("roadmap.cta1")} <ArrowRight size={16} />
+              </Link>
+              <Link
+                href="/acces"
+                className="inline-flex items-center gap-2 border border-gray-200 text-gray-600 rounded-xl px-8 py-3.5 text-sm font-medium hover:border-[#C4956A]/40 hover:text-[#C4956A] transition-all bg-white"
+              >
+                {t("roadmap.cta2")}
+              </Link>
+            </motion.div>
+
+            <motion.div {...fadeUp} className="text-center text-xs text-gray-400 max-w-lg mx-auto">
+              {t("roadmap.cta_disclaimer")}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════ FOOTER ═══════════════════════ */}
+      <footer className="bg-gray-900 text-white pt-20 pb-10 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-12 mb-16">
+            {/* Brand */}
+            <div className="md:col-span-1">
+              <h3 className="text-2xl font-semibold mb-3">
+                E-<span className="text-[#C4956A]">Dome</span>
+              </h3>
+              <p className="text-gray-400 text-sm font-light leading-relaxed">
+                {t("footer.desc")}
+              </p>
+              <div className="mt-6">
+                <Link
+                  href="/acces"
+                  className="inline-flex items-center gap-2 bg-[#C4956A] text-white rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#b8856a] transition-colors"
+                >
+                  {t("footer.access")} <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
+
+            {/* Demo links */}
+            <div>
+              <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
+                {t("footer.demo_label")}
+              </h4>
+              <ul className="space-y-2.5">
+                {[
+                  "footer.link_feed",
+                  "footer.link_marketplace",
+                  "footer.link_dashboard",
+                  "footer.link_formations",
+                  "footer.link_live",
+                  "footer.link_messages",
+                ].map((key) => (
+                  <li key={key}>
+                    <span className="text-gray-500 text-sm hover:text-[#C4956A] transition-colors cursor-pointer">
+                      {t(key)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Platform links */}
+            <div>
+              <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
+                {t("footer.platform_label")}
+              </h4>
+              <ul className="space-y-2.5">
+                {[
+                  "footer.link_apporteurs",
+                  "footer.link_reservations",
+                  "footer.link_statistiques",
+                  "footer.link_evenements",
+                  "footer.link_services",
+                  "footer.link_investisseurs",
+                ].map((key) => (
+                  <li key={key}>
+                    <span className="text-gray-500 text-sm hover:text-[#C4956A] transition-colors cursor-pointer">
+                      {t(key)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* About links */}
+            <div>
+              <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
+                {t("footer.about_label")}
+              </h4>
+              <ul className="space-y-2.5">
+                {[
+                  { key: "footer.link_vision", href: "#vision" },
+                  { key: "footer.link_features", href: "#fonctionnalites" },
+                  { key: "footer.link_founders", href: "#fondateurs" },
+                  { key: "footer.link_roadmap", href: "#roadmap" },
+                  { key: "footer.link_conditions", href: "#" },
+                  { key: "footer.link_privacy", href: "#" },
+                ].map((link) => (
+                  <li key={link.key}>
+                    <a
+                      href={link.href}
+                      className="text-gray-500 text-sm hover:text-[#C4956A] transition-colors"
+                    >
+                      {t(link.key)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Contact info */}
+              <div className="mt-6 space-y-2">
+                <a
+                  href="mailto:contact@edome.world"
+                  className="flex items-center gap-2 text-gray-500 text-sm hover:text-[#C4956A] transition-colors"
+                >
+                  <Mail size={14} /> contact@edome.world
+                </a>
+                <a
+                  href="https://wa.me/41786091880"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-500 text-sm hover:text-green-500 transition-colors"
+                >
+                  <Phone size={14} /> WhatsApp
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Copyright */}
+          <div className="border-t border-gray-800 pt-8">
+            <p className="text-gray-600 text-xs text-center font-light">
+              {t("footer.copyright")}
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

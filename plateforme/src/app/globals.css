@@ -1,352 +1,47 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* ─── Liquid Glass ─────────────────────────────────────────────────────────── */
-
-.liquid-glass {
-  contain: layout style paint;
-  background: rgba(255, 255, 255, 0.01);
-  background-blend-mode: luminosity;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: none;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
+/* ─── Theme ─────────────────────────────────────────────── */
+:root {
+  --gold: #C4956A;
+  --gold-hover: #b8856a;
+  --bg: #FAFAF8;
+  --bg-alt: #F5F3EF;
+  --text: #1a1a1a;
+  --text-secondary: #666;
+  --text-muted: #999;
 }
-
-.liquid-glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.15) 20%,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0.15) 80%,
-    rgba(255, 255, 255, 0.45) 100%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-/* ─── Theme variables ──────────────────────────────────────────────────────── */
-
-html.light {
-  --background: #f8f8f8;
-  --foreground: #1a1a1a;
-  --card: #ffffff;
-  --card-border: rgba(0, 0, 0, 0.08);
-  --text-primary: #1a1a1a;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --gold: #c8a94e;
-  --gold-hover: #b8993e;
-  --input-bg: #f0f0f0;
-  --input-border: rgba(0, 0, 0, 0.12);
-  --hover-bg: rgba(0, 0, 0, 0.04);
-  --divider: rgba(0, 0, 0, 0.06);
-}
-
-html.dark,
-html:not(.light) {
-  --background: #080808;
-  --foreground: #ffffff;
-  --card: #0e0e0e;
-  --card-border: rgba(255, 255, 255, 0.06);
-  --text-primary: #ffffff;
-  --text-secondary: #888888;
-  --text-muted: #555555;
-  --gold: #c8a94e;
-  --gold-hover: #d4b95e;
-  --input-bg: #141414;
-  --input-border: rgba(255, 255, 255, 0.08);
-  --hover-bg: rgba(255, 255, 255, 0.04);
-  --divider: rgba(255, 255, 255, 0.06);
-}
-
-/* ─── Base ─────────────────────────────────────────────────────────────────── */
 
 html {
-  height: auto !important;
-  overflow-x: hidden !important;
   scroll-behavior: smooth;
 }
 
 body {
-  height: auto !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Poppins', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
-
-/* ─── Selection ────────────────────────────────────────────────────────────── */
 
 ::selection {
-  background: rgba(200, 169, 78, 0.3);
-  color: inherit;
+  background: rgba(196, 149, 106, 0.3);
 }
 
-/* ─── Focus visible ────────────────────────────────────────────────────────── */
+/* ─── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
 
-:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-}
-
-/* ─── Scrollbar ────────────────────────────────────────────────────────────── */
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-html.light ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-}
-
-html.light ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
-}
-
-/* Hide scrollbar for horizontal scroll areas */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* ─── Glass utility ───────────────────────────────────────────────────────── */
-
-.glass {
-  background: rgba(14, 14, 14, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-html.light .glass {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-/* ─── Card hover ──────────────────────────────────────────────────────────── */
-
-.card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-  border-color: rgba(200, 169, 78, 0.3);
-}
-
-html.light .card-hover:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-}
-
-/* ─── Animations ─────────────────────────────────────────────────────────── */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(-100%) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-@keyframes skeleton-pulse {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-out;
-}
-.animate-slide-up {
-  animation: slideUp 0.4s ease-out;
-}
-.animate-scale-in {
-  animation: scaleIn 0.2s ease-out;
-}
-.animate-confetti {
-  animation: confetti-fall 2s ease-in forwards;
-}
-
-.skeleton {
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
-  background: var(--input-bg);
-  border-radius: 8px;
-}
-
-/* ─── Reduced motion ─────────────────────────────────────────────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* ─── Mobile: reset sidebar margin ──────────────────────────────────────── */
+/* ─── Mobile ─────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .app-content {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
+  .app-content { margin-left: 0 !important; width: 100% !important; }
 }
 
-/* ─── Liquid Glass Light (for light backgrounds) ─────────────────────────── */
-
-.liquid-glass-light {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-}
-
-/* ─── Scroll-reveal animations ───────────────────────────────────────────── */
-
-.reveal-up {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.reveal-up.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.scroll-reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.scroll-reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.scroll-reveal-left {
-  opacity: 0;
-  transform: translateX(-30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.scroll-reveal-left.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.scroll-reveal-right {
-  opacity: 0;
-  transform: translateX(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.scroll-reveal-right.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* ─── Hero text panels (sticky video hero) ──────────────────────────────── */
-
-.hero-panel {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  pointer-events: none;
-}
-.hero-panel > * {
-  pointer-events: auto;
-}
-
-/* ─── Print styles ───────────────────────────────────────────────────────── */
-
-@media print {
-  body {
-    background: white;
-    color: black;
-  }
-
-  nav,
-  .no-print,
-  header {
-    display: none !important;
+/* ─── Reduced motion ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
