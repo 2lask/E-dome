@@ -53,7 +53,7 @@ export function ServicesSection() {
   ];
 
   return (
-    <section className="bg-white py-28 md:py-40 px-6 overflow-hidden relative">
+    <section className="bg-black/40 backdrop-blur-xl py-28 md:py-40 px-6 overflow-hidden relative">
 
       <div className="max-w-6xl mx-auto relative">
         <div className="flex items-start md:items-center justify-between mb-12 md:mb-16 flex-col md:flex-row gap-4">
@@ -72,7 +72,7 @@ export function ServicesSection() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.7, delay: 0.1 }}
             >
-              <h2 className="text-3xl md:text-5xl text-gray-900 tracking-tight">
+              <h2 className="text-3xl md:text-5xl text-white tracking-tight">
                 {t("services.title1")} {t("services.title2")}
               </h2>
             </motion.div>
@@ -88,7 +88,7 @@ export function ServicesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.7, delay: i * 0.1 }}
-                className="bg-white rounded-3xl overflow-hidden group border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                className="bg-black/40 backdrop-blur-xl rounded-3xl overflow-hidden group border border-white/10 shadow-none hover:shadow-xl transition-all">
                 <div className="aspect-video overflow-hidden relative">
                   {feature.media.type === "video" ? (
                     <video
@@ -117,12 +117,12 @@ export function ServicesSection() {
                       </div>
                       <p className="uppercase tracking-widest text-[#C4956A] text-xs md:text-[10px]">{feature.tag}</p>
                     </div>
-                    <div className="rounded-full p-1.5 bg-gray-100 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                    <div className="rounded-full p-1.5 bg-white/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <ArrowUpRight size={14} className="text-[#C4956A]" />
                     </div>
                   </div>
-                  <h3 className="text-gray-900 text-lg mb-2 tracking-tight">{feature.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
+                  <h3 className="text-white text-lg mb-2 tracking-tight">{feature.title}</h3>
+                  <p className="text-white/60 text-sm leading-relaxed">{feature.description}</p>
                 </div>
               </motion.div>
             );

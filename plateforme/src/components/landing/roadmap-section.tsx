@@ -69,11 +69,11 @@ export function RoadmapSection() {
   const statusConfig = {
     done: { icon: Check, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-2 border-emerald-200", dot: "bg-emerald-500", label: t("roadmap.status_done") },
     current: { icon: Loader2, color: "text-[#C4956A]", bg: "bg-[#C4956A]/10", border: "border-2 border-[#C4956A]/30", dot: "bg-[#C4956A]", label: t("roadmap.status_current") },
-    upcoming: { icon: Clock, color: "text-gray-400", bg: "bg-gray-100", border: "border border-gray-200", dot: "bg-gray-300", label: t("roadmap.status_upcoming") },
+    upcoming: { icon: Clock, color: "text-white/40", bg: "bg-white/10", border: "border border-white/10", dot: "bg-gray-300", label: t("roadmap.status_upcoming") },
   };
 
   return (
-    <section className="bg-[#FAFAFA] py-16 md:py-40 px-6 overflow-hidden relative">
+    <section className="bg-black/40 backdrop-blur-xl py-16 md:py-40 px-6 overflow-hidden relative">
 
       <div className="max-w-6xl mx-auto relative">
         <div className="mb-10 md:mb-24">
@@ -93,7 +93,7 @@ export function RoadmapSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            <h2 className="text-4xl md:text-6xl text-gray-900 tracking-tight mb-8">
+            <h2 className="text-4xl md:text-6xl text-white tracking-tight mb-8">
               {t("roadmap.title1")} {t("roadmap.title2")}
             </h2>
           </motion.div>
@@ -103,10 +103,10 @@ export function RoadmapSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <p className="text-gray-600 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
+            <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
               {t("roadmap.desc")}
             </p>
-            <p className="text-gray-400 text-sm md:text-base max-w-3xl leading-relaxed">
+            <p className="text-white/40 text-sm md:text-base max-w-3xl leading-relaxed">
               {t("roadmap.desc2")}
             </p>
           </motion.div>
@@ -122,26 +122,26 @@ export function RoadmapSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.7, delay: i * 0.1 }}
-                className={`rounded-3xl p-6 md:p-8 ${config.border} bg-white shadow-sm relative overflow-hidden`}>
+                className={`rounded-3xl p-6 md:p-8 ${config.border} bg-white shadow-none relative overflow-hidden`}>
                 <div className="relative z-10 flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
                     <div className={`rounded-full p-2 ${config.bg}`}>
                       <Icon size={16} className={config.color} />
                     </div>
                     <div>
-                      <p className="text-gray-900 text-sm font-medium">{phase.phase}</p>
+                      <p className="text-white text-sm font-medium">{phase.phase}</p>
                     </div>
                   </div>
                   <span className={`text-xs px-3 py-1 rounded-full ${config.bg} ${config.color}`}>
                     {config.label}
                   </span>
                 </div>
-                <h3 className="relative z-10 text-gray-900 text-xl mb-4 tracking-tight">{phase.title}</h3>
+                <h3 className="relative z-10 text-white text-xl mb-4 tracking-tight">{phase.title}</h3>
                 <ul className="relative z-10 space-y-2">
                   {phase.items.map((item) => (
                     <li key={item} className="flex items-start gap-2.5">
                       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
-                      <span className="text-gray-500 text-sm">{item}</span>
+                      <span className="text-white/60 text-sm">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -165,15 +165,15 @@ export function RoadmapSection() {
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-emerald-600 text-xs font-medium">{t("roadmap.inscriptions_label")}</span>
               </div>
-              <h3 className="text-gray-900 text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
+              <h3 className="text-white text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
                 {t("roadmap.cta_title1")}
                 <br />
                 <span className="text-[#C4956A]">{t("roadmap.cta_title2")}</span>
               </h3>
-              <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-2">
+              <p className="text-white/60 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-2">
                 {t("roadmap.cta_subtitle")}
               </p>
-              <p className="text-gray-400 text-xs max-w-xl mx-auto">
+              <p className="text-white/40 text-xs max-w-xl mx-auto">
                 {t("roadmap.cta_disclaimer")}
               </p>
             </div>
@@ -220,12 +220,12 @@ export function RoadmapSection() {
               ].map((item) => {
                 const ItemIcon = item.icon;
                 return (
-                <div key={item.title} className="rounded-2xl p-5 bg-white border border-gray-100 hover:shadow-md transition-all">
-                  <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center mb-3">
+                <div key={item.title} className="rounded-2xl p-5 bg-white border border-white/10 hover:shadow-xl transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-3">
                     <ItemIcon size={20} className={item.iconColor} />
                   </div>
-                  <h4 className="text-gray-900 text-sm font-semibold mb-2">{item.title}</h4>
-                  <p className="text-gray-500 text-xs leading-relaxed">{item.desc}</p>
+                  <h4 className="text-white text-sm font-semibold mb-2">{item.title}</h4>
+                  <p className="text-white/60 text-xs leading-relaxed">{item.desc}</p>
                 </div>
                 );
               })}
@@ -238,7 +238,7 @@ export function RoadmapSection() {
                 {t("roadmap.cta1")} <ArrowRight size={16} />
               </Link>
               <Link href="/acces"
-                className="w-full sm:w-auto rounded-lg px-8 py-4 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center">
+                className="w-full sm:w-auto rounded-lg px-8 py-4 text-white/70 text-sm font-medium hover:bg-white/5 transition-colors border border-white/10 flex items-center justify-center">
                 {t("roadmap.cta2")}
               </Link>
             </div>

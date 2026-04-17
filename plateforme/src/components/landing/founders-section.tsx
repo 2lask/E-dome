@@ -9,7 +9,7 @@ export function FoundersSection() {
   const { t } = useLandingLang();
 
   return (
-    <section className="bg-white py-16 md:py-44 px-6 overflow-hidden relative">
+    <section className="bg-black/40 backdrop-blur-xl py-16 md:py-44 px-6 overflow-hidden relative">
 
       <div className="max-w-6xl mx-auto relative">
 
@@ -22,7 +22,7 @@ export function FoundersSection() {
           className="flex flex-col md:flex-row items-center gap-10 md:gap-16 mb-16 md:mb-28"
         >
           <div className="w-36 sm:w-48 md:w-64 shrink-0">
-            <div className="aspect-square rounded-full overflow-hidden border-4 border-gray-200 shadow-lg">
+            <div className="aspect-square rounded-full overflow-hidden border-4 border-white/10 shadow-lg">
               <img src="/images/founders/leonard.jpg" alt="Leonard Ansermet" className="w-full h-full object-cover" />
             </div>
           </div>
@@ -30,13 +30,13 @@ export function FoundersSection() {
             <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
               {t("founders.label_leo")}
             </p>
-            <h3 className="text-gray-900 text-3xl md:text-4xl font-semibold mb-5 tracking-tight">
+            <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">
               Leonard Ansermet
             </h3>
-            <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-4">
+            <p className="text-white/80 text-base md:text-lg leading-relaxed mb-4">
               {t("founders.leo_p1")}
             </p>
-            <p className="text-gray-500 text-sm md:text-base leading-relaxed">
+            <p className="text-white/60 text-sm md:text-base leading-relaxed">
               {t("founders.leo_p2")}
             </p>
             <div className="flex items-center gap-3 mt-5 justify-center md:justify-start">
@@ -46,7 +46,7 @@ export function FoundersSection() {
                 WhatsApp
               </a>
               <a href="mailto:contact@edome.world"
-                className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-200 transition-colors">
+                className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-white/10 border border-white/10 text-white/70 text-xs font-medium hover:bg-gray-200 transition-colors">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                 contact@edome.world
               </a>
@@ -64,7 +64,7 @@ export function FoundersSection() {
         >
           <div className="w-12 h-1 bg-[#C4956A] mx-auto mb-8" />
           <p
-            className="text-xl sm:text-2xl md:text-4xl lg:text-5xl text-gray-900 leading-[1.3] tracking-tight italic"
+            className="text-xl sm:text-2xl md:text-4xl lg:text-5xl text-white leading-[1.3] tracking-tight italic"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             {t("founders.quote")}
@@ -84,13 +84,13 @@ export function FoundersSection() {
             <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
               {t("founders.label_jp")}
             </p>
-            <h3 className="text-gray-900 text-3xl md:text-4xl font-semibold mb-5 tracking-tight">
+            <h3 className="text-white text-3xl md:text-4xl font-semibold mb-5 tracking-tight">
               Jean-Pierre Medard Garza
             </h3>
-            <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-4">
+            <p className="text-white/80 text-base md:text-lg leading-relaxed mb-4">
               {t("founders.jp_p1")}
             </p>
-            <p className="text-gray-500 text-sm md:text-base leading-relaxed">
+            <p className="text-white/60 text-sm md:text-base leading-relaxed">
               {t("founders.jp_p2")}
             </p>
             <div className="flex items-center gap-3 mt-5 justify-center md:justify-end">
@@ -100,14 +100,14 @@ export function FoundersSection() {
                 WhatsApp
               </a>
               <a href="mailto:contact@edome.world"
-                className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-gray-100 border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-200 transition-colors">
+                className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-white/10 border border-white/10 text-white/70 text-xs font-medium hover:bg-gray-200 transition-colors">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                 contact@edome.world
               </a>
             </div>
           </div>
           <div className="w-36 sm:w-48 md:w-64 shrink-0">
-            <div className="aspect-square rounded-full overflow-hidden border-4 border-gray-200 shadow-lg">
+            <div className="aspect-square rounded-full overflow-hidden border-4 border-white/10 shadow-lg">
               <img src="/images/founders/jeanpierre.jpg" alt="Jean-Pierre Medard Garza" className="w-full h-full object-cover" />
             </div>
           </div>
@@ -122,29 +122,29 @@ export function FoundersSection() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {/* Left card - conviction */}
-            <div className="rounded-2xl p-7 md:p-9 bg-[#FAFAFA] border border-gray-100">
+            <div className="rounded-2xl p-7 md:p-9 bg-[#FAFAFA] border border-white/10">
               <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-4 font-medium">{t("founders.conviction_label")}</p>
               <p
-                className="text-gray-900 text-xl md:text-2xl leading-[1.3] mb-5 tracking-tight"
+                className="text-white text-xl md:text-2xl leading-[1.3] mb-5 tracking-tight"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {t("founders.conviction_title")}
               </p>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-white/70 text-sm leading-relaxed">
                 {t("founders.conviction_desc")}
               </p>
             </div>
 
             {/* Right card - engagement */}
-            <div className="rounded-2xl p-7 md:p-9 bg-[#FAFAFA] border border-gray-100">
-              <p className="text-gray-500 text-xs tracking-widest uppercase mb-4 font-medium">{t("founders.engagement_label")}</p>
+            <div className="rounded-2xl p-7 md:p-9 bg-[#FAFAFA] border border-white/10">
+              <p className="text-white/60 text-xs tracking-widest uppercase mb-4 font-medium">{t("founders.engagement_label")}</p>
               <p
-                className="text-gray-900 text-xl md:text-2xl leading-[1.3] mb-5 tracking-tight"
+                className="text-white text-xl md:text-2xl leading-[1.3] mb-5 tracking-tight"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {t("founders.engagement_title")}
               </p>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-white/70 text-sm leading-relaxed">
                 {t("founders.engagement_desc")}
               </p>
             </div>
