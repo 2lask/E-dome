@@ -58,20 +58,14 @@ export function ServicesSection() {
   ];
 
   return (
-    <section ref={ref} className="bg-black py-28 md:py-40 px-6 overflow-hidden relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(196,149,106,0.02)_0%,_transparent_60%)]" />
-      <div className="absolute inset-0 opacity-[0.05]"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30" />
-
+    <section ref={ref} className="bg-white py-28 md:py-40 px-6 overflow-hidden relative">
       <div className="max-w-6xl mx-auto relative">
         <div className="flex items-start md:items-center justify-between mb-12 md:mb-16 flex-col md:flex-row gap-4">
           <div>
             <BlurFade delay={0.1} inView>
-              <p className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-3">{t("services.label")}</p>
+              <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-3">{t("services.label")}</p>
             </BlurFade>
-            <h2 className="text-3xl md:text-5xl text-white tracking-tight">
+            <h2 className="text-3xl md:text-5xl text-gray-900 tracking-tight">
               <VerticalCutReveal splitBy="words" staggerDuration={0.12} staggerFrom="first">
                 {t("services.title1")} {t("services.title2")}
               </VerticalCutReveal>
@@ -86,7 +80,7 @@ export function ServicesSection() {
               <motion.div key={feature.tag}
                 initial={{ opacity: 0, y: 50 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.8, delay: i * 0.1 }}
-                className="liquid-glass rounded-3xl overflow-hidden group border border-[#C4956A]/5 hover:border-[#C4956A]/15 transition-colors">
+                className="bg-white rounded-3xl overflow-hidden group border border-gray-100 shadow-sm hover:shadow-md transition-all">
                 <div className="aspect-video overflow-hidden relative">
                   {feature.media.type === "video" ? (
                     <video
@@ -106,22 +100,21 @@ export function ServicesSection() {
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2.5">
                       <div className="rounded-full p-2 bg-[#C4956A]/10">
-                        <Icon size={14} className="text-[#C4956A]/70" />
+                        <Icon size={14} className="text-[#C4956A]" />
                       </div>
-                      <p className="uppercase tracking-widest text-[#C4956A]/40 text-xs md:text-[10px]">{feature.tag}</p>
+                      <p className="uppercase tracking-widest text-[#C4956A] text-xs md:text-[10px]">{feature.tag}</p>
                     </div>
-                    <div className="rounded-full p-1.5 bg-white/5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                    <div className="rounded-full p-1.5 bg-gray-100 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <ArrowUpRight size={14} className="text-[#C4956A]" />
                     </div>
                   </div>
-                  <h3 className="text-white text-lg mb-2 tracking-tight">{feature.title}</h3>
-                  <p className="text-white/40 text-sm leading-relaxed">{feature.description}</p>
+                  <h3 className="text-gray-900 text-lg mb-2 tracking-tight">{feature.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
                 </div>
               </motion.div>
             );

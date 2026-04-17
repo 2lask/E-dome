@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { Globe } from "lucide-react";
-import { VillaLuxuryDrawing } from "@/components/landing/drawings/villa-luxury";
-import { ChaletAlpineDrawing } from "@/components/landing/drawings/chalet-alpine";
 import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function FooterSection() {
@@ -27,14 +25,7 @@ export function FooterSection() {
     { label: t("footer.link_investisseurs"), href: "/investisseurs" },
   ];
   return (
-    <footer className="bg-black border-t border-[#C4956A]/8 pt-16 pb-8 px-6 relative overflow-hidden">
-      {/* Architectural drawings background */}
-      <div className="hidden md:block absolute left-[-15%] top-[-10%] w-[70%] md:w-[50%] text-white/[0.04] pointer-events-none">
-        <VillaLuxuryDrawing />
-      </div>
-      <div className="hidden md:block absolute right-[-10%] bottom-[-15%] w-[60%] md:w-[40%] text-white/[0.04] pointer-events-none">
-        <ChaletAlpineDrawing />
-      </div>
+    <footer className="bg-[#1a1a1a] border-t border-white/5 pt-16 pb-8 px-6 relative overflow-hidden">
 
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-16">
@@ -43,11 +34,11 @@ export function FooterSection() {
               <Globe size={22} className="text-[#C4956A]" />
               <span className="text-white font-semibold text-lg">E-Dome</span>
             </div>
-            <p className="text-white/35 text-sm leading-relaxed mb-4">
+            <p className="text-white/50 text-sm leading-relaxed mb-4">
               {t("footer.desc")}
             </p>
             <div className="flex flex-col gap-2 mt-4">
-              <a href="mailto:contact@edome.world" className="inline-flex items-center gap-2 text-white/30 text-xs hover:text-white/60 transition-colors">
+              <a href="mailto:contact@edome.world" className="inline-flex items-center gap-2 text-white/40 text-xs hover:text-white/70 transition-colors">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                 contact@edome.world
               </a>
@@ -63,43 +54,43 @@ export function FooterSection() {
           </div>
 
           <div>
-            <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">{t("footer.demo_label")}</p>
+            <p className="text-[#C4956A]/60 text-xs tracking-widest uppercase mb-4">{t("footer.demo_label")}</p>
             <ul className="space-y-2.5">
               {demoLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{link.label}</Link>
+                  <Link href={link.href} className="text-white/50 text-sm hover:text-[#C4956A] transition-colors py-1.5 inline-block">{link.label}</Link>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">{t("footer.platform_label")}</p>
+            <p className="text-[#C4956A]/60 text-xs tracking-widest uppercase mb-4">{t("footer.platform_label")}</p>
             <ul className="space-y-2.5">
               {platformLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{link.label}</Link>
+                  <Link href={link.href} className="text-white/50 text-sm hover:text-[#C4956A] transition-colors py-1.5 inline-block">{link.label}</Link>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <p className="text-[#C4956A]/40 text-xs tracking-widest uppercase mb-4">{t("footer.about_label")}</p>
+            <p className="text-[#C4956A]/60 text-xs tracking-widest uppercase mb-4">{t("footer.about_label")}</p>
             <ul className="space-y-2.5">
-              <li><a href="#vision" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_vision")}</a></li>
-              <li><a href="#fonctionnalites" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_features")}</a></li>
-              <li><a href="#fondateurs" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_founders")}</a></li>
-              <li><a href="#roadmap" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_roadmap")}</a></li>
-              <li><Link href="/conditions" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_conditions")}</Link></li>
-              <li><Link href="/confidentialite" className="text-white/30 text-sm hover:text-[#C4956A]/70 transition-colors py-1.5 inline-block">{t("footer.link_privacy")}</Link></li>
+              <li><a href="#vision" className="text-white/50 text-sm hover:text-[#C4956A] transition-colors py-1.5 inline-block">{t("footer.link_vision")}</a></li>
+              <li><a href="#fonctionnalites" className="text-white/50 text-sm hover:text-[#C4956A] transition-colors py-1.5 inline-block">{t("footer.link_features")}</a></li>
+              <li><a href="#fondateurs" className="text-white/50 text-sm hover:text-[#C4956A] transition-colors py-1.5 inline-block">{t("footer.link_founders")}</a></li>
+              <li><a href="#roadmap" className="text-white/50 text-sm hover:text-[#C4956A] transition-colors py-1.5 inline-block">{t("footer.link_roadmap")}</a></li>
+              <li><Link href="/conditions" className="text-white/50 text-sm hover:text-[#C4956A] transition-colors py-1.5 inline-block">{t("footer.link_conditions")}</Link></li>
+              <li><Link href="/confidentialite" className="text-white/50 text-sm hover:text-[#C4956A] transition-colors py-1.5 inline-block">{t("footer.link_privacy")}</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <p className="text-white/15 text-xs">{t("footer.copyright")}</p>
-          <Link href="#inscriptions" className="liquid-glass rounded-full px-5 py-2.5 text-white/40 text-xs hover:text-[#C4956A]/70 hover:bg-white/5 transition-all border border-[#C4956A]/8">
+        <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <p className="text-white/25 text-xs">{t("footer.copyright")}</p>
+          <Link href="#inscriptions" className="rounded-full px-5 py-2.5 text-white/50 text-xs hover:text-[#C4956A] hover:bg-white/5 transition-all border border-white/10">
             {t("footer.access")}
           </Link>
         </div>

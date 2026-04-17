@@ -5,8 +5,6 @@ import { motion, useInView } from "framer-motion";
 import { AlertTriangle, Clock, ArrowLeftRight, Brain } from "lucide-react";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { TextEffect } from "@/components/ui/text-effect";
-import { ArchBackground } from "@/components/landing/arch-background";
-import DotPattern from "@/components/ui/dot-pattern";
 import { useLandingLang } from "@/components/landing/landing-i18n";
 
 function CountUpStat({ target, suffix = "", inView }: { target: number; suffix?: string; inView: boolean }) {
@@ -41,9 +39,8 @@ export function ProblemSection() {
   const stats = [
     {
       icon: ArrowLeftRight,
-      iconColor: "text-blue-400/70",
-      iconBg: "bg-blue-400/10",
-      light: true,
+      iconColor: "text-blue-500",
+      iconBg: "bg-blue-50",
       value: t("problem.stat1_value"),
       numValue: 12,
       numSuffix: "",
@@ -53,9 +50,8 @@ export function ProblemSection() {
     },
     {
       icon: Clock,
-      iconColor: "text-amber-400/70",
-      iconBg: "bg-amber-400/10",
-      light: "beige",
+      iconColor: "text-amber-500",
+      iconBg: "bg-amber-50",
       value: t("problem.stat2_value"),
       numValue: 40,
       numSuffix: "%",
@@ -65,9 +61,8 @@ export function ProblemSection() {
     },
     {
       icon: Brain,
-      iconColor: "text-purple-400/70",
-      iconBg: "bg-purple-400/10",
-      light: "beige",
+      iconColor: "text-purple-500",
+      iconBg: "bg-purple-50",
       value: t("problem.stat3_value"),
       numValue: 23,
       numSuffix: " min",
@@ -77,9 +72,8 @@ export function ProblemSection() {
     },
     {
       icon: AlertTriangle,
-      iconColor: "text-red-400/70",
-      iconBg: "bg-red-400/10",
-      light: true,
+      iconColor: "text-red-400",
+      iconBg: "bg-red-50",
       value: t("problem.stat4_value"),
       numValue: 67,
       numSuffix: "%",
@@ -90,26 +84,19 @@ export function ProblemSection() {
   ];
 
   return (
-    <section ref={ref} className="bg-black py-16 md:py-40 px-6 overflow-hidden relative">
-      <div
-        className="absolute inset-0 opacity-[0.06]"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&q=40')", backgroundSize: "cover", backgroundPosition: "center" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40" />
-      <ArchBackground variant="floorplan" />
-
+    <section ref={ref} className="bg-white py-16 md:py-40 px-6 overflow-hidden relative">
       <div className="max-w-6xl mx-auto relative">
         <div className="mb-10 md:mb-24">
           <TextEffect per="word" preset="slide" delay={0} trigger={inView}
-            className="text-[#C4956A]/50 text-sm tracking-widest uppercase mb-4">
+            className="text-[#C4956A] text-sm tracking-widest uppercase mb-4">
             {t("problem.label")}
           </TextEffect>
           <TextEffect per="word" preset="scale" delay={0.2} trigger={inView}
             as="h2"
-            className="text-4xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-tight mb-8">
+            className="text-4xl md:text-6xl lg:text-7xl text-gray-900 leading-[1.1] tracking-tight mb-8">
             {`${t("problem.title1")} ${t("problem.title2")}`}
           </TextEffect>
-          <BlurFade delay={0.3} inView><p className="text-white/45 text-base md:text-lg max-w-3xl leading-relaxed">
+          <BlurFade delay={0.3} inView><p className="text-gray-500 text-base md:text-lg max-w-3xl leading-relaxed">
             {t("problem.desc")}
           </p></BlurFade>
         </div>
@@ -121,14 +108,7 @@ export function ProblemSection() {
               <motion.div key={stat.value}
                 initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
-                className="relative border border-red-500/50 hover:border-red-500/70 transition-colors overflow-hidden"
-                style={{ background: "rgba(20, 10, 10, 0.9)" }}>
-                <DotPattern width={5} height={5} className="fill-red-500/10" />
-
-                <div className="absolute -left-1.5 -top-1.5 h-3 w-3 bg-red-500" />
-                <div className="absolute -bottom-1.5 -left-1.5 h-3 w-3 bg-red-500" />
-                <div className="absolute -right-1.5 -top-1.5 h-3 w-3 bg-red-500" />
-                <div className="absolute -bottom-1.5 -right-1.5 h-3 w-3 bg-red-500" />
+                className="relative bg-white border border-gray-200 rounded-2xl hover:shadow-lg transition-all overflow-hidden">
 
                 <div className="relative z-10 p-6 md:p-8">
                   <div className="flex items-start gap-4 mb-4">
@@ -136,14 +116,14 @@ export function ProblemSection() {
                       <Icon size={18} className={stat.iconColor} />
                     </div>
                     <div>
-                      <p className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
+                      <p className="text-gray-900 text-3xl md:text-4xl font-semibold tracking-tight">
                         <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
-                        <span className="text-white/30 text-base ml-2 font-normal">{stat.unit}</span>
+                        <span className="text-gray-400 text-base ml-2 font-normal">{stat.unit}</span>
                       </p>
                     </div>
                   </div>
-                  <p className="text-white/60 text-sm leading-relaxed mb-3">{stat.description}</p>
-                  <p className="text-white/25 text-xs italic">{stat.source}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed mb-3">{stat.description}</p>
+                  <p className="text-gray-400 text-xs italic">{stat.source}</p>
                 </div>
               </motion.div>
             );
@@ -152,11 +132,11 @@ export function ProblemSection() {
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
           className="mt-16 text-center">
-          <div className="rounded-2xl md:rounded-full inline-flex items-center gap-3 px-5 md:px-8 py-4 border-2 border-emerald-500/40" style={{ background: "rgba(15, 30, 15, 0.85)" }}>
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <p className="text-white/60 text-sm">
+          <div className="rounded-2xl md:rounded-full inline-flex items-center gap-3 px-5 md:px-8 py-4 border-2 border-emerald-200 bg-emerald-50">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-gray-600 text-sm">
               {t("problem.pill")}{" "}
-              <span className="text-emerald-400 font-medium">{t("problem.pill_bold")}</span>
+              <span className="text-emerald-600 font-medium">{t("problem.pill_bold")}</span>
             </p>
           </div>
         </motion.div>

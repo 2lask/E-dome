@@ -76,6 +76,7 @@ html:not(.light) {
 html {
   height: auto !important;
   overflow-x: hidden !important;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -268,114 +269,26 @@ html.light .card-hover:hover {
   }
 }
 
-/* ─── Architectural drawing animations ────────────────────────────────────── */
+/* ─── Liquid Glass Light (for light backgrounds) ─────────────────────────── */
 
-/* Draw-in: lines trace themselves */
-.arch-draw-in svg line,
-.arch-draw-in svg path,
-.arch-draw-in svg rect,
-.arch-draw-in svg circle,
-.arch-draw-in svg polygon,
-.arch-draw-in svg polyline,
-.arch-draw-in svg ellipse {
-  stroke-dasharray: 2000;
-  stroke-dashoffset: 2000;
-  transition: stroke-dashoffset 2.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.arch-draw-in.visible svg line,
-.arch-draw-in.visible svg path,
-.arch-draw-in.visible svg rect,
-.arch-draw-in.visible svg circle,
-.arch-draw-in.visible svg polygon,
-.arch-draw-in.visible svg polyline,
-.arch-draw-in.visible svg ellipse {
-  stroke-dashoffset: 0;
+.liquid-glass-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }
 
-@media (max-width: 767px) {
-  .arch-draw-in svg line,
-  .arch-draw-in svg path,
-  .arch-draw-in svg rect,
-  .arch-draw-in svg circle,
-  .arch-draw-in svg polygon,
-  .arch-draw-in svg polyline,
-  .arch-draw-in svg ellipse {
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
-    transition: none;
-  }
-  .arch-shimmer::after {
-    animation: none;
-  }
-  .arch-pulse svg line,
-  .arch-pulse svg path,
-  .arch-pulse svg rect {
-    animation: none;
-  }
-}
+/* ─── Scroll-reveal animations ───────────────────────────────────────────── */
 
-/* Gradient color on strokes: white to beige */
-.arch-gradient-tint svg {
-  color: white;
+.reveal-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
 }
-.arch-gradient-tint svg line:nth-child(3n),
-.arch-gradient-tint svg path:nth-child(2n),
-.arch-gradient-tint svg rect:nth-child(4n),
-.arch-gradient-tint svg circle:nth-child(2n) {
-  color: #C4956A;
-}
-
-/* Pulse: lines gently pulse opacity */
-.arch-pulse svg line,
-.arch-pulse svg path,
-.arch-pulse svg rect {
-  animation: archPulse 4s ease-in-out infinite;
-}
-.arch-pulse svg line:nth-child(odd) { animation-delay: 0s; }
-.arch-pulse svg line:nth-child(even) { animation-delay: 2s; }
-.arch-pulse svg rect:nth-child(3n) { animation-delay: 1s; }
-.arch-pulse svg path:nth-child(2n) { animation-delay: 1.5s; }
-
-@keyframes archPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* Shimmer: a light sweep moves across */
-.arch-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-.arch-shimmer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 40%,
-    rgba(255,255,255,0.04) 45%,
-    rgba(255,255,255,0.08) 50%,
-    rgba(255,255,255,0.04) 55%,
-    transparent 60%
-  );
-  background-size: 200% 100%;
-  animation: archShimmer 6s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes archShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* Float: gentle floating motion */
-.arch-float svg {
-  animation: archFloat 8s ease-in-out infinite;
-  will-change: transform;
-}
-@keyframes archFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
+.reveal-up.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ─── Print styles ───────────────────────────────────────────────────────── */
