@@ -1,28 +1,24 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
-import { TextEffect } from "@/components/ui/text-effect";
 import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function FoundersSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
   const { t } = useLandingLang();
 
   return (
-    <section ref={ref} className="bg-white py-16 md:py-44 px-6 overflow-hidden relative">
+    <section className="bg-white py-16 md:py-44 px-6 overflow-hidden relative">
 
       <div className="max-w-6xl mx-auto relative">
 
         {/* Leonard - photo left, text right */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7 }}
           className="flex flex-col md:flex-row items-center gap-10 md:gap-16 mb-16 md:mb-28"
         >
           <div className="w-36 sm:w-48 md:w-64 shrink-0">
@@ -31,14 +27,11 @@ export function FoundersSection() {
             </div>
           </div>
           <div className="flex-1 text-center md:text-left">
-            <TextEffect per="word" preset="fade" delay={0.2} trigger={inView}
-              className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+            <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
               {t("founders.label_leo")}
-            </TextEffect>
+            </p>
             <h3 className="text-gray-900 text-3xl md:text-4xl font-semibold mb-5 tracking-tight">
-              <VerticalCutReveal splitBy="words" staggerDuration={0.15} staggerFrom="first">
-                Leonard Ansermet
-              </VerticalCutReveal>
+              Leonard Ansermet
             </h3>
             <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-4">
               {t("founders.leo_p1")}
@@ -62,44 +55,37 @@ export function FoundersSection() {
         </motion.div>
 
         {/* Central quote */}
-        <div className="text-center mb-16 md:mb-28 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="text-center mb-16 md:mb-28 px-4"
+        >
           <div className="w-12 h-1 bg-[#C4956A] mx-auto mb-8" />
-          {/* Decorative quote mark */}
-          <svg
-            className="mx-auto mb-4 w-10 h-10 md:w-14 md:h-14 text-[#C4956A] opacity-20"
-            viewBox="0 0 48 48"
-            fill="currentColor"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M14 24c-3.3 0-6-2.7-6-6s2.7-6 6-6c1 0 2 .3 2.8.7C18.8 10.3 20 7.3 22 5l2 1.5c-3 3.5-5 7.5-5 11.5 0 3.3-2.2 6-5 6zm20 0c-3.3 0-6-2.7-6-6s2.7-6 6-6c1 0 2 .3 2.8.7C38.8 10.3 40 7.3 42 5l2 1.5c-3 3.5-5 7.5-5 11.5 0 3.3-2.2 6-5 6z" />
-          </svg>
-          <div
+          <p
             className="text-xl sm:text-2xl md:text-4xl lg:text-5xl text-gray-900 leading-[1.3] tracking-tight italic"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
-            <VerticalCutReveal splitBy="words" staggerDuration={0.08} staggerFrom="center">
-              {t("founders.quote")}
-            </VerticalCutReveal>
-          </div>
+            {t("founders.quote")}
+          </p>
           <div className="w-12 h-1 bg-[#C4956A] mx-auto mt-8" />
-        </div>
+        </motion.div>
 
         {/* Jean-Pierre - text left, photo right */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, delay: 0.3 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, delay: 0.1 }}
           className="flex flex-col-reverse md:flex-row items-center gap-10 md:gap-16 mb-16 md:mb-28"
         >
           <div className="flex-1 text-center md:text-right">
-            <TextEffect per="word" preset="fade" delay={0.2} trigger={inView}
-              className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+            <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
               {t("founders.label_jp")}
-            </TextEffect>
+            </p>
             <h3 className="text-gray-900 text-3xl md:text-4xl font-semibold mb-5 tracking-tight">
-              <VerticalCutReveal splitBy="words" staggerDuration={0.15} staggerFrom="first">
-                Jean-Pierre Medard Garza
-              </VerticalCutReveal>
+              Jean-Pierre Medard Garza
             </h3>
             <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-4">
               {t("founders.jp_p1")}
@@ -129,9 +115,10 @@ export function FoundersSection() {
 
         {/* Vision commune */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.45 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, delay: 0.2 }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {/* Left card - conviction */}

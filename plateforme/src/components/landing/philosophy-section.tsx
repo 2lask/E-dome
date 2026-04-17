@@ -1,16 +1,11 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { Network, UserCog, Eye, MessageCircle } from "lucide-react";
-import { StaggerText } from "@/components/ui/stagger-text";
-import { BlurFade } from "@/components/ui/blur-fade";
 import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function PhilosophySection() {
   const { t } = useLandingLang();
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
 
   const pillars = [
     {
@@ -44,24 +39,38 @@ export function PhilosophySection() {
   ];
 
   return (
-    <section ref={ref} className="bg-[#FAFAFA] py-16 md:py-28 lg:py-40 px-6 overflow-hidden relative">
+    <section className="bg-[#FAFAFA] py-16 md:py-28 lg:py-40 px-6 overflow-hidden relative">
 
       <div className="max-w-6xl mx-auto relative">
         <div className="mb-16 md:mb-24">
-          <BlurFade delay={0} inView>
-            <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-4">{t("philosophy.label")}</p>
-          </BlurFade>
-          <StaggerText
-            text={`${t("philosophy.title1")} ${t("philosophy.title2")}`}
-            direction="left"
-            stagger={0.06}
-            className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl text-gray-900 tracking-tight mb-6"
-          />
-          <BlurFade delay={0.4} inView>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7 }}
+          >
+            <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-6">{t("philosophy.label")}</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+          >
+            <h2 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl text-gray-900 tracking-tight mb-8">
+              {t("philosophy.title1")} {t("philosophy.title2")}
+            </h2>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
             <p className="text-gray-600 text-base md:text-lg max-w-3xl leading-relaxed">
               {t("philosophy.desc")}
             </p>
-          </BlurFade>
+          </motion.div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16">
@@ -70,9 +79,10 @@ export function PhilosophySection() {
             return (
               <motion.div
                 key={pillar.title}
-                initial={{ opacity: 0, y: 40 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.7, delay: i * 0.1 }}
               >
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-300 p-6 md:p-8">
                   <div className="flex items-center gap-3 mb-5">
@@ -90,9 +100,10 @@ export function PhilosophySection() {
 
         {/* Video showcase */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, delay: 0.5 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, delay: 0.2 }}
           className="rounded-3xl overflow-hidden aspect-[4/5] md:aspect-video relative"
         >
           <video

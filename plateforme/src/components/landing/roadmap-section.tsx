@@ -1,17 +1,11 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { Check, Loader2, Clock, ArrowRight, Users, Award, KeyRound, Star, Mic, Handshake, Gift } from "lucide-react";
-import { BlurFade } from "@/components/ui/blur-fade";
-import { TextEffect } from "@/components/ui/text-effect";
-import { StaggerText } from "@/components/ui/stagger-text";
+import { motion } from "framer-motion";
+import { Check, Loader2, Clock, ArrowRight, Award, KeyRound, Star, Mic, Handshake, Gift } from "lucide-react";
 import Link from "next/link";
 import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function RoadmapSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
   const { t } = useLandingLang();
 
   const phases = [
@@ -79,26 +73,43 @@ export function RoadmapSection() {
   };
 
   return (
-    <section ref={ref} className="bg-[#FAFAFA] py-16 md:py-40 px-6 overflow-hidden relative">
+    <section className="bg-[#FAFAFA] py-16 md:py-40 px-6 overflow-hidden relative">
 
       <div className="max-w-6xl mx-auto relative">
         <div className="mb-10 md:mb-24">
-          <TextEffect per="char" preset="blur" delay={0} trigger={inView}
-            className="text-[#C4956A] text-sm tracking-widest uppercase mb-4 font-medium">
-            {t("roadmap.label")}
-          </TextEffect>
-          <StaggerText
-            text={`${t("roadmap.title1")} ${t("roadmap.title2")}`}
-            direction="right"
-            stagger={0.05}
-            className="text-4xl md:text-6xl text-gray-900 tracking-tight mb-6"
-          />
-          <BlurFade delay={0.3} inView><p className="text-gray-600 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
-            {t("roadmap.desc")}
-          </p>
-          <p className="text-gray-400 text-sm md:text-base max-w-3xl leading-relaxed">
-            {t("roadmap.desc2")}
-          </p></BlurFade>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7 }}
+          >
+            <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-6 font-medium">
+              {t("roadmap.label")}
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+          >
+            <h2 className="text-4xl md:text-6xl text-gray-900 tracking-tight mb-8">
+              {t("roadmap.title1")} {t("roadmap.title2")}
+            </h2>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            <p className="text-gray-600 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
+              {t("roadmap.desc")}
+            </p>
+            <p className="text-gray-400 text-sm md:text-base max-w-3xl leading-relaxed">
+              {t("roadmap.desc2")}
+            </p>
+          </motion.div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
@@ -107,8 +118,10 @@ export function RoadmapSection() {
             const Icon = config.icon;
             return (
               <motion.div key={phase.phase}
-                initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: 0.15 + i * 0.1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.7, delay: i * 0.1 }}
                 className={`rounded-3xl p-6 md:p-8 ${config.border} bg-white shadow-sm relative overflow-hidden`}>
                 <div className="relative z-10 flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
@@ -138,7 +151,11 @@ export function RoadmapSection() {
         </div>
 
         {/* CTA + avantages early members */}
-        <motion.div id="inscriptions" initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.7 }}
+        <motion.div id="inscriptions"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, delay: 0.2 }}
           className="rounded-3xl border-2 border-[#C4956A]/20 overflow-hidden relative bg-white shadow-lg">
 
           <div className="relative z-10 p-5 md:p-12">

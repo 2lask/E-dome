@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { AboutSection } from "@/components/landing/about-section";
 import { ProblemSection } from "@/components/landing/problem-section";
 import { FeaturedVideoSection } from "@/components/landing/featured-video-section";
@@ -12,60 +13,6 @@ import { FoundersSection } from "@/components/landing/founders-section";
 import { RoadmapSection } from "@/components/landing/roadmap-section";
 import { FooterSection } from "@/components/landing/footer-section";
 import { LandingLanguageProvider, useLandingLang } from "@/components/landing/landing-i18n";
-
-function AnimatedText({ text, delay = 200 }: { text: string; delay?: number }) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-
-  return (
-    <span className="inline-block">
-      {text.split("").map((char, i) => (
-        <span
-          key={i}
-          className="inline-block transition-[transform,opacity] duration-500"
-          style={{
-            transform: visible ? "translateX(0)" : "translateX(-18px)",
-            opacity: visible ? 1 : 0,
-            transitionDelay: `${i * 30}ms`,
-          }}
-        >
-          {char === " " ? "\u00A0" : char}
-        </span>
-      ))}
-    </span>
-  );
-}
-
-function CountUp({ target, suffix = "", delay = 1600, duration = 1500 }: { target: number; suffix?: string; delay?: number; duration?: number }) {
-  const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setStarted(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-
-  useEffect(() => {
-    if (!started) return;
-    const start = performance.now();
-    const step = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(target * eased));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [started, target, duration]);
-
-  return (
-    <span style={{ opacity: started ? 1 : 0, transition: "opacity 300ms ease" }}>
-      {count}{suffix}
-    </span>
-  );
-}
 
 export default function HomePage() {
   return (
@@ -78,14 +25,15 @@ export default function HomePage() {
 function HomePageContent() {
   const { lang, setLang, t } = useLandingLang();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [subVisible, setSubVisible] = useState(false);
-  const [btnVisible, setBtnVisible] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const t1 = setTimeout(() => setSubVisible(true), 800);
-    const t2 = setTimeout(() => setBtnVisible(true), 1200);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const heroScale = useTransform(heroScroll, [0, 1], [1, 1.15]);
+  const heroTextY = useTransform(heroScroll, [0, 0.5], [0, -80]);
+  const heroTextOpacity = useTransform(heroScroll, [0, 0.4], [1, 0]);
 
   // Force video play on mobile (some browsers block autoplay until interaction)
   useEffect(() => {
@@ -104,17 +52,19 @@ function HomePageContent() {
   return (
     <div className="bg-white" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
       {/* ═══ HERO ═══ */}
-      <section className="min-h-screen overflow-hidden relative flex flex-col">
-        <video
-          ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover"
-          muted
-          autoPlay
-          loop
-          playsInline
-          preload="auto"
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260402_143803_f635b644-d959-4f16-9d29-cedaeb5c6de0.mp4"
-        />
+      <section ref={heroRef} className="min-h-screen overflow-hidden relative flex flex-col">
+        <motion.div style={{ scale: heroScale }} className="absolute inset-0 w-full h-full">
+          <video
+            ref={videoRef}
+            className="absolute inset-0 w-full h-full object-cover"
+            muted
+            autoPlay
+            loop
+            playsInline
+            preload="auto"
+            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260402_143803_f635b644-d959-4f16-9d29-cedaeb5c6de0.mp4"
+          />
+        </motion.div>
         {/* Subtle dark gradient overlay - video stays visible */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/60" />
 
@@ -152,73 +102,57 @@ function HomePageContent() {
         </nav>
 
         {/* Hero content - centered */}
-        <div className="relative z-10 flex-1 flex items-center justify-center px-6 sm:px-10">
+        <motion.div style={{ y: heroTextY, opacity: heroTextOpacity }} className="relative z-10 flex-1 flex items-center justify-center px-6 sm:px-10">
           <div className="max-w-4xl mx-auto w-full text-center">
             <p
-              className="text-[#C4956A] text-xs sm:text-sm tracking-[0.3em] uppercase mb-6 font-semibold"
-              style={{
-                opacity: subVisible ? 1 : 0,
-                transform: subVisible ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity 800ms ease, transform 800ms ease",
-              }}
+              className="text-[#C4956A] text-xs sm:text-sm tracking-[0.3em] uppercase mb-6 font-semibold animate-fade-in"
+              style={{ animationDelay: "0.1s", animationFillMode: "both" }}
             >
               {t("hero.label")}
             </p>
             <h1
-              className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl text-white leading-[1.05] mb-6"
-              style={{ letterSpacing: "-0.04em", fontFamily: "'Instrument Serif', 'Georgia', serif" }}
+              className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl text-white leading-[1.05] mb-6 animate-fade-in"
+              style={{ letterSpacing: "-0.04em", fontFamily: "'Instrument Serif', 'Georgia', serif", animationDelay: "0.2s", animationFillMode: "both" }}
             >
-              <AnimatedText text={t("hero.title1")} delay={200} />
+              {t("hero.title1")}
               <br />
-              <span className="text-[#C4956A]"><AnimatedText text={t("hero.title2")} delay={400} /></span>
+              <span className="text-[#C4956A]">{t("hero.title2")}</span>
             </h1>
 
             <p
-              className="text-white/75 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-8 font-light"
-              style={{
-                opacity: subVisible ? 1 : 0,
-                transform: subVisible ? "translateY(0)" : "translateY(16px)",
-                transition: "opacity 1000ms ease, transform 1000ms ease",
-              }}
+              className="text-white/75 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-8 font-light animate-fade-in"
+              style={{ animationDelay: "0.4s", animationFillMode: "both" }}
             >
               {t("hero.subtitle")}
             </p>
 
             {/* Early member perks */}
             <div
-              className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-8"
-              style={{
-                opacity: subVisible ? 1 : 0,
-                transform: subVisible ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity 1200ms ease, transform 1200ms ease",
-              }}
+              className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-8 animate-fade-in"
+              style={{ animationDelay: "0.6s", animationFillMode: "both" }}
             >
               <div className="flex items-center gap-1.5 text-emerald-400 text-[11px] sm:text-xs font-medium">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span className="text-white/70">{lang === "th" ? "แบดจ์ผู้ก่อตั้ง" : lang === "en" ? "Founder badge" : "Badge fondateur"}</span>
+                <span className="text-white/70">{lang === "th" ? "\u0e41\u0e1a\u0e14\u0e08\u0e4c\u0e1c\u0e39\u0e49\u0e01\u0e48\u0e2d\u0e15\u0e31\u0e49\u0e07" : lang === "en" ? "Founder badge" : "Badge fondateur"}</span>
               </div>
               <div className="flex items-center gap-1.5 text-emerald-400 text-[11px] sm:text-xs font-medium">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span className="text-white/70">{lang === "th" ? "เข้าถึงก่อนใคร" : lang === "en" ? "Early access" : "Accès anticipé"}</span>
+                <span className="text-white/70">{lang === "th" ? "\u0e40\u0e02\u0e49\u0e32\u0e16\u0e36\u0e07\u0e01\u0e48\u0e2d\u0e19\u0e43\u0e04\u0e23" : lang === "en" ? "Early access" : "Acc\u00e8s anticip\u00e9"}</span>
               </div>
               <div className="flex items-center gap-1.5 text-emerald-400 text-[11px] sm:text-xs font-medium">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span className="text-white/70">{lang === "th" ? "การมองเห็นสำคัญ" : lang === "en" ? "Priority visibility" : "Visibilité prioritaire"}</span>
+                <span className="text-white/70">{lang === "th" ? "\u0e01\u0e32\u0e23\u0e21\u0e2d\u0e07\u0e40\u0e2b\u0e47\u0e19\u0e2a\u0e33\u0e04\u0e31\u0e0d" : lang === "en" ? "Priority visibility" : "Visibilit\u00e9 prioritaire"}</span>
               </div>
               <div className="hidden sm:flex items-center gap-1.5 text-emerald-400 text-[11px] sm:text-xs font-medium">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span className="text-white/70">{lang === "th" ? "สิทธิพิเศษ" : lang === "en" ? "Exclusive perks" : "Avantages exclusifs"}</span>
+                <span className="text-white/70">{lang === "th" ? "\u0e2a\u0e34\u0e17\u0e18\u0e34\u0e1e\u0e34\u0e40\u0e28\u0e29" : lang === "en" ? "Exclusive perks" : "Avantages exclusifs"}</span>
               </div>
             </div>
 
             {/* CTA buttons */}
             <div
-              className="flex flex-wrap items-center justify-center gap-4"
-              style={{
-                opacity: btnVisible ? 1 : 0,
-                transform: btnVisible ? "translateY(0)" : "translateY(16px)",
-                transition: "opacity 1000ms ease, transform 1000ms ease",
-              }}
+              className="flex flex-wrap items-center justify-center gap-4 animate-fade-in"
+              style={{ animationDelay: "0.8s", animationFillMode: "both" }}
             >
               <Link href="#inscriptions" className="bg-[#C4956A] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#b8856a] transition-all flex items-center gap-2 shadow-lg shadow-[#C4956A]/25 hover:shadow-xl hover:shadow-[#C4956A]/30 hover:scale-[1.02]">
                 {t("hero.cta")} <ArrowRight size={16} />
@@ -228,17 +162,7 @@ function HomePageContent() {
               </a>
             </div>
           </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="relative z-10 flex justify-center pb-8">
-          <div className="flex flex-col items-center gap-2 animate-bounce">
-            <span className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-medium">Scroll</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/40">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </div>
-        </div>
+        </motion.div>
 
       </section>
 

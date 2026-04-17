@@ -1,22 +1,20 @@
 "use client";
 
-import { useRef } from "react";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function FeaturedVideoSection() {
   const { t } = useLandingLang();
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="bg-[#FAFAFA] pt-6 md:pt-10 pb-20 md:pb-32 px-6 overflow-hidden">
+    <section className="bg-[#FAFAFA] pt-6 md:pt-10 pb-20 md:pb-32 px-6 overflow-hidden">
       <motion.div
-        initial={{ opacity: 0, y: 60 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.9 }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.7 }}
         className="max-w-6xl mx-auto"
       >
         {/* Video container */}
