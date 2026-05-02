@@ -136,19 +136,22 @@ body {
 .bp-line {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: bp-draw 1.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation-name: bp-draw;
+  animation-duration: 1.0s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  animation-fill-mode: forwards;
   vector-effect: non-scaling-stroke;
 }
 .bp-frame { animation-duration: 1.7s; animation-delay: 0.55s; }
 .bp-axis  { animation-duration: 1.0s; animation-delay: 0.4s; }
-.bp-corner { animation-duration: 0.5s; }
-.bp-center-line { animation-duration: 0.5s; animation-delay: 1.4s; }
-.bp-tick { animation-duration: 0.3s; }
 
 /* Label mono fade-in */
 .bp-label {
   opacity: 0;
-  animation: bp-fade 0.6s ease-out 1.9s forwards;
+  animation-name: bp-fade;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
