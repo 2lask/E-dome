@@ -28,6 +28,7 @@ import {
   LandingLanguageProvider,
   useLandingLang,
 } from "@/components/landing/landing-i18n";
+import { ScrollFadeController } from "@/components/landing/scroll-fade-controller";
 
 /* ═══════════════════════════════════════════════════════════════════ */
 /*  ROOT                                                               */
@@ -63,7 +64,7 @@ function SectionHeading({
   description?: string;
 }) {
   return (
-    <div className="text-center max-w-3xl mx-auto mb-16">
+    <div data-scroll-fade className="text-center max-w-3xl mx-auto mb-16">
       <motion.div {...fadeUp} className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
         {label}
       </motion.div>
@@ -180,6 +181,7 @@ function HomePageContent() {
 
   return (
     <div className="bg-[#FAFAF8] text-gray-900 antialiased" style={{ fontFamily: "'Poppins', system-ui, sans-serif" }}>
+      <ScrollFadeController />
 
       {/* ═══════════════════════ NAVBAR ═══════════════════════ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
@@ -232,22 +234,24 @@ function HomePageContent() {
       </nav>
 
       {/* ═══════════════════════ HERO ═══════════════════════ */}
-      <AnimatedMarqueeHero
-        tagline={t("hero.label")}
-        title={
-          <>
-            <span>{t("hero.title1")}</span>{" "}
-            <span className="text-[#C4956A]">{t("hero.title2")}</span>
-          </>
-        }
-        description={t("hero.subtitle")}
-        ctaText={t("hero.cta")}
-        ctaHref="#inscriptions"
-        secondaryCtaText={t("hero.learn")}
-        secondaryCtaHref="#vision"
-        images={heroImages}
-        className="bg-[#FAFAF8]"
-      />
+      <div data-scroll-fade>
+        <AnimatedMarqueeHero
+          tagline={t("hero.label")}
+          title={
+            <>
+              <span>{t("hero.title1")}</span>{" "}
+              <span className="text-[#C4956A]">{t("hero.title2")}</span>
+            </>
+          }
+          description={t("hero.subtitle")}
+          ctaText={t("hero.cta")}
+          ctaHref="#inscriptions"
+          secondaryCtaText={t("hero.learn")}
+          secondaryCtaHref="#vision"
+          images={heroImages}
+          className="bg-[#FAFAF8]"
+        />
+      </div>
 
       <DotDivider />
 
