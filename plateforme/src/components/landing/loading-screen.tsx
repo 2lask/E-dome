@@ -10,8 +10,10 @@ import { useEffect, useState } from "react";
  *   0.00s  → image scale 1.12 → 1 (2.4s expo.out)
  *   0.15s  → lettres E/D/O/M/E reveal (yPercent 110→0, dur 1.2s, stagger 0.09)
  *   0.70s  → trait ambre vertical scaleY 0→1 (1.0s)
- *   ~2.30s → début fade-out container (0.9s)
- *   ~3.20s → unmount
+ *   ~2.30s → SORTIE : lettres s'envolent (0.55s) + trait se rétracte (0.45s)
+ *                     + image continue son zoom (1.1s) + panneau remonte
+ *                     comme un rideau (translateY -101%, 1.1s expo.inOut)
+ *   ~3.40s → unmount
  */
 export function LoadingScreen() {
   const [exiting, setExiting] = useState(false);
@@ -24,7 +26,7 @@ export function LoadingScreen() {
     const removeTimer = window.setTimeout(() => {
       setDone(true);
       document.body.style.overflow = "";
-    }, 3200);
+    }, 3450);
 
     return () => {
       window.clearTimeout(fadeTimer);
