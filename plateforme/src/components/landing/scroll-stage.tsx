@@ -3,20 +3,29 @@
 import { useEffect, useRef, Children } from "react";
 
 /**
- * ScrollStage — pattern studiopwi.com pour la première section :
- *   Un sentinel haut de N × 100vh fournit la course du scroll. Un stage
- *   sticky de 100vh reste épinglé en viewport. À l'intérieur, les enfants
- *   `.scroll-slide` sont stackés en absolute inset-0. Quand on scroll,
- *   le stage reste fixe et UNIQUEMENT l'opacité de chaque slide change
- *   (crossfade) — aucune translation, aucun mouvement vertical.
+ * ScrollStage — pinned crossfade scroll-driven, niveau studio primé.
  *
- *   La courbe est un smoothstep (lissage doux des extrémités).
+ * Architecture : sentinelle de N×200vh fournit la course, stage sticky
+ * top:0 height:100vh. Slides .scroll-slide stackées en absolute inset:0.
  *
- * Usage :
- *   <ScrollStage>
- *     <section className="scroll-slide">...</section>
- *     <section className="scroll-slide">...</section>
- *   </ScrollStage>
+ * Fluidité : RAF lerp factor 0.08 sur le progress — la valeur consommée
+ * par les slides est lissée image par image, indépendamment de la
+ * fréquence des events scroll natifs (saccadés au trackpad/souris).
+ *
+ * Rise-up effect (sortante) : translateY 0 → -100px + scale 1 → 0.92
+ *   + blur 0 → 8px + saturate 1 → 1.4. Easing power3.in (accelerate away).
+ *   Phase delay 10 % : opacity baisse légèrement après le translate
+ *   (drag/trail effect — Disney 12 + Material exit).
+ *
+ * Entrante : scale 1.04 → 1 + blur 4 → 0 (rack-focus cinéma, mirror
+ *   subtil). Easing power3.out (decelerate into place).
+ *
+ * Snap : custom rAF smooth-scroll 900ms easeInOutCubic, interruptable
+ *   sur wheel/touchstart. Plus haut de gamme que window.scrollTo natif.
+ *
+ * Perf : layout mesures cachées + ResizeObserver, early return si
+ *   progress inchangé, willChange dynamique sur slides actives, cache
+ *   pointer-events.
  */
 export function ScrollStage({ children }: { children: React.ReactNode }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -33,128 +42,267 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
     );
     if (slides.length === 0) return;
 
-    // Initial : tous en absolute, seule la première visible et interactive
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ── Easings ─────────────────────────────────────────── */
+    const power3In = (t: number) => t * t * t;
+    const power3Out = (t: number) => 1 - Math.pow(1 - t, 3);
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    /* ── Constantes anim ─────────────────────────────────── */
+    const RISE_PX = 100;        // translateY de la sortante
+    const SCALE_OUT = 0.92;     // scale finale de la sortante
+    const BLUR_OUT = 8;         // blur max de la sortante (px)
+    const SAT_OUT = 1.4;        // saturate boost de la sortante
+    const SCALE_IN_FROM = 1.04; // scale initiale de l'entrante
+    const BLUR_IN_FROM = 4;     // blur initial de l'entrante (px)
+    const OPACITY_DRAG = 0.1;   // opacity délayée vs translate
+
+    /* ── Init styles slides ──────────────────────────────── */
+    const lastPE: string[] = slides.map((_, i) => (i === 0 ? "auto" : "none"));
     slides.forEach((s, i) => {
       s.style.position = "absolute";
       s.style.inset = "0";
       s.style.overflowY = "auto";
       s.style.overflowX = "hidden";
       s.style.opacity = i === 0 ? "1" : "0";
-      s.style.transform = "translate3d(0, 0, 0)";
+      s.style.transform =
+        i === 1
+          ? `translate3d(0,0,0) scale(${SCALE_IN_FROM})`
+          : "translate3d(0,0,0)";
+      s.style.filter = i === 1 ? `blur(${BLUR_IN_FROM}px)` : "none";
+      s.style.transformOrigin = "50% 50%";
+      s.style.backfaceVisibility = "hidden";
       s.style.pointerEvents = i === 0 ? "auto" : "none";
-      s.style.willChange = "opacity, transform";
+      s.style.willChange = i <= 1 ? "opacity, transform, filter" : "auto";
     });
 
-    // Distance de remontée (px) que la slide sortante effectue pendant son fade-out
-    const RISE_PX = 60;
-
-    const update = () => {
+    /* ── Cache mesures DOM ───────────────────────────────── */
+    let cachedTotal = 0;
+    let cachedSentinelTop = 0;
+    const measure = () => {
       const rect = sentinel.getBoundingClientRect();
-      const total = sentinel.offsetHeight - window.innerHeight;
-      if (total <= 0) return;
-      const scrolled = Math.max(0, -rect.top);
-      const progress = Math.min(1, scrolled / total);
+      cachedSentinelTop = window.scrollY + rect.top;
+      cachedTotal = sentinel.offsetHeight - window.innerHeight;
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(sentinel);
+    window.addEventListener("resize", measure);
 
-      // Mappe progress (0..1) sur (slides.length - 1) transitions
+    /* ── Lerp loop (frame-rate decoupled) ────────────────── */
+    let targetProgress = 0;
+    let currentProgress = 0;
+    let rafId = 0;
+    let isRunning = false;
+    let lastAppliedIdx = -2;
+    let lastAppliedLocal = -1;
+
+    const computeTarget = () => {
+      if (cachedTotal <= 0) {
+        targetProgress = 0;
+        return;
+      }
+      const scrolled = Math.max(0, window.scrollY - cachedSentinelTop);
+      targetProgress = Math.min(1, scrolled / cachedTotal);
+    };
+
+    const applySlides = () => {
       const segCount = Math.max(1, slides.length - 1);
-      const segPos = progress * segCount;
+      const segPos = currentProgress * segCount;
       const currentIdx = Math.min(segCount - 1, Math.floor(segPos));
       const localProgress = segPos - currentIdx;
 
-      // Smootherstep (Perlin) : 6t⁵ - 15t⁴ + 10t³
-      const smoother = (x: number) =>
-        x * x * x * (x * (x * 6 - 15) + 10);
+      // Early return : pas de write si rien n'a bougé visuellement
+      if (
+        currentIdx === lastAppliedIdx &&
+        Math.abs(localProgress - lastAppliedLocal) < 0.0008
+      ) {
+        return;
+      }
+      lastAppliedIdx = currentIdx;
+      lastAppliedLocal = localProgress;
 
-      // Transition séquentielle :
-      //   première moitié (0 → 0.5) : sortante 1 → 0 (+ translateY)
-      //   seconde moitié (0.5 → 1)  : entrante 0 → 1 (sans mouvement)
-      // Entre les deux : très bref instant où les deux sont à 0 (le fond
-      // de page apparaît), garantissant que rien ne se chevauche.
       slides.forEach((s, i) => {
         let opacity = 0;
         let translateY = 0;
+        let scale = 1;
+        let blur = 0;
+        let saturate = 1;
+        const active = i === currentIdx || i === currentIdx + 1;
 
         if (i === currentIdx) {
-          // Sortante
+          /* Sortante : 0 → 0.5 (première moitié) puis hold à 0 */
           if (localProgress < 0.5) {
-            const phase = smoother(localProgress * 2);
-            opacity = 1 - phase;
-            translateY = -phase * RISE_PX;
+            const phase = Math.min(1, localProgress * 2);
+            const eased = power3In(phase); // accelerate away
+            translateY = -RISE_PX * eased;
+            scale = 1 - (1 - SCALE_OUT) * eased;
+            blur = BLUR_OUT * eased;
+            saturate = 1 + (SAT_OUT - 1) * eased;
+            // Opacity démarre avec un délai (drag/trail)
+            const opPhase = Math.max(0, (phase - OPACITY_DRAG) / (1 - OPACITY_DRAG));
+            opacity = 1 - power3In(opPhase);
           } else {
-            opacity = 0;
+            // Hors viewport — gardée à l'état final pour éviter un flash
             translateY = -RISE_PX;
+            scale = SCALE_OUT;
+            blur = BLUR_OUT;
+            saturate = SAT_OUT;
+            opacity = 0;
           }
         } else if (i === currentIdx + 1) {
-          // Entrante : reste invisible jusqu'au point milieu, puis fade-in pur
+          /* Entrante : avant 0.5 cachée, après fade in décéléré */
           if (localProgress >= 0.5) {
-            const phase = smoother((localProgress - 0.5) * 2);
-            opacity = phase;
+            const phase = Math.min(1, (localProgress - 0.5) * 2);
+            const eased = power3Out(phase); // decelerate into place
+            opacity = eased;
+            scale = SCALE_IN_FROM - (SCALE_IN_FROM - 1) * eased;
+            blur = BLUR_IN_FROM * (1 - eased);
+          } else {
+            opacity = 0;
+            scale = SCALE_IN_FROM;
+            blur = BLUR_IN_FROM;
           }
         }
 
+        // Writes regroupés
         s.style.opacity = String(opacity);
-        s.style.transform = `translate3d(0, ${translateY}px, 0)`;
-        // Slide la plus visible reçoit les interactions
-        s.style.pointerEvents = opacity > 0.5 ? "auto" : "none";
+        s.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+        const filterStr =
+          blur > 0.02
+            ? `blur(${blur.toFixed(2)}px) saturate(${saturate.toFixed(2)})`
+            : "none";
+        s.style.filter = filterStr;
+
+        const wantPE = opacity > 0.5 ? "auto" : "none";
+        if (lastPE[i] !== wantPE) {
+          s.style.pointerEvents = wantPE;
+          lastPE[i] = wantPE;
+        }
+        const wantWC = active ? "opacity, transform, filter" : "auto";
+        if (s.style.willChange !== wantWC) s.style.willChange = wantWC;
       });
     };
 
-    // ── Auto-snap : quand l'utilisateur arrête de scroller dans le milieu
-    //    d'une transition, on glisse en smooth scroll vers le bord le plus
-    //    proche (en avant si localProgress >= 0.5, en arrière sinon).
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let snapTimer: number | null = null;
-    let isSnapping = false;
+    const tick = () => {
+      const delta = targetProgress - currentProgress;
+      const lerp = reduced ? 1 : 0.08;
+      if (Math.abs(delta) > 0.0001) {
+        currentProgress += delta * lerp;
+        applySlides();
+        rafId = requestAnimationFrame(tick);
+      } else {
+        currentProgress = targetProgress;
+        applySlides();
+        rafId = 0;
+        isRunning = false;
+      }
+    };
 
-    const maybeSnap = () => {
-      if (isSnapping) return;
-      const rect = sentinel.getBoundingClientRect();
-      const total = sentinel.offsetHeight - window.innerHeight;
-      if (total <= 0) return;
-      const sentinelAbsTop = window.scrollY + rect.top;
-      const scrolled = window.scrollY - sentinelAbsTop;
-      if (scrolled <= 0 || scrolled >= total) return; // hors stage
+    const wakeRaf = () => {
+      if (!isRunning) {
+        isRunning = true;
+        rafId = requestAnimationFrame(tick);
+      }
+    };
 
+    /* ── Custom smooth-scroll snap (900ms easeInOutCubic) ── */
+    let snapAnimId = 0;
+    let snapCancel: (() => void) | null = null;
+
+    const smoothScrollTo = (targetY: number) => {
+      if (snapAnimId) cancelAnimationFrame(snapAnimId);
+      snapCancel?.();
+      const startY = window.scrollY;
+      const delta = targetY - startY;
+      if (Math.abs(delta) < 1) return;
+      const duration = reduced ? 0 : 900;
+      const startT = performance.now();
+      let cancelled = false;
+
+      const onUserInput = () => {
+        cancelled = true;
+      };
+      window.addEventListener("wheel", onUserInput, { passive: true, once: true });
+      window.addEventListener("touchstart", onUserInput, { passive: true, once: true });
+      snapCancel = () => {
+        window.removeEventListener("wheel", onUserInput);
+        window.removeEventListener("touchstart", onUserInput);
+        snapCancel = null;
+      };
+
+      if (duration === 0) {
+        window.scrollTo(0, targetY);
+        snapCancel?.();
+        return;
+      }
+
+      const animate = (now: number) => {
+        if (cancelled) {
+          snapCancel?.();
+          snapAnimId = 0;
+          return;
+        }
+        const t = Math.min(1, (now - startT) / duration);
+        window.scrollTo(0, startY + delta * easeInOutCubic(t));
+        if (t < 1) {
+          snapAnimId = requestAnimationFrame(animate);
+        } else {
+          snapCancel?.();
+          snapAnimId = 0;
+        }
+      };
+      snapAnimId = requestAnimationFrame(animate);
+    };
+
+    /* ── Snap detection (interval découplé du scroll) ────── */
+    let lastScrollTs = performance.now();
+    const onAnyScroll = () => {
+      lastScrollTs = performance.now();
+    };
+    window.addEventListener("scroll", onAnyScroll, { passive: true });
+
+    const SNAP_THRESHOLD = 0.04;
+    const snapInterval = window.setInterval(() => {
+      if (snapAnimId !== 0) return;
+      if (performance.now() - lastScrollTs < 220) return;
+      if (cachedTotal <= 0) return;
+      const scrolled = window.scrollY - cachedSentinelTop;
+      if (scrolled <= 0 || scrolled >= cachedTotal) return;
       const segCount = Math.max(1, slides.length - 1);
-      const segHeight = total / segCount;
+      const segHeight = cachedTotal / segCount;
       const segPos = scrolled / segHeight;
-      const currentIdx = Math.floor(segPos);
-      const localProgress = segPos - currentIdx;
-
-      // Très proche d'un bord → on ne snap pas (déjà sur place)
-      if (localProgress < 0.04 || localProgress > 0.96) return;
-
-      // Math.round bias to forward at exactly 0.5
+      const localProgress = segPos - Math.floor(segPos);
+      if (localProgress < SNAP_THRESHOLD || localProgress > 1 - SNAP_THRESHOLD) return;
       const targetIdx = Math.max(0, Math.min(segCount, Math.round(segPos)));
-      const targetScroll = sentinelAbsTop + targetIdx * segHeight;
-      if (Math.abs(window.scrollY - targetScroll) < 6) return;
+      const targetY = cachedSentinelTop + targetIdx * segHeight;
+      if (Math.abs(window.scrollY - targetY) < 6) return;
+      smoothScrollTo(targetY);
+    }, 100);
 
-      isSnapping = true;
-      window.scrollTo({ top: targetScroll, behavior: reduced ? "auto" : "smooth" });
-      window.setTimeout(() => {
-        isSnapping = false;
-      }, 900);
-    };
-
-    let raf = 0;
+    /* ── Scroll listener (wake la lerp loop) ──────────────── */
     const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-
-      if (isSnapping) return;
-      if (snapTimer) clearTimeout(snapTimer);
-      snapTimer = window.setTimeout(maybeSnap, 220);
+      computeTarget();
+      wakeRaf();
     };
-
-    update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+
+    /* ── Bootstrap ────────────────────────────────────────── */
+    computeTarget();
+    currentProgress = targetProgress;
+    applySlides();
 
     return () => {
-      cancelAnimationFrame(raf);
-      if (snapTimer) clearTimeout(snapTimer);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", onAnyScroll);
+      window.removeEventListener("resize", measure);
+      window.clearInterval(snapInterval);
+      if (rafId) cancelAnimationFrame(rafId);
+      if (snapAnimId) cancelAnimationFrame(snapAnimId);
+      snapCancel?.();
+      ro.disconnect();
     };
   }, [slideCount]);
 
@@ -163,9 +311,8 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
       ref={sentinelRef}
       style={{
         position: "relative",
-        // 1.7 viewport par slide : plus de course de scroll = transitions plus
-        // lentes et progressives, sensation moins brusque entre les sections.
-        height: `${slideCount * 170}vh`,
+        // 200vh par slide : breathing room style PWI (~190vh par phase)
+        height: `${slideCount * 200}vh`,
       }}
     >
       <div
