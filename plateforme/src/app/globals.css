@@ -114,33 +114,42 @@ body {
   animation: loading-letter-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
 }
-/* Barre de chargement horizontale qui se remplit sous EDOME */
-.loading-bar {
-  display: block;
-  margin-top: 2.5rem;
-  width: clamp(180px, 28vw, 280px);
-  height: 1px;
-  background: rgba(255, 255, 255, 0.12);
+/* Wrapper qui contient le texte EDOME + le blueprint SVG par-dessus */
+.loading-frame-wrap {
   position: relative;
-  overflow: hidden;
+  width: clamp(280px, 50vw, 460px);
+  height: clamp(420px, 75vh, 680px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.loading-bar-fill {
+.loading-blueprint {
   position: absolute;
-  inset: 0 auto 0 0;
-  width: 0;
-  background: #C4956A;
-  animation: loading-bar-fill 2.0s cubic-bezier(0.65, 0, 0.35, 1) 0.4s forwards;
-  will-change: width;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
 }
-.loading-bar-pct {
-  display: block;
-  margin-top: 0.75rem;
+
+/* Toutes les lignes du blueprint utilisent pathLength=1 + dashoffset */
+.bp-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: bp-draw 1.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  vector-effect: non-scaling-stroke;
+}
+.bp-frame { animation-duration: 1.7s; animation-delay: 0.55s; }
+.bp-axis  { animation-duration: 1.0s; animation-delay: 0.4s; }
+.bp-corner { animation-duration: 0.5s; }
+.bp-center-line { animation-duration: 0.5s; animation-delay: 1.4s; }
+.bp-tick { animation-duration: 0.3s; }
+
+/* Label mono fade-in */
+.bp-label {
+  opacity: 0;
+  animation: bp-fade 0.6s ease-out 1.9s forwards;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.5);
-  text-align: center;
-  font-feature-settings: "tnum";
 }
 
 @keyframes loading-zoom-out {
@@ -149,14 +158,18 @@ body {
 @keyframes loading-letter-reveal {
   to { transform: translateY(0); }
 }
-@keyframes loading-bar-fill {
-  to { width: 100%; }
+@keyframes bp-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes bp-fade {
+  to { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .loading-bg,
   .loading-letter,
-  .loading-bar-fill {
+  .bp-line,
+  .bp-label {
     animation-duration: 0.01s !important;
     animation-delay: 0s !important;
   }
