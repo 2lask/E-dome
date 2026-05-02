@@ -3,33 +3,55 @@
 import { useEffect, useState } from "react";
 
 /**
- * LoadingScreen — intro plein écran (image gratte-ciels + EDOME vertical
- * mask-reveal + trait ambre). Animations 100 % CSS, zéro dépendance.
+ * LoadingScreen — intro plein écran cinématique.
  *
- * Timeline :
- *   0.00s  → image scale 1.12 → 1 (2.4s expo.out)
- *   0.15s  → lettres E/D/O/M/E reveal (yPercent 110→0, dur 1.2s, stagger 0.09)
- *   0.70s  → trait ambre vertical scaleY 0→1 (1.0s)
- *   ~2.30s → SORTIE : lettres s'envolent (0.55s) + trait se rétracte (0.45s)
- *                     + image continue son zoom (1.1s) + panneau remonte
- *                     comme un rideau (translateY -101%, 1.1s expo.inOut)
- *   ~3.40s → unmount
+ * Entrée :
+ *   0.00s → image scale 1.12 → 1 (2.4s expo.out)
+ *   0.15s → lettres E/D/O/M/E reveal (yPercent 110→0, dur 1.2s, stagger 0.09)
+ *   0.40s → barre de chargement horizontale 0% → 100% (2.0s)
+ *   0.40s → compteur "00 → 100" sync avec la barre
+ *
+ * Sortie (à ~2.6s, après que la barre soit pleine) :
+ *   Tout le panneau se dissout : opacity 1→0 + blur 0→14px + scale 1→1.04.
+ *   Effet "défocus caméra" très doux (1.4s, cubic-bezier(0.4, 0, 0.2, 1)).
+ *
+ * Unmount à ~4.0s.
  */
 export function LoadingScreen() {
   const [exiting, setExiting] = useState(false);
   const [done, setDone] = useState(false);
+  const [pct, setPct] = useState(0);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
-    const fadeTimer = window.setTimeout(() => setExiting(true), 2300);
+    // Compteur synchronisé avec l'animation CSS de la barre :
+    // démarre à 0.4s, se remplit en 2.0s. On affiche 0 → 100 pendant ces 2s.
+    const startCounter = window.setTimeout(() => {
+      const start = performance.now();
+      const duration = 2000;
+      let raf = 0;
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / duration);
+        // Match l'easing CSS cubic-bezier(0.65, 0, 0.35, 1) — easeInOutCubic
+        const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        setPct(Math.round(eased * 100));
+        if (t < 1) raf = window.requestAnimationFrame(tick);
+      };
+      raf = window.requestAnimationFrame(tick);
+      return () => window.cancelAnimationFrame(raf);
+    }, 400);
+
+    // Sortie déclenchée juste après que la barre soit pleine
+    const exitTimer = window.setTimeout(() => setExiting(true), 2600);
     const removeTimer = window.setTimeout(() => {
       setDone(true);
       document.body.style.overflow = "";
-    }, 3450);
+    }, 4000);
 
     return () => {
-      window.clearTimeout(fadeTimer);
+      window.clearTimeout(startCounter);
+      window.clearTimeout(exitTimer);
       window.clearTimeout(removeTimer);
       document.body.style.overflow = "";
     };
@@ -58,7 +80,15 @@ export function LoadingScreen() {
             </span>
           ))}
         </h1>
-        <span className="loading-rule" />
+
+        <div>
+          <span className="loading-bar">
+            <span className="loading-bar-fill" />
+          </span>
+          <span className="loading-bar-pct">
+            {String(pct).padStart(3, "0")}
+          </span>
+        </div>
       </div>
     </div>
   );
