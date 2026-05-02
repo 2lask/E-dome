@@ -28,7 +28,7 @@ import {
   LandingLanguageProvider,
   useLandingLang,
 } from "@/components/landing/landing-i18n";
-import { ScrollFadeController } from "@/components/landing/scroll-fade-controller";
+import { ScrollStage } from "@/components/landing/scroll-stage";
 
 /* ═══════════════════════════════════════════════════════════════════ */
 /*  ROOT                                                               */
@@ -64,7 +64,7 @@ function SectionHeading({
   description?: string;
 }) {
   return (
-    <div data-scroll-fade className="text-center max-w-3xl mx-auto mb-16">
+    <div className="text-center max-w-3xl mx-auto mb-12">
       <motion.div {...fadeUp} className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
         {label}
       </motion.div>
@@ -181,7 +181,6 @@ function HomePageContent() {
 
   return (
     <div className="bg-[#FAFAF8] text-gray-900 antialiased" style={{ fontFamily: "'Poppins', system-ui, sans-serif" }}>
-      <ScrollFadeController />
 
       {/* ═══════════════════════ NAVBAR ═══════════════════════ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
@@ -233,8 +232,9 @@ function HomePageContent() {
         </div>
       </nav>
 
+      <ScrollStage>
       {/* ═══════════════════════ HERO ═══════════════════════ */}
-      <div data-scroll-fade>
+      <section className="scroll-slide bg-[#FAFAF8]">
         <AnimatedMarqueeHero
           tagline={t("hero.label")}
           title={
@@ -251,12 +251,10 @@ function HomePageContent() {
           images={heroImages}
           className="bg-[#FAFAF8]"
         />
-      </div>
-
-      <DotDivider />
+      </section>
 
       {/* ═══════════════════════ VISION ═══════════════════════ */}
-      <section id="vision" className="py-20 px-6">
+      <section id="vision" className="scroll-slide py-20 px-6 bg-[#FAFAF8]">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("about.label")}
@@ -293,10 +291,9 @@ function HomePageContent() {
         </div>
       </section>
 
-      <DotDivider />
 
       {/* ═══════════════════════ VIDEO PLATEFORME ═══════════════════════ */}
-      <section className="py-20 px-6">
+      <section className="scroll-slide py-20 px-6 bg-[#FAFAF8]">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("featured.label")}
@@ -331,10 +328,9 @@ function HomePageContent() {
         </div>
       </section>
 
-      <DotDivider />
 
       {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
-      <section id="probleme" className="py-20 px-6 bg-[#F5F3EF]">
+      <section id="probleme" className="scroll-slide py-20 px-6 bg-[#F5F3EF]">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("problem.label")}
@@ -378,10 +374,9 @@ function HomePageContent() {
         </div>
       </section>
 
-      <DotDivider />
 
       {/* ═══════════════════════ FONCTIONNALITES ═══════════════════════ */}
-      <section id="fonctionnalites" className="py-20 px-6">
+      <section id="fonctionnalites" className="scroll-slide py-20 px-6 bg-[#FAFAF8]">
         <div className="max-w-6xl mx-auto">
           <SectionHeading
             label={t("services.label")}
@@ -414,10 +409,9 @@ function HomePageContent() {
         </div>
       </section>
 
-      <DotDivider />
 
       {/* ═══════════════════════ POURQUOI E-DOME ═══════════════════════ */}
-      <section className="py-20 px-6 bg-[#F5F3EF]">
+      <section className="scroll-slide py-20 px-6 bg-[#F5F3EF]">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("philosophy.label")}
@@ -502,10 +496,9 @@ function HomePageContent() {
         </div>
       </section>
 
-      <DotDivider />
 
       {/* ═══════════════════════ FONDATEURS ═══════════════════════ */}
-      <section id="fondateurs" className="py-20 px-6">
+      <section id="fondateurs" className="scroll-slide py-20 px-6 bg-[#FAFAF8]">
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
             <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
@@ -633,10 +626,9 @@ function HomePageContent() {
         </div>
       </section>
 
-      <DotDivider />
 
       {/* ═══════════════════════ ROADMAP ═══════════════════════ */}
-      <section id="roadmap" className="py-20 px-6 bg-[#F5F3EF]">
+      <section id="roadmap" className="scroll-slide py-20 px-6 bg-[#F5F3EF]">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("roadmap.label")}
@@ -740,6 +732,7 @@ function HomePageContent() {
           </div>
         </div>
       </section>
+      </ScrollStage>
 
       {/* ═══════════════════════ FOOTER ═══════════════════════ */}
       <footer className="bg-gray-900 text-white pt-20 pb-10 px-6">
