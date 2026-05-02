@@ -45,3 +45,92 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─── Loading screen (intro) ─────────────────────────── */
+.loading-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  background: #1a1a1a;
+  opacity: 1;
+  transition: opacity 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: opacity;
+}
+.loading-root.loading-exit {
+  opacity: 0;
+  pointer-events: none;
+}
+.loading-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/loading-bg.avif');
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.12);
+  animation: loading-zoom-out 2.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+.loading-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4));
+}
+.loading-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5rem;
+}
+.loading-text {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 300;
+  color: #ffffff;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 1.05;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+.loading-line {
+  display: block;
+  overflow: hidden;
+  text-align: center;
+}
+.loading-letter {
+  display: inline-block;
+  transform: translateY(110%);
+  animation: loading-letter-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+.loading-rule {
+  display: block;
+  margin-top: 2rem;
+  width: 2px;
+  height: clamp(80px, 12vw, 112px);
+  background: #C4956A;
+  transform: scaleY(0);
+  transform-origin: top;
+  animation: loading-rule-reveal 1.0s cubic-bezier(0.65, 0, 0.35, 1) 0.7s forwards;
+  will-change: transform;
+}
+@keyframes loading-zoom-out {
+  to { transform: scale(1); }
+}
+@keyframes loading-letter-reveal {
+  to { transform: translateY(0); }
+}
+@keyframes loading-rule-reveal {
+  to { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-bg,
+  .loading-letter,
+  .loading-rule {
+    animation-duration: 0.01s !important;
+    animation-delay: 0s !important;
+  }
+}
