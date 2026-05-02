@@ -61,23 +61,37 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
       const currentIdx = Math.min(segCount - 1, Math.floor(segPos));
       const localProgress = segPos - currentIdx;
 
-      // Smootherstep (Perlin) : 6t⁵ - 15t⁴ + 10t³ — encore plus douce
-      // que smoothstep, transitions presque imperceptibles aux extrémités
-      const t = localProgress;
-      const eased = t * t * t * (t * (t * 6 - 15) + 10);
+      // Smootherstep (Perlin) : 6t⁵ - 15t⁴ + 10t³
+      const smoother = (x: number) =>
+        x * x * x * (x * (x * 6 - 15) + 10);
 
+      // Transition séquentielle :
+      //   première moitié (0 → 0.5) : sortante 1 → 0 (+ translateY)
+      //   seconde moitié (0.5 → 1)  : entrante 0 → 1 (sans mouvement)
+      // Entre les deux : très bref instant où les deux sont à 0 (le fond
+      // de page apparaît), garantissant que rien ne se chevauche.
       slides.forEach((s, i) => {
         let opacity = 0;
         let translateY = 0;
+
         if (i === currentIdx) {
-          // Slide sortante : opacité descend ET la section monte vers le haut
-          opacity = 1 - eased;
-          translateY = -eased * RISE_PX;
+          // Sortante
+          if (localProgress < 0.5) {
+            const phase = smoother(localProgress * 2);
+            opacity = 1 - phase;
+            translateY = -phase * RISE_PX;
+          } else {
+            opacity = 0;
+            translateY = -RISE_PX;
+          }
         } else if (i === currentIdx + 1) {
-          // Slide entrante : juste un fade-in, AUCUN mouvement (n'apparaît pas du bas)
-          opacity = eased;
-          translateY = 0;
+          // Entrante : reste invisible jusqu'au point milieu, puis fade-in pur
+          if (localProgress >= 0.5) {
+            const phase = smoother((localProgress - 0.5) * 2);
+            opacity = phase;
+          }
         }
+
         s.style.opacity = String(opacity);
         s.style.transform = `translate3d(0, ${translateY}px, 0)`;
         // Slide la plus visible reçoit les interactions
