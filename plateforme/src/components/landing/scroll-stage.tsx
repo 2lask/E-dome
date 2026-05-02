@@ -40,9 +40,13 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
       s.style.overflowY = "auto";
       s.style.overflowX = "hidden";
       s.style.opacity = i === 0 ? "1" : "0";
+      s.style.transform = "translate3d(0, 0, 0)";
       s.style.pointerEvents = i === 0 ? "auto" : "none";
-      s.style.willChange = "opacity";
+      s.style.willChange = "opacity, transform";
     });
+
+    // Distance de remontée (px) que la slide sortante effectue pendant son fade-out
+    const RISE_PX = 60;
 
     const update = () => {
       const rect = sentinel.getBoundingClientRect();
@@ -57,15 +61,25 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
       const currentIdx = Math.min(segCount - 1, Math.floor(segPos));
       const localProgress = segPos - currentIdx;
 
-      // Smoothstep : 3t² - 2t³ — courbe en S douce aux extrémités
-      const eased =
-        localProgress * localProgress * (3 - 2 * localProgress);
+      // Smootherstep (Perlin) : 6t⁵ - 15t⁴ + 10t³ — encore plus douce
+      // que smoothstep, transitions presque imperceptibles aux extrémités
+      const t = localProgress;
+      const eased = t * t * t * (t * (t * 6 - 15) + 10);
 
       slides.forEach((s, i) => {
         let opacity = 0;
-        if (i === currentIdx) opacity = 1 - eased;
-        else if (i === currentIdx + 1) opacity = eased;
+        let translateY = 0;
+        if (i === currentIdx) {
+          // Slide sortante : opacité descend ET la section monte vers le haut
+          opacity = 1 - eased;
+          translateY = -eased * RISE_PX;
+        } else if (i === currentIdx + 1) {
+          // Slide entrante : juste un fade-in, AUCUN mouvement (n'apparaît pas du bas)
+          opacity = eased;
+          translateY = 0;
+        }
         s.style.opacity = String(opacity);
+        s.style.transform = `translate3d(0, ${translateY}px, 0)`;
         // Slide la plus visible reçoit les interactions
         s.style.pointerEvents = opacity > 0.5 ? "auto" : "none";
       });
@@ -93,7 +107,9 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
       ref={sentinelRef}
       style={{
         position: "relative",
-        height: `${slideCount * 100}vh`,
+        // 1.7 viewport par slide : plus de course de scroll = transitions plus
+        // lentes et progressives, sensation moins brusque entre les sections.
+        height: `${slideCount * 170}vh`,
       }}
     >
       <div
