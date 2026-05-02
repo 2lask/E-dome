@@ -99,10 +99,51 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
       });
     };
 
+    // ── Auto-snap : quand l'utilisateur arrête de scroller dans le milieu
+    //    d'une transition, on glisse en smooth scroll vers le bord le plus
+    //    proche (en avant si localProgress >= 0.5, en arrière sinon).
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let snapTimer: number | null = null;
+    let isSnapping = false;
+
+    const maybeSnap = () => {
+      if (isSnapping) return;
+      const rect = sentinel.getBoundingClientRect();
+      const total = sentinel.offsetHeight - window.innerHeight;
+      if (total <= 0) return;
+      const sentinelAbsTop = window.scrollY + rect.top;
+      const scrolled = window.scrollY - sentinelAbsTop;
+      if (scrolled <= 0 || scrolled >= total) return; // hors stage
+
+      const segCount = Math.max(1, slides.length - 1);
+      const segHeight = total / segCount;
+      const segPos = scrolled / segHeight;
+      const currentIdx = Math.floor(segPos);
+      const localProgress = segPos - currentIdx;
+
+      // Très proche d'un bord → on ne snap pas (déjà sur place)
+      if (localProgress < 0.04 || localProgress > 0.96) return;
+
+      // Math.round bias to forward at exactly 0.5
+      const targetIdx = Math.max(0, Math.min(segCount, Math.round(segPos)));
+      const targetScroll = sentinelAbsTop + targetIdx * segHeight;
+      if (Math.abs(window.scrollY - targetScroll) < 6) return;
+
+      isSnapping = true;
+      window.scrollTo({ top: targetScroll, behavior: reduced ? "auto" : "smooth" });
+      window.setTimeout(() => {
+        isSnapping = false;
+      }, 900);
+    };
+
     let raf = 0;
     const onScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(update);
+
+      if (isSnapping) return;
+      if (snapTimer) clearTimeout(snapTimer);
+      snapTimer = window.setTimeout(maybeSnap, 220);
     };
 
     update();
@@ -111,6 +152,7 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
 
     return () => {
       cancelAnimationFrame(raf);
+      if (snapTimer) clearTimeout(snapTimer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
