@@ -23,7 +23,6 @@ import {
   Handshake,
 } from "lucide-react";
 import SkewCards from "@/components/ui/gradient-card-showcase";
-import HolographicCard from "@/components/ui/holographic-card";
 import {
   LandingLanguageProvider,
   useLandingLang,
@@ -260,16 +259,8 @@ function HomePageContent() {
               </div>
             </motion.div>
 
-            {/* Colonne droite : carte fictive Membre Fondateur (effet holographique au curseur) */}
-            <motion.div {...fadeUp} className="hidden lg:flex lg:col-span-5 items-center justify-end pr-4">
-              <HolographicCard
-                brand="E-DOME"
-                topLabel="MEMBRE FONDATEUR"
-                memberNumber="N° 001 / 100"
-                bottomLeft="CARTE PREMIUM"
-                bottomRight="EXP. 2026"
-              />
-            </motion.div>
+            {/* Colonne droite : volontairement vide (négatif brutaliste) */}
+            <div className="hidden lg:block lg:col-span-5" />
           </div>
         </div>
       </section>
