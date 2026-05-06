@@ -82,7 +82,9 @@ body {
 .loading-veil {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4));
+  /* Voile blanc opaque qui transforme l'image en texture très subtile
+     pour que le blueprint noir reste parfaitement lisible par dessus */
+  background: linear-gradient(to bottom, rgba(250,250,248,0.94), rgba(250,250,248,0.90) 50%, rgba(250,250,248,0.94));
 }
 .loading-content {
   position: relative;
