@@ -52,7 +52,7 @@ body {
   inset: 0;
   z-index: 9999;
   overflow: hidden;
-  background: #1a1a1a;
+  background: #FAFAF8;
   opacity: 1;
   transform: scale(1);
   filter: blur(0px);
@@ -97,7 +97,7 @@ body {
 .loading-text {
   font-family: 'Instrument Serif', Georgia, serif;
   font-weight: 300;
-  color: #ffffff;
+  color: #1a1a1a;
   font-size: clamp(3rem, 8vw, 6rem);
   line-height: 1.05;
   letter-spacing: 0.05em;
