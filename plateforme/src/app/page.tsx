@@ -22,7 +22,6 @@ import {
   GraduationCap,
   Handshake,
 } from "lucide-react";
-import { AnimatedMarqueeHero } from "@/components/ui/hero-marquee";
 import SkewCards from "@/components/ui/gradient-card-showcase";
 import {
   LandingLanguageProvider,
@@ -102,18 +101,6 @@ function DotDivider() {
 
 function HomePageContent() {
   const { lang, setLang, t } = useLandingLang();
-
-  /* ── Hero images (Unsplash) ──────────────────────────────────────── */
-  const heroImages = [
-    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80",
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80",
-    "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80",
-    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80",
-    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80",
-    "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600&q=80",
-    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&q=80",
-    "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80",
-  ];
 
   /* ── Service cards data ──────────────────────────────────────────── */
   const services = [
@@ -233,24 +220,72 @@ function HomePageContent() {
       </nav>
 
       <ScrollStage>
-      {/* ═══════════════════════ HERO ═══════════════════════ */}
+      {/* ═══════════════════════ HERO (left-aligned, brutaliste) ═══════════════════════ */}
       <section className="scroll-slide bg-black">
-        <AnimatedMarqueeHero
-          tagline={t("hero.label")}
-          title={
-            <>
-              <span>{t("hero.title1")}</span>{" "}
-              <span className="text-[#C4956A]">{t("hero.title2")}</span>
-            </>
-          }
-          description={t("hero.subtitle")}
-          ctaText={t("hero.cta")}
-          ctaHref="#inscriptions"
-          secondaryCtaText={t("hero.learn")}
-          secondaryCtaHref="#vision"
-          images={heroImages}
-          className="bg-black"
-        />
+        <div className="min-h-screen flex items-center px-6 sm:px-12 md:px-20 lg:px-32 pt-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-center">
+            {/* Colonne texte (gauche) */}
+            <motion.div {...fadeUp} className="lg:col-span-7 max-w-2xl">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="block w-8 h-px bg-[#C4956A]" />
+                <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold">
+                  {t("hero.label")}
+                </p>
+              </div>
+              <h1
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-tight text-white leading-[1.02] mb-8"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
+              >
+                {t("hero.title1")}
+                <br />
+                <span className="text-[#C4956A] italic">{t("hero.title2")}</span>
+              </h1>
+              <p className="text-base sm:text-lg text-gray-400 leading-relaxed font-light mb-10 max-w-xl">
+                {t("hero.subtitle")}
+              </p>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link
+                  href="#inscriptions"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#C4956A] text-white text-sm font-semibold hover:bg-[#b8856a] transition-all"
+                >
+                  {t("hero.cta")} <ArrowRight size={16} />
+                </Link>
+                <Link
+                  href="#vision"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 border border-neutral-700 text-gray-300 text-sm font-medium hover:bg-neutral-900 hover:border-neutral-600 transition-all"
+                >
+                  {t("hero.learn")}
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Colonne droite (vide / index brutaliste) */}
+            <motion.div {...fadeUp} className="hidden lg:flex lg:col-span-5 flex-col items-end justify-center text-right pr-4">
+              <div className="space-y-6 text-xs uppercase tracking-[0.3em] font-semibold text-gray-700">
+                <div className="flex items-center justify-end gap-3">
+                  <span>{t("nav.vision")}</span>
+                  <span className="block w-12 h-px bg-neutral-800" />
+                  <span className="text-[#C4956A]">01</span>
+                </div>
+                <div className="flex items-center justify-end gap-3">
+                  <span>{t("nav.features")}</span>
+                  <span className="block w-12 h-px bg-neutral-800" />
+                  <span className="text-gray-700">02</span>
+                </div>
+                <div className="flex items-center justify-end gap-3">
+                  <span>{t("nav.founders")}</span>
+                  <span className="block w-12 h-px bg-neutral-800" />
+                  <span className="text-gray-700">03</span>
+                </div>
+                <div className="flex items-center justify-end gap-3">
+                  <span>{t("nav.roadmap")}</span>
+                  <span className="block w-12 h-px bg-neutral-800" />
+                  <span className="text-gray-700">04</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* ═══════════════════════ VISION ═══════════════════════ */}
