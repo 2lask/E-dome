@@ -52,7 +52,7 @@ body {
   inset: 0;
   z-index: 9999;
   overflow: hidden;
-  background: #1a1a1a;
+  background: #000000;
   opacity: 1;
   transform: scale(1);
   filter: blur(0px);
@@ -98,15 +98,17 @@ body {
   font-family: 'Instrument Serif', Georgia, serif;
   font-weight: 300;
   color: #ffffff;
-  font-size: clamp(3rem, 8vw, 6rem);
-  line-height: 1.05;
-  letter-spacing: 0.05em;
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  line-height: 1.4;
+  letter-spacing: 0.5em;
+  text-align: center;
   margin: 0;
+  padding-left: 0.5em; /* compense le tracking pour centrage optique */
 }
 .loading-line {
-  display: block;
+  display: inline-block;
   overflow: hidden;
-  text-align: center;
+  vertical-align: top;
 }
 .loading-letter {
   display: inline-block;
@@ -114,20 +116,21 @@ body {
   animation: loading-letter-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
 }
-/* Wrapper qui contient le texte EDOME + le blueprint SVG par-dessus */
+/* Wrapper : villa brutaliste (carré) + texte EDOME en-dessous, en colonne */
 .loading-frame-wrap {
   position: relative;
-  width: clamp(280px, 50vw, 460px);
-  height: clamp(420px, 75vh, 680px);
+  width: clamp(360px, 75vw, 680px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1.75rem;
 }
 .loading-blueprint {
-  position: absolute;
-  inset: 0;
+  position: relative;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 70vh;
   pointer-events: none;
   overflow: visible;
 }
