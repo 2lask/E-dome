@@ -223,8 +223,11 @@ function HomePageContent() {
       <ScrollStage>
       {/* ═══════════════════════ HERO (left-aligned, brutaliste) ═══════════════════════ */}
       <section className="scroll-slide bg-black relative">
-        {/* Bâtiment d'architecture détaillé en bas-droit */}
-        <div className="hidden lg:block absolute bottom-8 right-8 w-[200px] xl:w-[240px] pointer-events-none z-10">
+        {/* Bâtiment d'architecture détaillé : occupe la moitié droite, traits gold qui dépassent largement à gauche */}
+        <div
+          className="hidden lg:block absolute bottom-0 right-0 w-[60%] xl:w-[55%] pointer-events-none z-10"
+          style={{ overflow: "visible" }}
+        >
           <BuildingDrawing className="w-full h-auto" />
         </div>
 

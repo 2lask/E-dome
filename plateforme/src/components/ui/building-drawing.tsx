@@ -3,200 +3,209 @@
 import React from "react";
 
 /**
- * BuildingDrawing — élévation technique d'une tour modernist/brutaliste
- * vue de face. Penthouse en setback, tour principale (5 niveaux), rez
- * vitré avec entrée. Fins béton verticales, strip windows à mullions,
- * parapets, élément de toiture, ligne de cote latérale, hachures sol,
- * grille de construction. ~120 éléments SVG.
+ * BuildingDrawing — élévation technique XL d'une tour modernist/brutaliste
+ * (penthouse setback, 5 niveaux, lobby vitré). Tous les traits en gold
+ * #C4956A avec différentes opacités. Longues lignes de construction qui
+ * partent du bâtiment et dépassent largement à gauche grâce à des
+ * coordonnées négatives + `overflow: visible`.
  *
- * Statique (les traits sont dessinés en permanence, sans animation
- * pour ne pas se déclencher pendant le loading screen).
- *
- * Positionnée en absolute bottom-right du hero. Cachée < lg.
+ * ViewBox : 900×600. Le bâtiment est ancré à x=590..850, le reste de
+ * la largeur est dédié aux extensions de cote/niveau qui s'étendent
+ * jusqu'à x=-300 (visuellement très loin sur la gauche).
  */
 export function BuildingDrawing({ className }: { className?: string }) {
-  const W_HI = "rgba(255,255,255,0.88)";
-  const W_MD = "rgba(255,255,255,0.55)";
-  const W_LO = "rgba(255,255,255,0.25)";
-  const W_FN = "rgba(255,255,255,0.08)";
-  const O = "#C4956A";
+  // Toutes les lignes en gold #C4956A avec hiérarchie d'opacité
+  const G_HI = "rgba(196, 149, 106, 0.95)";   // contours principaux
+  const G_MD = "rgba(196, 149, 106, 0.65)";   // mullions, fins, parapets
+  const G_LO = "rgba(196, 149, 106, 0.32)";   // construction, axes
+  const G_FN = "rgba(196, 149, 106, 0.10)";   // grille
+  const O = "#C4956A";                         // accent saturé
 
-  // Niveaux (5 floors typiques + penthouse + rez)
-  // y range : penthouse 60-135 (75h), 5 floors 135-410 (55h chacun), rez 410-460 (50h)
-  const floors = [135, 190, 245, 300, 355]; // top y de chaque floor (5)
+  // Tour : 5 niveaux entre y=160 et y=510 (350 tall, 70 par étage)
+  const floorTops = [160, 230, 300, 370, 440];
 
   return (
     <svg
-      viewBox="0 0 320 500"
-      preserveAspectRatio="xMidYMid meet"
+      viewBox="0 0 900 600"
+      preserveAspectRatio="xMidYEnd meet"
       aria-hidden="true"
       className={className}
-      style={{ shapeRendering: "geometricPrecision" }}
+      style={{ overflow: "visible", shapeRendering: "geometricPrecision" }}
     >
-      {/* ── GRILLE FAIBLE ── */}
-      <g stroke={W_FN} strokeWidth="0.5">
-        {[80, 160, 240, 320, 400, 480].map((y) => (
-          <line key={`gh-${y}`} x1="-10" y1={y} x2="330" y2={y} />
-        ))}
-        {[80, 160, 240].map((x) => (
-          <line key={`gv-${x}`} x1={x} y1="0" x2={x} y2="500" />
+      {/* ═══════ GRILLE FAIBLE (étendue à gauche) ═══════ */}
+      <g stroke={G_FN} strokeWidth="0.5">
+        {[80, 160, 240, 320, 400, 480, 560].map((y) => (
+          <line key={`gh-${y}`} x1="-300" y1={y} x2="900" y2={y} />
         ))}
       </g>
 
-      {/* ── CONSTRUCTION EXTENSIONS (lignes de niveau étendues) ── */}
-      <g stroke={W_LO} strokeWidth="0.5">
-        <line x1="0" y1="60" x2="80" y2="60" />
-        <line x1="240" y1="60" x2="320" y2="60" />
-        <line x1="0" y1="135" x2="80" y2="135" />
-        <line x1="240" y1="135" x2="320" y2="135" />
-        <line x1="0" y1="410" x2="80" y2="410" />
-        <line x1="240" y1="410" x2="320" y2="410" />
-        <line x1="0" y1="460" x2="320" y2="460" />
+      {/* ═══════ LIGNES DE CONSTRUCTION (étendent largement à gauche) ═══════ */}
+      <g stroke={G_LO} strokeWidth="0.8">
+        {/* Penthouse top */}
+        <line x1="-320" y1="80" x2="640" y2="80" />
+        {/* Tower top (penthouse base) */}
+        <line x1="-320" y1="160" x2="590" y2="160" />
+        {/* Slabs (5 niveaux) */}
+        {floorTops.map((y) => (
+          <line key={`fs-${y}`} x1="-320" y1={y} x2="590" y2={y} />
+        ))}
+        {/* Lobby top */}
+        <line x1="-320" y1="510" x2="590" y2="510" />
+        {/* Ground (sol) — étend des deux côtés */}
+        <line x1="-320" y1="560" x2="900" y2="560" />
+        {/* Mullion levels (fenêtre supérieure et inférieure de chaque strip) */}
+        <line x1="-320" y1="190" x2="590" y2="190" />
+        <line x1="-320" y1="260" x2="590" y2="260" />
+        <line x1="-320" y1="330" x2="590" y2="330" />
+        <line x1="-320" y1="400" x2="590" y2="400" />
+        <line x1="-320" y1="470" x2="590" y2="470" />
       </g>
 
-      {/* ── LIGNE DE COTE LATÉRALE (DROITE) avec flèches ── */}
-      <g stroke={W_MD} strokeWidth="0.7" fill="none">
-        <line x1="290" y1="60" x2="290" y2="460" />
-        <path d="M 286 60 L 290 54 L 294 60" />
-        <path d="M 286 460 L 290 466 L 294 460" />
-      </g>
-
-      {/* ── LIGNE DE SOL ── */}
-      <line x1="0" y1="460" x2="320" y2="460" stroke={W_HI} strokeWidth="1.6" />
-
-      {/* ── HACHURES SOL ── */}
-      <g stroke={W_MD} strokeWidth="0.6">
-        {Array.from({ length: 28 }).map((_, i) => {
-          const x = -5 + i * 12;
-          return <line key={`gh-${i}`} x1={x} y1="460" x2={x - 7} y2="473" />;
+      {/* ═══════ HACHURES SOL (étendent loin à gauche) ═══════ */}
+      <g stroke={G_MD} strokeWidth="0.7">
+        {Array.from({ length: 75 }).map((_, i) => {
+          const x = -300 + i * 16;
+          return <line key={`gh-${i}`} x1={x} y1="560" x2={x - 11} y2="578" />;
         })}
       </g>
 
-      {/* ═══════ PENTHOUSE (setback en haut) ═══════ */}
-      <g stroke={W_HI} strokeWidth="1.6" fill="none">
-        <line x1="100" y1="60" x2="100" y2="135" />
-        <line x1="220" y1="60" x2="220" y2="135" />
-        <line x1="100" y1="60" x2="220" y2="60" />
+      {/* ═══════ DIAGONALES DE CONSTRUCTION (corner-out) ═══════ */}
+      <g stroke={G_LO} strokeWidth="0.6">
+        <line x1="590" y1="160" x2="-200" y2="600" />
+        <line x1="590" y1="510" x2="100" y2="610" />
+        <line x1="850" y1="160" x2="900" y2="100" />
       </g>
-      {/* Strip window penthouse */}
-      <g stroke={W_HI} strokeWidth="1" fill="none">
-        <rect x="110" y="78" width="100" height="38" />
+
+      {/* ═══════ PENTHOUSE (setback) ═══════ */}
+      <g stroke={G_HI} strokeWidth="2.2" fill="none">
+        <line x1="640" y1="80" x2="640" y2="160" />
+        <line x1="800" y1="80" x2="800" y2="160" />
+        <line x1="640" y1="80" x2="800" y2="80" />
       </g>
-      <g stroke={W_MD} strokeWidth="0.6">
-        {[140, 160, 180].map((x) => (
-          <line key={`pm-${x}`} x1={x} y1="78" x2={x} y2="116" />
+      {/* Strip window penthouse + mullions */}
+      <g stroke={G_HI} strokeWidth="1.4" fill="none">
+        <rect x="650" y="100" width="140" height="50" />
+      </g>
+      <g stroke={G_MD} strokeWidth="0.8">
+        {[680, 705, 730, 760].map((x) => (
+          <line key={`pm-${x}`} x1={x} y1="100" x2={x} y2="150" />
         ))}
       </g>
-      {/* Parapet penthouse top */}
-      <line x1="92" y1="56" x2="228" y2="56" stroke={W_MD} strokeWidth="0.8" />
+      {/* Penthouse parapet */}
+      <line x1="630" y1="74" x2="810" y2="74" stroke={G_MD} strokeWidth="1.1" />
 
-      {/* ── ÉLÉMENT TOITURE (HVAC + antenne) ── */}
-      <g stroke={W_MD} strokeWidth="0.9" fill="none">
-        <rect x="135" y="40" width="22" height="16" />
+      {/* ═══════ TOITURE : HVAC + ANTENNE ═══════ */}
+      <g stroke={G_MD} strokeWidth="1.1" fill="none">
+        <rect x="690" y="48" width="32" height="26" />
       </g>
-      <g stroke={W_HI} strokeWidth="1">
-        <line x1="180" y1="56" x2="180" y2="20" />
-        <line x1="175" y1="20" x2="185" y2="20" />
+      <g stroke={G_HI} strokeWidth="1.5">
+        <line x1="740" y1="74" x2="740" y2="20" />
+        <line x1="734" y1="20" x2="746" y2="20" />
       </g>
+      {/* Accent ambre au sommet (signal saturé) */}
+      <line x1="740" y1="20" x2="740" y2="40" stroke={O} strokeWidth="2.6" />
 
       {/* ═══════ TOUR PRINCIPALE (5 floors) ═══════ */}
-      {/* Murs latéraux principal */}
-      <g stroke={W_HI} strokeWidth="1.8" fill="none">
-        <line x1="80" y1="135" x2="80" y2="410" />
-        <line x1="240" y1="135" x2="240" y2="410" />
+      <g stroke={G_HI} strokeWidth="2.6" fill="none" strokeLinecap="square">
+        <line x1="590" y1="160" x2="590" y2="510" />
+        <line x1="850" y1="160" x2="850" y2="510" />
       </g>
-
-      {/* Slabs (dalles) entre étages */}
-      <g stroke={W_HI} strokeWidth="1.2">
-        {floors.map((y) => (
-          <line key={`sl-${y}`} x1="80" y1={y} x2="240" y2={y} />
+      {/* Slabs entre étages */}
+      <g stroke={G_HI} strokeWidth="1.6">
+        {floorTops.map((y) => (
+          <line key={`sl-${y}`} x1="590" y1={y} x2="850" y2={y} />
         ))}
-        <line x1="80" y1="410" x2="240" y2="410" />
+        <line x1="590" y1="510" x2="850" y2="510" />
       </g>
-
-      {/* Strip windows par étage avec mullions */}
-      {floors.map((floorTop, idx) => (
-        <g key={`f-${idx}`}>
-          <g stroke={W_HI} strokeWidth="1" fill="none">
-            <rect x="92" y={floorTop + 12} width="136" height="32" />
+      {/* Strip windows + mullions par étage */}
+      {floorTops.map((y, idx) => (
+        <g key={`fl-${idx}`}>
+          <g stroke={G_HI} strokeWidth="1.3" fill="none">
+            <rect x="608" y={y + 14} width="224" height="42" />
           </g>
-          <g stroke={W_MD} strokeWidth="0.6">
-            {[120, 148, 176, 204].map((x) => (
-              <line key={`m-${idx}-${x}`} x1={x} y1={floorTop + 12} x2={x} y2={floorTop + 44} />
+          <g stroke={G_MD} strokeWidth="0.8">
+            {[640, 680, 720, 760, 800].map((x) => (
+              <line key={`mm-${idx}-${x}`} x1={x} y1={y + 14} x2={x} y2={y + 56} />
             ))}
           </g>
-          {/* Allège béton (sous-fenêtre) */}
+          {/* Allège sous fenêtre */}
           <line
-            x1="80"
-            y1={floorTop + 48}
-            x2="240"
-            y2={floorTop + 48}
-            stroke={W_MD}
-            strokeWidth="0.5"
+            x1="590"
+            y1={y + 60}
+            x2="850"
+            y2={y + 60}
+            stroke={G_MD}
+            strokeWidth="0.7"
           />
         </g>
       ))}
 
-      {/* ── FINS BÉTON VERTICALES (sur la façade entière de la tour) ── */}
-      <g stroke={W_MD} strokeWidth="0.7">
-        {[88, 95].map((x) => (
-          <line key={`finL-${x}`} x1={x} y1="135" x2={x} y2="410" />
+      {/* ═══════ FINS BÉTON VERTICALES (sur les côtés) ═══════ */}
+      <g stroke={G_MD} strokeWidth="0.9">
+        {[598, 605].map((x) => (
+          <line key={`finL-${x}`} x1={x} y1="160" x2={x} y2="510" />
         ))}
-        {[225, 232].map((x) => (
-          <line key={`finR-${x}`} x1={x} y1="135" x2={x} y2="410" />
-        ))}
-      </g>
-
-      {/* ═══════ REZ-DE-CHAUSSÉE (lobby vitré) ═══════ */}
-      <g stroke={W_HI} strokeWidth="1.8" fill="none">
-        <line x1="80" y1="410" x2="80" y2="460" />
-        <line x1="240" y1="410" x2="240" y2="460" />
-      </g>
-
-      {/* Vitres lobby (4 panneaux) */}
-      <g stroke={W_MD} strokeWidth="0.8">
-        {[112, 144, 176, 208].map((x) => (
-          <line key={`v-${x}`} x1={x} y1="410" x2={x} y2="460" />
+        {[835, 842].map((x) => (
+          <line key={`finR-${x}`} x1={x} y1="160" x2={x} y2="510" />
         ))}
       </g>
 
-      {/* ── ENTRÉE PRINCIPALE (ORANGE) ── */}
-      <g stroke={O} strokeWidth="1.8" fill="none" strokeLinecap="square">
-        <path d="M 145 460 L 145 420 L 175 420 L 175 460" />
-        <line x1="160" y1="420" x2="160" y2="460" />
+      {/* ═══════ LOBBY VITRÉ (rez-de-chaussée) ═══════ */}
+      <g stroke={G_HI} strokeWidth="2.6" fill="none">
+        <line x1="590" y1="510" x2="590" y2="560" />
+        <line x1="850" y1="510" x2="850" y2="560" />
       </g>
-      <circle cx="170" cy="442" r="1.4" fill={O} />
-
-      {/* Auvent au-dessus de l'entrée */}
-      <line x1="135" y1="420" x2="185" y2="420" stroke={W_HI} strokeWidth="1" />
-      <line x1="130" y1="416" x2="190" y2="416" stroke={W_MD} strokeWidth="0.7" />
-
-      {/* ── PARVIS / PLAZA (deux niveaux d'esplanade) ── */}
-      <g stroke={W_MD} strokeWidth="0.6">
-        <line x1="40" y1="468" x2="80" y2="468" />
-        <line x1="240" y1="468" x2="280" y2="468" />
-        <line x1="20" y1="478" x2="80" y2="478" />
-        <line x1="240" y1="478" x2="300" y2="478" />
-      </g>
-
-      {/* ── DEUX TRAITS LATÉRAUX ── */}
-      <g stroke={W_HI} strokeWidth="0.9">
-        <line x1="10" y1="20" x2="10" y2="490" />
-        <line x1="310" y1="20" x2="310" y2="490" />
-      </g>
-
-      {/* ── INDEX DE NIVEAUX (small hash marks à gauche) ── */}
-      <g stroke={W_HI} strokeWidth="1.2">
-        <line x1="14" y1="60" x2="22" y2="60" />
-        <line x1="14" y1="135" x2="22" y2="135" />
-        {floors.map((y) => (
-          <line key={`tk-${y}`} x1="14" y1={y} x2="22" y2={y} />
+      {/* Vitres lobby */}
+      <g stroke={G_MD} strokeWidth="1">
+        {[640, 690, 740, 790].map((x) => (
+          <line key={`v-${x}`} x1={x} y1="510" x2={x} y2="560" />
         ))}
-        <line x1="14" y1="410" x2="22" y2="410" />
       </g>
 
-      {/* ── ACCENT ORANGE : barre verticale au sommet (signal) ── */}
-      <line x1="180" y1="20" x2="180" y2="40" stroke={O} strokeWidth="1.6" />
+      {/* ═══════ ENTRÉE PRINCIPALE (orange saturé) ═══════ */}
+      <g stroke={O} strokeWidth="2.6" fill="none" strokeLinecap="square">
+        <path d="M 700 560 L 700 524 L 740 524 L 740 560" />
+        <line x1="720" y1="524" x2="720" y2="560" />
+      </g>
+      <circle cx="734" cy="544" r="2.2" fill={O} />
+      {/* Auvent au-dessus */}
+      <line x1="685" y1="524" x2="755" y2="524" stroke={G_HI} strokeWidth="1.5" />
+      <line x1="680" y1="520" x2="760" y2="520" stroke={G_MD} strokeWidth="0.9" />
+
+      {/* ═══════ PARVIS / ESPLANADE (étend largement à gauche) ═══════ */}
+      <g stroke={G_MD} strokeWidth="0.8">
+        <line x1="-150" y1="568" x2="590" y2="568" />
+        <line x1="-150" y1="578" x2="590" y2="578" />
+      </g>
+      {/* Marches de parvis */}
+      <g stroke={G_MD} strokeWidth="0.7">
+        <line x1="500" y1="560" x2="500" y2="568" />
+        <line x1="450" y1="560" x2="450" y2="568" />
+        <line x1="400" y1="560" x2="400" y2="568" />
+        <line x1="350" y1="568" x2="350" y2="578" />
+        <line x1="280" y1="568" x2="280" y2="578" />
+      </g>
+
+      {/* ═══════ LIGNE DE COTE GAUCHE étendue avec flèches ═══════ */}
+      <g stroke={G_MD} strokeWidth="0.9" fill="none">
+        <line x1="-260" y1="80" x2="-260" y2="560" />
+        <path d="M -266 86 L -260 70 L -254 86" />
+        <path d="M -266 554 L -260 570 L -254 554" />
+      </g>
+      {/* Tick marks de niveau sur la cote */}
+      <g stroke={G_MD} strokeWidth="1.1">
+        {[80, 160, 230, 300, 370, 440, 510, 560].map((y) => (
+          <line key={`ck-${y}`} x1="-265" y1={y} x2="-255" y2={y} />
+        ))}
+      </g>
+
+      {/* ═══════ TICKS RULER en HAUT (sur la ligne penthouse) ═══════ */}
+      <g stroke={G_MD} strokeWidth="0.8">
+        {Array.from({ length: 12 }).map((_, i) => {
+          const x = -200 + i * 60;
+          return <line key={`tt-${i}`} x1={x} y1="76" x2={x} y2={i % 2 === 0 ? 84 : 80} />;
+        })}
+      </g>
     </svg>
   );
 }
