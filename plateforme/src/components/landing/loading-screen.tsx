@@ -30,12 +30,12 @@ export function LoadingScreen() {
 
   if (done) return null;
 
-  // Palette tout en noir (mode papier blueprint)
-  const W_HI = "rgba(0,0,0,0.88)";    // principal
-  const W_MD = "rgba(0,0,0,0.52)";    // secondaire
-  const W_LO = "rgba(0,0,0,0.24)";    // axes / construction
-  const W_FN = "rgba(0,0,0,0.07)";    // grille faible
-  const O = "#000000";                 // accents noirs (ex-orange)
+  // Palette
+  const W_HI = "rgba(255,255,255,0.92)";   // traits blancs principaux
+  const W_MD = "rgba(255,255,255,0.55)";   // traits blancs secondaires
+  const W_LO = "rgba(255,255,255,0.28)";   // axes, lignes de construction
+  const W_FN = "rgba(255,255,255,0.07)";   // grille
+  const O = "#f59e0b";                      // orange architectural
 
   // Helper inline
   const at = (delay: number, dur = 0.8): React.CSSProperties => ({
@@ -49,6 +49,7 @@ export function LoadingScreen() {
       className={`loading-root${exiting ? " loading-exit" : ""}`}
     >
       <div className="loading-bg" />
+      <div className="loading-veil" />
 
       <div className="loading-content">
         <div className="loading-frame-wrap">

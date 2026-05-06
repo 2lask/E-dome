@@ -82,9 +82,7 @@ body {
 .loading-veil {
   position: absolute;
   inset: 0;
-  /* Voile blanc opaque qui transforme l'image en texture très subtile
-     pour que le blueprint noir reste parfaitement lisible par dessus */
-  background: linear-gradient(to bottom, rgba(250,250,248,0.94), rgba(250,250,248,0.90) 50%, rgba(250,250,248,0.94));
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4));
 }
 .loading-content {
   position: relative;
@@ -99,7 +97,7 @@ body {
 .loading-text {
   font-family: 'Instrument Serif', Georgia, serif;
   font-weight: 300;
-  color: #1a1a1a;
+  color: #ffffff;
   font-size: clamp(3rem, 8vw, 6rem);
   line-height: 1.05;
   letter-spacing: 0.05em;
@@ -116,9 +114,7 @@ body {
   animation: loading-letter-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
 }
-/* Wrapper "papier blueprint" centré : carte crème qui se détache de
-   l'image gratte-ciels en arrière-plan, sur laquelle le blueprint noir
-   et le texte EDOME se dessinent. */
+/* Wrapper qui contient le texte EDOME + le blueprint SVG par-dessus */
 .loading-frame-wrap {
   position: relative;
   width: clamp(280px, 50vw, 460px);
@@ -126,8 +122,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FAFAF8;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25), 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 .loading-blueprint {
   position: absolute;
