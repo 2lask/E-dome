@@ -52,7 +52,7 @@ body {
   inset: 0;
   z-index: 9999;
   overflow: hidden;
-  background: #FAFAF8;
+  background: #1a1a1a;
   opacity: 1;
   transform: scale(1);
   filter: blur(0px);
@@ -116,7 +116,9 @@ body {
   animation: loading-letter-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
 }
-/* Wrapper qui contient le texte EDOME + le blueprint SVG par-dessus */
+/* Wrapper "papier blueprint" centré : carte crème qui se détache de
+   l'image gratte-ciels en arrière-plan, sur laquelle le blueprint noir
+   et le texte EDOME se dessinent. */
 .loading-frame-wrap {
   position: relative;
   width: clamp(280px, 50vw, 460px);
@@ -124,6 +126,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #FAFAF8;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25), 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 .loading-blueprint {
   position: absolute;

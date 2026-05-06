@@ -49,7 +49,6 @@ export function LoadingScreen() {
       className={`loading-root${exiting ? " loading-exit" : ""}`}
     >
       <div className="loading-bg" />
-      <div className="loading-veil" />
 
       <div className="loading-content">
         <div className="loading-frame-wrap">
