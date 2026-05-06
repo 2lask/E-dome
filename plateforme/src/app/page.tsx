@@ -78,7 +78,7 @@ function SectionHeading({
         <span className="text-[#C4956A]">{title2}</span>
       </motion.h2>
       {description && (
-        <motion.div {...fadeUp} className="text-gray-500 text-base sm:text-lg leading-relaxed font-light">
+        <motion.div {...fadeUp} className="text-gray-400 text-base sm:text-lg leading-relaxed font-light">
           {description}
         </motion.div>
       )}
@@ -138,25 +138,25 @@ function HomePageContent() {
     {
       titleKey: "roadmap.phase1_title",
       status: t("roadmap.status_done"),
-      statusColor: "bg-emerald-100 text-emerald-700",
+      statusColor: "bg-emerald-900/40 text-emerald-300",
       items: [1, 2, 3, 4, 5, 6, 7].map((n) => `roadmap.phase1_item${n}`),
     },
     {
       titleKey: "roadmap.phase2_title",
       status: t("roadmap.status_current"),
-      statusColor: "bg-amber-100 text-amber-700",
+      statusColor: "bg-amber-900/40 text-amber-300",
       items: [1, 2, 3, 4, 5].map((n) => `roadmap.phase2_item${n}`),
     },
     {
       titleKey: "roadmap.phase3_title",
       status: t("roadmap.status_upcoming"),
-      statusColor: "bg-gray-100 text-gray-500",
+      statusColor: "bg-neutral-800 text-gray-400",
       items: [1, 2, 3, 4, 5, 6].map((n) => `roadmap.phase3_item${n}`),
     },
     {
       titleKey: "roadmap.phase4_title",
       status: t("roadmap.status_upcoming"),
-      statusColor: "bg-gray-100 text-gray-500",
+      statusColor: "bg-neutral-800 text-gray-400",
       items: [1, 2, 3, 4, 5].map((n) => `roadmap.phase4_item${n}`),
     },
   ];
@@ -180,10 +180,10 @@ function HomePageContent() {
   ];
 
   return (
-    <div className="bg-[#FAFAF8] text-gray-900 antialiased" style={{ fontFamily: "'Poppins', system-ui, sans-serif" }}>
+    <div className="bg-black text-white antialiased" style={{ fontFamily: "'Poppins', system-ui, sans-serif" }}>
 
       {/* ═══════════════════════ NAVBAR ═══════════════════════ */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-neutral-800">
         <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
           <a href="#" className="font-semibold text-2xl tracking-tight">
             E-<span className="text-[#C4956A]">Dome</span>
@@ -199,7 +199,7 @@ function HomePageContent() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-gray-500 hover:text-[#C4956A] text-sm font-medium transition-colors"
+                className="text-gray-400 hover:text-[#C4956A] text-sm font-medium transition-colors"
               >
                 {link.label}
               </a>
@@ -207,7 +207,7 @@ function HomePageContent() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-0.5 rounded-lg border border-gray-200 overflow-hidden">
+            <div className="flex items-center gap-0.5 rounded-lg border border-neutral-800 overflow-hidden">
               {(["fr", "en", "th"] as const).map((l) => (
                 <button
                   key={l}
@@ -234,7 +234,7 @@ function HomePageContent() {
 
       <ScrollStage>
       {/* ═══════════════════════ HERO ═══════════════════════ */}
-      <section className="scroll-slide bg-[#FAFAF8]">
+      <section className="scroll-slide bg-black">
         <AnimatedMarqueeHero
           tagline={t("hero.label")}
           title={
@@ -249,12 +249,12 @@ function HomePageContent() {
           secondaryCtaText={t("hero.learn")}
           secondaryCtaHref="#vision"
           images={heroImages}
-          className="bg-[#FAFAF8]"
+          className="bg-black"
         />
       </section>
 
       {/* ═══════════════════════ VISION ═══════════════════════ */}
-      <section id="vision" className="scroll-slide py-20 px-6 bg-[#FAFAF8]">
+      <section id="vision" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("about.label")}
@@ -263,10 +263,10 @@ function HomePageContent() {
           />
 
           <div className="grid md:grid-cols-2 gap-12 mb-16">
-            <motion.div {...fadeUp} className="text-gray-500 leading-relaxed font-light">
+            <motion.div {...fadeUp} className="text-gray-400 leading-relaxed font-light">
               {t("about.p1")}
             </motion.div>
-            <motion.div {...fadeUp} className="text-gray-500 leading-relaxed font-light">
+            <motion.div {...fadeUp} className="text-gray-400 leading-relaxed font-light">
               {t("about.p2")}
             </motion.div>
           </div>
@@ -278,7 +278,7 @@ function HomePageContent() {
               {roles.map((roleKey) => (
                 <span
                   key={roleKey}
-                  className="px-4 py-1.5 rounded-full bg-white border border-gray-100 text-sm text-gray-600 shadow-sm"
+                  className="px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-sm text-gray-400 shadow-sm"
                 >
                   {t(roleKey)}
                 </span>
@@ -293,7 +293,7 @@ function HomePageContent() {
 
 
       {/* ═══════════════════════ VIDEO PLATEFORME ═══════════════════════ */}
-      <section className="scroll-slide py-20 px-6 bg-[#FAFAF8]">
+      <section className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("featured.label")}
@@ -330,7 +330,7 @@ function HomePageContent() {
 
 
       {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
-      <section id="probleme" className="scroll-slide py-20 px-6 bg-[#F5F3EF]">
+      <section id="probleme" className="scroll-slide py-20 px-6 bg-neutral-900">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("problem.label")}
@@ -363,11 +363,11 @@ function HomePageContent() {
           />
 
           <motion.div {...fadeUp} className="text-center mt-8">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 shadow-sm border border-gray-100">
+            <div className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 shadow-sm border border-neutral-800">
               <Sparkles size={16} className="text-[#C4956A]" />
-              <span className="text-gray-500 text-sm">
+              <span className="text-gray-400 text-sm">
                 {t("problem.pill")}{" "}
-                <span className="font-semibold text-gray-900">{t("problem.pill_bold")}</span>
+                <span className="font-semibold text-white">{t("problem.pill_bold")}</span>
               </span>
             </div>
           </motion.div>
@@ -376,7 +376,7 @@ function HomePageContent() {
 
 
       {/* ═══════════════════════ FONCTIONNALITES ═══════════════════════ */}
-      <section id="fonctionnalites" className="scroll-slide py-20 px-6 bg-[#FAFAF8]">
+      <section id="fonctionnalites" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-6xl mx-auto">
           <SectionHeading
             label={t("services.label")}
@@ -393,7 +393,7 @@ function HomePageContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="bg-white rounded-2xl p-8 border border-gray-100 hover:border-[#C4956A]/30 hover:shadow-lg transition-all group"
+                className="bg-neutral-900 rounded-2xl p-8 border border-neutral-800 hover:border-[#C4956A]/30 hover:shadow-lg transition-all group"
               >
                 <div className="w-10 h-10 rounded-xl bg-[#C4956A]/10 text-[#C4956A] flex items-center justify-center mb-4 group-hover:bg-[#C4956A] group-hover:text-white transition-colors">
                   {s.icon}
@@ -401,8 +401,8 @@ function HomePageContent() {
                 <p className="text-[#C4956A] text-xs tracking-wider uppercase font-medium mb-2">
                   {t(s.tagKey)}
                 </p>
-                <h3 className="text-lg font-semibold mb-3 text-gray-900">{t(s.titleKey)}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed font-light">{t(s.descKey)}</p>
+                <h3 className="text-lg font-semibold mb-3 text-white">{t(s.titleKey)}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed font-light">{t(s.descKey)}</p>
               </motion.div>
             ))}
           </div>
@@ -411,7 +411,7 @@ function HomePageContent() {
 
 
       {/* ═══════════════════════ POURQUOI E-DOME ═══════════════════════ */}
-      <section className="scroll-slide py-20 px-6 bg-[#F5F3EF]">
+      <section className="scroll-slide py-20 px-6 bg-neutral-900">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("philosophy.label")}
@@ -428,10 +428,10 @@ function HomePageContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="bg-white rounded-2xl p-8 border border-gray-100"
+                className="bg-neutral-900 rounded-2xl p-8 border border-neutral-800"
               >
-                <h3 className="text-lg font-semibold mb-3 text-gray-900">{t(p.titleKey)}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed font-light">{t(p.descKey)}</p>
+                <h3 className="text-lg font-semibold mb-3 text-white">{t(p.titleKey)}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed font-light">{t(p.descKey)}</p>
               </motion.div>
             ))}
           </div>
@@ -448,10 +448,10 @@ function HomePageContent() {
               {t("philosophy.video_title1")}{" "}
               <span className="text-[#C4956A]">{t("philosophy.video_title2")}</span>
             </h3>
-            <p className="text-gray-500 text-sm max-w-xl mx-auto mb-2 font-light">
+            <p className="text-gray-400 text-sm max-w-xl mx-auto mb-2 font-light">
               {t("philosophy.video_desktop_p1")}
             </p>
-            <p className="text-gray-500 text-sm max-w-xl mx-auto font-light">
+            <p className="text-gray-400 text-sm max-w-xl mx-auto font-light">
               {t("philosophy.video_desktop_p2")}
             </p>
           </motion.div>
@@ -478,7 +478,7 @@ function HomePageContent() {
             ].map((key) => (
               <span
                 key={key}
-                className="px-4 py-1.5 rounded-full bg-white border border-gray-100 text-sm text-gray-600 shadow-sm"
+                className="px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-sm text-gray-400 shadow-sm"
               >
                 {t(key)}
               </span>
@@ -498,7 +498,7 @@ function HomePageContent() {
 
 
       {/* ═══════════════════════ FONDATEURS ═══════════════════════ */}
-      <section id="fondateurs" className="scroll-slide py-20 px-6 bg-[#FAFAF8]">
+      <section id="fondateurs" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
             <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
@@ -530,21 +530,21 @@ function HomePageContent() {
                   href="https://wa.me/41786091880"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-green-600 transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-green-600 transition-colors"
                 >
                   <MessageCircle size={14} /> {t("founders.whatsapp")}
                 </a>
                 <a
                   href="mailto:leonard@edome.world"
-                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#C4956A] transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#C4956A] transition-colors"
                 >
                   <Mail size={14} /> Email
                 </a>
               </div>
             </div>
             <div>
-              <p className="text-gray-500 leading-relaxed font-light mb-4">{t("founders.leo_p1")}</p>
-              <p className="text-gray-500 leading-relaxed font-light">{t("founders.leo_p2")}</p>
+              <p className="text-gray-400 leading-relaxed font-light mb-4">{t("founders.leo_p1")}</p>
+              <p className="text-gray-400 leading-relaxed font-light">{t("founders.leo_p2")}</p>
             </div>
           </motion.div>
 
@@ -565,21 +565,21 @@ function HomePageContent() {
                   href="https://wa.me/41798267542"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-green-600 transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-green-600 transition-colors"
                 >
                   <MessageCircle size={14} /> {t("founders.whatsapp")}
                 </a>
                 <a
                   href="mailto:jeanpierre@edome.world"
-                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#C4956A] transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#C4956A] transition-colors"
                 >
                   <Mail size={14} /> Email
                 </a>
               </div>
             </div>
             <div>
-              <p className="text-gray-500 leading-relaxed font-light mb-4">{t("founders.jp_p1")}</p>
-              <p className="text-gray-500 leading-relaxed font-light">{t("founders.jp_p2")}</p>
+              <p className="text-gray-400 leading-relaxed font-light mb-4">{t("founders.jp_p1")}</p>
+              <p className="text-gray-400 leading-relaxed font-light">{t("founders.jp_p2")}</p>
             </div>
           </motion.div>
 
@@ -598,19 +598,19 @@ function HomePageContent() {
 
           {/* Conviction + Engagement */}
           <div className="grid md:grid-cols-2 gap-8">
-            <motion.div {...fadeUp} className="bg-[#F5F3EF] rounded-2xl p-8">
+            <motion.div {...fadeUp} className="bg-neutral-900 rounded-2xl p-8">
               <p className="text-[#C4956A] text-xs tracking-wider uppercase font-semibold mb-3">
                 {t("founders.conviction_label")}
               </p>
               <h4 className="text-lg font-semibold mb-3">{t("founders.conviction_title")}</h4>
-              <p className="text-gray-500 text-sm leading-relaxed font-light">{t("founders.conviction_desc")}</p>
+              <p className="text-gray-400 text-sm leading-relaxed font-light">{t("founders.conviction_desc")}</p>
             </motion.div>
-            <motion.div {...fadeUp} className="bg-[#F5F3EF] rounded-2xl p-8">
+            <motion.div {...fadeUp} className="bg-neutral-900 rounded-2xl p-8">
               <p className="text-[#C4956A] text-xs tracking-wider uppercase font-semibold mb-3">
                 {t("founders.engagement_label")}
               </p>
               <h4 className="text-lg font-semibold mb-3">{t("founders.engagement_title")}</h4>
-              <p className="text-gray-500 text-sm leading-relaxed font-light">{t("founders.engagement_desc")}</p>
+              <p className="text-gray-400 text-sm leading-relaxed font-light">{t("founders.engagement_desc")}</p>
             </motion.div>
           </div>
 
@@ -618,7 +618,7 @@ function HomePageContent() {
           <motion.div {...fadeUp} className="flex items-center justify-center gap-6 mt-12">
             <a
               href="mailto:contact@edome.world"
-              className="flex items-center gap-2 text-sm text-gray-500 hover:text-[#C4956A] transition-colors"
+              className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#C4956A] transition-colors"
             >
               <Mail size={16} /> {t("founders.email_label")}
             </a>
@@ -628,7 +628,7 @@ function HomePageContent() {
 
 
       {/* ═══════════════════════ ROADMAP ═══════════════════════ */}
-      <section id="roadmap" className="scroll-slide py-20 px-6 bg-[#F5F3EF]">
+      <section id="roadmap" className="scroll-slide py-20 px-6 bg-neutral-900">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
             label={t("roadmap.label")}
@@ -637,7 +637,7 @@ function HomePageContent() {
             description={t("roadmap.desc")}
           />
 
-          <motion.div {...fadeUp} className="text-center text-gray-500 text-sm font-light mb-16 max-w-2xl mx-auto">
+          <motion.div {...fadeUp} className="text-center text-gray-400 text-sm font-light mb-16 max-w-2xl mx-auto">
             {t("roadmap.desc2")}
           </motion.div>
 
@@ -650,10 +650,10 @@ function HomePageContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="bg-white rounded-2xl p-8 border border-gray-100"
+                className="bg-neutral-900 rounded-2xl p-8 border border-neutral-800"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-sm font-bold text-gray-300">0{i + 1}</span>
+                  <span className="text-sm font-bold text-gray-700">0{i + 1}</span>
                   <h3 className="text-lg font-semibold flex-1">{t(phase.titleKey)}</h3>
                   <span className={`text-xs font-medium px-3 py-1 rounded-full ${phase.statusColor}`}>
                     {phase.status}
@@ -661,7 +661,7 @@ function HomePageContent() {
                 </div>
                 <ul className="grid sm:grid-cols-2 gap-2">
                   {phase.items.map((itemKey) => (
-                    <li key={itemKey} className="flex items-start gap-2 text-sm text-gray-500 font-light">
+                    <li key={itemKey} className="flex items-start gap-2 text-sm text-gray-400 font-light">
                       <span className="w-1 h-1 rounded-full bg-[#C4956A] mt-2 flex-shrink-0" />
                       {t(itemKey)}
                     </li>
@@ -685,7 +685,7 @@ function HomePageContent() {
                 <br />
                 <span className="text-[#C4956A]">{t("roadmap.cta_title2")}</span>
               </h2>
-              <p className="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
+              <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
                 {t("roadmap.cta_subtitle")}
               </p>
             </motion.div>
@@ -699,7 +699,7 @@ function HomePageContent() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.5, delay: i * 0.06 }}
-                  className="bg-white rounded-xl p-6 border border-gray-100"
+                  className="bg-neutral-900 rounded-xl p-6 border border-neutral-800"
                 >
                   <div className="w-9 h-9 rounded-lg bg-[#C4956A]/10 text-[#C4956A] flex items-center justify-center mb-3">
                     {b.icon}
@@ -720,7 +720,7 @@ function HomePageContent() {
               </Link>
               <Link
                 href="/acces"
-                className="inline-flex items-center gap-2 border border-gray-200 text-gray-600 rounded-xl px-8 py-3.5 text-sm font-medium hover:border-[#C4956A]/40 hover:text-[#C4956A] transition-all bg-white"
+                className="inline-flex items-center gap-2 border border-neutral-800 text-gray-400 rounded-xl px-8 py-3.5 text-sm font-medium hover:border-[#C4956A]/40 hover:text-[#C4956A] transition-all bg-white"
               >
                 {t("roadmap.cta2")}
               </Link>
@@ -758,7 +758,7 @@ function HomePageContent() {
 
             {/* Demo links */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
+              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
                 {t("footer.demo_label")}
               </h4>
               <ul className="space-y-2.5">
@@ -771,7 +771,7 @@ function HomePageContent() {
                   "footer.link_messages",
                 ].map((key) => (
                   <li key={key}>
-                    <span className="text-gray-500 text-sm hover:text-[#C4956A] transition-colors cursor-pointer">
+                    <span className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors cursor-pointer">
                       {t(key)}
                     </span>
                   </li>
@@ -781,7 +781,7 @@ function HomePageContent() {
 
             {/* Platform links */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
+              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
                 {t("footer.platform_label")}
               </h4>
               <ul className="space-y-2.5">
@@ -794,7 +794,7 @@ function HomePageContent() {
                   "footer.link_investisseurs",
                 ].map((key) => (
                   <li key={key}>
-                    <span className="text-gray-500 text-sm hover:text-[#C4956A] transition-colors cursor-pointer">
+                    <span className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors cursor-pointer">
                       {t(key)}
                     </span>
                   </li>
@@ -804,7 +804,7 @@ function HomePageContent() {
 
             {/* About links */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4">
+              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
                 {t("footer.about_label")}
               </h4>
               <ul className="space-y-2.5">
@@ -819,7 +819,7 @@ function HomePageContent() {
                   <li key={link.key}>
                     <a
                       href={link.href}
-                      className="text-gray-500 text-sm hover:text-[#C4956A] transition-colors"
+                      className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors"
                     >
                       {t(link.key)}
                     </a>
@@ -831,7 +831,7 @@ function HomePageContent() {
               <div className="mt-6 space-y-2">
                 <a
                   href="mailto:contact@edome.world"
-                  className="flex items-center gap-2 text-gray-500 text-sm hover:text-[#C4956A] transition-colors"
+                  className="flex items-center gap-2 text-gray-400 text-sm hover:text-[#C4956A] transition-colors"
                 >
                   <Mail size={14} /> contact@edome.world
                 </a>
@@ -839,7 +839,7 @@ function HomePageContent() {
                   href="https://wa.me/41786091880"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-500 text-sm hover:text-green-500 transition-colors"
+                  className="flex items-center gap-2 text-gray-400 text-sm hover:text-green-500 transition-colors"
                 >
                   <Phone size={14} /> WhatsApp
                 </a>
@@ -849,7 +849,7 @@ function HomePageContent() {
 
           {/* Copyright */}
           <div className="border-t border-gray-800 pt-8">
-            <p className="text-gray-600 text-xs text-center font-light">
+            <p className="text-gray-400 text-xs text-center font-light">
               {t("footer.copyright")}
             </p>
           </div>

@@ -38,7 +38,7 @@ export const AnimatedMarqueeHero: React.FC<AnimatedMarqueeHeroProps> = ({
 
         <motion.h1 initial="hidden" animate="show"
           variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
-          className="text-5xl md:text-7xl font-bold tracking-tighter text-gray-900">
+          className="text-5xl md:text-7xl font-bold tracking-tighter text-white">
           {typeof title === 'string' ? (
             title.split(" ").map((word, i) => (
               <motion.span key={i} variants={FADE_IN} className="inline-block">{word}&nbsp;</motion.span>
@@ -47,7 +47,7 @@ export const AnimatedMarqueeHero: React.FC<AnimatedMarqueeHeroProps> = ({
         </motion.h1>
 
         <motion.p initial="hidden" animate="show" variants={FADE_IN} transition={{ delay: 0.5 }}
-          className="mt-6 max-w-xl text-lg text-gray-500">
+          className="mt-6 max-w-xl text-lg text-gray-400">
           {description}
         </motion.p>
 
@@ -59,7 +59,7 @@ export const AnimatedMarqueeHero: React.FC<AnimatedMarqueeHeroProps> = ({
           </a>
           {secondaryCtaText && (
             <a href={secondaryCtaHref}
-              className="px-8 py-3 rounded-full border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-all">
+              className="px-8 py-3 rounded-full border border-neutral-700 text-gray-300 font-medium hover:bg-neutral-900 transition-all">
               {secondaryCtaText}
             </a>
           )}
