@@ -46,6 +46,155 @@ body {
   }
 }
 
+/* ─── Holographic Card (membre fondateur) ───────────── */
+.holographic-card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1.586 / 1;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, #1c1c1c 0%, #0a0a0a 60%, #1a1a1a 100%);
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.85),
+    0 16px 30px -10px rgba(196, 149, 106, 0.18),
+    inset 0 1px 0 rgba(196, 149, 106, 0.18);
+  transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+  overflow: hidden;
+  --x: 50%;
+  --y: 50%;
+}
+
+/* Bordure gold conique fine */
+.holo-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(196, 149, 106, 0.7) 0%,
+    rgba(196, 149, 106, 0.05) 35%,
+    rgba(196, 149, 106, 0.05) 65%,
+    rgba(196, 149, 106, 0.55) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Grain noise très subtil */
+.holo-grain {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.6;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Reflet holographique radial qui suit le curseur */
+.holo-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      circle at var(--x) var(--y),
+      rgba(255, 235, 200, 0.22) 0%,
+      rgba(196, 149, 106, 0.18) 18%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at var(--x) var(--y),
+      rgba(255, 255, 255, 0.10) 0%,
+      transparent 22%
+    );
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transition: background 0.15s ease-out;
+}
+
+.holo-content {
+  position: relative;
+  height: 100%;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1;
+}
+
+.holo-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.holo-brand {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  text-transform: none;
+}
+.holo-seal {
+  font-size: 1.1rem;
+  color: #C4956A;
+  letter-spacing: 0.1em;
+  filter: drop-shadow(0 0 8px rgba(196, 149, 106, 0.5));
+}
+
+.holo-middle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.holo-label {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  color: #C4956A;
+  font-weight: 600;
+  margin: 0;
+}
+.holo-number {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  font-weight: 300;
+  margin: 0;
+}
+
+.holo-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.holo-tier {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: #C4956A;
+  font-weight: 600;
+}
+.holo-exp {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: #737373;
+  font-weight: 500;
+}
+
 /* ─── Loading screen (intro) ─────────────────────────── */
 .loading-root {
   position: fixed;

@@ -23,6 +23,7 @@ import {
   Handshake,
 } from "lucide-react";
 import SkewCards from "@/components/ui/gradient-card-showcase";
+import HolographicCard from "@/components/ui/holographic-card";
 import {
   LandingLanguageProvider,
   useLandingLang,
@@ -259,30 +260,15 @@ function HomePageContent() {
               </div>
             </motion.div>
 
-            {/* Colonne droite (vide / index brutaliste) */}
-            <motion.div {...fadeUp} className="hidden lg:flex lg:col-span-5 flex-col items-end justify-center text-right pr-4">
-              <div className="space-y-6 text-xs uppercase tracking-[0.3em] font-semibold text-gray-700">
-                <div className="flex items-center justify-end gap-3">
-                  <span>{t("nav.vision")}</span>
-                  <span className="block w-12 h-px bg-neutral-800" />
-                  <span className="text-[#C4956A]">01</span>
-                </div>
-                <div className="flex items-center justify-end gap-3">
-                  <span>{t("nav.features")}</span>
-                  <span className="block w-12 h-px bg-neutral-800" />
-                  <span className="text-gray-700">02</span>
-                </div>
-                <div className="flex items-center justify-end gap-3">
-                  <span>{t("nav.founders")}</span>
-                  <span className="block w-12 h-px bg-neutral-800" />
-                  <span className="text-gray-700">03</span>
-                </div>
-                <div className="flex items-center justify-end gap-3">
-                  <span>{t("nav.roadmap")}</span>
-                  <span className="block w-12 h-px bg-neutral-800" />
-                  <span className="text-gray-700">04</span>
-                </div>
-              </div>
+            {/* Colonne droite : carte fictive Membre Fondateur (effet holographique au curseur) */}
+            <motion.div {...fadeUp} className="hidden lg:flex lg:col-span-5 items-center justify-end pr-4">
+              <HolographicCard
+                brand="E-DOME"
+                topLabel="MEMBRE FONDATEUR"
+                memberNumber="N° 001 / 100"
+                bottomLeft="CARTE PREMIUM"
+                bottomRight="EXP. 2026"
+              />
             </motion.div>
           </div>
         </div>
