@@ -499,8 +499,9 @@ function HomePageContent() {
       </section>
 
       {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
-      <section id="probleme" className="scroll-slide py-20 px-6 bg-black">
-        <div className="max-w-5xl mx-auto">
+      <section id="probleme" className="scroll-slide bg-black relative">
+        <div className="min-h-screen flex items-center px-6 py-12">
+        <div className="max-w-5xl mx-auto w-full">
           {(() => {
             const data =
               lang === "en"
@@ -544,18 +545,18 @@ function HomePageContent() {
             return (
               <>
                 {/* ── HEADER : label + titre + intro empilés, alignés à gauche ── */}
-                <motion.div {...fadeUp} className="mb-16">
-                  <p className="text-[#C4956A] text-[0.65rem] tracking-[0.35em] uppercase font-semibold mb-5">
+                <motion.div {...fadeUp} className="mb-10">
+                  <p className="text-[#C4956A] text-[0.65rem] tracking-[0.35em] uppercase font-semibold mb-3">
                     {t("problem.label")}
                   </p>
                   <h2
-                    className="text-4xl sm:text-5xl md:text-[3.5rem] leading-[1.05] text-white mb-8 max-w-3xl"
+                    className="text-3xl sm:text-4xl md:text-5xl leading-[1.05] text-white mb-5 max-w-3xl"
                     style={{ fontFamily: "'Instrument Serif', serif" }}
                   >
                     {t("problem.title1")}{" "}
                     <span className="text-[#C4956A]">{t("problem.title2")}</span>
                   </h2>
-                  <p className="max-w-3xl text-gray-300 text-base md:text-[1.05rem] leading-relaxed font-light">
+                  <p className="max-w-3xl text-gray-300 text-sm md:text-base leading-relaxed font-light">
                     {data.intro}
                   </p>
                 </motion.div>
@@ -563,44 +564,44 @@ function HomePageContent() {
                 {/* ── 3 STATS PROBLÈMES : encadrées par 2 rules pour ancrer le bloc ── */}
                 <motion.div
                   {...fadeUp}
-                  className="grid sm:grid-cols-3 gap-0 mb-14 border-t border-b border-neutral-800 py-10"
+                  className="grid sm:grid-cols-3 gap-0 border-t border-b border-neutral-800 py-6"
                 >
                   {data.stats.map((s, i) => {
                     const TopicIcon = [Layers, Share2, Users][i];
                     return (
                     <div
                       key={i}
-                      className="relative px-6 sm:px-8 py-6 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
+                      className="relative px-5 sm:px-7 py-3 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
                     >
                       {/* Topic icon — coin haut droit, subtle red */}
                       <TopicIcon
-                        size={28}
+                        size={24}
                         strokeWidth={1}
-                        className="absolute top-6 right-6 sm:right-8 text-red-500/30"
+                        className="absolute top-3 right-5 sm:right-7 text-red-500/30"
                       />
                       {/* Tag PROBLÈME 0X rouge */}
-                      <div className="flex items-center gap-2 mb-5">
-                        <AlertTriangle size={11} className="text-red-500" strokeWidth={2.2} />
+                      <div className="flex items-center gap-2 mb-3">
+                        <AlertTriangle size={10} className="text-red-500" strokeWidth={2.2} />
                         <p className="font-mono text-red-400 text-[0.6rem] tracking-[0.3em] uppercase font-semibold">
                           {problemTag} 0{i + 1}
                         </p>
                       </div>
                       {/* Grand chiffre */}
                       <p
-                        className="font-serif text-5xl md:text-6xl text-white leading-[1]"
+                        className="font-serif text-4xl md:text-5xl text-white leading-[1]"
                         style={{ fontFamily: "'Instrument Serif', serif" }}
                       >
                         {s.value}
-                        <span className="text-red-500 text-2xl ml-2 font-normal align-top">
+                        <span className="text-red-500 text-xl ml-2 font-normal align-top">
                           {s.unit}
                         </span>
                       </p>
                       {/* Label majuscule */}
-                      <p className="text-white text-[0.78rem] font-semibold uppercase tracking-[0.18em] mt-5 mb-3 leading-snug">
+                      <p className="text-white text-[0.72rem] font-semibold uppercase tracking-[0.18em] mt-3 mb-2 leading-snug">
                         {s.label}
                       </p>
                       {/* Source citée en très petit */}
-                      <p className="text-gray-600 text-[0.6rem] font-mono tracking-wider">
+                      <p className="text-gray-600 text-[0.55rem] font-mono tracking-wider">
                         {sourceLabel} : {s.source}
                       </p>
                     </div>
@@ -611,6 +612,7 @@ function HomePageContent() {
               </>
             );
           })()}
+        </div>
         </div>
       </section>
 

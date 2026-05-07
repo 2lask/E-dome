@@ -40,17 +40,15 @@ export function ZoomParallax({ images, videos, targetRef, progress }: ZoomParall
   });
   const scrollYProgress = progress ?? scrollFromTarget;
 
-  /* Courbes en deux phases :
-     - 0 → 0.5  (= incoming d'un slide ScrollStage) : zoom doux
-     - 0.5 → 1  (= hold pleine visibilité)         : zoom dramatique
-     Le pic du zoom coïncide ainsi avec le moment où le slide est
-     parfaitement immobile, pas pendant les fades. */
-  const scale3 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.2, 3]);
-  const scale35 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.25, 3.5]);
-  const scale4 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.3, 4]);
-  const scale5 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.4, 5]);
-  const scale6 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.5, 6]);
-  const scaleCenter = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.5, 7]);
+  /* Pic à slideProgress 0.5 (= moment de visibilité maximale du slide,
+     au croisement entre le fade-in et le fade-out). On tient ensuite
+     l'état zoomé pendant le fade-out pour un finale propre. */
+  const scale3 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 3, 3]);
+  const scale35 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 3.5, 3.5]);
+  const scale4 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 4, 4]);
+  const scale5 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 5, 5]);
+  const scale6 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 6, 6]);
+  const scaleCenter = useTransform(scrollYProgress, [0, 0.5, 1], [1, 7, 7]);
   const scales = [scaleCenter, scale35, scale4, scale35, scale4, scale5, scale6, scale3, scale35, scale4];
 
   // Position presets — viewport units when standalone, % of parent when embedded.
