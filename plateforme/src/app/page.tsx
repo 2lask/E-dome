@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
@@ -23,6 +23,7 @@ import {
   Mic,
   Phone,
   Share2,
+  Sparkles,
   Star,
   TrendingUp,
   Users,
@@ -31,8 +32,7 @@ import {
 } from "lucide-react";
 import { FounderBadge } from "@/components/ui/founder-badge";
 import { HeroSideStrip } from "@/components/ui/hero-side-strip";
-import { IPhoneMockup } from "@/components/ui/iphone-mockup";
-import InfiniteGallery from "@/components/ui/3d-gallery-photography";
+import { CinematicHero } from "@/components/ui/cinematic-landing-hero";
 import {
   LandingLanguageProvider,
   useLandingLang,
@@ -229,66 +229,6 @@ function DotDivider() {
       <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
       <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#C4956A]/15" />
     </div>
-  );
-}
-
-/* ─────────── PhoneSlide ──────────────────────────────────────────────
-   Slide ScrollStage : iPhone à droite, texte punch à gauche. À l'intérieur
-   de l'écran du téléphone, la composition Remotion `InfiniteBentoPan`
-   pan en diagonale sur un grand canvas de cards, dont les "video" sont
-   alimentées par les 10 reels.
-   ─────────────────────────────────────────────────────────────────── */
-function PhoneSlide({
-  videos,
-  punch,
-  punchEmphasis,
-}: {
-  videos: { src: string }[];
-  punch: string;
-  punchEmphasis: string;
-}) {
-  const galleryItems = useMemo(
-    () => videos.map((v, i) => ({ src: v.src, alt: `Reel ${i + 1}` })),
-    [videos],
-  );
-
-  return (
-    <section className="scroll-slide bg-black relative">
-      <div className="min-h-screen flex items-center px-6 sm:px-12 lg:px-20">
-        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Texte punch */}
-          <div className="order-2 lg:order-1 max-w-xl mx-auto lg:mx-0">
-            <div className="border-l-2 border-red-500/60 pl-6 py-1">
-              <p className="text-white text-base md:text-lg leading-relaxed font-light">
-                {punch}{" "}
-                <strong className="font-semibold text-white">{punchEmphasis}</strong>
-              </p>
-            </div>
-          </div>
-
-          {/* iPhone — InfiniteGallery (R3F 3D) en plein écran de la mockup */}
-          <div className="order-1 lg:order-2 flex justify-center">
-            <div style={{ width: 292, height: 613 }}>
-              <IPhoneMockup
-                model="15-pro"
-                color="natural-titanium"
-                scale={0.7}
-                safeArea={false}
-              >
-                <div className="absolute inset-0 bg-black overflow-hidden">
-                  <InfiniteGallery
-                    images={galleryItems}
-                    speed={1.2}
-                    visibleCount={10}
-                    className="h-full w-full"
-                  />
-                </div>
-              </IPhoneMockup>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -625,14 +565,165 @@ function HomePageContent() {
         </div>
         </div>
       </section>
+      </ScrollStage>
 
-      {/* ═══════════════════════ PHONE SLIDE (snap crossfade) ═══ */}
-      <PhoneSlide
-        videos={phoneVideos}
-        punch={phonePunch}
-        punchEmphasis={phonePunchEmphasis}
+      {/* ═══════════════════════ CINEMATIC HERO (hors ScrollStage) ═══════════
+          Composant cinématique qui s'auto-pinne sur 7000 px de scroll : il
+          révèle la tagline, la card pleine résolution avec mockup iPhone,
+          puis pull-back vers les CTAs. Contenu adapté à E-Dome. */}
+      <CinematicHero
+        brandName={lang === "th" ? "E-DOME" : "E-DOME"}
+        tagline1={
+          lang === "en"
+            ? "Real estate built walls."
+            : lang === "th"
+              ? "อสังหาฯ สร้างกำแพง"
+              : "L'immobilier a bâti des murs."
+        }
+        tagline2={
+          lang === "en"
+            ? "We are building the roof."
+            : lang === "th"
+              ? "เรากำลังสร้างหลังคา"
+              : "Nous bâtissons le toit."
+        }
+        cardHeading={
+          lang === "en"
+            ? "The whole ecosystem, one space."
+            : lang === "th"
+              ? "ระบบนิเวศทั้งหมด ที่เดียว"
+              : "Tout l'écosystème, un seul espace."
+        }
+        cardDescription={
+          lang === "en" ? (
+            <>
+              <span className="text-white font-semibold">E-Dome</span> connects
+              professionals, individuals, prescribers and local contributors in
+              a single platform. Content, transactions, conversations, signatures —
+              with no redirection, no lost attention.
+            </>
+          ) : lang === "th" ? (
+            <>
+              <span className="text-white font-semibold">E-Dome</span>{" "}
+              เชื่อมโยงมืออาชีพ บุคคลทั่วไป ผู้แนะนำ และผู้ร่วมในท้องถิ่น
+              ไว้ในแพลตฟอร์มเดียว — คอนเทนต์ ธุรกรรม บทสนทนา การลงนาม
+              โดยไม่ต้องเปลี่ยนแพลตฟอร์ม
+            </>
+          ) : (
+            <>
+              <span className="text-white font-semibold">E-Dome</span> relie pros,
+              particuliers, prescripteurs et contributeurs locaux dans une seule
+              plateforme. Contenu, transactions, conversations, signatures —
+              sans redirection, sans déperdition.
+            </>
+          )
+        }
+        metricValue={100}
+        metricLabel={
+          lang === "en" ? "Founders" : lang === "th" ? "ผู้ก่อตั้ง" : "Fondateurs"
+        }
+        ctaHeading={
+          lang === "en"
+            ? "Become a founding member."
+            : lang === "th"
+              ? "เป็นสมาชิกผู้ก่อตั้ง"
+              : "Devenez membre fondateur."
+        }
+        ctaDescription={
+          lang === "en"
+            ? "The first 100 profiles get exclusive perks and shape the platform with us."
+            : lang === "th"
+              ? "100 โปรไฟล์แรกได้รับสิทธิประโยชน์พิเศษและร่วมสร้างแพลตฟอร์มกับเรา"
+              : "Les 100 premiers profils accèdent à des avantages exclusifs et façonnent la plateforme avec nous."
+        }
+        phoneEyebrow={
+          lang === "en" ? "E-Dome" : lang === "th" ? "E-Dome" : "E-Dome"
+        }
+        phoneTitle={
+          lang === "en" ? "Founder" : lang === "th" ? "ผู้ก่อตั้ง" : "Fondateur"
+        }
+        phoneAvatar="ED"
+        floatingBadgeTop={{
+          icon: "🏛",
+          title:
+            lang === "en"
+              ? "Founder unlocked"
+              : lang === "th"
+                ? "ปลดล็อกผู้ก่อตั้ง"
+                : "Membre fondateur",
+          subtitle:
+            lang === "en"
+              ? "Lifetime perks"
+              : lang === "th"
+                ? "สิทธิตลอดชีพ"
+                : "Avantages à vie",
+        }}
+        floatingBadgeBottom={{
+          icon: "🤝",
+          title:
+            lang === "en"
+              ? "Network connected"
+              : lang === "th"
+                ? "เครือข่ายเชื่อมต่อแล้ว"
+                : "Réseau connecté",
+          subtitle:
+            lang === "en"
+              ? "Pros + individuals"
+              : lang === "th"
+                ? "มืออาชีพ + บุคคล"
+                : "Pros + particuliers",
+        }}
+        ctaButtons={
+          <div className="flex flex-col sm:flex-row gap-6">
+            <Link
+              href="/acces"
+              className="btn-modern-light flex items-center justify-center gap-3 px-8 py-4 rounded-[1.25rem] group"
+            >
+              <Sparkles size={20} className="text-[#C4956A]" />
+              <div className="text-left">
+                <div className="text-[10px] font-bold tracking-wider text-neutral-500 uppercase mb-[-2px]">
+                  {lang === "en"
+                    ? "Reserve your spot"
+                    : lang === "th"
+                      ? "จองที่นั่งของคุณ"
+                      : "Réservez votre place"}
+                </div>
+                <div className="text-xl font-bold leading-none tracking-tight">
+                  {lang === "en"
+                    ? "Become founder"
+                    : lang === "th"
+                      ? "เป็นผู้ก่อตั้ง"
+                      : "Devenir fondateur"}
+                </div>
+              </div>
+            </Link>
+            <Link
+              href="#fonctionnalites"
+              className="btn-modern-dark flex items-center justify-center gap-3 px-8 py-4 rounded-[1.25rem] group"
+            >
+              <ArrowRight size={20} />
+              <div className="text-left">
+                <div className="text-[10px] font-bold tracking-wider text-neutral-400 uppercase mb-[-2px]">
+                  {lang === "en"
+                    ? "What's inside"
+                    : lang === "th"
+                      ? "สิ่งที่อยู่ภายใน"
+                      : "Ce qu'il y a dedans"}
+                </div>
+                <div className="text-xl font-bold leading-none tracking-tight">
+                  {lang === "en"
+                    ? "Discover"
+                    : lang === "th"
+                      ? "ค้นพบ"
+                      : "Découvrir"}
+                </div>
+              </div>
+            </Link>
+          </div>
+        }
       />
 
+      <ScrollStage>
       {/* ═══════════════════════ VISION ═══════════════════════ */}
       <section id="vision" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">
