@@ -74,8 +74,8 @@ export const translations: Record<LandingLang, TranslationMap> = {
 
     // ── Problem ───────────────────────────────────────────────────────────
     "problem.label": "Le constat",
-    "problem.title1": "Un secteur",
-    "problem.title2": "disperse.",
+    "problem.title1": "Un marche",
+    "problem.title2": "qui fuit.",
     "problem.desc":
       "Pour chercher un bien, un site. Pour reserver, un autre. Pour se former, encore un autre. Pour trouver un prestataire, un annuaire. Pour suivre ses commissions, un tableur. Chaque etape renvoie vers un outil different \u2014 et a chaque transition, on perd du temps, de la concentration et des opportunites. Le parcours immobilier actuel est une succession de ruptures qui coute cher a tous les acteurs.",
 
@@ -465,8 +465,8 @@ export const translations: Record<LandingLang, TranslationMap> = {
 
     // ── Problem ───────────────────────────────────────────────────────────
     "problem.label": "The problem",
-    "problem.title1": "A sector",
-    "problem.title2": "fragmented.",
+    "problem.title1": "A market",
+    "problem.title2": "that leaks.",
     "problem.desc":
       "To search for a property, one website. To book, another. To get trained, yet another. To find a service provider, a directory. To track commissions, a spreadsheet. Every step redirects to a different tool \u2014 and with each transition, you lose time, focus and opportunities. The current real estate journey is a series of breakpoints that costs every player dearly.",
 
@@ -856,8 +856,8 @@ export const translations: Record<LandingLang, TranslationMap> = {
 
     // ── Problem ───────────────────────────────────────────────────────────
     "problem.label": "ปัญหาที่พบ",
-    "problem.title1": "อุตสาหกรรมที่",
-    "problem.title2": "กระจัดกระจาย",
+    "problem.title1": "ตลาดที่",
+    "problem.title2": "รั่วไหล",
     "problem.desc":
       "ค้นหาอสังหาริมทรัพย์ ใช้เว็บไซต์หนึ่ง จอง ใช้อีกเว็บหนึ่ง ฝึกอบรม ใช้อีกที่หนึ่ง หาผู้ให้บริการ ใช้สมุดรายชื่อ ติดตามค่าคอมมิชชัน ใช้สเปรดชีต ทุกขั้นตอนนำไปสู่เครื่องมือที่แตกต่างกัน — และในทุกการเปลี่ยนผ่าน คุณสูญเสียเวลา สมาธิ และโอกาส เส้นทางอสังหาริมทรัพย์ในปัจจุบันเป็นชุดของจุดขาดตอนที่มีค่าใช้จ่ายสูงสำหรับทุกฝ่าย",
 

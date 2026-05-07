@@ -22,7 +22,6 @@ import {
   MessageCircle,
   Mic,
   Phone,
-  Share2,
   Sparkles,
   Star,
   TrendingUp,
@@ -456,46 +455,101 @@ function HomePageContent() {
             const data =
               lang === "en"
                 ? {
-                    intro: "Real estate is shattered across dozens of tools, portals and roles that never talk to each other. And while social media has become the single biggest attention lever of the market, every piece of content has to push its audience elsewhere — to another platform, another login, another set of rules.",
+                    intro:
+                      "One deal in six collapses before signature. The audience pros pay to build with social content evaporates at the first click toward an external platform. And the market's natural prescribers — owners, neighbours, local referrers — have no place inside the tools the industry reserves for itself.",
                     stats: [
-                      { value: "8", unit: "+", label: "Tools per deal", source: "Deloitte Real Estate Outlook, 2024" },
-                      { value: "73", unit: "%", label: "Attention lost in redirects", source: "HubSpot State of Marketing, 2024" },
-                      { value: "2", unit: "/ 3", label: "Actors locked out", source: "NAR Profile of Home Buyers & Sellers, 2024" },
+                      {
+                        value: "16,3",
+                        unit: "%",
+                        label: "Compromis qui échouent",
+                        caption:
+                          "Highest cancellation rate on record, end of 2025. Buyers and sellers already engaged absorb the cost.",
+                        source: "Redfin, December 2025",
+                      },
+                      {
+                        value: "1,5",
+                        unit: "%",
+                        label: "Social → contact conversion",
+                        caption:
+                          "On average 98.5% of audience captured by paid social content drops off before the form is submitted.",
+                        source: "Unbounce Conversion Benchmark, 2024",
+                      },
+                      {
+                        value: "6",
+                        unit: "%",
+                        label: "Sellers without a pro",
+                        caption:
+                          "Word-of-mouth drives 66% of agent matches, but the ecosystem still gates almost everyone out of doing it themselves.",
+                        source: "NAR Profile of Home Buyers & Sellers, 2024",
+                      },
                     ],
-                    punch: "Social content captures millions of eyes — and ushers them straight out the door. Commissions stay high in a market that never consolidated its stack. And owners, prescribers, local contributors — half the living forces of the ecosystem — have nowhere to belong.",
-                    punchEmphasis: "Real estate has built walls where it should have built a roof.",
                   }
                 : lang === "th"
                 ? {
-                    intro: "อสังหาริมทรัพย์ถูกแบ่งแยกระหว่างเครื่องมือ พอร์ทัล และบทบาทมากมายที่ไม่เคยเชื่อมต่อกัน และในขณะที่โซเชียลมีเดียกลายเป็นตัวขับเคลื่อนความสนใจที่ใหญ่ที่สุดในตลาด ทุกคอนเทนต์ต้องส่งผู้ชมออกไปยังแพลตฟอร์มอื่น เข้าสู่ระบบอื่น กฎเกณฑ์อื่น",
+                    intro:
+                      "หนึ่งในหกของดีลล้มก่อนการลงนาม ผู้ชมที่มืออาชีพจ่ายเพื่อสร้างผ่านคอนเทนต์โซเชียลหายไปเมื่อคลิกครั้งแรกไปยังแพลตฟอร์มภายนอก และผู้แนะนำที่ดีที่สุดของตลาด — เจ้าของ เพื่อนบ้าน ผู้แนะนำท้องถิ่น — ไม่มีบทบาทในเครื่องมือที่จัดเตรียมไว้",
                     stats: [
-                      { value: "8", unit: "+", label: "เครื่องมือต่อดีล", source: "Deloitte, 2024" },
-                      { value: "73", unit: "%", label: "ความสนใจหายในการรีไดเรกต์", source: "HubSpot, 2024" },
-                      { value: "2", unit: "/ 3", label: "ผู้เล่นถูกกีดกัน", source: "NAR, 2024" },
+                      {
+                        value: "16,3",
+                        unit: "%",
+                        label: "ดีลที่ล้มเหลว",
+                        caption: "อัตราการยกเลิกที่สูงที่สุดในประวัติการณ์ ปลายปี 2025 ผู้ซื้อและผู้ขายที่ผูกพันแล้วเป็นผู้รับภาระต้นทุน",
+                        source: "Redfin, ธ.ค. 2025",
+                      },
+                      {
+                        value: "1,5",
+                        unit: "%",
+                        label: "Conversion โซเชียล → ติดต่อ",
+                        caption: "98.5% ของผู้ชมที่ถูกดึงดูดผ่านคอนเทนต์โซเชียลหายไปก่อนที่จะส่งฟอร์ม",
+                        source: "Unbounce Conversion Benchmark, 2024",
+                      },
+                      {
+                        value: "6",
+                        unit: "%",
+                        label: "ผู้ขายที่ไม่ใช่มืออาชีพ",
+                        caption: "การบอกต่อสร้าง 66% ของการจับคู่กับนายหน้า แต่ระบบนิเวศยังคงกีดกันคนส่วนใหญ่จากการทำเอง",
+                        source: "NAR Profile of Home Buyers & Sellers, 2024",
+                      },
                     ],
-                    punch: "คอนเทนต์โซเชียลดึงดูดสายตาเป็นล้าน — แล้วผลักออกไปทันที ค่าคอมมิชชันยังสูงในตลาดที่ไม่เคยรวมเครื่องมือเข้าด้วยกัน และเจ้าของ ผู้แนะนำ ผู้ร่วมในท้องถิ่น — ครึ่งหนึ่งของพลังของระบบนิเวศ — ไม่มีที่ให้อยู่",
-                    punchEmphasis: "อสังหาฯ สร้างกำแพงในที่ที่ควรสร้างหลังคา",
                   }
                 : {
-                    intro: "Le secteur immobilier reste fragmenté entre des dizaines d'outils, de portails et de rôles qui ne communiquent pas entre eux. Et alors même que les réseaux sociaux sont devenus le plus grand levier d'attention du marché, chaque contenu doit rediriger son audience ailleurs — vers une autre plateforme, un autre identifiant, une autre logique.",
+                    intro:
+                      "Un compromis sur six s'effondre avant signature. L'audience que les pros paient à coup de contenu social s'évapore au premier clic vers une plateforme externe. Et les meilleurs prescripteurs du marché — propriétaires, voisins, prescripteurs locaux — n'ont aucune place dans les outils que le secteur se réserve.",
                     stats: [
-                      { value: "8", unit: "+", label: "Outils par dossier", source: "Deloitte Real Estate Outlook, 2024" },
-                      { value: "73", unit: "%", label: "Attention perdue en redirection", source: "HubSpot State of Marketing, 2024" },
-                      { value: "2", unit: "/ 3", label: "Acteurs laissés à la porte", source: "NAR Profile of Home Buyers & Sellers, 2024" },
+                      {
+                        value: "16,3",
+                        unit: "%",
+                        label: "Compromis qui échouent",
+                        caption:
+                          "Pic historique fin 2025 : un dossier sur six s'effondre avant signature. Acheteurs et vendeurs déjà engagés en absorbent le coût.",
+                        source: "Redfin, décembre 2025",
+                      },
+                      {
+                        value: "1,5",
+                        unit: "%",
+                        label: "Conversion social → contact",
+                        caption:
+                          "Sur les réseaux, le contenu immobilier capte massivement — mais 98,5 % de l'audience se perd avant qu'un formulaire ne soit soumis.",
+                        source: "Unbounce Conversion Benchmark, 2024",
+                      },
+                      {
+                        value: "6",
+                        unit: "%",
+                        label: "Vendeurs sans intermédiaire",
+                        caption:
+                          "Le bouche-à-oreille fait 66 % des mises en relation, mais l'écosystème reste fermé à ceux qui pourraient s'en passer.",
+                        source: "NAR Profile of Home Buyers & Sellers, 2024",
+                      },
                     ],
-                    punch: "Du contenu social qui capte des millions de regards — et les envoie aussitôt ailleurs. Des commissions élevées dans un marché qui n'a jamais unifié ses outils. Des particuliers, prescripteurs, contributeurs locaux : la moitié des forces vives de l'écosystème, sans endroit pour exister.",
-                    punchEmphasis: "L'immobilier a bâti des murs là où il aurait fallu bâtir un toit.",
                   };
 
             const problemTag =
               lang === "en" ? "Problem" : lang === "th" ? "ปัญหา" : "Problème";
-            const sourceLabel =
-              lang === "en" ? "Source" : lang === "th" ? "แหล่งที่มา" : "Source";
 
             return (
               <>
                 {/* ── HEADER : label + titre + intro empilés, alignés à gauche ── */}
-                <motion.div {...fadeUp} className="mb-10">
+                <motion.div {...fadeUp} className="mb-8">
                   <p className="text-[#1e9df1] text-[0.65rem] tracking-[0.35em] uppercase font-semibold mb-3">
                     {t("problem.label")}
                   </p>
@@ -511,24 +565,16 @@ function HomePageContent() {
                   </p>
                 </motion.div>
 
-                {/* ── 3 STATS PROBLÈMES : encadrées par 2 rules pour ancrer le bloc ── */}
+                {/* ── 3 STATS PROBLÈMES : grand chiffre + label + caption + source ── */}
                 <motion.div
                   {...fadeUp}
                   className="grid sm:grid-cols-3 gap-0 border-t border-b border-neutral-800 py-6"
                 >
-                  {data.stats.map((s, i) => {
-                    const TopicIcon = [Layers, Share2, Users][i];
-                    return (
+                  {data.stats.map((s, i) => (
                     <div
                       key={i}
                       className="relative px-5 sm:px-7 py-3 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
                     >
-                      {/* Topic icon — coin haut droit, subtle red */}
-                      <TopicIcon
-                        size={24}
-                        strokeWidth={1}
-                        className="absolute top-3 right-5 sm:right-7 text-red-500/30"
-                      />
                       {/* Tag PROBLÈME 0X rouge */}
                       <div className="flex items-center gap-2 mb-3">
                         <AlertTriangle size={10} className="text-red-500" strokeWidth={2.2} />
@@ -546,19 +592,21 @@ function HomePageContent() {
                           {s.unit}
                         </span>
                       </p>
-                      {/* Label majuscule */}
+                      {/* Label */}
                       <p className="text-white text-[0.72rem] font-semibold uppercase tracking-[0.18em] mt-3 mb-2 leading-snug">
                         {s.label}
                       </p>
-                      {/* Source citée en très petit */}
-                      <p className="text-gray-600 text-[0.55rem] font-mono tracking-wider">
-                        {sourceLabel} : {s.source}
+                      {/* Caption — explicite ce que ça coûte */}
+                      <p className="text-gray-400 text-[0.72rem] leading-snug font-light mb-2">
+                        {s.caption}
+                      </p>
+                      {/* Source citée — italique, plus de prefix */}
+                      <p className="text-gray-600 text-[0.55rem] font-mono tracking-wider italic">
+                        {s.source}
                       </p>
                     </div>
-                    );
-                  })}
+                  ))}
                 </motion.div>
-
               </>
             );
           })()}
