@@ -593,32 +593,36 @@ function HomePageContent() {
         }
         cardHeading={
           lang === "en"
-            ? "The whole ecosystem, one space."
+            ? "Five platforms. One account."
             : lang === "th"
-              ? "ระบบนิเวศทั้งหมด ที่เดียว"
-              : "Tout l'écosystème, un seul espace."
+              ? "ห้าแพลตฟอร์ม บัญชีเดียว"
+              : "Cinq plateformes. Un compte."
         }
         cardDescription={
           lang === "en" ? (
             <>
-              <span className="text-white font-semibold">E-Dome</span> connects
-              professionals, individuals, prescribers and local contributors in
-              a single platform. Content, transactions, conversations, signatures —
-              with no redirection, no lost attention.
+              A social feed, a marketplace, a training campus, live events, a
+              referral network and a service directory — all in one app.{" "}
+              <span className="text-white font-semibold">
+                No more juggling ten tools to do one job.
+              </span>
             </>
           ) : lang === "th" ? (
             <>
-              <span className="text-white font-semibold">E-Dome</span>{" "}
-              เชื่อมโยงมืออาชีพ บุคคลทั่วไป ผู้แนะนำ และผู้ร่วมในท้องถิ่น
-              ไว้ในแพลตฟอร์มเดียว — คอนเทนต์ ธุรกรรม บทสนทนา การลงนาม
-              โดยไม่ต้องเปลี่ยนแพลตฟอร์ม
+              ฟีดโซเชียล มาร์เก็ตเพลส แคมปัสฝึกอบรม อีเวนต์สด เครือข่ายผู้แนะนำ
+              และไดเรกทอรีบริการ — ทั้งหมดในแอปเดียว{" "}
+              <span className="text-white font-semibold">
+                ไม่ต้องสลับเครื่องมือสิบตัวเพื่องานเดียวอีก
+              </span>
             </>
           ) : (
             <>
-              <span className="text-white font-semibold">E-Dome</span> relie pros,
-              particuliers, prescripteurs et contributeurs locaux dans une seule
-              plateforme. Contenu, transactions, conversations, signatures —
-              sans redirection, sans déperdition.
+              Un fil social, une marketplace, un campus de formations, des lives,
+              un réseau d'apporteurs et un annuaire de prestataires — tout ça
+              dans une seule application.{" "}
+              <span className="text-white font-semibold">
+                Plus de jongle entre dix outils pour faire un seul métier.
+              </span>
             </>
           )
         }
@@ -728,89 +732,162 @@ function HomePageContent() {
       />
 
       <ScrollStage>
-      {/* ═══════════════════════ 1. CINQ PLATEFORMES, UN COMPTE ═══════════════
-          Section unique pour décrire E-Dome : ce qui se remplace dans la
-          stack (6 features) + la liste des 12 rôles supportés en pied. La
-          section "L'écosystème" autonome a été retirée — la promesse est
-          déjà portée par CinematicHero juste au-dessus. */}
+      {/* ═══════════════════════ 1. POUR QUI ÇA CHANGE LA DONNE ═════════════
+          Le pitch "5 plateformes / 1 compte" a déménagé dans le CinematicHero
+          juste au-dessus. Ici on rend ça concret : 6 personas montrent ce
+          que chacun fait au quotidien sur E-Dome — l'utilité par rôle,
+          plutôt qu'une liste froide de modules. */}
       <section id="fonctionnalites" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-6xl mx-auto">
           <SectionHeading
             label={
               lang === "en"
-                ? "What it replaces"
+                ? "Who it changes the game for"
                 : lang === "th"
-                  ? "สิ่งที่ถูกแทนที่"
-                  : "Ce que ça remplace"
+                  ? "เปลี่ยนเกมให้ใคร"
+                  : "Pour qui ça change"
             }
             title1={
               lang === "en"
-                ? "Five platforms."
+                ? "Six profiles."
                 : lang === "th"
-                  ? "ห้าแพลตฟอร์ม"
-                  : "Cinq plateformes."
+                  ? "หกโปรไฟล์"
+                  : "Six profils."
             }
             title2={
               lang === "en"
-                ? "One account."
+                ? "One platform."
                 : lang === "th"
-                  ? "บัญชีเดียว"
-                  : "Un compte."
+                  ? "แพลตฟอร์มเดียว"
+                  : "Une plateforme."
             }
             description={
               lang === "en"
-                ? "Stop juggling a portal, a feed, a course platform, a video conferencing tool, a spreadsheet and a directory. E-Dome rolls them into one."
+                ? "Each role keeps its own dashboard, its own monetisation, its own audience — but everyone shares the same place."
                 : lang === "th"
-                  ? "หยุดสลับใช้พอร์ทัล ฟีด แพลตฟอร์มคอร์ส เครื่องมือประชุม สเปรดชีต และไดเรกทอรี E-Dome รวมทั้งหมดไว้เป็นหนึ่งเดียว"
-                  : "Plus besoin de jongler entre un portail, un fil social, une plateforme de cours, un outil de visio, un tableur et un annuaire. E-Dome les regroupe."
+                  ? "ทุกบทบาทมีแดชบอร์ด การสร้างรายได้ และผู้ชมของตัวเอง — แต่ทุกคนใช้พื้นที่เดียวกัน"
+                  : "Chaque rôle garde son tableau de bord, sa monétisation, son audience — mais tout le monde partage le même endroit."
             }
           />
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-14">
-            {services.map((s, i) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {(lang === "en"
+              ? [
+                  {
+                    icon: <Handshake size={20} />,
+                    role: "Host",
+                    body: "Publish a property in the morning, accept bookings via push, and watch revenue land in the same dashboard. No more Airbnb + Excel + WhatsApp + accountant.",
+                  },
+                  {
+                    icon: <Briefcase size={20} />,
+                    role: "Agency / Agent",
+                    body: "Listings on the integrated portal, clients chat in the messenger, referrer commissions configured in one click. No more SeLoger + WhatsApp + spreadsheet.",
+                  },
+                  {
+                    icon: <Users size={20} />,
+                    role: "Referrer",
+                    body: "Generate a link, share it, and every conversion is automatically attributed to you. No manual emails, no Excel reconciliation, no fights about who gets what.",
+                  },
+                  {
+                    icon: <GraduationCap size={20} />,
+                    role: "Trainer",
+                    body: "Publish your course on the campus, your students buy on the platform, and you keep earning where they invest what they've learned. The revenue stays in the loop.",
+                  },
+                  {
+                    icon: <TrendingUp size={20} />,
+                    role: "Investor",
+                    body: "See listings with calculated yield, follow expert trainers, and chat directly with the host. The decision lives in one app, not in your browser tab graveyard.",
+                  },
+                  {
+                    icon: <Eye size={20} />,
+                    role: "Service provider",
+                    body: "Photographer, notary, broker, home stager — your portfolio is on display where every host already is. Quote requests come straight to you, no middlemen.",
+                  },
+                ]
+              : lang === "th"
+                ? [
+                    {
+                      icon: <Handshake size={20} />,
+                      role: "เจ้าของบ้าน",
+                      body: "ลงประกาศในตอนเช้า รับการจองผ่านการแจ้งเตือน และดูรายได้เข้าในแดชบอร์ดเดียวกัน ไม่ต้องใช้ Airbnb + Excel + WhatsApp + นักบัญชีอีก",
+                    },
+                    {
+                      icon: <Briefcase size={20} />,
+                      role: "เอเจนซี่ / นายหน้า",
+                      body: "ประกาศบนพอร์ทัลในตัว ลูกค้าแชทในเมสเซนเจอร์ ค่าคอมมิชชันผู้แนะนำตั้งค่าในคลิกเดียว ไม่ต้องใช้ SeLoger + WhatsApp + สเปรดชีตอีก",
+                    },
+                    {
+                      icon: <Users size={20} />,
+                      role: "ผู้แนะนำ",
+                      body: "สร้างลิงก์ แชร์ และทุกการแปลงถูกระบุเป็นของคุณโดยอัตโนมัติ ไม่มีอีเมลที่ต้องส่งมือ ไม่มีการสอบทาน Excel ไม่มีความขัดแย้งว่าใครได้อะไร",
+                    },
+                    {
+                      icon: <GraduationCap size={20} />,
+                      role: "ผู้ฝึกอบรม",
+                      body: "ลงคอร์สในแคมปัส ผู้เรียนซื้อบนแพลตฟอร์ม และคุณยังได้รายได้ที่พวกเขาลงทุนต่อ รายได้อยู่ในวงเดียวกัน",
+                    },
+                    {
+                      icon: <TrendingUp size={20} />,
+                      role: "นักลงทุน",
+                      body: "เห็นประกาศพร้อมผลตอบแทนคำนวณไว้ ตามผู้ฝึกอบรมผู้เชี่ยวชาญ และแชทกับเจ้าของบ้านโดยตรง การตัดสินใจอยู่ในแอปเดียว ไม่ใช่กราฟฟิกแท็บที่กระจัดกระจาย",
+                    },
+                    {
+                      icon: <Eye size={20} />,
+                      role: "ผู้ให้บริการ",
+                      body: "ช่างภาพ ทนาย โบรกเกอร์ home stager — พอร์ตของคุณแสดงในที่ที่เจ้าของบ้านทุกคนอยู่แล้ว คำขอใบเสนอราคามาถึงคุณตรงๆ ไม่มีตัวกลาง",
+                    },
+                  ]
+                : [
+                    {
+                      icon: <Handshake size={20} />,
+                      role: "Hôte",
+                      body: "Vous publiez un bien le matin, vous acceptez les réservations en notification, et vos revenus tombent dans le même tableau de bord. Plus d'Airbnb + Excel + WhatsApp + comptable.",
+                    },
+                    {
+                      icon: <Briefcase size={20} />,
+                      role: "Agence / Agent",
+                      body: "Vos annonces sortent sur le portail intégré, vos clients échangent dans la messagerie, vos commissions apporteurs se configurent en un clic. Plus de SeLoger + WhatsApp + tableur.",
+                    },
+                    {
+                      icon: <Users size={20} />,
+                      role: "Apporteur d'affaires",
+                      body: "Vous générez un lien, vous le partagez, et chaque conversion vous est attribuée automatiquement. Plus de mails manuels, plus de recoupement Excel, plus de disputes sur qui touche quoi.",
+                    },
+                    {
+                      icon: <GraduationCap size={20} />,
+                      role: "Formateur",
+                      body: "Vous publiez votre formation sur le campus, vos apprenants achètent sur la plateforme, et vous touchez là où ils investissent ensuite ce qu'ils ont appris. Le revenu reste dans la boucle.",
+                    },
+                    {
+                      icon: <TrendingUp size={20} />,
+                      role: "Investisseur",
+                      body: "Vous voyez les annonces avec leur rendement calculé, vous suivez les formateurs experts, vous discutez avec l'hôte directement. La décision se prend dans une seule app, plus dans dix onglets.",
+                    },
+                    {
+                      icon: <Eye size={20} />,
+                      role: "Prestataire",
+                      body: "Photographe, notaire, courtier, home stager — votre portfolio est exposé là où tous les hôtes sont déjà. Les demandes de devis vous arrivent en direct, sans intermédiaire.",
+                    },
+                  ]
+            ).map((p, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="bg-neutral-900 rounded-2xl p-7 border border-neutral-800 hover:border-[#1e9df1]/30 hover:shadow-lg transition-all group"
+                className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800 hover:border-[#1e9df1]/30 transition-all"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center mb-4 group-hover:bg-[#1e9df1] group-hover:text-white transition-colors">
-                  {s.icon}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-9 h-9 rounded-lg bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center shrink-0">
+                    {p.icon}
+                  </div>
+                  <h3 className="text-sm font-semibold text-white">{p.role}</h3>
                 </div>
-                <p className="text-[#1e9df1] text-[0.65rem] tracking-[0.18em] uppercase font-semibold mb-2">
-                  {t(s.tagKey)}
-                </p>
-                <h3 className="text-base font-semibold mb-2 text-white">{t(s.titleKey)}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed font-light">{t(s.descKey)}</p>
+                <p className="text-gray-400 text-sm leading-relaxed font-light">{p.body}</p>
               </motion.div>
             ))}
           </div>
-
-          {/* Pour qui — 12 rôles en pied de section */}
-          <motion.div {...fadeUp} className="text-center border-t border-neutral-800 pt-10">
-            <p className="text-xs text-gray-500 uppercase tracking-[0.25em] mb-5">
-              {lang === "en"
-                ? "For every role"
-                : lang === "th"
-                  ? "สำหรับทุกบทบาท"
-                  : "Pour chaque rôle"}
-            </p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {roles.map((roleKey) => (
-                <span
-                  key={roleKey}
-                  className="px-3.5 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-xs text-gray-400"
-                >
-                  {t(roleKey)}
-                </span>
-              ))}
-              <span className="px-3.5 py-1 rounded-full bg-[#1e9df1]/5 border border-[#1e9df1]/30 text-xs text-[#1e9df1] font-medium">
-                {t("about.more")}
-              </span>
-            </div>
-          </motion.div>
         </div>
       </section>
 
