@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
@@ -32,6 +32,7 @@ import {
 import { FounderBadge } from "@/components/ui/founder-badge";
 import { HeroSideStrip } from "@/components/ui/hero-side-strip";
 import { IPhoneMockup } from "@/components/ui/iphone-mockup";
+import { ZoomParallax } from "@/components/ui/zoom-parallax";
 import {
   LandingLanguageProvider,
   useLandingLang,
@@ -237,6 +238,18 @@ function DotDivider() {
 
 function HomePageContent() {
   const { lang, setLang, t } = useLandingLang();
+  const phoneScrollRef = useRef<HTMLElement | null>(null);
+
+  /* ── Vidéos défilant en parallaxe dans l'iPhone ──────────────────── */
+  const phoneVideos = [
+    { src: "/videos/parallax/reel-01.mp4" },
+    { src: "/videos/parallax/reel-02.mp4" },
+    { src: "/videos/parallax/reel-03.mp4" },
+    { src: "/videos/parallax/reel-04.mp4" },
+    { src: "/videos/parallax/reel-05.mp4" },
+    { src: "/videos/parallax/reel-06.mp4" },
+    { src: "/videos/parallax/reel-07.mp4" },
+  ];
 
   /* ── Service cards data ──────────────────────────────────────────── */
   const services = [
@@ -545,19 +558,24 @@ function HomePageContent() {
         </div>
       </section>
 
-      {/* ═══════════════════════ IPHONE MOCKUP ═══════════════════════ */}
-      <section className="scroll-slide py-20 px-6 bg-black flex items-center justify-center">
-        <motion.div
-          {...fadeUp}
-          style={{ width: 250, height: 526 }}
-        >
-          <IPhoneMockup
-            model="15-pro"
-            color="natural-titanium"
-            scale={0.6}
-            wallpaper="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
-          />
-        </motion.div>
+      {/* ═══════════════════════ IPHONE + ZOOM PARALLAX ═══════════════════════ */}
+      <section
+        ref={phoneScrollRef}
+        className="relative bg-black"
+        style={{ height: "300vh" }}
+      >
+        <div className="sticky top-0 h-screen flex items-center justify-center px-6">
+          <div style={{ width: 250, height: 526 }}>
+            <IPhoneMockup
+              model="15-pro"
+              color="natural-titanium"
+              scale={0.6}
+              safeArea={false}
+            >
+              <ZoomParallax videos={phoneVideos} targetRef={phoneScrollRef} />
+            </IPhoneMockup>
+          </div>
+        </div>
       </section>
 
       {/* ═══════════════════════ VISION ═══════════════════════ */}
