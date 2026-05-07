@@ -28,7 +28,6 @@ import {
   Video,
   Zap,
 } from "lucide-react";
-import SkewCards from "@/components/ui/gradient-card-showcase";
 import { FounderBadge } from "@/components/ui/founder-badge";
 import { HeroSideStrip } from "@/components/ui/hero-side-strip";
 import {
@@ -418,7 +417,7 @@ function HomePageContent() {
 
       {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
       <section id="probleme" className="scroll-slide py-20 px-6 bg-neutral-900">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <SectionHeading
             label={t("problem.label")}
             title1={t("problem.title1")}
@@ -426,38 +425,119 @@ function HomePageContent() {
             description={t("problem.desc")}
           />
 
-          <SkewCards
-            cards={[
-              {
-                title: `${t("problem.stat1_value")} ${t("problem.stat1_unit")}`,
-                desc: t("problem.stat1_desc"),
-                gradientFrom: "#C4956A",
-                gradientTo: "#e8c9a0",
-              },
-              {
-                title: `${t("problem.stat2_value")} ${t("problem.stat2_unit")}`,
-                desc: t("problem.stat2_desc"),
-                gradientFrom: "#50afb6",
-                gradientTo: "#84d2e2",
-              },
-              {
-                title: `${t("problem.stat3_value")} ${t("problem.stat3_unit")}`,
-                desc: t("problem.stat3_desc"),
-                gradientFrom: "#e670ab",
-                gradientTo: "#f3a0ca",
-              },
-            ]}
-          />
-
-          <motion.div {...fadeUp} className="text-center mt-8">
-            <div className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 shadow-sm border border-neutral-800">
-              <Sparkles size={16} className="text-[#C4956A]" />
-              <span className="text-gray-400 text-sm">
-                {t("problem.pill")}{" "}
-                <span className="font-semibold text-white">{t("problem.pill_bold")}</span>
-              </span>
-            </div>
+          {/* ─── 3 stats brutalistes (séparés par hairlines verticales) ─── */}
+          <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-0 mb-20">
+            {[1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="px-6 sm:px-8 py-4 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
+              >
+                <p className="font-mono text-[#C4956A] text-[0.65rem] tracking-[0.3em] mb-5">
+                  0{n}
+                </p>
+                <p
+                  className="font-serif text-5xl md:text-6xl text-white leading-[1] mb-2"
+                  style={{ fontFamily: "'Instrument Serif', serif" }}
+                >
+                  {t(`problem.stat${n}_value`)}
+                  <span className="text-[#C4956A] text-2xl ml-2 font-normal align-top">
+                    {t(`problem.stat${n}_unit`)}
+                  </span>
+                </p>
+                <p className="text-gray-400 text-sm leading-relaxed font-light mt-5">
+                  {t(`problem.stat${n}_desc`)}
+                </p>
+              </div>
+            ))}
           </motion.div>
+
+          {/* ─── Analyse développée (2 colonnes éditoriales) ─── */}
+          {(() => {
+            const analysis =
+              lang === "en"
+                ? [
+                    {
+                      title: "A fragmented market",
+                      body: "Real estate operates today across dozens of isolated tools : search on one side, files on another, training somewhere else. Every transaction starts from scratch, every relationship fades between two operations.",
+                    },
+                    {
+                      title: "Everyone pays the price",
+                      body: "This fragmentation is costly : sellers struggle to find their audience, buyers juggle multiple processes, agents rebuild their network with every mandate. The tools exist — they just don't talk to each other.",
+                    },
+                  ]
+                : lang === "th"
+                ? [
+                    {
+                      title: "ตลาดที่กระจัดกระจาย",
+                      body: "ปัจจุบันอสังหาริมทรัพย์ทำงานกระจายอยู่บนเครื่องมือที่แยกกันเป็นสิบ ๆ การค้นหาที่หนึ่ง เอกสารอีกที่ การฝึกอบรมที่อื่น ทุกธุรกรรมเริ่มต้นจากศูนย์ ทุกความสัมพันธ์เลือนหายระหว่างปฏิบัติการ",
+                    },
+                    {
+                      title: "ทุกคนต่างต้องจ่ายราคา",
+                      body: "ความกระจัดกระจายนี้ต้องจ่ายราคาแพง : ผู้ขายดิ้นรนหากลุ่มเป้าหมาย ผู้ซื้อต้องผ่านขั้นตอนซ้ำซ้อน ตัวแทนสร้างเครือข่ายใหม่ทุกการมอบหมาย เครื่องมือมีอยู่ — เพียงแต่ไม่สื่อสารกัน",
+                    },
+                  ]
+                : [
+                    {
+                      title: "Un marché morcelé",
+                      body: "L'immobilier vit aujourd'hui éclaté sur des dizaines d'outils isolés : la recherche d'un côté, les dossiers de l'autre, les formations ailleurs encore. Chaque transaction recommence à zéro, chaque relation s'efface entre deux opérations.",
+                    },
+                    {
+                      title: "Une perte sèche pour tous",
+                      body: "Cette fragmentation coûte cher : aux vendeurs qui peinent à trouver leur public, aux acheteurs qui multiplient les démarches, aux agents qui reconstruisent leur réseau à chaque mandat. Les outils existent — ils ne se parlent simplement pas.",
+                    },
+                  ];
+
+            const quote =
+              lang === "en"
+                ? "Real estate is one of the last major sectors where everyone works alone. It is time to bring the entire ecosystem under one roof."
+                : lang === "th"
+                ? "อสังหาริมทรัพย์เป็นหนึ่งในไม่กี่ภาคส่วนใหญ่ที่ทุกคนทำงานคนเดียว ถึงเวลาที่จะรวมระบบนิเวศทั้งหมดไว้ใต้หลังคาเดียวกัน"
+                : "L'immobilier est l'un des derniers grands secteurs où chacun travaille seul. Il est temps de réunir l'écosystème sous un même toit.";
+
+            return (
+              <>
+                <div className="grid md:grid-cols-2 gap-10 lg:gap-16 mb-20">
+                  {analysis.map((a, i) => (
+                    <motion.div
+                      key={i}
+                      {...fadeUp}
+                      className="border-t border-[#C4956A]/30 pt-6"
+                    >
+                      <p className="font-mono text-[#C4956A] text-[0.65rem] tracking-[0.3em] uppercase mb-4">
+                        0{i + 1}
+                      </p>
+                      <h3
+                        className="font-serif text-2xl md:text-3xl mb-4 text-white leading-tight"
+                        style={{ fontFamily: "'Instrument Serif', serif" }}
+                      >
+                        {a.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm leading-relaxed font-light">
+                        {a.body}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Pull quote final + emphase pill */}
+                <motion.div
+                  {...fadeUp}
+                  className="text-center max-w-3xl mx-auto pt-12 border-t border-neutral-800"
+                >
+                  <Sparkles size={18} className="text-[#C4956A] mx-auto mb-6" />
+                  <p
+                    className="font-serif text-2xl md:text-3xl italic text-white leading-snug mb-6"
+                    style={{ fontFamily: "'Instrument Serif', serif" }}
+                  >
+                    «&nbsp;{quote}&nbsp;»
+                  </p>
+                  <p className="text-[#C4956A] text-[0.65rem] tracking-[0.4em] uppercase font-semibold">
+                    {t("problem.pill_bold")}
+                  </p>
+                </motion.div>
+              </>
+            );
+          })()}
         </div>
       </section>
 
