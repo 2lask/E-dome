@@ -30,9 +30,12 @@ export function useSlideProgress(slideIdx: number): MotionValue<number> {
     throw new Error("useSlideProgress must be used inside <ScrollStage>");
   }
   const segCount = Math.max(1, ctx.slideCount - 1);
-  // Slide visible during second half of previous segment (incoming) +
-  // first half of own segment (outgoing). Total = one segment of scroll.
-  const start = Math.max(0, (slideIdx - 0.5) / segCount);
+  // Le parallax interne ne doit démarrer qu'une fois le slide pleinement
+  // arrivé (frontière entre segments N-1 et N = point de visibilité max).
+  // Avant ça, slideProgress reste clampé à 0 → tuiles à leur échelle de
+  // départ. La fenêtre s'étend ensuite sur la moitié sortante du segment
+  // courant pour dérouler le zoom pendant que le slide reste affiché.
+  const start = Math.max(0, slideIdx / segCount);
   const end = Math.min(1, (slideIdx + 0.5) / segCount);
   return useTransform(
     ctx.progress,
