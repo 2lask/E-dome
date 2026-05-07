@@ -31,9 +31,8 @@ import {
 } from "lucide-react";
 import { FounderBadge } from "@/components/ui/founder-badge";
 import { HeroSideStrip } from "@/components/ui/hero-side-strip";
-import { Player } from "@remotion/player";
 import { IPhoneMockup } from "@/components/ui/iphone-mockup";
-import { InfiniteBentoPan } from "@/components/ui/infinite-bento-pan";
+import InfiniteGallery from "@/components/ui/3d-gallery-photography";
 import {
   LandingLanguageProvider,
   useLandingLang,
@@ -248,11 +247,8 @@ function PhoneSlide({
   punch: string;
   punchEmphasis: string;
 }) {
-  const inputProps = useMemo(
-    () => ({
-      videos: videos.map((v) => v.src),
-      accentColor: "#C4956A",
-    }),
+  const galleryItems = useMemo(
+    () => videos.map((v, i) => ({ src: v.src, alt: `Reel ${i + 1}` })),
     [videos],
   );
 
@@ -270,7 +266,7 @@ function PhoneSlide({
             </div>
           </div>
 
-          {/* iPhone — InfiniteBentoPan (Remotion) en plein écran de la mockup */}
+          {/* iPhone — InfiniteGallery (R3F 3D) en plein écran de la mockup */}
           <div className="order-1 lg:order-2 flex justify-center">
             <div style={{ width: 292, height: 613 }}>
               <IPhoneMockup
@@ -280,21 +276,11 @@ function PhoneSlide({
                 safeArea={false}
               >
                 <div className="absolute inset-0 bg-black overflow-hidden">
-                  <Player
-                    component={InfiniteBentoPan}
-                    inputProps={inputProps}
-                    durationInFrames={600}
-                    fps={30}
-                    compositionWidth={393}
-                    compositionHeight={852}
-                    autoPlay
-                    loop
-                    controls={false}
-                    clickToPlay={false}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                    }}
+                  <InfiniteGallery
+                    images={galleryItems}
+                    speed={1.2}
+                    visibleCount={10}
+                    className="h-full w-full"
                   />
                 </div>
               </IPhoneMockup>
