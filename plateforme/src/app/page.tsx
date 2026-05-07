@@ -416,7 +416,7 @@ function HomePageContent() {
       </section>
 
       {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
-      <section id="probleme" className="scroll-slide py-20 px-6 bg-neutral-900">
+      <section id="probleme" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-6xl mx-auto">
           <SectionHeading
             label={t("problem.label")}
