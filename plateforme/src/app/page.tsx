@@ -557,8 +557,9 @@ function HomePageContent() {
           })()}
         </div>
       </section>
+      </ScrollStage>
 
-      {/* ═══════════════════════ IPHONE + ZOOM PARALLAX ═══════════════════════ */}
+      {/* ═══════════════════════ IPHONE + ZOOM PARALLAX (hors ScrollStage) ═══ */}
       <section
         ref={phoneScrollRef}
         className="relative bg-black"
@@ -578,6 +579,7 @@ function HomePageContent() {
         </div>
       </section>
 
+      <ScrollStage>
       {/* ═══════════════════════ VISION ═══════════════════════ */}
       <section id="vision" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">
