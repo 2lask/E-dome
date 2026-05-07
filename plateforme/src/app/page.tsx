@@ -249,6 +249,9 @@ function HomePageContent() {
     { src: "/videos/parallax/reel-05.mp4" },
     { src: "/videos/parallax/reel-06.mp4" },
     { src: "/videos/parallax/reel-07.mp4" },
+    { src: "/videos/parallax/reel-08.mp4" },
+    { src: "/videos/parallax/reel-09.mp4" },
+    { src: "/videos/parallax/reel-10.mp4" },
   ];
 
   /* ── Texte punch affiché à côté du téléphone ─────────────────────── */

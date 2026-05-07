@@ -33,29 +33,35 @@ export function ZoomParallax({ images, videos, targetRef }: ZoomParallaxProps) {
     offset: ["start start", "end end"],
   });
 
+  const scale3 = useTransform(scrollYProgress, [0, 1], [1, 3]);
+  const scale35 = useTransform(scrollYProgress, [0, 1], [1, 3.5]);
   const scale4 = useTransform(scrollYProgress, [0, 1], [1, 4]);
   const scale5 = useTransform(scrollYProgress, [0, 1], [1, 5]);
   const scale6 = useTransform(scrollYProgress, [0, 1], [1, 6]);
-  const scale8 = useTransform(scrollYProgress, [0, 1], [1, 8]);
-  const scale9 = useTransform(scrollYProgress, [0, 1], [1, 9]);
-  const scales = [scale4, scale5, scale6, scale5, scale6, scale8, scale9];
+  const scales = [scale3, scale35, scale4, scale35, scale4, scale5, scale6, scale3, scale35, scale4];
 
   // Position presets — viewport units when standalone, % of parent when embedded.
   const positionClass = (index: number) => {
     if (isEmbedded) {
       switch (index) {
         case 1:
-          return "[&>div]:!-top-[30%] [&>div]:!left-[5%] [&>div]:!h-[30%] [&>div]:!w-[35%]";
+          return "[&>div]:!-top-[30%] [&>div]:!left-[5%] [&>div]:!h-[22%] [&>div]:!w-[26%]";
         case 2:
-          return "[&>div]:!-top-[10%] [&>div]:!-left-[25%] [&>div]:!h-[45%] [&>div]:!w-[20%]";
+          return "[&>div]:!-top-[10%] [&>div]:!-left-[25%] [&>div]:!h-[34%] [&>div]:!w-[15%]";
         case 3:
-          return "[&>div]:!left-[27.5%] [&>div]:!h-[25%] [&>div]:!w-[25%]";
+          return "[&>div]:!left-[27.5%] [&>div]:!h-[18%] [&>div]:!w-[18%]";
         case 4:
-          return "[&>div]:!top-[27.5%] [&>div]:!left-[5%] [&>div]:!h-[25%] [&>div]:!w-[20%]";
+          return "[&>div]:!top-[27.5%] [&>div]:!left-[5%] [&>div]:!h-[18%] [&>div]:!w-[15%]";
         case 5:
-          return "[&>div]:!top-[27.5%] [&>div]:!-left-[22.5%] [&>div]:!h-[25%] [&>div]:!w-[30%]";
+          return "[&>div]:!top-[27.5%] [&>div]:!-left-[22.5%] [&>div]:!h-[18%] [&>div]:!w-[22%]";
         case 6:
-          return "[&>div]:!top-[22.5%] [&>div]:!left-[25%] [&>div]:!h-[15%] [&>div]:!w-[15%]";
+          return "[&>div]:!top-[22.5%] [&>div]:!left-[25%] [&>div]:!h-[12%] [&>div]:!w-[12%]";
+        case 7:
+          return "[&>div]:!-top-[25%] [&>div]:!left-[28%] [&>div]:!h-[18%] [&>div]:!w-[20%]";
+        case 8:
+          return "[&>div]:!top-[10%] [&>div]:!-left-[15%] [&>div]:!h-[14%] [&>div]:!w-[18%]";
+        case 9:
+          return "[&>div]:!top-[42%] [&>div]:!left-[30%] [&>div]:!h-[12%] [&>div]:!w-[14%]";
         default:
           return "";
       }
@@ -78,7 +84,7 @@ export function ZoomParallax({ images, videos, targetRef }: ZoomParallaxProps) {
     }
   };
 
-  const innerSize = isEmbedded ? "h-[25%] w-[25%]" : "h-[25vh] w-[25vw]";
+  const innerSize = isEmbedded ? "h-[18%] w-[18%]" : "h-[25vh] w-[25vw]";
 
   const tiles = items.map(({ src, alt }, index) => {
     const scale = scales[index % scales.length];
