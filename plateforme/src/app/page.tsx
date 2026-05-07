@@ -23,7 +23,6 @@ import {
   Mic,
   Phone,
   Share2,
-  Sparkles,
   Star,
   TrendingUp,
   Users,
@@ -418,8 +417,8 @@ function HomePageContent() {
       </section>
 
       {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
-      <section id="probleme" className="scroll-slide py-16 px-6 bg-black">
-        <div className="max-w-6xl mx-auto">
+      <section id="probleme" className="scroll-slide py-20 px-6 bg-black">
+        <div className="max-w-5xl mx-auto">
           {(() => {
             const data =
               lang === "en"
@@ -432,7 +431,6 @@ function HomePageContent() {
                     ],
                     punch: "Social content captures millions of eyes — and ushers them straight out the door. Commissions stay high in a market that never consolidated its stack. And owners, prescribers, local contributors — half the living forces of the ecosystem — have nowhere to belong.",
                     punchEmphasis: "Real estate has built walls where it should have built a roof.",
-                    vision: "For the first time, the entire real-estate ecosystem under one roof — pros and individuals, content and transaction, conversation and signature.",
                   }
                 : lang === "th"
                 ? {
@@ -444,7 +442,6 @@ function HomePageContent() {
                     ],
                     punch: "คอนเทนต์โซเชียลดึงดูดสายตาเป็นล้าน — แล้วผลักออกไปทันที ค่าคอมมิชชันยังสูงในตลาดที่ไม่เคยรวมเครื่องมือเข้าด้วยกัน และเจ้าของ ผู้แนะนำ ผู้ร่วมในท้องถิ่น — ครึ่งหนึ่งของพลังของระบบนิเวศ — ไม่มีที่ให้อยู่",
                     punchEmphasis: "อสังหาฯ สร้างกำแพงในที่ที่ควรสร้างหลังคา",
-                    vision: "เป็นครั้งแรก ระบบนิเวศอสังหาฯ ทั้งหมดอยู่ใต้หลังคาเดียว — มืออาชีพและบุคคล คอนเทนต์และธุรกรรม บทสนทนาและการลงนาม",
                   }
                 : {
                     intro: "Le secteur immobilier reste fragmenté entre des dizaines d'outils, de portails et de rôles qui ne communiquent pas entre eux. Et alors même que les réseaux sociaux sont devenus le plus grand levier d'attention du marché, chaque contenu doit rediriger son audience ailleurs — vers une autre plateforme, un autre identifiant, une autre logique.",
@@ -455,7 +452,6 @@ function HomePageContent() {
                     ],
                     punch: "Du contenu social qui capte des millions de regards — et les envoie aussitôt ailleurs. Des commissions élevées dans un marché qui n'a jamais unifié ses outils. Des particuliers, prescripteurs, contributeurs locaux : la moitié des forces vives de l'écosystème, sans endroit pour exister.",
                     punchEmphasis: "L'immobilier a bâti des murs là où il aurait fallu bâtir un toit.",
-                    vision: "Pour la première fois, tout l'écosystème immobilier sous un même toit — pros et particuliers, contenu et transaction, conversation et signature.",
                   };
 
             const problemTag =
@@ -465,32 +461,28 @@ function HomePageContent() {
 
             return (
               <>
-                {/* ── HEADER : label + titre serré + intro en 2 colonnes ── */}
-                <div className="grid md:grid-cols-12 gap-8 md:gap-12 mb-14 items-end">
-                  <motion.div {...fadeUp} className="md:col-span-5">
-                    <p className="text-[#C4956A] text-[0.65rem] tracking-[0.35em] uppercase font-semibold mb-3">
-                      {t("problem.label")}
-                    </p>
-                    <h2
-                      className="text-4xl sm:text-5xl md:text-[3.25rem] leading-[1.05] text-white"
-                      style={{ fontFamily: "'Instrument Serif', serif" }}
-                    >
-                      {t("problem.title1")}{" "}
-                      <span className="text-[#C4956A] italic">{t("problem.title2")}</span>
-                    </h2>
-                  </motion.div>
-                  <motion.div
-                    {...fadeUp}
-                    className="md:col-span-7 md:pl-8 md:border-l md:border-neutral-800"
+                {/* ── HEADER : label + titre + intro empilés, alignés à gauche ── */}
+                <motion.div {...fadeUp} className="mb-16">
+                  <p className="text-[#C4956A] text-[0.65rem] tracking-[0.35em] uppercase font-semibold mb-5">
+                    {t("problem.label")}
+                  </p>
+                  <h2
+                    className="text-4xl sm:text-5xl md:text-[3.5rem] leading-[1.05] text-white mb-8 max-w-3xl"
+                    style={{ fontFamily: "'Instrument Serif', serif" }}
                   >
-                    <p className="text-gray-300 text-[0.95rem] md:text-base leading-relaxed font-light">
-                      {data.intro}
-                    </p>
-                  </motion.div>
-                </div>
+                    {t("problem.title1")}{" "}
+                    <span className="text-[#C4956A]">{t("problem.title2")}</span>
+                  </h2>
+                  <p className="max-w-3xl text-gray-300 text-base md:text-[1.05rem] leading-relaxed font-light">
+                    {data.intro}
+                  </p>
+                </motion.div>
 
-                {/* ── 3 STATS PROBLÈMES : grand chiffre rouge + label + source ── */}
-                <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-0 mb-14">
+                {/* ── 3 STATS PROBLÈMES : encadrées par 2 rules pour ancrer le bloc ── */}
+                <motion.div
+                  {...fadeUp}
+                  className="grid sm:grid-cols-3 gap-0 mb-14 border-t border-b border-neutral-800 py-10"
+                >
                   {data.stats.map((s, i) => {
                     const TopicIcon = [Layers, Share2, Users][i];
                     return (
@@ -534,10 +526,10 @@ function HomePageContent() {
                   })}
                 </motion.div>
 
-                {/* ── PUNCH : paragraphe pitch avec accent rouge à gauche ── */}
+                {/* ── PUNCH : pitch avec accent rouge à gauche, clôt la section ── */}
                 <motion.div
                   {...fadeUp}
-                  className="max-w-3xl mx-auto mb-12 border-l-2 border-red-500/60 pl-6 py-1"
+                  className="max-w-3xl border-l-2 border-red-500/60 pl-6 py-1"
                 >
                   <p className="text-white text-base md:text-lg leading-relaxed font-light">
                     {data.punch}{" "}
@@ -545,29 +537,6 @@ function HomePageContent() {
                       {data.punchEmphasis}
                     </strong>
                   </p>
-                </motion.div>
-
-                {/* ── VISION : pull quote final, compact, accent or inline ── */}
-                <motion.div
-                  {...fadeUp}
-                  className="max-w-3xl mx-auto pt-6 border-t border-neutral-800/60 flex items-start gap-3"
-                >
-                  <Sparkles
-                    size={14}
-                    className="text-[#C4956A] shrink-0 mt-1.5"
-                    strokeWidth={1.4}
-                  />
-                  <div className="flex-1">
-                    <p
-                      className="font-serif text-base md:text-lg italic text-gray-200 leading-snug"
-                      style={{ fontFamily: "'Instrument Serif', serif" }}
-                    >
-                      «&nbsp;{data.vision}&nbsp;»
-                    </p>
-                    <p className="text-[#C4956A] text-[0.6rem] tracking-[0.35em] uppercase font-semibold mt-2">
-                      — E-DOME
-                    </p>
-                  </div>
                 </motion.div>
               </>
             );
