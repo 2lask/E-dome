@@ -4,26 +4,31 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  Award,
   BadgeCheck,
+  Briefcase,
   Clock,
   Eye,
+  Gem,
   Gift,
+  GraduationCap,
+  Handshake,
+  Layers,
   Mail,
   MapPin,
   MessageCircle,
+  Mic,
   Phone,
   Sparkles,
   Star,
-  Users,
-  Layers,
   TrendingUp,
+  Users,
   Video,
-  Briefcase,
-  GraduationCap,
-  Handshake,
+  Zap,
 } from "lucide-react";
 import SkewCards from "@/components/ui/gradient-card-showcase";
 import { FounderBadge } from "@/components/ui/founder-badge";
+import { HeroSideStrip } from "@/components/ui/hero-side-strip";
 import {
   LandingLanguageProvider,
   useLandingLang,
@@ -223,6 +228,11 @@ function HomePageContent() {
       <ScrollStage>
       {/* ═══════════════════════ HERO (left-aligned, brutaliste) ═══════════════════════ */}
       <section className="scroll-slide bg-black relative">
+        {/* Strip vertical d'architecture sur le bord droit (se déforme au scroll) */}
+        <div className="hidden lg:block absolute right-0 top-0 bottom-0 z-20 pointer-events-none">
+          <HeroSideStrip />
+        </div>
+
         <div className="min-h-screen flex items-center px-6 sm:px-12 md:px-20 lg:px-32 pt-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-center">
             {/* Colonne texte (gauche) */}
@@ -263,6 +273,7 @@ function HomePageContent() {
             {/* Colonne droite : badge fondateur + 6 avantages (titres seuls, compact) */}
             <motion.div {...fadeUp} className="hidden lg:block lg:col-span-5">
               {(() => {
+                const ICONS = [Award, Zap, Eye, Mic, Users, Gem];
                 const titles =
                   lang === "en"
                     ? [
@@ -319,22 +330,25 @@ function HomePageContent() {
                       <FounderBadge brand="E-DOME" title={badgeTitle} />
                     </div>
 
-                    {/* Liste compacte des 6 avantages — titres seuls */}
+                    {/* Liste compacte des 6 avantages — icônes Lucide + titres */}
                     <ul>
-                      {titles.map((t, i) => (
-                        <li
-                          key={i}
-                          className="flex items-baseline gap-4 py-2.5 border-t border-neutral-800 first:border-t-0 group"
-                        >
-                          <span className="font-mono text-[0.6rem] text-[#C4956A] tracking-[0.25em] w-6">
-                            0{i + 1}
-                          </span>
-                          <span className="block w-3 h-px bg-neutral-700 group-hover:bg-[#C4956A] group-hover:w-6 transition-all duration-300" />
-                          <span className="text-white text-[0.72rem] font-medium uppercase tracking-[0.15em]">
-                            {t}
-                          </span>
-                        </li>
-                      ))}
+                      {titles.map((t, i) => {
+                        const Icon = ICONS[i];
+                        return (
+                          <li
+                            key={i}
+                            className="flex items-center gap-4 py-3 border-t border-neutral-800 first:border-t-0 group"
+                          >
+                            <span className="flex items-center justify-center w-7 h-7 rounded-full border border-[#C4956A]/40 bg-[#C4956A]/5 text-[#C4956A] group-hover:bg-[#C4956A] group-hover:text-black transition-colors duration-300">
+                              <Icon size={13} strokeWidth={1.8} />
+                            </span>
+                            <span className="block w-3 h-px bg-neutral-700 group-hover:bg-[#C4956A] group-hover:w-5 transition-all duration-300" />
+                            <span className="text-white text-[0.72rem] font-medium uppercase tracking-[0.15em]">
+                              {t}
+                            </span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 );
