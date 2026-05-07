@@ -728,53 +728,11 @@ function HomePageContent() {
       />
 
       <ScrollStage>
-      {/* ═══════════════════════ 1. L'ECOSYSTEME ═══════════════════════
-          Promesse : tout l'immobilier sous un même toit. Un compte, plusieurs
-          rôles évolutifs. Met en avant les 12 acteurs supportés. */}
-      <section id="vision" className="scroll-slide py-20 px-6 bg-black">
-        <div className="max-w-5xl mx-auto">
-          <SectionHeading
-            label={t("about.label")}
-            title1={t("about.title1")}
-            title2={t("about.title2")}
-          />
-
-          <motion.p
-            {...fadeUp}
-            className="text-center text-gray-400 text-base sm:text-lg leading-relaxed font-light max-w-3xl mx-auto mb-12"
-          >
-            {lang === "en"
-              ? "On E-Dome, every role exists in its own right. Host today, trainer tomorrow, referrer alongside — one account, your activity changes when you do."
-              : lang === "th"
-                ? "บน E-Dome ทุกบทบาทมีพื้นที่ของตัวเอง วันนี้เป็นเจ้าของบ้าน พรุ่งนี้เป็นผู้ฝึกอบรม พร้อมเป็นผู้แนะนำ — บัญชีเดียว กิจกรรมของคุณเปลี่ยนได้เมื่อคุณเปลี่ยน"
-                : "Sur E-Dome, chaque rôle existe à sa place. Hôte aujourd'hui, formateur demain, apporteur en parallèle — un seul compte, votre activité change quand vous changez."}
-          </motion.p>
-
-          {/* Roles pills */}
-          <motion.div {...fadeUp} className="text-center">
-            <p className="text-xs text-gray-500 uppercase tracking-[0.2em] mb-6">
-              {t("about.roles_label")}
-            </p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {roles.map((roleKey) => (
-                <span
-                  key={roleKey}
-                  className="px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-sm text-gray-400 shadow-sm"
-                >
-                  {t(roleKey)}
-                </span>
-              ))}
-              <span className="px-4 py-1.5 rounded-full bg-[#1e9df1]/5 border border-[#1e9df1]/30 text-sm text-[#1e9df1] font-medium">
-                {t("about.more")}
-              </span>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-
-      {/* ═══════════════════════ 2. CINQ PLATEFORMES, UN COMPTE ═══════════════
-          Reframe les 6 features comme "ce qui disparait de votre stack". */}
+      {/* ═══════════════════════ 1. CINQ PLATEFORMES, UN COMPTE ═══════════════
+          Section unique pour décrire E-Dome : ce qui se remplace dans la
+          stack (6 features) + la liste des 12 rôles supportés en pied. La
+          section "L'écosystème" autonome a été retirée — la promesse est
+          déjà portée par CinematicHero juste au-dessus. */}
       <section id="fonctionnalites" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-6xl mx-auto">
           <SectionHeading
@@ -801,14 +759,14 @@ function HomePageContent() {
             }
             description={
               lang === "en"
-                ? "Stop juggling a portal, a feed, a course platform, a video conferencing tool, an Excel and a directory. E-Dome rolls them into one."
+                ? "Stop juggling a portal, a feed, a course platform, a video conferencing tool, a spreadsheet and a directory. E-Dome rolls them into one."
                 : lang === "th"
-                  ? "หยุดสลับใช้พอร์ทัล ฟีด แพลตฟอร์มคอร์ส เครื่องมือประชุม Excel และไดเรกทอรี E-Dome รวมทั้งหมดไว้เป็นหนึ่งเดียว"
+                  ? "หยุดสลับใช้พอร์ทัล ฟีด แพลตฟอร์มคอร์ส เครื่องมือประชุม สเปรดชีต และไดเรกทอรี E-Dome รวมทั้งหมดไว้เป็นหนึ่งเดียว"
                   : "Plus besoin de jongler entre un portail, un fil social, une plateforme de cours, un outil de visio, un tableur et un annuaire. E-Dome les regroupe."
             }
           />
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-14">
             {services.map((s, i) => (
               <motion.div
                 key={i}
@@ -829,6 +787,30 @@ function HomePageContent() {
               </motion.div>
             ))}
           </div>
+
+          {/* Pour qui — 12 rôles en pied de section */}
+          <motion.div {...fadeUp} className="text-center border-t border-neutral-800 pt-10">
+            <p className="text-xs text-gray-500 uppercase tracking-[0.25em] mb-5">
+              {lang === "en"
+                ? "For every role"
+                : lang === "th"
+                  ? "สำหรับทุกบทบาท"
+                  : "Pour chaque rôle"}
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {roles.map((roleKey) => (
+                <span
+                  key={roleKey}
+                  className="px-3.5 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-xs text-gray-400"
+                >
+                  {t(roleKey)}
+                </span>
+              ))}
+              <span className="px-3.5 py-1 rounded-full bg-[#1e9df1]/5 border border-[#1e9df1]/30 text-xs text-[#1e9df1] font-medium">
+                {t("about.more")}
+              </span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -1068,137 +1050,23 @@ function HomePageContent() {
       </section>
 
 
-      {/* ═══════════════════════ 5. PHASE 2. C'EST MAINTENANT. ═══════════════
-          La roadmap reframée en argument d'urgence : le projet est entre
-          le concept prouvé et le lancement, c'est PHASE 2 qui se joue
-          maintenant grâce aux manifestations d'intérêt. */}
-      <section id="roadmap" className="scroll-slide py-20 px-6 bg-neutral-900">
+      {/* ═══════════════════════ 4. REJOINDRE LES 100 FONDATEURS ════════════
+          Section finale conversion qui agrège : la mini-timeline Phase 2
+          comme argument d'urgence + 100 places + 6 avantages + FAQ + CTA. */}
+      <section id="inscriptions" className="scroll-slide py-20 px-6 bg-neutral-900">
         <div className="max-w-5xl mx-auto">
-          <motion.div {...fadeUp} className="text-center mb-12">
-            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
-              {lang === "en"
-                ? "Phase 2 — now"
-                : lang === "th"
-                  ? "เฟส 2 — ตอนนี้"
-                  : "Phase 2 — maintenant"}
-            </p>
-            <h2
-              className="text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-5"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
-            >
-              {lang === "en" ? "We are " : lang === "th" ? "เราอยู่ที่ " : "Nous y sommes "}
-              <span className="text-[#1e9df1]">
-                {lang === "en" ? "here." : lang === "th" ? "ตรงนี้" : "ici."}
+          {/* Header — Phase 2 + 100 places fondues en une seule entrée */}
+          <motion.div {...fadeUp} className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/30 mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1e9df1] animate-pulse" />
+              <span className="text-[#1e9df1] text-[0.65rem] tracking-[0.25em] uppercase font-semibold">
+                {lang === "en"
+                  ? "Phase 2 — happening now"
+                  : lang === "th"
+                    ? "เฟส 2 — เกิดขึ้นตอนนี้"
+                    : "Phase 2 — en cours"}
               </span>
-            </h2>
-            <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
-              {lang === "en"
-                ? "The concept is proven. The mockup is live. Every interest registered now is the proof that lets us raise funds, build the team and ship the platform."
-                : lang === "th"
-                  ? "แนวคิดได้รับการพิสูจน์แล้ว ตัวอย่างใช้งานได้จริง ทุกความสนใจที่ลงทะเบียนตอนนี้คือหลักฐานที่ทำให้เราสามารถระดมทุน สร้างทีม และเปิดตัวแพลตฟอร์มได้"
-                  : "Le concept est prouvé. La maquette est en ligne. Chaque manifestation d'intérêt qu'on récolte maintenant est la preuve qui nous permettra de lever les fonds, constituer l'équipe et lancer la plateforme."}
-            </p>
-          </motion.div>
-
-          {/* Compact horizontal timeline */}
-          <div className="grid md:grid-cols-4 gap-4 mb-12 relative">
-            {phases.map((phase, i) => {
-              const isCurrent = i === 1;
-              const isDone = i === 0;
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className={`relative rounded-2xl p-5 border transition-all ${
-                    isCurrent
-                      ? "bg-[#1e9df1]/10 border-[#1e9df1]/50 shadow-lg shadow-[#1e9df1]/10"
-                      : "bg-neutral-900 border-neutral-800"
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-3">
-                    <span
-                      className={`text-xs font-mono ${
-                        isDone
-                          ? "text-gray-600"
-                          : isCurrent
-                            ? "text-[#1e9df1]"
-                            : "text-gray-500"
-                      }`}
-                    >
-                      0{i + 1}
-                    </span>
-                    {isCurrent && (
-                      <span className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[#1e9df1]">
-                        {lang === "en" ? "Now" : lang === "th" ? "ตอนนี้" : "Maintenant"}
-                      </span>
-                    )}
-                    {isDone && (
-                      <span className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-gray-500">
-                        {lang === "en" ? "Done" : lang === "th" ? "เสร็จแล้ว" : "Fait"}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-sm font-semibold leading-snug mb-2 text-white">
-                    {t(phase.titleKey)}
-                  </h3>
-                  {phase.items[0] && (
-                    <p className="text-gray-400 text-xs leading-relaxed font-light">
-                      {t(phase.items[0])}
-                    </p>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Urgency bridge */}
-          <motion.div
-            {...fadeUp}
-            className="text-center max-w-2xl mx-auto border-t border-neutral-800 pt-8"
-          >
-            <p className="text-gray-300 text-sm md:text-base leading-relaxed font-light">
-              {lang === "en" ? (
-                <>
-                  Joining now isn't joining{" "}
-                  <em className="text-white not-italic">a product</em> — it's joining the
-                  proof that lets the product exist.
-                </>
-              ) : lang === "th" ? (
-                <>
-                  การเข้าร่วมตอนนี้ไม่ใช่การเข้าร่วม
-                  <em className="text-white not-italic">ผลิตภัณฑ์</em> —
-                  แต่เป็นการเข้าร่วมหลักฐานที่ทำให้ผลิตภัณฑ์มีอยู่ได้
-                </>
-              ) : (
-                <>
-                  Rejoindre maintenant, ce n'est pas rejoindre{" "}
-                  <em className="text-white not-italic">un produit</em> — c'est rejoindre la
-                  preuve qui permettra au produit d'exister.
-                </>
-              )}
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-
-      {/* ═══════════════════════ 6. REJOINDRE LES 100 FONDATEURS ═════════════
-          Section finale conversion : 6 avantages, FAQ, CTA principal vers
-          /acces. La porte de sortie de la landing. */}
-      <section id="inscriptions" className="scroll-slide py-20 px-6 bg-black">
-        <div className="max-w-5xl mx-auto">
-          {/* Header */}
-          <motion.div {...fadeUp} className="text-center mb-14">
-            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
-              {lang === "en"
-                ? "Reserve your spot"
-                : lang === "th"
-                  ? "จองที่ของคุณ"
-                  : "Réservez votre place"}
-            </p>
+            </div>
             <h2
               className="text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-5"
               style={{ fontFamily: "'Instrument Serif', serif" }}
@@ -1225,11 +1093,56 @@ function HomePageContent() {
             </h2>
             <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
               {lang === "en"
-                ? "The first 100 profiles get a permanent founder badge, early access, priority visibility, and a direct line to shape the platform with us. Free, no commitment, two minutes."
+                ? "Concept proven, mockup live. Every interest registered now is the proof that lets us raise funds, build the team and ship the platform — and that's why founding members keep their badge for life."
                 : lang === "th"
-                  ? "100 โปรไฟล์แรกได้รับป้ายผู้ก่อตั้งถาวร เข้าถึงก่อนใคร การมองเห็นที่จัดลำดับ และช่องทางตรงเพื่อร่วมสร้างแพลตฟอร์มกับเรา ฟรี ไม่ผูกพัน สองนาที"
-                  : "Les 100 premiers profils reçoivent un badge fondateur permanent, un accès anticipé, une visibilité prioritaire et une ligne directe pour façonner la plateforme avec nous. Gratuit, sans engagement, en deux minutes."}
+                  ? "แนวคิดได้รับการพิสูจน์แล้ว ตัวอย่างใช้งานได้จริง ทุกความสนใจที่ลงทะเบียนตอนนี้คือหลักฐานที่ทำให้เราสามารถระดมทุน สร้างทีม และเปิดตัวแพลตฟอร์มได้ — และนั่นคือเหตุผลที่สมาชิกผู้ก่อตั้งจะเก็บป้ายไว้ตลอดชีวิต"
+                  : "Concept prouvé, maquette en ligne. Chaque manifestation d'intérêt qu'on récolte maintenant est la preuve qui nous permettra de lever les fonds, constituer l'équipe et lancer la plateforme — c'est pour ça que les membres fondateurs gardent leur badge à vie."}
             </p>
+          </motion.div>
+
+          {/* Mini-timeline 4 phases — Phase 2 highlightée */}
+          <motion.div {...fadeUp} className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-14">
+            {phases.map((phase, i) => {
+              const isCurrent = i === 1;
+              const isDone = i === 0;
+              return (
+                <div
+                  key={i}
+                  className={`rounded-xl p-4 border transition-all ${
+                    isCurrent
+                      ? "bg-[#1e9df1]/10 border-[#1e9df1]/50"
+                      : "bg-black/40 border-neutral-800"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span
+                      className={`text-[0.7rem] font-mono ${
+                        isDone
+                          ? "text-gray-600"
+                          : isCurrent
+                            ? "text-[#1e9df1]"
+                            : "text-gray-500"
+                      }`}
+                    >
+                      0{i + 1}
+                    </span>
+                    {isCurrent && (
+                      <span className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[#1e9df1]">
+                        {lang === "en" ? "Now" : lang === "th" ? "ตอนนี้" : "Maintenant"}
+                      </span>
+                    )}
+                    {isDone && (
+                      <span className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-gray-500">
+                        {lang === "en" ? "Done" : lang === "th" ? "เสร็จแล้ว" : "Fait"}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xs sm:text-sm font-semibold leading-snug text-white">
+                    {t(phase.titleKey)}
+                  </h3>
+                </div>
+              );
+            })}
           </motion.div>
 
           {/* 6 benefits compact grid */}
