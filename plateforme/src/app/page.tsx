@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Award,
   BadgeCheck,
   Briefcase,
+  ChevronDown,
   Clock,
   Eye,
   Gem,
@@ -87,6 +89,133 @@ function SectionHeading({
           {description}
         </motion.div>
       )}
+    </div>
+  );
+}
+
+/* ─────────── HeroBenefitsAccordion ──────────────────────
+   Liste des 6 avantages membres fondateurs avec icônes
+   Lucide. Clic sur une ligne → développe la description.
+─────────────────────────────────────────────────────────── */
+function HeroBenefitsAccordion({
+  lang,
+  badgeTitle,
+}: {
+  lang: "fr" | "en" | "th";
+  badgeTitle: string;
+}) {
+  const [open, setOpen] = useState<number[]>([]);
+  const toggle = (i: number) =>
+    setOpen((prev) => (prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]));
+
+  const ICONS = [Award, Zap, Eye, Mic, Users, Gem];
+
+  const benefits =
+    lang === "en"
+      ? [
+          { title: "Founding Member Badge", desc: "A permanent badge on your profile proving you were here from day one. Lifetime recognition in the ecosystem." },
+          { title: "Early access", desc: "Set up your account, profile and preferences before the public launch. Be operational on day one." },
+          { title: "Priority visibility", desc: "Your profile featured in search results and recommendations during the first months." },
+          { title: "Exclusive conferences", desc: "Access to private sessions to discover features, give feedback and shape development priorities." },
+          { title: "Founder network", desc: "Join a private group with the other first members and the founders. Exchange, collaborate, build together." },
+          { title: "Exclusive perks", desc: "Preferential conditions on future premium features, training and platform tools." },
+        ]
+      : lang === "th"
+      ? [
+          { title: "ป้ายสมาชิกผู้ก่อตั้ง", desc: "ป้ายถาวรบนโปรไฟล์ของคุณ ที่พิสูจน์ว่าคุณอยู่ที่นี่ตั้งแต่วันแรก การรับรองตลอดชีพในระบบนิเวศ" },
+          { title: "เข้าถึงก่อนใคร", desc: "ตั้งค่าบัญชี โปรไฟล์ และความชื่นชอบของคุณก่อนเปิดตัวสู่สาธารณะ พร้อมใช้งานตั้งแต่วันเปิดตัว" },
+          { title: "การมองเห็นที่จัดลำดับ", desc: "โปรไฟล์ของคุณถูกนำเสนอในผลการค้นหาและคำแนะนำในช่วงเดือนแรก" },
+          { title: "การประชุมพิเศษ", desc: "เข้าถึงเซสชันส่วนตัวเพื่อค้นพบฟีเจอร์ ให้ความคิดเห็น และมีอิทธิพลต่อทิศทางการพัฒนา" },
+          { title: "เครือข่ายผู้ก่อตั้ง", desc: "เข้าร่วมกลุ่มส่วนตัวกับสมาชิกกลุ่มแรกและผู้ก่อตั้ง แลกเปลี่ยน ทำงานร่วมกัน สร้างไปด้วยกัน" },
+          { title: "สิทธิประโยชน์พิเศษ", desc: "เงื่อนไขที่ดีกว่าสำหรับฟีเจอร์พรีเมียมในอนาคต การฝึกอบรม และเครื่องมือของแพลตฟอร์ม" },
+        ]
+      : [
+          { title: "Badge Membre Fondateur", desc: "Un badge permanent sur votre profil qui prouve que vous étiez là dès le début. Reconnaissance à vie dans l'écosystème." },
+          { title: "Accès anticipé", desc: "Configurez votre compte, votre profil et vos préférences avant le lancement public. Soyez opérationnel dès le jour J." },
+          { title: "Visibilité prioritaire", desc: "Votre profil mis en avant dans les résultats de recherche et les recommandations pendant les premiers mois." },
+          { title: "Conférences exclusives", desc: "Accès à des sessions privées pour découvrir les fonctionnalités, donner votre avis et influencer les priorités de développement." },
+          { title: "Réseau fondateur", desc: "Intégrez un groupe privé avec les autres premiers membres et les fondateurs. Échangez, collaborez, construisez ensemble." },
+          { title: "Avantages exclusifs", desc: "Des conditions préférentielles sur les futures fonctionnalités premium, les formations et les outils de la plateforme." },
+        ];
+
+  const eyebrow =
+    lang === "en"
+      ? "Founding members benefits"
+      : lang === "th"
+      ? "สิทธิประโยชน์สมาชิกผู้ก่อตั้ง"
+      : "Avantages membres fondateurs";
+
+  return (
+    <div className="border-l border-neutral-800 pl-8 max-w-md">
+      <div className="flex items-center gap-3 mb-6">
+        <span className="block w-8 h-px bg-[#C4956A]" />
+        <p className="text-[#C4956A] text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
+          {eyebrow}
+        </p>
+      </div>
+
+      {/* Badge premium en tête */}
+      <div className="mb-7">
+        <FounderBadge brand="E-DOME" title={badgeTitle} />
+      </div>
+
+      {/* Liste accordéon des 6 avantages */}
+      <ul>
+        {benefits.map((b, i) => {
+          const Icon = ICONS[i];
+          const isOpen = open.includes(i);
+          return (
+            <li key={i} className="border-t border-neutral-800 first:border-t-0">
+              <button
+                type="button"
+                onClick={() => toggle(i)}
+                aria-expanded={isOpen}
+                className="w-full flex items-center gap-3 py-3 text-left group"
+              >
+                <span
+                  className={`flex items-center justify-center w-7 h-7 rounded-full border transition-colors duration-300 ${
+                    isOpen
+                      ? "border-[#C4956A] bg-[#C4956A] text-black"
+                      : "border-[#C4956A]/40 bg-[#C4956A]/5 text-[#C4956A] group-hover:bg-[#C4956A] group-hover:text-black"
+                  }`}
+                >
+                  <Icon size={13} strokeWidth={1.8} />
+                </span>
+                <span
+                  className={`block h-px transition-all duration-300 ${
+                    isOpen ? "w-5 bg-[#C4956A]" : "w-3 bg-neutral-700 group-hover:w-5 group-hover:bg-[#C4956A]"
+                  }`}
+                />
+                <span className="text-white text-[0.72rem] font-medium uppercase tracking-[0.15em] flex-1">
+                  {b.title}
+                </span>
+                <ChevronDown
+                  size={12}
+                  className={`text-[#C4956A] transition-transform duration-300 ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    key="content"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <p className="text-gray-400 text-[0.7rem] leading-relaxed font-light pl-10 pr-2 pb-3">
+                      {b.desc}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -270,89 +399,18 @@ function HomePageContent() {
               </div>
             </motion.div>
 
-            {/* Colonne droite : badge fondateur + 6 avantages (titres seuls, compact) */}
+            {/* Colonne droite : badge fondateur + 6 avantages (accordéon cliquable) */}
             <motion.div {...fadeUp} className="hidden lg:block lg:col-span-5">
-              {(() => {
-                const ICONS = [Award, Zap, Eye, Mic, Users, Gem];
-                const titles =
-                  lang === "en"
-                    ? [
-                        "Founding Member Badge",
-                        "Early access",
-                        "Priority visibility",
-                        "Exclusive conferences",
-                        "Founder network",
-                        "Exclusive perks",
-                      ]
-                    : lang === "th"
-                    ? [
-                        "ป้ายสมาชิกผู้ก่อตั้ง",
-                        "เข้าถึงก่อนใคร",
-                        "การมองเห็นที่จัดลำดับ",
-                        "การประชุมพิเศษ",
-                        "เครือข่ายผู้ก่อตั้ง",
-                        "สิทธิประโยชน์พิเศษ",
-                      ]
-                    : [
-                        "Badge Membre Fondateur",
-                        "Accès anticipé",
-                        "Visibilité prioritaire",
-                        "Conférences exclusives",
-                        "Réseau fondateur",
-                        "Avantages exclusifs",
-                      ];
-
-                const eyebrow =
-                  lang === "en"
-                    ? "Founding members benefits"
-                    : lang === "th"
-                    ? "สิทธิประโยชน์สมาชิกผู้ก่อตั้ง"
-                    : "Avantages membres fondateurs";
-
-                const badgeTitle =
+              <HeroBenefitsAccordion
+                lang={lang}
+                badgeTitle={
                   lang === "en"
                     ? "FOUNDING MEMBER"
                     : lang === "th"
                     ? "สมาชิกผู้ก่อตั้ง"
-                    : "MEMBRE FONDATEUR";
-
-                return (
-                  <div className="border-l border-neutral-800 pl-8 max-w-md">
-                    <div className="flex items-center gap-3 mb-6">
-                      <span className="block w-8 h-px bg-[#C4956A]" />
-                      <p className="text-[#C4956A] text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
-                        {eyebrow}
-                      </p>
-                    </div>
-
-                    {/* Badge premium en tête */}
-                    <div className="mb-8">
-                      <FounderBadge brand="E-DOME" title={badgeTitle} />
-                    </div>
-
-                    {/* Liste compacte des 6 avantages — icônes Lucide + titres */}
-                    <ul>
-                      {titles.map((t, i) => {
-                        const Icon = ICONS[i];
-                        return (
-                          <li
-                            key={i}
-                            className="flex items-center gap-4 py-3 border-t border-neutral-800 first:border-t-0 group"
-                          >
-                            <span className="flex items-center justify-center w-7 h-7 rounded-full border border-[#C4956A]/40 bg-[#C4956A]/5 text-[#C4956A] group-hover:bg-[#C4956A] group-hover:text-black transition-colors duration-300">
-                              <Icon size={13} strokeWidth={1.8} />
-                            </span>
-                            <span className="block w-3 h-px bg-neutral-700 group-hover:bg-[#C4956A] group-hover:w-5 transition-all duration-300" />
-                            <span className="text-white text-[0.72rem] font-medium uppercase tracking-[0.15em]">
-                              {t}
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                );
-              })()}
+                    : "MEMBRE FONDATEUR"
+                }
+              />
             </motion.div>
           </div>
         </div>

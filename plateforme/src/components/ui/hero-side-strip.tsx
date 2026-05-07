@@ -3,13 +3,17 @@
 import React, { useEffect, useRef } from "react";
 
 /**
- * HeroSideStrip — bande verticale décorative sur le bord droit de la
- * première section. Lignes verticales gold, ticks horizontaux,
- * accents : un dessin technique de bâtiment minimaliste.
+ * HeroSideStrip — bande verticale sur le bord droit du hero représentant
+ * une élévation de bâtiment (façade : 7 étages + rez vitré + porte
+ * orange + parapet + antenne + hachures sol). Côté gauche, des traits
+ * horizontaux débordent à différentes longueurs et grosseurs (cotes de
+ * niveau techniques).
  *
- * Au scroll, chaque ligne se déforme indépendamment (translateY + skew
- * différents par index), et le SVG complet s'incline légèrement —
- * effet de "morphing architectural" pendant le passage entre sections.
+ * Au scroll, chaque élément se déforme indépendamment :
+ *   - skewY global du SVG
+ *   - étages (groupes) translateY différenciés
+ *   - lignes de cote translateX shift
+ *   - dots opacity + translateY
  */
 export function HeroSideStrip() {
   const ref = useRef<SVGSVGElement>(null);
@@ -26,32 +30,31 @@ export function HeroSideStrip() {
       if (!el) return;
       const scrolled = window.scrollY;
       const vh = window.innerHeight;
-      // Progress 0..1 sur les ~2 premiers viewports (transition hero → next)
       const progress = Math.min(1, scrolled / (vh * 1.8));
 
       // Skew global subtil sur tout le SVG
       el.style.transform = `skewY(${progress * -2.5}deg)`;
 
-      // Transformations différenciées par data-line
-      const verts = el.querySelectorAll<SVGElement>("[data-vline]");
-      verts.forEach((v, i) => {
-        const ty = (i % 2 === 0 ? -1 : 1) * progress * 70;
-        const scale = 1 - progress * (0.18 + i * 0.04);
-        v.style.transform = `translateY(${ty}px) scaleY(${scale})`;
+      // Étages : translateY alterné
+      const floors = el.querySelectorAll<SVGElement>("[data-floor]");
+      floors.forEach((f, i) => {
+        const ty = (i % 2 === 0 ? -1 : 1) * progress * 35;
+        f.style.transform = `translateY(${ty}px)`;
       });
 
-      const hticks = el.querySelectorAll<SVGElement>("[data-htick]");
-      hticks.forEach((h, i) => {
-        const tx = ((i % 3) - 1) * progress * 18;
-        h.style.transform = `translateX(${tx}px)`;
+      // Lignes de cote : translateX alternant gauche/droite
+      const ticks = el.querySelectorAll<SVGElement>("[data-htick]");
+      ticks.forEach((t, i) => {
+        const tx = ((i % 3) - 1) * progress * 22;
+        t.style.transform = `translateX(${tx}px)`;
       });
 
+      // Dots : translateY + opacity
       const dots = el.querySelectorAll<SVGElement>("[data-dot]");
       dots.forEach((d, i) => {
-        const ty = (i % 2 === 0 ? 1 : -1) * progress * 90;
-        const opacity = 1 - progress * 0.7;
+        const ty = (i % 2 === 0 ? 1 : -1) * progress * 60;
         d.style.transform = `translateY(${ty}px)`;
-        d.style.opacity = String(opacity);
+        d.style.opacity = String(1 - progress * 0.6);
       });
     };
 
@@ -70,98 +73,198 @@ export function HeroSideStrip() {
     };
   }, []);
 
-  // Niveaux horizontaux répartis sur la hauteur
-  const levels = Array.from({ length: 14 }, (_, i) => 30 + i * 56);
-  // Dots accent (gold remplis) à des positions spécifiques
-  const dotPositions = [120, 280, 440, 600, 720];
+  // Couleurs gold
+  const GHI = "rgba(196,149,106,0.85)";
+  const GMD = "rgba(196,149,106,0.55)";
+  const GLO = "rgba(196,149,106,0.30)";
+  const O = "#C4956A";
+
+  // 7 étages typiques (top y de chaque) + rez/lobby
+  const typicalFloors = [50, 130, 210, 290, 370, 450, 530];
+  // Rez/lobby : y=610-720
+  // Ground line : y=720
+
+  // Lignes de cote qui dépassent à gauche (longueurs et strokes variées)
+  const levelMarkers = [
+    { y: 30, len: 200, stroke: 1.5, color: GHI }, // toit (très long)
+    { y: 50, len: 60, stroke: 0.7, color: GMD },
+    { y: 130, len: 25, stroke: 0.5, color: GLO },
+    { y: 170, len: 110, stroke: 1.0, color: GHI }, // mid-floor
+    { y: 210, len: 30, stroke: 0.6, color: GMD },
+    { y: 250, len: 75, stroke: 0.9, color: GMD },
+    { y: 290, len: 18, stroke: 0.5, color: GLO },
+    { y: 330, len: 160, stroke: 1.3, color: GHI }, // emphase
+    { y: 370, len: 22, stroke: 0.5, color: GLO },
+    { y: 410, len: 90, stroke: 0.9, color: GMD },
+    { y: 450, len: 35, stroke: 0.6, color: GMD },
+    { y: 490, len: 130, stroke: 1.1, color: GHI },
+    { y: 530, len: 28, stroke: 0.6, color: GLO },
+    { y: 570, len: 68, stroke: 0.8, color: GMD },
+    { y: 610, len: 175, stroke: 1.4, color: GHI }, // dalle lobby
+    { y: 670, len: 50, stroke: 0.7, color: GMD },
+    { y: 720, len: 220, stroke: 1.5, color: GHI }, // sol (le plus long)
+  ];
 
   return (
     <svg
       ref={ref}
-      viewBox="0 0 90 820"
+      viewBox="0 0 90 800"
       preserveAspectRatio="none"
       aria-hidden="true"
-      className="absolute right-0 top-0 h-screen w-[70px] xl:w-[90px] pointer-events-none"
+      className="absolute right-0 top-0 h-screen w-[80px] xl:w-[100px] pointer-events-none"
       style={{
         overflow: "visible",
         transition: "transform 200ms ease-out",
         transformOrigin: "center center",
       }}
     >
-      {/* Cadre extérieur droite (bordure technique) */}
-      <line x1="84" y1="10" x2="84" y2="810" stroke="rgba(196,149,106,0.85)" strokeWidth="1.4" />
-      <line x1="80" y1="10" x2="80" y2="810" stroke="rgba(196,149,106,0.4)" strokeWidth="0.6" />
-
-      {/* 4 lignes verticales — chacune se déforme différemment */}
-      <g data-vline="1" style={{ transition: "transform 200ms ease-out", transformOrigin: "50% 50%" }}>
-        <line x1="20" y1="20" x2="20" y2="800" stroke="rgba(196,149,106,0.35)" strokeWidth="0.7" />
-      </g>
-      <g data-vline="2" style={{ transition: "transform 200ms ease-out", transformOrigin: "50% 50%" }}>
-        <line x1="36" y1="20" x2="36" y2="800" stroke="rgba(196,149,106,0.7)" strokeWidth="1.3" />
-      </g>
-      <g data-vline="3" style={{ transition: "transform 200ms ease-out", transformOrigin: "50% 50%" }}>
-        <line x1="54" y1="20" x2="54" y2="800" stroke="rgba(196,149,106,0.45)" strokeWidth="0.8" />
-      </g>
-      <g data-vline="4" style={{ transition: "transform 200ms ease-out", transformOrigin: "50% 50%" }}>
-        <line x1="68" y1="20" x2="68" y2="800" stroke="rgba(196,149,106,0.55)" strokeWidth="0.9" />
-      </g>
-
-      {/* Niveaux horizontaux (ticks) */}
-      {levels.map((y, i) => (
+      {/* ════════ LIGNES DE COTE QUI DÉBORDENT À GAUCHE ════════ */}
+      {levelMarkers.map((m, i) => (
         <g
-          key={`lv-${i}`}
+          key={`lm-${i}`}
           data-htick={i}
           style={{ transition: "transform 200ms ease-out", transformOrigin: "50% 50%" }}
         >
           <line
-            x1="10"
-            y1={y}
-            x2="78"
-            y2={y}
-            stroke={i % 3 === 0 ? "rgba(196,149,106,0.4)" : "rgba(196,149,106,0.18)"}
-            strokeWidth={i % 3 === 0 ? "0.7" : "0.4"}
+            x1={20 - m.len}
+            y1={m.y}
+            x2={20}
+            y2={m.y}
+            stroke={m.color}
+            strokeWidth={m.stroke}
           />
-          {/* Tick principal sur la ligne droite */}
-          <line
-            x1="80"
-            y1={y}
-            x2={i % 2 === 0 ? "88" : "84"}
-            y2={y}
-            stroke="rgba(196,149,106,0.7)"
-            strokeWidth="0.8"
-          />
+          {/* Tick vertical à l'extrémité gauche pour les lignes longues */}
+          {m.len > 90 && (
+            <line
+              x1={20 - m.len}
+              y1={m.y - 3}
+              x2={20 - m.len}
+              y2={m.y + 3}
+              stroke={m.color}
+              strokeWidth={m.stroke * 0.7}
+            />
+          )}
         </g>
       ))}
 
-      {/* Dots accent gold remplis */}
-      {dotPositions.map((y, i) => (
-        <g
-          key={`dot-${i}`}
-          data-dot={i}
-          style={{ transition: "transform 200ms ease-out, opacity 200ms ease-out" }}
+      {/* ════════ BÂTIMENT — façade ════════ */}
+
+      {/* Antenne au sommet */}
+      <g data-floor="0">
+        <line x1="49" y1="30" x2="49" y2="10" stroke={GMD} strokeWidth="0.8" />
+        <circle cx="49" cy="8" r="1.4" fill={O} data-dot="0" />
+      </g>
+
+      {/* Parapet du toit */}
+      <g data-floor="1">
+        <line x1="14" y1="28" x2="80" y2="28" stroke={GHI} strokeWidth="1.1" />
+        <line x1="14" y1="32" x2="80" y2="32" stroke={GMD} strokeWidth="0.5" />
+      </g>
+
+      {/* Murs latéraux (toute la hauteur du bâtiment) */}
+      <line x1="20" y1="32" x2="20" y2="720" stroke={GHI} strokeWidth="1" />
+      <line x1="78" y1="32" x2="78" y2="720" stroke={GHI} strokeWidth="1.3" />
+
+      {/* 7 étages typiques — chacun avec slab + strip window + 3 mullions */}
+      {typicalFloors.map((y, idx) => (
+        <g key={`fl-${idx}`} data-floor={`f${idx}`}>
+          {/* Slab du dessus */}
+          <line x1="20" y1={y} x2="78" y2={y} stroke={GMD} strokeWidth="0.6" />
+          {/* Strip window */}
+          <rect
+            x="26"
+            y={y + 18}
+            width="46"
+            height="32"
+            fill="none"
+            stroke={GHI}
+            strokeWidth="0.7"
+          />
+          {/* Mullions */}
+          <line x1="38" y1={y + 18} x2="38" y2={y + 50} stroke={GMD} strokeWidth="0.4" />
+          <line x1="50" y1={y + 18} x2="50" y2={y + 50} stroke={GMD} strokeWidth="0.4" />
+          <line x1="62" y1={y + 18} x2="62" y2={y + 50} stroke={GMD} strokeWidth="0.4" />
+          {/* Allège béton */}
+          <line x1="20" y1={y + 56} x2="78" y2={y + 56} stroke={GLO} strokeWidth="0.4" />
+        </g>
+      ))}
+
+      {/* Rez-de-chaussée / Lobby (vitré, plus haut) */}
+      <g data-floor="lobby">
+        {/* Slab du dessus */}
+        <line x1="20" y1="610" x2="78" y2="610" stroke={GHI} strokeWidth="0.9" />
+        {/* Vitres lobby */}
+        <line x1="34" y1="610" x2="34" y2="720" stroke={GMD} strokeWidth="0.4" />
+        <line x1="48" y1="610" x2="48" y2="720" stroke={GMD} strokeWidth="0.4" />
+        <line x1="62" y1="610" x2="62" y2="720" stroke={GMD} strokeWidth="0.4" />
+        {/* Porte d'entrée — accent ORANGE saturé */}
+        <path
+          d="M 42 720 L 42 678 L 56 678 L 56 720"
+          fill="none"
+          stroke={O}
+          strokeWidth="1.5"
+          strokeLinecap="square"
+        />
+        <line x1="49" y1="678" x2="49" y2="720" stroke={O} strokeWidth="0.8" />
+        <circle cx="54" cy="700" r="0.9" fill={O} />
+        {/* Auvent au-dessus de la porte */}
+        <line x1="38" y1="678" x2="60" y2="678" stroke={GHI} strokeWidth="0.7" />
+      </g>
+
+      {/* Ligne de sol */}
+      <line x1="14" y1="720" x2="84" y2="720" stroke={GHI} strokeWidth="1.4" />
+
+      {/* Hachures sol (étendues à gauche) */}
+      <g>
+        {Array.from({ length: 16 }).map((_, i) => {
+          const x = -40 + i * 9;
+          return (
+            <line
+              key={`gh-${i}`}
+              x1={x}
+              y1="720"
+              x2={x - 6}
+              y2="734"
+              stroke={GMD}
+              strokeWidth="0.5"
+            />
+          );
+        })}
+      </g>
+
+      {/* Dots accents gold à des points clés (avec halo) */}
+      {[
+        { x: 49, y: 80, key: 1 },
+        { x: 78, y: 250, key: 2 },
+        { x: 20, y: 410, key: 3 },
+        { x: 78, y: 570, key: 4 },
+      ].map((d) => (
+        <g key={`dot-${d.key}`} data-dot={d.key} style={{ transition: "transform 200ms ease-out, opacity 200ms ease-out" }}>
+          <circle cx={d.x} cy={d.y} r="1.6" fill={O} />
+          <circle cx={d.x} cy={d.y} r="4" stroke={O} strokeWidth="0.5" fill="none" opacity="0.55" />
+        </g>
+      ))}
+
+      {/* Petits chiffres de niveau (mono) sur le côté gauche, ponctuellement */}
+      {[
+        { y: 50, label: "07" },
+        { y: 210, label: "05" },
+        { y: 370, label: "03" },
+        { y: 530, label: "01" },
+        { y: 670, label: "00" },
+      ].map((n) => (
+        <text
+          key={`lvl-${n.label}`}
+          x={-50}
+          y={n.y + 2}
+          fontSize="6"
+          fontFamily="ui-monospace, 'SF Mono', Menlo, monospace"
+          fill={GMD}
+          letterSpacing="0.15em"
         >
-          <circle cx="36" cy={y} r="2.5" fill="#C4956A" />
-          <circle cx="36" cy={y} r="6" stroke="#C4956A" strokeWidth="0.6" fill="none" opacity="0.5" />
-        </g>
+          {n.label}
+        </text>
       ))}
-
-      {/* Petits chiffres mono à intervalles (style cote technique) */}
-      {[1, 4, 7, 10, 13].map((idx) => {
-        const y = 30 + idx * 56;
-        return (
-          <text
-            key={`num-${idx}`}
-            x="2"
-            y={y + 2}
-            fontSize="6"
-            fontFamily="ui-monospace, 'SF Mono', Menlo, monospace"
-            fill="rgba(196,149,106,0.45)"
-            letterSpacing="0.15em"
-          >
-            {String(idx).padStart(2, "0")}
-          </text>
-        );
-      })}
     </svg>
   );
 }
