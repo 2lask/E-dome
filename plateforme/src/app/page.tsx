@@ -31,13 +31,12 @@ import {
 } from "lucide-react";
 import { FounderBadge } from "@/components/ui/founder-badge";
 import { HeroSideStrip } from "@/components/ui/hero-side-strip";
-import { IPhoneMockup } from "@/components/ui/iphone-mockup";
-import { ZoomParallax } from "@/components/ui/zoom-parallax";
+import { RadialScrollGallery } from "@/components/ui/portfolio-and-image-gallery";
 import {
   LandingLanguageProvider,
   useLandingLang,
 } from "@/components/landing/landing-i18n";
-import { ScrollStage, useSlideProgress } from "@/components/landing/scroll-stage";
+import { ScrollStage } from "@/components/landing/scroll-stage";
 
 /* ═══════════════════════════════════════════════════════════════════ */
 /*  ROOT                                                               */
@@ -233,22 +232,19 @@ function DotDivider() {
 }
 
 /* ─────────── PhoneSlide ──────────────────────────────────────────────
-   Slide ScrollStage : iPhone + texte punch côte à côte. Le zoom-parallax
-   est piloté par useSlideProgress(slideIndex) — synchronisé au snap
-   crossfade pour que l'animation reste fluide à l'intérieur du slide.
+   Slide ScrollStage : galerie radiale (rotation pilotée par GSAP) à droite,
+   texte punch à gauche. Les vidéos prennent place sur la roue qui tourne
+   au scroll.
    ─────────────────────────────────────────────────────────────────── */
 function PhoneSlide({
-  slideIndex,
   videos,
   punch,
   punchEmphasis,
 }: {
-  slideIndex: number;
   videos: { src: string }[];
   punch: string;
   punchEmphasis: string;
 }) {
-  const slideProgress = useSlideProgress(slideIndex);
   return (
     <section className="scroll-slide bg-black relative">
       <div className="min-h-screen flex items-center px-6 sm:px-12 lg:px-20">
@@ -263,18 +259,40 @@ function PhoneSlide({
             </div>
           </div>
 
-          {/* iPhone */}
-          <div className="order-1 lg:order-2 flex justify-center">
-            <div style={{ width: 250, height: 526 }}>
-              <IPhoneMockup
-                model="15-pro"
-                color="natural-titanium"
-                scale={0.6}
-                safeArea={false}
-              >
-                <ZoomParallax videos={videos} progress={slideProgress} />
-              </IPhoneMockup>
-            </div>
+          {/* Galerie radiale */}
+          <div className="order-1 lg:order-2 relative">
+            <RadialScrollGallery
+              baseRadius={260}
+              mobileRadius={150}
+              visiblePercentage={55}
+              scrollDuration={1500}
+              className="!min-h-0"
+            >
+              {(hoveredIndex) =>
+                videos.map((video, index) => {
+                  const isActive = hoveredIndex === index;
+                  return (
+                    <div
+                      key={index}
+                      className="relative w-[140px] h-[180px] sm:w-[160px] sm:h-[200px] overflow-hidden rounded-xl bg-neutral-900 border border-neutral-800 shadow-lg"
+                    >
+                      <video
+                        src={video.src}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className={`h-full w-full object-cover transition-transform duration-700 ease-out ${
+                          isActive ? "scale-110" : "scale-100"
+                        }`}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    </div>
+                  );
+                })
+              }
+            </RadialScrollGallery>
           </div>
         </div>
       </div>
@@ -616,9 +634,8 @@ function HomePageContent() {
         </div>
       </section>
 
-      {/* ═══════════════════════ IPHONE + ZOOM PARALLAX (slide ScrollStage) ═══ */}
+      {/* ═══════════════════════ RADIAL GALLERY (slide ScrollStage) ═══ */}
       <PhoneSlide
-        slideIndex={2}
         videos={phoneVideos}
         punch={phonePunch}
         punchEmphasis={phonePunchEmphasis}
