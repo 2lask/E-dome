@@ -1,6 +1,6 @@
 "use client";
 
-import { useScroll, useTransform, motion } from "framer-motion";
+import { useScroll, useTransform, motion, type MotionValue } from "framer-motion";
 import { RefObject, useRef } from "react";
 
 interface MediaItem {
@@ -20,18 +20,25 @@ interface ZoomParallaxProps {
    * from a 300vh+ section above.
    */
   targetRef?: RefObject<HTMLElement | null>;
+  /**
+   * Optional MotionValue [0,1] driving the zoom directly. Useful when the
+   * parallax sits inside a snap-crossfade slide where natural page scroll
+   * can't be measured — feed it the slide-local progress instead.
+   */
+  progress?: MotionValue<number>;
 }
 
-export function ZoomParallax({ images, videos, targetRef }: ZoomParallaxProps) {
+export function ZoomParallax({ images, videos, targetRef, progress }: ZoomParallaxProps) {
   const internal = useRef<HTMLDivElement | null>(null);
-  const isEmbedded = !!targetRef;
+  const isEmbedded = !!targetRef || !!progress;
   const items = videos ?? images ?? [];
   const isVideo = !!videos;
 
-  const { scrollYProgress } = useScroll({
+  const { scrollYProgress: scrollFromTarget } = useScroll({
     target: targetRef ?? internal,
     offset: ["start start", "end end"],
   });
+  const scrollYProgress = progress ?? scrollFromTarget;
 
   const scale3 = useTransform(scrollYProgress, [0, 1], [1, 3]);
   const scale35 = useTransform(scrollYProgress, [0, 1], [1, 3.5]);

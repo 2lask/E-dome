@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
@@ -37,7 +37,7 @@ import {
   LandingLanguageProvider,
   useLandingLang,
 } from "@/components/landing/landing-i18n";
-import { ScrollStage } from "@/components/landing/scroll-stage";
+import { ScrollStage, useSlideProgress } from "@/components/landing/scroll-stage";
 
 /* ═══════════════════════════════════════════════════════════════════ */
 /*  ROOT                                                               */
@@ -232,13 +232,62 @@ function DotDivider() {
   );
 }
 
+/* ─────────── PhoneSlide ──────────────────────────────────────────────
+   Slide ScrollStage : iPhone + texte punch côte à côte. Le zoom-parallax
+   est piloté par useSlideProgress(slideIndex) — synchronisé au snap
+   crossfade pour que l'animation reste fluide à l'intérieur du slide.
+   ─────────────────────────────────────────────────────────────────── */
+function PhoneSlide({
+  slideIndex,
+  videos,
+  punch,
+  punchEmphasis,
+}: {
+  slideIndex: number;
+  videos: { src: string }[];
+  punch: string;
+  punchEmphasis: string;
+}) {
+  const slideProgress = useSlideProgress(slideIndex);
+  return (
+    <section className="scroll-slide bg-black relative">
+      <div className="min-h-screen flex items-center px-6 sm:px-12 lg:px-20">
+        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          {/* Texte punch */}
+          <div className="order-2 lg:order-1 max-w-xl mx-auto lg:mx-0">
+            <div className="border-l-2 border-red-500/60 pl-6 py-1">
+              <p className="text-white text-base md:text-lg leading-relaxed font-light">
+                {punch}{" "}
+                <strong className="font-semibold text-white">{punchEmphasis}</strong>
+              </p>
+            </div>
+          </div>
+
+          {/* iPhone */}
+          <div className="order-1 lg:order-2 flex justify-center">
+            <div style={{ width: 250, height: 526 }}>
+              <IPhoneMockup
+                model="15-pro"
+                color="natural-titanium"
+                scale={0.6}
+                safeArea={false}
+              >
+                <ZoomParallax videos={videos} progress={slideProgress} />
+              </IPhoneMockup>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════ */
 /*  MAIN CONTENT                                                      */
 /* ═══════════════════════════════════════════════════════════════════ */
 
 function HomePageContent() {
   const { lang, setLang, t } = useLandingLang();
-  const phoneScrollRef = useRef<HTMLElement | null>(null);
 
   /* ── Vidéos défilant en parallaxe dans l'iPhone ──────────────────── */
   /* reel-08 vient en index 0 = tuile centrée qui zoome plein cadre à la fin */
@@ -564,46 +613,15 @@ function HomePageContent() {
           })()}
         </div>
       </section>
-      </ScrollStage>
 
-      {/* ═══════════════════════ IPHONE + ZOOM PARALLAX (hors ScrollStage) ═══ */}
-      <section
-        ref={phoneScrollRef}
-        className="relative bg-black"
-        style={{ height: "300vh" }}
-      >
-        <div className="sticky top-0 h-screen flex items-center px-6 sm:px-12 lg:px-20">
-          <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-            {/* Texte punch */}
-            <div className="order-2 lg:order-1 max-w-xl mx-auto lg:mx-0">
-              <div className="border-l-2 border-red-500/60 pl-6 py-1">
-                <p className="text-white text-base md:text-lg leading-relaxed font-light">
-                  {phonePunch}{" "}
-                  <strong className="font-semibold text-white">
-                    {phonePunchEmphasis}
-                  </strong>
-                </p>
-              </div>
-            </div>
+      {/* ═══════════════════════ IPHONE + ZOOM PARALLAX (slide ScrollStage) ═══ */}
+      <PhoneSlide
+        slideIndex={2}
+        videos={phoneVideos}
+        punch={phonePunch}
+        punchEmphasis={phonePunchEmphasis}
+      />
 
-            {/* iPhone */}
-            <div className="order-1 lg:order-2 flex justify-center">
-              <div style={{ width: 250, height: 526 }}>
-                <IPhoneMockup
-                  model="15-pro"
-                  color="natural-titanium"
-                  scale={0.6}
-                  safeArea={false}
-                >
-                  <ZoomParallax videos={phoneVideos} targetRef={phoneScrollRef} />
-                </IPhoneMockup>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <ScrollStage>
       {/* ═══════════════════════ VISION ═══════════════════════ */}
       <section id="vision" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">

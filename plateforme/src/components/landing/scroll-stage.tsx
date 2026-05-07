@@ -1,6 +1,45 @@
 "use client";
 
-import { useEffect, useRef, Children } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  Children,
+} from "react";
+import { useMotionValue, useTransform, type MotionValue } from "framer-motion";
+
+/* ─────────── Context : progress global 0..1 + nombre de slides ─────── */
+interface ScrollStageCtx {
+  progress: MotionValue<number>;
+  slideCount: number;
+}
+const ScrollStageContext = createContext<ScrollStageCtx | null>(null);
+
+/**
+ * Hook : MotionValue [0,1] qui suit la fenêtre de fade-in du slide. À 0 le
+ * slide commence à apparaître ; à 1 il atteint sa pleine visibilité (snap
+ * point). Au-delà (durant le fade-out vers le slide suivant), la valeur
+ * reste clampée à 1 — utile pour qu'une animation interne (ex. parallax)
+ * culmine pile au moment où le slide est entièrement visible et tienne sa
+ * pose pendant que l'opacité s'efface.
+ */
+export function useSlideProgress(slideIdx: number): MotionValue<number> {
+  const ctx = useContext(ScrollStageContext);
+  if (!ctx) {
+    throw new Error("useSlideProgress must be used inside <ScrollStage>");
+  }
+  const segCount = Math.max(1, ctx.slideCount - 1);
+  const start = Math.max(0, (slideIdx - 0.5) / segCount);
+  const end = Math.min(1, slideIdx / segCount);
+  return useTransform(
+    ctx.progress,
+    [start, end],
+    [0, 1],
+    { clamp: true },
+  );
+}
+
 
 /**
  * ScrollStage — pinned crossfade scroll-driven, niveau studio primé.
@@ -31,6 +70,7 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const slideCount = Children.count(children);
+  const progressMV = useMotionValue(0);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -191,10 +231,12 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
       const lerp = reduced ? 1 : 0.08;
       if (Math.abs(delta) > 0.0001) {
         currentProgress += delta * lerp;
+        progressMV.set(currentProgress);
         applySlides();
         rafId = requestAnimationFrame(tick);
       } else {
         currentProgress = targetProgress;
+        progressMV.set(currentProgress);
         applySlides();
         rafId = 0;
         isRunning = false;
@@ -292,6 +334,7 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
     /* ── Bootstrap ────────────────────────────────────────── */
     computeTarget();
     currentProgress = targetProgress;
+    progressMV.set(currentProgress);
     applySlides();
 
     return () => {
@@ -307,25 +350,27 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
   }, [slideCount]);
 
   return (
-    <div
-      ref={sentinelRef}
-      style={{
-        position: "relative",
-        // 200vh par slide : breathing room style PWI (~190vh par phase)
-        height: `${slideCount * 200}vh`,
-      }}
-    >
+    <ScrollStageContext.Provider value={{ progress: progressMV, slideCount }}>
       <div
-        ref={stageRef}
+        ref={sentinelRef}
         style={{
-          position: "sticky",
-          top: 0,
-          height: "100vh",
-          overflow: "hidden",
+          position: "relative",
+          // 200vh par slide : breathing room style PWI (~190vh par phase)
+          height: `${slideCount * 200}vh`,
         }}
       >
-        {children}
+        <div
+          ref={stageRef}
+          style={{
+            position: "sticky",
+            top: 0,
+            height: "100vh",
+            overflow: "hidden",
+          }}
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </ScrollStageContext.Provider>
   );
 }
