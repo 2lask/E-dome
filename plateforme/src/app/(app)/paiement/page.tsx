@@ -139,9 +139,9 @@ export default function PaiementPage() {
             <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
           <h1 className="text-2xl font-bold mb-2">Paiement reussi !</h1>
-          <p className="text-[var(--text-secondary)] mb-2">Montant : <strong className="text-[#C4956A]">{formatPrice(total)}</strong></p>
+          <p className="text-[var(--text-secondary)] mb-2">Montant : <strong className="text-[#1e9df1]">{formatPrice(total)}</strong></p>
           <p className="text-sm text-[var(--text-muted)] mb-6">Un email de confirmation a été envoyé.</p>
-          <a href="/reservations" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
+          <a href="/reservations" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
             Voir mes reservations
           </a>
         </div>
@@ -149,7 +149,7 @@ export default function PaiementPage() {
     );
   }
 
-  const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors";
+  const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors";
   const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5";
 
   return (
@@ -164,7 +164,7 @@ export default function PaiementPage() {
             {/* Method tabs */}
             <div className="flex gap-2">
               {([["carte", "Carte bancaire"], ["twint", "Twint"], ["virement", "Virement"]] as const).map(([key, label]) => (
-                <button key={key} onClick={() => setMethod(key)} className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors border ${method === key ? "bg-[#C4956A]/10 border-[#C4956A] text-[#C4956A]" : "bg-[var(--card)] border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
+                <button key={key} onClick={() => setMethod(key)} className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors border ${method === key ? "bg-[#1e9df1]/10 border-[#1e9df1] text-[#1e9df1]" : "bg-[var(--card)] border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
                   {label}
                 </button>
               ))}
@@ -211,7 +211,7 @@ export default function PaiementPage() {
                   <span className="text-white font-bold text-lg">T</span>
                 </div>
                 <h3 className="font-semibold mb-2">Payer avec Twint</h3>
-                <p className="text-sm text-[var(--text-secondary)]">Vous serez redirige vers l&apos;application Twint pour confirmer le paiement de <strong className="text-[#C4956A]">{formatPrice(total)}</strong>.</p>
+                <p className="text-sm text-[var(--text-secondary)]">Vous serez redirige vers l&apos;application Twint pour confirmer le paiement de <strong className="text-[#1e9df1]">{formatPrice(total)}</strong>.</p>
               </div>
             )}
 
@@ -223,7 +223,7 @@ export default function PaiementPage() {
                   <div className="flex justify-between"><span className="text-[var(--text-muted)]">IBAN</span><span className="text-[var(--foreground)] font-mono">CH93 0076 2011 6238 5295 7</span></div>
                   <div className="flex justify-between"><span className="text-[var(--text-muted)]">BIC/SWIFT</span><span className="text-[var(--foreground)] font-mono">UBSWCHZH80A</span></div>
                   <div className="flex justify-between"><span className="text-[var(--text-muted)]">Beneficiaire</span><span className="text-[var(--foreground)]">E-Dome SA</span></div>
-                  <div className="flex justify-between"><span className="text-[var(--text-muted)]">Montant</span><span className="text-[#C4956A] font-bold">{formatPrice(total)}</span></div>
+                  <div className="flex justify-between"><span className="text-[var(--text-muted)]">Montant</span><span className="text-[#1e9df1] font-bold">{formatPrice(total)}</span></div>
                   <div className="flex justify-between"><span className="text-[var(--text-muted)]">Reference</span><span className="text-[var(--foreground)] font-mono">ED-2026-{Math.random().toString(36).slice(2, 8).toUpperCase()}</span></div>
                 </div>
                 <p className="text-xs text-[var(--text-muted)] pt-2">La reservation sera confirmee apres reception du virement (1-3 jours ouvrables).</p>
@@ -235,7 +235,7 @@ export default function PaiementPage() {
               <h3 className="text-sm font-medium text-[var(--text-secondary)] mb-2">Code promo</h3>
               <div className="flex gap-2">
                 <input className={`${inputCls} flex-1`} placeholder="Entrez votre code" value={couponInput} onChange={(e) => { setCouponInput(e.target.value); setCouponError(""); }} />
-                <button onClick={applyCoupon} className="px-4 py-3 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm font-medium text-[var(--text-secondary)] hover:border-[#C4956A]/40 transition-colors">
+                <button onClick={applyCoupon} className="px-4 py-3 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm font-medium text-[var(--text-secondary)] hover:border-[#1e9df1]/40 transition-colors">
                   Appliquer
                 </button>
               </div>
@@ -247,7 +247,7 @@ export default function PaiementPage() {
             <button
               onClick={handlePay}
               disabled={processing}
-              className={`w-full py-4 rounded-xl font-medium text-lg transition-colors ${processing ? "bg-[#C4956A]/60 text-white" : "bg-[#C4956A] hover:bg-[#b8845a] text-white"}`}
+              className={`w-full py-4 rounded-xl font-medium text-lg transition-colors ${processing ? "bg-[#1e9df1]/60 text-white" : "bg-[#1e9df1] hover:bg-[#b8845a] text-white"}`}
             >
               {processing ? (
                 <span className="flex items-center justify-center gap-2">
@@ -290,7 +290,7 @@ export default function PaiementPage() {
                 )}
                 <div className="flex justify-between font-bold text-[var(--foreground)] pt-2 border-t border-[var(--card-border)]">
                   <span>Total</span>
-                  <span className="text-[#C4956A]">{formatPrice(total)}</span>
+                  <span className="text-[#1e9df1]">{formatPrice(total)}</span>
                 </div>
               </div>
             </div>
@@ -333,7 +333,7 @@ export default function PaiementPage() {
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handle3DSInput(i, e.target.value)}
-                  className="w-11 h-14 text-center text-xl font-bold bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#C4956A] transition-colors"
+                  className="w-11 h-14 text-center text-xl font-bold bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] focus:outline-none focus:border-[#1e9df1] transition-colors"
                 />
               ))}
             </div>
@@ -344,7 +344,7 @@ export default function PaiementPage() {
               <button
                 onClick={verify3DS}
                 disabled={code3DS.some((d) => !d) || verifying3DS}
-                className={`flex-1 py-3 rounded-xl font-medium transition-colors ${code3DS.every((d) => d) && !verifying3DS ? "bg-[#C4956A] hover:bg-[#b8845a] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}
+                className={`flex-1 py-3 rounded-xl font-medium transition-colors ${code3DS.every((d) => d) && !verifying3DS ? "bg-[#1e9df1] hover:bg-[#b8845a] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}
               >
                 {verifying3DS ? (
                   <span className="flex items-center justify-center gap-2">

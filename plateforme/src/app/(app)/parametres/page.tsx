@@ -157,7 +157,7 @@ export default function ParametresPage() {
                 onClick={() => setSection(s.key)}
                 className={`px-4 py-2.5 text-sm rounded-xl text-left whitespace-nowrap transition-colors ${
                   section === s.key
-                    ? "bg-[#C4956A]/10 text-[#C4956A] font-medium"
+                    ? "bg-[#1e9df1]/10 text-[#1e9df1] font-medium"
                     : "text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
                 }`}
               >
@@ -226,7 +226,7 @@ export default function ParametresPage() {
 
               <button
                 onClick={() => showToast("Profil sauvegardé !")}
-                className="px-6 py-2.5 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a] transition-colors"
+                className="px-6 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a] transition-colors"
               >
                 Sauvegarder
               </button>
@@ -272,7 +272,7 @@ export default function ParametresPage() {
 
                 <button
                   onClick={() => showToast("Mot de passe mis à jour !")}
-                  className="px-6 py-2.5 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a]"
+                  className="px-6 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a]"
                 >
                   Mettre à jour
                 </button>
@@ -289,7 +289,7 @@ export default function ParametresPage() {
                       if (!twoFA) { setShowQR(true); setTwoFA(true); }
                       else { setTwoFA(false); setShowQR(false); setTwoFAVerified(false); }
                     }}
-                    className={`w-12 h-6 rounded-full transition-colors relative ${twoFA ? "bg-[#C4956A]" : "bg-[var(--input-bg)]"}`}
+                    className={`w-12 h-6 rounded-full transition-colors relative ${twoFA ? "bg-[#1e9df1]" : "bg-[var(--input-bg)]"}`}
                   >
                     <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform ${twoFA ? "translate-x-6" : "translate-x-0.5"}`} />
                   </button>
@@ -314,7 +314,7 @@ export default function ParametresPage() {
                           onClick={() => {
                             if (verifyCode.length === 6) { setTwoFAVerified(true); showToast("2FA activé !"); }
                           }}
-                          className="px-4 py-2 text-sm rounded-lg bg-[#C4956A] text-white hover:bg-[#b8845a]"
+                          className="px-4 py-2 text-sm rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a]"
                         >
                           Vérifier
                         </button>
@@ -344,7 +344,7 @@ export default function ParametresPage() {
                           setNotifChannels({ ...notifChannels, [ch]: !notifChannels[ch] });
                           showToast(`${ch} ${!notifChannels[ch] ? "activé" : "désactivé"}`);
                         }}
-                        className={`w-12 h-6 rounded-full transition-colors relative ${notifChannels[ch] ? "bg-[#C4956A]" : "bg-[var(--input-bg)]"}`}
+                        className={`w-12 h-6 rounded-full transition-colors relative ${notifChannels[ch] ? "bg-[#1e9df1]" : "bg-[var(--input-bg)]"}`}
                       >
                         <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform ${notifChannels[ch] ? "translate-x-6" : "translate-x-0.5"}`} />
                       </button>
@@ -372,7 +372,7 @@ export default function ParametresPage() {
                             setNotifCategories({ ...notifCategories, [cat]: !enabled });
                             showToast(`${labels[cat]} ${!enabled ? "activé" : "désactivé"}`);
                           }}
-                          className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? "bg-[#C4956A]" : "bg-[var(--input-bg)]"}`}
+                          className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? "bg-[#1e9df1]" : "bg-[var(--input-bg)]"}`}
                         >
                           <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform ${enabled ? "translate-x-6" : "translate-x-0.5"}`} />
                         </button>
@@ -437,7 +437,7 @@ export default function ParametresPage() {
                   <button
                     onClick={createAlert}
                     className="px-5 py-2.5 text-sm rounded-xl text-white font-medium transition-colors hover:opacity-90"
-                    style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}
+                    style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}
                   >
                     Créer l&apos;alerte
                   </button>
@@ -460,7 +460,7 @@ export default function ParametresPage() {
                           }}
                         >
                           <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 rounded-md bg-[#C4956A]/10 text-[#C4956A] text-xs font-medium">
+                            <span className="px-2 py-0.5 rounded-md bg-[#1e9df1]/10 text-[#1e9df1] text-xs font-medium">
                               {alert.type}
                             </span>
                             <span className="text-sm text-[var(--foreground)]">
@@ -499,7 +499,7 @@ export default function ParametresPage() {
                       <button
                         onClick={() => setPrivacy({ ...privacy, [item.key]: !privacy[item.key as keyof typeof privacy] })}
                         className={`w-12 h-6 rounded-full transition-colors relative ${
-                          privacy[item.key as keyof typeof privacy] ? "bg-[#C4956A]" : "bg-[var(--input-bg)]"
+                          privacy[item.key as keyof typeof privacy] ? "bg-[#1e9df1]" : "bg-[var(--input-bg)]"
                         }`}
                       >
                         <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform ${
@@ -518,7 +518,7 @@ export default function ParametresPage() {
                 </p>
                 <button
                   onClick={() => setShowGDPR(true)}
-                  className="px-5 py-2 text-sm rounded-xl border border-[var(--card-border)] text-[var(--foreground)] hover:border-[#C4956A]/50"
+                  className="px-5 py-2 text-sm rounded-xl border border-[var(--card-border)] text-[var(--foreground)] hover:border-[#1e9df1]/50"
                 >
                   Exporter mes données
                 </button>
@@ -531,7 +531,7 @@ export default function ParametresPage() {
                     <p className="text-sm text-[var(--text-secondary)] mb-4">
                       Votre demande d'exportation a été prise en compte. Vous recevrez un email avec un lien de téléchargement dans les 48 heures.
                     </p>
-                    <button onClick={() => { setShowGDPR(false); showToast("Demande envoyée !"); }} className="w-full py-2.5 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a]">
+                    <button onClick={() => { setShowGDPR(false); showToast("Demande envoyée !"); }} className="w-full py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a]">
                       Compris
                     </button>
                   </div>
@@ -546,7 +546,7 @@ export default function ParametresPage() {
               {/* Portefeuille */}
               <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6">
                 <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Portefeuille</h2>
-                <div className="flex items-center justify-between p-5 rounded-xl bg-gradient-to-br from-[#C4956A]/15 to-[#C4956A]/5 border border-[#C4956A]/20">
+                <div className="flex items-center justify-between p-5 rounded-xl bg-gradient-to-br from-[#1e9df1]/15 to-[#1e9df1]/5 border border-[#1e9df1]/20">
                   <div>
                     <LottiePlayer src="/lottie/lottieflow-ecommerce-14-20-000000-easey.json" width={80} height={80} />
                     <p className="text-sm text-[var(--text-muted)]">Solde disponible</p>
@@ -555,7 +555,7 @@ export default function ParametresPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => showToast("Rechargement en cours...")}
-                      className="px-4 py-2 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a] transition-colors"
+                      className="px-4 py-2 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a] transition-colors"
                     >
                       Recharger
                     </button>
@@ -571,12 +571,12 @@ export default function ParametresPage() {
 
               <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6">
                 <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Plan actuel</h2>
-                <div className="flex items-center justify-between p-4 bg-[#C4956A]/10 border border-[#C4956A]/20 rounded-xl">
+                <div className="flex items-center justify-between p-4 bg-[#1e9df1]/10 border border-[#1e9df1]/20 rounded-xl">
                   <div>
                     <div className="text-sm font-semibold text-[var(--foreground)]">{mockPlan.name}</div>
                     <div className="text-xs text-[var(--text-muted)]">Renouvellement automatique</div>
                   </div>
-                  <div className="text-lg font-bold text-[#C4956A]">
+                  <div className="text-lg font-bold text-[#1e9df1]">
                     {formatPrice(mockPlan.price)}{mockPlan.period}
                   </div>
                 </div>
@@ -627,7 +627,7 @@ export default function ParametresPage() {
                       key={role}
                       className={`p-4 rounded-xl border transition-colors ${
                         active
-                          ? "border-[#C4956A] bg-[#C4956A]/5"
+                          ? "border-[#1e9df1] bg-[#1e9df1]/5"
                           : "border-[var(--card-border)] hover:border-[var(--text-muted)]"
                       }`}
                     >
@@ -641,7 +641,7 @@ export default function ParametresPage() {
                             showToast(`${roleLabels[role]} ${active ? "désactivé" : "activé"}`);
                           }}
                           className={`w-10 h-5 rounded-full transition-colors relative ${
-                            active ? "bg-[#C4956A]" : "bg-[var(--input-bg)]"
+                            active ? "bg-[#1e9df1]" : "bg-[var(--input-bg)]"
                           }`}
                         >
                           <div

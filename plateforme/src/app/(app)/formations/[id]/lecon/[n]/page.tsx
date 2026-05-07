@@ -68,7 +68,7 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
         <p className="text-[var(--text-secondary)]">Cette lecon n&apos;existe pas.</p>
         <Link
           href={`/formations/${id}`}
-          className="inline-block px-5 py-2.5 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
+          className="inline-block px-5 py-2.5 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
         >
           Retour à la formation
         </Link>
@@ -117,7 +117,7 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
             </div>
             <div className="w-full h-2 rounded-full bg-[var(--input-bg)]">
               <div
-                className="h-2 rounded-full bg-[#C4956A] transition-all duration-500"
+                className="h-2 rounded-full bg-[#1e9df1] transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -143,7 +143,7 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
               className={`flex-1 sm:flex-none px-5 py-2.5 rounded-lg text-sm font-medium transition text-center ${
                 isCompleted
                   ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                  : "bg-[#C4956A] text-white hover:opacity-90"
+                  : "bg-[#1e9df1] text-white hover:opacity-90"
               }`}
             >
               {isCompleted ? "Terminee ✓" : "Marquer comme terminee ✓"}
@@ -152,7 +152,7 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
             {lessonNum < TOTAL_LESSONS ? (
               <Link
                 href={`/formations/${id}/lecon/${lessonNum + 1}`}
-                className="px-4 py-2.5 rounded-lg border border-[#C4956A] text-[#C4956A] text-sm font-medium hover:bg-[#C4956A]/10 transition text-center"
+                className="px-4 py-2.5 rounded-lg border border-[#1e9df1] text-[#1e9df1] text-sm font-medium hover:bg-[#1e9df1]/10 transition text-center"
               >
                 Suivante &rarr;
               </Link>
@@ -181,14 +181,14 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
                     key={num}
                     href={`/formations/${id}/lecon/${num}`}
                     className={`flex items-center gap-3 px-4 py-3 text-sm transition hover:bg-[var(--hover-bg)] ${
-                      isCurrent ? "bg-[#C4956A]/10" : ""
+                      isCurrent ? "bg-[#1e9df1]/10" : ""
                     }`}
                   >
                     <span className="shrink-0 w-5 text-center">
                       {isDone ? (
                         <span className="text-green-500">✓</span>
                       ) : isCurrent ? (
-                        <span className="text-[#C4956A]">&rarr;</span>
+                        <span className="text-[#1e9df1]">&rarr;</span>
                       ) : (
                         <span className="text-[var(--text-muted)]">○</span>
                       )}
@@ -196,7 +196,7 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
                     <span
                       className={`${
                         isCurrent
-                          ? "text-[#C4956A] font-medium"
+                          ? "text-[#1e9df1] font-medium"
                           : isDone
                           ? "text-[var(--text-secondary)]"
                           : "text-[var(--foreground)]"

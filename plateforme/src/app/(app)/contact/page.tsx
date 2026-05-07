@@ -67,7 +67,7 @@ export default function ContactPage() {
             <div
               className="w-20 h-20 rounded-full flex items-center justify-center"
               style={{
-                background: "linear-gradient(135deg, #C4956A, #d4a574)",
+                background: "linear-gradient(135deg, #1e9df1, #d4a574)",
                 animation: "scaleIn 0.5s ease-out",
               }}
             >
@@ -85,7 +85,7 @@ export default function ContactPage() {
           </p>
           <button
             onClick={handleReset}
-            className="mt-4 px-6 py-2.5 rounded-lg bg-[#C4956A] text-white font-medium hover:opacity-90 transition"
+            className="mt-4 px-6 py-2.5 rounded-lg bg-[#1e9df1] text-white font-medium hover:opacity-90 transition"
           >
             Envoyer un autre message
           </button>
@@ -122,7 +122,7 @@ export default function ContactPage() {
                 value={form.sujet}
                 onChange={(e) => handleChange("sujet", e.target.value)}
                 required
-                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] outline-none focus:border-[#C4956A] transition ${
+                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] outline-none focus:border-[#1e9df1] transition ${
                   errors.sujet ? "border-red-400" : "border-[var(--input-border)]"
                 }`}
               >
@@ -146,7 +146,7 @@ export default function ContactPage() {
                 onChange={(e) => handleChange("nom", e.target.value)}
                 required
                 placeholder="Votre nom..."
-                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition ${
+                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] transition ${
                   errors.nom ? "border-red-400" : "border-[var(--input-border)]"
                 }`}
               />
@@ -160,7 +160,7 @@ export default function ContactPage() {
                 onChange={(e) => handleChange("email", e.target.value)}
                 required
                 placeholder="votre@email.com"
-                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition ${
+                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] transition ${
                   errors.email ? "border-red-400" : "border-[var(--input-border)]"
                 }`}
               />
@@ -174,7 +174,7 @@ export default function ContactPage() {
                 required
                 placeholder="Décrivez votre demande..."
                 rows={5}
-                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition resize-none ${
+                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] transition resize-none ${
                   errors.message ? "border-red-400" : "border-[var(--input-border)]"
                 }`}
               />
@@ -183,7 +183,7 @@ export default function ContactPage() {
             <button
               type="submit"
               disabled={sending}
-              className="w-full px-6 py-3 rounded-lg bg-[#C4956A] text-white font-medium hover:opacity-90 transition disabled:opacity-60 flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 rounded-lg bg-[#1e9df1] text-white font-medium hover:opacity-90 transition disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {sending ? (
                 <>
@@ -256,7 +256,7 @@ export default function ContactPage() {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm hover:text-[#C4956A] transition"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm hover:text-[#1e9df1] transition"
                 >
                   {social.name}
                 </a>

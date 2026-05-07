@@ -53,7 +53,7 @@ function Stars({ rating }: { rating: number }) {
   return (
     <span className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((s) => (
-        <svg key={s} className={`w-3.5 h-3.5 ${s <= Math.round(rating) ? "text-[#C4956A]" : "text-[var(--text-muted)]"}`} fill="currentColor" viewBox="0 0 20 20">
+        <svg key={s} className={`w-3.5 h-3.5 ${s <= Math.round(rating) ? "text-[#1e9df1]" : "text-[var(--text-muted)]"}`} fill="currentColor" viewBox="0 0 20 20">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
@@ -107,7 +107,7 @@ export default function ServicesPage() {
             <h1 className="text-3xl font-bold">Services</h1>
             <p className="text-[var(--text-secondary)] mt-1">Trouvez les meilleurs prestataires pour vos biens</p>
           </div>
-          <a href="/services/proposer" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+          <a href="/services/proposer" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
             Proposer un service
           </a>
         </div>
@@ -117,13 +117,13 @@ export default function ServicesPage() {
           <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input type="text" placeholder="Rechercher un service..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-12 pr-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors" />
+          <input type="text" placeholder="Rechercher un service..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-12 pr-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors" />
         </div>
 
         {/* Category chips */}
         <div className="flex gap-2 flex-wrap">
           {CATEGORIES.map((cat) => (
-            <button key={cat.label} onClick={() => setCategory(cat.label)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${category === cat.label ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
+            <button key={cat.label} onClick={() => setCategory(cat.label)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${category === cat.label ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
               {cat.icon} {cat.label}
             </button>
           ))}
@@ -132,13 +132,13 @@ export default function ServicesPage() {
         {/* ── Service Grid ────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((service) => (
-            <div key={service.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#C4956A]/40 transition-colors">
+            <div key={service.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#1e9df1]/40 transition-colors">
               {/* Gradient thumbnail */}
               <div className={`h-32 bg-gradient-to-br ${GRADIENTS[service.gradient]} flex items-center justify-center`}>
                 <span className="text-5xl">{CATEGORIES.find((c) => c.label === service.category)?.icon || service.category.charAt(0)}</span>
               </div>
               <div className="p-4 space-y-3">
-                <span className="inline-block px-2 py-0.5 bg-[#C4956A]/20 text-[#C4956A] rounded-full text-xs font-medium">{service.category}</span>
+                <span className="inline-block px-2 py-0.5 bg-[#1e9df1]/20 text-[#1e9df1] rounded-full text-xs font-medium">{service.category}</span>
                 <h3 className="font-semibold line-clamp-2">{service.title}</h3>
                 <div className="flex items-center gap-2">
                   <img src={service.providerAvatar} alt={service.provider} className="w-6 h-6 rounded-full object-cover" />
@@ -148,7 +148,7 @@ export default function ServicesPage() {
                 <span className="text-xs text-[var(--text-muted)]">({service.reviews} avis)</span>
                 <div className="flex items-center justify-between pt-2">
                   <div>
-                    <span className="font-bold text-[#C4956A]">{formatPrice(service.price)}</span>
+                    <span className="font-bold text-[#1e9df1]">{formatPrice(service.price)}</span>
                     <span className="text-xs text-[var(--text-muted)]"> {service.unit}</span>
                   </div>
                   {devisSent.has(service.id) ? (
@@ -158,7 +158,7 @@ export default function ServicesPage() {
                       Annuler
                     </button>
                   ) : (
-                    <button onClick={() => setDevisOpenId(service.id)} className="px-3 py-1.5 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-lg text-sm font-medium transition-colors">
+                    <button onClick={() => setDevisOpenId(service.id)} className="px-3 py-1.5 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-lg text-sm font-medium transition-colors">
                       Demander un devis
                     </button>
                   )}
@@ -168,40 +168,40 @@ export default function ServicesPage() {
                 {devisOpenId === service.id && (
                   <div className="pt-3 border-t border-[var(--card-border)] space-y-3 animate-fade-in">
                     <textarea
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 min-h-[80px] resize-y transition-colors"
+                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 min-h-[80px] resize-y transition-colors"
                       placeholder="Description du besoin..."
                       value={devisMessage}
                       onChange={(e) => setDevisMessage(e.target.value)}
                     />
                     <input
                       type="date"
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] focus:outline-none focus:border-[#C4956A]/50 transition-colors"
+                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors"
                       value={devisDate}
                       onChange={(e) => setDevisDate(e.target.value)}
                       placeholder="Date souhait&eacute;e"
                     />
                     <input
                       type="text"
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors"
+                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors"
                       placeholder="Votre nom"
                       value={devisNom}
                       onChange={(e) => setDevisNom(e.target.value)}
                     />
                     <input
                       type="email"
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors"
+                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors"
                       placeholder="Email"
                       value={devisEmail}
                       onChange={(e) => setDevisEmail(e.target.value)}
                     />
                     <input
                       type="tel"
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors"
+                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors"
                       placeholder="T&eacute;l&eacute;phone"
                       value={devisTel}
                       onChange={(e) => setDevisTel(e.target.value)}
                     />
-                    <button onClick={() => handleSendDevis(service.id)} className="w-full py-2 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-lg text-sm font-medium transition-colors">
+                    <button onClick={() => handleSendDevis(service.id)} className="w-full py-2 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-lg text-sm font-medium transition-colors">
                       Envoyer
                     </button>
                   </div>
@@ -227,7 +227,7 @@ export default function ServicesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {STEPS.map((step) => (
               <div key={step.number} className="text-center p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl">
-                <div className="w-12 h-12 bg-[#C4956A]/20 text-[#C4956A] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                <div className="w-12 h-12 bg-[#1e9df1]/20 text-[#1e9df1] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                   {step.number}
                 </div>
                 <h3 className="font-semibold mb-2">{step.title}</h3>

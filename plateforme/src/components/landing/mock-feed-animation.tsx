@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Home, Search, Plus, User, Bell } from "lucide-react";
 
 const stories = [
-  { name: "Votre story", color: "from-[#C4956A] to-[#d4a832]", initials: "+" },
+  { name: "Votre story", color: "from-[#1e9df1] to-[#d4a832]", initials: "+" },
   { name: "Sophie M.", color: "from-pink-500 to-rose-500", initials: "SM" },
   { name: "Marc D.", color: "from-blue-500 to-cyan-500", initials: "MD" },
   { name: "Amira F.", color: "from-purple-500 to-violet-500", initials: "AF" },
@@ -89,12 +89,12 @@ export function MockFeedAnimation() {
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2">
-        <span className="text-white font-semibold text-sm">E-<span className="text-[#C4956A]">Dome</span></span>
+        <span className="text-white font-semibold text-sm">E-<span className="text-[#1e9df1]">Dome</span></span>
         <div className="flex items-center gap-3">
           <div className="relative">
             <Bell size={16} className="text-white/60" />
             {showNotif && (
-              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#C4956A] rounded-full animate-pulse" />
+              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#1e9df1] rounded-full animate-pulse" />
             )}
           </div>
         </div>
@@ -106,15 +106,15 @@ export function MockFeedAnimation() {
           <div key={story.name} className="flex flex-col items-center gap-1 shrink-0">
             <div
               className={`w-12 h-12 rounded-full flex items-center justify-center text-[10px] font-bold text-white transition-all duration-500 ${
-                activeStory === i ? "scale-110 ring-2 ring-[#C4956A]" : ""
+                activeStory === i ? "scale-110 ring-2 ring-[#1e9df1]" : ""
               }`}
               style={{
                 background: i === 0 ? "#1a1a1a" : undefined,
-                border: i === 0 ? "2px dashed rgba(196,149,106,0.5)" : undefined,
+                border: i === 0 ? "2px dashed rgba(30, 157, 242,0.5)" : undefined,
               }}
             >
               {i === 0 ? (
-                <Plus size={16} className="text-[#C4956A]" />
+                <Plus size={16} className="text-[#1e9df1]" />
               ) : (
                 <div className={`w-full h-full rounded-full bg-gradient-to-br ${story.color} flex items-center justify-center`}>
                   {story.initials}
@@ -141,7 +141,7 @@ export function MockFeedAnimation() {
           >
             {/* Post header */}
             <div className="flex items-center gap-2.5 px-4 py-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C4956A] to-[#d4a832] flex items-center justify-center text-[9px] font-bold text-black">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1e9df1] to-[#d4a832] flex items-center justify-center text-[9px] font-bold text-black">
                 {post.initials}
               </div>
               <div className="flex-1 min-w-0">
@@ -160,7 +160,7 @@ export function MockFeedAnimation() {
             {/* Hashtags */}
             <div className="flex gap-1.5 px-4 mb-2">
               {post.hashtags.map((tag) => (
-                <span key={tag} className="text-[#C4956A]/60 text-[9px]">{tag}</span>
+                <span key={tag} className="text-[#1e9df1]/60 text-[9px]">{tag}</span>
               ))}
             </div>
 
@@ -199,9 +199,9 @@ export function MockFeedAnimation() {
 
       {/* Bottom nav */}
       <div className="flex items-center justify-around py-2.5 border-t border-white/5 bg-[#0a0a0a]">
-        <Home size={16} className="text-[#C4956A]" />
+        <Home size={16} className="text-[#1e9df1]" />
         <Search size={16} className="text-white/30" />
-        <div className="w-8 h-8 rounded-full bg-[#C4956A] flex items-center justify-center -mt-3 shadow-lg shadow-[#C4956A]/20">
+        <div className="w-8 h-8 rounded-full bg-[#1e9df1] flex items-center justify-center -mt-3 shadow-lg shadow-[#1e9df1]/20">
           <Plus size={16} className="text-black" />
         </div>
         <MessageCircle size={16} className="text-white/30" />
@@ -212,7 +212,7 @@ export function MockFeedAnimation() {
       {showNotif && (
         <div
           className="absolute top-12 left-3 right-3 rounded-xl p-3 flex items-center gap-3 animate-slide-up"
-          style={{ background: "rgba(196, 149, 106, 0.15)", backdropFilter: "blur(12px)", border: "1px solid rgba(196,149,106,0.3)" }}
+          style={{ background: "rgba(30, 157, 242, 0.15)", backdropFilter: "blur(12px)", border: "1px solid rgba(30, 157, 242,0.3)" }}
         >
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-[9px] font-bold text-white shrink-0">AF</div>
           <div className="flex-1 min-w-0">

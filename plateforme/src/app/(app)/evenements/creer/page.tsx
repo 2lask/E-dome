@@ -28,7 +28,7 @@ const emptyForm: EventForm = {
   intervenantNom: "", intervenantBio: "", places: 0, prix: 0,
 };
 
-const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors";
+const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors";
 const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5";
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
@@ -55,7 +55,7 @@ export default function CreerEvenementPage() {
           </div>
           <h1 className="text-2xl font-bold mb-2">Événement publié !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre événement &quot;{form.titre}&quot; est maintenant visible.</p>
-          <a href="/evenements" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
+          <a href="/evenements" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
             Voir les événements
           </a>
         </div>
@@ -79,7 +79,7 @@ export default function CreerEvenementPage() {
             <label className={labelCls}>Type d&apos;événement</label>
             <div className="flex flex-wrap gap-2">
               {TYPES.map((t) => (
-                <button key={t} onClick={() => update("type", t)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${form.type === t ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
+                <button key={t} onClick={() => update("type", t)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${form.type === t ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
                   {t}
                 </button>
               ))}
@@ -105,7 +105,7 @@ export default function CreerEvenementPage() {
             <div className="flex items-center gap-3 mb-2">
               <label className={`${labelCls} mb-0`}>Lieu</label>
               <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
-                <button onClick={() => update("enLigne", !form.enLigne)} className={`w-10 h-5 rounded-full transition-colors relative ${form.enLigne ? "bg-[#C4956A]" : "bg-[var(--text-muted)]"}`}>
+                <button onClick={() => update("enLigne", !form.enLigne)} className={`w-10 h-5 rounded-full transition-colors relative ${form.enLigne ? "bg-[#1e9df1]" : "bg-[var(--text-muted)]"}`}>
                   <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${form.enLigne ? "left-5" : "left-0.5"}`} />
                 </button>
                 En ligne
@@ -114,7 +114,7 @@ export default function CreerEvenementPage() {
             {!form.enLigne && (
               <input className={inputCls} placeholder="Adresse du lieu" value={form.lieu} onChange={(e) => update("lieu", e.target.value)} />
             )}
-            {form.enLigne && <p className="text-sm text-[#C4956A]">L&apos;événement se déroulera en ligne. Un lien sera envoyé aux participants.</p>}
+            {form.enLigne && <p className="text-sm text-[#1e9df1]">L&apos;événement se déroulera en ligne. Un lien sera envoyé aux participants.</p>}
           </div>
 
           <div>
@@ -154,7 +154,7 @@ export default function CreerEvenementPage() {
             </div>
           </div>
 
-          <button onClick={handlePublish} className="w-full py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors mt-4">
+          <button onClick={handlePublish} className="w-full py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors mt-4">
             Publier l&apos;événement
           </button>
         </div>

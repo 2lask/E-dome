@@ -212,7 +212,7 @@ export default function MessagesPage() {
             </div>
             <button
               onClick={() => setShowNewConv(true)}
-              className="w-8 h-8 rounded-full bg-[#C4956A] text-white flex items-center justify-center hover:bg-[#b8845a] transition-colors"
+              className="w-8 h-8 rounded-full bg-[#1e9df1] text-white flex items-center justify-center hover:bg-[#b8845a] transition-colors"
               title="Nouvelle conversation"
             >
               <LottiePlayer src="/lottie/lottieflow-chat-17-1-000000-easey.json" width={24} height={24} />
@@ -257,7 +257,7 @@ export default function MessagesPage() {
                 <div className="flex items-center justify-between mt-0.5">
                   <span className="text-xs text-[var(--text-muted)] truncate">{conv.lastMessage}</span>
                   {conv.unreadCount > 0 && (
-                    <span className="ml-2 w-5 h-5 rounded-full bg-[#C4956A] text-white text-[10px] flex items-center justify-center flex-shrink-0">
+                    <span className="ml-2 w-5 h-5 rounded-full bg-[#1e9df1] text-white text-[10px] flex items-center justify-center flex-shrink-0">
                       {conv.unreadCount}
                     </span>
                   )}
@@ -336,7 +336,7 @@ export default function MessagesPage() {
                               isDeleted
                                 ? "bg-[var(--card)] text-[var(--text-muted)] italic"
                                 : isMine
-                                ? "bg-[#C4956A]/20 text-[var(--foreground)] rounded-br-md"
+                                ? "bg-[#1e9df1]/20 text-[var(--foreground)] rounded-br-md"
                                 : "bg-[var(--card)] text-[var(--foreground)] rounded-bl-md"
                             }`}
                             onClick={() => {
@@ -350,7 +350,7 @@ export default function MessagesPage() {
                                 <div>{msg.content}</div>
                                 <div
                                   className={`text-[10px] mt-1 flex items-center gap-1 ${
-                                    isMine ? "text-[#C4956A]/60 justify-end" : "text-[var(--text-muted)]"
+                                    isMine ? "text-[#1e9df1]/60 justify-end" : "text-[var(--text-muted)]"
                                   }`}
                                 >
                                   {formatTime(msg.timestamp)}
@@ -422,7 +422,7 @@ export default function MessagesPage() {
                     <button
                       key={item}
                       onClick={() => setShowAttach(false)}
-                      className="px-3 py-1.5 text-xs rounded-lg bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/50"
+                      className="px-3 py-1.5 text-xs rounded-lg bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/50"
                     >
                       {item}
                     </button>
@@ -461,7 +461,7 @@ export default function MessagesPage() {
                 <button
                   onClick={sendMessage}
                   disabled={!message.trim()}
-                  className="p-2.5 rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a] disabled:opacity-40 transition-colors"
+                  className="p-2.5 rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a] disabled:opacity-40 transition-colors"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="22" y1="2" x2="11" y2="13" />
@@ -564,7 +564,7 @@ export default function MessagesPage() {
               <img
                 src={activeConv.participant.avatar}
                 alt=""
-                className="w-24 h-24 rounded-full object-cover border-4 border-[#C4956A] mx-auto mb-2"
+                className="w-24 h-24 rounded-full object-cover border-4 border-[#1e9df1] mx-auto mb-2"
               />
               <span className="text-white text-sm">
                 {activeConv.participant.firstName} {activeConv.participant.lastName}

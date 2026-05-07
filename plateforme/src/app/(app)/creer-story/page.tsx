@@ -50,14 +50,14 @@ const GRADIENTS = [
   "linear-gradient(135deg, #e0c3fc, #8ec5fc)",
   "linear-gradient(135deg, #f5576c, #ff9a9e)",
   "linear-gradient(135deg, #667eea, #00f2fe)",
-  "linear-gradient(135deg, #C4956A, #e8c9a0)",
+  "linear-gradient(135deg, #1e9df1, #e8c9a0)",
   "linear-gradient(135deg, #1a1a2e, #16213e)",
 ];
 
 const FONTS = ["Inter", "Georgia", "Courier New", "Impact", "Comic Sans MS"];
 const SIZES: Record<string, number> = { S: 14, M: 18, L: 24, XL: 32, XXL: 42 };
 const TEXT_COLORS = [
-  "#ffffff", "#000000", "#C4956A", "#ef4444", "#f59e0b", "#22c55e",
+  "#ffffff", "#000000", "#1e9df1", "#ef4444", "#f59e0b", "#22c55e",
   "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16", "#f97316",
 ];
 const EMOJI_STICKERS = ["🏡", "🏢", "🌴", "🏔", "🔑", "💰", "⭐", "❤️", "🔥", "📈", "🤝", "✅"];
@@ -251,7 +251,7 @@ export default function CreerStoryPage() {
               ? background
               : background,
           ...(bgType === "gradient" ? { backgroundImage: background } : {}),
-          boxShadow: "0 0 40px rgba(196,149,106,0.15)",
+          boxShadow: "0 0 40px rgba(30, 157, 242,0.15)",
         }}>
           {/* Progress bar */}
           {(isPlaying || playProgress > 0) && (
@@ -260,7 +260,7 @@ export default function CreerStoryPage() {
               background: "rgba(255,255,255,0.3)", borderRadius: 2, zIndex: 20,
             }}>
               <div style={{
-                height: "100%", borderRadius: 2, background: "#C4956A",
+                height: "100%", borderRadius: 2, background: "#1e9df1",
                 width: `${playProgress}%`, transition: "width 50ms linear",
               }} />
             </div>
@@ -298,7 +298,7 @@ export default function CreerStoryPage() {
                     ? "rgba(255,255,255,0.15)"
                     : "transparent",
                 backdropFilter: block.bg === "blur" ? "blur(8px)" : "none",
-                border: selectedTextId === block.id ? "2px solid #C4956A" : "2px solid transparent",
+                border: selectedTextId === block.id ? "2px solid #1e9df1" : "2px solid transparent",
                 minWidth: 40,
                 maxWidth: "80%",
                 wordBreak: "break-word",
@@ -345,7 +345,7 @@ export default function CreerStoryPage() {
                       fontWeight: 700,
                       color: "#fff",
                       backdropFilter: "blur(4px)",
-                      border: "1px solid rgba(196,149,106,0.4)",
+                      border: "1px solid rgba(30, 157, 242,0.4)",
                     }
                   : {}),
               }}
@@ -368,7 +368,7 @@ export default function CreerStoryPage() {
               onClick={() => setLocation("")}
               title="Cliquer pour supprimer"
             >
-              <MapPin size={12} color="#C4956A" /> {location}
+              <MapPin size={12} color="#1e9df1" /> {location}
             </div>
           )}
 
@@ -380,7 +380,7 @@ export default function CreerStoryPage() {
                 background: "rgba(0,0,0,0.7)", borderRadius: 12, padding: 10,
                 display: "flex", alignItems: "center", gap: 10,
                 backdropFilter: "blur(8px)", zIndex: 10, cursor: "pointer",
-                border: "1px solid rgba(196,149,106,0.3)",
+                border: "1px solid rgba(30, 157, 242,0.3)",
               }}
               onClick={() => setSelectedProperty(null)}
               title="Cliquer pour supprimer"
@@ -392,9 +392,9 @@ export default function CreerStoryPage() {
               />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600 }}>{selectedProperty.title}</div>
-                <div style={{ fontSize: 12, color: "#C4956A" }}>{selectedProperty.price}</div>
+                <div style={{ fontSize: 12, color: "#1e9df1" }}>{selectedProperty.price}</div>
               </div>
-              <span style={{ fontSize: 12, color: "#C4956A" }}>Voir →</span>
+              <span style={{ fontSize: 12, color: "#1e9df1" }}>Voir →</span>
             </div>
           )}
         </div>
@@ -418,9 +418,9 @@ export default function CreerStoryPage() {
               style={{
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
                 padding: "8px 14px", borderRadius: 12,
-                background: activeTool === tool.key ? "rgba(196,149,106,0.2)" : "rgba(255,255,255,0.08)",
-                border: activeTool === tool.key ? "1px solid #C4956A" : "1px solid rgba(255,255,255,0.1)",
-                color: activeTool === tool.key ? "#C4956A" : "#fff",
+                background: activeTool === tool.key ? "rgba(30, 157, 242,0.2)" : "rgba(255,255,255,0.08)",
+                border: activeTool === tool.key ? "1px solid #1e9df1" : "1px solid rgba(255,255,255,0.1)",
+                color: activeTool === tool.key ? "#1e9df1" : "#fff",
                 cursor: "pointer", fontSize: 12, fontWeight: 500,
                 transition: "all 0.2s",
               }}
@@ -442,7 +442,7 @@ export default function CreerStoryPage() {
             {/* ─ Fond ───────────────────────────────────────────────────────── */}
             {activeTool === "fond" && (
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#C4956A" }}>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#1e9df1" }}>
                   Arriere-plan
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 16 }}>
@@ -454,7 +454,7 @@ export default function CreerStoryPage() {
                         aspectRatio: "1", borderRadius: 10, cursor: "pointer",
                         backgroundImage: g,
                         border: background === g && bgType === "gradient"
-                          ? "2px solid #C4956A"
+                          ? "2px solid #1e9df1"
                           : "2px solid transparent",
                         transition: "border 0.2s",
                       }}
@@ -473,8 +473,8 @@ export default function CreerStoryPage() {
                     style={{
                       marginLeft: "auto", display: "flex", alignItems: "center", gap: 4,
                       padding: "6px 12px", borderRadius: 8, fontSize: 12,
-                      background: "rgba(196,149,106,0.15)", color: "#C4956A",
-                      cursor: "pointer", border: "1px solid rgba(196,149,106,0.3)",
+                      background: "rgba(30, 157, 242,0.15)", color: "#1e9df1",
+                      cursor: "pointer", border: "1px solid rgba(30, 157, 242,0.3)",
                     }}
                   >
                     <LottiePlayer src="/lottie/lottieflow-multimedia-8-5-000000-easey.json" width={20} height={20} /> Image
@@ -488,13 +488,13 @@ export default function CreerStoryPage() {
             {activeTool === "texte" && (
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: "#C4956A" }}>Texte</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#1e9df1" }}>Texte</span>
                   <button
                     onClick={addTextBlock}
                     style={{
                       display: "flex", alignItems: "center", gap: 4,
                       padding: "6px 12px", borderRadius: 8, fontSize: 12,
-                      background: "#C4956A", color: "#fff", border: "none",
+                      background: "#1e9df1", color: "#fff", border: "none",
                       cursor: "pointer", fontWeight: 600,
                     }}
                   >
@@ -521,7 +521,7 @@ export default function CreerStoryPage() {
                           style={{
                             padding: "4px 8px", borderRadius: 6, fontSize: 11,
                             fontFamily: f, cursor: "pointer",
-                            background: selectedText.font === f ? "#C4956A" : "rgba(255,255,255,0.1)",
+                            background: selectedText.font === f ? "#1e9df1" : "rgba(255,255,255,0.1)",
                             color: "#fff", border: "none",
                           }}
                         >
@@ -538,7 +538,7 @@ export default function CreerStoryPage() {
                           style={{
                             padding: "4px 10px", borderRadius: 6, fontSize: 12,
                             cursor: "pointer",
-                            background: selectedText.size === s ? "#C4956A" : "rgba(255,255,255,0.1)",
+                            background: selectedText.size === s ? "#1e9df1" : "rgba(255,255,255,0.1)",
                             color: "#fff", border: "none", fontWeight: 600,
                           }}
                         >
@@ -554,7 +554,7 @@ export default function CreerStoryPage() {
                           onClick={() => updateTextBlock(selectedText.id, { color: c })}
                           style={{
                             width: 24, height: 24, borderRadius: "50%", background: c, cursor: "pointer",
-                            border: selectedText.color === c ? "2px solid #C4956A" : "2px solid rgba(255,255,255,0.2)",
+                            border: selectedText.color === c ? "2px solid #1e9df1" : "2px solid rgba(255,255,255,0.2)",
                           }}
                         />
                       ))}
@@ -568,7 +568,7 @@ export default function CreerStoryPage() {
                             onClick={() => updateTextBlock(selectedText.id, { align: a })}
                             style={{
                               padding: "4px 8px", borderRadius: 6, cursor: "pointer",
-                              background: selectedText.align === a ? "#C4956A" : "rgba(255,255,255,0.1)",
+                              background: selectedText.align === a ? "#1e9df1" : "rgba(255,255,255,0.1)",
                               color: "#fff", border: "none",
                             }}
                           >
@@ -583,7 +583,7 @@ export default function CreerStoryPage() {
                             onClick={() => updateTextBlock(selectedText.id, { bg })}
                             style={{
                               padding: "4px 8px", borderRadius: 6, fontSize: 11, cursor: "pointer",
-                              background: selectedText.bg === bg ? "#C4956A" : "rgba(255,255,255,0.1)",
+                              background: selectedText.bg === bg ? "#1e9df1" : "rgba(255,255,255,0.1)",
                               color: "#fff", border: "none",
                             }}
                           >
@@ -610,7 +610,7 @@ export default function CreerStoryPage() {
             {/* ─ Sticker ────────────────────────────────────────────────────── */}
             {activeTool === "sticker" && (
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#C4956A" }}>Stickers</div>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#1e9df1" }}>Stickers</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8, marginBottom: 16 }}>
                   {EMOJI_STICKERS.map((e) => (
                     <button
@@ -621,7 +621,7 @@ export default function CreerStoryPage() {
                         border: "none", cursor: "pointer", padding: "8px 0",
                         transition: "background 0.2s",
                       }}
-                      onMouseEnter={(ev) => (ev.currentTarget.style.background = "rgba(196,149,106,0.2)")}
+                      onMouseEnter={(ev) => (ev.currentTarget.style.background = "rgba(30, 157, 242,0.2)")}
                       onMouseLeave={(ev) => (ev.currentTarget.style.background = "rgba(255,255,255,0.08)")}
                     >
                       {e}
@@ -642,8 +642,8 @@ export default function CreerStoryPage() {
                         transition: "all 0.2s",
                       }}
                       onMouseEnter={(ev) => {
-                        ev.currentTarget.style.background = "rgba(196,149,106,0.2)";
-                        ev.currentTarget.style.borderColor = "rgba(196,149,106,0.4)";
+                        ev.currentTarget.style.background = "rgba(30, 157, 242,0.2)";
+                        ev.currentTarget.style.borderColor = "rgba(30, 157, 242,0.4)";
                       }}
                       onMouseLeave={(ev) => {
                         ev.currentTarget.style.background = "rgba(255,255,255,0.08)";
@@ -660,7 +660,7 @@ export default function CreerStoryPage() {
             {/* ─ Bien ───────────────────────────────────────────────────────── */}
             {activeTool === "bien" && (
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#C4956A" }}>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#1e9df1" }}>
                   Associer un bien
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, maxHeight: 280, overflowY: "auto" }}>
@@ -671,7 +671,7 @@ export default function CreerStoryPage() {
                       style={{
                         borderRadius: 10, overflow: "hidden", cursor: "pointer",
                         border: selectedProperty?.id === p.id
-                          ? "2px solid #C4956A"
+                          ? "2px solid #1e9df1"
                           : "1px solid rgba(255,255,255,0.1)",
                         background: "rgba(255,255,255,0.05)",
                         transition: "all 0.2s",
@@ -680,7 +680,7 @@ export default function CreerStoryPage() {
                       <img src={p.image} alt={p.title} style={{ width: "100%", height: 70, objectFit: "cover" }} />
                       <div style={{ padding: "6px 8px" }}>
                         <div style={{ fontSize: 11, fontWeight: 600, color: "#fff" }}>{p.title}</div>
-                        <div style={{ fontSize: 10, color: "#C4956A" }}>{p.price}</div>
+                        <div style={{ fontSize: 10, color: "#1e9df1" }}>{p.price}</div>
                       </div>
                     </div>
                   ))}
@@ -691,7 +691,7 @@ export default function CreerStoryPage() {
             {/* ─ Lieu ───────────────────────────────────────────────────────── */}
             {activeTool === "lieu" && (
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#C4956A" }}>Lieu</div>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#1e9df1" }}>Lieu</div>
                 <div style={{ position: "relative" }}>
                   <input
                     type="text"
@@ -725,10 +725,10 @@ export default function CreerStoryPage() {
                             display: "flex", alignItems: "center", gap: 6,
                             borderBottom: "1px solid rgba(255,255,255,0.05)",
                           }}
-                          onMouseEnter={(ev) => (ev.currentTarget.style.background = "rgba(196,149,106,0.15)")}
+                          onMouseEnter={(ev) => (ev.currentTarget.style.background = "rgba(30, 157, 242,0.15)")}
                           onMouseLeave={(ev) => (ev.currentTarget.style.background = "transparent")}
                         >
-                          <MapPin size={12} color="#C4956A" /> {s}
+                          <MapPin size={12} color="#1e9df1" /> {s}
                         </div>
                       ))}
                     </div>
@@ -738,10 +738,10 @@ export default function CreerStoryPage() {
                   <div style={{
                     marginTop: 10, display: "flex", alignItems: "center", gap: 6,
                     padding: "6px 12px", borderRadius: 20,
-                    background: "rgba(196,149,106,0.15)", border: "1px solid rgba(196,149,106,0.3)",
+                    background: "rgba(30, 157, 242,0.15)", border: "1px solid rgba(30, 157, 242,0.3)",
                     fontSize: 13, width: "fit-content",
                   }}>
-                    <MapPin size={12} color="#C4956A" /> {location}
+                    <MapPin size={12} color="#1e9df1" /> {location}
                     <X
                       size={12}
                       style={{ cursor: "pointer", marginLeft: 4 }}
@@ -755,7 +755,7 @@ export default function CreerStoryPage() {
             {/* ─ Duree ──────────────────────────────────────────────────────── */}
             {activeTool === "duree" && (
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#C4956A" }}>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#1e9df1" }}>
                   Duree de la story
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
@@ -766,9 +766,9 @@ export default function CreerStoryPage() {
                       style={{
                         flex: 1, padding: "12px 0", borderRadius: 10, fontSize: 15,
                         fontWeight: 700, cursor: "pointer",
-                        background: duration === d ? "#C4956A" : "rgba(255,255,255,0.08)",
+                        background: duration === d ? "#1e9df1" : "rgba(255,255,255,0.08)",
                         color: duration === d ? "#fff" : "#aaa",
-                        border: duration === d ? "1px solid #C4956A" : "1px solid rgba(255,255,255,0.1)",
+                        border: duration === d ? "1px solid #1e9df1" : "1px solid rgba(255,255,255,0.1)",
                         transition: "all 0.2s",
                       }}
                     >
@@ -779,7 +779,7 @@ export default function CreerStoryPage() {
                 {/* Mini progress preview */}
                 <div style={{ marginTop: 12, height: 4, background: "rgba(255,255,255,0.1)", borderRadius: 2 }}>
                   <div style={{
-                    height: "100%", width: `${(duration / 15) * 100}%`, background: "#C4956A",
+                    height: "100%", width: `${(duration / 15) * 100}%`, background: "#1e9df1",
                     borderRadius: 2, transition: "width 0.3s",
                   }} />
                 </div>
@@ -815,12 +815,12 @@ export default function CreerStoryPage() {
           style={{
             display: "flex", alignItems: "center", gap: 6,
             padding: "10px 24px", borderRadius: 12, fontSize: 14,
-            background: "#C4956A", color: "#fff", border: "none",
+            background: "#1e9df1", color: "#fff", border: "none",
             cursor: "pointer", fontWeight: 600, transition: "all 0.2s",
-            boxShadow: "0 4px 15px rgba(196,149,106,0.3)",
+            boxShadow: "0 4px 15px rgba(30, 157, 242,0.3)",
           }}
           onMouseEnter={(e) => (e.currentTarget.style.background = "#b8845a")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "#C4956A")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#1e9df1")}
         >
           <Check size={16} /> Publier la story
         </button>

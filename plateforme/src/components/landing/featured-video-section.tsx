@@ -18,12 +18,12 @@ export function FeaturedVideoSection() {
         viewBox="0 0 120 120"
         fill="none"
       >
-        <rect x="10" y="10" width="100" height="100" stroke="#C4956A" strokeWidth="1" />
-        <rect x="30" y="30" width="60" height="60" stroke="#C4956A" strokeWidth="1" />
-        <line x1="10" y1="10" x2="30" y2="30" stroke="#C4956A" strokeWidth="1" />
-        <line x1="110" y1="10" x2="90" y2="30" stroke="#C4956A" strokeWidth="1" />
-        <line x1="10" y1="110" x2="30" y2="90" stroke="#C4956A" strokeWidth="1" />
-        <line x1="110" y1="110" x2="90" y2="90" stroke="#C4956A" strokeWidth="1" />
+        <rect x="10" y="10" width="100" height="100" stroke="#1e9df1" strokeWidth="1" />
+        <rect x="30" y="30" width="60" height="60" stroke="#1e9df1" strokeWidth="1" />
+        <line x1="10" y1="10" x2="30" y2="30" stroke="#1e9df1" strokeWidth="1" />
+        <line x1="110" y1="10" x2="90" y2="30" stroke="#1e9df1" strokeWidth="1" />
+        <line x1="10" y1="110" x2="30" y2="90" stroke="#1e9df1" strokeWidth="1" />
+        <line x1="110" y1="110" x2="90" y2="90" stroke="#1e9df1" strokeWidth="1" />
       </svg>
 
       <div className="max-w-5xl mx-auto">
@@ -57,7 +57,7 @@ export function FeaturedVideoSection() {
           className="mt-10 md:mt-14 max-w-2xl mx-auto text-center"
         >
           <p
-            className="text-[#C4956A] text-xs tracking-[0.2em] uppercase mb-4 font-medium"
+            className="text-[#1e9df1] text-xs tracking-[0.2em] uppercase mb-4 font-medium"
             style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
           >
             {t("featured.label")}
@@ -75,7 +75,7 @@ export function FeaturedVideoSection() {
             <motion.span
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2.5 bg-[#C4956A] text-white text-sm font-semibold px-7 py-3.5 rounded-xl hover:bg-[#b8875e] transition-colors cursor-pointer shadow-md shadow-[#C4956A]/20"
+              className="inline-flex items-center gap-2.5 bg-[#1e9df1] text-white text-sm font-semibold px-7 py-3.5 rounded-xl hover:bg-[#b8875e] transition-colors cursor-pointer shadow-md shadow-[#1e9df1]/20"
             >
               {t("featured.cta")}
               <ArrowRight size={16} />

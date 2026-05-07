@@ -103,14 +103,14 @@ export default function EvenementsPage() {
             <p className="text-[var(--text-secondary)] mt-1">Découvrez les événements de la communauté</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setViewMode("list")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "list" ? "bg-[#C4956A] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
+            <button onClick={() => setViewMode("list")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "list" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
               Liste
             </button>
-            <button onClick={() => setViewMode("calendar")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "calendar" ? "bg-[#C4956A] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
+            <button onClick={() => setViewMode("calendar")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "calendar" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
               Calendrier
             </button>
             {canCreateEvent && (
-              <a href="/evenements/creer" className="px-4 py-2 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl text-sm font-medium transition-colors">
+              <a href="/evenements/creer" className="px-4 py-2 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl text-sm font-medium transition-colors">
                 + Cr&eacute;er
               </a>
             )}
@@ -128,7 +128,7 @@ export default function EvenementsPage() {
               <div className="flex items-center gap-4 text-white/80 text-sm">
                 <span>{new Date(featured.date).toLocaleDateString("fr-CH")} à {featured.heure}</span>
                 <span>{featured.lieu}</span>
-                <span className="text-[#C4956A] font-semibold">{featured.prix > 0 ? formatPrice(featured.prix) : "Gratuit"}</span>
+                <span className="text-[#1e9df1] font-semibold">{featured.prix > 0 ? formatPrice(featured.prix) : "Gratuit"}</span>
               </div>
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function EvenementsPage() {
           <>
             <div className="flex gap-2">
               {TABS.map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === tab ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
+                <button key={tab} onClick={() => setActiveTab(tab)} className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === tab ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
                   {tab}
                 </button>
               ))}
@@ -154,19 +154,19 @@ export default function EvenementsPage() {
                 const isFull = effectiveRemaining === 0;
                 const isRegistered = registeredIds.has(ev.id);
                 return (
-                  <div key={ev.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#C4956A]/40 transition-colors relative">
+                  <div key={ev.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#1e9df1]/40 transition-colors relative">
                     <div className="relative">
                       <img src={ev.thumbnail} alt={ev.titre} className="w-full h-44 object-cover" />
                       {/* Date badge */}
                       <div className="absolute top-3 left-3 bg-white/90 dark:bg-black/80 backdrop-blur-sm rounded-xl px-3 py-1.5 text-center">
-                        <div className="text-lg font-bold text-[#C4956A] leading-tight">{db.day}</div>
+                        <div className="text-lg font-bold text-[#1e9df1] leading-tight">{db.day}</div>
                         <div className="text-[10px] font-medium text-[var(--text-muted)] uppercase">{db.month}</div>
                       </div>
                       {/* Type badge */}
                       <span className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium ${TYPE_COLORS[ev.type] || "bg-gray-500/20 text-gray-400"}`}>{ev.type}</span>
                     </div>
                     <div className="p-4 space-y-3">
-                      <a href={`/evenements/${ev.id}`} className="font-semibold line-clamp-2 hover:text-[#C4956A] transition-colors block">{ev.titre}</a>
+                      <a href={`/evenements/${ev.id}`} className="font-semibold line-clamp-2 hover:text-[#1e9df1] transition-colors block">{ev.titre}</a>
                       <div className="space-y-1 text-sm text-[var(--text-secondary)]">
                         <div className="flex items-center gap-2">
                           <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -184,11 +184,11 @@ export default function EvenementsPage() {
                           <span>{ev.spots - effectiveRemaining}/{ev.spots}</span>
                         </div>
                         <div className="w-full h-1.5 bg-[var(--background)] rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full transition-all ${isFull ? "bg-red-500" : "bg-[#C4956A]"}`} style={{ width: `${spotsPercent}%` }} />
+                          <div className={`h-full rounded-full transition-all ${isFull ? "bg-red-500" : "bg-[#1e9df1]"}`} style={{ width: `${spotsPercent}%` }} />
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-[#C4956A]">{ev.prix > 0 ? formatPrice(ev.prix) : "Gratuit"}</span>
+                        <span className="font-bold text-[#1e9df1]">{ev.prix > 0 ? formatPrice(ev.prix) : "Gratuit"}</span>
                         <div className="flex gap-2">
                           {/* Share button */}
                           <div className="relative">
@@ -208,7 +208,7 @@ export default function EvenementsPage() {
                           ) : isFull ? (
                             <span className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium">Complet</span>
                           ) : (
-                            <button onClick={() => setRegisteringId(ev.id)} className="px-3 py-1.5 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-lg text-sm font-medium transition-colors">
+                            <button onClick={() => setRegisteringId(ev.id)} className="px-3 py-1.5 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-lg text-sm font-medium transition-colors">
                               S&apos;inscrire
                             </button>
                           )}
@@ -247,7 +247,7 @@ export default function EvenementsPage() {
                       <>
                         <span className="text-xs text-[var(--text-secondary)]">{day}</span>
                         {eventsOnDay.map((ev) => (
-                          <div key={ev.id} className="mt-1 px-1.5 py-0.5 bg-[#C4956A]/20 text-[#C4956A] rounded text-[10px] font-medium truncate cursor-pointer" title={ev.titre}>
+                          <div key={ev.id} className="mt-1 px-1.5 py-0.5 bg-[#1e9df1]/20 text-[#1e9df1] rounded text-[10px] font-medium truncate cursor-pointer" title={ev.titre}>
                             {ev.titre.substring(0, 15)}...
                           </div>
                         ))}
@@ -269,7 +269,7 @@ export default function EvenementsPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full animate-scale-in">
               <h2 className="text-xl font-bold mb-2">S&apos;inscrire à l&apos;événement</h2>
-              <h3 className="text-[#C4956A] font-medium mb-4">{ev.titre}</h3>
+              <h3 className="text-[#1e9df1] font-medium mb-4">{ev.titre}</h3>
               <div className="space-y-2 text-sm text-[var(--text-secondary)] mb-6">
                 <p>Date : {new Date(ev.date).toLocaleDateString("fr-CH")} à {ev.heure}</p>
                 <p>Lieu : {ev.lieu}</p>
@@ -280,7 +280,7 @@ export default function EvenementsPage() {
                 <button onClick={() => setRegisteringId(null)} className="flex-1 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
                   Annuler
                 </button>
-                <button onClick={() => handleRegister(ev.id)} className="flex-1 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+                <button onClick={() => handleRegister(ev.id)} className="flex-1 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
                   Confirmer
                 </button>
               </div>

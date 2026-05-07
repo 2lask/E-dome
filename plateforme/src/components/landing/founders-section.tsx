@@ -28,7 +28,7 @@ export function FoundersSection() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-2 font-medium">
+            <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-2 font-medium">
               {t("founders.label_leo")}
             </p>
             <h3 className="text-gray-900 text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
@@ -75,7 +75,7 @@ export function FoundersSection() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-2 font-medium">
+            <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-2 font-medium">
               {t("founders.label_jp")}
             </p>
             <h3 className="text-gray-900 text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
@@ -116,14 +116,14 @@ export function FoundersSection() {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="text-center mb-20 md:mb-28 px-4"
         >
-          <div className="w-16 h-1 bg-[#C4956A] mx-auto mb-8 rounded-full" />
+          <div className="w-16 h-1 bg-[#1e9df1] mx-auto mb-8 rounded-full" />
           <p
             className="text-xl sm:text-2xl md:text-4xl lg:text-5xl text-gray-900 leading-[1.3] tracking-tight italic max-w-4xl mx-auto"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             {t("founders.quote")}
           </p>
-          <div className="w-16 h-1 bg-[#C4956A] mx-auto mt-8 rounded-full" />
+          <div className="w-16 h-1 bg-[#1e9df1] mx-auto mt-8 rounded-full" />
         </motion.div>
 
         {/* ── Conviction & Engagement cards ── */}
@@ -136,7 +136,7 @@ export function FoundersSection() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {/* Conviction */}
             <div className="rounded-2xl p-7 md:p-9 bg-[#FAFAF8] border border-gray-200">
-              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-4 font-medium">
+              <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium">
                 {t("founders.conviction_label")}
               </p>
               <p

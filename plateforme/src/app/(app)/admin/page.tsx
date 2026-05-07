@@ -140,7 +140,7 @@ export default function AdminPage() {
             onClick={() => setActiveTab(tab.key)}
             className={`px-4 py-2.5 text-sm font-medium transition border-b-2 ${
               activeTab === tab.key
-                ? "border-[#C4956A] text-[#C4956A]"
+                ? "border-[#1e9df1] text-[#1e9df1]"
                 : "border-transparent text-[var(--text-muted)] hover:text-[var(--foreground)]"
             }`}
           >
@@ -157,7 +157,7 @@ export default function AdminPage() {
             placeholder="Rechercher un utilisateur..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full max-w-md px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition"
+            className="w-full max-w-md px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] transition"
           />
           <div className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-x-auto">
             <table className="w-full text-sm">
@@ -294,7 +294,7 @@ export default function AdminPage() {
                   step="0.1"
                   value={commissionVente}
                   onChange={(e) => setCommissionVente(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#1e9df1] transition"
                 />
               </div>
               <div className="space-y-1">
@@ -304,7 +304,7 @@ export default function AdminPage() {
                   step="0.1"
                   value={commissionLocation}
                   onChange={(e) => setCommissionLocation(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#1e9df1] transition"
                 />
               </div>
               <div className="space-y-1">
@@ -314,7 +314,7 @@ export default function AdminPage() {
                   step="1"
                   value={commissionApporteur}
                   onChange={(e) => setCommissionApporteur(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] transition"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#1e9df1] transition"
                 />
               </div>
             </div>
@@ -341,7 +341,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <button className="px-6 py-2.5 rounded-lg bg-[#C4956A] text-white font-medium hover:opacity-90 transition">
+          <button className="px-6 py-2.5 rounded-lg bg-[#1e9df1] text-white font-medium hover:opacity-90 transition">
             Sauvegarder les parametres
           </button>
         </section>

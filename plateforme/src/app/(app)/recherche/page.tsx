@@ -145,7 +145,7 @@ function SearchResults() {
               <button
                 key={term}
                 onClick={() => handlePopularSearch(term)}
-                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[#C4956A]/40 hover:text-[#C4956A] transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[#1e9df1]/40 hover:text-[#1e9df1] transition-colors cursor-pointer"
               >
                 {term}
               </button>
@@ -174,7 +174,7 @@ function SearchResults() {
               <button
                 key={term}
                 onClick={() => handlePopularSearch(term)}
-                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[#C4956A]/40 hover:text-[#C4956A] transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[#1e9df1]/40 hover:text-[#1e9df1] transition-colors cursor-pointer"
               >
                 {term}
               </button>
@@ -207,7 +207,7 @@ function SearchResults() {
               onClick={() => setActiveCategory(tab.key)}
               className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                 activeCategory === tab.key
-                  ? "bg-[#C4956A] text-white"
+                  ? "bg-[#1e9df1] text-white"
                   : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
               }`}
             >
@@ -230,12 +230,12 @@ function SearchResults() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {results!.biens.map((b) => (
-              <div key={b.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition cursor-pointer"
+              <div key={b.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition cursor-pointer"
                 onClick={() => router.push(`/explorer/${b.id}`)}>
                 <h3 className="font-medium text-[var(--foreground)]">{b.titre}</h3>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-sm text-[var(--text-secondary)]">{b.type} — {b.ville}, {b.pays}</span>
-                  <span className="text-sm font-bold text-[#C4956A]">{formatPrice(b.prix)}</span>
+                  <span className="text-sm font-bold text-[#1e9df1]">{formatPrice(b.prix)}</span>
                 </div>
               </div>
             ))}
@@ -251,11 +251,11 @@ function SearchResults() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {results!.formations.map((f) => (
-              <div key={f.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition cursor-pointer"
+              <div key={f.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition cursor-pointer"
                 onClick={() => router.push("/formations")}>
                 <h3 className="font-medium text-[var(--foreground)]">{f.titre}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">{f.instructeur} — {f.niveau}</p>
-                <p className="text-sm font-bold text-[#C4956A] mt-1">{formatPrice(f.prix)}</p>
+                <p className="text-sm font-bold text-[#1e9df1] mt-1">{formatPrice(f.prix)}</p>
               </div>
             ))}
           </div>
@@ -273,7 +273,7 @@ function SearchResults() {
               <div key={u.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] flex items-center justify-between hover:bg-[var(--hover-bg)] transition cursor-pointer"
                 onClick={() => router.push(`/profil/${u.id}`)}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#C4956A]/20 flex items-center justify-center text-[#C4956A] font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-[#1e9df1]/20 flex items-center justify-center text-[#1e9df1] font-bold text-sm">
                     {u.nom.split(" ").map((n) => n[0]).join("")}
                   </div>
                   <div>
@@ -298,7 +298,7 @@ function SearchResults() {
           </h2>
           <div className="space-y-2">
             {results!.evenements.map((e) => (
-              <div key={e.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition cursor-pointer"
+              <div key={e.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition cursor-pointer"
                 onClick={() => router.push(`/evenements/${e.id}`)}>
                 <h3 className="font-medium text-[var(--foreground)]">{e.titre}</h3>
                 <div className="flex items-center gap-4 mt-1 text-sm text-[var(--text-secondary)]">
@@ -319,10 +319,10 @@ function SearchResults() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {results!.services.map((s) => (
-              <div key={s.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition">
+              <div key={s.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition">
                 <h3 className="font-medium text-[var(--foreground)]">{s.titre}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">{s.description}</p>
-                <p className="text-sm font-bold text-[#C4956A] mt-2">Des {formatPrice(s.prix)}</p>
+                <p className="text-sm font-bold text-[#1e9df1] mt-2">Des {formatPrice(s.prix)}</p>
               </div>
             ))}
           </div>

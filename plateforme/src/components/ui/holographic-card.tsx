@@ -20,7 +20,7 @@ interface HolographicCardProps {
  * HolographicCard — carte premium "Membre Fondateur" avec effet 3D
  * tilt suivant le curseur + reflet holographique radial gold qui se
  * déplace sur la surface. Esthétique carte de crédit luxe (ratio
- * 1.586:1, dark gradient, accents gold #C4956A).
+ * 1.586:1, dark gradient, accents gold #1e9df1).
  */
 export function HolographicCard({
   memberNumber = "N° 001 / 100",

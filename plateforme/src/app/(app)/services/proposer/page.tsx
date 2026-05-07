@@ -25,7 +25,7 @@ const emptyForm: ServiceForm = {
   photos: [],
 };
 
-const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors";
+const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors";
 const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5";
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
@@ -70,7 +70,7 @@ export default function ProposerServicePage() {
           </div>
           <h1 className="text-2xl font-bold mb-2">Service publié !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre service &quot;{form.titre}&quot; est maintenant disponible sur la plateforme.</p>
-          <a href="/services" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
+          <a href="/services" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
             Voir les services
           </a>
         </div>
@@ -94,7 +94,7 @@ export default function ProposerServicePage() {
             <label className={labelCls}>Catégorie</label>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((c) => (
-                <button key={c} onClick={() => update("categorie", c)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${form.categorie === c ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}>
+                <button key={c} onClick={() => update("categorie", c)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${form.categorie === c ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
                   {c}
                 </button>
               ))}
@@ -137,7 +137,7 @@ export default function ProposerServicePage() {
                 <button
                   key={jour}
                   onClick={() => toggleDay(i)}
-                  className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors ${form.disponibilites[i] ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-muted)]"}`}
+                  className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors ${form.disponibilites[i] ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-muted)]"}`}
                 >
                   {jour}
                 </button>
@@ -150,7 +150,7 @@ export default function ProposerServicePage() {
             <label className={labelCls}>Photos (URLs)</label>
             <div className="flex gap-2 mb-2">
               <input className={`${inputCls} flex-1`} placeholder="https://..." value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} />
-              <button onClick={addPhoto} className="px-4 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+              <button onClick={addPhoto} className="px-4 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
                 Ajouter
               </button>
             </div>
@@ -168,7 +168,7 @@ export default function ProposerServicePage() {
             )}
           </div>
 
-          <button onClick={handlePublish} className="w-full py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors mt-4">
+          <button onClick={handlePublish} className="w-full py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors mt-4">
             Publier le service
           </button>
         </div>

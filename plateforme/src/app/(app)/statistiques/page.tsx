@@ -48,7 +48,7 @@ const VIEWS_BY_PROPERTY = [
 ];
 
 const TRAFFIC_SOURCES = [
-  { source: "Recherche directe", value: 35, color: "#C4956A" },
+  { source: "Recherche directe", value: 35, color: "#1e9df1" },
   { source: "Réseaux sociaux", value: 25, color: "#60a5fa" },
   { source: "Referral", value: 20, color: "#34d399" },
   { source: "Email", value: 12, color: "#a78bfa" },
@@ -69,7 +69,7 @@ const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
 /* ─── Sparkline component ────────────────────────────────────────────────── */
 
-function Sparkline({ data, color = "#C4956A" }: { data: number[]; color?: string }) {
+function Sparkline({ data, color = "#1e9df1" }: { data: number[]; color?: string }) {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -140,7 +140,7 @@ export default function StatistiquesPage() {
               onClick={() => setPeriod(p.key)}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition ${
                 period === p.key
-                  ? "bg-[#C4956A] text-white"
+                  ? "bg-[#1e9df1] text-white"
                   : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
               }`}
             >
@@ -210,7 +210,7 @@ export default function StatistiquesPage() {
                 <span className="text-sm text-[var(--text-secondary)] w-44 truncate">{p.nom}</span>
                 <div className="flex-1 h-6 bg-[var(--hover-bg)] rounded overflow-hidden">
                   <div
-                    className="h-full bg-[#C4956A]/80 rounded transition-all"
+                    className="h-full bg-[#1e9df1]/80 rounded transition-all"
                     style={{ width: `${(p.vues / maxBarVues) * 100}%` }}
                   />
                 </div>
@@ -288,7 +288,7 @@ export default function StatistiquesPage() {
                     key={hourIdx}
                     className="flex-1 aspect-square rounded-sm"
                     style={{
-                      backgroundColor: `rgba(196,149,106,${val / maxHeat})`,
+                      backgroundColor: `rgba(30, 157, 242,${val / maxHeat})`,
                     }}
                     title={`${DAYS[dayIdx]} ${hourIdx}h: ${val} actions`}
                   />

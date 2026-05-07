@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     "La plateforme immobilière tout-en-un pour la gestion, l'investissement et la location de biens.",
   keywords: ["immobilier", "investissement", "location", "plateforme", "E-Dome"],
   manifest: "/manifest.json",
-  themeColor: "#C4956A",
+  themeColor: "#1e9df1",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

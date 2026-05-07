@@ -106,7 +106,7 @@ export default function FavorisPage() {
               onClick={() => setTab(t.key)}
               className={`px-4 py-2 text-sm rounded-xl transition-colors ${
                 tab === t.key
-                  ? "bg-[#C4956A] text-white"
+                  ? "bg-[#1e9df1] text-white"
                   : "text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
               }`}
             >
@@ -145,7 +145,7 @@ export default function FavorisPage() {
               </p>
               <Link
                 href="/explorer"
-                className="inline-block px-6 py-2.5 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a]"
+                className="inline-block px-6 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a]"
               >
                 Explorer
               </Link>
@@ -164,7 +164,7 @@ export default function FavorisPage() {
                   </Link>
                   <div className="p-4">
                     <Link href={`/explorer/${p.id}`}>
-                      <h3 className="text-sm font-semibold text-[var(--foreground)] truncate hover:text-[#C4956A]">
+                      <h3 className="text-sm font-semibold text-[var(--foreground)] truncate hover:text-[#1e9df1]">
                         {p.title}
                       </h3>
                     </Link>
@@ -172,7 +172,7 @@ export default function FavorisPage() {
                       {p.location.city}, {p.location.country}
                     </p>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-bold text-[#C4956A]">
+                      <span className="text-sm font-bold text-[#1e9df1]">
                         {formatPrice(p.price, p.currency)}
                         {p.transactionType === "location-ct" ? "/nuit" : ""}
                       </span>

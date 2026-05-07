@@ -35,7 +35,7 @@ function Stars({ rating }: { rating: number }) {
   return (
     <span className="flex items-center gap-1 text-sm">
       {[1, 2, 3, 4, 5].map((s) => (
-        <svg key={s} className={`w-4 h-4 ${s <= Math.round(rating) ? "text-[#C4956A]" : "text-[var(--text-muted)]"}`} fill="currentColor" viewBox="0 0 20 20">
+        <svg key={s} className={`w-4 h-4 ${s <= Math.round(rating) ? "text-[#1e9df1]" : "text-[var(--text-muted)]"}`} fill="currentColor" viewBox="0 0 20 20">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
@@ -74,7 +74,7 @@ export default function FormationsPage() {
             <p className="text-[var(--text-secondary)] mt-1">Développez vos compétences immobilières</p>
           </div>
           {activeRole === "formateur" && (
-            <Link href="/formations/creer" className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+            <Link href="/formations/creer" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
               + Créer une formation
             </Link>
           )}
@@ -86,10 +86,10 @@ export default function FormationsPage() {
             <h2 className="text-xl font-semibold mb-4">Mes formations en cours</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {enrolledFormations.map((f) => (
-                <Link key={f.id} href={`/formations/${f.id}`} className="flex gap-4 p-4 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#C4956A]/40 transition-colors group">
+                <Link key={f.id} href={`/formations/${f.id}`} className="flex gap-4 p-4 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#1e9df1]/40 transition-colors group">
                   <img src={f.thumbnail} alt={f.title} className="w-28 h-20 rounded-xl object-cover flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-[var(--foreground)] truncate group-hover:text-[#C4956A] transition-colors">{f.title}</h3>
+                    <h3 className="font-medium text-[var(--foreground)] truncate group-hover:text-[#1e9df1] transition-colors">{f.title}</h3>
                     <p className="text-sm text-[var(--text-muted)] mt-0.5">{f.instructor.name}</p>
                     <div className="mt-2">
                       <div className="flex items-center justify-between text-xs text-[var(--text-secondary)] mb-1">
@@ -97,7 +97,7 @@ export default function FormationsPage() {
                         <span>{f.progress}%</span>
                       </div>
                       <div className="w-full h-2 bg-[var(--background)] rounded-full overflow-hidden">
-                        <div className="h-full bg-[#C4956A] rounded-full transition-all" style={{ width: `${f.progress}%` }} />
+                        <div className="h-full bg-[#1e9df1] rounded-full transition-all" style={{ width: `${f.progress}%` }} />
                       </div>
                     </div>
                   </div>
@@ -113,13 +113,13 @@ export default function FormationsPage() {
             <img src={featured.thumbnail} alt={featured.title} className="w-full h-64 object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6">
-              <span className="inline-block px-3 py-1 bg-[#C4956A] text-white text-xs font-medium rounded-full mb-3">Formation vedette</span>
+              <span className="inline-block px-3 py-1 bg-[#1e9df1] text-white text-xs font-medium rounded-full mb-3">Formation vedette</span>
               <h2 className="text-2xl font-bold text-white mb-1">{featured.title}</h2>
               <div className="flex items-center gap-4 text-white/80 text-sm">
                 <span>{featured.instructor.name}</span>
                 <span>{featured.studentCount} étudiants</span>
                 <Stars rating={featured.rating} />
-                <span className="font-semibold text-[#C4956A]">{formatPrice(featured.price)}</span>
+                <span className="font-semibold text-[#1e9df1]">{formatPrice(featured.price)}</span>
               </div>
             </div>
           </Link>
@@ -136,7 +136,7 @@ export default function FormationsPage() {
               placeholder="Rechercher une formation..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors"
+              className="w-full pl-12 pr-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors"
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -144,7 +144,7 @@ export default function FormationsPage() {
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${category === cat ? "bg-[#C4956A] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#C4956A]/40"}`}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${category === cat ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}
               >
                 {cat}
               </button>
@@ -157,7 +157,7 @@ export default function FormationsPage() {
           <h2 className="text-xl font-semibold mb-4">Toutes les formations</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((f) => (
-              <Link key={f.id} href={`/formations/${f.id}`} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#C4956A]/40 transition-colors group">
+              <Link key={f.id} href={`/formations/${f.id}`} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#1e9df1]/40 transition-colors group">
                 <div className="relative">
                   <img src={f.thumbnail} alt={f.title} className="w-full h-44 object-cover" />
                   <span className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${LEVEL_COLORS[f.level]}`}>
@@ -165,20 +165,20 @@ export default function FormationsPage() {
                   </span>
                   {f.enrolled && (
                     <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/30">
-                      <div className="h-full bg-[#C4956A]" style={{ width: `${f.progress}%` }} />
+                      <div className="h-full bg-[#1e9df1]" style={{ width: `${f.progress}%` }} />
                     </div>
                   )}
                 </div>
                 <div className="p-4 space-y-2">
                   <span className="text-xs text-[var(--text-muted)]">{f.category}</span>
-                  <h3 className="font-semibold text-[var(--foreground)] group-hover:text-[#C4956A] transition-colors line-clamp-2">{f.title}</h3>
+                  <h3 className="font-semibold text-[var(--foreground)] group-hover:text-[#1e9df1] transition-colors line-clamp-2">{f.title}</h3>
                   <Link href={`/profil/${f.instructor.id}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-2 hover:underline">
                     <img src={f.instructor.avatar} alt={f.instructor.name} className="w-6 h-6 rounded-full object-cover" />
                     <span className="text-sm text-[var(--text-secondary)]">{f.instructor.name}</span>
                   </Link>
                   <Stars rating={f.rating} />
                   <div className="flex items-center justify-between pt-1">
-                    <span className="font-bold text-[#C4956A]">{formatPrice(f.price)}</span>
+                    <span className="font-bold text-[#1e9df1]">{formatPrice(f.price)}</span>
                     <span className="text-xs text-[var(--text-muted)]">{f.duration} &middot; {f.modules} modules</span>
                   </div>
                 </div>
@@ -195,13 +195,13 @@ export default function FormationsPage() {
           <h2 className="text-xl font-semibold mb-4">Formateurs populaires</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {INSTRUCTORS.map((inst) => (
-              <Link key={inst.id} href={`/profil/${inst.id}`} className="flex flex-col items-center p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#C4956A]/40 transition-colors group">
+              <Link key={inst.id} href={`/profil/${inst.id}`} className="flex flex-col items-center p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#1e9df1]/40 transition-colors group">
                 <img src={inst.avatar} alt={inst.name} className="w-16 h-16 rounded-full object-cover mb-3" />
-                <h3 className="font-medium text-[var(--foreground)] group-hover:text-[#C4956A] transition-colors text-center">{inst.name}</h3>
+                <h3 className="font-medium text-[var(--foreground)] group-hover:text-[#1e9df1] transition-colors text-center">{inst.name}</h3>
                 <span className="text-sm text-[var(--text-muted)]">{inst.specialty}</span>
                 <div className="flex items-center gap-3 mt-2 text-xs text-[var(--text-secondary)]">
                   <span>{inst.students} étudiants</span>
-                  <span className="text-[#C4956A]">{inst.rating.toFixed(1)} ★</span>
+                  <span className="text-[#1e9df1]">{inst.rating.toFixed(1)} ★</span>
                 </div>
               </Link>
             ))}

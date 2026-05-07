@@ -142,7 +142,7 @@ export default function ProfilPage() {
     <div className="max-w-4xl mx-auto pb-12 animate-fade-in">
       {/* Cover + Avatar */}
       <div className="relative h-48 md:h-56 rounded-b-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#C4956A] via-[#C4956A]/60 to-[var(--background)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1e9df1] via-[#1e9df1]/60 to-[var(--background)]" />
       </div>
       <div className="px-4 md:px-6 -mt-16 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end gap-4">
@@ -165,7 +165,7 @@ export default function ProfilPage() {
               {roleBadges.map((r) => (
                 <span
                   key={r.key}
-                  className="px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-[#C4956A]/10 text-[#C4956A]"
+                  className="px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-[#1e9df1]/10 text-[#1e9df1]"
                 >
                   {r.label}
                 </span>
@@ -174,7 +174,7 @@ export default function ProfilPage() {
           </div>
           <button
             onClick={() => setShowEditModal(true)}
-            className="px-5 py-2 text-sm rounded-xl border border-[var(--card-border)] text-[var(--foreground)] hover:border-[#C4956A]/50 transition-colors self-start md:self-auto"
+            className="px-5 py-2 text-sm rounded-xl border border-[var(--card-border)] text-[var(--foreground)] hover:border-[#1e9df1]/50 transition-colors self-start md:self-auto"
           >
             Modifier le profil
           </button>
@@ -224,13 +224,13 @@ export default function ProfilPage() {
               onClick={() => setTab(t.key)}
               className={`px-4 py-3 text-sm font-medium transition-colors relative ${
                 tab === t.key
-                  ? "text-[#C4956A]"
+                  ? "text-[#1e9df1]"
                   : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
               }`}
             >
               {t.label}
               {tab === t.key && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4956A] rounded-full" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1e9df1] rounded-full" />
               )}
             </button>
           ))}
@@ -244,7 +244,7 @@ export default function ProfilPage() {
                 <Link
                   key={p.id}
                   href={`/explorer/${p.id}`}
-                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#C4956A]/30 transition-colors"
+                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#1e9df1]/30 transition-colors"
                 >
                   <img src={p.images[0]} alt={p.title} className="w-full h-40 object-cover" />
                   <div className="p-4">
@@ -253,7 +253,7 @@ export default function ProfilPage() {
                       {p.location.city}, {p.location.country}
                     </p>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-bold text-[#C4956A]">
+                      <span className="text-sm font-bold text-[#1e9df1]">
                         {formatPrice(p.price, p.currency)}
                         {p.transactionType === "location-ct" ? "/nuit" : ""}
                       </span>
@@ -272,7 +272,7 @@ export default function ProfilPage() {
               {publicationPhotos.map((photo) => (
                 <div
                   key={photo.id}
-                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#C4956A]/30 transition-colors group"
+                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#1e9df1]/30 transition-colors group"
                 >
                   <div className="relative">
                     <img src={photo.src} alt={photo.label} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -292,7 +292,7 @@ export default function ProfilPage() {
                 <Link
                   key={f.id}
                   href={`/formations/${f.id}`}
-                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#C4956A]/30 transition-colors"
+                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#1e9df1]/30 transition-colors"
                 >
                   <img src={f.image} alt={f.title} className="w-full h-40 object-cover" />
                   <div className="p-4">
@@ -301,7 +301,7 @@ export default function ProfilPage() {
                       <span>{f.students} étudiants</span>
                       <span>★ {f.rating}</span>
                     </div>
-                    <div className="mt-2 text-sm font-bold text-[#C4956A]">
+                    <div className="mt-2 text-sm font-bold text-[#1e9df1]">
                       {formatPrice(f.price)}
                     </div>
                   </div>
@@ -325,7 +325,7 @@ export default function ProfilPage() {
                         <span className="text-xs text-[var(--text-muted)] w-3">{r.stars}</span>
                         <div className="flex-1 h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-[#C4956A] rounded-full"
+                            className="h-full bg-[#1e9df1] rounded-full"
                             style={{ width: `${totalReviews > 0 ? (r.count / totalReviews) * 100 : 0}%` }}
                           />
                         </div>
@@ -343,7 +343,7 @@ export default function ProfilPage() {
                     <span className="text-sm font-medium text-[var(--foreground)]">{review.author}</span>
                     <div className="flex items-center gap-1">
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <span key={i} className={`text-sm ${i < review.rating ? "text-[#C4956A]" : "text-[var(--text-muted)]"}`}>
+                        <span key={i} className={`text-sm ${i < review.rating ? "text-[#1e9df1]" : "text-[var(--text-muted)]"}`}>
                           ★
                         </span>
                       ))}
@@ -352,7 +352,7 @@ export default function ProfilPage() {
                   <p className="text-sm text-[var(--text-secondary)]">{review.text}</p>
                   <div className="text-xs text-[var(--text-muted)] mt-2">{review.date}</div>
                   {review.reply && (
-                    <div className="mt-3 pl-4 border-l-2 border-[#C4956A]/30">
+                    <div className="mt-3 pl-4 border-l-2 border-[#1e9df1]/30">
                       <p className="text-sm text-[var(--text-secondary)] italic">{review.reply}</p>
                     </div>
                   )}
@@ -372,7 +372,7 @@ export default function ProfilPage() {
                   <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Langues</h3>
                   <div className="flex flex-wrap gap-2">
                     {currentUser.languages.map((l) => (
-                      <span key={l} className="px-3 py-1 text-xs rounded-full bg-[#C4956A]/10 text-[#C4956A]">
+                      <span key={l} className="px-3 py-1 text-xs rounded-full bg-[#1e9df1]/10 text-[#1e9df1]">
                         {l}
                       </span>
                     ))}
@@ -385,7 +385,7 @@ export default function ProfilPage() {
                   <ul className="space-y-2">
                     {currentUser.certifications.map((c) => (
                       <li key={c} className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-                        <span className="text-[#C4956A]">✓</span> {c}
+                        <span className="text-[#1e9df1]">✓</span> {c}
                       </li>
                     ))}
                   </ul>
@@ -395,7 +395,7 @@ export default function ProfilPage() {
                 <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Zones</h3>
                 <div className="flex flex-wrap gap-2">
                   {["Suisse romande", "Côte d'Azur", "Maroc"].map((z) => (
-                    <span key={z} className="px-3 py-1 text-xs rounded-full bg-[#C4956A]/10 text-[#C4956A]">
+                    <span key={z} className="px-3 py-1 text-xs rounded-full bg-[#1e9df1]/10 text-[#1e9df1]">
                       {z}
                     </span>
                   ))}
@@ -405,7 +405,7 @@ export default function ProfilPage() {
                 <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Spécialités</h3>
                 <div className="flex flex-wrap gap-2">
                   {["Location courte durée premium", "Investissement immobilier", "Formation"].map((s) => (
-                    <span key={s} className="px-3 py-1 text-xs rounded-full bg-[#C4956A]/10 text-[#C4956A]">
+                    <span key={s} className="px-3 py-1 text-xs rounded-full bg-[#1e9df1]/10 text-[#1e9df1]">
                       {s}
                     </span>
                   ))}
@@ -515,7 +515,7 @@ export default function ProfilPage() {
               </button>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="flex-1 py-2.5 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a]"
+                className="flex-1 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a]"
               >
                 Sauvegarder
               </button>

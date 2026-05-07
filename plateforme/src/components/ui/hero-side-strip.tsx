@@ -119,11 +119,11 @@ export function HeroSideStrip() {
   }, []);
 
   // Gold avec hiérarchie d'opacités
-  const GHI = "rgba(196,149,106,0.85)";
-  const GMD = "rgba(196,149,106,0.55)";
-  const GLO = "rgba(196,149,106,0.30)";
-  const GFN = "rgba(196,149,106,0.12)";
-  const O = "#C4956A";
+  const GHI = "rgba(30, 157, 242,0.85)";
+  const GMD = "rgba(30, 157, 242,0.55)";
+  const GLO = "rgba(30, 157, 242,0.30)";
+  const GFN = "rgba(30, 157, 242,0.12)";
+  const O = "#1e9df1";
 
   // 7 étages typiques (top y de chaque, espacement 80)
   const typicalFloors = [50, 130, 210, 290, 370, 450, 530];

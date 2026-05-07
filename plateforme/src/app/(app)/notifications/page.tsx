@@ -101,7 +101,7 @@ export default function NotificationsPage() {
             onClick={() => {
               setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
             }}
-            className="text-sm text-[#C4956A] hover:underline transition-colors cursor-pointer"
+            className="text-sm text-[#1e9df1] hover:underline transition-colors cursor-pointer"
           >
             Tout marquer comme lu
           </button>
@@ -114,7 +114,7 @@ export default function NotificationsPage() {
           onClick={() => setReadTab("unread")}
           className={`px-4 py-2 text-sm rounded-xl transition-colors ${
             readTab === "unread"
-              ? "bg-[#C4956A] text-white"
+              ? "bg-[#1e9df1] text-white"
               : "text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
           }`}
         >
@@ -124,7 +124,7 @@ export default function NotificationsPage() {
           onClick={() => setReadTab("read")}
           className={`px-4 py-2 text-sm rounded-xl transition-colors ${
             readTab === "read"
-              ? "bg-[#C4956A] text-white"
+              ? "bg-[#1e9df1] text-white"
               : "text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
           }`}
         >
@@ -181,7 +181,7 @@ export default function NotificationsPage() {
                     className={`w-full flex items-start gap-3 p-4 rounded-xl text-left transition-colors ${
                       notif.read
                         ? "bg-[var(--card)] hover:bg-[var(--hover-bg)]"
-                        : "bg-[#C4956A]/5 border border-[#C4956A]/10 hover:bg-[#C4956A]/10"
+                        : "bg-[#1e9df1]/5 border border-[#1e9df1]/10 hover:bg-[#1e9df1]/10"
                     }`}
                   >
                     <span className="text-lg flex-shrink-0 mt-0.5">{typeIcons[notif.type]}</span>
@@ -191,7 +191,7 @@ export default function NotificationsPage() {
                           {notif.title}
                         </span>
                         {!notif.read && (
-                          <div className="w-2 h-2 rounded-full bg-[#C4956A] flex-shrink-0" />
+                          <div className="w-2 h-2 rounded-full bg-[#1e9df1] flex-shrink-0" />
                         )}
                       </div>
                       <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">{notif.message}</p>

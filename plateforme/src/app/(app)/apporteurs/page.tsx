@@ -134,7 +134,7 @@ export default function ApporteursPage() {
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${link.color}`}>{link.label}</span>
             </div>
             <p className="text-sm text-[var(--text-secondary)]">{link.description}</p>
-            <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#C4956A]/20 text-[#C4956A]">
+            <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#1e9df1]/20 text-[#1e9df1]">
               {link.commission}
             </span>
             <div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
@@ -144,7 +144,7 @@ export default function ApporteursPage() {
               <LottiePlayer src="/lottie/lottieflow-social-networks-16-11-000000-easey.json" width={40} height={40} className="flex-shrink-0" />
               <button
                 onClick={() => handleCopy(link.url, idx)}
-                className="flex-1 px-3 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
+                className="flex-1 px-3 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
               >
                 {copiedIdx === idx ? "\u2713 Copié" : "Copier"}
               </button>
@@ -184,13 +184,13 @@ export default function ApporteursPage() {
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Types d&apos;apport</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {APPORT_TYPES.map((type, idx) => (
-            <div key={idx} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#C4956A]/40 transition space-y-2">
+            <div key={idx} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition space-y-2">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{type.icon}</span>
                 <h3 className="font-medium text-[var(--foreground)]">{type.title}</h3>
               </div>
               <p className="text-sm text-[var(--text-secondary)]">{type.desc}</p>
-              <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#C4956A]/20 text-[#C4956A]">
+              <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#1e9df1]/20 text-[#1e9df1]">
                 Commission: {type.commission}
               </span>
             </div>
@@ -210,7 +210,7 @@ export default function ApporteursPage() {
             <React.Fragment key={idx}>
               {idx > 0 && <div className="hidden md:block text-[var(--text-muted)] text-2xl">→</div>}
               <div className="flex-1 w-full p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] text-center space-y-2">
-                <div className="w-10 h-10 mx-auto rounded-full bg-[#C4956A] text-white flex items-center justify-center font-bold">
+                <div className="w-10 h-10 mx-auto rounded-full bg-[#1e9df1] text-white flex items-center justify-center font-bold">
                   {s.step}
                 </div>
                 <h3 className="font-medium text-[var(--foreground)]">{s.title}</h3>
@@ -277,7 +277,7 @@ export default function ApporteursPage() {
             </div>
             <div className="flex justify-between border-t border-[var(--card-border)] pt-3">
               <span className="text-[var(--text-secondary)]">En attente</span>
-              <span className="text-[#C4956A] font-bold">{formatPrice(enAttente)}</span>
+              <span className="text-[#1e9df1] font-bold">{formatPrice(enAttente)}</span>
             </div>
           </div>
         </div>
@@ -317,10 +317,10 @@ export default function ApporteursPage() {
           </div>
           {/* 1st */}
           <div className="text-center space-y-2">
-            <div className="w-20 h-20 mx-auto rounded-full bg-[#C4956A]/20 flex items-center justify-center text-3xl">🥇</div>
-            <p className="text-sm font-bold text-[#C4956A]">{LEADERBOARD[0].nom}</p>
+            <div className="w-20 h-20 mx-auto rounded-full bg-[#1e9df1]/20 flex items-center justify-center text-3xl">🥇</div>
+            <p className="text-sm font-bold text-[#1e9df1]">{LEADERBOARD[0].nom}</p>
             <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[0].commissions)}</p>
-            <div className="w-20 h-32 bg-[#C4956A]/10 rounded-t-lg mx-auto" />
+            <div className="w-20 h-32 bg-[#1e9df1]/10 rounded-t-lg mx-auto" />
           </div>
           {/* 3rd */}
           <div className="text-center space-y-2">
@@ -347,12 +347,12 @@ export default function ApporteursPage() {
                 <tr
                   key={l.rank}
                   className={`border-b border-[var(--card-border)] last:border-0 transition ${
-                    l.isYou ? "bg-[#C4956A]/5" : "hover:bg-[var(--hover-bg)]"
+                    l.isYou ? "bg-[#1e9df1]/5" : "hover:bg-[var(--hover-bg)]"
                   }`}
                 >
                   <td className="p-4 text-[var(--foreground)] font-bold">{l.rank}</td>
                   <td className="p-4 text-[var(--foreground)] font-medium">
-                    {l.nom} {l.isYou && <span className="text-xs text-[#C4956A]">(vous)</span>}
+                    {l.nom} {l.isYou && <span className="text-xs text-[#1e9df1]">(vous)</span>}
                   </td>
                   <td className="p-4 text-right text-[var(--text-secondary)]">{l.apports}</td>
                   <td className="p-4 text-right text-[var(--foreground)] font-medium">{formatPrice(l.commissions)}</td>

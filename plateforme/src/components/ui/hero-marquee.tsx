@@ -32,7 +32,7 @@ export const AnimatedMarqueeHero: React.FC<AnimatedMarqueeHeroProps> = ({
     <section className={cn("relative w-full min-h-screen overflow-hidden flex flex-col items-center justify-center text-center px-4 pt-24", className)}>
       <div className="z-10 flex flex-col items-center">
         <motion.div initial="hidden" animate="show" variants={FADE_IN}
-          className="mb-4 inline-block rounded-full border border-[#C4956A]/30 bg-[#C4956A]/5 px-4 py-1.5 text-sm font-medium text-[#C4956A] backdrop-blur-sm">
+          className="mb-4 inline-block rounded-full border border-[#1e9df1]/30 bg-[#1e9df1]/5 px-4 py-1.5 text-sm font-medium text-[#1e9df1] backdrop-blur-sm">
           {tagline}
         </motion.div>
 
@@ -54,7 +54,7 @@ export const AnimatedMarqueeHero: React.FC<AnimatedMarqueeHeroProps> = ({
         <motion.div initial="hidden" animate="show" variants={FADE_IN} transition={{ delay: 0.6 }}
           className="flex items-center gap-4 mt-8">
           <a href={ctaHref}
-            className="px-8 py-3 rounded-full bg-[#C4956A] text-white font-semibold shadow-lg transition-all hover:bg-[#b8856a] hover:shadow-xl hover:scale-[1.02]">
+            className="px-8 py-3 rounded-full bg-[#1e9df1] text-white font-semibold shadow-lg transition-all hover:bg-[#1a8fd9] hover:shadow-xl hover:scale-[1.02]">
             {ctaText}
           </a>
           {secondaryCtaText && (

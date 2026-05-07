@@ -48,11 +48,11 @@ export function PhilosophySection() {
         viewBox="0 0 140 140"
         fill="none"
       >
-        <circle cx="70" cy="70" r="65" stroke="#C4956A" strokeWidth="1" />
-        <circle cx="70" cy="70" r="45" stroke="#C4956A" strokeWidth="1" />
-        <circle cx="70" cy="70" r="25" stroke="#C4956A" strokeWidth="1" />
-        <line x1="70" y1="5" x2="70" y2="135" stroke="#C4956A" strokeWidth="0.5" />
-        <line x1="5" y1="70" x2="135" y2="70" stroke="#C4956A" strokeWidth="0.5" />
+        <circle cx="70" cy="70" r="65" stroke="#1e9df1" strokeWidth="1" />
+        <circle cx="70" cy="70" r="45" stroke="#1e9df1" strokeWidth="1" />
+        <circle cx="70" cy="70" r="25" stroke="#1e9df1" strokeWidth="1" />
+        <line x1="70" y1="5" x2="70" y2="135" stroke="#1e9df1" strokeWidth="0.5" />
+        <line x1="5" y1="70" x2="135" y2="70" stroke="#1e9df1" strokeWidth="0.5" />
       </svg>
       <svg
         className="absolute bottom-32 left-10 opacity-[0.04] pointer-events-none hidden lg:block"
@@ -61,9 +61,9 @@ export function PhilosophySection() {
         viewBox="0 0 60 120"
         fill="none"
       >
-        <rect x="5" y="5" width="50" height="50" stroke="#C4956A" strokeWidth="1" />
-        <rect x="15" y="65" width="30" height="50" stroke="#C4956A" strokeWidth="1" />
-        <line x1="30" y1="55" x2="30" y2="65" stroke="#C4956A" strokeWidth="1" />
+        <rect x="5" y="5" width="50" height="50" stroke="#1e9df1" strokeWidth="1" />
+        <rect x="15" y="65" width="30" height="50" stroke="#1e9df1" strokeWidth="1" />
+        <line x1="30" y1="55" x2="30" y2="65" stroke="#1e9df1" strokeWidth="1" />
       </svg>
 
       <div className="max-w-6xl mx-auto relative">
@@ -75,7 +75,7 @@ export function PhilosophySection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-[#C4956A] text-xs tracking-[0.2em] uppercase mb-4 font-medium">
+            <p className="text-[#1e9df1] text-xs tracking-[0.2em] uppercase mb-4 font-medium">
               {t("philosophy.label")}
             </p>
           </motion.div>
@@ -90,7 +90,7 @@ export function PhilosophySection() {
               style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
             >
               {t("philosophy.title1")}{" "}
-              <span className="text-[#C4956A]">{t("philosophy.title2")}</span>
+              <span className="text-[#1e9df1]">{t("philosophy.title2")}</span>
             </h2>
           </motion.div>
           <motion.div
@@ -161,7 +161,7 @@ export function PhilosophySection() {
             {/* Desktop overlay cards */}
             <div className="absolute top-0 left-0 p-8 lg:p-10 hidden md:block">
               <div className="rounded-2xl px-7 py-5 bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg">
-                <p className="text-[#C4956A] text-xs tracking-[0.2em] uppercase mb-2 font-medium">
+                <p className="text-[#1e9df1] text-xs tracking-[0.2em] uppercase mb-2 font-medium">
                   {t("philosophy.video_label")}
                 </p>
                 <h3
@@ -170,7 +170,7 @@ export function PhilosophySection() {
                 >
                   {t("philosophy.video_title1")}
                   <br />
-                  <span className="text-[#C4956A] italic">{t("philosophy.video_title2")}</span>
+                  <span className="text-[#1e9df1] italic">{t("philosophy.video_title2")}</span>
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {[
@@ -185,7 +185,7 @@ export function PhilosophySection() {
                       key={tag.label}
                       className={`text-[10px] px-3 py-1.5 rounded-full font-medium border ${
                         tag.gold
-                          ? "text-[#C4956A] border-[#C4956A]/30 bg-[#C4956A]/10"
+                          ? "text-[#1e9df1] border-[#1e9df1]/30 bg-[#1e9df1]/10"
                           : "text-gray-600 border-gray-200 bg-white/60"
                       }`}
                     >
@@ -199,7 +199,7 @@ export function PhilosophySection() {
             {/* Desktop overlay - bottom right */}
             <div className="absolute bottom-0 right-0 p-8 lg:p-10 hidden md:block">
               <div className="rounded-2xl px-7 py-5 max-w-md text-right bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg">
-                <div className="w-8 h-0.5 bg-[#C4956A] mb-4 ml-auto" />
+                <div className="w-8 h-0.5 bg-[#1e9df1] mb-4 ml-auto" />
                 <p className="text-gray-900 text-base leading-relaxed mb-3">
                   {t("philosophy.video_desktop_p1")}
                 </p>
@@ -208,7 +208,7 @@ export function PhilosophySection() {
                 </p>
                 <a
                   href="#inscriptions"
-                  className="inline-flex items-center gap-2 bg-[#C4956A] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#b8875e] transition-colors ml-auto shadow-md shadow-[#C4956A]/20"
+                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#b8875e] transition-colors ml-auto shadow-md shadow-[#1e9df1]/20"
                 >
                   {t("philosophy.video_cta")}
                 </a>
@@ -218,7 +218,7 @@ export function PhilosophySection() {
 
           {/* Mobile - text below video */}
           <div className="md:hidden bg-white p-6">
-            <p className="text-[#C4956A] text-[10px] tracking-[0.2em] uppercase mb-2 font-medium">
+            <p className="text-[#1e9df1] text-[10px] tracking-[0.2em] uppercase mb-2 font-medium">
               {t("philosophy.video_label")}
             </p>
             <h3
@@ -226,14 +226,14 @@ export function PhilosophySection() {
               style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
             >
               {t("philosophy.video_title1")}{" "}
-              <span className="text-[#C4956A] italic">{t("philosophy.video_title2")}</span>
+              <span className="text-[#1e9df1] italic">{t("philosophy.video_title2")}</span>
             </h3>
             <p className="text-gray-500 text-sm leading-relaxed mb-4">
               {t("philosophy.video_mobile_desc")}
             </p>
             <a
               href="#inscriptions"
-              className="inline-flex items-center gap-2 bg-[#C4956A] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#b8875e] transition-colors shadow-md shadow-[#C4956A]/20"
+              className="inline-flex items-center gap-2 bg-[#1e9df1] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#b8875e] transition-colors shadow-md shadow-[#1e9df1]/20"
             >
               {t("philosophy.video_cta")}
             </a>

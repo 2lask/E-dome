@@ -74,7 +74,7 @@ function SectionHeading({
 }) {
   return (
     <div className="text-center max-w-3xl mx-auto mb-12">
-      <motion.div {...fadeUp} className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+      <motion.div {...fadeUp} className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
         {label}
       </motion.div>
       <motion.h2
@@ -84,7 +84,7 @@ function SectionHeading({
       >
         {title1}
         <br />
-        <span className="text-[#C4956A]">{title2}</span>
+        <span className="text-[#1e9df1]">{title2}</span>
       </motion.h2>
       {description && (
         <motion.div {...fadeUp} className="text-gray-400 text-base sm:text-lg leading-relaxed font-light">
@@ -150,8 +150,8 @@ function HeroBenefitsAccordion({
   return (
     <div className="border-l border-neutral-800 pl-8 max-w-md">
       <div className="flex items-center gap-3 mb-6">
-        <span className="block w-8 h-px bg-[#C4956A]" />
-        <p className="text-[#C4956A] text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
+        <span className="block w-8 h-px bg-[#1e9df1]" />
+        <p className="text-[#1e9df1] text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
           {eyebrow}
         </p>
       </div>
@@ -177,15 +177,15 @@ function HeroBenefitsAccordion({
                 <span
                   className={`flex items-center justify-center w-7 h-7 rounded-full border transition-colors duration-300 ${
                     isOpen
-                      ? "border-[#C4956A] bg-[#C4956A] text-black"
-                      : "border-[#C4956A]/40 bg-[#C4956A]/5 text-[#C4956A] group-hover:bg-[#C4956A] group-hover:text-black"
+                      ? "border-[#1e9df1] bg-[#1e9df1] text-black"
+                      : "border-[#1e9df1]/40 bg-[#1e9df1]/5 text-[#1e9df1] group-hover:bg-[#1e9df1] group-hover:text-black"
                   }`}
                 >
                   <Icon size={13} strokeWidth={1.8} />
                 </span>
                 <span
                   className={`block h-px transition-all duration-300 ${
-                    isOpen ? "w-5 bg-[#C4956A]" : "w-3 bg-neutral-700 group-hover:w-5 group-hover:bg-[#C4956A]"
+                    isOpen ? "w-5 bg-[#1e9df1]" : "w-3 bg-neutral-700 group-hover:w-5 group-hover:bg-[#1e9df1]"
                   }`}
                 />
                 <span className="text-white text-[0.72rem] font-medium uppercase tracking-[0.15em] flex-1">
@@ -193,7 +193,7 @@ function HeroBenefitsAccordion({
                 </span>
                 <ChevronDown
                   size={12}
-                  className={`text-[#C4956A] transition-transform duration-300 ${
+                  className={`text-[#1e9df1] transition-transform duration-300 ${
                     isOpen ? "rotate-180" : ""
                   }`}
                 />
@@ -225,9 +225,9 @@ function HeroBenefitsAccordion({
 function DotDivider() {
   return (
     <div className="flex items-center gap-4 max-w-xs mx-auto py-14">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#C4956A]/15" />
-      <div className="w-1.5 h-1.5 rounded-full bg-[#C4956A]/40" />
-      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#C4956A]/15" />
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#1e9df1]/15" />
+      <div className="w-1.5 h-1.5 rounded-full bg-[#1e9df1]/40" />
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#1e9df1]/15" />
     </div>
   );
 }
@@ -340,7 +340,7 @@ function HomePageContent() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-neutral-800">
         <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
           <a href="#" className="font-semibold text-2xl tracking-tight">
-            E-<span className="text-[#C4956A]">Dome</span>
+            E-<span className="text-[#1e9df1]">Dome</span>
           </a>
 
           <div className="hidden md:flex gap-8">
@@ -353,7 +353,7 @@ function HomePageContent() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-gray-400 hover:text-[#C4956A] text-sm font-medium transition-colors"
+                className="text-gray-400 hover:text-[#1e9df1] text-sm font-medium transition-colors"
               >
                 {link.label}
               </a>
@@ -368,7 +368,7 @@ function HomePageContent() {
                   onClick={() => setLang(l)}
                   className={`text-xs font-medium px-2.5 py-1.5 transition-colors uppercase ${
                     lang === l
-                      ? "bg-[#C4956A] text-white"
+                      ? "bg-[#1e9df1] text-white"
                       : "text-gray-400 hover:text-gray-700 hover:bg-gray-50"
                   }`}
                 >
@@ -378,7 +378,7 @@ function HomePageContent() {
             </div>
             <Link
               href="#inscriptions"
-              className="hidden sm:inline-flex bg-[#C4956A] text-white rounded-lg px-5 py-2 text-sm font-semibold hover:bg-[#b8856a] transition-colors"
+              className="hidden sm:inline-flex bg-[#1e9df1] text-white rounded-lg px-5 py-2 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
             >
               {t("hero.cta")}
             </Link>
@@ -399,8 +399,8 @@ function HomePageContent() {
             {/* Colonne texte (gauche) */}
             <motion.div {...fadeUp} className="lg:col-span-7 max-w-2xl">
               <div className="flex items-center gap-3 mb-6">
-                <span className="block w-8 h-px bg-[#C4956A]" />
-                <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold">
+                <span className="block w-8 h-px bg-[#1e9df1]" />
+                <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold">
                   {t("hero.label")}
                 </p>
               </div>
@@ -410,7 +410,7 @@ function HomePageContent() {
               >
                 {t("hero.title1")}
                 <br />
-                <span className="text-[#C4956A] italic">{t("hero.title2")}</span>
+                <span className="text-[#1e9df1] italic">{t("hero.title2")}</span>
               </h1>
               <p className="text-base sm:text-lg text-gray-400 leading-relaxed font-light mb-10 max-w-xl">
                 {t("hero.subtitle")}
@@ -418,7 +418,7 @@ function HomePageContent() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link
                   href="#inscriptions"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#C4956A] text-white text-sm font-semibold hover:bg-[#b8856a] transition-all"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1e9df1] text-white text-sm font-semibold hover:bg-[#1a8fd9] transition-all"
                 >
                   {t("hero.cta")} <ArrowRight size={16} />
                 </Link>
@@ -496,7 +496,7 @@ function HomePageContent() {
               <>
                 {/* ── HEADER : label + titre + intro empilés, alignés à gauche ── */}
                 <motion.div {...fadeUp} className="mb-10">
-                  <p className="text-[#C4956A] text-[0.65rem] tracking-[0.35em] uppercase font-semibold mb-3">
+                  <p className="text-[#1e9df1] text-[0.65rem] tracking-[0.35em] uppercase font-semibold mb-3">
                     {t("problem.label")}
                   </p>
                   <h2
@@ -504,7 +504,7 @@ function HomePageContent() {
                     style={{ fontFamily: "'Instrument Serif', serif" }}
                   >
                     {t("problem.title1")}{" "}
-                    <span className="text-[#C4956A]">{t("problem.title2")}</span>
+                    <span className="text-[#1e9df1]">{t("problem.title2")}</span>
                   </h2>
                   <p className="max-w-3xl text-gray-300 text-sm md:text-base leading-relaxed font-light">
                     {data.intro}
@@ -679,7 +679,7 @@ function HomePageContent() {
               href="/acces"
               className="btn-modern-light flex items-center justify-center gap-3 px-8 py-4 rounded-[1.25rem] group"
             >
-              <Sparkles size={20} className="text-[#C4956A]" />
+              <Sparkles size={20} className="text-[#1e9df1]" />
               <div className="text-left">
                 <div className="text-[10px] font-bold tracking-wider text-neutral-500 uppercase mb-[-2px]">
                   {lang === "en"
@@ -754,7 +754,7 @@ function HomePageContent() {
                   {t(roleKey)}
                 </span>
               ))}
-              <span className="px-4 py-1.5 rounded-full bg-[#C4956A]/5 border border-[#C4956A]/20 text-sm text-[#C4956A] font-medium">
+              <span className="px-4 py-1.5 rounded-full bg-[#1e9df1]/5 border border-[#1e9df1]/20 text-sm text-[#1e9df1] font-medium">
                 {t("about.more")}
               </span>
             </div>
@@ -791,7 +791,7 @@ function HomePageContent() {
           <motion.div {...fadeUp} className="text-center mt-8">
             <Link
               href="/acces"
-              className="inline-flex items-center gap-2 bg-[#C4956A] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#b8856a] transition-all shadow-lg shadow-[#C4956A]/20"
+              className="inline-flex items-center gap-2 bg-[#1e9df1] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#1a8fd9] transition-all shadow-lg shadow-[#1e9df1]/20"
             >
               {t("featured.cta")} <ArrowRight size={16} />
             </Link>
@@ -818,12 +818,12 @@ function HomePageContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="bg-neutral-900 rounded-2xl p-8 border border-neutral-800 hover:border-[#C4956A]/30 hover:shadow-lg transition-all group"
+                className="bg-neutral-900 rounded-2xl p-8 border border-neutral-800 hover:border-[#1e9df1]/30 hover:shadow-lg transition-all group"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#C4956A]/10 text-[#C4956A] flex items-center justify-center mb-4 group-hover:bg-[#C4956A] group-hover:text-white transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center mb-4 group-hover:bg-[#1e9df1] group-hover:text-white transition-colors">
                   {s.icon}
                 </div>
-                <p className="text-[#C4956A] text-xs tracking-wider uppercase font-medium mb-2">
+                <p className="text-[#1e9df1] text-xs tracking-wider uppercase font-medium mb-2">
                   {t(s.tagKey)}
                 </p>
                 <h3 className="text-lg font-semibold mb-3 text-white">{t(s.titleKey)}</h3>
@@ -863,7 +863,7 @@ function HomePageContent() {
 
           {/* Philosophy video */}
           <motion.div {...fadeUp} className="text-center mb-8">
-            <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-3">
+            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-3">
               {t("philosophy.video_label")}
             </p>
             <h3
@@ -871,7 +871,7 @@ function HomePageContent() {
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
               {t("philosophy.video_title1")}{" "}
-              <span className="text-[#C4956A]">{t("philosophy.video_title2")}</span>
+              <span className="text-[#1e9df1]">{t("philosophy.video_title2")}</span>
             </h3>
             <p className="text-gray-400 text-sm max-w-xl mx-auto mb-2 font-light">
               {t("philosophy.video_desktop_p1")}
@@ -913,7 +913,7 @@ function HomePageContent() {
           <motion.div {...fadeUp} className="text-center mt-8">
             <Link
               href="/acces"
-              className="inline-flex items-center gap-2 border border-[#C4956A]/30 text-[#C4956A] rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#C4956A] hover:text-white transition-all"
+              className="inline-flex items-center gap-2 border border-[#1e9df1]/30 text-[#1e9df1] rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#1e9df1] hover:text-white transition-all"
             >
               {t("philosophy.video_cta")} <ArrowRight size={16} />
             </Link>
@@ -926,7 +926,7 @@ function HomePageContent() {
       <section id="fondateurs" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
               {lang === "th" ? "ผู้ก่อตั้ง" : lang === "en" ? "Founders" : "Fondateurs"}
             </p>
             <h2
@@ -934,7 +934,7 @@ function HomePageContent() {
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
               {lang === "th" ? "เบื้องหลัง" : lang === "en" ? "Behind" : "Derriere"}{" "}
-              <span className="text-[#C4956A]">E-Dome</span>
+              <span className="text-[#1e9df1]">E-Dome</span>
             </h2>
           </motion.div>
 
@@ -949,7 +949,7 @@ function HomePageContent() {
                 />
               </div>
               <h3 className="text-xl font-semibold">Leonard Ansermet</h3>
-              <p className="text-[#C4956A] text-sm font-medium">{t("founders.label_leo")}</p>
+              <p className="text-[#1e9df1] text-sm font-medium">{t("founders.label_leo")}</p>
               <div className="flex items-center justify-center md:justify-start gap-3 mt-3">
                 <a
                   href="https://wa.me/41786091880"
@@ -961,7 +961,7 @@ function HomePageContent() {
                 </a>
                 <a
                   href="mailto:leonard@edome.world"
-                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#C4956A] transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#1e9df1] transition-colors"
                 >
                   <Mail size={14} /> Email
                 </a>
@@ -984,7 +984,7 @@ function HomePageContent() {
                 />
               </div>
               <h3 className="text-xl font-semibold">Jean-Pierre Fallet</h3>
-              <p className="text-[#C4956A] text-sm font-medium">{t("founders.label_jp")}</p>
+              <p className="text-[#1e9df1] text-sm font-medium">{t("founders.label_jp")}</p>
               <div className="flex items-center justify-center md:justify-start gap-3 mt-3">
                 <a
                   href="https://wa.me/41798267542"
@@ -996,7 +996,7 @@ function HomePageContent() {
                 </a>
                 <a
                   href="mailto:jeanpierre@edome.world"
-                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#C4956A] transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#1e9df1] transition-colors"
                 >
                   <Mail size={14} /> Email
                 </a>
@@ -1024,14 +1024,14 @@ function HomePageContent() {
           {/* Conviction + Engagement */}
           <div className="grid md:grid-cols-2 gap-8">
             <motion.div {...fadeUp} className="bg-neutral-900 rounded-2xl p-8">
-              <p className="text-[#C4956A] text-xs tracking-wider uppercase font-semibold mb-3">
+              <p className="text-[#1e9df1] text-xs tracking-wider uppercase font-semibold mb-3">
                 {t("founders.conviction_label")}
               </p>
               <h4 className="text-lg font-semibold mb-3">{t("founders.conviction_title")}</h4>
               <p className="text-gray-400 text-sm leading-relaxed font-light">{t("founders.conviction_desc")}</p>
             </motion.div>
             <motion.div {...fadeUp} className="bg-neutral-900 rounded-2xl p-8">
-              <p className="text-[#C4956A] text-xs tracking-wider uppercase font-semibold mb-3">
+              <p className="text-[#1e9df1] text-xs tracking-wider uppercase font-semibold mb-3">
                 {t("founders.engagement_label")}
               </p>
               <h4 className="text-lg font-semibold mb-3">{t("founders.engagement_title")}</h4>
@@ -1043,7 +1043,7 @@ function HomePageContent() {
           <motion.div {...fadeUp} className="flex items-center justify-center gap-6 mt-12">
             <a
               href="mailto:contact@edome.world"
-              className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#C4956A] transition-colors"
+              className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#1e9df1] transition-colors"
             >
               <Mail size={16} /> {t("founders.email_label")}
             </a>
@@ -1087,7 +1087,7 @@ function HomePageContent() {
                 <ul className="grid sm:grid-cols-2 gap-2">
                   {phase.items.map((itemKey) => (
                     <li key={itemKey} className="flex items-start gap-2 text-sm text-gray-400 font-light">
-                      <span className="w-1 h-1 rounded-full bg-[#C4956A] mt-2 flex-shrink-0" />
+                      <span className="w-1 h-1 rounded-full bg-[#1e9df1] mt-2 flex-shrink-0" />
                       {t(itemKey)}
                     </li>
                   ))}
@@ -1099,7 +1099,7 @@ function HomePageContent() {
           {/* ─── CTA INSCRIPTIONS ─── */}
           <div id="inscriptions">
             <motion.div {...fadeUp} className="text-center mb-12">
-              <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+              <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
                 {t("roadmap.inscriptions_label")}
               </p>
               <h2
@@ -1108,7 +1108,7 @@ function HomePageContent() {
               >
                 {t("roadmap.cta_title1")}
                 <br />
-                <span className="text-[#C4956A]">{t("roadmap.cta_title2")}</span>
+                <span className="text-[#1e9df1]">{t("roadmap.cta_title2")}</span>
               </h2>
               <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
                 {t("roadmap.cta_subtitle")}
@@ -1126,7 +1126,7 @@ function HomePageContent() {
                   transition={{ duration: 0.5, delay: i * 0.06 }}
                   className="bg-neutral-900 rounded-xl p-6 border border-neutral-800"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-[#C4956A]/10 text-[#C4956A] flex items-center justify-center mb-3">
+                  <div className="w-9 h-9 rounded-lg bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center mb-3">
                     {b.icon}
                   </div>
                   <h4 className="text-sm font-semibold mb-1">{t(b.titleKey)}</h4>
@@ -1139,13 +1139,13 @@ function HomePageContent() {
             <motion.div {...fadeUp} className="flex flex-wrap items-center justify-center gap-4 mb-6">
               <Link
                 href="/acces"
-                className="inline-flex items-center gap-2 bg-[#C4956A] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#b8856a] transition-all shadow-lg shadow-[#C4956A]/20"
+                className="inline-flex items-center gap-2 bg-[#1e9df1] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#1a8fd9] transition-all shadow-lg shadow-[#1e9df1]/20"
               >
                 {t("roadmap.cta1")} <ArrowRight size={16} />
               </Link>
               <Link
                 href="/acces"
-                className="inline-flex items-center gap-2 border border-neutral-800 text-gray-400 rounded-xl px-8 py-3.5 text-sm font-medium hover:border-[#C4956A]/40 hover:text-[#C4956A] transition-all bg-white"
+                className="inline-flex items-center gap-2 border border-neutral-800 text-gray-400 rounded-xl px-8 py-3.5 text-sm font-medium hover:border-[#1e9df1]/40 hover:text-[#1e9df1] transition-all bg-white"
               >
                 {t("roadmap.cta2")}
               </Link>
@@ -1166,7 +1166,7 @@ function HomePageContent() {
             {/* Brand */}
             <div className="md:col-span-1">
               <h3 className="text-2xl font-semibold mb-3">
-                E-<span className="text-[#C4956A]">Dome</span>
+                E-<span className="text-[#1e9df1]">Dome</span>
               </h3>
               <p className="text-gray-400 text-sm font-light leading-relaxed">
                 {t("footer.desc")}
@@ -1174,7 +1174,7 @@ function HomePageContent() {
               <div className="mt-6">
                 <Link
                   href="/acces"
-                  className="inline-flex items-center gap-2 bg-[#C4956A] text-white rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#b8856a] transition-colors"
+                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-white rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
                 >
                   {t("footer.access")} <ArrowRight size={14} />
                 </Link>
@@ -1196,7 +1196,7 @@ function HomePageContent() {
                   "footer.link_messages",
                 ].map((key) => (
                   <li key={key}>
-                    <span className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors cursor-pointer">
+                    <span className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors cursor-pointer">
                       {t(key)}
                     </span>
                   </li>
@@ -1219,7 +1219,7 @@ function HomePageContent() {
                   "footer.link_investisseurs",
                 ].map((key) => (
                   <li key={key}>
-                    <span className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors cursor-pointer">
+                    <span className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors cursor-pointer">
                       {t(key)}
                     </span>
                   </li>
@@ -1244,7 +1244,7 @@ function HomePageContent() {
                   <li key={link.key}>
                     <a
                       href={link.href}
-                      className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors"
+                      className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors"
                     >
                       {t(link.key)}
                     </a>
@@ -1256,7 +1256,7 @@ function HomePageContent() {
               <div className="mt-6 space-y-2">
                 <a
                   href="mailto:contact@edome.world"
-                  className="flex items-center gap-2 text-gray-400 text-sm hover:text-[#C4956A] transition-colors"
+                  className="flex items-center gap-2 text-gray-400 text-sm hover:text-[#1e9df1] transition-colors"
                 >
                   <Mail size={14} /> contact@edome.world
                 </a>

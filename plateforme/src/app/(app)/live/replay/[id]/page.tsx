@@ -28,7 +28,7 @@ export default function ReplayPage({ params }: { params: Promise<{ id: string }>
         <p className="text-[var(--text-secondary)]">Ce replay n&apos;existe pas ou a ete supprime.</p>
         <Link
           href="/live"
-          className="inline-block px-5 py-2.5 rounded-lg bg-[#C4956A] text-white text-sm font-medium hover:opacity-90 transition"
+          className="inline-block px-5 py-2.5 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
         >
           Retour aux lives
         </Link>
@@ -61,7 +61,7 @@ export default function ReplayPage({ params }: { params: Promise<{ id: string }>
       <div className="space-y-2">
         <h1 className="text-2xl font-bold text-[var(--foreground)]">{replay.title}</h1>
         <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--text-secondary)]">
-          <span className="font-medium text-[#C4956A]">{replay.speaker}</span>
+          <span className="font-medium text-[#1e9df1]">{replay.speaker}</span>
           <span className="text-[var(--text-muted)]">&middot;</span>
           <span>{replay.date}</span>
           <span className="text-[var(--text-muted)]">&middot;</span>

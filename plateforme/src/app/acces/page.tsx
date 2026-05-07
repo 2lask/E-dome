@@ -101,7 +101,7 @@ function AccesPageContent() {
           <p className="text-white/60 text-base leading-relaxed mb-3">
             {t("form.success_desc")}
             {form.premierMembre === "oui" && (
-              <span className="text-[#C4956A]"> {t("form.success_founder")}</span>
+              <span className="text-[#1e9df1]"> {t("form.success_founder")}</span>
             )}
           </p>
 
@@ -115,7 +115,7 @@ function AccesPageContent() {
             </p>
             <Link
               href="/feed"
-              className="inline-flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
+              className="inline-flex items-center gap-2 bg-[#1e9df1] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
             >
               {t("form.success_desktop_cta")} <ArrowRight size={16} />
             </Link>
@@ -123,9 +123,9 @@ function AccesPageContent() {
 
           {/* Mobile: desktop only message */}
           <div className="md:hidden">
-            <div className="rounded-2xl border border-[#C4956A]/20 p-6 mb-6" style={{ background: "rgba(196, 149, 106, 0.05)" }}>
+            <div className="rounded-2xl border border-[#1e9df1]/20 p-6 mb-6" style={{ background: "rgba(30, 157, 242, 0.05)" }}>
               <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#C4956A]">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#1e9df1]">
                   <rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
                 </svg>
               </div>
@@ -157,15 +157,15 @@ function AccesPageContent() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-6">
         <Link href="/" className="flex items-center gap-2">
-          <Globe size={20} className="text-[#C4956A]" />
-          <span className="text-white font-semibold text-lg">E-<span className="text-[#C4956A]">Dome</span></span>
+          <Globe size={20} className="text-[#1e9df1]" />
+          <span className="text-white font-semibold text-lg">E-<span className="text-[#1e9df1]">Dome</span></span>
         </Link>
         <div className="flex items-center gap-2">
           {Array.from({ length: totalSteps }).map((_, i) => (
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i + 1 <= step ? "bg-[#C4956A] w-8" : "bg-white/10 w-4"
+                i + 1 <= step ? "bg-[#1e9df1] w-8" : "bg-white/10 w-4"
               }`}
             />
           ))}
@@ -179,7 +179,7 @@ function AccesPageContent() {
           {/* Step 1: Contact */}
           {step === 1 && (
             <div>
-              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+              <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-3 font-medium">
                 {t("form.step_of").replace("{current}", "1").replace("{total}", String(totalSteps))}
               </p>
               <h2 className="text-white text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
@@ -199,7 +199,7 @@ function AccesPageContent() {
                     <input
                       type="text" value={form.prenom}
                       onChange={(e) => update("prenom", e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#1e9df1]/50 transition-colors placeholder:text-white/20"
                       placeholder={t("form.placeholder_prenom")}
                     />
                   </div>
@@ -208,7 +208,7 @@ function AccesPageContent() {
                     <input
                       type="text" value={form.nom}
                       onChange={(e) => update("nom", e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#1e9df1]/50 transition-colors placeholder:text-white/20"
                       placeholder={t("form.placeholder_nom")}
                     />
                   </div>
@@ -218,7 +218,7 @@ function AccesPageContent() {
                   <input
                     type="email" value={form.email}
                     onChange={(e) => update("email", e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#1e9df1]/50 transition-colors placeholder:text-white/20"
                     placeholder={t("form.placeholder_email")}
                   />
                 </div>
@@ -227,7 +227,7 @@ function AccesPageContent() {
                   <input
                     type="tel" value={form.telephone}
                     onChange={(e) => update("telephone", e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#1e9df1]/50 transition-colors placeholder:text-white/20"
                     placeholder={t("form.placeholder_telephone")}
                   />
                 </div>
@@ -238,7 +238,7 @@ function AccesPageContent() {
           {/* Step 2: Activite */}
           {step === 2 && (
             <div>
-              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+              <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-3 font-medium">
                 {t("form.step_of").replace("{current}", "2").replace("{total}", String(totalSteps))}
               </p>
               <h2 className="text-white text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
@@ -267,7 +267,7 @@ function AccesPageContent() {
                           }}
                           className={`text-xs px-4 py-3 rounded-lg border transition-colors ${
                             selected
-                              ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
+                              ? "bg-[#1e9df1]/15 border-[#1e9df1]/40 text-[#1e9df1]"
                               : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
                           }`}
                         >
@@ -280,7 +280,7 @@ function AccesPageContent() {
                     <input
                       type="text" value={form.activiteAutre}
                       onChange={(e) => update("activiteAutre", e.target.value)}
-                      className="w-full mt-3 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
+                      className="w-full mt-3 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#1e9df1]/50 transition-colors placeholder:text-white/20"
                       placeholder={t("form.label_activite_autre")}
                     />
                   )}
@@ -292,7 +292,7 @@ function AccesPageContent() {
                     <input
                       type="text" value={form.ville}
                       onChange={(e) => update("ville", e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#1e9df1]/50 transition-colors placeholder:text-white/20"
                       placeholder={t("form.placeholder_ville")}
                     />
                   </div>
@@ -301,7 +301,7 @@ function AccesPageContent() {
                     <input
                       type="text" value={form.pays}
                       onChange={(e) => update("pays", e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#1e9df1]/50 transition-colors placeholder:text-white/20"
                       placeholder={t("form.placeholder_pays")}
                     />
                   </div>
@@ -316,7 +316,7 @@ function AccesPageContent() {
                         onClick={() => update("experience", exp.key)}
                         className={`text-xs px-4 py-2.5 rounded-lg border transition-colors ${
                           form.experience === exp.key
-                            ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
+                            ? "bg-[#1e9df1]/15 border-[#1e9df1]/40 text-[#1e9df1]"
                             : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
                         }`}
                       >
@@ -332,7 +332,7 @@ function AccesPageContent() {
           {/* Step 3: Engagement */}
           {step === 3 && (
             <div>
-              <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-3 font-medium">
+              <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-3 font-medium">
                 {t("form.step_of").replace("{current}", "3").replace("{total}", String(totalSteps))}
               </p>
               <h2 className="text-white text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
@@ -354,11 +354,11 @@ function AccesPageContent() {
                         onClick={() => update("premierMembre", opt.value)}
                         className={`w-full text-left rounded-xl p-5 border transition-colors ${
                           form.premierMembre === opt.value
-                            ? "bg-[#C4956A]/10 border-[#C4956A]/30"
+                            ? "bg-[#1e9df1]/10 border-[#1e9df1]/30"
                             : "bg-white/3 border-white/8 hover:border-white/15"
                         }`}
                       >
-                        <p className={`text-sm font-medium mb-1 ${form.premierMembre === opt.value ? "text-[#C4956A]" : "text-white/80"}`}>
+                        <p className={`text-sm font-medium mb-1 ${form.premierMembre === opt.value ? "text-[#1e9df1]" : "text-white/80"}`}>
                           {opt.label}
                         </p>
                         <p className="text-white/35 text-xs">{opt.sub}</p>
@@ -376,7 +376,7 @@ function AccesPageContent() {
                         onClick={() => update("source", s.key)}
                         className={`text-xs px-3 py-3 rounded-lg border transition-colors ${
                           form.source === s.key
-                            ? "bg-[#C4956A]/15 border-[#C4956A]/40 text-[#C4956A]"
+                            ? "bg-[#1e9df1]/15 border-[#1e9df1]/40 text-[#1e9df1]"
                             : "bg-white/3 border-white/10 text-white/50 hover:border-white/20"
                         }`}
                       >
@@ -392,7 +392,7 @@ function AccesPageContent() {
                     value={form.message}
                     onChange={(e) => update("message", e.target.value)}
                     rows={3}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#C4956A]/50 transition-colors placeholder:text-white/20 resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-[#1e9df1]/50 transition-colors placeholder:text-white/20 resize-none"
                     placeholder={t("form.placeholder_message")}
                   />
                 </div>
@@ -402,7 +402,7 @@ function AccesPageContent() {
                     type="checkbox"
                     checked={form.newsletter}
                     onChange={(e) => update("newsletter", e.target.checked)}
-                    className="mt-1 accent-[#C4956A]"
+                    className="mt-1 accent-[#1e9df1]"
                   />
                   <span className="text-white/50 text-xs leading-relaxed">
                     {t("form.label_newsletter")}
@@ -432,7 +432,7 @@ function AccesPageContent() {
                 onClick={() => canNext() && setStep(step + 1)}
                 className={`flex items-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold transition-colors ${
                   canNext()
-                    ? "bg-[#C4956A] text-black hover:bg-[#d4a57a]"
+                    ? "bg-[#1e9df1] text-black hover:bg-[#d4a57a]"
                     : "bg-white/10 text-white/30 cursor-not-allowed"
                 }`}
               >
@@ -441,7 +441,7 @@ function AccesPageContent() {
             ) : (
               <button
                 onClick={handleSubmit}
-                className="flex items-center gap-2 bg-[#C4956A] text-black rounded-lg px-6 py-3.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
+                className="flex items-center gap-2 bg-[#1e9df1] text-black rounded-lg px-6 py-3.5 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
               >
                 {t("form.nav_submit")} <ArrowRight size={16} />
               </button>

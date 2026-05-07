@@ -73,10 +73,10 @@ export function RoadmapSection() {
     },
     current: {
       icon: Loader2,
-      color: "text-[#C4956A]",
-      bg: "bg-[#C4956A]/10",
-      border: "border-2 border-[#C4956A]/40",
-      dot: "bg-[#C4956A]",
+      color: "text-[#1e9df1]",
+      bg: "bg-[#1e9df1]/10",
+      border: "border-2 border-[#1e9df1]/40",
+      dot: "bg-[#1e9df1]",
       label: t("roadmap.status_current"),
     },
     upcoming: {
@@ -101,7 +101,7 @@ export function RoadmapSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-[#C4956A] text-sm tracking-widest uppercase mb-5 font-medium">
+            <p className="text-[#1e9df1] text-sm tracking-widest uppercase mb-5 font-medium">
               {t("roadmap.label")}
             </p>
           </motion.div>
@@ -184,7 +184,7 @@ export function RoadmapSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="rounded-3xl border-2 border-[#C4956A]/20 overflow-hidden relative bg-white shadow-lg"
+          className="rounded-3xl border-2 border-[#1e9df1]/20 overflow-hidden relative bg-white shadow-lg"
         >
           <div className="p-6 md:p-12">
             {/* Header */}
@@ -201,7 +201,7 @@ export function RoadmapSection() {
               >
                 {t("roadmap.cta_title1")}
                 <br />
-                <span className="text-[#C4956A]">{t("roadmap.cta_title2")}</span>
+                <span className="text-[#1e9df1]">{t("roadmap.cta_title2")}</span>
               </h3>
               <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-2">
                 {t("roadmap.cta_subtitle")}
@@ -214,7 +214,7 @@ export function RoadmapSection() {
             {/* Benefit cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
               {[
-                { icon: Award, iconColor: "text-[#C4956A]", title: t("roadmap.benefit1_title"), desc: t("roadmap.benefit1_desc") },
+                { icon: Award, iconColor: "text-[#1e9df1]", title: t("roadmap.benefit1_title"), desc: t("roadmap.benefit1_desc") },
                 { icon: KeyRound, iconColor: "text-emerald-500", title: t("roadmap.benefit2_title"), desc: t("roadmap.benefit2_desc") },
                 { icon: Star, iconColor: "text-amber-500", title: t("roadmap.benefit3_title"), desc: t("roadmap.benefit3_desc") },
                 { icon: Mic, iconColor: "text-purple-500", title: t("roadmap.benefit4_title"), desc: t("roadmap.benefit4_desc") },
@@ -241,7 +241,7 @@ export function RoadmapSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/acces"
-                className="w-full sm:w-auto bg-[#C4956A] rounded-lg px-8 py-4 text-white text-sm font-semibold hover:bg-[#b5866b] transition-colors flex items-center justify-center gap-2 shadow-md"
+                className="w-full sm:w-auto bg-[#1e9df1] rounded-lg px-8 py-4 text-white text-sm font-semibold hover:bg-[#b5866b] transition-colors flex items-center justify-center gap-2 shadow-md"
               >
                 {t("roadmap.cta1")} <ArrowRight size={16} />
               </Link>

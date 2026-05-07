@@ -129,7 +129,7 @@ const shortcuts = [
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-function Sparkline({ data, color = "#C4956A" }: { data: number[]; color?: string }) {
+function Sparkline({ data, color = "#1e9df1" }: { data: number[]; color?: string }) {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -232,7 +232,7 @@ export default function DashboardPage() {
           <img
             src={currentUser.avatar}
             alt=""
-            className="w-14 h-14 rounded-full object-cover border-2 border-[#C4956A]"
+            className="w-14 h-14 rounded-full object-cover border-2 border-[#1e9df1]"
           />
           <div>
             <h1 className="text-xl font-bold text-[var(--foreground)]">
@@ -250,7 +250,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setShowInvite(true)}
-            className="px-4 py-2 text-sm rounded-lg bg-[#C4956A] text-white hover:bg-[#b8845a] transition-colors"
+            className="px-4 py-2 text-sm rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a] transition-colors"
           >
             Inviter
           </button>
@@ -265,8 +265,8 @@ export default function DashboardPage() {
             onClick={() => setDashboardTab(t.key)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-xl whitespace-nowrap transition-colors ${
               dashboardTab === t.key
-                ? "bg-[#C4956A] text-white"
-                : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-muted)] hover:text-[var(--foreground)] hover:border-[#C4956A]/30"
+                ? "bg-[#1e9df1] text-white"
+                : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-muted)] hover:text-[var(--foreground)] hover:border-[#1e9df1]/30"
             }`}
           >
             <span>{t.icon}</span>
@@ -325,7 +325,7 @@ export default function DashboardPage() {
                       setEditGoalIdx(idx);
                       setEditGoalVal(String(goal.target));
                     }}
-                    className="text-xs text-[var(--text-muted)] hover:text-[#C4956A]"
+                    className="text-xs text-[var(--text-muted)] hover:text-[#1e9df1]"
                   >
                     Modifier
                   </button>
@@ -340,7 +340,7 @@ export default function DashboardPage() {
                     />
                     <button
                       onClick={() => saveGoal(idx)}
-                      className="px-3 py-1 text-sm rounded-lg bg-[#C4956A] text-white"
+                      className="px-3 py-1 text-sm rounded-lg bg-[#1e9df1] text-white"
                     >
                       OK
                     </button>
@@ -349,7 +349,7 @@ export default function DashboardPage() {
                   <>
                     <div className="w-full h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-[#C4956A] transition-all duration-500"
+                        className="h-full rounded-full bg-[#1e9df1] transition-all duration-500"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -377,7 +377,7 @@ export default function DashboardPage() {
                   onClick={() => setPeriod(p.label)}
                   className={`px-3 py-1 text-xs rounded-md transition-colors ${
                     period === p.label
-                      ? "bg-[#C4956A] text-white"
+                      ? "bg-[#1e9df1] text-white"
                       : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
                   }`}
                 >
@@ -483,11 +483,11 @@ export default function DashboardPage() {
                 key={ap.id}
                 className="flex items-center gap-4 py-2 border-b border-[var(--card-border)] last:border-0"
               >
-                <div className="w-12 h-12 rounded-lg bg-[#C4956A]/10 flex flex-col items-center justify-center flex-shrink-0">
-                  <span className="text-xs text-[#C4956A] font-medium">
+                <div className="w-12 h-12 rounded-lg bg-[#1e9df1]/10 flex flex-col items-center justify-center flex-shrink-0">
+                  <span className="text-xs text-[#1e9df1] font-medium">
                     {new Date(ap.date).toLocaleDateString("fr-CH", { day: "numeric" })}
                   </span>
-                  <span className="text-[10px] text-[#C4956A]">
+                  <span className="text-[10px] text-[#1e9df1]">
                     {new Date(ap.date).toLocaleDateString("fr-CH", { month: "short" })}
                   </span>
                 </div>
@@ -535,7 +535,7 @@ export default function DashboardPage() {
                   <td className="py-3 px-2">
                     <div className="flex gap-2">
                       {r.statut === "pending" && (
-                        <button className="px-3 py-1 text-xs rounded-lg bg-[#C4956A] text-white hover:bg-[#b8845a] transition-colors">Confirmer</button>
+                        <button className="px-3 py-1 text-xs rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a] transition-colors">Confirmer</button>
                       )}
                       <button className="px-3 py-1 text-xs rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Contacter</button>
                     </div>
@@ -564,7 +564,7 @@ export default function DashboardPage() {
                   <span className="text-[var(--foreground)] font-medium">{prop.occupation}%</span>
                 </div>
                 <div className="w-full h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full bg-[#C4956A] transition-all duration-500" style={{ width: `${prop.occupation}%` }} />
+                  <div className="h-full rounded-full bg-[#1e9df1] transition-all duration-500" style={{ width: `${prop.occupation}%` }} />
                 </div>
               </div>
               <div className="flex items-center justify-between text-xs">
@@ -573,7 +573,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-[var(--text-muted)]">Revenus du mois</span>
-                <span className="text-[#C4956A] font-medium">{formatPrice(prop.revenus)}</span>
+                <span className="text-[#1e9df1] font-medium">{formatPrice(prop.revenus)}</span>
               </div>
             </div>
           ))}
@@ -604,7 +604,7 @@ export default function DashboardPage() {
                   <td className="py-3 px-2 font-medium text-[var(--foreground)]">{a.apporteur}</td>
                   <td className="py-3 px-2 text-[var(--text-secondary)]">{a.bien}</td>
                   <td className="py-3 px-2 text-[var(--text-secondary)]">{a.reservations}</td>
-                  <td className="py-3 px-2 font-medium text-[#C4956A]">{formatPrice(a.commissions)}</td>
+                  <td className="py-3 px-2 font-medium text-[#1e9df1]">{formatPrice(a.commissions)}</td>
                 </tr>
               ))}
             </tbody>
@@ -620,9 +620,9 @@ export default function DashboardPage() {
             <Link
               key={s.href}
               href={s.href}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--card-border)] hover:border-[#C4956A]/50 text-sm text-[var(--foreground)] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--card-border)] hover:border-[#1e9df1]/50 text-sm text-[var(--foreground)] transition-colors"
             >
-              <span className="w-6 h-6 rounded bg-[#C4956A]/10 flex items-center justify-center text-xs text-[#C4956A] font-bold">{s.icon}</span>
+              <span className="w-6 h-6 rounded bg-[#1e9df1]/10 flex items-center justify-center text-xs text-[#1e9df1] font-bold">{s.icon}</span>
               <span>{s.label}</span>
             </Link>
           ))}
@@ -651,7 +651,7 @@ export default function DashboardPage() {
         <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-[var(--foreground)]">Mes formations</h2>
-            <Link href="/formations" className="text-sm text-[#C4956A] hover:underline">Voir tout</Link>
+            <Link href="/formations" className="text-sm text-[#1e9df1] hover:underline">Voir tout</Link>
           </div>
           <div className="space-y-3">
             {[
@@ -660,7 +660,7 @@ export default function DashboardPage() {
             ].map((f, idx) => (
               <div key={f.id} className="flex items-center justify-between py-3 border-b border-[var(--card-border)] last:border-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#C4956A]/10 flex items-center justify-center text-sm font-bold text-[#C4956A]">
+                  <div className="w-8 h-8 rounded-full bg-[#1e9df1]/10 flex items-center justify-center text-sm font-bold text-[#1e9df1]">
                     {idx + 1}
                   </div>
                   <div>
@@ -762,7 +762,7 @@ export default function DashboardPage() {
                   <div className="text-sm font-medium text-[var(--foreground)]">{bien.title}</div>
                   <div className="text-xs text-[var(--text-muted)]">Rendement : {bien.rendement}</div>
                 </div>
-                <div className="text-sm font-bold text-[#C4956A]">{formatPrice(bien.valeur)}</div>
+                <div className="text-sm font-bold text-[#1e9df1]">{formatPrice(bien.valeur)}</div>
               </div>
             ))}
           </div>
@@ -806,7 +806,7 @@ export default function DashboardPage() {
                     {mandat.status}
                   </span>
                 </div>
-                <div className="text-sm font-bold text-[#C4956A]">{formatPrice(mandat.prix)}</div>
+                <div className="text-sm font-bold text-[#1e9df1]">{formatPrice(mandat.prix)}</div>
               </div>
             ))}
           </div>
@@ -838,7 +838,7 @@ export default function DashboardPage() {
               />
               <button
                 onClick={() => navigator.clipboard?.writeText("https://e-dome.ch/invite/LEO2026")}
-                className="px-4 py-2 text-sm rounded-lg bg-[#C4956A] text-white hover:bg-[#b8845a]"
+                className="px-4 py-2 text-sm rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a]"
               >
                 Copier
               </button>

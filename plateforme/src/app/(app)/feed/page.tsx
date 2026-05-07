@@ -386,14 +386,14 @@ export default function FeedPage() {
     return content.split(/([@#]\S+)/g).map((part, i) => {
       if (part.startsWith("@")) {
         return (
-          <span key={i} className="text-[#C4956A] cursor-pointer hover:underline">
+          <span key={i} className="text-[#1e9df1] cursor-pointer hover:underline">
             {part}
           </span>
         );
       }
       if (part.startsWith("#")) {
         return (
-          <Link key={i} href={`/recherche?q=${encodeURIComponent(part)}`} className="text-[#C4956A] hover:underline">
+          <Link key={i} href={`/recherche?q=${encodeURIComponent(part)}`} className="text-[#1e9df1] hover:underline">
             {part}
           </Link>
         );
@@ -418,7 +418,7 @@ export default function FeedPage() {
             onClick={() => setShowStoryUpload(true)}
             className="flex flex-col items-center gap-1.5 shrink-0"
           >
-            <div className="w-16 h-16 rounded-full border-2 border-dashed border-[var(--text-muted)] flex items-center justify-center bg-[var(--card)] hover:border-[#C4956A] transition-colors">
+            <div className="w-16 h-16 rounded-full border-2 border-dashed border-[var(--text-muted)] flex items-center justify-center bg-[var(--card)] hover:border-[#1e9df1] transition-colors">
               <Plus className="w-6 h-6 text-[var(--text-muted)]" />
             </div>
             <span className="text-xs text-[var(--text-muted)]">Votre story</span>
@@ -431,7 +431,7 @@ export default function FeedPage() {
             >
               <div
                 className={`w-16 h-16 rounded-full p-0.5 ${
-                  viewedStories.has(story.id) ? "bg-[var(--text-muted)]" : "bg-gradient-to-br from-[#C4956A] to-[#e8c89e]"
+                  viewedStories.has(story.id) ? "bg-[var(--text-muted)]" : "bg-gradient-to-br from-[#1e9df1] to-[#e8c89e]"
                 }`}
               >
                 <img
@@ -508,7 +508,7 @@ export default function FeedPage() {
                   <button
                     key={g.name}
                     onClick={() => setStoryGradient(g.value)}
-                    className={`w-9 h-9 rounded-full border-2 transition-all shrink-0 ${storyGradient === g.value ? "border-[#C4956A] scale-110 ring-2 ring-[#C4956A]/30" : "border-transparent hover:border-[#C4956A]/40"}`}
+                    className={`w-9 h-9 rounded-full border-2 transition-all shrink-0 ${storyGradient === g.value ? "border-[#1e9df1] scale-110 ring-2 ring-[#1e9df1]/30" : "border-transparent hover:border-[#1e9df1]/40"}`}
                     style={{ background: g.value }}
                     title={g.name}
                   />
@@ -556,7 +556,7 @@ export default function FeedPage() {
                 placeholder="Écrivez le texte de votre story..."
                 maxLength={200}
                 rows={2}
-                className="w-full px-4 py-3 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A]/50 transition-colors text-sm resize-none"
+                className="w-full px-4 py-3 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors text-sm resize-none"
               />
               <p className="text-[10px] text-[var(--text-muted)] text-right mt-1">{storyText.length}/200</p>
             </div>
@@ -569,7 +569,7 @@ export default function FeedPage() {
                 setFeedToast("Story publiée ! (démonstration)");
                 setTimeout(() => setFeedToast(null), 3000);
               }}
-              className="w-full mt-3 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors"
+              className="w-full mt-3 py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors"
             >
               Publier la story
             </button>
@@ -591,13 +591,13 @@ export default function FeedPage() {
               onClick={() => setCreateTab(t.key)}
               className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
                 createTab === t.key
-                  ? "text-[#C4956A]"
+                  ? "text-[#1e9df1]"
                   : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
               }`}
             >
               {t.label}
               {createTab === t.key && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4956A] rounded-full" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1e9df1] rounded-full" />
               )}
             </button>
           ))}
@@ -630,7 +630,7 @@ export default function FeedPage() {
                         {/* No gradient option */}
                         <button
                           onClick={() => setSelectedGradient(null)}
-                          className={`w-12 h-12 rounded-lg border-2 transition-all shrink-0 bg-[var(--card)] flex items-center justify-center ${selectedGradient === null ? "border-[#C4956A] scale-105" : "border-[var(--card-border)] hover:border-[#C4956A]/40"}`}
+                          className={`w-12 h-12 rounded-lg border-2 transition-all shrink-0 bg-[var(--card)] flex items-center justify-center ${selectedGradient === null ? "border-[#1e9df1] scale-105" : "border-[var(--card-border)] hover:border-[#1e9df1]/40"}`}
                           title="Aucun fond"
                         >
                           <span className="text-[11px] text-[var(--text-muted)]">Aa</span>
@@ -639,7 +639,7 @@ export default function FeedPage() {
                           <button
                             key={g.name}
                             onClick={() => setSelectedGradient(g.value)}
-                            className={`w-12 h-12 rounded-lg border-2 transition-all shrink-0 ${selectedGradient === g.value ? "border-[#C4956A] scale-105" : "border-transparent hover:border-[#C4956A]/40"}`}
+                            className={`w-12 h-12 rounded-lg border-2 transition-all shrink-0 ${selectedGradient === g.value ? "border-[#1e9df1] scale-105" : "border-transparent hover:border-[#1e9df1]/40"}`}
                             style={{ background: g.value }}
                             title={g.name}
                           />
@@ -682,7 +682,7 @@ export default function FeedPage() {
                     <button
                       onClick={() => setShowLocationInput(!showLocationInput)}
                       className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-colors text-xs ${
-                        showLocationInput ? "bg-[#C4956A]/10 text-[#C4956A]" : "hover:bg-[var(--hover-bg)] text-[var(--text-muted)]"
+                        showLocationInput ? "bg-[#1e9df1]/10 text-[#1e9df1]" : "hover:bg-[var(--hover-bg)] text-[var(--text-muted)]"
                       }`}
                     >
                       <span>📍</span> Lieu
@@ -704,7 +704,7 @@ export default function FeedPage() {
                     <button
                       onClick={createPost}
                       disabled={!newPostContent.trim()}
-                      className="px-4 py-2 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors disabled:opacity-40"
+                      className="px-4 py-2 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors disabled:opacity-40"
                     >
                       Publier
                     </button>
@@ -716,7 +716,7 @@ export default function FeedPage() {
                     value={newPostLocation}
                     onChange={(e) => setNewPostLocation(e.target.value)}
                     placeholder="Ajouter un lieu..."
-                    className="mt-2 w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A]"
+                    className="mt-2 w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]"
                   />
                 )}
               </div>
@@ -725,7 +725,7 @@ export default function FeedPage() {
 
           {createTab === "story" && (
             <div className="flex flex-col items-center gap-4 py-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C4956A] to-[#e8c89e] flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1e9df1] to-[#e8c89e] flex items-center justify-center">
                 <span className="text-2xl">📱</span>
               </div>
               <p className="text-sm text-[var(--text-secondary)] text-center">
@@ -733,7 +733,7 @@ export default function FeedPage() {
               </p>
               <Link
                 href="/creer-story"
-                className="px-6 py-2.5 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors"
+                className="px-6 py-2.5 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors"
               >
                 Ouvrir l&apos;éditeur de story →
               </Link>
@@ -742,7 +742,7 @@ export default function FeedPage() {
 
           {createTab === "reel" && (
             <div className="flex flex-col items-center gap-4 py-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C4956A] to-[#e8c89e] flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1e9df1] to-[#e8c89e] flex items-center justify-center">
                 <span className="text-2xl">🎬</span>
               </div>
               <p className="text-sm text-[var(--text-secondary)] text-center">
@@ -750,7 +750,7 @@ export default function FeedPage() {
               </p>
               <Link
                 href="/creer-reel"
-                className="px-6 py-2.5 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors"
+                className="px-6 py-2.5 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors"
               >
                 Ouvrir l&apos;éditeur de reel →
               </Link>
@@ -770,7 +770,7 @@ export default function FeedPage() {
                 onClick={() => setActiveTab(tab)}
                 className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                   activeTab === tab
-                    ? "bg-[#C4956A] text-white"
+                    ? "bg-[#1e9df1] text-white"
                     : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
                 }`}
               >
@@ -902,12 +902,12 @@ export default function FeedPage() {
                         onChange={(e) => setEditContent(e.target.value)}
                         maxLength={2000}
                         rows={4}
-                        className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl p-3 text-sm text-[var(--foreground)] outline-none resize-none focus:border-[#C4956A]"
+                        className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl p-3 text-sm text-[var(--foreground)] outline-none resize-none focus:border-[#1e9df1]"
                       />
                       <div className="flex gap-2 mt-2">
                         <button
                           onClick={() => saveEdit(post.id)}
-                          className="px-4 py-2 rounded-lg bg-[#C4956A] text-white text-sm font-medium"
+                          className="px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium"
                         >
                           Sauvegarder
                         </button>
@@ -952,7 +952,7 @@ export default function FeedPage() {
 
                 {/* Property link card */}
                 {post.property && (
-                  <div className="mx-4 my-3 rounded-xl border border-[var(--card-border)] overflow-hidden hover:border-[#C4956A]/30 transition-colors">
+                  <div className="mx-4 my-3 rounded-xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
                     <Link href={`/explorer/${post.property.id}`} className="flex gap-3 p-3">
                       <img
                         src={post.property.images[0]}
@@ -963,7 +963,7 @@ export default function FeedPage() {
                         <p className="text-sm font-medium text-[var(--foreground)] truncate">
                           {post.property.title}
                         </p>
-                        <p className="text-sm font-bold text-[#C4956A] mt-1">
+                        <p className="text-sm font-bold text-[#1e9df1] mt-1">
                           {formatPrice(post.property.price, post.property.currency)}
                         </p>
                         <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -981,7 +981,7 @@ export default function FeedPage() {
 
                 {/* Formation link card */}
                 {post.formation && (
-                  <div className="mx-4 my-3 rounded-xl border border-[var(--card-border)] overflow-hidden hover:border-[#C4956A]/30 transition-colors">
+                  <div className="mx-4 my-3 rounded-xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
                     <Link href={`/formations/${post.formation.id}`} className="flex gap-3 p-3">
                       <img
                         src={post.formation.thumbnail}
@@ -990,7 +990,7 @@ export default function FeedPage() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="px-2 py-0.5 bg-[#C4956A]/20 text-[#C4956A] text-[10px] font-medium rounded-full">Formation</span>
+                          <span className="px-2 py-0.5 bg-[#1e9df1]/20 text-[#1e9df1] text-[10px] font-medium rounded-full">Formation</span>
                         </div>
                         <p className="text-sm font-medium text-[var(--foreground)] truncate">
                           {post.formation.title}
@@ -998,7 +998,7 @@ export default function FeedPage() {
                         <p className="text-xs text-[var(--text-muted)] mt-1">
                           {post.formation.instructor} · {post.formation.students} étudiants
                         </p>
-                        <p className="text-sm font-bold text-[#C4956A] mt-1">
+                        <p className="text-sm font-bold text-[#1e9df1] mt-1">
                           {formatPrice(post.formation.price)}
                         </p>
                       </div>
@@ -1068,7 +1068,7 @@ export default function FeedPage() {
                     onClick={() => toggleSave(post.id)}
                     className={`p-2 rounded-lg transition-colors ${
                       savedPosts.has(post.id)
-                        ? "text-[#C4956A] bg-[#C4956A]/10"
+                        ? "text-[#1e9df1] bg-[#1e9df1]/10"
                         : "text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
                     }`}
                   >
@@ -1132,7 +1132,7 @@ export default function FeedPage() {
                       <div className="flex-1 relative">
                         {replyTo[post.id] && (
                           <div className="flex items-center gap-1 mb-1">
-                            <span className="text-xs text-[#C4956A]">
+                            <span className="text-xs text-[#1e9df1]">
                               @{replyTo[post.id]}
                             </span>
                             <button
@@ -1161,11 +1161,11 @@ export default function FeedPage() {
                             }
                             onKeyDown={(e) => e.key === "Enter" && addComment(post.id)}
                             placeholder="Écrire un commentaire..."
-                            className="flex-1 px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A]"
+                            className="flex-1 px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]"
                           />
                           <button
                             onClick={() => addComment(post.id)}
-                            className="p-2 rounded-lg bg-[#C4956A] text-white hover:bg-[var(--gold-hover)] transition-colors disabled:opacity-40"
+                            className="p-2 rounded-lg bg-[#1e9df1] text-white hover:bg-[var(--gold-hover)] transition-colors disabled:opacity-40"
                             disabled={!commentInputs[post.id]?.trim()}
                           >
                             <Send className="w-4 h-4" />
@@ -1221,7 +1221,7 @@ export default function FeedPage() {
                     className={`text-xs px-3 py-1 rounded-lg font-medium transition-colors ${
                       isFollowing(user.id)
                         ? "bg-[var(--hover-bg)] text-[var(--text-secondary)]"
-                        : "bg-[#C4956A] text-white"
+                        : "bg-[#1e9df1] text-white"
                     }`}
                   >
                     {isFollowing(user.id) ? "Suivi" : "Suivre"}
@@ -1234,7 +1234,7 @@ export default function FeedPage() {
           {/* Trending hashtags */}
           <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
             <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-[#C4956A]" />
+              <TrendingUp className="w-4 h-4 text-[#1e9df1]" />
               Tendances
             </h3>
             <div className="space-y-3">
@@ -1244,7 +1244,7 @@ export default function FeedPage() {
                   href={`/recherche?q=${encodeURIComponent(item.tag)}`}
                   className="flex items-center justify-between group"
                 >
-                  <span className="text-sm text-[#C4956A] group-hover:underline">{item.tag}</span>
+                  <span className="text-sm text-[#1e9df1] group-hover:underline">{item.tag}</span>
                   <span className="text-xs text-[var(--text-muted)]">{formatCount(item.count)}</span>
                 </Link>
               ))}
@@ -1254,13 +1254,13 @@ export default function FeedPage() {
           {/* Upcoming events */}
           <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
             <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#C4956A]" />
+              <Calendar className="w-4 h-4 text-[#1e9df1]" />
               Événements à venir
             </h3>
             <div className="space-y-3">
               {UPCOMING_EVENTS.map((event) => (
                 <div key={event.id} className="group cursor-pointer">
-                  <p className="text-sm font-medium text-[var(--foreground)] group-hover:text-[#C4956A] transition-colors">
+                  <p className="text-sm font-medium text-[var(--foreground)] group-hover:text-[#1e9df1] transition-colors">
                     {event.title}
                   </p>
                   <p className="text-xs text-[var(--text-muted)]">
@@ -1277,7 +1277,7 @@ export default function FeedPage() {
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-20 md:bottom-8 right-6 z-30 w-10 h-10 rounded-full bg-[#C4956A] text-white flex items-center justify-center shadow-lg hover:bg-[var(--gold-hover)] transition-colors animate-scale-in"
+          className="fixed bottom-20 md:bottom-8 right-6 z-30 w-10 h-10 rounded-full bg-[#1e9df1] text-white flex items-center justify-center shadow-lg hover:bg-[var(--gold-hover)] transition-colors animate-scale-in"
         >
           <ChevronUp className="w-5 h-5" />
         </button>

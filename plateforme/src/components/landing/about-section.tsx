@@ -15,7 +15,7 @@ const roles = [
   { key: "about.role_agent", bg: "bg-cyan-50", text: "text-cyan-700", border: "border-cyan-200" },
   { key: "about.role_investisseur", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
   { key: "about.role_formateur", bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200" },
-  { key: "about.role_apporteur", bg: "bg-[#C4956A]/10", text: "text-[#C4956A]", border: "border-[#C4956A]/20" },
+  { key: "about.role_apporteur", bg: "bg-[#1e9df1]/10", text: "text-[#1e9df1]", border: "border-[#1e9df1]/20" },
   { key: "about.role_photographe", bg: "bg-pink-50", text: "text-pink-700", border: "border-pink-200" },
   { key: "about.role_courtier", bg: "bg-teal-50", text: "text-teal-700", border: "border-teal-200" },
   { key: "about.role_notaire", bg: "bg-indigo-50", text: "text-indigo-700", border: "border-indigo-200" },
@@ -51,7 +51,7 @@ export function AboutSection() {
         <motion.p
           {...fadeUp}
           transition={{ duration: 0.6 }}
-          className="text-[#C4956A] text-xs md:text-sm font-medium tracking-widest uppercase mb-8"
+          className="text-[#1e9df1] text-xs md:text-sm font-medium tracking-widest uppercase mb-8"
         >
           {t("about.label")}
         </motion.p>
@@ -64,7 +64,7 @@ export function AboutSection() {
           style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
         >
           {t("about.title1")}{" "}
-          <span className="italic text-[#C4956A]">{t("about.title2")}</span>
+          <span className="italic text-[#1e9df1]">{t("about.title2")}</span>
         </motion.h2>
 
         {/* Two-column paragraphs */}

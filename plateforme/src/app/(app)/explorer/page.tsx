@@ -240,16 +240,16 @@ export default function ExplorerPage() {
 
       const el = document.createElement("div");
       el.className = "map-marker";
-      el.innerHTML = `<span style="background:#C4956A;color:white;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2)">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix}</span>`;
+      el.innerHTML = `<span style="background:#1e9df1;color:white;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2)">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix}</span>`;
 
       const popup = new maplibregl.Popup({ offset: 25, closeButton: false }).setHTML(
         `<div style="font-family:system-ui;min-width:200px">
           <img src="${prop.images[0]}" style="width:100%;height:120px;object-fit:cover;border-radius:8px 8px 0 0" />
           <div style="padding:8px">
             <p style="font-weight:600;margin:0">${prop.title}</p>
-            <p style="color:#C4956A;font-weight:700;margin:4px 0">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix ? ` <span style="font-weight:400;color:#888;font-size:11px">${suffix}</span>` : ""}</p>
+            <p style="color:#1e9df1;font-weight:700;margin:4px 0">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix ? ` <span style="font-weight:400;color:#888;font-size:11px">${suffix}</span>` : ""}</p>
             <p style="color:#888;font-size:12px;margin:0">${prop.location.city}${prop.rating ? ` · ★ ${prop.rating}` : ""}</p>
-            <a href="/explorer/${prop.id}" style="display:block;margin-top:8px;color:#C4956A;font-size:12px;font-weight:600;text-decoration:none">Voir le bien →</a>
+            <a href="/explorer/${prop.id}" style="display:block;margin-top:8px;color:#1e9df1;font-size:12px;font-weight:600;text-decoration:none">Voir le bien →</a>
           </div>
         </div>`
       );
@@ -283,7 +283,7 @@ export default function ExplorerPage() {
     }, 600);
   };
 
-  const selectClass = "px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A] appearance-none cursor-pointer";
+  const selectClass = "px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1] appearance-none cursor-pointer";
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -300,12 +300,12 @@ export default function ExplorerPage() {
               <Link
                 key={prop.id}
                 href={`/explorer/${prop.id}`}
-                className="shrink-0 w-48 rounded-xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden hover:border-[#C4956A]/30 transition-colors"
+                className="shrink-0 w-48 rounded-xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors"
               >
                 <img src={prop.images[0]} alt="" className="w-full h-24 object-cover" />
                 <div className="p-2.5">
                   <p className="text-xs font-medium text-[var(--foreground)] truncate">{prop.title}</p>
-                  <p className="text-xs text-[#C4956A] font-semibold mt-0.5">
+                  <p className="text-xs text-[#1e9df1] font-semibold mt-0.5">
                     {formatPrice(prop.price, prop.currency)}
                     {prop.transactionType === "location-ct" && <span className="text-[var(--text-muted)]">/nuit</span>}
                     {prop.transactionType === "location-lt" && <span className="text-[var(--text-muted)]">/mois</span>}
@@ -332,14 +332,14 @@ export default function ExplorerPage() {
               onClick={() => setFilterType(filterType === item.type ? "" : item.type)}
               className={`relative rounded-2xl overflow-hidden aspect-[3/2] group transition-all duration-300 ${
                 filterType === item.type
-                  ? "ring-2 ring-[#C4956A] ring-offset-2 ring-offset-[var(--background)] scale-[1.02]"
+                  ? "ring-2 ring-[#1e9df1] ring-offset-2 ring-offset-[var(--background)] scale-[1.02]"
                   : "hover:scale-[1.03]"
               }`}
             >
               <img src={item.img} alt={item.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
               <div className={`absolute inset-0 transition-colors duration-300 ${
                 filterType === item.type
-                  ? "bg-gradient-to-t from-[#C4956A]/90 via-[#C4956A]/40 to-transparent"
+                  ? "bg-gradient-to-t from-[#1e9df1]/90 via-[#1e9df1]/40 to-transparent"
                   : "bg-gradient-to-t from-black/70 via-black/30 to-transparent"
               }`} />
               <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
@@ -347,7 +347,7 @@ export default function ExplorerPage() {
                 <p className="text-white/70 text-xs drop-shadow">{item.subtitle}</p>
               </div>
               {filterType === item.type && (
-                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#C4956A] flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#1e9df1] flex items-center justify-center text-white text-xs font-bold shadow-lg">
                   ✓
                 </div>
               )}
@@ -365,15 +365,15 @@ export default function ExplorerPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher par ville, type, titre..."
-            className="w-full pl-12 pr-12 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A] transition-colors"
+            className="w-full pl-12 pr-12 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1] transition-colors"
           />
           <button
             onClick={saveSearch}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[#C4956A] transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[#1e9df1] transition-colors"
             title="Sauvegarder la recherche"
           >
             {savedSearches.includes(search) ? (
-              <BookmarkCheck className="w-5 h-5 text-[#C4956A]" />
+              <BookmarkCheck className="w-5 h-5 text-[#1e9df1]" />
             ) : (
               <Bookmark className="w-5 h-5" />
             )}
@@ -383,7 +383,7 @@ export default function ExplorerPage() {
           onClick={() => setShowFilters(!showFilters)}
           className={`px-4 py-3 rounded-xl border transition-colors flex items-center gap-2 ${
             showFilters
-              ? "border-[#C4956A] bg-[#C4956A]/10 text-[#C4956A]"
+              ? "border-[#1e9df1] bg-[#1e9df1]/10 text-[#1e9df1]"
               : "border-[var(--card-border)] bg-[var(--card)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]"
           }`}
         >
@@ -476,7 +476,7 @@ export default function ExplorerPage() {
             onClick={() => setFilterTransaction(tab.value)}
             className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
               filterTransaction === tab.value
-                ? "bg-[#C4956A] text-white"
+                ? "bg-[#1e9df1] text-white"
                 : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
             }`}
           >
@@ -508,13 +508,13 @@ export default function ExplorerPage() {
           <div className="flex rounded-lg border border-[var(--card-border)] overflow-hidden">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 transition-colors ${viewMode === "grid" ? "bg-[#C4956A] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
+              className={`p-2 transition-colors ${viewMode === "grid" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
             >
               <Grid3X3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 transition-colors ${viewMode === "list" ? "bg-[#C4956A] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
+              className={`p-2 transition-colors ${viewMode === "list" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
             >
               <List className="w-4 h-4" />
             </button>
@@ -547,7 +547,7 @@ export default function ExplorerPage() {
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex gap-2">
                   {prop.featured && (
-                    <span className="px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}>
+                    <span className="px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}>
                       <Rocket className="w-3 h-3" /> Mis en avant
                     </span>
                   )}
@@ -568,7 +568,7 @@ export default function ExplorerPage() {
                     className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold backdrop-blur-sm flex items-center gap-1"
                     style={{
                       background: prop.analytics.rendementBrut > 7
-                        ? "linear-gradient(135deg, #C4956A, #d4a574)"
+                        ? "linear-gradient(135deg, #1e9df1, #d4a574)"
                         : prop.analytics.rendementBrut >= 5
                         ? "rgba(34,197,94,0.85)"
                         : prop.analytics.rendementBrut >= 3
@@ -585,7 +585,7 @@ export default function ExplorerPage() {
               {/* Info */}
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-lg font-bold text-[#C4956A]">
+                  <p className="text-lg font-bold text-[#1e9df1]">
                     {formatPrice(prop.price, prop.currency)}
                     {prop.transactionType === "location-ct" && (
                       <span className="text-sm font-normal text-[var(--text-muted)]">/nuit</span>
@@ -595,12 +595,12 @@ export default function ExplorerPage() {
                     )}
                   </p>
                   <div className="flex items-center gap-1 text-[var(--text-muted)]">
-                    <Star className="w-4 h-4 fill-[#C4956A] text-[#C4956A]" />
+                    <Star className="w-4 h-4 fill-[#1e9df1] text-[#1e9df1]" />
                     <span className="text-sm">{prop.rating}</span>
                   </div>
                 </div>
                 <Link href={`/explorer/${prop.id}`}>
-                  <h3 className="font-semibold text-[var(--foreground)] mb-1 hover:text-[#C4956A] transition-colors">
+                  <h3 className="font-semibold text-[var(--foreground)] mb-1 hover:text-[#1e9df1] transition-colors">
                     {prop.title}
                   </h3>
                 </Link>
@@ -651,7 +651,7 @@ export default function ExplorerPage() {
                   <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover" />
                 </Link>
                 {prop.featured && (
-                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}>
+                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}>
                     <Rocket className="w-3 h-3" /> Mis en avant
                   </span>
                 )}
@@ -667,7 +667,7 @@ export default function ExplorerPage() {
                     className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold backdrop-blur-sm flex items-center gap-1"
                     style={{
                       background: prop.analytics.rendementBrut > 7
-                        ? "linear-gradient(135deg, #C4956A, #d4a574)"
+                        ? "linear-gradient(135deg, #1e9df1, #d4a574)"
                         : prop.analytics.rendementBrut >= 5
                         ? "rgba(34,197,94,0.85)"
                         : prop.analytics.rendementBrut >= 3
@@ -684,7 +684,7 @@ export default function ExplorerPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <Link href={`/explorer/${prop.id}`}>
-                      <h3 className="font-semibold text-[var(--foreground)] hover:text-[#C4956A] transition-colors">
+                      <h3 className="font-semibold text-[var(--foreground)] hover:text-[#1e9df1] transition-colors">
                         {prop.title}
                       </h3>
                     </Link>
@@ -693,7 +693,7 @@ export default function ExplorerPage() {
                       {prop.location.city}, {prop.location.country}
                     </p>
                   </div>
-                  <p className="text-lg font-bold text-[#C4956A]">
+                  <p className="text-lg font-bold text-[#1e9df1]">
                     {formatPrice(prop.price, prop.currency)}
                   </p>
                 </div>
@@ -701,7 +701,7 @@ export default function ExplorerPage() {
                   {prop.bedrooms > 0 && <span className="flex items-center gap-1"><Bed className="w-4 h-4" /> {prop.bedrooms} ch</span>}
                   {prop.bathrooms > 0 && <span className="flex items-center gap-1"><Bath className="w-4 h-4" /> {prop.bathrooms} sdb</span>}
                   <span className="flex items-center gap-1"><Maximize className="w-4 h-4" /> {prop.area}m²</span>
-                  <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-[#C4956A] text-[#C4956A]" /> {prop.rating}</span>
+                  <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-[#1e9df1] text-[#1e9df1]" /> {prop.rating}</span>
                 </div>
                 {prop.transactionType === "vente" && prop.analytics && (
                   <p className="mt-2 text-xs text-green-400 flex items-center gap-1">
@@ -724,7 +724,7 @@ export default function ExplorerPage() {
           <button
             onClick={loadMore}
             disabled={loadingMore}
-            className="px-6 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors disabled:opacity-60 flex items-center gap-2"
+            className="px-6 py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors disabled:opacity-60 flex items-center gap-2"
           >
             {loadingMore ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -744,7 +744,7 @@ export default function ExplorerPage() {
       <button
         onClick={() => setShowMap((v) => !v)}
         className="fixed bottom-20 md:bottom-8 right-6 z-30 px-5 py-3 rounded-full font-medium flex items-center gap-2 shadow-xl text-white hover:opacity-90 transition-opacity"
-        style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}
+        style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}
       >
         <span className="text-lg">🗺</span>
         Carte
@@ -756,7 +756,7 @@ export default function ExplorerPage() {
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--card-border)] bg-[var(--card)] shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base" style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)" }}>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base" style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}>
                 🗺
               </div>
               <div>

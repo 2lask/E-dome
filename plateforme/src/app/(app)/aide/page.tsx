@@ -92,7 +92,7 @@ export default function AidePage() {
           placeholder="Rechercher une question..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-5 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A] transition text-lg"
+          className="w-full px-5 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] transition text-lg"
         />
       </div>
 
@@ -102,7 +102,7 @@ export default function AidePage() {
           onClick={() => setActiveCategory(null)}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
             activeCategory === null
-              ? "bg-[#C4956A] text-white"
+              ? "bg-[#1e9df1] text-white"
               : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--foreground)]"
           }`}
         >
@@ -114,7 +114,7 @@ export default function AidePage() {
             onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
               activeCategory === cat
-                ? "bg-[#C4956A] text-white"
+                ? "bg-[#1e9df1] text-white"
                 : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--foreground)]"
             }`}
           >
@@ -166,7 +166,7 @@ export default function AidePage() {
         </p>
         <a
           href="/contact"
-          className="inline-block px-6 py-3 rounded-lg bg-[#C4956A] text-white font-medium hover:opacity-90 transition"
+          className="inline-block px-6 py-3 rounded-lg bg-[#1e9df1] text-white font-medium hover:opacity-90 transition"
         >
           Contacter le support
         </a>

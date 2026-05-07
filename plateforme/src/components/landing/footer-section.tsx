@@ -33,7 +33,7 @@ export function FooterSection() {
           {/* ── Logo + description + contact ── */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <Globe size={22} className="text-[#C4956A]" />
+              <Globe size={22} className="text-[#1e9df1]" />
               <span className="text-white font-semibold text-lg">E-Dome</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">
@@ -42,7 +42,7 @@ export function FooterSection() {
             <div className="flex flex-col gap-2.5">
               <a
                 href="mailto:contact@edome.world"
-                className="inline-flex items-center gap-2 text-gray-500 text-xs hover:text-[#C4956A] transition-colors"
+                className="inline-flex items-center gap-2 text-gray-500 text-xs hover:text-[#1e9df1] transition-colors"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                 contact@edome.world
@@ -70,7 +70,7 @@ export function FooterSection() {
 
           {/* ── Demo links ── */}
           <div>
-            <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-4 font-medium">
+            <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium">
               {t("footer.demo_label")}
             </p>
             <ul className="space-y-2.5">
@@ -78,7 +78,7 @@ export function FooterSection() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors py-1 inline-block"
+                    className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors py-1 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -89,7 +89,7 @@ export function FooterSection() {
 
           {/* ── Platform links ── */}
           <div>
-            <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-4 font-medium">
+            <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium">
               {t("footer.platform_label")}
             </p>
             <ul className="space-y-2.5">
@@ -97,7 +97,7 @@ export function FooterSection() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors py-1 inline-block"
+                    className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors py-1 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -108,37 +108,37 @@ export function FooterSection() {
 
           {/* ── About links ── */}
           <div>
-            <p className="text-[#C4956A] text-xs tracking-widest uppercase mb-4 font-medium">
+            <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium">
               {t("footer.about_label")}
             </p>
             <ul className="space-y-2.5">
               <li>
-                <a href="#vision" className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors py-1 inline-block">
+                <a href="#vision" className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors py-1 inline-block">
                   {t("footer.link_vision")}
                 </a>
               </li>
               <li>
-                <a href="#fonctionnalites" className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors py-1 inline-block">
+                <a href="#fonctionnalites" className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors py-1 inline-block">
                   {t("footer.link_features")}
                 </a>
               </li>
               <li>
-                <a href="#fondateurs" className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors py-1 inline-block">
+                <a href="#fondateurs" className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors py-1 inline-block">
                   {t("footer.link_founders")}
                 </a>
               </li>
               <li>
-                <a href="#roadmap" className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors py-1 inline-block">
+                <a href="#roadmap" className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors py-1 inline-block">
                   {t("footer.link_roadmap")}
                 </a>
               </li>
               <li>
-                <Link href="/conditions" className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors py-1 inline-block">
+                <Link href="/conditions" className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors py-1 inline-block">
                   {t("footer.link_conditions")}
                 </Link>
               </li>
               <li>
-                <Link href="/confidentialite" className="text-gray-400 text-sm hover:text-[#C4956A] transition-colors py-1 inline-block">
+                <Link href="/confidentialite" className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors py-1 inline-block">
                   {t("footer.link_privacy")}
                 </Link>
               </li>
@@ -153,7 +153,7 @@ export function FooterSection() {
           </p>
           <Link
             href="#inscriptions"
-            className="rounded-full px-5 py-2.5 text-gray-400 text-xs hover:text-[#C4956A] hover:bg-gray-800 transition-all border border-gray-700"
+            className="rounded-full px-5 py-2.5 text-gray-400 text-xs hover:text-[#1e9df1] hover:bg-gray-800 transition-all border border-gray-700"
           >
             {t("footer.access")}
           </Link>

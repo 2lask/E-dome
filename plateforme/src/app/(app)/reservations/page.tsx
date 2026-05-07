@@ -195,7 +195,7 @@ export default function ReservationsPage() {
               onClick={() => setStatusFilter(s)}
               className={`px-4 py-2 text-sm rounded-xl whitespace-nowrap transition-colors ${
                 statusFilter === s
-                  ? "bg-[#C4956A] text-white"
+                  ? "bg-[#1e9df1] text-white"
                   : "text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
               }`}
             >
@@ -206,13 +206,13 @@ export default function ReservationsPage() {
         <div className="flex gap-1 bg-[var(--input-bg)] rounded-lg p-1">
           <button
             onClick={() => setViewMode("list")}
-            className={`px-3 py-1 text-xs rounded-md ${viewMode === "list" ? "bg-[#C4956A] text-white" : "text-[var(--text-muted)]"}`}
+            className={`px-3 py-1 text-xs rounded-md ${viewMode === "list" ? "bg-[#1e9df1] text-white" : "text-[var(--text-muted)]"}`}
           >
             Liste
           </button>
           <button
             onClick={() => setViewMode("calendar")}
-            className={`px-3 py-1 text-xs rounded-md ${viewMode === "calendar" ? "bg-[#C4956A] text-white" : "text-[var(--text-muted)]"}`}
+            className={`px-3 py-1 text-xs rounded-md ${viewMode === "calendar" ? "bg-[#1e9df1] text-white" : "text-[var(--text-muted)]"}`}
           >
             Calendrier
           </button>
@@ -327,7 +327,7 @@ export default function ReservationsPage() {
                         <span>Du {formatDate(res.checkIn)}</span>
                         <span>au {formatDate(res.checkOut)}</span>
                         <span>{nights} nuit{nights > 1 ? "s" : ""}</span>
-                        <span className="font-medium text-[#C4956A]">{formatPrice(res.totalPrice)}</span>
+                        <span className="font-medium text-[#1e9df1]">{formatPrice(res.totalPrice)}</span>
                       </div>
 
                       {/* Timeline progress */}
@@ -335,7 +335,7 @@ export default function ReservationsPage() {
                         <div className="w-full h-1.5 bg-[var(--input-bg)] rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all duration-500 ${
-                              res.status === "cancelled" ? "bg-red-400" : "bg-[#C4956A]"
+                              res.status === "cancelled" ? "bg-red-400" : "bg-[#1e9df1]"
                             }`}
                             style={{ width: `${progress}%` }}
                           />
@@ -348,7 +348,7 @@ export default function ReservationsPage() {
                           <>
                             <button
                               onClick={() => setConfirmModal({ id: res.id, action: "confirm" })}
-                              className="px-3 py-1.5 text-xs rounded-lg bg-[#C4956A] text-white hover:bg-[#b8845a]"
+                              className="px-3 py-1.5 text-xs rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a]"
                             >
                               Confirmer
                             </button>
@@ -375,7 +375,7 @@ export default function ReservationsPage() {
                         {res.status === "completed" && (
                           <button
                             onClick={() => setReviewModal(res.id)}
-                            className="px-3 py-1.5 text-xs rounded-lg border border-[#C4956A]/30 text-[#C4956A] hover:bg-[#C4956A]/10"
+                            className="px-3 py-1.5 text-xs rounded-lg border border-[#1e9df1]/30 text-[#1e9df1] hover:bg-[#1e9df1]/10"
                           >
                             Laisser un avis
                           </button>
@@ -414,7 +414,7 @@ export default function ReservationsPage() {
                 <select
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
-                  className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#C4956A] appearance-none cursor-pointer"
+                  className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#1e9df1] appearance-none cursor-pointer"
                 >
                   <option value="">Sélectionnez une raison</option>
                   <option value="dates">Changement de dates</option>
@@ -437,7 +437,7 @@ export default function ReservationsPage() {
                 onClick={() => handleAction(confirmModal.id, confirmModal.action)}
                 className={`flex-1 py-2.5 text-sm rounded-xl text-white ${
                   confirmModal.action === "confirm"
-                    ? "bg-[#C4956A] hover:bg-[#b8845a]"
+                    ? "bg-[#1e9df1] hover:bg-[#b8845a]"
                     : "bg-red-500 hover:bg-red-600"
                 }`}
               >
@@ -465,7 +465,7 @@ export default function ReservationsPage() {
                 <button
                   key={star}
                   onClick={() => setReviewRating(star)}
-                  className={`text-2xl cursor-pointer transition-colors ${star <= reviewRating ? "text-[#C4956A]" : "text-[var(--text-muted)]"}`}
+                  className={`text-2xl cursor-pointer transition-colors ${star <= reviewRating ? "text-[#1e9df1]" : "text-[var(--text-muted)]"}`}
                 >
                   ★
                 </button>
@@ -477,7 +477,7 @@ export default function ReservationsPage() {
               onChange={(e) => setReviewText(e.target.value)}
               placeholder="Partagez votre expérience..."
               rows={4}
-              className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none mb-2 outline-none focus:border-[#C4956A]"
+              className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none mb-2 outline-none focus:border-[#1e9df1]"
             />
             <p className={`text-xs mb-4 ${reviewText.length >= 20 ? "text-green-400" : "text-[var(--text-muted)]"}`}>
               {reviewText.length}/20 caractères minimum
@@ -493,7 +493,7 @@ export default function ReservationsPage() {
               <button
                 onClick={handleReviewSubmit}
                 disabled={!reviewRating || reviewText.trim().length < 20}
-                className="flex-1 py-2.5 text-sm rounded-xl bg-[#C4956A] text-white hover:bg-[#b8845a] disabled:opacity-40"
+                className="flex-1 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a] disabled:opacity-40"
               >
                 Publier
               </button>

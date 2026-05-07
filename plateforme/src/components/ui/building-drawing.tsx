@@ -8,16 +8,16 @@ import React from "react";
  * d'accès, terrasse avec garde-corps, deux arbres à droite, lignes
  * de construction étendues à gauche. ViewBox 1200×600.
  *
- * Tous les traits en gold #C4956A (hiérarchie d'opacités). Quelques
+ * Tous les traits en gold #1e9df1 (hiérarchie d'opacités). Quelques
  * accents pleins en orange saturé (porte d'entrée, signal sommet,
  * parasol). ~200 éléments SVG.
  */
 export function BuildingDrawing({ className }: { className?: string }) {
-  const G_HI = "rgba(196, 149, 106, 0.95)"; // contours principaux
-  const G_MD = "rgba(196, 149, 106, 0.65)"; // mullions, fins, parapets
-  const G_LO = "rgba(196, 149, 106, 0.32)"; // construction, axes
-  const G_FN = "rgba(196, 149, 106, 0.10)"; // grille
-  const O = "#C4956A"; // accent saturé
+  const G_HI = "rgba(30, 157, 242, 0.95)"; // contours principaux
+  const G_MD = "rgba(30, 157, 242, 0.65)"; // mullions, fins, parapets
+  const G_LO = "rgba(30, 157, 242, 0.32)"; // construction, axes
+  const G_FN = "rgba(30, 157, 242, 0.10)"; // grille
+  const O = "#1e9df1"; // accent saturé
 
   return (
     <svg

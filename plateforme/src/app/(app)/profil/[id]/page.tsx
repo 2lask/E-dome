@@ -484,7 +484,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
     <div className="max-w-4xl mx-auto pb-12 animate-fade-in">
       {/* Cover */}
       <div className="relative h-48 md:h-56 rounded-b-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#C4956A] via-[#C4956A]/60 to-[var(--background)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1e9df1] via-[#1e9df1]/60 to-[var(--background)]" />
       </div>
 
       <div className="px-4 md:px-6 -mt-16 relative z-10">
@@ -508,8 +508,8 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
               onClick={() => toggleFollow(id)}
               className={`px-5 py-2 text-sm rounded-xl transition-colors flex items-center gap-1.5 ${
                 following
-                  ? "bg-[var(--card)] border border-[#C4956A] text-[#C4956A]"
-                  : "bg-[#C4956A] text-white hover:bg-[#b8845a]"
+                  ? "bg-[var(--card)] border border-[#1e9df1] text-[#1e9df1]"
+                  : "bg-[#1e9df1] text-white hover:bg-[#b8845a]"
               }`}
             >
               <LottiePlayer src="/lottie/lottieflow-social-networks-15-4-000000-easey.json" width={24} height={24} />
@@ -517,7 +517,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
             </button>
             <Link
               href="/messages"
-              className="px-5 py-2 text-sm rounded-xl border border-[var(--card-border)] text-[var(--foreground)] hover:border-[#C4956A]/50 transition-colors"
+              className="px-5 py-2 text-sm rounded-xl border border-[var(--card-border)] text-[var(--foreground)] hover:border-[#1e9df1]/50 transition-colors"
             >
               Contacter
             </Link>
@@ -550,11 +550,11 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`px-4 py-3 text-sm font-medium transition-colors relative ${
-                tab === t.key ? "text-[#C4956A]" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
+                tab === t.key ? "text-[#1e9df1]" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
               }`}
             >
               {t.label}
-              {tab === t.key && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4956A] rounded-full" />}
+              {tab === t.key && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1e9df1] rounded-full" />}
             </button>
           ))}
         </div>
@@ -569,14 +569,14 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
                   <Link
                     key={p.id}
                     href={`/explorer/${p.id}`}
-                    className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#C4956A]/30 transition-colors"
+                    className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#1e9df1]/30 transition-colors"
                   >
                     <img src={p.images[0]} alt={p.title} className="w-full h-40 object-cover" />
                     <div className="p-4">
                       <h3 className="text-sm font-semibold text-[var(--foreground)] truncate">{p.title}</h3>
                       <p className="text-xs text-[var(--text-muted)] mt-1">{p.location.city}, {p.location.country}</p>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-sm font-bold text-[#C4956A]">
+                        <span className="text-sm font-bold text-[#1e9df1]">
                           {formatPrice(p.price, p.currency)}
                           {p.transactionType === "location-ct" ? "/nuit" : ""}
                         </span>
@@ -624,7 +624,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
                         <div key={r.stars} className="flex items-center gap-2">
                           <span className="text-xs text-[var(--text-muted)] w-3">{r.stars}</span>
                           <div className="flex-1 h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
-                            <div className="h-full bg-[#C4956A] rounded-full" style={{ width: `${totalReviews > 0 ? (r.count / totalReviews) * 100 : 0}%` }} />
+                            <div className="h-full bg-[#1e9df1] rounded-full" style={{ width: `${totalReviews > 0 ? (r.count / totalReviews) * 100 : 0}%` }} />
                           </div>
                           <span className="text-xs text-[var(--text-muted)] w-6 text-right">{r.count}</span>
                         </div>
@@ -639,14 +639,14 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
                     <span className="text-sm font-medium text-[var(--foreground)]">{review.author}</span>
                     <div className="flex items-center gap-1">
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <span key={i} className={`text-sm ${i < review.rating ? "text-[#C4956A]" : "text-[var(--text-muted)]"}`}>★</span>
+                        <span key={i} className={`text-sm ${i < review.rating ? "text-[#1e9df1]" : "text-[var(--text-muted)]"}`}>★</span>
                       ))}
                     </div>
                   </div>
                   <p className="text-sm text-[var(--text-secondary)]">{review.text}</p>
                   <div className="text-xs text-[var(--text-muted)] mt-2">{review.date}</div>
                   {review.reply && (
-                    <div className="mt-3 pl-4 border-l-2 border-[#C4956A]/30">
+                    <div className="mt-3 pl-4 border-l-2 border-[#1e9df1]/30">
                       <p className="text-sm text-[var(--text-secondary)] italic">{review.reply}</p>
                     </div>
                   )}
@@ -666,7 +666,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
                   <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Langues</h3>
                   <div className="flex flex-wrap gap-2">
                     {user.languages.map((l) => (
-                      <span key={l} className="px-3 py-1 text-xs rounded-full bg-[#C4956A]/10 text-[#C4956A]">{l}</span>
+                      <span key={l} className="px-3 py-1 text-xs rounded-full bg-[#1e9df1]/10 text-[#1e9df1]">{l}</span>
                     ))}
                   </div>
                 </div>
@@ -677,7 +677,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
                   <ul className="space-y-2">
                     {user.certifications.map((c) => (
                       <li key={c} className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-                        <span className="text-[#C4956A]">✓</span> {c}
+                        <span className="text-[#1e9df1]">✓</span> {c}
                       </li>
                     ))}
                   </ul>

@@ -3,21 +3,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 /* ─── Theme ─────────────────────────────────────────────── */
+/* Le thème E-Dome (gold/black) a été remplacé par le thème shadcn/X-style
+   ci-dessous. Les anciens noms de tokens (--gold, --bg, --text, …) sont
+   conservés en alias vers les nouveaux pour ne rien casser dans le code
+   existant qui les référencerait encore. */
 :root {
-  /* Tokens E-Dome (existants, gold/black) */
-  --gold: #C4956A;
-  --gold-hover: #b8856a;
-  --bg: #000000;
-  --bg-alt: #171717;
-  --text: #ffffff;
-  --text-secondary: #a3a3a3;
-  --text-muted: #737373;
+  /* Aliases rétro-compat — pointent désormais vers les tokens shadcn */
+  --gold: var(--primary);
+  --gold-hover: #1a8fd9;
+  --bg: var(--background);
+  --bg-alt: var(--card);
+  --text: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-muted: var(--muted-foreground);
+  --text-primary: var(--foreground);
+  --bg-primary: var(--background);
+  --bg-secondary: var(--card);
 
-  /* Tokens shadcn/Tailwind v4 (utilisés notamment par CinematicHero
-     via var(--color-foreground), var(--background), text-muted-foreground,
-     etc.). Light mode — non actif sur ce site puisque <html className="dark">
-     est forcé, mais défini pour que les utilitaires Tailwind aient un
-     fallback propre. */
+  /* Tokens shadcn/Tailwind v4 — palette principale (light mode, fallback). */
   --card: #f7f8f8;
   --ring: #1da1f2;
   --input: #f7f9fa;
@@ -158,7 +161,7 @@ body {
 }
 
 ::selection {
-  background: rgba(196, 149, 106, 0.3);
+  background: rgba(30, 157, 242, 0.3);
 }
 
 /* ─── Scrollbar ──────────────────────────────────────── */
@@ -202,8 +205,8 @@ body {
     linear-gradient(135deg, #1c1c1c 0%, #0a0a0a 60%, #1a1a1a 100%);
   box-shadow:
     0 30px 60px -20px rgba(0, 0, 0, 0.85),
-    0 16px 30px -10px rgba(196, 149, 106, 0.18),
-    inset 0 1px 0 rgba(196, 149, 106, 0.18);
+    0 16px 30px -10px rgba(30, 157, 242, 0.18),
+    inset 0 1px 0 rgba(30, 157, 242, 0.18);
   transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   cursor: pointer;
@@ -220,10 +223,10 @@ body {
   padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(196, 149, 106, 0.7) 0%,
-    rgba(196, 149, 106, 0.05) 35%,
-    rgba(196, 149, 106, 0.05) 65%,
-    rgba(196, 149, 106, 0.55) 100%
+    rgba(30, 157, 242, 0.7) 0%,
+    rgba(30, 157, 242, 0.05) 35%,
+    rgba(30, 157, 242, 0.05) 65%,
+    rgba(30, 157, 242, 0.55) 100%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -252,7 +255,7 @@ body {
     radial-gradient(
       circle at var(--x) var(--y),
       rgba(255, 235, 200, 0.22) 0%,
-      rgba(196, 149, 106, 0.18) 18%,
+      rgba(30, 157, 242, 0.18) 18%,
       transparent 45%
     ),
     radial-gradient(
@@ -289,9 +292,9 @@ body {
 }
 .holo-seal {
   font-size: 1.1rem;
-  color: #C4956A;
+  color: #1e9df1;
   letter-spacing: 0.1em;
-  filter: drop-shadow(0 0 8px rgba(196, 149, 106, 0.5));
+  filter: drop-shadow(0 0 8px rgba(30, 157, 242, 0.5));
 }
 
 .holo-middle {
@@ -305,7 +308,7 @@ body {
   font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.32em;
-  color: #C4956A;
+  color: #1e9df1;
   font-weight: 600;
   margin: 0;
 }
@@ -328,7 +331,7 @@ body {
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.28em;
-  color: #C4956A;
+  color: #1e9df1;
   font-weight: 600;
 }
 .holo-exp {

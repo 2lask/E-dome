@@ -100,7 +100,7 @@ export default function OnboardingPage() {
   };
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#C4956A] focus:ring-1 focus:ring-[#C4956A]/30 transition-colors";
+    "w-full px-4 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1] focus:ring-1 focus:ring-[#1e9df1]/30 transition-colors";
 
   return (
     <div className="fixed inset-0 z-50 bg-[var(--background)]/95 backdrop-blur-sm flex items-center justify-center p-4">
@@ -109,7 +109,7 @@ export default function OnboardingPage() {
         <div className="sticky top-0 z-10 bg-[var(--card)] border-b border-[var(--divider)] p-6 pb-4 rounded-t-2xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#C4956A] flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-[#1e9df1] flex items-center justify-center">
                 <span className="text-white text-lg font-bold">E</span>
               </div>
               <span className="font-bold text-lg">E-Dome</span>
@@ -125,7 +125,7 @@ export default function OnboardingPage() {
               <div
                 key={i}
                 className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
-                  i < step ? "bg-[#C4956A]" : "bg-[var(--input-bg)]"
+                  i < step ? "bg-[#1e9df1]" : "bg-[var(--input-bg)]"
                 }`}
               />
             ))}
@@ -137,8 +137,8 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className="animate-fade-in">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-[#C4956A]/10 flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-8 h-8 text-[#C4956A]" />
+                <div className="w-16 h-16 rounded-2xl bg-[#1e9df1]/10 flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-8 h-8 text-[#1e9df1]" />
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold mb-2">
                   Bienvenue sur E-Dome, Leo !
@@ -154,8 +154,8 @@ export default function OnboardingPage() {
                     key={i}
                     className="flex items-start gap-4 p-4 rounded-xl border border-[var(--card-border)] bg-[var(--background)]"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-[#C4956A]/10 flex items-center justify-center flex-shrink-0">
-                      <feature.icon className="w-5 h-5 text-[#C4956A]" />
+                    <div className="w-10 h-10 rounded-xl bg-[#1e9df1]/10 flex items-center justify-center flex-shrink-0">
+                      <feature.icon className="w-5 h-5 text-[#1e9df1]" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-sm mb-1">{feature.title}</h3>
@@ -179,11 +179,11 @@ export default function OnboardingPage() {
               <div className="mb-8 p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)]">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">Profil complété à {profileCompletion()}%</span>
-                  <span className="text-sm text-[#C4956A] font-semibold">{profileCompletion()}%</span>
+                  <span className="text-sm text-[#1e9df1] font-semibold">{profileCompletion()}%</span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-[var(--input-bg)]">
                   <div
-                    className="h-full rounded-full bg-[#C4956A] transition-all duration-500"
+                    className="h-full rounded-full bg-[#1e9df1] transition-all duration-500"
                     style={{ width: `${profileCompletion()}%` }}
                   />
                 </div>
@@ -191,13 +191,13 @@ export default function OnboardingPage() {
 
               {/* Photo upload */}
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-20 h-20 rounded-2xl bg-[var(--input-bg)] border-2 border-dashed border-[var(--input-border)] flex items-center justify-center cursor-pointer hover:border-[#C4956A] transition-colors group">
-                  <Camera className="w-8 h-8 text-[var(--text-muted)] group-hover:text-[#C4956A] transition-colors" />
+                <div className="w-20 h-20 rounded-2xl bg-[var(--input-bg)] border-2 border-dashed border-[var(--input-border)] flex items-center justify-center cursor-pointer hover:border-[#1e9df1] transition-colors group">
+                  <Camera className="w-8 h-8 text-[var(--text-muted)] group-hover:text-[#1e9df1] transition-colors" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">Photo de profil</p>
                   <p className="text-xs text-[var(--text-muted)]">JPG, PNG. Max 5 Mo.</p>
-                  <button className="text-xs text-[#C4956A] hover:underline mt-1">
+                  <button className="text-xs text-[#1e9df1] hover:underline mt-1">
                     Telecharger une photo
                   </button>
                 </div>
@@ -263,14 +263,14 @@ export default function OnboardingPage() {
                     onClick={() => toggleRole(id)}
                     className={`relative p-4 rounded-xl border text-left transition-all ${
                       selectedRoles.includes(id)
-                        ? "border-[#C4956A] bg-[#C4956A]/10"
+                        ? "border-[#1e9df1] bg-[#1e9df1]/10"
                         : "border-[var(--card-border)] bg-[var(--background)] hover:border-[var(--text-muted)]"
                     }`}
                   >
                     {/* Toggle indicator */}
                     <div
                       className={`absolute top-3 right-3 w-8 h-5 rounded-full transition-colors flex items-center ${
-                        selectedRoles.includes(id) ? "bg-[#C4956A]" : "bg-[var(--input-bg)]"
+                        selectedRoles.includes(id) ? "bg-[#1e9df1]" : "bg-[var(--input-bg)]"
                       }`}
                     >
                       <div
@@ -282,7 +282,7 @@ export default function OnboardingPage() {
 
                     <Icon
                       className={`w-6 h-6 mb-2 ${
-                        selectedRoles.includes(id) ? "text-[#C4956A]" : "text-[var(--text-muted)]"
+                        selectedRoles.includes(id) ? "text-[#1e9df1]" : "text-[var(--text-muted)]"
                       }`}
                     />
                     <p className="text-sm font-medium">{label}</p>
@@ -293,7 +293,7 @@ export default function OnboardingPage() {
 
               {selectedRoles.length > 0 && (
                 <p className="mt-4 text-sm text-[var(--text-secondary)]">
-                  <span className="text-[#C4956A] font-semibold">{selectedRoles.length}</span>{" "}
+                  <span className="text-[#1e9df1] font-semibold">{selectedRoles.length}</span>{" "}
                   role{selectedRoles.length > 1 ? "s" : ""} selectionne{selectedRoles.length > 1 ? "s" : ""}
                 </p>
               )}
@@ -304,8 +304,8 @@ export default function OnboardingPage() {
           {step === 4 && (
             <div className="animate-fade-in">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-[#C4956A]/10 flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-8 h-8 text-[#C4956A]" />
+                <div className="w-16 h-16 rounded-2xl bg-[#1e9df1]/10 flex items-center justify-center mx-auto mb-4">
+                  <Zap className="w-8 h-8 text-[#1e9df1]" />
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold mb-2">
                   Tout est pret !
@@ -320,13 +320,13 @@ export default function OnboardingPage() {
                   <button
                     key={i}
                     onClick={() => router.push(suggestion.href)}
-                    className="w-full flex items-center gap-4 p-4 rounded-xl border border-[var(--card-border)] bg-[var(--background)] hover:border-[#C4956A]/50 hover:bg-[#C4956A]/5 transition-all text-left group"
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border border-[var(--card-border)] bg-[var(--background)] hover:border-[#1e9df1]/50 hover:bg-[#1e9df1]/5 transition-all text-left group"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-[#C4956A]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#C4956A]/20 transition-colors">
-                      <suggestion.icon className="w-5 h-5 text-[#C4956A]" />
+                    <div className="w-10 h-10 rounded-xl bg-[#1e9df1]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#1e9df1]/20 transition-colors">
+                      <suggestion.icon className="w-5 h-5 text-[#1e9df1]" />
                     </div>
                     <span className="font-medium text-sm flex-1">{suggestion.label}</span>
-                    <ArrowRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[#C4956A] transition-colors" />
+                    <ArrowRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[#1e9df1] transition-colors" />
                   </button>
                 ))}
               </div>
@@ -349,7 +349,7 @@ export default function OnboardingPage() {
             {step < totalSteps ? (
               <button
                 onClick={() => setStep(step + 1)}
-                className="flex-1 py-3 rounded-xl bg-[#C4956A] hover:bg-[#b8864f] text-white font-semibold flex items-center justify-center gap-2 transition-colors"
+                className="flex-1 py-3 rounded-xl bg-[#1e9df1] hover:bg-[#b8864f] text-white font-semibold flex items-center justify-center gap-2 transition-colors"
               >
                 Suivant
                 <ArrowRight className="w-5 h-5" />
@@ -357,7 +357,7 @@ export default function OnboardingPage() {
             ) : (
               <button
                 onClick={() => router.push("/feed")}
-                className="flex-1 py-3 rounded-xl bg-[#C4956A] hover:bg-[#b8864f] text-white font-semibold flex items-center justify-center gap-2 transition-colors"
+                className="flex-1 py-3 rounded-xl bg-[#1e9df1] hover:bg-[#b8864f] text-white font-semibold flex items-center justify-center gap-2 transition-colors"
               >
                 Commencer
                 <Sparkles className="w-5 h-5" />

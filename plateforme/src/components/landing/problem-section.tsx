@@ -146,7 +146,7 @@ export function ProblemSection() {
           <motion.p
             {...fadeUp}
             transition={{ duration: 0.6 }}
-            className="text-[#C4956A] text-xs md:text-sm font-medium tracking-widest uppercase mb-6"
+            className="text-[#1e9df1] text-xs md:text-sm font-medium tracking-widest uppercase mb-6"
           >
             {t("problem.label")}
           </motion.p>
@@ -158,7 +158,7 @@ export function ProblemSection() {
             style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
           >
             {t("problem.title1")}{" "}
-            <span className="italic text-[#C4956A]">{t("problem.title2")}</span>
+            <span className="italic text-[#1e9df1]">{t("problem.title2")}</span>
           </motion.h2>
 
           <motion.p

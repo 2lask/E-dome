@@ -51,7 +51,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 }}
               >
                 {/* Demo banner */}
-                <div className="w-full px-4 py-1.5 bg-[#C4956A]/10 border-b border-[#C4956A]/20 text-center text-xs text-[#C4956A]">
+                <div className="w-full px-4 py-1.5 bg-[#1e9df1]/10 border-b border-[#1e9df1]/20 text-center text-xs text-[#1e9df1]">
                   🛠️ Maquette de démonstration — Toutes les données sont fictives · <a href="/" className="underline hover:opacity-80" title="Retour à la page d'accueil de la maquette E-Dome">En savoir plus</a>
                 </div>
                 <Header

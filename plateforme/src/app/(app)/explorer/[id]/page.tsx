@@ -233,7 +233,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
       <div className="max-w-5xl mx-auto py-20 text-center">
         <h1 className="text-2xl font-bold text-[var(--foreground)] mb-4">Bien introuvable</h1>
         <p className="text-[var(--text-secondary)] mb-6">Le bien avec l&apos;identifiant &quot;{id}&quot; n&apos;existe pas.</p>
-        <Link href="/explorer" className="px-6 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors">
+        <Link href="/explorer" className="px-6 py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors">
           Retour à l&apos;explorer
         </Link>
       </div>
@@ -359,7 +359,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 key={i}
                 onClick={() => setGalleryIndex(i)}
                 className={`w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0 transition-colors ${
-                  i === galleryIndex ? "border-[#C4956A]" : "border-transparent opacity-50"
+                  i === galleryIndex ? "border-[#1e9df1]" : "border-transparent opacity-50"
                 }`}
               >
                 <img src={img} alt="" className="w-full h-full object-cover" />
@@ -384,14 +384,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   {property.location.address && `${property.location.address}, `}
                   {property.location.city}, {property.location.country}
                 </span>
-                <span className="flex items-center gap-1 text-[#C4956A]">
-                  <Star className="w-4 h-4 fill-[#C4956A]" />
+                <span className="flex items-center gap-1 text-[#1e9df1]">
+                  <Star className="w-4 h-4 fill-[#1e9df1]" />
                   {property.rating} ({reviews.length > 0 ? reviews.length : property.reviewCount} avis)
                 </span>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-2xl md:text-3xl font-bold text-[#C4956A]">
+              <p className="text-2xl md:text-3xl font-bold text-[#1e9df1]">
                 {formatPrice(property.price, property.currency)}
               </p>
               {property.transactionType === "location-ct" && (
@@ -405,14 +405,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
           {/* Badges */}
           <div className="flex gap-2 mb-6 flex-wrap">
-            <span className="px-3 py-1 rounded-lg bg-[#C4956A]/10 text-[#C4956A] text-sm font-medium">
+            <span className="px-3 py-1 rounded-lg bg-[#1e9df1]/10 text-[#1e9df1] text-sm font-medium">
               {property.type.charAt(0).toUpperCase() + property.type.slice(1)}
             </span>
             <span className="px-3 py-1 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm">
               {property.transactionType === "vente" ? "Vente" : property.transactionType === "location-ct" ? "Location courte durée" : "Location longue durée"}
             </span>
             {property.featured && (
-              <span className="px-3 py-1 rounded-lg bg-[#C4956A] text-white text-sm font-medium flex items-center gap-1">
+              <span className="px-3 py-1 rounded-lg bg-[#1e9df1] text-white text-sm font-medium flex items-center gap-1">
                 <Award className="w-3.5 h-3.5" /> En vedette
               </span>
             )}
@@ -465,7 +465,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             {(activeRole === "hote" || activeRole === "agence" || activeRole === "promoteur") && (
               <button
                 onClick={() => setShowBoostModal(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#C4956A] bg-[#C4956A]/10 text-[#C4956A] hover:bg-[#C4956A]/20 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#1e9df1] bg-[#1e9df1]/10 text-[#1e9df1] hover:bg-[#1e9df1]/20 transition-colors"
               >
                 <Rocket className="w-4 h-4" /> Booster
               </button>
@@ -481,7 +481,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               { icon: Layers, label: "Étage", value: property.floor !== undefined ? `${property.floor === 0 ? "RdC" : property.floor}` : "—" },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card)] text-center">
-                <Icon className="w-6 h-6 text-[#C4956A] mx-auto mb-2" />
+                <Icon className="w-6 h-6 text-[#1e9df1] mx-auto mb-2" />
                 <p className="text-lg font-bold text-[var(--foreground)]">{value}</p>
                 <p className="text-xs text-[var(--text-muted)]">{label}</p>
               </div>
@@ -499,7 +499,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             </div>
             <button
               onClick={() => setDescExpanded(!descExpanded)}
-              className="mt-2 text-sm text-[#C4956A] hover:underline flex items-center gap-1"
+              className="mt-2 text-sm text-[#1e9df1] hover:underline flex items-center gap-1"
             >
               {descExpanded ? (
                 <>Voir moins <ChevronUp className="w-4 h-4" /></>
@@ -534,7 +534,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     {FLOOR_PLANS[property.id].rooms.map((room) => (
                       <div key={room.name} className="p-3 rounded-xl border border-[var(--card-border)] bg-[var(--background)] text-center">
                         <p className="text-xs font-semibold text-[var(--foreground)]">{room.name}</p>
-                        <p className="text-[10px] text-[#C4956A] font-medium">{room.area} m²</p>
+                        <p className="text-[10px] text-[#1e9df1] font-medium">{room.area} m²</p>
                       </div>
                     ))}
                   </div>
@@ -568,7 +568,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           {property.transactionType === "vente" && property.analytics && (
             <div className="mb-8">
               <h2 className="text-lg font-bold text-[var(--foreground)] mb-3 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-[#C4956A]" />
+                <BarChart3 className="w-5 h-5 text-[#1e9df1]" />
                 Analyse d&apos;investissement
               </h2>
               <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6">
@@ -576,7 +576,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   {[
                     { label: "Rendement brut", value: `${property.analytics.rendementBrut.toFixed(1)}%`, color: "text-green-400" },
                     { label: "Rendement net", value: `${property.analytics.rendementNet.toFixed(1)}%`, color: "text-green-400" },
-                    { label: "Prix/m²", value: formatPrice(property.analytics.prixM2, property.currency), color: "text-[#C4956A]" },
+                    { label: "Prix/m²", value: formatPrice(property.analytics.prixM2, property.currency), color: "text-[#1e9df1]" },
                     { label: "DPE", value: property.analytics.dpe, color: "text-blue-400" },
                     { label: "État", value: property.analytics.etatGeneral, color: "text-[var(--foreground)]" },
                     { label: "Construction", value: `${property.analytics.anneeConstruction}`, color: "text-[var(--foreground)]" },
@@ -593,7 +593,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 {/* Mortgage simulator */}
                 <div className="border-t border-[var(--card-border)] pt-6">
                   <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-[#C4956A]" />
+                    <DollarSign className="w-4 h-4 text-[#1e9df1]" />
                     Simulateur hypothécaire
                   </h3>
                   <div className="grid grid-cols-3 gap-4 mb-4">
@@ -603,7 +603,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                         type="number"
                         value={simApport}
                         onChange={(e) => setSimApport(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]"
+                        className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1]"
                       />
                     </div>
                     <div>
@@ -612,7 +612,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                         type="number"
                         value={simDuree}
                         onChange={(e) => setSimDuree(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]"
+                        className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1]"
                       />
                     </div>
                     <div>
@@ -622,14 +622,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                         step="0.1"
                         value={simTaux}
                         onChange={(e) => setSimTaux(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]"
+                        className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1]"
                       />
                     </div>
                   </div>
                   <div className="flex items-center justify-between p-4 rounded-xl bg-[var(--hover-bg)]">
                     <div>
                       <p className="text-xs text-[var(--text-muted)]">Mensualité estimée</p>
-                      <p className="text-xl font-bold text-[#C4956A]">
+                      <p className="text-xl font-bold text-[#1e9df1]">
                         {formatPrice(Math.round(monthlyPayment), property.currency)}
                       </p>
                     </div>
@@ -658,7 +658,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                       key={opt.id}
                       className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
                         isSelected || isIncluded
-                          ? "border-[#C4956A] bg-[#C4956A]/10"
+                          ? "border-[#1e9df1] bg-[#1e9df1]/10"
                           : "border-[var(--card-border)] bg-[var(--card)] hover:border-[var(--text-muted)]"
                       }`}
                     >
@@ -687,8 +687,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                           }}
                           className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                             isSelected
-                              ? "bg-[#C4956A] text-white"
-                              : "border border-[#C4956A] text-[#C4956A] hover:bg-[#C4956A]/10"
+                              ? "bg-[#1e9df1] text-white"
+                              : "border border-[#1e9df1] text-[#1e9df1] hover:bg-[#1e9df1]/10"
                           }`}
                         >
                           {isSelected ? "Ajouté \u2713" : "Ajouter"}
@@ -701,7 +701,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               {selectedOptions.size > 0 && (
                 <div className="mt-3 p-4 rounded-xl bg-[var(--hover-bg)] flex items-center justify-between">
                   <span className="text-sm text-[var(--text-secondary)]">Total options</span>
-                  <span className="text-lg font-bold text-[#C4956A]">{formatPrice(optionsTotal, property.currency)}</span>
+                  <span className="text-lg font-bold text-[#1e9df1]">{formatPrice(optionsTotal, property.currency)}</span>
                 </div>
               )}
             </div>
@@ -751,8 +751,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                         className={`py-2 rounded-lg text-sm transition-colors ${
                           isDisabled
                             ? "text-[var(--text-muted)] opacity-30 cursor-not-allowed line-through"
-                            : "text-[var(--foreground)] hover:bg-[#C4956A]/20 cursor-pointer"
-                        } ${checkIn === dateStr || checkOut === dateStr ? "bg-[#C4956A] text-white" : ""}`}
+                            : "text-[var(--foreground)] hover:bg-[#1e9df1]/20 cursor-pointer"
+                        } ${checkIn === dateStr || checkOut === dateStr ? "bg-[#1e9df1] text-white" : ""}`}
                         onClick={() => {
                           if (!checkIn || (checkIn && checkOut)) {
                             setCheckIn(dateStr);
@@ -770,7 +770,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 {/* Legend */}
                 <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-[var(--card-border)]">
                   <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                    <div className="w-3 h-3 rounded bg-[#C4956A]/20" />
+                    <div className="w-3 h-3 rounded bg-[#1e9df1]/20" />
                     Disponible
                   </div>
                   <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
@@ -785,7 +785,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           {/* Reviews */}
           <div className="mb-8">
             <h2 className="text-lg font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
-              <Star className="w-5 h-5 fill-[#C4956A] text-[#C4956A]" />
+              <Star className="w-5 h-5 fill-[#1e9df1] text-[#1e9df1]" />
               {averageRating} · {reviews.length} avis
             </h2>
 
@@ -797,7 +797,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   <button key={star} onClick={() => setReviewRating(star)} className="cursor-pointer">
                     <Star
                       className={`w-6 h-6 transition-colors ${
-                        star <= reviewRating ? "fill-[#C4956A] text-[#C4956A]" : "text-[var(--text-muted)]"
+                        star <= reviewRating ? "fill-[#1e9df1] text-[#1e9df1]" : "text-[var(--text-muted)]"
                       }`}
                     />
                   </button>
@@ -808,7 +808,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 onChange={(e) => setReviewText(e.target.value)}
                 placeholder="Partagez votre expérience (min. 20 caractères)..."
                 rows={3}
-                className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#C4956A] mb-1"
+                className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#1e9df1] mb-1"
               />
               <p className={`text-xs mb-3 ${reviewText.length >= 20 ? "text-green-400" : "text-[var(--text-muted)]"}`}>
                 {reviewText.length}/20 caractères minimum
@@ -828,7 +828,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   addToast("Avis publié avec succès !", "success");
                 }}
                 disabled={!reviewRating || reviewText.trim().length < 20}
-                className="px-5 py-2 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors disabled:opacity-40"
+                className="px-5 py-2 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors disabled:opacity-40"
               >
                 Publier
               </button>
@@ -845,7 +845,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                       <div className="flex items-center gap-2">
                         <div className="flex">
                           {Array.from({ length: 5 }, (_, i) => (
-                            <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? "fill-[#C4956A] text-[#C4956A]" : "text-[var(--text-muted)]"}`} />
+                            <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? "fill-[#1e9df1] text-[#1e9df1]" : "text-[var(--text-muted)]"}`} />
                           ))}
                         </div>
                         <span className="text-xs text-[var(--text-muted)]">{formatDate(review.date)}</span>
@@ -872,7 +872,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <div className="flex-1 px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-xs text-[var(--text-secondary)] truncate">
                 edome.world/ref/bien/AP-{Math.floor(Math.random()*9000+1000)}/{property.id}
               </div>
-              <button onClick={() => { navigator.clipboard.writeText(`edome.world/ref/bien/${property.id}`); setCopyFeedback(true); setTimeout(() => setCopyFeedback(false), 2000); }} className="px-3 py-2 rounded-lg bg-[#C4956A] text-white text-xs font-medium hover:bg-[#b8845a]">
+              <button onClick={() => { navigator.clipboard.writeText(`edome.world/ref/bien/${property.id}`); setCopyFeedback(true); setTimeout(() => setCopyFeedback(false), 2000); }} className="px-3 py-2 rounded-lg bg-[#1e9df1] text-white text-xs font-medium hover:bg-[#b8845a]">
                 {copyFeedback ? "✓ Copié" : "📋 Copier"}
               </button>
             </div>
@@ -884,8 +884,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             </div>
 
             {/* Commission info */}
-            <div className="p-4 rounded-xl bg-[#C4956A]/5 border border-[#C4956A]/20">
-              <p className="text-sm font-medium text-[#C4956A]">
+            <div className="p-4 rounded-xl bg-[#1e9df1]/5 border border-[#1e9df1]/20">
+              <p className="text-sm font-medium text-[#1e9df1]">
                 💰 Commission : {property.transactionType === "vente" ? "2% de la vente" : "5% de la réservation"} · prélevée sur la part E-Dome
               </p>
               <p className="text-xs text-[var(--text-secondary)] mt-1">
@@ -899,7 +899,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               </p>
             </div>
 
-            <a href="/apporteurs" className="text-xs text-[#C4956A] hover:underline">
+            <a href="/apporteurs" className="text-xs text-[#1e9df1] hover:underline">
               En savoir plus sur le programme →
             </a>
           </div>
@@ -918,7 +918,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   <img src={sp.images[0]} alt="" className="w-full h-36 object-cover" />
                   <div className="p-3">
                     <p className="text-sm font-medium text-[var(--foreground)] truncate">{sp.title}</p>
-                    <p className="text-sm font-bold text-[#C4956A] mt-1">
+                    <p className="text-sm font-bold text-[#1e9df1] mt-1">
                       {formatPrice(sp.price, sp.currency)}
                       {sp.transactionType === "location-ct" && <span className="text-xs text-[var(--text-muted)]">/nuit</span>}
                       {sp.transactionType === "location-lt" && <span className="text-xs text-[var(--text-muted)]">/mois</span>}
@@ -926,7 +926,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     <div className="flex items-center gap-3 mt-1 text-xs text-[var(--text-muted)]">
                       <span>{sp.location.city}</span>
                       <span className="flex items-center gap-0.5">
-                        <Star className="w-3 h-3 fill-[#C4956A] text-[#C4956A]" /> {sp.rating}
+                        <Star className="w-3 h-3 fill-[#1e9df1] text-[#1e9df1]" /> {sp.rating}
                       </span>
                     </div>
                   </div>
@@ -949,25 +949,25 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             const total = subtotal + fraisEdome + optionsTotal;
             return (
               <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 lg:sticky lg:top-20">
-                <p className="text-2xl font-bold text-[#C4956A] mb-1">
+                <p className="text-2xl font-bold text-[#1e9df1] mb-1">
                   {formatPrice(property.price, property.currency)} <span className="text-sm font-normal text-[var(--text-muted)]">/ nuit</span>
                 </p>
                 <div className="grid grid-cols-2 gap-2 mt-4">
                   <div>
                     <label className="block text-xs text-[var(--text-muted)] mb-1">Arrivée</label>
                     <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
+                      className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1]" />
                   </div>
                   <div>
                     <label className="block text-xs text-[var(--text-muted)] mb-1">Départ</label>
                     <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
+                      className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1]" />
                   </div>
                 </div>
                 <div className="mt-3">
                   <label className="block text-xs text-[var(--text-muted)] mb-1">Voyageurs</label>
                   <select value={guests} onChange={(e) => setGuests(Number(e.target.value))}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A] appearance-none cursor-pointer">
+                    className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1] appearance-none cursor-pointer">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                       <option key={n} value={n}>{n} voyageur{n > 1 ? "s" : ""}</option>
                     ))}
@@ -986,10 +986,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                               return next;
                             });
                           }}
-                          className="w-4 h-4 rounded accent-[#C4956A]" />
+                          className="w-4 h-4 rounded accent-[#1e9df1]" />
                         <span className="text-[var(--text-secondary)]">{opt.label}</span>
                       </span>
-                      <span className="text-[#C4956A] text-xs">{formatPrice(opt.price, property.currency)}</span>
+                      <span className="text-[#1e9df1] text-xs">{formatPrice(opt.price, property.currency)}</span>
                     </label>
                   ))}
                 </div>
@@ -1011,7 +1011,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     )}
                     <div className="flex justify-between text-sm font-bold text-[var(--foreground)] pt-2 border-t border-[var(--card-border)]">
                       <span>Total</span>
-                      <span className="text-[#C4956A]">{formatPrice(total, property.currency)}</span>
+                      <span className="text-[#1e9df1]">{formatPrice(total, property.currency)}</span>
                     </div>
                   </div>
                 )}
@@ -1020,11 +1020,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     if (!checkIn || !checkOut) { addToast("Veuillez sélectionner les dates.", "warning"); return; }
                     router.push("/paiement");
                   }}
-                  className="w-full mt-4 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
+                  className="w-full mt-4 py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
                 >
                   Réserver
                 </button>
-                <Link href="/messages" className="block text-center mt-3 text-sm text-[#C4956A] hover:underline">
+                <Link href="/messages" className="block text-center mt-3 text-sm text-[#1e9df1] hover:underline">
                   Contacter l&apos;hôte
                 </Link>
               </div>
@@ -1034,18 +1034,18 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           {/* Vente CTAs */}
           {property.transactionType === "vente" && (
             <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 lg:sticky lg:top-20 space-y-3">
-              <p className="text-2xl font-bold text-[#C4956A] mb-4">
+              <p className="text-2xl font-bold text-[#1e9df1] mb-4">
                 {formatPrice(property.price, property.currency)}
               </p>
               <button
                 onClick={() => setShowVisitModal(true)}
-                className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 <CalendarIcon className="w-4 h-4" /> Planifier une visite
               </button>
               <button
                 onClick={() => setShowOfferModal(true)}
-                className="w-full py-3 rounded-xl border-2 border-[#C4956A] text-[#C4956A] hover:bg-[#C4956A]/10 font-semibold transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl border-2 border-[#1e9df1] text-[#1e9df1] hover:bg-[#1e9df1]/10 font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 <DollarSign className="w-4 h-4" /> Faire une offre
               </button>
@@ -1084,7 +1084,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             )}
             <div className="flex items-center gap-4 text-sm text-[var(--text-muted)] mb-4">
               <span className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-[#C4956A] text-[#C4956A]" /> {property.host.stats.rating}
+                <Star className="w-4 h-4 fill-[#1e9df1] text-[#1e9df1]" /> {property.host.stats.rating}
               </span>
               <span>{property.host.stats.reviews} avis</span>
               {property.host.responseTime && <span>Rép. {property.host.responseTime}</span>}
@@ -1118,25 +1118,25 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
                   placeholder="Votre nom"
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]"
                 />
                 <input
                   type="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
                   placeholder="Votre email"
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#C4956A]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]"
                 />
                 <textarea
                   value={contactMessage}
                   onChange={(e) => setContactMessage(e.target.value)}
                   placeholder="Votre message..."
                   rows={4}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#C4956A]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#1e9df1]"
                 />
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors flex items-center justify-center gap-2"
                 >
                   <Send className="w-4 h-4" /> Contacter l&apos;hôte
                 </button>
@@ -1209,12 +1209,12 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <div>
                 <label className="block text-xs text-[var(--text-muted)] mb-1">Date souhaitée</label>
                 <input type="date" value={visitDate} onChange={(e) => setVisitDate(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1]" />
               </div>
               <div>
                 <label className="block text-xs text-[var(--text-muted)] mb-1">Heure</label>
                 <select value={visitTime} onChange={(e) => setVisitTime(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A] appearance-none cursor-pointer">
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1] appearance-none cursor-pointer">
                   {["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"].map((t) => (
                     <option key={t} value={t}>{t}</option>
                   ))}
@@ -1227,7 +1227,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   onChange={(e) => setRequestMessage(e.target.value)}
                   placeholder="Précisez vos disponibilités ou questions..."
                   rows={3}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#C4956A]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#1e9df1]"
                 />
               </div>
               <button
@@ -1238,7 +1238,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   setVisitDate("");
                   setRequestMessage("");
                 }}
-                className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
+                className="w-full py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
               >
                 Envoyer la demande
               </button>
@@ -1265,14 +1265,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <div>
                 <label className="block text-xs text-[var(--text-muted)] mb-1">Montant de votre offre ({property.currency})</label>
                 <input type="number" value={offerAmount} onChange={(e) => setOfferAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#C4956A]" />
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1]" />
               </div>
               <div>
                 <label className="block text-xs text-[var(--text-muted)] mb-1">Conditions (optionnel)</label>
                 <textarea value={offerConditions} onChange={(e) => setOfferConditions(e.target.value)}
                   placeholder="Ex: sous réserve de financement, date de remise souhaitée..."
                   rows={3}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#C4956A]" />
+                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[#1e9df1]" />
               </div>
               <button
                 onClick={() => {
@@ -1281,7 +1281,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   setShowOfferModal(false);
                   setOfferConditions("");
                 }}
-                className="w-full py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
+                className="w-full py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
               >
                 Soumettre l&apos;offre
               </button>
@@ -1296,7 +1296,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full mx-4 animate-scale-in" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
-                <Rocket className="w-5 h-5 text-[#C4956A]" /> Booster ce bien
+                <Rocket className="w-5 h-5 text-[#1e9df1]" /> Booster ce bien
               </h3>
               <button onClick={() => setShowBoostModal(false)} className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
                 <X className="w-5 h-5" />
@@ -1314,7 +1314,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 <label
                   key={opt.days}
                   className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-colors ${
-                    boostDuration === opt.days ? "border-[#C4956A] bg-[#C4956A]/10" : "border-[var(--card-border)] hover:border-[var(--text-muted)]"
+                    boostDuration === opt.days ? "border-[#1e9df1] bg-[#1e9df1]/10" : "border-[var(--card-border)] hover:border-[var(--text-muted)]"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -1323,11 +1323,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                       name="boost"
                       checked={boostDuration === opt.days}
                       onChange={() => setBoostDuration(opt.days)}
-                      className="accent-[#C4956A]"
+                      className="accent-[#1e9df1]"
                     />
                     <span className="text-sm font-medium text-[var(--foreground)]">{opt.days} jours</span>
                   </div>
-                  <span className="text-sm font-bold text-[#C4956A]">{formatPrice(opt.price)}</span>
+                  <span className="text-sm font-bold text-[#1e9df1]">{formatPrice(opt.price)}</span>
                 </label>
               ))}
             </div>
@@ -1337,7 +1337,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 setShowBoostModal(false);
               }}
               className="w-full py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
-              style={{ background: "linear-gradient(135deg, #C4956A, #d4a574)", color: "#fff" }}
+              style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)", color: "#fff" }}
             >
               <Rocket className="w-4 h-4" /> Confirmer le boost
             </button>
@@ -1348,7 +1348,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
       {/* Sticky CTA bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden border-t border-[var(--card-border)] bg-[var(--card)] px-4 py-3 flex items-center justify-between">
         <div>
-          <p className="text-lg font-bold text-[#C4956A]">
+          <p className="text-lg font-bold text-[#1e9df1]">
             {formatPrice(property.price, property.currency)}
           </p>
           {property.transactionType === "location-ct" && (
@@ -1357,10 +1357,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         </div>
         {property.transactionType === "vente" ? (
           <div className="flex gap-2">
-            <button onClick={() => setShowVisitModal(true)} className="px-4 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors text-sm">
+            <button onClick={() => setShowVisitModal(true)} className="px-4 py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors text-sm">
               Visite
             </button>
-            <button onClick={() => setShowOfferModal(true)} className="px-4 py-3 rounded-xl border border-[#C4956A] text-[#C4956A] font-semibold transition-colors text-sm">
+            <button onClick={() => setShowOfferModal(true)} className="px-4 py-3 rounded-xl border border-[#1e9df1] text-[#1e9df1] font-semibold transition-colors text-sm">
               Offre
             </button>
           </div>
@@ -1370,7 +1370,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               if (!checkIn || !checkOut) { addToast("Sélectionnez vos dates.", "warning"); return; }
               router.push("/paiement");
             }}
-            className="px-6 py-3 rounded-xl bg-[#C4956A] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
+            className="px-6 py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
           >
             Réserver
           </button>

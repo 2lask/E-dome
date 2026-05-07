@@ -41,7 +41,7 @@ export default function EvenementDetailPage() {
           <div className="text-6xl">📅</div>
           <h1 className="text-2xl font-bold text-[var(--foreground)]">Événement introuvable</h1>
           <p className="text-[var(--text-secondary)]">Cet événement n&apos;existe pas ou a été supprimé.</p>
-          <button onClick={() => router.push("/evenements")} className="px-6 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+          <button onClick={() => router.push("/evenements")} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
             Retour aux événements
           </button>
         </div>
@@ -96,7 +96,7 @@ export default function EvenementDetailPage() {
           </div>
           <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4 text-center">
             <div className="text-sm text-[var(--text-muted)] mb-1">Prix</div>
-            <div className="font-semibold text-[#C4956A]">{event.prix > 0 ? formatPrice(event.prix) : "Gratuit"}</div>
+            <div className="font-semibold text-[#1e9df1]">{event.prix > 0 ? formatPrice(event.prix) : "Gratuit"}</div>
           </div>
         </div>
 
@@ -116,7 +116,7 @@ export default function EvenementDetailPage() {
                 <div className="space-y-3">
                   {event.programme.map((item, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <div className="w-2 h-2 mt-2 rounded-full bg-[#C4956A] flex-shrink-0" />
+                      <div className="w-2 h-2 mt-2 rounded-full bg-[#1e9df1] flex-shrink-0" />
                       <p className="text-[var(--text-secondary)] text-sm">{item}</p>
                     </div>
                   ))}
@@ -129,7 +129,7 @@ export default function EvenementDetailPage() {
           <div className="space-y-4">
             <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 space-y-4 sticky top-24">
               <div className="text-center">
-                <div className="text-3xl font-bold text-[#C4956A] mb-1">
+                <div className="text-3xl font-bold text-[#1e9df1] mb-1">
                   {event.prix > 0 ? formatPrice(event.prix) : "Gratuit"}
                 </div>
                 <p className="text-sm text-[var(--text-muted)]">par participant</p>
@@ -143,7 +143,7 @@ export default function EvenementDetailPage() {
                 </div>
                 <div className="w-full h-2 bg-[var(--background)] rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all ${isFull ? "bg-red-500" : "bg-[#C4956A]"}`}
+                    className={`h-full rounded-full transition-all ${isFull ? "bg-red-500" : "bg-[#1e9df1]"}`}
                     style={{ width: `${((event.spots - event.spotsRemaining) / event.spots) * 100}%` }}
                   />
                 </div>
@@ -165,7 +165,7 @@ export default function EvenementDetailPage() {
               ) : (
                 <button
                   onClick={() => setShowConfirm(true)}
-                  className="w-full py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors"
+                  className="w-full py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors"
                 >
                   S&apos;inscrire
                 </button>
@@ -205,7 +205,7 @@ export default function EvenementDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full animate-scale-in">
             <h2 className="text-xl font-bold mb-2">Confirmer l&apos;inscription</h2>
-            <h3 className="text-[#C4956A] font-medium mb-4">{event.titre}</h3>
+            <h3 className="text-[#1e9df1] font-medium mb-4">{event.titre}</h3>
             <div className="space-y-2 text-sm text-[var(--text-secondary)] mb-6">
               <p>Date : {eventDate.toLocaleDateString("fr-CH")} à {event.heure}</p>
               <p>Lieu : {event.lieu}</p>
@@ -215,7 +215,7 @@ export default function EvenementDetailPage() {
               <button onClick={() => setShowConfirm(false)} className="flex-1 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
                 Annuler
               </button>
-              <button onClick={handleRegister} className="flex-1 py-3 bg-[#C4956A] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+              <button onClick={handleRegister} className="flex-1 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
                 Confirmer
               </button>
             </div>
