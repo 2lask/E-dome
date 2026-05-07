@@ -23,6 +23,7 @@ import {
   Handshake,
 } from "lucide-react";
 import SkewCards from "@/components/ui/gradient-card-showcase";
+import { FounderBadge } from "@/components/ui/founder-badge";
 import {
   LandingLanguageProvider,
   useLandingLang,
@@ -259,7 +260,7 @@ function HomePageContent() {
               </div>
             </motion.div>
 
-            {/* Colonne droite : avantages exclusifs des 100 membres fondateurs */}
+            {/* Colonne droite : avantages des membres fondateurs + badge */}
             <motion.div {...fadeUp} className="hidden lg:block lg:col-span-5">
               {(() => {
                 const benefits =
@@ -267,58 +268,64 @@ function HomePageContent() {
                     ? [
                         { title: "Early access", desc: "Discover the platform before its public launch and help shape it." },
                         { title: "Lifetime founder status", desc: "Permanent badge and recognition on your profile." },
-                        { title: "Preferred pricing", desc: "30 % reduced commissions throughout the first year." },
-                        { title: "Private circle", desc: "Exclusive access to the network of the first 100 members." },
+                        { title: "Private circle", desc: "Access to the exclusive network of the first members." },
                       ]
                     : lang === "th"
                     ? [
                         { title: "เข้าถึงก่อนใคร", desc: "ค้นพบแพลตฟอร์มก่อนเปิดตัวสู่สาธารณะและร่วมกำหนดทิศทาง" },
                         { title: "สถานะผู้ก่อตั้งตลอดชีพ", desc: "ป้ายและการรับรองถาวรบนโปรไฟล์ของคุณ" },
-                        { title: "ราคาพิเศษ", desc: "ค่าคอมมิชชันลด 30% ตลอดปีแรก" },
-                        { title: "วงในพิเศษ", desc: "เข้าถึงเครือข่ายเฉพาะของสมาชิก 100 คนแรก" },
+                        { title: "วงในพิเศษ", desc: "เข้าถึงเครือข่ายเฉพาะของสมาชิกกลุ่มแรก" },
                       ]
                     : [
                         { title: "Accès anticipé", desc: "Découvrez la plateforme avant son ouverture publique et participez à sa construction." },
                         { title: "Statut fondateur à vie", desc: "Badge et reconnaissance permanents sur votre profil." },
-                        { title: "Tarif préférentiel", desc: "Commissions réduites de 30 % sur la première année." },
-                        { title: "Cercle privé", desc: "Accès au réseau exclusif des 100 premiers membres." },
+                        { title: "Cercle privé", desc: "Accès au réseau exclusif des premiers membres." },
                       ];
 
                 const eyebrow =
                   lang === "en"
-                    ? "Exclusive benefits · 100 seats"
+                    ? "Founding members benefits"
                     : lang === "th"
-                    ? "สิทธิพิเศษ · 100 ที่นั่ง"
-                    : "Avantages exclusifs · 100 places";
+                    ? "สิทธิประโยชน์สมาชิกผู้ก่อตั้ง"
+                    : "Avantages membres fondateurs";
+
+                const badgeTitle =
+                  lang === "en"
+                    ? "FOUNDING MEMBER"
+                    : lang === "th"
+                    ? "สมาชิกผู้ก่อตั้ง"
+                    : "MEMBRE FONDATEUR";
 
                 return (
                   <div className="border-l border-neutral-800 pl-8 max-w-md">
-                    <div className="flex items-center gap-3 mb-8">
+                    <div className="flex items-center gap-3 mb-6">
                       <span className="block w-8 h-px bg-[#C4956A]" />
-                      <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold">
+                      <p className="text-[#C4956A] text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
                         {eyebrow}
                       </p>
                     </div>
-                    <ul className="space-y-6">
+                    <ul className="space-y-4 mb-8">
                       {benefits.map((b, i) => (
                         <li
                           key={i}
-                          className="grid grid-cols-[2.5rem_1fr] gap-4 border-t border-neutral-800 pt-6 first:border-t-0 first:pt-0"
+                          className="grid grid-cols-[2rem_1fr] gap-3 border-t border-neutral-800 pt-4 first:border-t-0 first:pt-0"
                         >
-                          <span className="font-mono text-xs text-[#C4956A] pt-0.5 tracking-wider">
+                          <span className="font-mono text-[0.65rem] text-[#C4956A] pt-0.5 tracking-wider">
                             0{i + 1}
                           </span>
                           <div>
-                            <h4 className="text-white text-sm font-semibold uppercase tracking-wider mb-1.5">
+                            <h4 className="text-white text-xs font-semibold uppercase tracking-wider mb-1">
                               {b.title}
                             </h4>
-                            <p className="text-gray-400 text-sm leading-relaxed font-light">
+                            <p className="text-gray-400 text-xs leading-relaxed font-light">
                               {b.desc}
                             </p>
                           </div>
                         </li>
                       ))}
                     </ul>
+                    {/* Badge premium des fondateurs */}
+                    <FounderBadge brand="E-DOME" title={badgeTitle} />
                   </div>
                 );
               })()}
