@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
@@ -31,13 +31,14 @@ import {
 } from "lucide-react";
 import { FounderBadge } from "@/components/ui/founder-badge";
 import { HeroSideStrip } from "@/components/ui/hero-side-strip";
+import { Player } from "@remotion/player";
 import { IPhoneMockup } from "@/components/ui/iphone-mockup";
-import { RadialScrollGallery } from "@/components/ui/portfolio-and-image-gallery";
+import { InfiniteBentoPan } from "@/components/ui/infinite-bento-pan";
 import {
   LandingLanguageProvider,
   useLandingLang,
 } from "@/components/landing/landing-i18n";
-import { ScrollStage, useSlideProgress } from "@/components/landing/scroll-stage";
+import { ScrollStage } from "@/components/landing/scroll-stage";
 
 /* ═══════════════════════════════════════════════════════════════════ */
 /*  ROOT                                                               */
@@ -234,23 +235,26 @@ function DotDivider() {
 
 /* ─────────── PhoneSlide ──────────────────────────────────────────────
    Slide ScrollStage : iPhone à droite, texte punch à gauche. À l'intérieur
-   de l'écran du téléphone, la galerie radiale (composant fourni par
-   l'utilisateur) défile au scroll.
+   de l'écran du téléphone, la composition Remotion `InfiniteBentoPan`
+   pan en diagonale sur un grand canvas de cards, dont les "video" sont
+   alimentées par les 10 reels.
    ─────────────────────────────────────────────────────────────────── */
 function PhoneSlide({
-  slideIndex,
   videos,
   punch,
   punchEmphasis,
 }: {
-  slideIndex: number;
   videos: { src: string }[];
   punch: string;
   punchEmphasis: string;
 }) {
-  // Progression locale du slide → la galerie radiale tourne en synchro
-  // avec la fenêtre visible du slide dans ScrollStage. Bypass GSAP/pin.
-  const slideProgress = useSlideProgress(slideIndex);
+  const inputProps = useMemo(
+    () => ({
+      videos: videos.map((v) => v.src),
+      accentColor: "#C4956A",
+    }),
+    [videos],
+  );
 
   return (
     <section className="scroll-slide bg-black relative">
@@ -266,7 +270,7 @@ function PhoneSlide({
             </div>
           </div>
 
-          {/* iPhone — gallery radiale dans l'écran, rotation pilotée par slideProgress */}
+          {/* iPhone — InfiniteBentoPan (Remotion) en plein écran de la mockup */}
           <div className="order-1 lg:order-2 flex justify-center">
             <div style={{ width: 292, height: 613 }}>
               <IPhoneMockup
@@ -276,39 +280,22 @@ function PhoneSlide({
                 safeArea={false}
               >
                 <div className="absolute inset-0 bg-black overflow-hidden">
-                  <RadialScrollGallery
-                    progress={slideProgress}
-                    rotations={1}
-                    upright
-                    baseRadius={250}
-                    mobileRadius={250}
-                    className="!min-h-0 !h-full"
-                  >
-                    {(hoveredIndex) =>
-                      videos.map((video, index) => {
-                        const isActive = hoveredIndex === index;
-                        return (
-                          <div
-                            key={index}
-                            className="relative w-[150px] h-[200px] overflow-hidden rounded-xl bg-neutral-900 border border-neutral-800 shadow-lg"
-                          >
-                            <video
-                              src={video.src}
-                              autoPlay
-                              muted
-                              loop
-                              playsInline
-                              preload="metadata"
-                              className={`h-full w-full object-cover transition-transform duration-700 ease-out ${
-                                isActive ? "scale-110" : "scale-100"
-                              }`}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                          </div>
-                        );
-                      })
-                    }
-                  </RadialScrollGallery>
+                  <Player
+                    component={InfiniteBentoPan}
+                    inputProps={inputProps}
+                    durationInFrames={600}
+                    fps={30}
+                    compositionWidth={393}
+                    compositionHeight={852}
+                    autoPlay
+                    loop
+                    controls={false}
+                    clickToPlay={false}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
                 </div>
               </IPhoneMockup>
             </div>
@@ -655,7 +642,6 @@ function HomePageContent() {
 
       {/* ═══════════════════════ PHONE SLIDE (snap crossfade) ═══ */}
       <PhoneSlide
-        slideIndex={2}
         videos={phoneVideos}
         punch={phonePunch}
         punchEmphasis={phonePunchEmphasis}
