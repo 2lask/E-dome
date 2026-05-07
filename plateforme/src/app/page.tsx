@@ -418,121 +418,106 @@ function HomePageContent() {
       {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
       <section id="probleme" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-6xl mx-auto">
-          <SectionHeading
-            label={t("problem.label")}
-            title1={t("problem.title1")}
-            title2={t("problem.title2")}
-            description={t("problem.desc")}
-          />
-
-          {/* ─── 3 stats brutalistes (séparés par hairlines verticales) ─── */}
-          <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-0 mb-20">
-            {[1, 2, 3].map((n) => (
-              <div
-                key={n}
-                className="px-6 sm:px-8 py-4 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
-              >
-                <p className="font-mono text-[#C4956A] text-[0.65rem] tracking-[0.3em] mb-5">
-                  0{n}
-                </p>
-                <p
-                  className="font-serif text-5xl md:text-6xl text-white leading-[1] mb-2"
-                  style={{ fontFamily: "'Instrument Serif', serif" }}
-                >
-                  {t(`problem.stat${n}_value`)}
-                  <span className="text-[#C4956A] text-2xl ml-2 font-normal align-top">
-                    {t(`problem.stat${n}_unit`)}
-                  </span>
-                </p>
-                <p className="text-gray-400 text-sm leading-relaxed font-light mt-5">
-                  {t(`problem.stat${n}_desc`)}
-                </p>
-              </div>
-            ))}
-          </motion.div>
-
-          {/* ─── Analyse développée (2 colonnes éditoriales) ─── */}
           {(() => {
-            const analysis =
+            const data =
               lang === "en"
-                ? [
-                    {
-                      title: "A fragmented market",
-                      body: "Real estate operates today across dozens of isolated tools : search on one side, files on another, training somewhere else. Every transaction starts from scratch, every relationship fades between two operations.",
-                    },
-                    {
-                      title: "Everyone pays the price",
-                      body: "This fragmentation is costly : sellers struggle to find their audience, buyers juggle multiple processes, agents rebuild their network with every mandate. The tools exist — they just don't talk to each other.",
-                    },
-                  ]
+                ? {
+                    intro: "A market worth hundreds of billions of dollars — still fractured into silos.",
+                    stats: [
+                      { value: "85", unit: "%", cap: "of professionals juggle five tools or more for a single transaction." },
+                      { value: "3.5", unit: "×", cap: "the wasted-time factor between disconnected stakeholders." },
+                      { value: "72", unit: "h", cap: "the median delay to circulate one piece of key information." },
+                    ],
+                    punch: "Every deal reinvents the wheel. The tools exist — they simply don't talk to each other. Consolidating the ecosystem on one platform is no longer optional. It is inevitable.",
+                    vision: "For the first time, the entire real-estate ecosystem under one roof.",
+                  }
                 : lang === "th"
-                ? [
-                    {
-                      title: "ตลาดที่กระจัดกระจาย",
-                      body: "ปัจจุบันอสังหาริมทรัพย์ทำงานกระจายอยู่บนเครื่องมือที่แยกกันเป็นสิบ ๆ การค้นหาที่หนึ่ง เอกสารอีกที่ การฝึกอบรมที่อื่น ทุกธุรกรรมเริ่มต้นจากศูนย์ ทุกความสัมพันธ์เลือนหายระหว่างปฏิบัติการ",
-                    },
-                    {
-                      title: "ทุกคนต่างต้องจ่ายราคา",
-                      body: "ความกระจัดกระจายนี้ต้องจ่ายราคาแพง : ผู้ขายดิ้นรนหากลุ่มเป้าหมาย ผู้ซื้อต้องผ่านขั้นตอนซ้ำซ้อน ตัวแทนสร้างเครือข่ายใหม่ทุกการมอบหมาย เครื่องมือมีอยู่ — เพียงแต่ไม่สื่อสารกัน",
-                    },
-                  ]
-                : [
-                    {
-                      title: "Un marché morcelé",
-                      body: "L'immobilier vit aujourd'hui éclaté sur des dizaines d'outils isolés : la recherche d'un côté, les dossiers de l'autre, les formations ailleurs encore. Chaque transaction recommence à zéro, chaque relation s'efface entre deux opérations.",
-                    },
-                    {
-                      title: "Une perte sèche pour tous",
-                      body: "Cette fragmentation coûte cher : aux vendeurs qui peinent à trouver leur public, aux acheteurs qui multiplient les démarches, aux agents qui reconstruisent leur réseau à chaque mandat. Les outils existent — ils ne se parlent simplement pas.",
-                    },
-                  ];
-
-            const quote =
-              lang === "en"
-                ? "Real estate is one of the last major sectors where everyone works alone. It is time to bring the entire ecosystem under one roof."
-                : lang === "th"
-                ? "อสังหาริมทรัพย์เป็นหนึ่งในไม่กี่ภาคส่วนใหญ่ที่ทุกคนทำงานคนเดียว ถึงเวลาที่จะรวมระบบนิเวศทั้งหมดไว้ใต้หลังคาเดียวกัน"
-                : "L'immobilier est l'un des derniers grands secteurs où chacun travaille seul. Il est temps de réunir l'écosystème sous un même toit.";
+                ? {
+                    intro: "ตลาดมูลค่าหลายแสนล้านดอลลาร์ ยังคงแตกแยกเป็นไซโลที่ไม่เชื่อมต่อกัน",
+                    stats: [
+                      { value: "85", unit: "%", cap: "ของมืออาชีพใช้เครื่องมือห้าชิ้นขึ้นไปต่อหนึ่งธุรกรรม" },
+                      { value: "3.5", unit: "×", cap: "ปัจจัยเวลาที่สูญเสียระหว่างผู้เกี่ยวข้องที่ไม่เชื่อมต่อกัน" },
+                      { value: "72", unit: "h", cap: "ค่ามัธยฐานของระยะเวลาในการส่งข้อมูลสำคัญหนึ่งรายการ" },
+                    ],
+                    punch: "ทุกธุรกรรมประดิษฐ์ล้อใหม่ เครื่องมือมีอยู่ — เพียงแต่ไม่สื่อสารกัน การรวมระบบนิเวศไว้บนแพลตฟอร์มเดียวไม่ใช่ทางเลือกอีกต่อไป มันเป็นสิ่งที่หลีกเลี่ยงไม่ได้",
+                    vision: "เป็นครั้งแรก ระบบนิเวศอสังหาริมทรัพย์ทั้งหมดอยู่ใต้หลังคาเดียวกัน",
+                  }
+                : {
+                    intro: "Un marché de plusieurs centaines de milliards de dollars — toujours éclaté en silos.",
+                    stats: [
+                      { value: "85", unit: "%", cap: "des professionnels jonglent avec cinq outils ou plus pour une seule transaction." },
+                      { value: "3.5", unit: "×", cap: "le facteur de temps perdu entre acteurs déconnectés." },
+                      { value: "72", unit: "h", cap: "le délai médian pour faire circuler une information-clé." },
+                    ],
+                    punch: "Chaque transaction réinvente la roue. Les outils existent — ils ne se parlent simplement pas. Consolider l'écosystème sur une seule plateforme n'est plus une option. C'est une inévitabilité.",
+                    vision: "Pour la première fois, tout l'écosystème immobilier sous un même toit.",
+                  };
 
             return (
               <>
-                <div className="grid md:grid-cols-2 gap-10 lg:gap-16 mb-20">
-                  {analysis.map((a, i) => (
-                    <motion.div
+                <SectionHeading
+                  label={t("problem.label")}
+                  title1={t("problem.title1")}
+                  title2={t("problem.title2")}
+                />
+
+                {/* ── HOOK : phrase d'accroche centrée, juste sous le titre ── */}
+                <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto -mt-10 mb-20">
+                  <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light">
+                    {data.intro}
+                  </p>
+                </motion.div>
+
+                {/* ── 3 STATS : grand chiffre + caption courte ── */}
+                <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-0 mb-20">
+                  {data.stats.map((s, i) => (
+                    <div
                       key={i}
-                      {...fadeUp}
-                      className="border-t border-[#C4956A]/30 pt-6"
+                      className="px-6 sm:px-8 py-4 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
                     >
-                      <p className="font-mono text-[#C4956A] text-[0.65rem] tracking-[0.3em] uppercase mb-4">
+                      <p className="font-mono text-[#C4956A] text-[0.65rem] tracking-[0.3em] mb-5">
                         0{i + 1}
                       </p>
-                      <h3
-                        className="font-serif text-2xl md:text-3xl mb-4 text-white leading-tight"
+                      <p
+                        className="font-serif text-5xl md:text-6xl text-white leading-[1] mb-2"
                         style={{ fontFamily: "'Instrument Serif', serif" }}
                       >
-                        {a.title}
-                      </h3>
-                      <p className="text-gray-400 text-sm leading-relaxed font-light">
-                        {a.body}
+                        {s.value}
+                        <span className="text-[#C4956A] text-2xl ml-2 font-normal align-top">
+                          {s.unit}
+                        </span>
                       </p>
-                    </motion.div>
+                      <p className="text-gray-400 text-sm leading-snug font-light mt-5">
+                        {s.cap}
+                      </p>
+                    </div>
                   ))}
-                </div>
+                </motion.div>
 
-                {/* Pull quote final + emphase pill */}
+                {/* ── PUNCH : un paragraphe pitch percutant ── */}
                 <motion.div
                   {...fadeUp}
-                  className="text-center max-w-3xl mx-auto pt-12 border-t border-neutral-800"
+                  className="max-w-3xl mx-auto mb-20 border-t border-[#C4956A]/40 pt-8"
+                >
+                  <p className="text-white text-lg md:text-xl leading-relaxed font-light">
+                    {data.punch}
+                  </p>
+                </motion.div>
+
+                {/* ── VISION : pull quote final ── */}
+                <motion.div
+                  {...fadeUp}
+                  className="text-center max-w-3xl mx-auto pt-10 border-t border-neutral-800"
                 >
                   <Sparkles size={18} className="text-[#C4956A] mx-auto mb-6" />
                   <p
-                    className="font-serif text-2xl md:text-3xl italic text-white leading-snug mb-6"
+                    className="font-serif text-2xl md:text-3xl italic text-white leading-snug mb-5"
                     style={{ fontFamily: "'Instrument Serif', serif" }}
                   >
-                    «&nbsp;{quote}&nbsp;»
+                    «&nbsp;{data.vision}&nbsp;»
                   </p>
                   <p className="text-[#C4956A] text-[0.65rem] tracking-[0.4em] uppercase font-semibold">
-                    {t("problem.pill_bold")}
+                    — E-DOME
                   </p>
                 </motion.div>
               </>
