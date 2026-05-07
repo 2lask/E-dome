@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { FounderBadge } from "@/components/ui/founder-badge";
 import { HeroSideStrip } from "@/components/ui/hero-side-strip";
+import { IPhoneMockup } from "@/components/ui/iphone-mockup";
 import { RadialScrollGallery } from "@/components/ui/portfolio-and-image-gallery";
 import {
   LandingLanguageProvider,
@@ -232,9 +233,9 @@ function DotDivider() {
 }
 
 /* ─────────── PhoneSlide ──────────────────────────────────────────────
-   Slide ScrollStage : galerie radiale (rotation pilotée par GSAP) à droite,
-   texte punch à gauche. Les vidéos prennent place sur la roue qui tourne
-   au scroll.
+   Slide ScrollStage : iPhone à droite, texte punch à gauche. À l'intérieur
+   de l'écran du téléphone, la galerie radiale remplace l'ancien zoom-
+   parallax — les 10 vidéos tournent en cercle au scroll.
    ─────────────────────────────────────────────────────────────────── */
 function PhoneSlide({
   videos,
@@ -259,40 +260,51 @@ function PhoneSlide({
             </div>
           </div>
 
-          {/* Galerie radiale */}
-          <div className="order-1 lg:order-2 relative">
-            <RadialScrollGallery
-              baseRadius={260}
-              mobileRadius={150}
-              visiblePercentage={55}
-              scrollDuration={1500}
-              className="!min-h-0"
-            >
-              {(hoveredIndex) =>
-                videos.map((video, index) => {
-                  const isActive = hoveredIndex === index;
-                  return (
-                    <div
-                      key={index}
-                      className="relative w-[140px] h-[180px] sm:w-[160px] sm:h-[200px] overflow-hidden rounded-xl bg-neutral-900 border border-neutral-800 shadow-lg"
-                    >
-                      <video
-                        src={video.src}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                        className={`h-full w-full object-cover transition-transform duration-700 ease-out ${
-                          isActive ? "scale-110" : "scale-100"
-                        }`}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    </div>
-                  );
-                })
-              }
-            </RadialScrollGallery>
+          {/* iPhone avec galerie radiale dans l'écran */}
+          <div className="order-1 lg:order-2 flex justify-center">
+            <div style={{ width: 250, height: 526 }}>
+              <IPhoneMockup
+                model="15-pro"
+                color="natural-titanium"
+                scale={0.6}
+                safeArea={false}
+              >
+                <div className="absolute inset-0 bg-black overflow-hidden">
+                  <RadialScrollGallery
+                    baseRadius={180}
+                    mobileRadius={180}
+                    visiblePercentage={50}
+                    scrollDuration={2000}
+                    className="!min-h-0 !h-full"
+                  >
+                    {(hoveredIndex) =>
+                      videos.map((video, index) => {
+                        const isActive = hoveredIndex === index;
+                        return (
+                          <div
+                            key={index}
+                            className="relative w-[80px] h-[110px] overflow-hidden rounded-lg bg-neutral-900 border border-neutral-800 shadow-lg"
+                          >
+                            <video
+                              src={video.src}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              preload="metadata"
+                              className={`h-full w-full object-cover transition-transform duration-700 ease-out ${
+                                isActive ? "scale-110" : "scale-100"
+                              }`}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          </div>
+                        );
+                      })
+                    }
+                  </RadialScrollGallery>
+                </div>
+              </IPhoneMockup>
+            </div>
           </div>
         </div>
       </div>
