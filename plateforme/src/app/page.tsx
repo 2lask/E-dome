@@ -430,7 +430,8 @@ function HomePageContent() {
                       { value: "73", unit: "%", label: "Attention lost in redirects", source: "HubSpot State of Marketing, 2024" },
                       { value: "2", unit: "/ 3", label: "Actors locked out", source: "NAR Profile of Home Buyers & Sellers, 2024" },
                     ],
-                    punch: "Social content captures millions of eyes — and ushers them straight out the door. Commissions stay high in a market that never consolidated its stack. And owners, prescribers, local contributors — half the living forces of the ecosystem — have nowhere to belong. Real estate has built walls where it should have built a roof.",
+                    punch: "Social content captures millions of eyes — and ushers them straight out the door. Commissions stay high in a market that never consolidated its stack. And owners, prescribers, local contributors — half the living forces of the ecosystem — have nowhere to belong.",
+                    punchEmphasis: "Real estate has built walls where it should have built a roof.",
                     vision: "For the first time, the entire real-estate ecosystem under one roof — pros and individuals, content and transaction, conversation and signature.",
                   }
                 : lang === "th"
@@ -441,7 +442,8 @@ function HomePageContent() {
                       { value: "73", unit: "%", label: "ความสนใจหายในการรีไดเรกต์", source: "HubSpot, 2024" },
                       { value: "2", unit: "/ 3", label: "ผู้เล่นถูกกีดกัน", source: "NAR, 2024" },
                     ],
-                    punch: "คอนเทนต์โซเชียลดึงดูดสายตาเป็นล้าน — แล้วผลักออกไปทันที ค่าคอมมิชชันยังสูงในตลาดที่ไม่เคยรวมเครื่องมือเข้าด้วยกัน และเจ้าของ ผู้แนะนำ ผู้ร่วมในท้องถิ่น — ครึ่งหนึ่งของพลังของระบบนิเวศ — ไม่มีที่ให้อยู่ อสังหาฯ สร้างกำแพงในที่ที่ควรสร้างหลังคา",
+                    punch: "คอนเทนต์โซเชียลดึงดูดสายตาเป็นล้าน — แล้วผลักออกไปทันที ค่าคอมมิชชันยังสูงในตลาดที่ไม่เคยรวมเครื่องมือเข้าด้วยกัน และเจ้าของ ผู้แนะนำ ผู้ร่วมในท้องถิ่น — ครึ่งหนึ่งของพลังของระบบนิเวศ — ไม่มีที่ให้อยู่",
+                    punchEmphasis: "อสังหาฯ สร้างกำแพงในที่ที่ควรสร้างหลังคา",
                     vision: "เป็นครั้งแรก ระบบนิเวศอสังหาฯ ทั้งหมดอยู่ใต้หลังคาเดียว — มืออาชีพและบุคคล คอนเทนต์และธุรกรรม บทสนทนาและการลงนาม",
                   }
                 : {
@@ -451,7 +453,8 @@ function HomePageContent() {
                       { value: "73", unit: "%", label: "Attention perdue en redirection", source: "HubSpot State of Marketing, 2024" },
                       { value: "2", unit: "/ 3", label: "Acteurs laissés à la porte", source: "NAR Profile of Home Buyers & Sellers, 2024" },
                     ],
-                    punch: "Du contenu social qui capte des millions de regards — et les envoie aussitôt ailleurs. Des commissions élevées dans un marché qui n'a jamais unifié ses outils. Des particuliers, prescripteurs, contributeurs locaux : la moitié des forces vives de l'écosystème, sans endroit pour exister. L'immobilier a bâti des murs là où il aurait fallu bâtir un toit.",
+                    punch: "Du contenu social qui capte des millions de regards — et les envoie aussitôt ailleurs. Des commissions élevées dans un marché qui n'a jamais unifié ses outils. Des particuliers, prescripteurs, contributeurs locaux : la moitié des forces vives de l'écosystème, sans endroit pour exister.",
+                    punchEmphasis: "L'immobilier a bâti des murs là où il aurait fallu bâtir un toit.",
                     vision: "Pour la première fois, tout l'écosystème immobilier sous un même toit — pros et particuliers, contenu et transaction, conversation et signature.",
                   };
 
@@ -535,7 +538,10 @@ function HomePageContent() {
                   className="max-w-3xl mx-auto mb-20 border-l-2 border-red-500/60 pl-6 py-2"
                 >
                   <p className="text-white text-lg md:text-xl leading-relaxed font-light">
-                    {data.punch}
+                    {data.punch}{" "}
+                    <strong className="font-semibold text-white">
+                      {data.punchEmphasis}
+                    </strong>
                   </p>
                 </motion.div>
 
