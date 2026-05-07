@@ -456,89 +456,56 @@ function HomePageContent() {
               lang === "en"
                 ? {
                     intro:
-                      "One deal in six collapses before signature. The audience pros pay to build with social content evaporates at the first click toward an external platform. And the market's natural prescribers — owners, neighbours, local referrers — have no place inside the tools the industry reserves for itself.",
-                    stats: [
+                      "Real estate is a business of network and visibility. Yet today, every actor works in their own silo, on tools that don't talk to each other, and gives away their audience to platforms that don't belong to them. Three invisible walls, that everyone has come to find normal.",
+                    problems: [
                       {
-                        value: "16,3",
-                        unit: "%",
-                        label: "Compromis qui échouent",
-                        caption:
-                          "Highest cancellation rate on record, end of 2025. Buyers and sellers already engaged absorb the cost.",
-                        source: "Redfin, December 2025",
+                        title: "One activity, ten tools.",
+                        body: "An agent posts listings on one portal, chats on another, tracks bookings in a spreadsheet, runs trainings on Zoom, follows commissions by hand. Every added tool is one more wall between them and their own activity.",
                       },
                       {
-                        value: "1,5",
-                        unit: "%",
-                        label: "Social → contact conversion",
-                        caption:
-                          "On average 98.5% of audience captured by paid social content drops off before the form is submitted.",
-                        source: "Unbounce Conversion Benchmark, 2024",
+                        title: "The audience we hand away.",
+                        body: "Real-estate content lives on Instagram, TikTok, Facebook — where every day we build an audience that never belongs to us. Every outbound click is a relationship that evaporates to the next platform.",
                       },
                       {
-                        value: "6",
-                        unit: "%",
-                        label: "Sellers without a pro",
-                        caption:
-                          "Word-of-mouth drives 66% of agent matches, but the ecosystem still gates almost everyone out of doing it themselves.",
-                        source: "NAR Profile of Home Buyers & Sellers, 2024",
+                        title: "Roles kept apart.",
+                        body: "Host, referrer, trainer, photographer, prescriber, neighbour — they all make the market run. But each is locked in their own tool, with no way to compensate one another or share a single community.",
                       },
                     ],
                   }
                 : lang === "th"
                 ? {
                     intro:
-                      "หนึ่งในหกของดีลล้มก่อนการลงนาม ผู้ชมที่มืออาชีพจ่ายเพื่อสร้างผ่านคอนเทนต์โซเชียลหายไปเมื่อคลิกครั้งแรกไปยังแพลตฟอร์มภายนอก และผู้แนะนำที่ดีที่สุดของตลาด — เจ้าของ เพื่อนบ้าน ผู้แนะนำท้องถิ่น — ไม่มีบทบาทในเครื่องมือที่จัดเตรียมไว้",
-                    stats: [
+                      "อสังหาริมทรัพย์เป็นธุรกิจของเครือข่ายและการมองเห็น แต่วันนี้ ทุกผู้เล่นทำงานในไซโลของตัวเอง บนเครื่องมือที่ไม่สื่อสารกัน และยกผู้ชมให้กับแพลตฟอร์มที่ไม่ได้เป็นของพวกเขา กำแพงที่มองไม่เห็นสามด้าน ที่ทุกคนได้เริ่มมองว่าเป็นเรื่องปกติ",
+                    problems: [
                       {
-                        value: "16,3",
-                        unit: "%",
-                        label: "ดีลที่ล้มเหลว",
-                        caption: "อัตราการยกเลิกที่สูงที่สุดในประวัติการณ์ ปลายปี 2025 ผู้ซื้อและผู้ขายที่ผูกพันแล้วเป็นผู้รับภาระต้นทุน",
-                        source: "Redfin, ธ.ค. 2025",
+                        title: "หนึ่งกิจกรรม สิบเครื่องมือ",
+                        body: "นายหน้าลงประกาศบนพอร์ทัลหนึ่ง แชทบนอีกอันหนึ่ง ติดตามการจองในสเปรดชีต จัดอบรมบน Zoom ตามค่าคอมมิชชันด้วยมือ ทุกเครื่องมือที่เพิ่มเข้ามาคือกำแพงระหว่างเขาและกิจกรรมของเขาเอง",
                       },
                       {
-                        value: "1,5",
-                        unit: "%",
-                        label: "Conversion โซเชียล → ติดต่อ",
-                        caption: "98.5% ของผู้ชมที่ถูกดึงดูดผ่านคอนเทนต์โซเชียลหายไปก่อนที่จะส่งฟอร์ม",
-                        source: "Unbounce Conversion Benchmark, 2024",
+                        title: "ผู้ชมที่เรายกให้ไป",
+                        body: "คอนเทนต์อสังหาฯ อยู่บน Instagram, TikTok, Facebook — ที่ซึ่งเราสร้างผู้ชมทุกวัน แต่ผู้ชมเหล่านั้นไม่เคยเป็นของเรา ทุกคลิกออกคือความสัมพันธ์ที่ระเหยไปยังแพลตฟอร์มถัดไป",
                       },
                       {
-                        value: "6",
-                        unit: "%",
-                        label: "ผู้ขายที่ไม่ใช่มืออาชีพ",
-                        caption: "การบอกต่อสร้าง 66% ของการจับคู่กับนายหน้า แต่ระบบนิเวศยังคงกีดกันคนส่วนใหญ่จากการทำเอง",
-                        source: "NAR Profile of Home Buyers & Sellers, 2024",
+                        title: "บทบาทที่แยกจากกัน",
+                        body: "เจ้าของบ้าน ผู้แนะนำ ผู้ฝึกอบรม ช่างภาพ ผู้บอกต่อ เพื่อนบ้าน — ทุกคนทำให้ตลาดเดินไป แต่แต่ละคนถูกล็อกไว้ในเครื่องมือของตัวเอง โดยไม่มีทางได้รับค่าตอบแทนซึ่งกันและกัน หรือแบ่งปันชุมชนเดียวกัน",
                       },
                     ],
                   }
                 : {
                     intro:
-                      "Un compromis sur six s'effondre avant signature. L'audience que les pros paient à coup de contenu social s'évapore au premier clic vers une plateforme externe. Et les meilleurs prescripteurs du marché — propriétaires, voisins, prescripteurs locaux — n'ont aucune place dans les outils que le secteur se réserve.",
-                    stats: [
+                      "L'immobilier est un métier de réseau et de visibilité. Pourtant, aujourd'hui, ses acteurs travaillent chacun dans leur silo, sur des outils qui ne se parlent pas, et cèdent leur audience à des plateformes qui ne leur appartiennent pas. Trois murs invisibles, que tout le monde a fini par trouver normaux.",
+                    problems: [
                       {
-                        value: "16,3",
-                        unit: "%",
-                        label: "Compromis qui échouent",
-                        caption:
-                          "Pic historique fin 2025 : un dossier sur six s'effondre avant signature. Acheteurs et vendeurs déjà engagés en absorbent le coût.",
-                        source: "Redfin, décembre 2025",
+                        title: "Une activité, dix outils.",
+                        body: "Un agent publie ses biens sur un portail, échange sur un autre, suit ses réservations dans un tableur, anime ses formations sur Zoom, traque ses commissions à la main. Chaque outil ajouté est un mur de plus entre lui et sa propre activité.",
                       },
                       {
-                        value: "1,5",
-                        unit: "%",
-                        label: "Conversion social → contact",
-                        caption:
-                          "Sur les réseaux, le contenu immobilier capte massivement — mais 98,5 % de l'audience se perd avant qu'un formulaire ne soit soumis.",
-                        source: "Unbounce Conversion Benchmark, 2024",
+                        title: "L'audience que l'on cède.",
+                        body: "Le contenu immobilier vit sur Instagram, TikTok, Facebook — où l'on construit chaque jour une audience qui n'est jamais à nous. Chaque clic sortant est une relation qui s'évapore au profit de la plateforme suivante.",
                       },
                       {
-                        value: "6",
-                        unit: "%",
-                        label: "Vendeurs sans intermédiaire",
-                        caption:
-                          "Le bouche-à-oreille fait 66 % des mises en relation, mais l'écosystème reste fermé à ceux qui pourraient s'en passer.",
-                        source: "NAR Profile of Home Buyers & Sellers, 2024",
+                        title: "Des rôles tenus à l'écart.",
+                        body: "Hôte, apporteur, formateur, photographe, prescripteur, voisin — tous font tourner le marché. Mais chacun reste enfermé dans son outil, sans pouvoir se rémunérer mutuellement ni partager une même communauté.",
                       },
                     ],
                   };
@@ -565,44 +532,33 @@ function HomePageContent() {
                   </p>
                 </motion.div>
 
-                {/* ── 3 STATS PROBLÈMES : grand chiffre + label + caption + source ── */}
+                {/* ── 3 PROBLÈMES — phrases concrètes, pas de chiffres ── */}
                 <motion.div
                   {...fadeUp}
-                  className="grid sm:grid-cols-3 gap-0 border-t border-b border-neutral-800 py-6"
+                  className="grid sm:grid-cols-3 gap-0 border-t border-b border-neutral-800 py-7"
                 >
-                  {data.stats.map((s, i) => (
+                  {data.problems.map((p, i) => (
                     <div
                       key={i}
                       className="relative px-5 sm:px-7 py-3 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
                     >
                       {/* Tag PROBLÈME 0X rouge */}
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-2 mb-4">
                         <AlertTriangle size={10} className="text-red-500" strokeWidth={2.2} />
                         <p className="font-mono text-red-400 text-[0.6rem] tracking-[0.3em] uppercase font-semibold">
                           {problemTag} 0{i + 1}
                         </p>
                       </div>
-                      {/* Grand chiffre */}
-                      <p
-                        className="font-serif text-4xl md:text-5xl text-white leading-[1]"
+                      {/* Titre court — serif, le constat verbalisé */}
+                      <h3
+                        className="font-serif text-xl md:text-2xl text-white leading-snug mb-3"
                         style={{ fontFamily: "'Instrument Serif', serif" }}
                       >
-                        {s.value}
-                        <span className="text-red-500 text-xl ml-2 font-normal align-top">
-                          {s.unit}
-                        </span>
-                      </p>
-                      {/* Label */}
-                      <p className="text-white text-[0.72rem] font-semibold uppercase tracking-[0.18em] mt-3 mb-2 leading-snug">
-                        {s.label}
-                      </p>
-                      {/* Caption — explicite ce que ça coûte */}
-                      <p className="text-gray-400 text-[0.72rem] leading-snug font-light mb-2">
-                        {s.caption}
-                      </p>
-                      {/* Source citée — italique, plus de prefix */}
-                      <p className="text-gray-600 text-[0.55rem] font-mono tracking-wider italic">
-                        {s.source}
+                        {p.title}
+                      </h3>
+                      {/* Description concrète */}
+                      <p className="text-gray-400 text-[0.78rem] md:text-sm leading-relaxed font-light">
+                        {p.body}
                       </p>
                     </div>
                   ))}
