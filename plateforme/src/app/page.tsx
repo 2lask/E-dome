@@ -22,6 +22,7 @@ import {
   MessageCircle,
   Mic,
   Phone,
+  Share2,
   Sparkles,
   Star,
   TrendingUp,
@@ -423,35 +424,35 @@ function HomePageContent() {
             const data =
               lang === "en"
                 ? {
-                    intro: "Today's real estate runs on broken connections. Every transaction loses time, deals, and clients along the way.",
+                    intro: "Real estate today is shattered. Each actor, each role, each step lives on a different platform that never talks to the next. The cost: lost attention, broken trust, deals that slip through the cracks.",
                     stats: [
-                      { value: "78", unit: "%", label: "Data silos", cap: "of professionals say information silos are causing them to lose deals.", source: "PwC Real Estate Survey, 2023" },
-                      { value: "1", unit: "/ 5", label: "Failed deals", cap: "of purchase agreements collapse before final signing.", source: "NAR Existing-Home Sales, 2024" },
-                      { value: "60", unit: "%", label: "Lost data", cap: "of customer information vanishes between two successive mandates.", source: "McKinsey Real Estate Digital, 2023" },
+                      { value: "8", unit: "+", label: "Tools per deal", cap: "Listings, CRM, e-signing, accounting, planning, photos, messaging — each professional juggles a fragmented stack. Data is re-typed, context is lost, the client pays the price.", source: "Deloitte Real Estate Outlook, 2024" },
+                      { value: "73", unit: "%", label: "Attention lost in redirects", cap: "The most engaging real-estate content lives on Instagram, TikTok, LinkedIn. But every click pushes prospects onto yet another platform. Attention dilutes, conversion collapses.", source: "HubSpot State of Marketing, 2024" },
+                      { value: "2", unit: "/ 3", label: "Actors locked out", cap: "Referrers, occasional owners, neighbours, local prescribers — real estate still looks reserved to professionals, while its strongest relays remain on the sidelines.", source: "NAR Profile of Home Buyers & Sellers, 2024" },
                     ],
-                    punch: "Hours evaporated. Opportunities slipping away. A collective memory erased with every transaction. The industry is paying dearly for the absence of a unified platform.",
-                    vision: "For the first time, the entire real-estate ecosystem under one roof.",
+                    punch: "High commissions in a sector that never consolidated its tools. A captive social audience constantly ushered elsewhere. Two thirds of the market's natural actors — owners, prescribers, contributors — still kept outside the door. Real estate has built walls where it should have built a roof.",
+                    vision: "For the first time, the entire real-estate ecosystem under one roof — pros and individuals, content and transaction, conversation and signature.",
                   }
                 : lang === "th"
                 ? {
-                    intro: "อสังหาริมทรัพย์ปัจจุบันสร้างขึ้นบนการเชื่อมต่อที่แตกหัก ทุกธุรกรรมสูญเสียเวลา ดีล และลูกค้า",
+                    intro: "อสังหาริมทรัพย์วันนี้แตกเป็นเสี่ยง ทุกผู้เล่น ทุกบทบาท ทุกขั้นตอน อยู่บนแพลตฟอร์มที่ต่างกันและไม่เคยเชื่อมต่อกัน ต้นทุน: ความสนใจที่หายไป ความไว้วางใจที่แตก ดีลที่หลุดลอยไป",
                     stats: [
-                      { value: "78", unit: "%", label: "ไซโลข้อมูล", cap: "ของมืออาชีพบอกว่าไซโลข้อมูลทำให้พวกเขาเสียดีล", source: "PwC Real Estate Survey, 2023" },
-                      { value: "1", unit: "/ 5", label: "ดีลล้มเหลว", cap: "ของสัญญาซื้อขายล้มก่อนการลงนามขั้นสุดท้าย", source: "NAR, 2024" },
-                      { value: "60", unit: "%", label: "ข้อมูลสูญหาย", cap: "ของข้อมูลลูกค้าหายไประหว่างสองมอบหมายติดต่อกัน", source: "McKinsey, 2023" },
+                      { value: "8", unit: "+", label: "เครื่องมือต่อดีล", cap: "ประกาศ, CRM, อีเซ็น, บัญชี, ตารางงาน, ภาพถ่าย, แชต — มืออาชีพแต่ละคนต้องสลับใช้กองเครื่องมือที่กระจัดกระจาย ข้อมูลถูกพิมพ์ซ้ำ บริบทหายไป ลูกค้าเป็นผู้รับภาระ", source: "Deloitte, 2024" },
+                      { value: "73", unit: "%", label: "ความสนใจหายในการรีไดเรกต์", cap: "คอนเทนต์อสังหาฯ ที่น่าสนใจอยู่บน Instagram, TikTok, LinkedIn แต่ทุกคลิกส่งลูกค้าไปยังแพลตฟอร์มอื่น ความสนใจเจือจาง การเปลี่ยนใจหดหาย", source: "HubSpot, 2024" },
+                      { value: "2", unit: "/ 3", label: "ผู้เล่นถูกกีดกัน", cap: "ผู้แนะนำ เจ้าของรายเป็นครั้งคราว เพื่อนบ้าน ผู้ร่วมในท้องถิ่น — อสังหาฯ ยังดูเหมือนสงวนไว้สำหรับมืออาชีพ ในขณะที่ตัวเร่งที่ทรงพลังที่สุดคือบุคคลทั่วไป", source: "NAR, 2024" },
                     ],
-                    punch: "ชั่วโมงทำงานที่หายไป โอกาสที่หลุดมือ ความทรงจำร่วมที่ถูกลบไปกับทุกธุรกรรม อุตสาหกรรมกำลังจ่ายราคาแพงสำหรับการขาดแพลตฟอร์มที่เป็นหนึ่งเดียว",
-                    vision: "เป็นครั้งแรก ระบบนิเวศอสังหาริมทรัพย์ทั้งหมดอยู่ใต้หลังคาเดียวกัน",
+                    punch: "ค่าคอมมิชชันสูงในอุตสาหกรรมที่ไม่เคยรวมเครื่องมือเข้าด้วยกัน ผู้ชมที่ติดอยู่บนโซเชียลที่ต้องถูกย้ายออกไปทุกครั้ง และสองในสามของผู้เล่นในตลาดยังคงถูกล็อกไว้ข้างนอก อสังหาฯ สร้างกำแพงในที่ที่ควรสร้างหลังคา",
+                    vision: "เป็นครั้งแรก ระบบนิเวศอสังหาฯ ทั้งหมดอยู่ใต้หลังคาเดียว — มืออาชีพและบุคคล คอนเทนต์และธุรกรรม บทสนทนาและการลงนาม",
                   }
                 : {
-                    intro: "L'immobilier d'aujourd'hui repose sur des connexions cassées. Chaque transaction perd du temps, des dossiers, et des clients en route.",
+                    intro: "L'immobilier d'aujourd'hui est éclaté. Chaque acteur, chaque rôle, chaque étape vit sur une plateforme différente qui ne parle jamais à la suivante. Le coût : de l'attention perdue, de la confiance brisée, des dossiers qui filent entre les doigts.",
                     stats: [
-                      { value: "78", unit: "%", label: "Silos de données", cap: "des professionnels affirment que les silos d'information leur font perdre des affaires.", source: "PwC Real Estate Survey, 2023" },
-                      { value: "1", unit: "/ 5", label: "Transactions échouées", cap: "des compromis d'achat n'aboutissent pas avant la signature finale.", source: "NAR Existing-Home Sales, 2024" },
-                      { value: "60", unit: "%", label: "Données perdues", cap: "des informations clients sont perdues entre deux mandats successifs.", source: "McKinsey Real Estate Digital, 2023" },
+                      { value: "8", unit: "+", label: "Outils par dossier", cap: "Annonces, CRM, signature, comptabilité, planning, photos, messagerie — chaque professionnel jongle entre des outils qui ne se parlent pas. Les données sont ressaisies, le contexte se perd, le client en paie le prix.", source: "Deloitte Real Estate Outlook, 2024" },
+                      { value: "73", unit: "%", label: "Attention perdue en redirection", cap: "Le contenu immobilier qui engage vit sur Instagram, TikTok, LinkedIn — mais chaque clic redirige le prospect vers une plateforme différente, avec ses codes propres. L'attention se dilue, la conversion s'effondre.", source: "HubSpot State of Marketing, 2024" },
+                      { value: "2", unit: "/ 3", label: "Acteurs laissés à la porte", cap: "Apporteurs d'affaires, propriétaires occasionnels, voisins, prescripteurs locaux — l'immobilier paraît encore réservé aux pros, alors que ses meilleurs relais sont les particuliers eux-mêmes.", source: "NAR Profile of Home Buyers & Sellers, 2024" },
                     ],
-                    punch: "Des heures de travail évaporées. Des opportunités qui filent. Une mémoire collective qui s'efface entre chaque transaction. Le secteur paye cher l'absence d'une plateforme commune.",
-                    vision: "Pour la première fois, tout l'écosystème immobilier sous un même toit.",
+                    punch: "Des commissions qui restent élevées dans un secteur qui n'a jamais consolidé ses outils. Une audience captive sur les réseaux sociaux qu'il faut systématiquement déloger ailleurs. Et deux tiers des acteurs naturels du marché — propriétaires, prescripteurs, contributeurs — encore tenus à la porte. L'immobilier a bâti des murs là où il aurait fallu bâtir un toit.",
+                    vision: "Pour la première fois, tout l'écosystème immobilier sous un même toit — pros et particuliers, contenu et transaction, conversation et signature.",
                   };
 
             const problemTag =
@@ -485,11 +486,19 @@ function HomePageContent() {
 
                 {/* ── 3 STATS PROBLÈMES : grand chiffre rouge + label + source ── */}
                 <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-0 mb-20">
-                  {data.stats.map((s, i) => (
+                  {data.stats.map((s, i) => {
+                    const TopicIcon = [Layers, Share2, Users][i];
+                    return (
                     <div
                       key={i}
                       className="relative px-6 sm:px-8 py-6 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
                     >
+                      {/* Topic icon — coin haut droit, subtle red */}
+                      <TopicIcon
+                        size={28}
+                        strokeWidth={1}
+                        className="absolute top-6 right-6 sm:right-8 text-red-500/30"
+                      />
                       {/* Tag PROBLÈME 0X rouge */}
                       <div className="flex items-center gap-2 mb-5">
                         <AlertTriangle size={11} className="text-red-500" strokeWidth={2.2} />
@@ -520,7 +529,8 @@ function HomePageContent() {
                         {sourceLabel} : {s.source}
                       </p>
                     </div>
-                  ))}
+                    );
+                  })}
                 </motion.div>
 
                 {/* ── PUNCH : paragraphe pitch avec accent rouge à gauche ── */}
