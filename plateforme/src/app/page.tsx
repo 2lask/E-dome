@@ -424,34 +424,34 @@ function HomePageContent() {
             const data =
               lang === "en"
                 ? {
-                    intro: "Real estate today is shattered. Each actor, each role, each step lives on a different platform that never talks to the next. The cost: lost attention, broken trust, deals that slip through the cracks.",
+                    intro: "Real estate is shattered across dozens of tools, portals and roles that never talk to each other. And while social media has become the single biggest attention lever of the market, every piece of content has to push its audience elsewhere — to another platform, another login, another set of rules.",
                     stats: [
-                      { value: "8", unit: "+", label: "Tools per deal", cap: "Listings, CRM, e-signing, accounting, planning, photos, messaging — each professional juggles a fragmented stack. Data is re-typed, context is lost, the client pays the price.", source: "Deloitte Real Estate Outlook, 2024" },
-                      { value: "73", unit: "%", label: "Attention lost in redirects", cap: "The most engaging real-estate content lives on Instagram, TikTok, LinkedIn. But every click pushes prospects onto yet another platform. Attention dilutes, conversion collapses.", source: "HubSpot State of Marketing, 2024" },
-                      { value: "2", unit: "/ 3", label: "Actors locked out", cap: "Referrers, occasional owners, neighbours, local prescribers — real estate still looks reserved to professionals, while its strongest relays remain on the sidelines.", source: "NAR Profile of Home Buyers & Sellers, 2024" },
+                      { value: "8", unit: "+", label: "Tools per deal", source: "Deloitte Real Estate Outlook, 2024" },
+                      { value: "73", unit: "%", label: "Attention lost in redirects", source: "HubSpot State of Marketing, 2024" },
+                      { value: "2", unit: "/ 3", label: "Actors locked out", source: "NAR Profile of Home Buyers & Sellers, 2024" },
                     ],
-                    punch: "High commissions in a sector that never consolidated its tools. A captive social audience constantly ushered elsewhere. Two thirds of the market's natural actors — owners, prescribers, contributors — still kept outside the door. Real estate has built walls where it should have built a roof.",
+                    punch: "Social content captures millions of eyes — and ushers them straight out the door. Commissions stay high in a market that never consolidated its stack. And owners, prescribers, local contributors — half the living forces of the ecosystem — have nowhere to belong. Real estate has built walls where it should have built a roof.",
                     vision: "For the first time, the entire real-estate ecosystem under one roof — pros and individuals, content and transaction, conversation and signature.",
                   }
                 : lang === "th"
                 ? {
-                    intro: "อสังหาริมทรัพย์วันนี้แตกเป็นเสี่ยง ทุกผู้เล่น ทุกบทบาท ทุกขั้นตอน อยู่บนแพลตฟอร์มที่ต่างกันและไม่เคยเชื่อมต่อกัน ต้นทุน: ความสนใจที่หายไป ความไว้วางใจที่แตก ดีลที่หลุดลอยไป",
+                    intro: "อสังหาริมทรัพย์ถูกแบ่งแยกระหว่างเครื่องมือ พอร์ทัล และบทบาทมากมายที่ไม่เคยเชื่อมต่อกัน และในขณะที่โซเชียลมีเดียกลายเป็นตัวขับเคลื่อนความสนใจที่ใหญ่ที่สุดในตลาด ทุกคอนเทนต์ต้องส่งผู้ชมออกไปยังแพลตฟอร์มอื่น เข้าสู่ระบบอื่น กฎเกณฑ์อื่น",
                     stats: [
-                      { value: "8", unit: "+", label: "เครื่องมือต่อดีล", cap: "ประกาศ, CRM, อีเซ็น, บัญชี, ตารางงาน, ภาพถ่าย, แชต — มืออาชีพแต่ละคนต้องสลับใช้กองเครื่องมือที่กระจัดกระจาย ข้อมูลถูกพิมพ์ซ้ำ บริบทหายไป ลูกค้าเป็นผู้รับภาระ", source: "Deloitte, 2024" },
-                      { value: "73", unit: "%", label: "ความสนใจหายในการรีไดเรกต์", cap: "คอนเทนต์อสังหาฯ ที่น่าสนใจอยู่บน Instagram, TikTok, LinkedIn แต่ทุกคลิกส่งลูกค้าไปยังแพลตฟอร์มอื่น ความสนใจเจือจาง การเปลี่ยนใจหดหาย", source: "HubSpot, 2024" },
-                      { value: "2", unit: "/ 3", label: "ผู้เล่นถูกกีดกัน", cap: "ผู้แนะนำ เจ้าของรายเป็นครั้งคราว เพื่อนบ้าน ผู้ร่วมในท้องถิ่น — อสังหาฯ ยังดูเหมือนสงวนไว้สำหรับมืออาชีพ ในขณะที่ตัวเร่งที่ทรงพลังที่สุดคือบุคคลทั่วไป", source: "NAR, 2024" },
+                      { value: "8", unit: "+", label: "เครื่องมือต่อดีล", source: "Deloitte, 2024" },
+                      { value: "73", unit: "%", label: "ความสนใจหายในการรีไดเรกต์", source: "HubSpot, 2024" },
+                      { value: "2", unit: "/ 3", label: "ผู้เล่นถูกกีดกัน", source: "NAR, 2024" },
                     ],
-                    punch: "ค่าคอมมิชชันสูงในอุตสาหกรรมที่ไม่เคยรวมเครื่องมือเข้าด้วยกัน ผู้ชมที่ติดอยู่บนโซเชียลที่ต้องถูกย้ายออกไปทุกครั้ง และสองในสามของผู้เล่นในตลาดยังคงถูกล็อกไว้ข้างนอก อสังหาฯ สร้างกำแพงในที่ที่ควรสร้างหลังคา",
+                    punch: "คอนเทนต์โซเชียลดึงดูดสายตาเป็นล้าน — แล้วผลักออกไปทันที ค่าคอมมิชชันยังสูงในตลาดที่ไม่เคยรวมเครื่องมือเข้าด้วยกัน และเจ้าของ ผู้แนะนำ ผู้ร่วมในท้องถิ่น — ครึ่งหนึ่งของพลังของระบบนิเวศ — ไม่มีที่ให้อยู่ อสังหาฯ สร้างกำแพงในที่ที่ควรสร้างหลังคา",
                     vision: "เป็นครั้งแรก ระบบนิเวศอสังหาฯ ทั้งหมดอยู่ใต้หลังคาเดียว — มืออาชีพและบุคคล คอนเทนต์และธุรกรรม บทสนทนาและการลงนาม",
                   }
                 : {
-                    intro: "L'immobilier d'aujourd'hui est éclaté. Chaque acteur, chaque rôle, chaque étape vit sur une plateforme différente qui ne parle jamais à la suivante. Le coût : de l'attention perdue, de la confiance brisée, des dossiers qui filent entre les doigts.",
+                    intro: "L'immobilier est éclaté entre des dizaines d'outils, de portails et de rôles qui ne se parlent pas. Et alors même que les réseaux sociaux sont devenus le plus grand levier d'attention du marché, chaque contenu doit déloger son audience ailleurs — vers une autre plateforme, un autre login, une autre logique.",
                     stats: [
-                      { value: "8", unit: "+", label: "Outils par dossier", cap: "Annonces, CRM, signature, comptabilité, planning, photos, messagerie — chaque professionnel jongle entre des outils qui ne se parlent pas. Les données sont ressaisies, le contexte se perd, le client en paie le prix.", source: "Deloitte Real Estate Outlook, 2024" },
-                      { value: "73", unit: "%", label: "Attention perdue en redirection", cap: "Le contenu immobilier qui engage vit sur Instagram, TikTok, LinkedIn — mais chaque clic redirige le prospect vers une plateforme différente, avec ses codes propres. L'attention se dilue, la conversion s'effondre.", source: "HubSpot State of Marketing, 2024" },
-                      { value: "2", unit: "/ 3", label: "Acteurs laissés à la porte", cap: "Apporteurs d'affaires, propriétaires occasionnels, voisins, prescripteurs locaux — l'immobilier paraît encore réservé aux pros, alors que ses meilleurs relais sont les particuliers eux-mêmes.", source: "NAR Profile of Home Buyers & Sellers, 2024" },
+                      { value: "8", unit: "+", label: "Outils par dossier", source: "Deloitte Real Estate Outlook, 2024" },
+                      { value: "73", unit: "%", label: "Attention perdue en redirection", source: "HubSpot State of Marketing, 2024" },
+                      { value: "2", unit: "/ 3", label: "Acteurs laissés à la porte", source: "NAR Profile of Home Buyers & Sellers, 2024" },
                     ],
-                    punch: "Des commissions qui restent élevées dans un secteur qui n'a jamais consolidé ses outils. Une audience captive sur les réseaux sociaux qu'il faut systématiquement déloger ailleurs. Et deux tiers des acteurs naturels du marché — propriétaires, prescripteurs, contributeurs — encore tenus à la porte. L'immobilier a bâti des murs là où il aurait fallu bâtir un toit.",
+                    punch: "Du contenu social qui capte des millions de regards — et les envoie aussitôt ailleurs. Des commissions élevées dans un marché qui n'a jamais unifié ses outils. Des particuliers, prescripteurs, contributeurs locaux : la moitié des forces vives de l'écosystème, sans endroit pour exister. L'immobilier a bâti des murs là où il aurait fallu bâtir un toit.",
                     vision: "Pour la première fois, tout l'écosystème immobilier sous un même toit — pros et particuliers, contenu et transaction, conversation et signature.",
                   };
 
@@ -517,12 +517,8 @@ function HomePageContent() {
                         </span>
                       </p>
                       {/* Label majuscule */}
-                      <p className="text-white text-[0.72rem] font-semibold uppercase tracking-[0.18em] mt-5 mb-2">
+                      <p className="text-white text-[0.78rem] font-semibold uppercase tracking-[0.18em] mt-5 mb-3 leading-snug">
                         {s.label}
-                      </p>
-                      {/* Description */}
-                      <p className="text-gray-400 text-sm leading-relaxed font-light mb-4">
-                        {s.cap}
                       </p>
                       {/* Source citée en très petit */}
                       <p className="text-gray-600 text-[0.6rem] font-mono tracking-wider">
