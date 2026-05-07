@@ -546,11 +546,15 @@ function HomePageContent() {
       </section>
 
       {/* ═══════════════════════ IPHONE MOCKUP ═══════════════════════ */}
-      <section className="scroll-slide py-24 px-6 bg-black flex items-center justify-center">
-        <motion.div {...fadeUp}>
+      <section className="scroll-slide py-20 px-6 bg-black flex items-center justify-center">
+        <motion.div
+          {...fadeUp}
+          style={{ width: 250, height: 526 }}
+        >
           <IPhoneMockup
             model="15-pro"
             color="natural-titanium"
+            scale={0.6}
             wallpaper="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
           />
         </motion.div>
