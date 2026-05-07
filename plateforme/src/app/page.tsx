@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { FounderBadge } from "@/components/ui/founder-badge";
 import { HeroSideStrip } from "@/components/ui/hero-side-strip";
+import { IPhoneMockup } from "@/components/ui/iphone-mockup";
 import {
   LandingLanguageProvider,
   useLandingLang,
@@ -542,6 +543,17 @@ function HomePageContent() {
             );
           })()}
         </div>
+      </section>
+
+      {/* ═══════════════════════ IPHONE MOCKUP ═══════════════════════ */}
+      <section className="scroll-slide py-24 px-6 bg-black flex items-center justify-center">
+        <motion.div {...fadeUp}>
+          <IPhoneMockup
+            model="15-pro"
+            color="natural-titanium"
+            wallpaper="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
+          />
+        </motion.div>
       </section>
 
       {/* ═══════════════════════ VISION ═══════════════════════ */}
