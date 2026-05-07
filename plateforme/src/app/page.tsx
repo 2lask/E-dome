@@ -241,7 +241,9 @@ function HomePageContent() {
   const phoneScrollRef = useRef<HTMLElement | null>(null);
 
   /* ── Vidéos défilant en parallaxe dans l'iPhone ──────────────────── */
+  /* reel-08 vient en index 0 = tuile centrée qui zoome plein cadre à la fin */
   const phoneVideos = [
+    { src: "/videos/parallax/reel-08.mp4" },
     { src: "/videos/parallax/reel-01.mp4" },
     { src: "/videos/parallax/reel-02.mp4" },
     { src: "/videos/parallax/reel-03.mp4" },
@@ -249,7 +251,6 @@ function HomePageContent() {
     { src: "/videos/parallax/reel-05.mp4" },
     { src: "/videos/parallax/reel-06.mp4" },
     { src: "/videos/parallax/reel-07.mp4" },
-    { src: "/videos/parallax/reel-08.mp4" },
     { src: "/videos/parallax/reel-09.mp4" },
     { src: "/videos/parallax/reel-10.mp4" },
   ];

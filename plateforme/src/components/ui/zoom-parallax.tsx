@@ -38,7 +38,9 @@ export function ZoomParallax({ images, videos, targetRef }: ZoomParallaxProps) {
   const scale4 = useTransform(scrollYProgress, [0, 1], [1, 4]);
   const scale5 = useTransform(scrollYProgress, [0, 1], [1, 5]);
   const scale6 = useTransform(scrollYProgress, [0, 1], [1, 6]);
-  const scales = [scale3, scale35, scale4, scale35, scale4, scale5, scale6, scale3, scale35, scale4];
+  /* Tuile centrée (index 0) — zoom plein cadre, accélère à la fin */
+  const scaleCenter = useTransform(scrollYProgress, [0, 0.7, 1], [1, 2.5, 7]);
+  const scales = [scaleCenter, scale35, scale4, scale35, scale4, scale5, scale6, scale3, scale35, scale4];
 
   // Position presets — viewport units when standalone, % of parent when embedded.
   const positionClass = (index: number) => {
@@ -85,16 +87,20 @@ export function ZoomParallax({ images, videos, targetRef }: ZoomParallaxProps) {
   };
 
   const innerSize = isEmbedded ? "h-[18%] w-[18%]" : "h-[25vh] w-[25vw]";
+  /* Tuile centrée légèrement plus grande pour servir de focal point */
+  const innerSizeCenter = isEmbedded ? "h-[22%] w-[22%]" : "h-[25vh] w-[25vw]";
 
   const tiles = items.map(({ src, alt }, index) => {
     const scale = scales[index % scales.length];
+    const isCenter = index === 0;
+    const tileSize = isCenter ? innerSizeCenter : innerSize;
     return (
       <motion.div
         key={index}
-        style={{ scale }}
+        style={{ scale, zIndex: isCenter ? 10 : 1 }}
         className={`absolute top-0 flex h-full w-full items-center justify-center ${positionClass(index)}`}
       >
-        <div className={`relative ${innerSize}`}>
+        <div className={`relative ${tileSize}`}>
           {isVideo ? (
             <video
               src={src}
