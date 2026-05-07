@@ -17,6 +17,15 @@ interface ScrollStageCtx {
 const ScrollStageContext = createContext<ScrollStageCtx | null>(null);
 
 /**
+ * Phase boundaries inside a single segment (localProgress 0..1).
+ * - 0..HOLD_END : slide is held fully visible, no animation. Time for the
+ *   reader to dwell on the section before any transition kicks in.
+ * - HOLD_END..1 : symmetric crossfade — outgoing slide rises/blurs/fades
+ *   while incoming slide fades in.
+ */
+const HOLD_END = 0.5;
+
+/**
  * Hook : MotionValue [0,1] qui suit la fenêtre de fade-in du slide. À 0 le
  * slide commence à apparaître ; à 1 il atteint sa pleine visibilité (snap
  * point). Au-delà (durant le fade-out vers le slide suivant), la valeur
@@ -30,8 +39,10 @@ export function useSlideProgress(slideIdx: number): MotionValue<number> {
     throw new Error("useSlideProgress must be used inside <ScrollStage>");
   }
   const segCount = Math.max(1, ctx.slideCount - 1);
-  const start = Math.max(0, (slideIdx - 0.5) / segCount);
-  const end = Math.min(1, slideIdx / segCount);
+  // Visible window = incoming half of previous segment (HOLD_END..1) +
+  // hold of own segment (0..HOLD_END). Total = exactly one segment of scroll.
+  const start = Math.max(0, (slideIdx - (1 - HOLD_END)) / segCount);
+  const end = Math.min(1, (slideIdx + HOLD_END) / segCount);
   return useTransform(
     ctx.progress,
     [start, end],
@@ -173,30 +184,30 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
         const active = i === currentIdx || i === currentIdx + 1;
 
         if (i === currentIdx) {
-          /* Sortante : 0 → 0.5 (première moitié) puis hold à 0 */
-          if (localProgress < 0.5) {
-            const phase = Math.min(1, localProgress * 2);
-            const eased = power3In(phase); // accelerate away
+          /* Slide N : hold [0, HOLD_END] puis crossfade [HOLD_END, 1] */
+          if (localProgress < HOLD_END) {
+            // HOLD : pleinement visible, immobile
+            opacity = 1;
+            translateY = 0;
+            scale = 1;
+            blur = 0;
+            saturate = 1;
+          } else {
+            // OUTGOING : rise + blur + fade pendant la seconde moitié
+            const phase = (localProgress - HOLD_END) / (1 - HOLD_END);
+            const eased = power3In(phase);
             translateY = -RISE_PX * eased;
             scale = 1 - (1 - SCALE_OUT) * eased;
             blur = BLUR_OUT * eased;
             saturate = 1 + (SAT_OUT - 1) * eased;
-            // Opacity démarre avec un délai (drag/trail)
             const opPhase = Math.max(0, (phase - OPACITY_DRAG) / (1 - OPACITY_DRAG));
             opacity = 1 - power3In(opPhase);
-          } else {
-            // Hors viewport — gardée à l'état final pour éviter un flash
-            translateY = -RISE_PX;
-            scale = SCALE_OUT;
-            blur = BLUR_OUT;
-            saturate = SAT_OUT;
-            opacity = 0;
           }
         } else if (i === currentIdx + 1) {
-          /* Entrante : avant 0.5 cachée, après fade in décéléré */
-          if (localProgress >= 0.5) {
-            const phase = Math.min(1, (localProgress - 0.5) * 2);
-            const eased = power3Out(phase); // decelerate into place
+          /* Slide N+1 : caché pendant le hold, puis fade in symétrique */
+          if (localProgress >= HOLD_END) {
+            const phase = Math.min(1, (localProgress - HOLD_END) / (1 - HOLD_END));
+            const eased = power3Out(phase);
             opacity = eased;
             scale = SCALE_IN_FROM - (SCALE_IN_FROM - 1) * eased;
             blur = BLUR_IN_FROM * (1 - eased);
@@ -317,7 +328,11 @@ export function ScrollStage({ children }: { children: React.ReactNode }) {
       const segHeight = cachedTotal / segCount;
       const segPos = scrolled / segHeight;
       const localProgress = segPos - Math.floor(segPos);
-      if (localProgress < SNAP_THRESHOLD || localProgress > 1 - SNAP_THRESHOLD) return;
+      // Pas de snap dans le hold (user en visualisation stable) ni juste
+      // au bord d'une frontière (déjà arrivé). On ne snap que quand l'user
+      // s'est arrêté en pleine zone de transition.
+      if (localProgress < HOLD_END) return;
+      if (localProgress > 1 - SNAP_THRESHOLD) return;
       const targetIdx = Math.max(0, Math.min(segCount, Math.round(segPos)));
       const targetY = cachedSentinelTop + targetIdx * segHeight;
       if (Math.abs(window.scrollY - targetY) < 6) return;
