@@ -416,6 +416,51 @@ function HomePageContent() {
         </div>
       </section>
 
+      {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
+      <section id="probleme" className="scroll-slide py-20 px-6 bg-neutral-900">
+        <div className="max-w-5xl mx-auto">
+          <SectionHeading
+            label={t("problem.label")}
+            title1={t("problem.title1")}
+            title2={t("problem.title2")}
+            description={t("problem.desc")}
+          />
+
+          <SkewCards
+            cards={[
+              {
+                title: `${t("problem.stat1_value")} ${t("problem.stat1_unit")}`,
+                desc: t("problem.stat1_desc"),
+                gradientFrom: "#C4956A",
+                gradientTo: "#e8c9a0",
+              },
+              {
+                title: `${t("problem.stat2_value")} ${t("problem.stat2_unit")}`,
+                desc: t("problem.stat2_desc"),
+                gradientFrom: "#50afb6",
+                gradientTo: "#84d2e2",
+              },
+              {
+                title: `${t("problem.stat3_value")} ${t("problem.stat3_unit")}`,
+                desc: t("problem.stat3_desc"),
+                gradientFrom: "#e670ab",
+                gradientTo: "#f3a0ca",
+              },
+            ]}
+          />
+
+          <motion.div {...fadeUp} className="text-center mt-8">
+            <div className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 shadow-sm border border-neutral-800">
+              <Sparkles size={16} className="text-[#C4956A]" />
+              <span className="text-gray-400 text-sm">
+                {t("problem.pill")}{" "}
+                <span className="font-semibold text-white">{t("problem.pill_bold")}</span>
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ═══════════════════════ VISION ═══════════════════════ */}
       <section id="vision" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">
@@ -487,52 +532,6 @@ function HomePageContent() {
             >
               {t("featured.cta")} <ArrowRight size={16} />
             </Link>
-          </motion.div>
-        </div>
-      </section>
-
-
-      {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
-      <section id="probleme" className="scroll-slide py-20 px-6 bg-neutral-900">
-        <div className="max-w-5xl mx-auto">
-          <SectionHeading
-            label={t("problem.label")}
-            title1={t("problem.title1")}
-            title2={t("problem.title2")}
-            description={t("problem.desc")}
-          />
-
-          <SkewCards
-            cards={[
-              {
-                title: `${t("problem.stat1_value")} ${t("problem.stat1_unit")}`,
-                desc: t("problem.stat1_desc"),
-                gradientFrom: "#C4956A",
-                gradientTo: "#e8c9a0",
-              },
-              {
-                title: `${t("problem.stat2_value")} ${t("problem.stat2_unit")}`,
-                desc: t("problem.stat2_desc"),
-                gradientFrom: "#50afb6",
-                gradientTo: "#84d2e2",
-              },
-              {
-                title: `${t("problem.stat3_value")} ${t("problem.stat3_unit")}`,
-                desc: t("problem.stat3_desc"),
-                gradientFrom: "#e670ab",
-                gradientTo: "#f3a0ca",
-              },
-            ]}
-          />
-
-          <motion.div {...fadeUp} className="text-center mt-8">
-            <div className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 shadow-sm border border-neutral-800">
-              <Sparkles size={16} className="text-[#C4956A]" />
-              <span className="text-gray-400 text-sm">
-                {t("problem.pill")}{" "}
-                <span className="font-semibold text-white">{t("problem.pill_bold")}</span>
-              </span>
-            </div>
           </motion.div>
         </div>
       </section>
