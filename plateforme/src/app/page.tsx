@@ -728,7 +728,9 @@ function HomePageContent() {
       />
 
       <ScrollStage>
-      {/* ═══════════════════════ VISION ═══════════════════════ */}
+      {/* ═══════════════════════ 1. L'ECOSYSTEME ═══════════════════════
+          Promesse : tout l'immobilier sous un même toit. Un compte, plusieurs
+          rôles évolutifs. Met en avant les 12 acteurs supportés. */}
       <section id="vision" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
@@ -737,18 +739,22 @@ function HomePageContent() {
             title2={t("about.title2")}
           />
 
-          <div className="grid md:grid-cols-2 gap-12 mb-16">
-            <motion.div {...fadeUp} className="text-gray-400 leading-relaxed font-light">
-              {t("about.p1")}
-            </motion.div>
-            <motion.div {...fadeUp} className="text-gray-400 leading-relaxed font-light">
-              {t("about.p2")}
-            </motion.div>
-          </div>
+          <motion.p
+            {...fadeUp}
+            className="text-center text-gray-400 text-base sm:text-lg leading-relaxed font-light max-w-3xl mx-auto mb-12"
+          >
+            {lang === "en"
+              ? "On E-Dome, every role exists in its own right. Host today, trainer tomorrow, referrer alongside — one account, your activity changes when you do."
+              : lang === "th"
+                ? "บน E-Dome ทุกบทบาทมีพื้นที่ของตัวเอง วันนี้เป็นเจ้าของบ้าน พรุ่งนี้เป็นผู้ฝึกอบรม พร้อมเป็นผู้แนะนำ — บัญชีเดียว กิจกรรมของคุณเปลี่ยนได้เมื่อคุณเปลี่ยน"
+                : "Sur E-Dome, chaque rôle existe à sa place. Hôte aujourd'hui, formateur demain, apporteur en parallèle — un seul compte, votre activité change quand vous changez."}
+          </motion.p>
 
           {/* Roles pills */}
           <motion.div {...fadeUp} className="text-center">
-            <p className="text-sm text-gray-400 mb-6">{t("about.roles_label")}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-[0.2em] mb-6">
+              {t("about.roles_label")}
+            </p>
             <div className="flex flex-wrap justify-center gap-2">
               {roles.map((roleKey) => (
                 <span
@@ -758,7 +764,7 @@ function HomePageContent() {
                   {t(roleKey)}
                 </span>
               ))}
-              <span className="px-4 py-1.5 rounded-full bg-[#1e9df1]/5 border border-[#1e9df1]/20 text-sm text-[#1e9df1] font-medium">
+              <span className="px-4 py-1.5 rounded-full bg-[#1e9df1]/5 border border-[#1e9df1]/30 text-sm text-[#1e9df1] font-medium">
                 {t("about.more")}
               </span>
             </div>
@@ -767,51 +773,39 @@ function HomePageContent() {
       </section>
 
 
-      {/* ═══════════════════════ VIDEO PLATEFORME ═══════════════════════ */}
-      <section className="scroll-slide py-20 px-6 bg-black">
-        <div className="max-w-5xl mx-auto">
-          <SectionHeading
-            label={t("featured.label")}
-            title1="E-Dome"
-            title2={t("featured.label")}
-            description={t("featured.desc")}
-          />
-
-          <motion.div {...fadeUp} className="rounded-3xl overflow-hidden shadow-2xl max-w-5xl mx-auto">
-            <video
-              className="w-full"
-              muted
-              autoPlay
-              loop
-              playsInline
-              src="/videos/plateforme-bg.mp4"
-            />
-          </motion.div>
-
-          <motion.div {...fadeUp} className="text-center text-xs text-gray-400 mt-6 max-w-xl mx-auto">
-            {t("featured.disclaimer")}
-          </motion.div>
-
-          <motion.div {...fadeUp} className="text-center mt-8">
-            <Link
-              href="/acces"
-              className="inline-flex items-center gap-2 bg-[#1e9df1] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#1a8fd9] transition-all shadow-lg shadow-[#1e9df1]/20"
-            >
-              {t("featured.cta")} <ArrowRight size={16} />
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-
-      {/* ═══════════════════════ FONCTIONNALITES ═══════════════════════ */}
+      {/* ═══════════════════════ 2. CINQ PLATEFORMES, UN COMPTE ═══════════════
+          Reframe les 6 features comme "ce qui disparait de votre stack". */}
       <section id="fonctionnalites" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-6xl mx-auto">
           <SectionHeading
-            label={t("services.label")}
-            title1={t("services.title1")}
-            title2={t("services.title2")}
-            description={t("services.subtitle")}
+            label={
+              lang === "en"
+                ? "What it replaces"
+                : lang === "th"
+                  ? "สิ่งที่ถูกแทนที่"
+                  : "Ce que ça remplace"
+            }
+            title1={
+              lang === "en"
+                ? "Five platforms."
+                : lang === "th"
+                  ? "ห้าแพลตฟอร์ม"
+                  : "Cinq plateformes."
+            }
+            title2={
+              lang === "en"
+                ? "One account."
+                : lang === "th"
+                  ? "บัญชีเดียว"
+                  : "Un compte."
+            }
+            description={
+              lang === "en"
+                ? "Stop juggling a portal, a feed, a course platform, a video conferencing tool, an Excel and a directory. E-Dome rolls them into one."
+                : lang === "th"
+                  ? "หยุดสลับใช้พอร์ทัล ฟีด แพลตฟอร์มคอร์ส เครื่องมือประชุม Excel และไดเรกทอรี E-Dome รวมทั้งหมดไว้เป็นหนึ่งเดียว"
+                  : "Plus besoin de jongler entre un portail, un fil social, une plateforme de cours, un outil de visio, un tableur et un annuaire. E-Dome les regroupe."
+            }
           />
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -822,15 +816,15 @@ function HomePageContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="bg-neutral-900 rounded-2xl p-8 border border-neutral-800 hover:border-[#1e9df1]/30 hover:shadow-lg transition-all group"
+                className="bg-neutral-900 rounded-2xl p-7 border border-neutral-800 hover:border-[#1e9df1]/30 hover:shadow-lg transition-all group"
               >
                 <div className="w-10 h-10 rounded-xl bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center mb-4 group-hover:bg-[#1e9df1] group-hover:text-white transition-colors">
                   {s.icon}
                 </div>
-                <p className="text-[#1e9df1] text-xs tracking-wider uppercase font-medium mb-2">
+                <p className="text-[#1e9df1] text-[0.65rem] tracking-[0.18em] uppercase font-semibold mb-2">
                   {t(s.tagKey)}
                 </p>
-                <h3 className="text-lg font-semibold mb-3 text-white">{t(s.titleKey)}</h3>
+                <h3 className="text-base font-semibold mb-2 text-white">{t(s.titleKey)}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed font-light">{t(s.descKey)}</p>
               </motion.div>
             ))}
@@ -839,326 +833,536 @@ function HomePageContent() {
       </section>
 
 
-      {/* ═══════════════════════ POURQUOI E-DOME ═══════════════════════ */}
+      {/* ═══════════════════════ 3. CHACUN GAGNE SA PART ═════════════════════
+          L'apporteur d'affaires comme moteur économique transparent.
+          3 types de liens visibles : amener un hôte, un client, un bien. */}
       <section className="scroll-slide py-20 px-6 bg-neutral-900">
         <div className="max-w-5xl mx-auto">
           <SectionHeading
-            label={t("philosophy.label")}
-            title1={t("philosophy.title1")}
-            title2={t("philosophy.title2")}
-            description={t("philosophy.desc")}
+            label={
+              lang === "en"
+                ? "The economic engine"
+                : lang === "th"
+                  ? "เครื่องยนต์เศรษฐกิจ"
+                  : "Le moteur économique"
+            }
+            title1={
+              lang === "en"
+                ? "Every role"
+                : lang === "th"
+                  ? "ทุกบทบาท"
+                  : "Chaque rôle"
+            }
+            title2={
+              lang === "en"
+                ? "earns a share."
+                : lang === "th"
+                  ? "ได้รับส่วนแบ่ง"
+                  : "a sa part."
+            }
+            description={
+              lang === "en"
+                ? "Recommend a host, a client or a property — every connection generates a traceable, automatic commission. No paper, no informal deal, no opacity. Each actor sees their own dashboard in real time."
+                : lang === "th"
+                  ? "แนะนำเจ้าของบ้าน ลูกค้า หรือทรัพย์สิน — ทุกการเชื่อมต่อสร้างค่าคอมมิชชันที่ติดตามได้และเป็นอัตโนมัติ ไม่มีกระดาษ ไม่มีข้อตกลงนอกระบบ ไม่มีความคลุมเครือ"
+                  : "Recommandez un hôte, un client ou un bien — chaque connexion génère une commission traçable, automatique. Pas de paperasse, pas d'accord informel, pas d'opacité. Chacun suit son tableau de bord en temps réel."
+            }
           />
 
-          <div className="grid md:grid-cols-2 gap-8 mb-16">
-            {philosophyPoints.map((p, i) => (
+          {/* 3 types de liens */}
+          <div className="grid md:grid-cols-3 gap-5 mb-12">
+            {[
+              {
+                icon: <Handshake size={22} />,
+                tag:
+                  lang === "en" ? "Bring a host" : lang === "th" ? "นำเจ้าของบ้าน" : "Amener un hôte",
+                title:
+                  lang === "en"
+                    ? "Reward per activation"
+                    : lang === "th"
+                      ? "รางวัลต่อการเปิดใช้งาน"
+                      : "Récompense par activation",
+                body:
+                  lang === "en"
+                    ? "A property owner publishes their first listing thanks to your link — you earn a fixed commission, paid out monthly."
+                    : lang === "th"
+                      ? "เจ้าของทรัพย์สินลงประกาศแรกผ่านลิงก์ของคุณ — คุณได้รับค่าคอมมิชชันคงที่ จ่ายรายเดือน"
+                      : "Un propriétaire publie son premier bien via votre lien — vous touchez une commission fixe, payée chaque mois.",
+              },
+              {
+                icon: <Users size={22} />,
+                tag:
+                  lang === "en" ? "Bring a client" : lang === "th" ? "นำลูกค้า" : "Amener un client",
+                title:
+                  lang === "en"
+                    ? "Percent of booking"
+                    : lang === "th"
+                      ? "เปอร์เซ็นต์ของการจอง"
+                      : "Pourcentage sur la réservation",
+                body:
+                  lang === "en"
+                    ? "Your contact books a property they discovered through you — you earn a percentage of every transaction, automatically."
+                    : lang === "th"
+                      ? "ผู้ติดต่อของคุณจองทรัพย์สินที่พวกเขาค้นพบผ่านคุณ — คุณได้รับเปอร์เซ็นต์ของทุกธุรกรรมโดยอัตโนมัติ"
+                      : "Votre contact réserve un bien qu'il a découvert via vous — vous touchez un pourcentage sur chaque transaction, automatiquement.",
+              },
+              {
+                icon: <BadgeCheck size={22} />,
+                tag:
+                  lang === "en" ? "Bring a property" : lang === "th" ? "นำทรัพย์สิน" : "Amener un bien",
+                title:
+                  lang === "en"
+                    ? "Percent on the sale"
+                    : lang === "th"
+                      ? "เปอร์เซ็นต์ของการขาย"
+                      : "Pourcentage sur la vente",
+                body:
+                  lang === "en"
+                    ? "A property is sold thanks to a referral chain you started — you stay in the chain and you stay paid."
+                    : lang === "th"
+                      ? "ทรัพย์สินถูกขายผ่านห่วงโซ่การแนะนำที่คุณเริ่มต้น — คุณยังอยู่ในห่วงโซ่และยังคงได้รับเงิน"
+                      : "Un bien est vendu via une chaîne de recommandation que vous avez initiée — vous restez dans la chaîne, vous restez payé.",
+              },
+            ].map((item, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="bg-neutral-900 rounded-2xl p-8 border border-neutral-800"
+                className="bg-black/40 rounded-2xl p-7 border border-neutral-800 hover:border-[#1e9df1]/40 transition-all"
               >
-                <h3 className="text-lg font-semibold mb-3 text-white">{t(p.titleKey)}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed font-light">{t(p.descKey)}</p>
+                <div className="w-10 h-10 rounded-xl bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center mb-4">
+                  {item.icon}
+                </div>
+                <p className="text-[#1e9df1] text-[0.65rem] tracking-[0.18em] uppercase font-semibold mb-2">
+                  {item.tag}
+                </p>
+                <h3 className="text-base font-semibold mb-2 text-white">{item.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed font-light">{item.body}</p>
               </motion.div>
             ))}
           </div>
 
-          {/* Philosophy video */}
-          <motion.div {...fadeUp} className="text-center mb-8">
-            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-3">
-              {t("philosophy.video_label")}
+          {/* Trust line */}
+          <motion.div
+            {...fadeUp}
+            className="max-w-2xl mx-auto text-center border-t border-neutral-800 pt-8"
+          >
+            <p className="text-gray-300 text-sm md:text-base leading-relaxed font-light">
+              {lang === "en" ? (
+                <>
+                  100% traceable. 100% automatic.{" "}
+                  <strong className="text-white font-semibold">No hidden cost</strong> for the
+                  host or the client.
+                </>
+              ) : lang === "th" ? (
+                <>
+                  ตรวจสอบได้ 100% อัตโนมัติ 100%{" "}
+                  <strong className="text-white font-semibold">ไม่มีค่าใช้จ่ายแอบแฝง</strong>{" "}
+                  สำหรับเจ้าของบ้านหรือลูกค้า
+                </>
+              ) : (
+                <>
+                  100 % traçable. 100 % automatique.{" "}
+                  <strong className="text-white font-semibold">Aucun coût caché</strong> pour
+                  l'hôte ou le client.
+                </>
+              )}
             </p>
-            <h3
-              className="text-3xl sm:text-4xl mb-4"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
-            >
-              {t("philosophy.video_title1")}{" "}
-              <span className="text-[#1e9df1]">{t("philosophy.video_title2")}</span>
-            </h3>
-            <p className="text-gray-400 text-sm max-w-xl mx-auto mb-2 font-light">
-              {t("philosophy.video_desktop_p1")}
-            </p>
-            <p className="text-gray-400 text-sm max-w-xl mx-auto font-light">
-              {t("philosophy.video_desktop_p2")}
-            </p>
-          </motion.div>
-
-          <motion.div {...fadeUp} className="rounded-3xl overflow-hidden shadow-2xl max-w-5xl mx-auto">
-            <video
-              className="w-full"
-              muted
-              autoPlay
-              loop
-              playsInline
-              src="/videos/philosophy-bg.mp4"
-            />
-          </motion.div>
-
-          <motion.div {...fadeUp} className="flex flex-wrap justify-center gap-2 mt-8">
-            {[
-              "philosophy.tag_recherche",
-              "philosophy.tag_publication",
-              "philosophy.tag_reservation",
-              "philosophy.tag_formation",
-              "philosophy.tag_recommandation",
-              "philosophy.tag_remuneration",
-            ].map((key) => (
-              <span
-                key={key}
-                className="px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-sm text-gray-400 shadow-sm"
-              >
-                {t(key)}
-              </span>
-            ))}
-          </motion.div>
-
-          <motion.div {...fadeUp} className="text-center mt-8">
-            <Link
-              href="/acces"
-              className="inline-flex items-center gap-2 border border-[#1e9df1]/30 text-[#1e9df1] rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#1e9df1] hover:text-white transition-all"
-            >
-              {t("philosophy.video_cta")} <ArrowRight size={16} />
-            </Link>
           </motion.div>
         </div>
       </section>
 
 
-      {/* ═══════════════════════ FONDATEURS ═══════════════════════ */}
+      {/* ═══════════════════════ 4. LES FONDATEURS (compressé) ═══════════════
+          2 cartes côte-à-côte, 1 quote forte, contact unique. */}
       <section id="fondateurs" className="scroll-slide py-20 px-6 bg-black">
         <div className="max-w-5xl mx-auto">
-          <motion.div {...fadeUp} className="text-center mb-16">
+          <motion.div {...fadeUp} className="text-center mb-12">
             <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
-              {lang === "th" ? "ผู้ก่อตั้ง" : lang === "en" ? "Founders" : "Fondateurs"}
+              {lang === "th" ? "ผู้ก่อตั้ง" : lang === "en" ? "Founders" : "Les fondateurs"}
             </p>
             <h2
-              className="text-4xl sm:text-5xl md:text-6xl leading-[1.1]"
+              className="text-4xl sm:text-5xl md:text-6xl leading-[1.1] mb-5"
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
-              {lang === "th" ? "เบื้องหลัง" : lang === "en" ? "Behind" : "Derriere"}{" "}
+              {lang === "th" ? "เบื้องหลัง" : lang === "en" ? "Behind" : "Derrière"}{" "}
               <span className="text-[#1e9df1]">E-Dome</span>
             </h2>
-          </motion.div>
-
-          {/* Leonard */}
-          <motion.div {...fadeUp} className="grid md:grid-cols-[280px_1fr] gap-10 mb-16 items-start">
-            <div className="text-center md:text-left">
-              <div className="w-48 h-48 mx-auto md:mx-0 rounded-2xl overflow-hidden shadow-lg mb-4">
-                <img
-                  src="/images/founders/leonard.jpg"
-                  alt="Leonard"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="text-xl font-semibold">Leonard Ansermet</h3>
-              <p className="text-[#1e9df1] text-sm font-medium">{t("founders.label_leo")}</p>
-              <div className="flex items-center justify-center md:justify-start gap-3 mt-3">
-                <a
-                  href="https://wa.me/41786091880"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-green-600 transition-colors"
-                >
-                  <MessageCircle size={14} /> {t("founders.whatsapp")}
-                </a>
-                <a
-                  href="mailto:leonard@edome.world"
-                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#1e9df1] transition-colors"
-                >
-                  <Mail size={14} /> Email
-                </a>
-              </div>
-            </div>
-            <div>
-              <p className="text-gray-400 leading-relaxed font-light mb-4">{t("founders.leo_p1")}</p>
-              <p className="text-gray-400 leading-relaxed font-light">{t("founders.leo_p2")}</p>
-            </div>
-          </motion.div>
-
-          {/* Jean-Pierre */}
-          <motion.div {...fadeUp} className="grid md:grid-cols-[280px_1fr] gap-10 mb-16 items-start">
-            <div className="text-center md:text-left">
-              <div className="w-48 h-48 mx-auto md:mx-0 rounded-2xl overflow-hidden shadow-lg mb-4">
-                <img
-                  src="/images/founders/jeanpierre.jpg"
-                  alt="Jean-Pierre"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="text-xl font-semibold">Jean-Pierre Fallet</h3>
-              <p className="text-[#1e9df1] text-sm font-medium">{t("founders.label_jp")}</p>
-              <div className="flex items-center justify-center md:justify-start gap-3 mt-3">
-                <a
-                  href="https://wa.me/41798267542"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-green-600 transition-colors"
-                >
-                  <MessageCircle size={14} /> {t("founders.whatsapp")}
-                </a>
-                <a
-                  href="mailto:jeanpierre@edome.world"
-                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#1e9df1] transition-colors"
-                >
-                  <Mail size={14} /> Email
-                </a>
-              </div>
-            </div>
-            <div>
-              <p className="text-gray-400 leading-relaxed font-light mb-4">{t("founders.jp_p1")}</p>
-              <p className="text-gray-400 leading-relaxed font-light">{t("founders.jp_p2")}</p>
-            </div>
-          </motion.div>
-
-          {/* Quote */}
-          <motion.blockquote
-            {...fadeUp}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <p
-              className="text-2xl sm:text-3xl text-gray-800 italic leading-snug"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
-            >
-              &ldquo;{t("founders.quote")}&rdquo;
+            <p className="text-gray-400 text-base sm:text-lg leading-relaxed font-light max-w-2xl mx-auto">
+              {lang === "en"
+                ? "Two profiles, one conviction: real estate doesn't change with one more app. It changes when its actors are finally connected."
+                : lang === "th"
+                  ? "สองโปรไฟล์ ความเชื่อเดียว: อสังหาฯ ไม่เปลี่ยนด้วยแอปอีกตัว แต่เปลี่ยนเมื่อผู้เล่นถูกเชื่อมโยงกัน"
+                  : "Deux profils, une conviction : l'immobilier ne changera pas avec une app de plus. Il changera quand ses acteurs seront enfin connectés."}
             </p>
-          </motion.blockquote>
-
-          {/* Conviction + Engagement */}
-          <div className="grid md:grid-cols-2 gap-8">
-            <motion.div {...fadeUp} className="bg-neutral-900 rounded-2xl p-8">
-              <p className="text-[#1e9df1] text-xs tracking-wider uppercase font-semibold mb-3">
-                {t("founders.conviction_label")}
-              </p>
-              <h4 className="text-lg font-semibold mb-3">{t("founders.conviction_title")}</h4>
-              <p className="text-gray-400 text-sm leading-relaxed font-light">{t("founders.conviction_desc")}</p>
-            </motion.div>
-            <motion.div {...fadeUp} className="bg-neutral-900 rounded-2xl p-8">
-              <p className="text-[#1e9df1] text-xs tracking-wider uppercase font-semibold mb-3">
-                {t("founders.engagement_label")}
-              </p>
-              <h4 className="text-lg font-semibold mb-3">{t("founders.engagement_title")}</h4>
-              <p className="text-gray-400 text-sm leading-relaxed font-light">{t("founders.engagement_desc")}</p>
-            </motion.div>
-          </div>
-
-          {/* Contact */}
-          <motion.div {...fadeUp} className="flex items-center justify-center gap-6 mt-12">
-            <a
-              href="mailto:contact@edome.world"
-              className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#1e9df1] transition-colors"
-            >
-              <Mail size={16} /> {t("founders.email_label")}
-            </a>
-          </motion.div>
-        </div>
-      </section>
-
-
-      {/* ═══════════════════════ ROADMAP ═══════════════════════ */}
-      <section id="roadmap" className="scroll-slide py-20 px-6 bg-neutral-900">
-        <div className="max-w-5xl mx-auto">
-          <SectionHeading
-            label={t("roadmap.label")}
-            title1={t("roadmap.title1")}
-            title2={t("roadmap.title2")}
-            description={t("roadmap.desc")}
-          />
-
-          <motion.div {...fadeUp} className="text-center text-gray-400 text-sm font-light mb-16 max-w-2xl mx-auto">
-            {t("roadmap.desc2")}
           </motion.div>
 
-          {/* Phases */}
-          <div className="space-y-8 mb-20">
-            {phases.map((phase, i) => (
+          {/* 2 founder cards side by side */}
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {[
+              {
+                name: "Léonard Ansermet",
+                role: t("founders.label_leo"),
+                photo: "/images/founders/leonard.jpg",
+                whatsapp: "https://wa.me/41786091880",
+                email: "leonard@edome.world",
+              },
+              {
+                name: "Jean-Pierre Fallet",
+                role: t("founders.label_jp"),
+                photo: "/images/founders/jeanpierre.jpg",
+                whatsapp: "https://wa.me/41798267542",
+                email: "jeanpierre@edome.world",
+              },
+            ].map((f, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="bg-neutral-900 rounded-2xl p-8 border border-neutral-800"
+                className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800 flex items-center gap-5"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-sm font-bold text-gray-700">0{i + 1}</span>
-                  <h3 className="text-lg font-semibold flex-1">{t(phase.titleKey)}</h3>
-                  <span className={`text-xs font-medium px-3 py-1 rounded-full ${phase.statusColor}`}>
-                    {phase.status}
-                  </span>
+                <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg shrink-0">
+                  <img src={f.photo} alt={f.name} className="w-full h-full object-cover" />
                 </div>
-                <ul className="grid sm:grid-cols-2 gap-2">
-                  {phase.items.map((itemKey) => (
-                    <li key={itemKey} className="flex items-start gap-2 text-sm text-gray-400 font-light">
-                      <span className="w-1 h-1 rounded-full bg-[#1e9df1] mt-2 flex-shrink-0" />
-                      {t(itemKey)}
-                    </li>
-                  ))}
-                </ul>
+                <div className="min-w-0">
+                  <h3 className="text-lg font-semibold text-white">{f.name}</h3>
+                  <p className="text-[#1e9df1] text-xs font-medium mb-2">{f.role}</p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <a
+                      href={f.whatsapp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-[0.7rem] text-gray-400 hover:text-green-500 transition-colors"
+                    >
+                      <MessageCircle size={12} /> {t("founders.whatsapp")}
+                    </a>
+                    <a
+                      href={`mailto:${f.email}`}
+                      className="flex items-center gap-1.5 text-[0.7rem] text-gray-400 hover:text-[#1e9df1] transition-colors"
+                    >
+                      <Mail size={12} /> Email
+                    </a>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
 
-          {/* ─── CTA INSCRIPTIONS ─── */}
-          <div id="inscriptions">
-            <motion.div {...fadeUp} className="text-center mb-12">
-              <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
-                {t("roadmap.inscriptions_label")}
-              </p>
-              <h2
-                className="text-3xl sm:text-4xl md:text-5xl leading-[1.1] mb-4"
-                style={{ fontFamily: "'Instrument Serif', serif" }}
-              >
-                {t("roadmap.cta_title1")}
-                <br />
-                <span className="text-[#1e9df1]">{t("roadmap.cta_title2")}</span>
-              </h2>
-              <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
-                {t("roadmap.cta_subtitle")}
-              </p>
-            </motion.div>
+          {/* Founders quote */}
+          <motion.blockquote
+            {...fadeUp}
+            className="text-center max-w-3xl mx-auto border-l-2 border-[#1e9df1]/50 pl-6 py-2"
+          >
+            <p
+              className="text-xl sm:text-2xl text-white italic leading-snug"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              «&nbsp;{t("founders.quote")}&nbsp;»
+            </p>
+          </motion.blockquote>
+        </div>
+      </section>
 
-            {/* Benefits grid */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
-              {benefits.map((b, i) => (
+
+      {/* ═══════════════════════ 5. PHASE 2. C'EST MAINTENANT. ═══════════════
+          La roadmap reframée en argument d'urgence : le projet est entre
+          le concept prouvé et le lancement, c'est PHASE 2 qui se joue
+          maintenant grâce aux manifestations d'intérêt. */}
+      <section id="roadmap" className="scroll-slide py-20 px-6 bg-neutral-900">
+        <div className="max-w-5xl mx-auto">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+              {lang === "en"
+                ? "Phase 2 — now"
+                : lang === "th"
+                  ? "เฟส 2 — ตอนนี้"
+                  : "Phase 2 — maintenant"}
+            </p>
+            <h2
+              className="text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-5"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              {lang === "en" ? "We are " : lang === "th" ? "เราอยู่ที่ " : "Nous y sommes "}
+              <span className="text-[#1e9df1]">
+                {lang === "en" ? "here." : lang === "th" ? "ตรงนี้" : "ici."}
+              </span>
+            </h2>
+            <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
+              {lang === "en"
+                ? "The concept is proven. The mockup is live. Every interest registered now is the proof that lets us raise funds, build the team and ship the platform."
+                : lang === "th"
+                  ? "แนวคิดได้รับการพิสูจน์แล้ว ตัวอย่างใช้งานได้จริง ทุกความสนใจที่ลงทะเบียนตอนนี้คือหลักฐานที่ทำให้เราสามารถระดมทุน สร้างทีม และเปิดตัวแพลตฟอร์มได้"
+                  : "Le concept est prouvé. La maquette est en ligne. Chaque manifestation d'intérêt qu'on récolte maintenant est la preuve qui nous permettra de lever les fonds, constituer l'équipe et lancer la plateforme."}
+            </p>
+          </motion.div>
+
+          {/* Compact horizontal timeline */}
+          <div className="grid md:grid-cols-4 gap-4 mb-12 relative">
+            {phases.map((phase, i) => {
+              const isCurrent = i === 1;
+              const isDone = i === 0;
+              return (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.5, delay: i * 0.06 }}
-                  className="bg-neutral-900 rounded-xl p-6 border border-neutral-800"
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  className={`relative rounded-2xl p-5 border transition-all ${
+                    isCurrent
+                      ? "bg-[#1e9df1]/10 border-[#1e9df1]/50 shadow-lg shadow-[#1e9df1]/10"
+                      : "bg-neutral-900 border-neutral-800"
+                  }`}
                 >
-                  <div className="w-9 h-9 rounded-lg bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center mb-3">
-                    {b.icon}
+                  <div className="flex items-center gap-2 mb-3">
+                    <span
+                      className={`text-xs font-mono ${
+                        isDone
+                          ? "text-gray-600"
+                          : isCurrent
+                            ? "text-[#1e9df1]"
+                            : "text-gray-500"
+                      }`}
+                    >
+                      0{i + 1}
+                    </span>
+                    {isCurrent && (
+                      <span className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[#1e9df1]">
+                        {lang === "en" ? "Now" : lang === "th" ? "ตอนนี้" : "Maintenant"}
+                      </span>
+                    )}
+                    {isDone && (
+                      <span className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-gray-500">
+                        {lang === "en" ? "Done" : lang === "th" ? "เสร็จแล้ว" : "Fait"}
+                      </span>
+                    )}
                   </div>
-                  <h4 className="text-sm font-semibold mb-1">{t(b.titleKey)}</h4>
-                  <p className="text-gray-400 text-xs leading-relaxed font-light">{t(b.descKey)}</p>
+                  <h3 className="text-sm font-semibold leading-snug mb-2 text-white">
+                    {t(phase.titleKey)}
+                  </h3>
+                  {phase.items[0] && (
+                    <p className="text-gray-400 text-xs leading-relaxed font-light">
+                      {t(phase.items[0])}
+                    </p>
+                  )}
                 </motion.div>
-              ))}
-            </div>
-
-            {/* CTA buttons */}
-            <motion.div {...fadeUp} className="flex flex-wrap items-center justify-center gap-4 mb-6">
-              <Link
-                href="/acces"
-                className="inline-flex items-center gap-2 bg-[#1e9df1] text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-[#1a8fd9] transition-all shadow-lg shadow-[#1e9df1]/20"
-              >
-                {t("roadmap.cta1")} <ArrowRight size={16} />
-              </Link>
-              <Link
-                href="/acces"
-                className="inline-flex items-center gap-2 border border-neutral-800 text-gray-400 rounded-xl px-8 py-3.5 text-sm font-medium hover:border-[#1e9df1]/40 hover:text-[#1e9df1] transition-all bg-white"
-              >
-                {t("roadmap.cta2")}
-              </Link>
-            </motion.div>
-
-            <motion.div {...fadeUp} className="text-center text-xs text-gray-400 max-w-lg mx-auto">
-              {t("roadmap.cta_disclaimer")}
-            </motion.div>
+              );
+            })}
           </div>
+
+          {/* Urgency bridge */}
+          <motion.div
+            {...fadeUp}
+            className="text-center max-w-2xl mx-auto border-t border-neutral-800 pt-8"
+          >
+            <p className="text-gray-300 text-sm md:text-base leading-relaxed font-light">
+              {lang === "en" ? (
+                <>
+                  Joining now isn't joining{" "}
+                  <em className="text-white not-italic">a product</em> — it's joining the
+                  proof that lets the product exist.
+                </>
+              ) : lang === "th" ? (
+                <>
+                  การเข้าร่วมตอนนี้ไม่ใช่การเข้าร่วม
+                  <em className="text-white not-italic">ผลิตภัณฑ์</em> —
+                  แต่เป็นการเข้าร่วมหลักฐานที่ทำให้ผลิตภัณฑ์มีอยู่ได้
+                </>
+              ) : (
+                <>
+                  Rejoindre maintenant, ce n'est pas rejoindre{" "}
+                  <em className="text-white not-italic">un produit</em> — c'est rejoindre la
+                  preuve qui permettra au produit d'exister.
+                </>
+              )}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+
+      {/* ═══════════════════════ 6. REJOINDRE LES 100 FONDATEURS ═════════════
+          Section finale conversion : 6 avantages, FAQ, CTA principal vers
+          /acces. La porte de sortie de la landing. */}
+      <section id="inscriptions" className="scroll-slide py-20 px-6 bg-black">
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <motion.div {...fadeUp} className="text-center mb-14">
+            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+              {lang === "en"
+                ? "Reserve your spot"
+                : lang === "th"
+                  ? "จองที่ของคุณ"
+                  : "Réservez votre place"}
+            </p>
+            <h2
+              className="text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-5"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              {lang === "en" ? (
+                <>
+                  100 spots.
+                  <br />
+                  <span className="text-[#1e9df1]">Not one more.</span>
+                </>
+              ) : lang === "th" ? (
+                <>
+                  100 ที่นั่ง
+                  <br />
+                  <span className="text-[#1e9df1]">ไม่มากกว่านั้น</span>
+                </>
+              ) : (
+                <>
+                  100 places.
+                  <br />
+                  <span className="text-[#1e9df1]">Pas une de plus.</span>
+                </>
+              )}
+            </h2>
+            <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
+              {lang === "en"
+                ? "The first 100 profiles get a permanent founder badge, early access, priority visibility, and a direct line to shape the platform with us. Free, no commitment, two minutes."
+                : lang === "th"
+                  ? "100 โปรไฟล์แรกได้รับป้ายผู้ก่อตั้งถาวร เข้าถึงก่อนใคร การมองเห็นที่จัดลำดับ และช่องทางตรงเพื่อร่วมสร้างแพลตฟอร์มกับเรา ฟรี ไม่ผูกพัน สองนาที"
+                  : "Les 100 premiers profils reçoivent un badge fondateur permanent, un accès anticipé, une visibilité prioritaire et une ligne directe pour façonner la plateforme avec nous. Gratuit, sans engagement, en deux minutes."}
+            </p>
+          </motion.div>
+
+          {/* 6 benefits compact grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+            {benefits.map((b, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: i * 0.06 }}
+                className="bg-neutral-900 rounded-xl p-5 border border-neutral-800 flex items-start gap-4"
+              >
+                <div className="w-9 h-9 rounded-lg bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center shrink-0">
+                  {b.icon}
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-sm font-semibold mb-1 text-white">{t(b.titleKey)}</h4>
+                  <p className="text-gray-400 text-xs leading-relaxed font-light">
+                    {t(b.descKey)}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* FAQ — handle objections inline */}
+          <motion.div {...fadeUp} className="max-w-2xl mx-auto mb-12">
+            <p className="text-center text-[0.65rem] tracking-[0.3em] uppercase font-semibold text-gray-500 mb-5">
+              {lang === "en" ? "Common questions" : lang === "th" ? "คำถามที่พบบ่อย" : "Questions fréquentes"}
+            </p>
+            <div className="border-t border-neutral-800">
+              {(() => {
+                const faqs =
+                  lang === "en"
+                    ? [
+                        {
+                          q: "Is it free?",
+                          a: "Yes, completely. Registering is a no-commitment expression of interest — no card, no payment.",
+                        },
+                        {
+                          q: "When does the platform launch?",
+                          a: "Phase 3 — fundraising and team — starts as soon as we have enough proof. Phase 4 — public launch — follows. The mockup at /feed already shows what's being built.",
+                        },
+                        {
+                          q: "Who can become a founding member?",
+                          a: "Anyone who fits one of the 12 ecosystem roles: host, agent, agency, referrer, trainer, photographer, broker, notary, architect, developer, investor, or simply a future client.",
+                        },
+                        {
+                          q: "What if I change my mind later?",
+                          a: "You haven't signed up to anything binding. The form is a market signal, not a contract.",
+                        },
+                      ]
+                    : lang === "th"
+                      ? [
+                          {
+                            q: "ฟรีหรือไม่?",
+                            a: "ใช่ ฟรีทั้งหมด การลงทะเบียนเป็นการแสดงความสนใจโดยไม่ผูกพัน ไม่ต้องใช้บัตร ไม่มีการชำระเงิน",
+                          },
+                          {
+                            q: "แพลตฟอร์มเปิดตัวเมื่อไหร่?",
+                            a: "เฟส 3 — การระดมทุนและทีม — เริ่มต้นทันทีที่เรามีหลักฐานเพียงพอ จากนั้นเฟส 4 — การเปิดตัวสาธารณะ — จะตามมา ตัวอย่างที่ /feed แสดงสิ่งที่กำลังสร้างอยู่แล้ว",
+                          },
+                          {
+                            q: "ใครสามารถเป็นสมาชิกผู้ก่อตั้งได้?",
+                            a: "ทุกคนที่อยู่ใน 12 บทบาทของระบบนิเวศ: เจ้าของบ้าน นายหน้า เอเจนซี่ ผู้แนะนำ ผู้ฝึกอบรม ช่างภาพ ที่ปรึกษาสินเชื่อ ทนาย สถาปนิก ผู้พัฒนา นักลงทุน หรือเพียงแค่ลูกค้าในอนาคต",
+                          },
+                          {
+                            q: "ถ้าฉันเปลี่ยนใจในภายหลังล่ะ?",
+                            a: "คุณไม่ได้ลงนามในสิ่งที่มีผลผูกพัน แบบฟอร์มเป็นสัญญาณตลาด ไม่ใช่สัญญา",
+                          },
+                        ]
+                      : [
+                          {
+                            q: "Est-ce gratuit ?",
+                            a: "Oui, totalement. S'inscrire est une simple manifestation d'intérêt sans engagement — pas de carte, pas de paiement.",
+                          },
+                          {
+                            q: "Quand sort la plateforme ?",
+                            a: "La phase 3 — levée de fonds et constitution de l'équipe — démarre dès que la preuve est suffisante. La phase 4 — lancement public — suit. La maquette sur /feed montre déjà ce qui est en construction.",
+                          },
+                          {
+                            q: "Qui peut devenir membre fondateur ?",
+                            a: "Tous les profils qui correspondent à l'un des 12 rôles de l'écosystème : hôte, agent, agence, apporteur, formateur, photographe, courtier, notaire, architecte, promoteur, investisseur ou simplement futur client.",
+                          },
+                          {
+                            q: "Et si je change d'avis ensuite ?",
+                            a: "Vous ne vous êtes engagé à rien de contraignant. Le formulaire est un signal de marché, pas un contrat.",
+                          },
+                        ];
+                return faqs.map((f, i) => (
+                  <details
+                    key={i}
+                    className="group border-b border-neutral-800 py-4 cursor-pointer"
+                  >
+                    <summary className="flex items-start gap-3 list-none select-none">
+                      <ChevronDown
+                        size={16}
+                        className="text-[#1e9df1] mt-0.5 transition-transform group-open:rotate-180 shrink-0"
+                      />
+                      <span className="text-sm font-medium text-white flex-1">{f.q}</span>
+                    </summary>
+                    <p className="text-gray-400 text-sm leading-relaxed font-light mt-3 pl-7">
+                      {f.a}
+                    </p>
+                  </details>
+                ));
+              })()}
+            </div>
+          </motion.div>
+
+          {/* Final CTA */}
+          <motion.div {...fadeUp} className="text-center">
+            <Link
+              href="/acces"
+              className="inline-flex items-center gap-3 bg-[#1e9df1] text-white rounded-xl px-10 py-4 text-base font-semibold hover:bg-[#1a8fd9] transition-all shadow-lg shadow-[#1e9df1]/30"
+            >
+              <Sparkles size={18} />
+              {lang === "en"
+                ? "Become a founding member"
+                : lang === "th"
+                  ? "เป็นสมาชิกผู้ก่อตั้ง"
+                  : "Devenir membre fondateur"}
+              <ArrowRight size={18} />
+            </Link>
+            <p className="text-[0.7rem] text-gray-500 mt-4 max-w-md mx-auto">
+              {lang === "en"
+                ? "Two minutes. Free. No commitment. The form helps us prove the demand and build what you actually need."
+                : lang === "th"
+                  ? "สองนาที ฟรี ไม่ผูกพัน แบบฟอร์มช่วยให้เราพิสูจน์ความต้องการและสร้างสิ่งที่คุณต้องการจริงๆ"
+                  : "Deux minutes. Gratuit. Sans engagement. Le formulaire nous aide à prouver la demande et à construire ce dont vous avez vraiment besoin."}
+            </p>
+          </motion.div>
         </div>
       </section>
       </ScrollStage>
