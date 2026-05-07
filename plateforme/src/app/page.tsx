@@ -23,7 +23,6 @@ import {
   Handshake,
 } from "lucide-react";
 import SkewCards from "@/components/ui/gradient-card-showcase";
-import BuildingDrawing from "@/components/ui/building-drawing";
 import {
   LandingLanguageProvider,
   useLandingLang,
@@ -223,14 +222,6 @@ function HomePageContent() {
       <ScrollStage>
       {/* ═══════════════════════ HERO (left-aligned, brutaliste) ═══════════════════════ */}
       <section className="scroll-slide bg-black relative">
-        {/* Bâtiment d'architecture détaillé : occupe la moitié droite, traits gold qui dépassent largement à gauche */}
-        <div
-          className="hidden lg:block absolute bottom-0 right-0 w-[60%] xl:w-[55%] pointer-events-none z-10"
-          style={{ overflow: "visible" }}
-        >
-          <BuildingDrawing className="w-full h-auto" />
-        </div>
-
         <div className="min-h-screen flex items-center px-6 sm:px-12 md:px-20 lg:px-32 pt-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-center">
             {/* Colonne texte (gauche) */}
