@@ -248,13 +248,22 @@ export const RadialScrollGallery = forwardRef<
       >
         <div
           className="relative w-full overflow-hidden"
-          style={{
-            height: `${visibleAreaHeight}px`,
-            maskImage:
-              "linear-gradient(to top, transparent 0%, black 40%, black 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to top, transparent 0%, black 40%, black 100%)",
-          }}
+          style={
+            useExternalProgress
+              ? {
+                  // Embedded : la roue occupe toute la hauteur du parent et
+                  // le masque dégradé est neutralisé pour que la roue tienne
+                  // visuellement centrée (pas ancrée en bas).
+                  height: "100%",
+                }
+              : {
+                  height: `${visibleAreaHeight}px`,
+                  maskImage:
+                    "linear-gradient(to top, transparent 0%, black 40%, black 100%)",
+                  WebkitMaskImage:
+                    "linear-gradient(to top, transparent 0%, black 40%, black 100%)",
+                }
+          }
         >
           <motion.ul
             ref={containerRef}
@@ -268,12 +277,21 @@ export const RadialScrollGallery = forwardRef<
             style={{
               width: circleDiameter,
               height: circleDiameter,
-              bottom: -(circleDiameter * hiddenDecimal),
-              // Motion gère translateX + rotate via le builder de transform
-              // uniquement en mode embedded (sinon Tailwind/GSAP s'en occupent).
+              // Embedded : on centre verticalement la roue dans son parent
+              // (top:50% + translateY -50%) plutôt que de l'ancrer en bas.
+              // Standalone : ancrage en bas + masque dégradé (comportement
+              // d'origine, "roue à demi enterrée").
               ...(useExternalProgress
-                ? { x: "-50%", rotate: externalRotation }
-                : {}),
+                ? {
+                    top: "50%",
+                    bottom: "auto",
+                    x: "-50%",
+                    y: "-50%",
+                    rotate: externalRotation,
+                  }
+                : {
+                    bottom: -(circleDiameter * hiddenDecimal),
+                  }),
             }}
           >
             {childrenNodes.map((child, index) => {
