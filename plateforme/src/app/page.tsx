@@ -260,26 +260,35 @@ function HomePageContent() {
               </div>
             </motion.div>
 
-            {/* Colonne droite : avantages des membres fondateurs + badge */}
+            {/* Colonne droite : badge fondateur + 6 avantages détaillés */}
             <motion.div {...fadeUp} className="hidden lg:block lg:col-span-5">
               {(() => {
                 const benefits =
                   lang === "en"
                     ? [
-                        { title: "Early access", desc: "Discover the platform before its public launch and help shape it." },
-                        { title: "Lifetime founder status", desc: "Permanent badge and recognition on your profile." },
-                        { title: "Private circle", desc: "Access to the exclusive network of the first members." },
+                        { title: "Founding Member Badge", desc: "A permanent badge on your profile proving you were here from day one. Lifetime recognition in the ecosystem." },
+                        { title: "Early access", desc: "Set up your account, profile and preferences before the public launch. Be operational on day one." },
+                        { title: "Priority visibility", desc: "Your profile featured in search results and recommendations during the first months." },
+                        { title: "Exclusive conferences", desc: "Access to private sessions to discover features, give your feedback and shape development priorities." },
+                        { title: "Founder network", desc: "Join a private group with the other first members and the founders. Exchange, collaborate, build together." },
+                        { title: "Exclusive perks", desc: "Preferential conditions on future premium features, training and platform tools." },
                       ]
                     : lang === "th"
                     ? [
-                        { title: "เข้าถึงก่อนใคร", desc: "ค้นพบแพลตฟอร์มก่อนเปิดตัวสู่สาธารณะและร่วมกำหนดทิศทาง" },
-                        { title: "สถานะผู้ก่อตั้งตลอดชีพ", desc: "ป้ายและการรับรองถาวรบนโปรไฟล์ของคุณ" },
-                        { title: "วงในพิเศษ", desc: "เข้าถึงเครือข่ายเฉพาะของสมาชิกกลุ่มแรก" },
+                        { title: "ป้ายสมาชิกผู้ก่อตั้ง", desc: "ป้ายถาวรบนโปรไฟล์ของคุณ ที่พิสูจน์ว่าคุณอยู่ที่นี่ตั้งแต่วันแรก การรับรองตลอดชีพในระบบนิเวศ" },
+                        { title: "เข้าถึงก่อนใคร", desc: "ตั้งค่าบัญชี โปรไฟล์ และความชื่นชอบของคุณก่อนเปิดตัวสู่สาธารณะ พร้อมใช้งานตั้งแต่วันเปิดตัว" },
+                        { title: "การมองเห็นที่จัดลำดับ", desc: "โปรไฟล์ของคุณถูกนำเสนอในผลการค้นหาและคำแนะนำในช่วงเดือนแรก" },
+                        { title: "การประชุมพิเศษ", desc: "เข้าถึงเซสชันส่วนตัวเพื่อค้นพบฟีเจอร์ ให้ความคิดเห็น และมีอิทธิพลต่อทิศทางการพัฒนา" },
+                        { title: "เครือข่ายผู้ก่อตั้ง", desc: "เข้าร่วมกลุ่มส่วนตัวกับสมาชิกกลุ่มแรกและผู้ก่อตั้ง แลกเปลี่ยน ทำงานร่วมกัน สร้างไปด้วยกัน" },
+                        { title: "สิทธิประโยชน์พิเศษ", desc: "เงื่อนไขที่ดีกว่าสำหรับฟีเจอร์พรีเมียมในอนาคต การฝึกอบรม และเครื่องมือของแพลตฟอร์ม" },
                       ]
                     : [
-                        { title: "Accès anticipé", desc: "Découvrez la plateforme avant son ouverture publique et participez à sa construction." },
-                        { title: "Statut fondateur à vie", desc: "Badge et reconnaissance permanents sur votre profil." },
-                        { title: "Cercle privé", desc: "Accès au réseau exclusif des premiers membres." },
+                        { title: "Badge Membre Fondateur", desc: "Un badge permanent sur votre profil qui prouve que vous étiez là dès le début. Reconnaissance à vie dans l'écosystème." },
+                        { title: "Accès anticipé", desc: "Configurez votre compte, votre profil et vos préférences avant le lancement public. Soyez opérationnel dès le jour J." },
+                        { title: "Visibilité prioritaire", desc: "Votre profil mis en avant dans les résultats de recherche et les recommandations pendant les premiers mois." },
+                        { title: "Conférences exclusives", desc: "Accès à des sessions privées pour découvrir les fonctionnalités, donner votre avis et influencer les priorités de développement." },
+                        { title: "Réseau fondateur", desc: "Intégrez un groupe privé avec les autres premiers membres et les fondateurs. Échangez, collaborez, construisez ensemble." },
+                        { title: "Avantages exclusifs", desc: "Des conditions préférentielles sur les futures fonctionnalités premium, les formations et les outils de la plateforme." },
                       ];
 
                 const eyebrow =
@@ -298,34 +307,37 @@ function HomePageContent() {
 
                 return (
                   <div className="border-l border-neutral-800 pl-8 max-w-md">
-                    <div className="flex items-center gap-3 mb-6">
+                    <div className="flex items-center gap-3 mb-5">
                       <span className="block w-8 h-px bg-[#C4956A]" />
                       <p className="text-[#C4956A] text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
                         {eyebrow}
                       </p>
                     </div>
-                    <ul className="space-y-4 mb-8">
+                    {/* Badge premium en tête (visualisation du benefit #1) */}
+                    <div className="mb-7">
+                      <FounderBadge brand="E-DOME" title={badgeTitle} />
+                    </div>
+                    {/* Liste des 6 avantages */}
+                    <ul className="space-y-3">
                       {benefits.map((b, i) => (
                         <li
                           key={i}
-                          className="grid grid-cols-[2rem_1fr] gap-3 border-t border-neutral-800 pt-4 first:border-t-0 first:pt-0"
+                          className="grid grid-cols-[1.6rem_1fr] gap-2.5 border-t border-neutral-800 pt-3 first:border-t-0 first:pt-0"
                         >
-                          <span className="font-mono text-[0.65rem] text-[#C4956A] pt-0.5 tracking-wider">
+                          <span className="font-mono text-[0.6rem] text-[#C4956A] pt-0.5 tracking-wider">
                             0{i + 1}
                           </span>
                           <div>
-                            <h4 className="text-white text-xs font-semibold uppercase tracking-wider mb-1">
+                            <h4 className="text-white text-[0.7rem] font-semibold uppercase tracking-wider mb-0.5">
                               {b.title}
                             </h4>
-                            <p className="text-gray-400 text-xs leading-relaxed font-light">
+                            <p className="text-gray-400 text-[0.7rem] leading-snug font-light">
                               {b.desc}
                             </p>
                           </div>
                         </li>
                       ))}
                     </ul>
-                    {/* Badge premium des fondateurs */}
-                    <FounderBadge brand="E-DOME" title={badgeTitle} />
                   </div>
                 );
               })()}

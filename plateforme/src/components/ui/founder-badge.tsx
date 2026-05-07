@@ -271,20 +271,20 @@ export const FounderBadge = ({
             {title}
           </text>
 
-          {/* Icône dôme + base + sommet (signature E-Dome) */}
-          <g transform="translate(8, 12)" stroke="#3d2c1c" strokeWidth="1.6" fill="none" strokeLinecap="round">
-            {/* Arc du dôme */}
-            <path d="M 2 28 A 14 14 0 0 1 30 28" />
-            {/* Base */}
-            <line x1="0" y1="28" x2="32" y2="28" />
-            {/* Pilier vertical au sommet */}
-            <line x1="16" y1="14" x2="16" y2="6" />
-            {/* Petite étoile au sommet */}
-            <circle cx="16" cy="4" r="1.4" fill="#3d2c1c" />
-            {/* Détail intérieur (3 lignes verticales = colonnes) */}
-            <line x1="8" y1="20" x2="8" y2="28" />
-            <line x1="16" y1="18" x2="16" y2="28" />
-            <line x1="24" y1="20" x2="24" y2="28" />
+          {/* Icône médaillon (cercle anneau + étoile pleine) — symbole universel de "membre fondateur" / award */}
+          <g transform="translate(10, 13)">
+            {/* Anneau extérieur */}
+            <circle cx="14" cy="14" r="13" stroke="#3d2c1c" strokeWidth="1.6" fill="none" />
+            {/* Anneau intérieur */}
+            <circle cx="14" cy="14" r="10" stroke="#3d2c1c" strokeWidth="0.7" fill="none" opacity="0.7" />
+            {/* Étoile à 5 branches pleine */}
+            <path
+              d="M 14 5.6 L 16.2 11 L 22 11.4 L 17.5 15.1 L 19 20.6 L 14 17.5 L 9 20.6 L 10.5 15.1 L 6 11.4 L 11.8 11 Z"
+              fill="#3d2c1c"
+              stroke="#3d2c1c"
+              strokeWidth="0.4"
+              strokeLinejoin="round"
+            />
           </g>
 
           {/* ── Reflet holographique multicolore (10 polygones tournants) ── */}
