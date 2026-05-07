@@ -37,7 +37,7 @@ import {
   LandingLanguageProvider,
   useLandingLang,
 } from "@/components/landing/landing-i18n";
-import { ScrollStage } from "@/components/landing/scroll-stage";
+import { ScrollStage, useSlideProgress } from "@/components/landing/scroll-stage";
 
 /* ═══════════════════════════════════════════════════════════════════ */
 /*  ROOT                                                               */
@@ -238,14 +238,20 @@ function DotDivider() {
    l'utilisateur) défile au scroll.
    ─────────────────────────────────────────────────────────────────── */
 function PhoneSlide({
+  slideIndex,
   videos,
   punch,
   punchEmphasis,
 }: {
+  slideIndex: number;
   videos: { src: string }[];
   punch: string;
   punchEmphasis: string;
 }) {
+  // Progression locale du slide → la galerie radiale tourne en synchro
+  // avec la fenêtre visible du slide dans ScrollStage. Bypass GSAP/pin.
+  const slideProgress = useSlideProgress(slideIndex);
+
   return (
     <section className="scroll-slide bg-black relative">
       <div className="min-h-screen flex items-center px-6 sm:px-12 lg:px-20">
@@ -260,21 +266,22 @@ function PhoneSlide({
             </div>
           </div>
 
-          {/* iPhone — contenu interne défini par le composant fourni */}
+          {/* iPhone — gallery radiale dans l'écran, rotation pilotée par slideProgress */}
           <div className="order-1 lg:order-2 flex justify-center">
-            <div style={{ width: 250, height: 526 }}>
+            <div style={{ width: 313, height: 657 }}>
               <IPhoneMockup
                 model="15-pro"
                 color="natural-titanium"
-                scale={0.6}
+                scale={0.75}
                 safeArea={false}
               >
                 <div className="absolute inset-0 bg-black overflow-hidden">
                   <RadialScrollGallery
-                    baseRadius={180}
-                    mobileRadius={180}
-                    visiblePercentage={50}
-                    scrollDuration={2000}
+                    progress={slideProgress}
+                    rotations={1}
+                    baseRadius={190}
+                    mobileRadius={190}
+                    visiblePercentage={62}
                     className="!min-h-0 !h-full"
                   >
                     {(hoveredIndex) =>
@@ -283,7 +290,7 @@ function PhoneSlide({
                         return (
                           <div
                             key={index}
-                            className="relative w-[80px] h-[110px] overflow-hidden rounded-lg bg-neutral-900 border border-neutral-800 shadow-lg"
+                            className="relative w-[115px] h-[155px] overflow-hidden rounded-lg bg-neutral-900 border border-neutral-800 shadow-lg"
                           >
                             <video
                               src={video.src}
@@ -648,6 +655,7 @@ function HomePageContent() {
 
       {/* ═══════════════════════ PHONE SLIDE (snap crossfade) ═══ */}
       <PhoneSlide
+        slideIndex={2}
         videos={phoneVideos}
         punch={phonePunch}
         punchEmphasis={phonePunchEmphasis}

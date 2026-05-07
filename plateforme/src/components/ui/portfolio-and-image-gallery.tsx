@@ -3,6 +3,12 @@
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 import React, {
   forwardRef,
   HTMLAttributes,
@@ -72,6 +78,15 @@ export interface RadialScrollGalleryProps
   onItemSelect?: (index: number) => void;
   direction?: "ltr" | "rtl";
   disabled?: boolean;
+  /**
+   * Optional MotionValue [0,1] driving the wheel's rotation. When provided,
+   * the component bypasses its own GSAP ScrollTrigger pin/scrub — useful
+   * when the gallery sits inside another sticky-pinned context (e.g. a
+   * ScrollStage slide) where GSAP's pin would fight the parent.
+   */
+  progress?: MotionValue<number>;
+  /** Number of full 360° turns when `progress` goes 0→1. Default 1. */
+  rotations?: number;
 }
 
 export const RadialScrollGallery = forwardRef<
@@ -90,6 +105,8 @@ export const RadialScrollGallery = forwardRef<
       onItemSelect,
       direction = "ltr",
       disabled = false,
+      progress,
+      rotations = 1,
       ...rest
     },
     ref,
@@ -108,6 +125,17 @@ export const RadialScrollGallery = forwardRef<
 
     const currentRadius = useResponsiveValue(baseRadius, mobileRadius);
     const circleDiameter = currentRadius * 2;
+
+    // Rotation pilotée par une MotionValue externe (mode embedded).
+    // Quand `progress` est absent, on garde un fallback à 0 et c'est GSAP
+    // qui anime imperatively containerRef.style.rotate via gsap.to.
+    const fallbackProgress = useMotionValue(0);
+    const externalRotation = useTransform(
+      progress ?? fallbackProgress,
+      [0, 1],
+      [0, 360 * rotations],
+    );
+    const useExternalProgress = progress !== undefined;
 
     const { visibleDecimal, hiddenDecimal } = useMemo(() => {
       const clamped = Math.max(10, Math.min(100, visiblePercentage));
@@ -148,6 +176,10 @@ export const RadialScrollGallery = forwardRef<
       () => {
         if (!pinRef.current || !containerRef.current || childrenCount === 0)
           return;
+        // Mode embedded : un parent pilote la rotation via la prop progress.
+        // On laisse tomber les ScrollTrigger GSAP (pin + scrub + entrance)
+        // pour éviter le conflit avec le sticky parent.
+        if (useExternalProgress) return;
 
         const prefersReducedMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
@@ -192,6 +224,7 @@ export const RadialScrollGallery = forwardRef<
           currentRadius,
           startTrigger,
           childrenCount,
+          useExternalProgress,
         ],
       },
     );
@@ -223,7 +256,7 @@ export const RadialScrollGallery = forwardRef<
               "linear-gradient(to top, transparent 0%, black 40%, black 100%)",
           }}
         >
-          <ul
+          <motion.ul
             ref={containerRef}
             className={`
               absolute left-1/2 -translate-x-1/2 will-change-transform m-0 p-0 list-none
@@ -236,6 +269,11 @@ export const RadialScrollGallery = forwardRef<
               width: circleDiameter,
               height: circleDiameter,
               bottom: -(circleDiameter * hiddenDecimal),
+              // Motion gère translateX + rotate via le builder de transform
+              // uniquement en mode embedded (sinon Tailwind/GSAP s'en occupent).
+              ...(useExternalProgress
+                ? { x: "-50%", rotate: externalRotation }
+                : {}),
             }}
           >
             {childrenNodes.map((child, index) => {
@@ -295,7 +333,7 @@ export const RadialScrollGallery = forwardRef<
                 </li>
               );
             })}
-          </ul>
+          </motion.ul>
         </div>
       </div>
     );
