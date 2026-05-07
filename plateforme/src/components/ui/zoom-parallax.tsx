@@ -40,15 +40,16 @@ export function ZoomParallax({ images, videos, targetRef, progress }: ZoomParall
   });
   const scrollYProgress = progress ?? scrollFromTarget;
 
-  /* Pic à slideProgress 0.5 (= moment de visibilité maximale du slide,
-     au croisement entre le fade-in et le fade-out). On tient ensuite
-     l'état zoomé pendant le fade-out pour un finale propre. */
-  const scale3 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 3, 3]);
-  const scale35 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 3.5, 3.5]);
-  const scale4 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 4, 4]);
-  const scale5 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 5, 5]);
-  const scale6 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 6, 6]);
-  const scaleCenter = useTransform(scrollYProgress, [0, 0.5, 1], [1, 7, 7]);
+  /* Activation retardée : tuiles tenues à scale=1 pendant la fade-in
+     (slideProgress 0 → 0.5), puis ramp doux jusqu'au max pendant la
+     fade-out (0.5 → 1). Le ramp dispose d'une fenêtre complète au lieu
+     d'une moitié — ~2× moins réactif au scroll. */
+  const scale3 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1, 3]);
+  const scale35 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1, 3.5]);
+  const scale4 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1, 4]);
+  const scale5 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1, 5]);
+  const scale6 = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1, 6]);
+  const scaleCenter = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1, 7]);
   const scales = [scaleCenter, scale35, scale4, scale35, scale4, scale5, scale6, scale3, scale35, scale4];
 
   // Position presets — viewport units when standalone, % of parent when embedded.
