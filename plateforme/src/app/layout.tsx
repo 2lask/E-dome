@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { PWARegister } from "@/components/pwa-register";
 import { LoadingScreen } from "@/components/landing/loading-screen";
-import { SiteBackground } from "@/components/ui/site-background";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,7 +42,6 @@ export default function RootLayout({
       <body
         className={`${inter.variable} bg-[var(--background)] antialiased`}
       >
-        <SiteBackground />
         <LoadingScreen />
         {children}
         <PWARegister />
