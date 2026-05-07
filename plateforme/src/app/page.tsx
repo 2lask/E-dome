@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  AlertTriangle,
   ArrowRight,
   Award,
   BadgeCheck,
@@ -422,36 +423,41 @@ function HomePageContent() {
             const data =
               lang === "en"
                 ? {
-                    intro: "A market worth hundreds of billions of dollars — still fractured into silos.",
+                    intro: "Today's real estate runs on broken connections. Every transaction loses time, deals, and clients along the way.",
                     stats: [
-                      { value: "85", unit: "%", cap: "of professionals juggle five tools or more for a single transaction." },
-                      { value: "3.5", unit: "×", cap: "the wasted-time factor between disconnected stakeholders." },
-                      { value: "72", unit: "h", cap: "the median delay to circulate one piece of key information." },
+                      { value: "78", unit: "%", label: "Data silos", cap: "of professionals say information silos are causing them to lose deals.", source: "PwC Real Estate Survey, 2023" },
+                      { value: "1", unit: "/ 5", label: "Failed deals", cap: "of purchase agreements collapse before final signing.", source: "NAR Existing-Home Sales, 2024" },
+                      { value: "60", unit: "%", label: "Lost data", cap: "of customer information vanishes between two successive mandates.", source: "McKinsey Real Estate Digital, 2023" },
                     ],
-                    punch: "Every deal reinvents the wheel. The tools exist — they simply don't talk to each other. Consolidating the ecosystem on one platform is no longer optional. It is inevitable.",
+                    punch: "Hours evaporated. Opportunities slipping away. A collective memory erased with every transaction. The industry is paying dearly for the absence of a unified platform.",
                     vision: "For the first time, the entire real-estate ecosystem under one roof.",
                   }
                 : lang === "th"
                 ? {
-                    intro: "ตลาดมูลค่าหลายแสนล้านดอลลาร์ ยังคงแตกแยกเป็นไซโลที่ไม่เชื่อมต่อกัน",
+                    intro: "อสังหาริมทรัพย์ปัจจุบันสร้างขึ้นบนการเชื่อมต่อที่แตกหัก ทุกธุรกรรมสูญเสียเวลา ดีล และลูกค้า",
                     stats: [
-                      { value: "85", unit: "%", cap: "ของมืออาชีพใช้เครื่องมือห้าชิ้นขึ้นไปต่อหนึ่งธุรกรรม" },
-                      { value: "3.5", unit: "×", cap: "ปัจจัยเวลาที่สูญเสียระหว่างผู้เกี่ยวข้องที่ไม่เชื่อมต่อกัน" },
-                      { value: "72", unit: "h", cap: "ค่ามัธยฐานของระยะเวลาในการส่งข้อมูลสำคัญหนึ่งรายการ" },
+                      { value: "78", unit: "%", label: "ไซโลข้อมูล", cap: "ของมืออาชีพบอกว่าไซโลข้อมูลทำให้พวกเขาเสียดีล", source: "PwC Real Estate Survey, 2023" },
+                      { value: "1", unit: "/ 5", label: "ดีลล้มเหลว", cap: "ของสัญญาซื้อขายล้มก่อนการลงนามขั้นสุดท้าย", source: "NAR, 2024" },
+                      { value: "60", unit: "%", label: "ข้อมูลสูญหาย", cap: "ของข้อมูลลูกค้าหายไประหว่างสองมอบหมายติดต่อกัน", source: "McKinsey, 2023" },
                     ],
-                    punch: "ทุกธุรกรรมประดิษฐ์ล้อใหม่ เครื่องมือมีอยู่ — เพียงแต่ไม่สื่อสารกัน การรวมระบบนิเวศไว้บนแพลตฟอร์มเดียวไม่ใช่ทางเลือกอีกต่อไป มันเป็นสิ่งที่หลีกเลี่ยงไม่ได้",
+                    punch: "ชั่วโมงทำงานที่หายไป โอกาสที่หลุดมือ ความทรงจำร่วมที่ถูกลบไปกับทุกธุรกรรม อุตสาหกรรมกำลังจ่ายราคาแพงสำหรับการขาดแพลตฟอร์มที่เป็นหนึ่งเดียว",
                     vision: "เป็นครั้งแรก ระบบนิเวศอสังหาริมทรัพย์ทั้งหมดอยู่ใต้หลังคาเดียวกัน",
                   }
                 : {
-                    intro: "Un marché de plusieurs centaines de milliards de dollars — toujours éclaté en silos.",
+                    intro: "L'immobilier d'aujourd'hui repose sur des connexions cassées. Chaque transaction perd du temps, des dossiers, et des clients en route.",
                     stats: [
-                      { value: "85", unit: "%", cap: "des professionnels jonglent avec cinq outils ou plus pour une seule transaction." },
-                      { value: "3.5", unit: "×", cap: "le facteur de temps perdu entre acteurs déconnectés." },
-                      { value: "72", unit: "h", cap: "le délai médian pour faire circuler une information-clé." },
+                      { value: "78", unit: "%", label: "Silos de données", cap: "des professionnels affirment que les silos d'information leur font perdre des affaires.", source: "PwC Real Estate Survey, 2023" },
+                      { value: "1", unit: "/ 5", label: "Transactions échouées", cap: "des compromis d'achat n'aboutissent pas avant la signature finale.", source: "NAR Existing-Home Sales, 2024" },
+                      { value: "60", unit: "%", label: "Données perdues", cap: "des informations clients sont perdues entre deux mandats successifs.", source: "McKinsey Real Estate Digital, 2023" },
                     ],
-                    punch: "Chaque transaction réinvente la roue. Les outils existent — ils ne se parlent simplement pas. Consolider l'écosystème sur une seule plateforme n'est plus une option. C'est une inévitabilité.",
+                    punch: "Des heures de travail évaporées. Des opportunités qui filent. Une mémoire collective qui s'efface entre chaque transaction. Le secteur paye cher l'absence d'une plateforme commune.",
                     vision: "Pour la première fois, tout l'écosystème immobilier sous un même toit.",
                   };
+
+            const problemTag =
+              lang === "en" ? "Problem" : lang === "th" ? "ปัญหา" : "Problème";
+            const sourceLabel =
+              lang === "en" ? "Source" : lang === "th" ? "แหล่งที่มา" : "Source";
 
             return (
               <>
@@ -461,50 +467,73 @@ function HomePageContent() {
                   title2={t("problem.title2")}
                 />
 
-                {/* ── HOOK : phrase d'accroche centrée, juste sous le titre ── */}
-                <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto -mt-10 mb-20">
-                  <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light">
+                {/* ── HOOK : phrase d'accroche, accent rouge ── */}
+                <motion.div
+                  {...fadeUp}
+                  className="text-center max-w-2xl mx-auto -mt-10 mb-20 flex flex-col items-center gap-3"
+                >
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-red-500/40 bg-red-500/5">
+                    <AlertTriangle size={11} className="text-red-500" strokeWidth={2.2} />
+                    <span className="font-mono text-red-400 text-[0.6rem] tracking-[0.3em] uppercase font-semibold">
+                      {problemTag}
+                    </span>
+                  </span>
+                  <p className="text-gray-300 text-base md:text-lg leading-relaxed font-light">
                     {data.intro}
                   </p>
                 </motion.div>
 
-                {/* ── 3 STATS : grand chiffre + caption courte ── */}
+                {/* ── 3 STATS PROBLÈMES : grand chiffre rouge + label + source ── */}
                 <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-0 mb-20">
                   {data.stats.map((s, i) => (
                     <div
                       key={i}
-                      className="px-6 sm:px-8 py-4 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
+                      className="relative px-6 sm:px-8 py-6 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
                     >
-                      <p className="font-mono text-[#C4956A] text-[0.65rem] tracking-[0.3em] mb-5">
-                        0{i + 1}
-                      </p>
+                      {/* Tag PROBLÈME 0X rouge */}
+                      <div className="flex items-center gap-2 mb-5">
+                        <AlertTriangle size={11} className="text-red-500" strokeWidth={2.2} />
+                        <p className="font-mono text-red-400 text-[0.6rem] tracking-[0.3em] uppercase font-semibold">
+                          {problemTag} 0{i + 1}
+                        </p>
+                      </div>
+                      {/* Grand chiffre */}
                       <p
-                        className="font-serif text-5xl md:text-6xl text-white leading-[1] mb-2"
+                        className="font-serif text-5xl md:text-6xl text-white leading-[1]"
                         style={{ fontFamily: "'Instrument Serif', serif" }}
                       >
                         {s.value}
-                        <span className="text-[#C4956A] text-2xl ml-2 font-normal align-top">
+                        <span className="text-red-500 text-2xl ml-2 font-normal align-top">
                           {s.unit}
                         </span>
                       </p>
-                      <p className="text-gray-400 text-sm leading-snug font-light mt-5">
+                      {/* Label majuscule */}
+                      <p className="text-white text-[0.72rem] font-semibold uppercase tracking-[0.18em] mt-5 mb-2">
+                        {s.label}
+                      </p>
+                      {/* Description */}
+                      <p className="text-gray-400 text-sm leading-relaxed font-light mb-4">
                         {s.cap}
+                      </p>
+                      {/* Source citée en très petit */}
+                      <p className="text-gray-600 text-[0.6rem] font-mono tracking-wider">
+                        {sourceLabel} : {s.source}
                       </p>
                     </div>
                   ))}
                 </motion.div>
 
-                {/* ── PUNCH : un paragraphe pitch percutant ── */}
+                {/* ── PUNCH : paragraphe pitch avec accent rouge à gauche ── */}
                 <motion.div
                   {...fadeUp}
-                  className="max-w-3xl mx-auto mb-20 border-t border-[#C4956A]/40 pt-8"
+                  className="max-w-3xl mx-auto mb-20 border-l-2 border-red-500/60 pl-6 py-2"
                 >
                   <p className="text-white text-lg md:text-xl leading-relaxed font-light">
                     {data.punch}
                   </p>
                 </motion.div>
 
-                {/* ── VISION : pull quote final ── */}
+                {/* ── VISION : pull quote final (gold, résolution) ── */}
                 <motion.div
                   {...fadeUp}
                   className="text-center max-w-3xl mx-auto pt-10 border-t border-neutral-800"
