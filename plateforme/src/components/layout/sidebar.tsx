@@ -26,6 +26,7 @@ import {
   ChevronRight,
   GraduationCap,
   Video,
+  type LucideIcon,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useLanguage } from "@/lib/i18n";
@@ -36,7 +37,7 @@ interface NavItem {
   key: string;
   label: string;
   href: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   badge?: number;
   indicator?: boolean;
 }

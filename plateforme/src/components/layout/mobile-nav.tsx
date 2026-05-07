@@ -3,12 +3,19 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Search, Plus, MessageCircle, User } from "lucide-react";
+import {
+  Home,
+  Search,
+  Plus,
+  MessageCircle,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 
 interface MobileNavItem {
   href: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   label: string;
   isGold?: boolean;
 }

@@ -1,7 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
-import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react";
+import {
+  X,
+  CheckCircle,
+  AlertCircle,
+  AlertTriangle,
+  Info,
+  type LucideIcon,
+} from "lucide-react";
 
 type ToastType = "success" | "error" | "warning" | "info";
 
@@ -17,7 +24,7 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-const ICONS: Record<ToastType, React.ElementType> = {
+const ICONS: Record<ToastType, LucideIcon> = {
   success: CheckCircle,
   error: AlertCircle,
   warning: AlertTriangle,
