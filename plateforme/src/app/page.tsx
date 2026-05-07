@@ -268,19 +268,20 @@ function PhoneSlide({
 
           {/* iPhone — gallery radiale dans l'écran, rotation pilotée par slideProgress */}
           <div className="order-1 lg:order-2 flex justify-center">
-            <div style={{ width: 354, height: 744 }}>
+            <div style={{ width: 292, height: 613 }}>
               <IPhoneMockup
                 model="15-pro"
                 color="natural-titanium"
-                scale={0.85}
+                scale={0.7}
                 safeArea={false}
               >
                 <div className="absolute inset-0 bg-black overflow-hidden">
                   <RadialScrollGallery
                     progress={slideProgress}
                     rotations={1}
-                    baseRadius={210}
-                    mobileRadius={210}
+                    upright
+                    baseRadius={250}
+                    mobileRadius={250}
                     className="!min-h-0 !h-full"
                   >
                     {(hoveredIndex) =>
@@ -289,7 +290,7 @@ function PhoneSlide({
                         return (
                           <div
                             key={index}
-                            className="relative w-[130px] h-[175px] overflow-hidden rounded-lg bg-neutral-900 border border-neutral-800 shadow-lg"
+                            className="relative w-[150px] h-[200px] overflow-hidden rounded-xl bg-neutral-900 border border-neutral-800 shadow-lg"
                           >
                             <video
                               src={video.src}

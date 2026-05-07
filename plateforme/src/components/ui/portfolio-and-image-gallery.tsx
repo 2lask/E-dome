@@ -87,6 +87,13 @@ export interface RadialScrollGalleryProps
   progress?: MotionValue<number>;
   /** Number of full 360° turns when `progress` goes 0→1. Default 1. */
   rotations?: number;
+  /**
+   * Si `true`, les cartes restent droites quel que soit leur angle sur la
+   * roue (la rotation radiale par item est désactivée et chaque carte
+   * contre-tourne la roue via une counter-rotation pilotée par `progress`).
+   * Effectif uniquement en mode embedded (avec `progress`). Default false.
+   */
+  upright?: boolean;
 }
 
 export const RadialScrollGallery = forwardRef<
@@ -107,6 +114,7 @@ export const RadialScrollGallery = forwardRef<
       disabled = false,
       progress,
       rotations = 1,
+      upright = false,
       ...rest
     },
     ref,
@@ -135,7 +143,15 @@ export const RadialScrollGallery = forwardRef<
       [0, 1],
       [0, 360 * rotations],
     );
+    // Counter-rotation appliquée à chaque carte pour qu'elle reste droite
+    // pendant que la roue tourne. Ne sert que quand upright + embedded.
+    const counterRotation = useTransform(
+      progress ?? fallbackProgress,
+      [0, 1],
+      [0, -360 * rotations],
+    );
     const useExternalProgress = progress !== undefined;
+    const isUprightActive = upright && useExternalProgress;
 
     const { visibleDecimal, hiddenDecimal } = useMemo(() => {
       const clamped = Math.max(10, Math.min(100, visiblePercentage));
@@ -307,6 +323,16 @@ export const RadialScrollGallery = forwardRef<
               const isHovered = hoveredIndex === index;
               const isAnyHovered = hoveredIndex !== null;
 
+              // En mode upright on n'applique PAS la rotation radiale par
+              // item ; chaque carte conserve son orientation de base, et la
+              // counter-rotation appliquée plus bas annule la rotation de la
+              // roue → cartes toujours droites.
+              const liTransform = isUprightActive
+                ? `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0)`
+                : `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0) rotate(${
+                    rotationAngle + 90
+                  }deg)`;
+
               return (
                 <li
                   key={index}
@@ -314,12 +340,10 @@ export const RadialScrollGallery = forwardRef<
                   className="absolute top-1/2 left-1/2"
                   style={{
                     zIndex: isHovered ? 100 : 10,
-                    transform: `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0) rotate(${
-                      rotationAngle + 90
-                    }deg)`,
+                    transform: liTransform,
                   }}
                 >
-                  <div
+                  <motion.div
                     role="button"
                     tabIndex={disabled ? -1 : 0}
                     onClick={() => !disabled && onItemSelect?.(index)}
@@ -334,6 +358,9 @@ export const RadialScrollGallery = forwardRef<
                     onMouseLeave={() => !disabled && setHoveredIndex(null)}
                     onFocus={() => !disabled && setHoveredIndex(index)}
                     onBlur={() => !disabled && setHoveredIndex(null)}
+                    style={
+                      isUprightActive ? { rotate: counterRotation } : undefined
+                    }
                     className={`
                       block cursor-pointer outline-none text-left
                       focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
@@ -347,7 +374,7 @@ export const RadialScrollGallery = forwardRef<
                     `}
                   >
                     {child}
-                  </div>
+                  </motion.div>
                 </li>
               );
             })}
