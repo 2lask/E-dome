@@ -447,7 +447,7 @@ function HomePageContent() {
                     vision: "เป็นครั้งแรก ระบบนิเวศอสังหาฯ ทั้งหมดอยู่ใต้หลังคาเดียว — มืออาชีพและบุคคล คอนเทนต์และธุรกรรม บทสนทนาและการลงนาม",
                   }
                 : {
-                    intro: "L'immobilier est éclaté entre des dizaines d'outils, de portails et de rôles qui ne se parlent pas. Et alors même que les réseaux sociaux sont devenus le plus grand levier d'attention du marché, chaque contenu doit déloger son audience ailleurs — vers une autre plateforme, un autre login, une autre logique.",
+                    intro: "Le secteur immobilier reste fragmenté entre des dizaines d'outils, de portails et de rôles qui ne communiquent pas entre eux. Et alors même que les réseaux sociaux sont devenus le plus grand levier d'attention du marché, chaque contenu doit rediriger son audience ailleurs — vers une autre plateforme, un autre identifiant, une autre logique.",
                     stats: [
                       { value: "8", unit: "+", label: "Outils par dossier", source: "Deloitte Real Estate Outlook, 2024" },
                       { value: "73", unit: "%", label: "Attention perdue en redirection", source: "HubSpot State of Marketing, 2024" },
