@@ -418,7 +418,7 @@ function HomePageContent() {
       </section>
 
       {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
-      <section id="probleme" className="scroll-slide py-20 px-6 bg-black">
+      <section id="probleme" className="scroll-slide py-16 px-6 bg-black">
         <div className="max-w-6xl mx-auto">
           {(() => {
             const data =
@@ -465,30 +465,32 @@ function HomePageContent() {
 
             return (
               <>
-                <SectionHeading
-                  label={t("problem.label")}
-                  title1={t("problem.title1")}
-                  title2={t("problem.title2")}
-                />
-
-                {/* ── HOOK : phrase d'accroche, accent rouge ── */}
-                <motion.div
-                  {...fadeUp}
-                  className="text-center max-w-2xl mx-auto -mt-10 mb-20 flex flex-col items-center gap-3"
-                >
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-red-500/40 bg-red-500/5">
-                    <AlertTriangle size={11} className="text-red-500" strokeWidth={2.2} />
-                    <span className="font-mono text-red-400 text-[0.6rem] tracking-[0.3em] uppercase font-semibold">
-                      {problemTag}
-                    </span>
-                  </span>
-                  <p className="text-gray-300 text-base md:text-lg leading-relaxed font-light">
-                    {data.intro}
-                  </p>
-                </motion.div>
+                {/* ── HEADER : label + titre serré + intro en 2 colonnes ── */}
+                <div className="grid md:grid-cols-12 gap-8 md:gap-12 mb-14 items-end">
+                  <motion.div {...fadeUp} className="md:col-span-5">
+                    <p className="text-[#C4956A] text-[0.65rem] tracking-[0.35em] uppercase font-semibold mb-3">
+                      {t("problem.label")}
+                    </p>
+                    <h2
+                      className="text-4xl sm:text-5xl md:text-[3.25rem] leading-[1.05] text-white"
+                      style={{ fontFamily: "'Instrument Serif', serif" }}
+                    >
+                      {t("problem.title1")}{" "}
+                      <span className="text-[#C4956A] italic">{t("problem.title2")}</span>
+                    </h2>
+                  </motion.div>
+                  <motion.div
+                    {...fadeUp}
+                    className="md:col-span-7 md:pl-8 md:border-l md:border-neutral-800"
+                  >
+                    <p className="text-gray-300 text-[0.95rem] md:text-base leading-relaxed font-light">
+                      {data.intro}
+                    </p>
+                  </motion.div>
+                </div>
 
                 {/* ── 3 STATS PROBLÈMES : grand chiffre rouge + label + source ── */}
-                <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-0 mb-20">
+                <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-0 mb-14">
                   {data.stats.map((s, i) => {
                     const TopicIcon = [Layers, Share2, Users][i];
                     return (
@@ -535,9 +537,9 @@ function HomePageContent() {
                 {/* ── PUNCH : paragraphe pitch avec accent rouge à gauche ── */}
                 <motion.div
                   {...fadeUp}
-                  className="max-w-3xl mx-auto mb-20 border-l-2 border-red-500/60 pl-6 py-2"
+                  className="max-w-3xl mx-auto mb-12 border-l-2 border-red-500/60 pl-6 py-1"
                 >
-                  <p className="text-white text-lg md:text-xl leading-relaxed font-light">
+                  <p className="text-white text-base md:text-lg leading-relaxed font-light">
                     {data.punch}{" "}
                     <strong className="font-semibold text-white">
                       {data.punchEmphasis}
@@ -545,21 +547,27 @@ function HomePageContent() {
                   </p>
                 </motion.div>
 
-                {/* ── VISION : pull quote final (gold, résolution) ── */}
+                {/* ── VISION : pull quote final, compact, accent or inline ── */}
                 <motion.div
                   {...fadeUp}
-                  className="text-center max-w-3xl mx-auto pt-10 border-t border-neutral-800"
+                  className="max-w-3xl mx-auto pt-6 border-t border-neutral-800/60 flex items-start gap-3"
                 >
-                  <Sparkles size={18} className="text-[#C4956A] mx-auto mb-6" />
-                  <p
-                    className="font-serif text-2xl md:text-3xl italic text-white leading-snug mb-5"
-                    style={{ fontFamily: "'Instrument Serif', serif" }}
-                  >
-                    «&nbsp;{data.vision}&nbsp;»
-                  </p>
-                  <p className="text-[#C4956A] text-[0.65rem] tracking-[0.4em] uppercase font-semibold">
-                    — E-DOME
-                  </p>
+                  <Sparkles
+                    size={14}
+                    className="text-[#C4956A] shrink-0 mt-1.5"
+                    strokeWidth={1.4}
+                  />
+                  <div className="flex-1">
+                    <p
+                      className="font-serif text-base md:text-lg italic text-gray-200 leading-snug"
+                      style={{ fontFamily: "'Instrument Serif', serif" }}
+                    >
+                      «&nbsp;{data.vision}&nbsp;»
+                    </p>
+                    <p className="text-[#C4956A] text-[0.6rem] tracking-[0.35em] uppercase font-semibold mt-2">
+                      — E-DOME
+                    </p>
+                  </div>
                 </motion.div>
               </>
             );
