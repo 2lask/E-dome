@@ -259,8 +259,70 @@ function HomePageContent() {
               </div>
             </motion.div>
 
-            {/* Colonne droite : volontairement vide (négatif brutaliste) */}
-            <div className="hidden lg:block lg:col-span-5" />
+            {/* Colonne droite : avantages exclusifs des 100 membres fondateurs */}
+            <motion.div {...fadeUp} className="hidden lg:block lg:col-span-5">
+              {(() => {
+                const benefits =
+                  lang === "en"
+                    ? [
+                        { title: "Early access", desc: "Discover the platform before its public launch and help shape it." },
+                        { title: "Lifetime founder status", desc: "Permanent badge and recognition on your profile." },
+                        { title: "Preferred pricing", desc: "30 % reduced commissions throughout the first year." },
+                        { title: "Private circle", desc: "Exclusive access to the network of the first 100 members." },
+                      ]
+                    : lang === "th"
+                    ? [
+                        { title: "เข้าถึงก่อนใคร", desc: "ค้นพบแพลตฟอร์มก่อนเปิดตัวสู่สาธารณะและร่วมกำหนดทิศทาง" },
+                        { title: "สถานะผู้ก่อตั้งตลอดชีพ", desc: "ป้ายและการรับรองถาวรบนโปรไฟล์ของคุณ" },
+                        { title: "ราคาพิเศษ", desc: "ค่าคอมมิชชันลด 30% ตลอดปีแรก" },
+                        { title: "วงในพิเศษ", desc: "เข้าถึงเครือข่ายเฉพาะของสมาชิก 100 คนแรก" },
+                      ]
+                    : [
+                        { title: "Accès anticipé", desc: "Découvrez la plateforme avant son ouverture publique et participez à sa construction." },
+                        { title: "Statut fondateur à vie", desc: "Badge et reconnaissance permanents sur votre profil." },
+                        { title: "Tarif préférentiel", desc: "Commissions réduites de 30 % sur la première année." },
+                        { title: "Cercle privé", desc: "Accès au réseau exclusif des 100 premiers membres." },
+                      ];
+
+                const eyebrow =
+                  lang === "en"
+                    ? "Exclusive benefits · 100 seats"
+                    : lang === "th"
+                    ? "สิทธิพิเศษ · 100 ที่นั่ง"
+                    : "Avantages exclusifs · 100 places";
+
+                return (
+                  <div className="border-l border-neutral-800 pl-8 max-w-md">
+                    <div className="flex items-center gap-3 mb-8">
+                      <span className="block w-8 h-px bg-[#C4956A]" />
+                      <p className="text-[#C4956A] text-xs tracking-[0.3em] uppercase font-semibold">
+                        {eyebrow}
+                      </p>
+                    </div>
+                    <ul className="space-y-6">
+                      {benefits.map((b, i) => (
+                        <li
+                          key={i}
+                          className="grid grid-cols-[2.5rem_1fr] gap-4 border-t border-neutral-800 pt-6 first:border-t-0 first:pt-0"
+                        >
+                          <span className="font-mono text-xs text-[#C4956A] pt-0.5 tracking-wider">
+                            0{i + 1}
+                          </span>
+                          <div>
+                            <h4 className="text-white text-sm font-semibold uppercase tracking-wider mb-1.5">
+                              {b.title}
+                            </h4>
+                            <p className="text-gray-400 text-sm leading-relaxed font-light">
+                              {b.desc}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })()}
+            </motion.div>
           </div>
         </div>
       </section>
