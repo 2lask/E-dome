@@ -251,6 +251,21 @@ function HomePageContent() {
     { src: "/videos/parallax/reel-07.mp4" },
   ];
 
+  /* ── Texte punch affiché à côté du téléphone ─────────────────────── */
+  const phonePunch =
+    lang === "en"
+      ? "Social content captures millions of eyes — and ushers them straight out the door. Commissions stay high in a market that never consolidated its stack. And owners, prescribers, local contributors — half the living forces of the ecosystem — have nowhere to belong."
+      : lang === "th"
+        ? "คอนเทนต์โซเชียลดึงดูดสายตาเป็นล้าน — แล้วผลักออกไปทันที ค่าคอมมิชชันยังสูงในตลาดที่ไม่เคยรวมเครื่องมือเข้าด้วยกัน และเจ้าของ ผู้แนะนำ ผู้ร่วมในท้องถิ่น — ครึ่งหนึ่งของพลังของระบบนิเวศ — ไม่มีที่ให้อยู่"
+        : "Du contenu social qui capte des millions de regards — et les envoie aussitôt ailleurs. Des commissions élevées dans un marché qui n'a jamais unifié ses outils. Des particuliers, prescripteurs, contributeurs locaux : la moitié des forces vives de l'écosystème, sans endroit pour exister.";
+
+  const phonePunchEmphasis =
+    lang === "en"
+      ? "Real estate has built walls where it should have built a roof."
+      : lang === "th"
+        ? "อสังหาฯ สร้างกำแพงในที่ที่ควรสร้างหลังคา"
+        : "L'immobilier a bâti des murs là où il aurait fallu bâtir un toit.";
+
   /* ── Service cards data ──────────────────────────────────────────── */
   const services = [
     { icon: <Layers size={22} />, tagKey: "services.f1_tag", titleKey: "services.f1_title", descKey: "services.f1_desc" },
@@ -540,18 +555,6 @@ function HomePageContent() {
                   })}
                 </motion.div>
 
-                {/* ── PUNCH : pitch avec accent rouge à gauche, clôt la section ── */}
-                <motion.div
-                  {...fadeUp}
-                  className="max-w-3xl border-l-2 border-red-500/60 pl-6 py-1"
-                >
-                  <p className="text-white text-base md:text-lg leading-relaxed font-light">
-                    {data.punch}{" "}
-                    <strong className="font-semibold text-white">
-                      {data.punchEmphasis}
-                    </strong>
-                  </p>
-                </motion.div>
               </>
             );
           })()}
@@ -565,16 +568,33 @@ function HomePageContent() {
         className="relative bg-black"
         style={{ height: "300vh" }}
       >
-        <div className="sticky top-0 h-screen flex items-center justify-center px-6">
-          <div style={{ width: 250, height: 526 }}>
-            <IPhoneMockup
-              model="15-pro"
-              color="natural-titanium"
-              scale={0.6}
-              safeArea={false}
-            >
-              <ZoomParallax videos={phoneVideos} targetRef={phoneScrollRef} />
-            </IPhoneMockup>
+        <div className="sticky top-0 h-screen flex items-center px-6 sm:px-12 lg:px-20">
+          <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+            {/* Texte punch */}
+            <div className="order-2 lg:order-1 max-w-xl mx-auto lg:mx-0">
+              <div className="border-l-2 border-red-500/60 pl-6 py-1">
+                <p className="text-white text-base md:text-lg leading-relaxed font-light">
+                  {phonePunch}{" "}
+                  <strong className="font-semibold text-white">
+                    {phonePunchEmphasis}
+                  </strong>
+                </p>
+              </div>
+            </div>
+
+            {/* iPhone */}
+            <div className="order-1 lg:order-2 flex justify-center">
+              <div style={{ width: 250, height: 526 }}>
+                <IPhoneMockup
+                  model="15-pro"
+                  color="natural-titanium"
+                  scale={0.6}
+                  safeArea={false}
+                >
+                  <ZoomParallax videos={phoneVideos} targetRef={phoneScrollRef} />
+                </IPhoneMockup>
+              </div>
+            </div>
           </div>
         </div>
       </section>
