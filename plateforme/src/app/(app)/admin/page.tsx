@@ -118,7 +118,7 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
-      <h1 className="text-3xl font-bold text-[var(--foreground)]">Administration</h1>
+      <h1 className="text-3xl page-heading text-[var(--foreground)]">Administration</h1>
 
       {/* KPIs */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

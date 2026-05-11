@@ -824,7 +824,7 @@ export default function CreerReelPage() {
               <button
                 onClick={handlePublish}
                 style={{ ...goldBtnStyle, flex: 1, justifyContent: "center" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#b8845a")}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#1583c9")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "#1e9df1")}
               >
                 <Check size={16} /> Publier le Reel

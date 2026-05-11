@@ -99,7 +99,7 @@ export default function EvenementsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Événements</h1>
+            <h1 className="text-3xl page-heading">Événements</h1>
             <p className="text-[var(--text-secondary)] mt-1">Découvrez les événements de la communauté</p>
           </div>
           <div className="flex gap-2">
@@ -110,7 +110,7 @@ export default function EvenementsPage() {
               Calendrier
             </button>
             {canCreateEvent && (
-              <a href="/evenements/creer" className="px-4 py-2 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl text-sm font-medium transition-colors">
+              <a href="/evenements/creer" className="px-4 py-2 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl text-sm font-medium transition-colors">
                 + Cr&eacute;er
               </a>
             )}
@@ -208,7 +208,7 @@ export default function EvenementsPage() {
                           ) : isFull ? (
                             <span className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium">Complet</span>
                           ) : (
-                            <button onClick={() => setRegisteringId(ev.id)} className="px-3 py-1.5 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-lg text-sm font-medium transition-colors">
+                            <button onClick={() => setRegisteringId(ev.id)} className="px-3 py-1.5 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-lg text-sm font-medium transition-colors">
                               S&apos;inscrire
                             </button>
                           )}
@@ -280,7 +280,7 @@ export default function EvenementsPage() {
                 <button onClick={() => setRegisteringId(null)} className="flex-1 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
                   Annuler
                 </button>
-                <button onClick={() => handleRegister(ev.id)} className="flex-1 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+                <button onClick={() => handleRegister(ev.id)} className="flex-1 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
                   Confirmer
                 </button>
               </div>

@@ -145,7 +145,7 @@ export default function ParametresPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 animate-fade-in">
-      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Paramètres</h1>
+      <h1 className="text-2xl page-heading text-[var(--foreground)] mb-6">Paramètres</h1>
 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar */}
@@ -226,7 +226,7 @@ export default function ParametresPage() {
 
               <button
                 onClick={() => showToast("Profil sauvegardé !")}
-                className="px-6 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a] transition-colors"
+                className="px-6 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9] transition-colors"
               >
                 Sauvegarder
               </button>
@@ -272,7 +272,7 @@ export default function ParametresPage() {
 
                 <button
                   onClick={() => showToast("Mot de passe mis à jour !")}
-                  className="px-6 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a]"
+                  className="px-6 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9]"
                 >
                   Mettre à jour
                 </button>
@@ -314,7 +314,7 @@ export default function ParametresPage() {
                           onClick={() => {
                             if (verifyCode.length === 6) { setTwoFAVerified(true); showToast("2FA activé !"); }
                           }}
-                          className="px-4 py-2 text-sm rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a]"
+                          className="px-4 py-2 text-sm rounded-lg bg-[#1e9df1] text-white hover:bg-[#1583c9]"
                         >
                           Vérifier
                         </button>
@@ -437,7 +437,7 @@ export default function ParametresPage() {
                   <button
                     onClick={createAlert}
                     className="px-5 py-2.5 text-sm rounded-xl text-white font-medium transition-colors hover:opacity-90"
-                    style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}
+                    style={{ background: "#1e9df1" }}
                   >
                     Créer l&apos;alerte
                   </button>
@@ -531,7 +531,7 @@ export default function ParametresPage() {
                     <p className="text-sm text-[var(--text-secondary)] mb-4">
                       Votre demande d'exportation a été prise en compte. Vous recevrez un email avec un lien de téléchargement dans les 48 heures.
                     </p>
-                    <button onClick={() => { setShowGDPR(false); showToast("Demande envoyée !"); }} className="w-full py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a]">
+                    <button onClick={() => { setShowGDPR(false); showToast("Demande envoyée !"); }} className="w-full py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9]">
                       Compris
                     </button>
                   </div>
@@ -555,7 +555,7 @@ export default function ParametresPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => showToast("Rechargement en cours...")}
-                      className="px-4 py-2 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a] transition-colors"
+                      className="px-4 py-2 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9] transition-colors"
                     >
                       Recharger
                     </button>

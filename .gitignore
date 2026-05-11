@@ -48,6 +48,14 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Claude Code (config locale, memory, agents)
+.claude/
+**/.claude/
+
+# Dossier de travail/inspiration local — vidéos MP4, photos,
+# Lottie, audits, prompts. Plusieurs centaines de Mo, à ne PAS pousser.
+informations/
+
 # Dependencies
 node_modules/
 

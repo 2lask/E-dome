@@ -231,7 +231,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   if (!property) {
     return (
       <div className="max-w-5xl mx-auto py-20 text-center">
-        <h1 className="text-2xl font-bold text-[var(--foreground)] mb-4">Bien introuvable</h1>
+        <h1 className="text-2xl page-heading text-[var(--foreground)] mb-4">Bien introuvable</h1>
         <p className="text-[var(--text-secondary)] mb-6">Le bien avec l&apos;identifiant &quot;{id}&quot; n&apos;existe pas.</p>
         <Link href="/explorer" className="px-6 py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors">
           Retour à l&apos;explorer
@@ -375,7 +375,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           {/* Title, price, badges */}
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-[var(--foreground)] mb-2">
+              <h1 className="text-2xl md:text-3xl page-heading text-[var(--foreground)] mb-2">
                 {property.title}
               </h1>
               <div className="flex items-center gap-3 flex-wrap">
@@ -384,8 +384,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   {property.location.address && `${property.location.address}, `}
                   {property.location.city}, {property.location.country}
                 </span>
-                <span className="flex items-center gap-1 text-[#1e9df1]">
-                  <Star className="w-4 h-4 fill-[#1e9df1]" />
+                <span className="flex items-center gap-1 text-amber-400">
+                  <Star className="w-4 h-4 fill-amber-400" />
                   {property.rating} ({reviews.length > 0 ? reviews.length : property.reviewCount} avis)
                 </span>
               </div>
@@ -785,7 +785,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           {/* Reviews */}
           <div className="mb-8">
             <h2 className="text-lg font-bold text-[var(--foreground)] mb-4 flex items-center gap-2">
-              <Star className="w-5 h-5 fill-[#1e9df1] text-[#1e9df1]" />
+              <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
               {averageRating} · {reviews.length} avis
             </h2>
 
@@ -797,7 +797,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   <button key={star} onClick={() => setReviewRating(star)} className="cursor-pointer">
                     <Star
                       className={`w-6 h-6 transition-colors ${
-                        star <= reviewRating ? "fill-[#1e9df1] text-[#1e9df1]" : "text-[var(--text-muted)]"
+                        star <= reviewRating ? "fill-amber-400 text-amber-400" : "text-[var(--text-muted)]"
                       }`}
                     />
                   </button>
@@ -845,7 +845,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                       <div className="flex items-center gap-2">
                         <div className="flex">
                           {Array.from({ length: 5 }, (_, i) => (
-                            <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? "fill-[#1e9df1] text-[#1e9df1]" : "text-[var(--text-muted)]"}`} />
+                            <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-[var(--text-muted)]"}`} />
                           ))}
                         </div>
                         <span className="text-xs text-[var(--text-muted)]">{formatDate(review.date)}</span>
@@ -872,7 +872,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <div className="flex-1 px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-xs text-[var(--text-secondary)] truncate">
                 edome.world/ref/bien/AP-{Math.floor(Math.random()*9000+1000)}/{property.id}
               </div>
-              <button onClick={() => { navigator.clipboard.writeText(`edome.world/ref/bien/${property.id}`); setCopyFeedback(true); setTimeout(() => setCopyFeedback(false), 2000); }} className="px-3 py-2 rounded-lg bg-[#1e9df1] text-white text-xs font-medium hover:bg-[#b8845a]">
+              <button onClick={() => { navigator.clipboard.writeText(`edome.world/ref/bien/${property.id}`); setCopyFeedback(true); setTimeout(() => setCopyFeedback(false), 2000); }} className="px-3 py-2 rounded-lg bg-[#1e9df1] text-white text-xs font-medium hover:bg-[#1583c9]">
                 {copyFeedback ? "✓ Copié" : "📋 Copier"}
               </button>
             </div>
@@ -926,7 +926,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     <div className="flex items-center gap-3 mt-1 text-xs text-[var(--text-muted)]">
                       <span>{sp.location.city}</span>
                       <span className="flex items-center gap-0.5">
-                        <Star className="w-3 h-3 fill-[#1e9df1] text-[#1e9df1]" /> {sp.rating}
+                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {sp.rating}
                       </span>
                     </div>
                   </div>
@@ -1084,7 +1084,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             )}
             <div className="flex items-center gap-4 text-sm text-[var(--text-muted)] mb-4">
               <span className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-[#1e9df1] text-[#1e9df1]" /> {property.host.stats.rating}
+                <Star className="w-4 h-4 fill-amber-400 text-amber-400" /> {property.host.stats.rating}
               </span>
               <span>{property.host.stats.reviews} avis</span>
               {property.host.responseTime && <span>Rép. {property.host.responseTime}</span>}
@@ -1337,7 +1337,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 setShowBoostModal(false);
               }}
               className="w-full py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
-              style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)", color: "#fff" }}
+              style={{ background: "#1e9df1", color: "#fff" }}
             >
               <Rocket className="w-4 h-4" /> Confirmer le boost
             </button>

@@ -95,7 +95,7 @@ export default function NotificationsPage() {
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-6 animate-fade-in">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Notifications</h1>
+        <h1 className="text-2xl page-heading text-[var(--foreground)]">Notifications</h1>
         {counts.all > 0 && (
           <button
             onClick={() => {

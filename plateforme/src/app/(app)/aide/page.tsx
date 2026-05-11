@@ -81,7 +81,7 @@ export default function AidePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
       <div className="text-center space-y-3">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Centre d&apos;aide</h1>
+        <h1 className="text-3xl page-heading text-[var(--foreground)]">Centre d&apos;aide</h1>
         <p className="text-[var(--text-secondary)]">Trouvez rapidement des réponses à vos questions</p>
       </div>
 

@@ -819,7 +819,7 @@ export default function CreerStoryPage() {
             cursor: "pointer", fontWeight: 600, transition: "all 0.2s",
             boxShadow: "0 4px 15px rgba(30, 157, 242,0.3)",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "#b8845a")}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#1583c9")}
           onMouseLeave={(e) => (e.currentTarget.style.background = "#1e9df1")}
         >
           <Check size={16} /> Publier la story

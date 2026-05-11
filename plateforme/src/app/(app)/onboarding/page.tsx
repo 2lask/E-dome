@@ -349,7 +349,7 @@ export default function OnboardingPage() {
             {step < totalSteps ? (
               <button
                 onClick={() => setStep(step + 1)}
-                className="flex-1 py-3 rounded-xl bg-[#1e9df1] hover:bg-[#b8864f] text-white font-semibold flex items-center justify-center gap-2 transition-colors"
+                className="flex-1 py-3 rounded-xl bg-[#1e9df1] hover:bg-[#1583c9] text-white font-semibold flex items-center justify-center gap-2 transition-colors"
               >
                 Suivant
                 <ArrowRight className="w-5 h-5" />
@@ -357,7 +357,7 @@ export default function OnboardingPage() {
             ) : (
               <button
                 onClick={() => router.push("/feed")}
-                className="flex-1 py-3 rounded-xl bg-[#1e9df1] hover:bg-[#b8864f] text-white font-semibold flex items-center justify-center gap-2 transition-colors"
+                className="flex-1 py-3 rounded-xl bg-[#1e9df1] hover:bg-[#1583c9] text-white font-semibold flex items-center justify-center gap-2 transition-colors"
               >
                 Commencer
                 <Sparkles className="w-5 h-5" />

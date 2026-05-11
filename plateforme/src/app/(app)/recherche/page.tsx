@@ -337,7 +337,7 @@ function SearchResults() {
 export default function RecherchePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
-      <h1 className="text-3xl font-bold text-[var(--foreground)] mb-8">Recherche</h1>
+      <h1 className="text-3xl page-heading text-[var(--foreground)] mb-8">Recherche</h1>
       <Suspense
         fallback={
           <div className="text-center py-16">

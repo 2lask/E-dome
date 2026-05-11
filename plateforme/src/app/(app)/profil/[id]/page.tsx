@@ -2,6 +2,7 @@
 
 import React, { useState, use } from "react";
 import Link from "next/link";
+import { Award, MapPin } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { roleLabels } from "@/lib/types";
 import type { Property, User } from "@/lib/types";
@@ -490,17 +491,23 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
       <div className="px-4 md:px-6 -mt-16 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end gap-4">
           <img src={user.avatar} alt="" className="w-28 h-28 rounded-full object-cover border-4 border-[var(--background)]" />
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold text-[var(--foreground)]">
-              {user.firstName} {user.lastName}
-            </h1>
-            {FONDATEUR_BADGES[id] && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style={{ background: "linear-gradient(135deg, #d4a832, #f5d679, #c9961e)", color: "#3d2b00", border: "1px solid rgba(212,168,50,0.4)", boxShadow: "0 2px 8px rgba(212,168,50,0.3)" }}>
-                🏅 Membre Fondateur #{FONDATEUR_BADGES[id]}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h1 className="text-2xl page-heading text-[var(--foreground)]">
+                {user.firstName} {user.lastName}
+              </h1>
+              {FONDATEUR_BADGES[id] && (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/30">
+                  <Award className="w-3 h-3" /> Membre Fondateur #{FONDATEUR_BADGES[id]}
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] flex items-center gap-1.5 mt-1">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-[#1e9df1]/10 text-[#1e9df1]">
+                {roleLabels[user.activeRole]}
               </span>
-            )}
-            <p className="text-sm text-[var(--text-secondary)]">
-              {roleLabels[user.activeRole]} - {user.city}, {user.country}
+              <MapPin className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+              {user.city}, {user.country}
             </p>
           </div>
           <div className="flex gap-2 self-start md:self-auto">
@@ -509,7 +516,7 @@ export default function PublicProfilPage({ params }: { params: Promise<{ id: str
               className={`px-5 py-2 text-sm rounded-xl transition-colors flex items-center gap-1.5 ${
                 following
                   ? "bg-[var(--card)] border border-[#1e9df1] text-[#1e9df1]"
-                  : "bg-[#1e9df1] text-white hover:bg-[#b8845a]"
+                  : "bg-[#1e9df1] text-white hover:bg-[#1583c9]"
               }`}
             >
               <LottiePlayer src="/lottie/lottieflow-social-networks-15-4-000000-easey.json" width={24} height={24} />

@@ -138,10 +138,10 @@ export default function PaiementPage() {
           <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
-          <h1 className="text-2xl font-bold mb-2">Paiement reussi !</h1>
+          <h1 className="text-2xl page-heading mb-2">Paiement reussi !</h1>
           <p className="text-[var(--text-secondary)] mb-2">Montant : <strong className="text-[#1e9df1]">{formatPrice(total)}</strong></p>
           <p className="text-sm text-[var(--text-muted)] mb-6">Un email de confirmation a été envoyé.</p>
-          <a href="/reservations" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
+          <a href="/reservations" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors inline-block">
             Voir mes reservations
           </a>
         </div>
@@ -155,7 +155,7 @@ export default function PaiementPage() {
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Paiement</h1>
+        <h1 className="text-3xl page-heading mb-8">Paiement</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* ── Left: Payment form ──────────────────────────────────── */}
@@ -247,7 +247,7 @@ export default function PaiementPage() {
             <button
               onClick={handlePay}
               disabled={processing}
-              className={`w-full py-4 rounded-xl font-medium text-lg transition-colors ${processing ? "bg-[#1e9df1]/60 text-white" : "bg-[#1e9df1] hover:bg-[#b8845a] text-white"}`}
+              className={`w-full py-4 rounded-xl font-medium text-lg transition-colors ${processing ? "bg-[#1e9df1]/60 text-white" : "bg-[#1e9df1] hover:bg-[#1583c9] text-white"}`}
             >
               {processing ? (
                 <span className="flex items-center justify-center gap-2">
@@ -344,7 +344,7 @@ export default function PaiementPage() {
               <button
                 onClick={verify3DS}
                 disabled={code3DS.some((d) => !d) || verifying3DS}
-                className={`flex-1 py-3 rounded-xl font-medium transition-colors ${code3DS.every((d) => d) && !verifying3DS ? "bg-[#1e9df1] hover:bg-[#b8845a] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}
+                className={`flex-1 py-3 rounded-xl font-medium transition-colors ${code3DS.every((d) => d) && !verifying3DS ? "bg-[#1e9df1] hover:bg-[#1583c9] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}
               >
                 {verifying3DS ? (
                   <span className="flex items-center justify-center gap-2">

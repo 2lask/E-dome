@@ -132,7 +132,7 @@ export default function StatistiquesPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Statistiques</h1>
+        <h1 className="text-3xl page-heading text-[var(--foreground)]">Statistiques</h1>
         <div className="flex gap-1 p-1 rounded-lg bg-[var(--card)] border border-[var(--card-border)]">
           {periods.map((p) => (
             <button

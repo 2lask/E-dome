@@ -86,7 +86,7 @@ export default function InvestisseursPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--foreground)]">Tableau de bord investisseur</h1>
+          <h1 className="text-3xl page-heading text-[var(--foreground)]">Tableau de bord investisseur</h1>
           <p className="text-[var(--text-secondary)]">Suivez et pilotez vos investissements immobiliers</p>
         </div>
         <div className="flex gap-2">

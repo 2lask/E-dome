@@ -68,9 +68,9 @@ export default function ProposerServicePage() {
           <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
-          <h1 className="text-2xl font-bold mb-2">Service publié !</h1>
+          <h1 className="text-2xl page-heading mb-2">Service publié !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre service &quot;{form.titre}&quot; est maintenant disponible sur la plateforme.</p>
-          <a href="/services" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
+          <a href="/services" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors inline-block">
             Voir les services
           </a>
         </div>
@@ -81,7 +81,7 @@ export default function ProposerServicePage() {
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Proposer un service</h1>
+        <h1 className="text-3xl page-heading mb-2">Proposer un service</h1>
         <p className="text-[var(--text-secondary)] mb-8">Décrivez le service que vous souhaitez proposer</p>
 
         <div className="space-y-5">
@@ -150,7 +150,7 @@ export default function ProposerServicePage() {
             <label className={labelCls}>Photos (URLs)</label>
             <div className="flex gap-2 mb-2">
               <input className={`${inputCls} flex-1`} placeholder="https://..." value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} />
-              <button onClick={addPhoto} className="px-4 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+              <button onClick={addPhoto} className="px-4 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
                 Ajouter
               </button>
             </div>
@@ -168,7 +168,7 @@ export default function ProposerServicePage() {
             )}
           </div>
 
-          <button onClick={handlePublish} className="w-full py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors mt-4">
+          <button onClick={handlePublish} className="w-full py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors mt-4">
             Publier le service
           </button>
         </div>

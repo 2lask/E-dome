@@ -39,9 +39,9 @@ export default function EvenementDetailPage() {
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="text-6xl">📅</div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Événement introuvable</h1>
+          <h1 className="text-2xl page-heading text-[var(--foreground)]">Événement introuvable</h1>
           <p className="text-[var(--text-secondary)]">Cet événement n&apos;existe pas ou a été supprimé.</p>
-          <button onClick={() => router.push("/evenements")} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+          <button onClick={() => router.push("/evenements")} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
             Retour aux événements
           </button>
         </div>
@@ -74,7 +74,7 @@ export default function EvenementDetailPage() {
           <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${TYPE_COLORS[event.type] || "bg-gray-500/20 text-gray-400"}`}>
             {event.type}
           </span>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{event.titre}</h1>
+          <h1 className="text-2xl sm:text-3xl page-heading text-white mb-2">{event.titre}</h1>
           <p className="text-white/80 text-sm">Par {event.intervenant}</p>
         </div>
       </div>
@@ -165,7 +165,7 @@ export default function EvenementDetailPage() {
               ) : (
                 <button
                   onClick={() => setShowConfirm(true)}
-                  className="w-full py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors"
+                  className="w-full py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors"
                 >
                   S&apos;inscrire
                 </button>
@@ -215,7 +215,7 @@ export default function EvenementDetailPage() {
               <button onClick={() => setShowConfirm(false)} className="flex-1 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
                 Annuler
               </button>
-              <button onClick={handleRegister} className="flex-1 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+              <button onClick={handleRegister} className="flex-1 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
                 Confirmer
               </button>
             </div>

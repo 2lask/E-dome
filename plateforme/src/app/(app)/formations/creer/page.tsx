@@ -158,9 +158,9 @@ export default function CreerFormationPage() {
           <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
-          <h1 className="text-2xl font-bold mb-2">Formation publiée !</h1>
+          <h1 className="text-2xl page-heading mb-2">Formation publiée !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre formation &quot;{form.titre}&quot; est maintenant disponible.</p>
-          <a href="/formations" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors inline-block">
+          <a href="/formations" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors inline-block">
             Voir mes formations
           </a>
         </div>
@@ -175,7 +175,7 @@ export default function CreerFormationPage() {
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Créer une formation</h1>
+        <h1 className="text-3xl page-heading mb-2">Créer une formation</h1>
         <p className="text-[var(--text-secondary)] mb-8">Étape {step} sur 4</p>
 
         {/* Steps indicator */}
@@ -230,7 +230,7 @@ export default function CreerFormationPage() {
               <div><label className={labelCls}>Durée estimée</label><input className={inputCls} placeholder="Ex: 12h" value={form.duree} onChange={(e) => updateField("duree", e.target.value)} /></div>
             </div>
             <div className="flex justify-end">
-              <button onClick={() => setStep(2)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(2)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -258,7 +258,7 @@ export default function CreerFormationPage() {
                       <button onClick={() => removeLesson(mod.id, les.id)} className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors flex-shrink-0"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
                     </div>
                   ))}
-                  <button onClick={() => addLesson(mod.id)} className="text-sm text-[#1e9df1] hover:text-[#b8845a] transition-colors">+ Ajouter une leçon</button>
+                  <button onClick={() => addLesson(mod.id)} className="text-sm text-[#1e9df1] hover:text-[#1583c9] transition-colors">+ Ajouter une leçon</button>
                 </div>
               </div>
             ))}
@@ -267,7 +267,7 @@ export default function CreerFormationPage() {
             </button>
             <div className="flex justify-between">
               <button onClick={() => setStep(1)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(3)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(3)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -300,7 +300,7 @@ export default function CreerFormationPage() {
             </button>
             <div className="flex justify-between">
               <button onClick={() => setStep(2)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(4)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(4)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -346,7 +346,7 @@ export default function CreerFormationPage() {
 
             <div className="flex justify-between">
               <button onClick={() => setStep(3)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={handlePublish} className="px-8 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+              <button onClick={handlePublish} className="px-8 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
                 Publier la formation
               </button>
             </div>

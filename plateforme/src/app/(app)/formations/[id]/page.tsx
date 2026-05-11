@@ -87,7 +87,7 @@ function Stars({ rating, size = "sm" }: { rating: number; size?: "sm" | "md" }) 
   return (
     <span className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((s) => (
-        <svg key={s} className={`${cls} ${s <= Math.round(rating) ? "text-[#1e9df1]" : "text-[var(--text-muted)]"}`} fill="currentColor" viewBox="0 0 20 20">
+        <svg key={s} className={`${cls} ${s <= Math.round(rating) ? "text-amber-400" : "text-[var(--text-muted)]"}`} fill="currentColor" viewBox="0 0 20 20">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
@@ -160,7 +160,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 max-w-7xl mx-auto">
           <span className="inline-block px-3 py-1 bg-[#1e9df1] text-white text-xs font-medium rounded-full mb-3">{formation.category}</span>
-          <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">{formation.title}</h1>
+          <h1 className="text-2xl md:text-4xl page-heading text-white mb-2">{formation.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-white/80 text-sm">
             <span>{LEVEL_LABELS[formation.level]}</span>
             <span>{formation.duration}</span>
@@ -200,7 +200,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                   <div className="h-full bg-[#1e9df1] rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }} />
                 </div>
                 {allDone && (
-                  <button onClick={() => setShowCertificate(true)} className="mt-3 px-4 py-2 bg-[#1e9df1] text-white rounded-lg text-sm font-medium hover:bg-[#b8845a] transition-colors">
+                  <button onClick={() => setShowCertificate(true)} className="mt-3 px-4 py-2 bg-[#1e9df1] text-white rounded-lg text-sm font-medium hover:bg-[#1583c9] transition-colors">
                     Obtenir mon certificat
                   </button>
                 )}
@@ -293,7 +293,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
             <div className="sticky top-4 p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl space-y-4">
               <div className="text-3xl font-bold text-[#1e9df1]">{formatPrice(formation.price)}</div>
               {enrollState === "idle" && (
-                <button onClick={handleEnroll} className="w-full py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+                <button onClick={handleEnroll} className="w-full py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
                   S&apos;inscrire à la formation
                 </button>
               )}
@@ -379,7 +379,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
               <button onClick={() => setShowCertificate(false)} className="flex-1 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
                 Fermer
               </button>
-              <button className="flex-1 py-3 bg-[#1e9df1] hover:bg-[#b8845a] text-white rounded-xl font-medium transition-colors">
+              <button className="flex-1 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
                 Télécharger PDF
               </button>
             </div>

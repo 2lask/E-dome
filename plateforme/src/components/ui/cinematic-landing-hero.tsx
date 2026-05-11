@@ -3,7 +3,13 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Bell, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  ArchRoof,
+  ArchFactoryFragment,
+  ArchClockTower,
+} from "@/components/landing/arch-sketches";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -157,6 +163,14 @@ const INJECTED_STYLES = `
       stroke-dashoffset: 402;
       stroke-linecap: round;
   }
+
+  @keyframes cinematic-arrow-bounce {
+      0%, 100% { transform: translateY(0); opacity: 0.55; }
+      50% { transform: translateY(5px); opacity: 1; }
+  }
+  .cinematic-scroll-arrow {
+      animation: cinematic-arrow-bounce 1.6s ease-in-out infinite;
+  }
 `;
 
 export interface CinematicHeroProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -178,6 +192,22 @@ export interface CinematicHeroProps extends React.HTMLAttributes<HTMLDivElement>
   phoneEyebrow?: string;
   phoneTitle?: string;
   phoneAvatar?: string;
+  /** Number rendered inside the bell badge in the phone header. 0 hides it. */
+  phoneBellCount?: number;
+  /** Top label of the earnings widget (e.g. "This week"). */
+  phoneStatLabel?: string;
+  /** Delta text shown at the bottom of the earnings widget (e.g. "+18%"). */
+  phoneStatDelta?: string;
+  /** 3×2 grid of app modules (icon, label, accent color). */
+  phoneModules?: { icon: React.ReactNode; label: string; color?: string }[];
+  /** Notification rows shown below the modules grid. */
+  phoneNotifications?: {
+    icon: React.ReactNode;
+    title: string;
+    subtitle: string;
+    time: string;
+    color?: string;
+  }[];
 }
 
 export function CinematicHero({
@@ -200,12 +230,33 @@ export function CinematicHero({
   phoneEyebrow = "Today",
   phoneTitle = "Journey",
   phoneAvatar = "JS",
+  phoneBellCount = 3,
+  phoneStatLabel = "This week",
+  phoneStatDelta = "+18%",
+  phoneModules,
+  phoneNotifications,
   className,
   ...props
 }: CinematicHeroProps) {
+  const fallbackModules = [
+    { icon: "📱", label: "Feed", color: "#1e9df1" },
+    { icon: "🏠", label: "Listings", color: "#22c55e" },
+    { icon: "🎥", label: "Live", color: "#ef4444" },
+    { icon: "🎓", label: "Campus", color: "#a855f7" },
+    { icon: "🤝", label: "Network", color: "#f59e0b" },
+    { icon: "🛠", label: "Pros", color: "#06b6d4" },
+  ];
+  const fallbackNotifications = [
+    { icon: "💸", title: "+250 · Referral", subtitle: "1 conversion", time: "2m", color: "#22c55e" },
+    { icon: "✅", title: "Booking accepted", subtitle: "4 nights", time: "12m", color: "#1e9df1" },
+    { icon: "🎙", title: "Live started", subtitle: "Now streaming", time: "1h", color: "#ef4444" },
+  ];
+  const modules = phoneModules ?? fallbackModules;
+  const notifications = phoneNotifications ?? fallbackNotifications;
   const containerRef = useRef<HTMLDivElement>(null);
   const mainCardRef = useRef<HTMLDivElement>(null);
   const mockupRef = useRef<HTMLDivElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
 
   useEffect(() => {
@@ -246,25 +297,49 @@ export function CinematicHero({
       gsap.set(".main-card", { y: window.innerHeight + 200, autoAlpha: 1 });
       gsap.set([".card-left-text", ".card-right-text", ".mockup-scroll-wrapper", ".floating-badge", ".phone-widget"], { autoAlpha: 0 });
       gsap.set(".cta-wrapper", { autoAlpha: 0, scale: 0.8, filter: "blur(30px)" });
+      gsap.set(".cta-corner", { autoAlpha: 0, scale: 0.85, y: 20 });
 
       const introTl = gsap.timeline({ delay: 0.3 });
       introTl
         .to(".text-track", { duration: 1.8, autoAlpha: 1, y: 0, scale: 1, filter: "blur(0px)", rotationX: 0, ease: "expo.out" })
         .to(".text-days", { duration: 1.4, clipPath: "inset(0 0% 0 0)", ease: "power4.inOut" }, "-=1.0");
 
+      /* Barre de progression scroll — apparaît une fois la révélation
+         (texte + téléphone + badges) entièrement terminée (~50 % du pin),
+         puis se remplit linéairement de 0 à 100 % jusqu'à la fin du
+         composant. Pilotée en DOM direct via onUpdate pour éviter les
+         re-renders React à chaque frame. */
+      const REVEAL_END = 0.58;
+      gsap.set(progressBarRef.current, { autoAlpha: 0, y: 12 });
+
       const scrollTl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=7000",
+          end: "+=6500",
           pin: true,
           scrub: 1,
           anticipatePin: 1,
+          onUpdate: (self) => {
+            const p = self.progress;
+            const bar = progressBarRef.current;
+            if (!bar) return;
+            // Fade in juste avant REVEAL_END (le contenu cinematic est
+            // entièrement révélé). Fade out tôt — synchronisé avec la
+            // sortie du contenu cinematic (mockup, card, side texts) qui
+            // commence vers le tag "exit" du timeline (~ progress 0.62).
+            const fadeIn = Math.min(1, Math.max(0, (p - (REVEAL_END - 0.05)) / 0.05));
+            const fadeOut = 1 - Math.min(1, Math.max(0, (p - 0.62) / 0.08));
+            const opacity = fadeIn * fadeOut;
+            bar.style.opacity = String(opacity);
+            bar.style.visibility = opacity > 0.01 ? "visible" : "hidden";
+            bar.style.transform = `translate(-50%, ${(1 - fadeIn) * 12}px)`;
+          },
         },
       });
 
       scrollTl
-        .to([".hero-text-wrapper", ".bg-grid-theme"], { scale: 1.15, filter: "blur(20px)", opacity: 0.2, ease: "power2.inOut", duration: 2 }, 0)
+        .to([".hero-text-wrapper", ".bg-grid-theme", ".arch-roof-wrapper"], { scale: 1.15, filter: "blur(20px)", opacity: 0.2, ease: "power2.inOut", duration: 2 }, 0)
         .to(".main-card", { y: 0, ease: "power3.inOut", duration: 2 }, 0)
         .to(".main-card", { width: "100%", height: "100%", borderRadius: "0px", ease: "power3.inOut", duration: 1.5 })
         .fromTo(".mockup-scroll-wrapper",
@@ -277,22 +352,111 @@ export function CinematicHero({
         .fromTo(".floating-badge", { y: 100, autoAlpha: 0, scale: 0.7, rotationZ: -10 }, { y: 0, autoAlpha: 1, scale: 1, rotationZ: 0, ease: "back.out(1.5)", duration: 1.5, stagger: 0.2 }, "-=2.0")
         .fromTo(".card-left-text", { x: -50, autoAlpha: 0 }, { x: 0, autoAlpha: 1, ease: "power4.out", duration: 1.5 }, "-=1.5")
         .fromTo(".card-right-text", { x: 50, autoAlpha: 0, scale: 0.8 }, { x: 0, autoAlpha: 1, scale: 1, ease: "expo.out", duration: 1.5 }, "<")
-        .to({}, { duration: 2.5 })
-        .set(".hero-text-wrapper", { autoAlpha: 0 })
-        .set(".cta-wrapper", { autoAlpha: 1 })
-        .to({}, { duration: 1.5 })
-        .to([".mockup-scroll-wrapper", ".floating-badge", ".card-left-text", ".card-right-text"], {
-          scale: 0.9, y: -40, z: -200, autoAlpha: 0, ease: "power3.in", duration: 1.2, stagger: 0.05,
-        })
-        .to(".main-card", {
-          width: isMobile ? "92vw" : "85vw",
-          height: isMobile ? "92vh" : "85vh",
-          borderRadius: isMobile ? "32px" : "40px",
-          ease: "expo.inOut",
-          duration: 1.8,
-        }, "pullback")
-        .to(".cta-wrapper", { scale: 1, filter: "blur(0px)", ease: "expo.inOut", duration: 1.8 }, "pullback")
-        .to(".main-card", { y: -window.innerHeight - 300, ease: "power3.in", duration: 1.5 });
+        // Temps mort pour respirer après la révélation
+        .to({}, { duration: 0.5 })
+        .set([".hero-text-wrapper", ".arch-roof-wrapper"], { autoAlpha: 0 })
+
+        /* ─── Sortie chorégraphique ───────────────────────────────
+           Chaque couche part dans sa propre direction au lieu d'un
+           simple fade. Les durées et eases sont accordés pour que
+           tout converge vers la cta-wrapper qui se révèle en
+           parallèle. Tag "exit" = point d'origine commun. */
+        // Mockup iPhone : descend légèrement avec une rotation 3D
+        .to(
+          ".mockup-scroll-wrapper",
+          {
+            autoAlpha: 0,
+            scale: 0.82,
+            y: 90,
+            rotationX: 18,
+            ease: "power2.inOut",
+            duration: 2.6,
+          },
+          "exit",
+        )
+        // Badges flottants : se dispersent vers l'extérieur
+        .to(
+          ".floating-badge",
+          {
+            autoAlpha: 0,
+            x: (i) => (i === 0 ? -50 : 50),
+            y: (i) => (i === 0 ? -30 : 30),
+            scale: 0.8,
+            rotationZ: (i) => (i === 0 ? -8 : 8),
+            ease: "power2.inOut",
+            duration: 2.2,
+            stagger: 0.12,
+          },
+          "exit",
+        )
+        // Description gauche : glisse vers la gauche
+        .to(
+          ".card-left-text",
+          {
+            autoAlpha: 0,
+            x: -110,
+            ease: "power2.inOut",
+            duration: 2.4,
+          },
+          "exit",
+        )
+        // Brand name (E-DOME) : glisse vers la droite
+        .to(
+          ".card-right-text",
+          {
+            autoAlpha: 0,
+            x: 110,
+            ease: "power2.inOut",
+            duration: 2.4,
+          },
+          "exit",
+        )
+        // Card (fond bleu dégradé) : zoom-out subtil + fade
+        .to(
+          ".main-card",
+          {
+            autoAlpha: 0,
+            scale: 0.94,
+            ease: "power2.inOut",
+            duration: 2.8,
+          },
+          "exit",
+        )
+
+        /* Reveal cta-wrapper (Pas un acteur + marquee) en slide-up
+           depuis le bas, chevauche la sortie pour un vrai crossfade. */
+        .fromTo(
+          ".cta-wrapper",
+          { y: 40 },
+          {
+            autoAlpha: 1,
+            scale: 1,
+            filter: "blur(0px)",
+            y: 0,
+            ease: "power3.out",
+            duration: 1.6,
+          },
+          "exit+=1.1",
+        )
+
+        /* Coins architecturaux (factory-fragment top-left, clock-tower top-right)
+           qui apparaissent en même temps que le CTA Pas un acteur. */
+        .to(
+          ".cta-corner",
+          {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            ease: "expo.out",
+            duration: 1.6,
+            stagger: 0.18,
+          },
+          "exit+=1.3",
+        )
+
+        /* Hold court — le marquee tourne en boucle de toute façon, pas
+           besoin de bloquer le scroll trop longtemps sur cette vue. */
+        .to({}, { duration: 0.6 });
     }, containerRef);
 
     return () => ctx.revert();
@@ -331,6 +495,44 @@ export function CinematicHero({
       <style dangerouslySetInnerHTML={{ __html: INJECTED_STYLES }} />
       <div className="film-grain" aria-hidden="true" />
       <div className="bg-grid-theme absolute inset-0 z-0 pointer-events-none opacity-50" aria-hidden="true" />
+
+      {/* Toit esquissé en blanc — disparait en même temps que la tagline
+          ("L'immobilier a bâti des murs / Nous bâtissons le toit") via
+          la classe .arch-roof-wrapper bundlée dans la tween GSAP du
+          .hero-text-wrapper. */}
+      <div className="arch-roof-wrapper hidden lg:block absolute right-[-2%] top-[12%] w-[36%] z-[5] pointer-events-none">
+        <ArchRoof className="w-full h-auto" />
+      </div>
+
+      {/* Coins "Pas un acteur" — apparaissent quand le CTA fade-in (animation
+          gérée via la classe .cta-corner dans le timeline GSAP). */}
+      <div className="cta-corner hidden lg:block absolute left-[1%] top-[6%] w-[22%] z-[6] pointer-events-none">
+        <ArchFactoryFragment className="w-full h-auto" />
+      </div>
+      <div className="cta-corner hidden lg:block absolute right-[1%] top-[3%] w-[18%] z-[6] pointer-events-none">
+        <ArchClockTower className="w-full h-auto" />
+      </div>
+
+      {/* Indicateur "scroll" — apparaît une fois la révélation cinematic
+          terminée, puis disparaît avant la sortie. Petit texte au-dessus
+          d'une chevron-down qui rebondit en boucle. */}
+      <div
+        ref={progressBarRef}
+        className="absolute bottom-8 left-1/2 z-40 pointer-events-none select-none"
+        style={{ opacity: 0, visibility: "hidden", transform: "translate(-50%, 12px)" }}
+        aria-hidden="true"
+      >
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-[9px] tracking-[0.4em] uppercase font-mono font-semibold text-white/55">
+            scroll
+          </span>
+          <ChevronDown
+            size={20}
+            strokeWidth={2}
+            className="cinematic-scroll-arrow text-white/55"
+          />
+        </div>
+      </div>
 
       <div className="hero-text-wrapper absolute z-10 flex flex-col items-center justify-center text-center w-screen px-4 will-change-transform transform-style-3d">
         <h1 className="text-track gsap-reveal text-3d-matte text-5xl md:text-7xl lg:text-[6rem] font-bold tracking-tight mb-2">
@@ -383,54 +585,129 @@ export function CinematicHero({
                       <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse" />
                     </div>
 
-                    <div className="relative w-full h-full pt-12 px-5 pb-8 flex flex-col">
-                      <div className="phone-widget flex justify-between items-center mb-8">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold mb-1">{phoneEyebrow}</span>
-                          <span className="text-xl font-bold tracking-tight text-white drop-shadow-md">{phoneTitle}</span>
-                        </div>
-                        <div className="w-9 h-9 rounded-full bg-white/5 text-neutral-200 flex items-center justify-center font-bold text-sm border border-white/10 shadow-lg shadow-black/50">
-                          {phoneAvatar}
-                        </div>
-                      </div>
-
-                      <div className="phone-widget relative w-44 h-44 mx-auto flex items-center justify-center mb-8 drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)]">
-                        <svg className="absolute inset-0 w-full h-full" aria-hidden="true">
-                          <circle cx="88" cy="88" r="64" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="12" />
-                          <circle className="progress-ring" cx="88" cy="88" r="64" fill="none" stroke="#3B82F6" strokeWidth="12" />
-                        </svg>
-                        <div className="text-center z-10 flex flex-col items-center">
-                          <span className="counter-val text-4xl font-extrabold tracking-tighter text-white">0</span>
-                          <span className="text-[8px] text-blue-200/50 uppercase tracking-[0.1em] font-bold mt-0.5">{metricLabel}</span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="phone-widget widget-depth rounded-2xl p-3 flex items-center">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/5 flex items-center justify-center mr-3 border border-blue-400/20 shadow-inner">
-                            <svg className="w-4 h-4 text-blue-400 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                    <div className="relative w-full h-full pt-11 px-3.5 pb-7 flex flex-col">
+                      {/* Header — brand mark + bell with badge + avatar */}
+                      <div className="phone-widget flex justify-between items-center mb-2.5">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-6 h-6 rounded-[7px] bg-[#1e9df1] flex items-center justify-center text-[10px] font-extrabold text-white shadow-md shadow-[#1e9df1]/40">
+                            E
                           </div>
-                          <div className="flex-1">
-                            <div className="h-2 w-20 bg-neutral-300 rounded-full mb-2 shadow-inner" />
-                            <div className="h-1.5 w-12 bg-neutral-600 rounded-full shadow-inner" />
+                          <div className="flex flex-col leading-none">
+                            <span className="text-[7px] text-blue-300/70 uppercase tracking-[0.15em] font-bold">
+                              {phoneEyebrow}
+                            </span>
+                            <span className="text-[11px] font-bold tracking-tight text-white mt-0.5">
+                              {phoneTitle}
+                            </span>
                           </div>
                         </div>
-                        <div className="phone-widget widget-depth rounded-2xl p-3 flex items-center">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 flex items-center justify-center mr-3 border border-emerald-400/20 shadow-inner">
-                            <svg className="w-4 h-4 text-emerald-400 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
+                        <div className="flex items-center gap-1.5">
+                          <div className="relative">
+                            <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                              <Bell className="w-3 h-3 text-neutral-300" strokeWidth={2.2} />
+                            </div>
+                            {phoneBellCount > 0 && (
+                              <span className="absolute -top-0.5 -right-0.5 min-w-3 h-3 px-0.5 rounded-full bg-red-500 text-[7px] flex items-center justify-center font-extrabold text-white border border-[#050914]">
+                                {phoneBellCount}
+                              </span>
+                            )}
                           </div>
-                          <div className="flex-1">
-                            <div className="h-2 w-16 bg-neutral-300 rounded-full mb-2 shadow-inner" />
-                            <div className="h-1.5 w-24 bg-neutral-600 rounded-full shadow-inner" />
+                          <div className="w-6 h-6 rounded-full bg-white/5 text-neutral-200 flex items-center justify-center font-bold text-[9px] border border-white/10">
+                            {phoneAvatar}
                           </div>
                         </div>
                       </div>
 
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[120px] h-[4px] bg-white/20 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+                      {/* Earnings widget — counter animates up to metricValue */}
+                      <div className="phone-widget rounded-xl px-2.5 py-2 mb-2.5 flex items-center justify-between border border-blue-400/25 bg-gradient-to-br from-blue-500/20 via-blue-500/5 to-purple-500/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]">
+                        <div className="flex flex-col leading-none">
+                          <span className="text-[7px] text-blue-200/70 uppercase tracking-[0.18em] font-bold">
+                            {phoneStatLabel}
+                          </span>
+                          <div className="flex items-baseline gap-0.5 mt-1">
+                            <span className="text-[10px] text-white/85 font-bold">+</span>
+                            <span className="counter-val text-[17px] font-extrabold text-white tracking-tighter">
+                              0
+                            </span>
+                            <span className="text-[8px] text-white/65 font-bold uppercase ml-0.5">
+                              {metricLabel}
+                            </span>
+                          </div>
+                          <span className="text-[7px] text-emerald-400 font-bold mt-1 tracking-wide">
+                            {phoneStatDelta}
+                          </span>
+                        </div>
+                        <div className="flex items-end gap-[2px] h-7">
+                          <div className="w-[3px] h-1.5 rounded-sm bg-emerald-400/30" />
+                          <div className="w-[3px] h-2.5 rounded-sm bg-emerald-400/50" />
+                          <div className="w-[3px] h-3.5 rounded-sm bg-emerald-400/70" />
+                          <div className="w-[3px] h-5 rounded-sm bg-emerald-400/90" />
+                          <div className="w-[3px] h-7 rounded-sm bg-emerald-400" />
+                        </div>
+                      </div>
+
+                      {/* Modules grid — 3×2 = 6 app sections */}
+                      <div className="phone-widget grid grid-cols-3 gap-1.5 mb-2.5">
+                        {modules.slice(0, 6).map((m, i) => {
+                          const accent = m.color ?? "#1e9df1";
+                          return (
+                            <div
+                              key={i}
+                              className="aspect-square widget-depth rounded-xl flex flex-col items-center justify-center gap-1 px-1"
+                            >
+                              <div
+                                className="w-7 h-7 rounded-lg flex items-center justify-center text-[12px]"
+                                style={{
+                                  background: `${accent}22`,
+                                  color: accent,
+                                  boxShadow: `inset 0 0 0 1px ${accent}33`,
+                                }}
+                              >
+                                {m.icon}
+                              </div>
+                              <span className="text-[6.5px] font-bold text-white/85 tracking-[0.05em] uppercase leading-tight text-center">
+                                {m.label}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Notifications — example feed of cross-module events */}
+                      <div className="space-y-1">
+                        {notifications.slice(0, 3).map((n, i) => {
+                          const accent = n.color ?? "#1e9df1";
+                          return (
+                            <div
+                              key={i}
+                              className="phone-widget widget-depth rounded-lg pl-1.5 pr-2 py-1.5 flex items-center gap-1.5"
+                            >
+                              <div
+                                className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-[11px]"
+                                style={{
+                                  background: `${accent}22`,
+                                  color: accent,
+                                }}
+                              >
+                                {n.icon}
+                              </div>
+                              <div className="flex-1 min-w-0 leading-none">
+                                <div className="text-[8.5px] font-bold text-white truncate">
+                                  {n.title}
+                                </div>
+                                <div className="text-[7px] text-white/55 truncate mt-0.5">
+                                  {n.subtitle}
+                                </div>
+                              </div>
+                              <span className="text-[7px] text-white/40 shrink-0 font-medium">
+                                {n.time}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-[120px] h-[4px] bg-white/20 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
                     </div>
                   </div>
                 </div>

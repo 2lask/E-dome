@@ -124,7 +124,7 @@ export default function LivePage() {
       )}
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Live</h1>
+        <h1 className="text-3xl page-heading text-[var(--foreground)]">Live</h1>
         <button
           onClick={() => setShowCreateModal(true)}
           className="px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
@@ -208,7 +208,7 @@ export default function LivePage() {
           {countdown && (
             <div
               className="relative overflow-hidden rounded-2xl p-8 md:p-10 text-center"
-              style={{ background: "linear-gradient(135deg, #1e9df1 0%, #d4a574 40%, #e8c9a0 70%, #1e9df1 100%)" }}
+              style={{ background: "linear-gradient(135deg, #1e9df1 0%, #5ec1ff 50%, #1e9df1 100%)" }}
             >
               {/* Decorative circles */}
               <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-2xl" />

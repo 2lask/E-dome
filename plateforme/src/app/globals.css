@@ -158,6 +158,50 @@ body {
   color: var(--text);
   font-family: 'Poppins', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* Tabular numerals : aligne les chiffres dans les KPI/tables/prix.
+     Évite le jitter visuel quand un montant change. */
+  font-feature-settings: "tnum";
+}
+
+/* ─── Sémantique design system ─────────────────────────
+   Palette étendue au-delà de l'accent bleu unique.
+   Chaque rôle sémantique a son token, utilisable via
+   les classes Tailwind text-amber-400 etc. (déjà dispo).
+   Ces variables servent de référence pour les charts
+   et les composants partagés.
+   - accent  : CTA, liens, états actifs              (bleu)
+   - rating  : étoiles, "premium", featured           (ambre)
+   - success : confirmation, online, gain positif     (émeraude)
+   - danger  : like, suppression, alerte critique     (rose)
+   - tag     : catégorie formation / type contenu     (violet)
+   ─────────────────────────────────────────────────── */
+:root {
+  --accent: #1e9df1;
+  --accent-hover: #1583c9;
+  --rating: #fbbf24;        /* amber-400 */
+  --success: #10b981;       /* emerald-500 */
+  --success-soft: #34d399;  /* emerald-400 — pour deltas + sparklines */
+  --danger: #f43f5e;        /* rose-500 */
+  --tag: #a78bfa;           /* violet-400 */
+}
+
+/* ─── Utilitaire : H1 / titre de page éditorial ───────
+   Toutes les pages de la démo doivent utiliser
+   `.page-heading` sur leur H1 pour avoir l'identité
+   serif italique d'E-Dome (cohérent avec le landing).
+   Override le font-bold de Tailwind via la weight 400. */
+.page-heading {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+}
+
+/* Variante avec un mot italique accentué (ex. "Bon retour parmi nous.") */
+.page-heading em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
 }
 
 ::selection {

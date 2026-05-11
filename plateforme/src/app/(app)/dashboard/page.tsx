@@ -138,9 +138,20 @@ function Sparkline({ data, color = "#1e9df1" }: { data: number[]; color?: string
   const points = data
     .map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`)
     .join(" ");
+  // Path "area" pour le gradient fill (ligne + descente vers la baseline + retour)
+  const areaPath = `M0,${h} L${points} L${w},${h} Z`;
+  // Id unique par instance pour ne pas mélanger les gradients
+  const gid = `spark-${color.replace("#", "")}`;
   return (
     <svg width={w} height={h} className="flex-shrink-0">
-      <polyline fill="none" stroke={color} strokeWidth="2" points={points} />
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={areaPath} fill={`url(#${gid})`} />
+      <polyline fill="none" stroke={color} strokeWidth="1.6" points={points} />
     </svg>
   );
 }
@@ -235,7 +246,7 @@ export default function DashboardPage() {
             className="w-14 h-14 rounded-full object-cover border-2 border-[#1e9df1]"
           />
           <div>
-            <h1 className="text-xl font-bold text-[var(--foreground)]">
+            <h1 className="text-xl page-heading text-[var(--foreground)]">
               Bonjour, {currentUser.firstName}
             </h1>
             <p className="text-sm text-[var(--text-muted)] capitalize">{getDateStr()}</p>
@@ -250,7 +261,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setShowInvite(true)}
-            className="px-4 py-2 text-sm rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a] transition-colors"
+            className="px-4 py-2 text-sm rounded-lg bg-[#1e9df1] text-white hover:bg-[#1583c9] transition-colors"
           >
             Inviter
           </button>
@@ -389,21 +400,33 @@ export default function DashboardPage() {
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={revenusData}>
               <defs>
+                {/* Revenus = accent bleu E-Dome (cohérence brand) */}
                 <linearGradient id="colorRevenus" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#1e9df1" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#1e9df1" stopOpacity={0} />
                 </linearGradient>
+                {/* Commissions = émeraude (gain positif, sémantique success) */}
                 <linearGradient id="colorCommissions" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#34d399" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--card-border)" />
-              <XAxis dataKey="month" stroke="var(--text-muted)" fontSize={12} />
-              <YAxis stroke="var(--text-muted)" fontSize={12} />
-              <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--card-border)", borderRadius: 12 }} />
-              <Area type="monotone" dataKey="revenus" stroke="#6366f1" fill="url(#colorRevenus)" strokeWidth={2} />
-              <Area type="monotone" dataKey="commissions" stroke="#10b981" fill="url(#colorCommissions)" strokeWidth={2} />
+              {/* Grid très atténuée — esprit Linear/Vercel */}
+              <CartesianGrid strokeDasharray="2 6" stroke="rgba(255,255,255,0.06)" vertical={false} />
+              <XAxis dataKey="month" stroke="rgba(255,255,255,0.25)" fontSize={11} tickLine={false} axisLine={false} />
+              <YAxis stroke="rgba(255,255,255,0.25)" fontSize={11} tickLine={false} axisLine={false} width={40} />
+              <Tooltip
+                contentStyle={{
+                  background: "rgba(10,10,10,0.92)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 12,
+                  backdropFilter: "blur(8px)",
+                  fontSize: 12,
+                }}
+                cursor={{ stroke: "rgba(30,157,241,0.3)", strokeWidth: 1 }}
+              />
+              <Area type="monotone" dataKey="revenus" stroke="#1e9df1" fill="url(#colorRevenus)" strokeWidth={1.8} dot={false} activeDot={{ r: 4, fill: "#1e9df1", stroke: "#0a0a0a", strokeWidth: 2 }} />
+              <Area type="monotone" dataKey="commissions" stroke="#34d399" fill="url(#colorCommissions)" strokeWidth={1.8} dot={false} activeDot={{ r: 4, fill: "#34d399", stroke: "#0a0a0a", strokeWidth: 2 }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -535,7 +558,7 @@ export default function DashboardPage() {
                   <td className="py-3 px-2">
                     <div className="flex gap-2">
                       {r.statut === "pending" && (
-                        <button className="px-3 py-1 text-xs rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a] transition-colors">Confirmer</button>
+                        <button className="px-3 py-1 text-xs rounded-lg bg-[#1e9df1] text-white hover:bg-[#1583c9] transition-colors">Confirmer</button>
                       )}
                       <button className="px-3 py-1 text-xs rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Contacter</button>
                     </div>
@@ -838,7 +861,7 @@ export default function DashboardPage() {
               />
               <button
                 onClick={() => navigator.clipboard?.writeText("https://e-dome.ch/invite/LEO2026")}
-                className="px-4 py-2 text-sm rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a]"
+                className="px-4 py-2 text-sm rounded-lg bg-[#1e9df1] text-white hover:bg-[#1583c9]"
               >
                 Copier
               </button>

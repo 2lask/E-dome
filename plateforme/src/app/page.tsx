@@ -1,42 +1,87 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence, useTransform, type MotionValue } from "framer-motion";
 import {
   AlertTriangle,
   ArrowRight,
+  ArrowUpRight,
   Award,
   BadgeCheck,
+  Bell,
+  Boxes,
   Briefcase,
+  Building,
+  Building2,
+  Calculator,
+  Camera,
   ChevronDown,
+  ClipboardCheck,
+  ClipboardList,
   Clock,
+  Compass,
+  Crown,
   Eye,
   Gem,
   Gift,
   GraduationCap,
+  HardHat,
   Handshake,
+  Home,
+  KeyRound,
+  Lamp,
+  Landmark,
   Layers,
+  LineChart,
+  Lock,
   Mail,
   MapPin,
+  Megaphone,
   MessageCircle,
   Mic,
+  Paintbrush,
   Phone,
+  Receipt,
+  Ruler,
+  Scale,
+  Scroll,
+  Search,
+  ShieldCheck,
+  ShoppingBag,
+  Shield,
+  Sofa,
   Sparkles,
   Star,
+  Store,
+  Tags,
+  TrendingDown,
   TrendingUp,
+  UserCheck,
   Users,
   Video,
+  Wallet,
+  Wrench,
   Zap,
 } from "lucide-react";
 import { FounderBadge } from "@/components/ui/founder-badge";
 import { HeroSideStrip } from "@/components/ui/hero-side-strip";
 import { CinematicHero } from "@/components/ui/cinematic-landing-hero";
+import { Marquee } from "@/components/ui/marquee";
+import { useSlideProgress } from "@/components/landing/scroll-stage";
 import {
   LandingLanguageProvider,
   useLandingLang,
 } from "@/components/landing/landing-i18n";
 import { ScrollStage } from "@/components/landing/scroll-stage";
+import {
+  ArchTower,
+  ArchTallFacade,
+  ArchAngularVolume,
+  ArchDraftingTable,
+  ArchSmallSlab,
+  ArchCantilever,
+} from "@/components/landing/arch-sketches";
 
 /* ═══════════════════════════════════════════════════════════════════ */
 /*  ROOT                                                               */
@@ -66,16 +111,18 @@ function SectionHeading({
   title2,
   description,
 }: {
-  label: string;
+  label?: string;
   title1: string;
   title2: string;
   description?: string;
 }) {
   return (
     <div className="text-center max-w-3xl mx-auto mb-12">
-      <motion.div {...fadeUp} className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
-        {label}
-      </motion.div>
+      {label && (
+        <motion.div {...fadeUp} className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+          {label}
+        </motion.div>
+      )}
       <motion.h2
         {...fadeUp}
         className="text-4xl sm:text-5xl md:text-6xl leading-[1.1] mb-6"
@@ -160,8 +207,11 @@ function HeroBenefitsAccordion({
         <FounderBadge brand="E-DOME" title={badgeTitle} />
       </div>
 
-      {/* Liste accordéon des 6 avantages */}
-      <ul>
+      {/* Liste accordéon des 6 avantages —
+          Hover-to-open : passage de la souris sur un item l'ouvre auto-
+          matiquement (et referme les autres). Le mouseLeave sur l'UL
+          referme tout. Le click reste fonctionnel pour le tactile/clavier. */}
+      <ul onMouseLeave={() => setOpen([])}>
         {benefits.map((b, i) => {
           const Icon = ICONS[i];
           const isOpen = open.includes(i);
@@ -170,14 +220,16 @@ function HeroBenefitsAccordion({
               <button
                 type="button"
                 onClick={() => toggle(i)}
+                onMouseEnter={() => setOpen([i])}
+                onFocus={() => setOpen([i])}
                 aria-expanded={isOpen}
                 className="w-full flex items-center gap-3 py-3 text-left group"
               >
                 <span
                   className={`flex items-center justify-center w-7 h-7 rounded-full border transition-colors duration-300 ${
                     isOpen
-                      ? "border-[#1e9df1] bg-[#1e9df1] text-black"
-                      : "border-[#1e9df1]/40 bg-[#1e9df1]/5 text-[#1e9df1] group-hover:bg-[#1e9df1] group-hover:text-black"
+                      ? "border-[#f5b945] bg-[#f5b945] text-black"
+                      : "border-[#f5b945]/40 bg-[#f5b945]/5 text-[#f5b945] group-hover:bg-[#f5b945] group-hover:text-black"
                   }`}
                 >
                   <Icon size={13} strokeWidth={1.8} />
@@ -227,6 +279,557 @@ function DotDivider() {
       <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#1e9df1]/15" />
       <div className="w-1.5 h-1.5 rounded-full bg-[#1e9df1]/40" />
       <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#1e9df1]/15" />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  MOTEUR ÉCONOMIQUE — slide ScrollStage avec graphique animé en BG  */
+/*  Doit vivre dans le tree d'un <ScrollStage> (utilise useSlide-     */
+/*  Progress). slideIdx attendu = 1 dans la 2e ScrollStage.           */
+/* ═══════════════════════════════════════════════════════════════════ */
+
+/**
+ * Petit point sur la courbe de revenus. Animation one-shot : quand le
+ * slide est activé (activated = true), le point grossit avec un délai
+ * propre puis reste affiché — pas de scroll-driven, pas de retour à 0.
+ */
+function RevenueDot({
+  x,
+  y,
+  color,
+  delay,
+  activated,
+}: {
+  x: number;
+  y: number;
+  color: string;
+  delay: number;
+  activated: boolean;
+}) {
+  return (
+    <g>
+      <motion.circle
+        cx={x}
+        cy={y}
+        fill={color}
+        fillOpacity={0.14}
+        initial={{ r: 0 }}
+        animate={{ r: activated ? 9 : 0 }}
+        transition={{ duration: 0.45, delay, ease: [0.34, 1.56, 0.64, 1] }}
+      />
+      <motion.circle
+        cx={x}
+        cy={y}
+        fill={color}
+        fillOpacity={0.85}
+        initial={{ r: 0 }}
+        animate={{ r: activated ? 3.5 : 0 }}
+        transition={{ duration: 0.45, delay, ease: [0.34, 1.56, 0.64, 1] }}
+      />
+    </g>
+  );
+}
+
+function MoteurEconomiqueSlide({
+  lang,
+  slideIdx,
+}: {
+  lang: "fr" | "en" | "th";
+  slideIdx: number;
+}) {
+  /* One-shot : dès qu'on arrive sur la section (progress > seuil bas),
+     l'animation se déclenche et reste figée à 100 % par la suite. */
+  const progress = useSlideProgress(slideIdx);
+  const [activated, setActivated] = useState(false);
+  useEffect(() => {
+    const unsub = progress.on("change", (v) => {
+      if (v > 0.05) setActivated(true);
+    });
+    return unsub;
+  }, [progress]);
+
+  const heading =
+    lang === "en"
+      ? { title1: "At the financial heart", title2: "of E-Dome." }
+      : lang === "th"
+        ? { title1: "หัวใจการเงิน", title2: "ของ E-Dome" }
+        : { title1: "Au cœur financier", title2: "d'E-Dome." };
+
+  const lead =
+    lang === "en" ? (
+      <>
+        E-Dome rebuilds the financial mechanics of real estate around{" "}
+        <span className="text-white font-semibold">
+          a single principle: value stays where it's created
+        </span>
+        . No opaque margins, no fees stacked on top of the price, no invisible
+        revenues. Everything is tracked, automatic, paid at source — and every paid
+        actor gets their own real-time revenue dashboard.
+      </>
+    ) : lang === "th" ? (
+      <>
+        E-Dome สร้างกลไกการเงินของอสังหาฯ ขึ้นใหม่บน{" "}
+        <span className="text-white font-semibold">
+          หลักการเดียว: คุณค่าอยู่กับคนที่สร้างมัน
+        </span>
+        . ไม่มีกำไรซ่อน ไม่มีค่าใช้จ่ายเพิ่มในราคา ไม่มีรายได้ที่มองไม่เห็น ทุกอย่างถูกติดตาม
+        อัตโนมัติ ชำระตั้งแต่ต้นทาง — และทุกผู้รับมีแดชบอร์ดรายได้ของตัวเองแบบเรียลไทม์
+      </>
+    ) : (
+      <>
+        E-Dome rebâtit la mécanique financière de l'immobilier autour d'{" "}
+        <span className="text-white font-semibold">
+          un seul principe : la valeur reste là où elle se crée
+        </span>
+        . Pas de marges opaques, pas de frais ajoutés au prix, pas de revenus
+        invisibles. Tout est tracé, automatique, payé à la source — et chaque acteur
+        rémunéré dispose de son propre tableau de bord en temps réel.
+      </>
+    );
+
+  const chips: { icon: React.ReactNode; color: string; label: string }[] = [
+    {
+      icon: <Lock size={13} />,
+      color: "#1e9df1",
+      label: lang === "en" ? "Fixed commission" : lang === "th" ? "คอมมิชชันคงที่" : "Commission fixe",
+    },
+    {
+      icon: <ShieldCheck size={13} />,
+      color: "#a855f7",
+      label: lang === "en" ? "100% traceable" : lang === "th" ? "ตรวจสอบได้ 100%" : "100 % traçable",
+    },
+    {
+      icon: <LineChart size={13} />,
+      color: "#f59e0b",
+      label:
+        lang === "en"
+          ? "Personal dashboard"
+          : lang === "th"
+            ? "แดชบอร์ดส่วนตัว"
+            : "Dashboard personnel",
+    },
+  ];
+
+  /* Liste compacte des types d'apports rémunérés. Chaque pill décrit le
+     canal d'affiliation et le mécanisme de paiement — pas de chiffres
+     précis car les barèmes ne sont pas encore fixés. La liste n'est pas
+     exhaustive : tout produit ou service vendu sur E-Dome peut déclencher
+     une part d'apporteur (rappelé en caption juste en-dessous). */
+  const affiliations: { icon: React.ReactNode; color: string; tag: string; rate: string }[] =
+    lang === "en"
+      ? [
+          { icon: <Home size={14} />, color: "#1e9df1", tag: "Bring a host", rate: "% forever (active account)" },
+          { icon: <Users size={14} />, color: "#22c55e", tag: "Bring a client", rate: "% per booking" },
+          { icon: <MapPin size={14} />, color: "#a855f7", tag: "Bring a property", rate: "% on the sale" },
+          { icon: <GraduationCap size={14} />, color: "#f59e0b", tag: "Bring a course", rate: "% on every sale" },
+          { icon: <Briefcase size={14} />, color: "#06b6d4", tag: "Bring a service", rate: "% of the quote" },
+          { icon: <Mic size={14} />, color: "#ef4444", tag: "Bring an event", rate: "% per ticket" },
+        ]
+      : lang === "th"
+        ? [
+            { icon: <Home size={14} />, color: "#1e9df1", tag: "นำเจ้าของบ้าน", rate: "% ตลอดไป (บัญชีใช้งาน)" },
+            { icon: <Users size={14} />, color: "#22c55e", tag: "นำลูกค้า", rate: "% ต่อการจอง" },
+            { icon: <MapPin size={14} />, color: "#a855f7", tag: "นำทรัพย์สิน", rate: "% ของการขาย" },
+            { icon: <GraduationCap size={14} />, color: "#f59e0b", tag: "นำคอร์ส", rate: "% ทุกการขาย" },
+            { icon: <Briefcase size={14} />, color: "#06b6d4", tag: "นำบริการ", rate: "% ใบเสนอราคา" },
+            { icon: <Mic size={14} />, color: "#ef4444", tag: "นำอีเวนต์", rate: "% ต่อบัตร" },
+          ]
+        : [
+            { icon: <Home size={14} />, color: "#1e9df1", tag: "Amener un hôte", rate: "% pour toujours (compte actif)" },
+            { icon: <Users size={14} />, color: "#22c55e", tag: "Amener un client", rate: "% par réservation" },
+            { icon: <MapPin size={14} />, color: "#a855f7", tag: "Amener un bien", rate: "% sur la vente" },
+            { icon: <GraduationCap size={14} />, color: "#f59e0b", tag: "Amener une formation", rate: "% à chaque vente" },
+            { icon: <Briefcase size={14} />, color: "#06b6d4", tag: "Amener un prestataire", rate: "% du devis" },
+            { icon: <Mic size={14} />, color: "#ef4444", tag: "Amener un événement", rate: "% par billet" },
+          ];
+
+  return (
+    <section className="relative scroll-slide bg-black overflow-hidden">
+      {/* ── BG : graphique linéaire qui se trace de bas-gauche en haut-droite,
+              piloté par le progress du slide (la courbe naît au scroll). ── */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        {/* Grille horizontale */}
+        {[20, 40, 60, 80].map((y) => (
+          <div
+            key={`h-${y}`}
+            className="absolute inset-x-0 h-px bg-white/[0.035]"
+            style={{ top: `${y}%` }}
+          />
+        ))}
+        {/* Grille verticale (très subtile) */}
+        {[15, 30, 45, 60, 75, 90].map((x) => (
+          <div
+            key={`v-${x}`}
+            className="absolute top-0 bottom-0 w-px bg-white/[0.025]"
+            style={{ left: `${x}%` }}
+          />
+        ))}
+
+        <svg
+          viewBox="0 0 1200 800"
+          preserveAspectRatio="none"
+          className="absolute inset-0 h-full w-full"
+        >
+          <defs>
+            <linearGradient id="rev-line" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stopColor="#1e9df1" stopOpacity="0.05" />
+              <stop offset="40%" stopColor="#1e9df1" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#22c55e" stopOpacity="0.9" />
+            </linearGradient>
+            <linearGradient id="rev-area" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#1e9df1" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#1e9df1" stopOpacity="0" />
+            </linearGradient>
+            <filter id="rev-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="6" />
+            </filter>
+          </defs>
+
+          {/* Aire sous la courbe */}
+          <motion.path
+            d="M 0 720 C 150 700, 300 660, 450 580 C 600 500, 750 380, 900 240 C 1050 130, 1200 80, 1200 80 L 1200 800 L 0 800 Z"
+            fill="url(#rev-area)"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: activated ? 1 : 0 }}
+            transition={{ duration: 1.0, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          />
+
+          {/* Halo flouté de la courbe principale (lueur) */}
+          <motion.path
+            d="M 0 720 C 150 700, 300 660, 450 580 C 600 500, 750 380, 900 240 C 1050 130, 1200 80, 1200 80"
+            stroke="#1e9df1"
+            strokeOpacity={0.35}
+            strokeWidth={6}
+            fill="none"
+            strokeLinecap="round"
+            filter="url(#rev-glow)"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: activated ? 1 : 0 }}
+            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+          />
+
+          {/* Courbe principale (bleu → vert) */}
+          <motion.path
+            d="M 0 720 C 150 700, 300 660, 450 580 C 600 500, 750 380, 900 240 C 1050 130, 1200 80, 1200 80"
+            stroke="url(#rev-line)"
+            strokeWidth={2.6}
+            fill="none"
+            strokeLinecap="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: activated ? 1 : 0 }}
+            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+          />
+
+          {/* Courbe secondaire pointillée (tendance support) */}
+          <motion.path
+            d="M 0 760 L 200 740 L 400 700 L 600 620 L 800 540 L 1000 460 L 1200 360"
+            stroke="rgba(255,255,255,0.16)"
+            strokeWidth={1}
+            strokeDasharray="3 5"
+            fill="none"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: activated ? 1 : 0 }}
+            transition={{ duration: 1.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          />
+
+          {/* Points clés — apparaissent en cascade après le tracé. */}
+          <RevenueDot x={250} y={685} color="#1e9df1" delay={0.7} activated={activated} />
+          <RevenueDot x={500} y={555} color="#1e9df1" delay={0.9} activated={activated} />
+          <RevenueDot x={750} y={360} color="#22c55e" delay={1.1} activated={activated} />
+          <RevenueDot x={1000} y={175} color="#22c55e" delay={1.3} activated={activated} />
+        </svg>
+
+        {/* Voile radial central pour garder le texte lisible */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 75%)",
+          }}
+        />
+      </div>
+
+      {/* ── Contenu ──
+          justify-start + pt-24 : la navbar fixe (top:0, z-50) recouvrait le
+          haut du titre quand le slide était centré ; on ancre désormais
+          depuis le haut avec un padding qui dégage la navbar (≈48 px) plus
+          un peu d'air. */}
+      <div className="relative z-10 max-w-6xl mx-auto px-2 h-full flex flex-col justify-start pt-24 pb-6">
+        {/* Heading compact — pas de label "kicker" cette fois (la BG anime
+            déjà l'idée du moteur économique). Titre direct, taille raisonnée
+            pour ne pas pousser le contenu hors slide. */}
+        <div className="text-center max-w-3xl mx-auto mb-7">
+          <motion.h2
+            {...fadeUp}
+            className="text-3xl sm:text-4xl md:text-5xl leading-[1.05] mb-4"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            {heading.title1}
+            <br />
+            <span className="text-[#1e9df1]">{heading.title2}</span>
+          </motion.h2>
+          <motion.p
+            {...fadeUp}
+            className="text-gray-300 text-sm sm:text-base leading-relaxed font-light"
+          >
+            {lead}
+          </motion.p>
+        </div>
+
+        {/* 4 chips */}
+        <motion.div
+          {...fadeUp}
+          className="flex flex-wrap justify-center gap-2 sm:gap-2.5 mb-8 px-4"
+        >
+          {chips.map((c, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-900/80 border border-neutral-800 backdrop-blur-sm"
+            >
+              <span
+                className="w-5 h-5 rounded-full flex items-center justify-center"
+                style={{
+                  background: `${c.color}1f`,
+                  color: c.color,
+                  boxShadow: `inset 0 0 0 1px ${c.color}33`,
+                }}
+              >
+                {c.icon}
+              </span>
+              <span className="text-[0.72rem] sm:text-xs font-semibold text-white tracking-tight whitespace-nowrap">
+                {c.label}
+              </span>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* ── 3 leviers financiers d'E-Dome — au-delà de l'apporteur :
+              (1) commission plateforme contenue, (2) données financières
+              que les hôtes peuvent ajouter à leurs annonces, (3) programme
+              d'affiliation paramétrable. */}
+        <motion.div {...fadeUp} className="max-w-5xl mx-auto px-4 mb-6">
+          <p className="text-center text-[0.6rem] tracking-[0.22em] uppercase text-gray-500 font-bold mb-3">
+            {lang === "en"
+              ? "What E-Dome brings"
+              : lang === "th"
+                ? "สิ่งที่ E-Dome มอบให้"
+                : "Ce que E-Dome apporte"}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+            {(lang === "en"
+              ? [
+                  {
+                    icon: <Handshake size={14} />,
+                    color: "#a855f7",
+                    eyebrow: "A shared commission",
+                    title: "Business referrer program",
+                    body: "Toggleable by the seller on every listing. Once open, anyone (a neighbor, a friend, an agent…) generates their own referral link: each conversion through it credits a share of E-Dome's commission to the referrer — tracked in real time, never added on top of the price. Off by default, fully under the seller's control.",
+                  },
+                  {
+                    icon: <LineChart size={14} />,
+                    color: "#1e9df1",
+                    eyebrow: "Built for investors",
+                    title: "Integrated investment data",
+                    body: "Hosts can enrich their sale or investment listings with yield numbers, rental revenue charts, projections, expense breakdowns, market comparables — everything the investor needs to decide, in one view.",
+                  },
+                  {
+                    icon: <Wallet size={14} />,
+                    color: "#22c55e",
+                    eyebrow: "Platform model",
+                    title: "A contained, transparent commission",
+                    body: "E-Dome takes a fixed, transparent share — sitting several points below what's standard on real-estate marketplaces. Most of the value stays with the seller, and nothing is added to the buyer's price.",
+                  },
+                ]
+              : lang === "th"
+                ? [
+                    {
+                      icon: <Handshake size={14} />,
+                      color: "#a855f7",
+                      eyebrow: "ค่าคอมมิชชันที่แบ่ง",
+                      title: "โปรแกรมผู้แนะนำธุรกิจ",
+                      body: "ผู้ขายเปิด/ปิดได้ในแต่ละประกาศ เมื่อเปิดแล้ว ใครก็ได้ (เพื่อนบ้าน เพื่อน นายหน้า…) สร้างลิงก์แนะนำของตนเอง ทุกการแปลงผ่านลิงก์ให้ส่วนแบ่งค่าคอมมิชชันของ E-Dome แก่ผู้แนะนำ ตรวจสอบได้แบบเรียลไทม์ ไม่บวกเพิ่มในราคา ปิดเป็นค่าเริ่มต้น อยู่ในมือผู้ขายทั้งหมด",
+                    },
+                    {
+                      icon: <LineChart size={14} />,
+                      color: "#1e9df1",
+                      eyebrow: "ออกแบบสำหรับนักลงทุน",
+                      title: "ข้อมูลการลงทุนในตัว",
+                      body: "เจ้าของสามารถเพิ่มข้อมูลผลตอบแทน กราฟรายได้ค่าเช่า การคาดการณ์ ค่าใช้จ่าย การเปรียบเทียบตลาด — ทุกอย่างที่นักลงทุนต้องการตัดสินใจ ในมุมมองเดียว",
+                    },
+                    {
+                      icon: <Wallet size={14} />,
+                      color: "#22c55e",
+                      eyebrow: "โมเดลแพลตฟอร์ม",
+                      title: "ค่าคอมมิชชันที่ควบคุม โปร่งใส",
+                      body: "E-Dome เก็บส่วนแบ่งคงที่และโปร่งใส ต่ำกว่ามาตรฐานของตลาดอสังหาฯ หลายเปอร์เซ็นต์ ผู้ขายเก็บส่วนใหญ่ของรายได้ และผู้ซื้อไม่เสียเพิ่ม",
+                    },
+                  ]
+                : [
+                    {
+                      icon: <Handshake size={14} />,
+                      color: "#a855f7",
+                      eyebrow: "Une commission partagée",
+                      title: "Programme apporteur d'affaires",
+                      body: "Activable par le vendeur sur chaque offre. Une fois ouvert, n'importe qui (un voisin, un ami, un agent…) génère son lien de recommandation : chaque conversion via ce lien reverse une part de la commission d'E-Dome à l'apporteur — tracée en temps réel, jamais ajoutée au prix. Désactivé par défaut, entièrement sous le contrôle du vendeur.",
+                    },
+                    {
+                      icon: <LineChart size={14} />,
+                      color: "#1e9df1",
+                      eyebrow: "Pensé pour les investisseurs",
+                      title: "Données d'investissement intégrées",
+                      body: "Les hôtes peuvent enrichir leurs annonces de vente ou de projet d'investissement avec rentabilité, graphiques de revenus locatifs, projections, charges détaillées, comparatifs marché — tout ce qu'il faut à l'investisseur, en un coup d'œil.",
+                    },
+                    {
+                      icon: <Wallet size={14} />,
+                      color: "#22c55e",
+                      eyebrow: "Modèle plateforme",
+                      title: "Une commission contenue, transparente",
+                      body: "E-Dome prélève une part fixe et transparente, plusieurs points en-dessous des standards des marketplaces immobilières. L'essentiel reste chez celui qui vend, et le prix payé par le client ne bouge pas.",
+                    },
+                  ]
+            ).map((card, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                className="flex flex-col gap-2 p-3.5 rounded-xl bg-neutral-900/70 backdrop-blur-sm border border-neutral-800 hover:border-neutral-700 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                    style={{
+                      background: `${card.color}1f`,
+                      color: card.color,
+                      boxShadow: `inset 0 0 0 1px ${card.color}33`,
+                    }}
+                  >
+                    {card.icon}
+                  </span>
+                  <span
+                    className="text-[0.55rem] tracking-[0.2em] uppercase font-bold"
+                    style={{ color: card.color }}
+                  >
+                    {card.eyebrow}
+                  </span>
+                </div>
+                <h4 className="text-[0.85rem] sm:text-[0.9rem] font-bold text-white tracking-tight leading-tight">
+                  {card.title}
+                </h4>
+                <p className="text-[0.7rem] sm:text-[0.74rem] text-gray-400 leading-snug font-light">
+                  {card.body}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ── Callout important : la commission de l'apporteur est prélevée
+              sur la part d'E-Dome, JAMAIS en sus. Pas d'animation : ce
+              bloc doit être constamment visible dès l'arrivée sur la
+              section, sans effet d'apparition. ── */}
+        <div className="mx-4 sm:mx-auto max-w-4xl rounded-2xl bg-gradient-to-br from-emerald-500/[0.08] via-emerald-500/[0.04] to-transparent border border-emerald-500/30 backdrop-blur-sm overflow-hidden mb-5">
+          <div className="flex flex-col sm:flex-row items-stretch">
+            {/* Côté gauche : pictogramme + libellé fort */}
+            <div className="flex items-center gap-3 px-4 py-3 sm:pr-3 sm:border-r sm:border-emerald-500/20">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                <ShieldCheck size={18} />
+              </div>
+              <div className="leading-tight">
+                <p className="text-[0.6rem] tracking-[0.2em] uppercase text-emerald-400 font-bold">
+                  {lang === "en"
+                    ? "Important"
+                    : lang === "th"
+                      ? "สำคัญ"
+                      : "À savoir"}
+                </p>
+                <p className="text-[0.95rem] sm:text-base font-bold text-white tracking-tight mt-0.5">
+                  {lang === "en"
+                    ? "Zero extra cost for the host or client."
+                    : lang === "th"
+                      ? "ไม่มีค่าใช้จ่ายเพิ่ม"
+                      : "Aucun supplément pour l'hôte ou le client."}
+                </p>
+              </div>
+            </div>
+
+            {/* Côté droit : phrase d'explication centrée */}
+            <div className="flex-1 px-4 py-3 flex items-center">
+              <p className="text-[0.78rem] sm:text-sm text-gray-300 font-light leading-snug">
+                {lang === "en" ? (
+                  <>
+                    The referrer's commission is{" "}
+                    <span className="text-white font-semibold">
+                      taken from E-Dome's own share
+                    </span>{" "}
+                    of the transaction —{" "}
+                    <span className="text-white font-semibold">never added on top</span>{" "}
+                    of the price. Bringing a contact never makes the deal more
+                    expensive.
+                  </>
+                ) : lang === "th" ? (
+                  <>
+                    ค่าคอมมิชชันของผู้แนะนำ{" "}
+                    <span className="text-white font-semibold">หักจากส่วนของ E-Dome</span>{" "}
+                    เท่านั้น —{" "}
+                    <span className="text-white font-semibold">ไม่เพิ่มเข้าราคา</span>{" "}
+                    การพาผู้ติดต่อมาจึงไม่ทำให้ดีลแพงขึ้น
+                  </>
+                ) : (
+                  <>
+                    La commission de l'apporteur est{" "}
+                    <span className="text-white font-semibold">
+                      prélevée sur la part d'E-Dome
+                    </span>{" "}
+                    — <span className="text-white font-semibold">jamais ajoutée</span> au
+                    prix. Amener un contact n'a jamais rendu une transaction plus chère.
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust closing line */}
+        <motion.div {...fadeUp} className="text-center px-4">
+          <p className="text-gray-400 text-[0.78rem] sm:text-sm leading-relaxed font-light">
+            {lang === "en" ? (
+              <>
+                100% traceable. 100% automatic.{" "}
+                <span className="text-white font-semibold">No hidden cost</span> for the
+                host or the client.
+              </>
+            ) : lang === "th" ? (
+              <>
+                ตรวจสอบได้ 100% อัตโนมัติ 100%{" "}
+                <span className="text-white font-semibold">ไม่มีค่าใช้จ่ายแอบแฝง</span>
+              </>
+            ) : (
+              <>
+                100 % traçable. 100 % automatique.{" "}
+                <span className="text-white font-semibold">Aucun coût caché</span> pour
+                l'hôte ou le client.
+              </>
+            )}
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  HeroArchTower — wrapper qui injecte useSlideProgress(0) du           */
+/*  ScrollStage parent dans l'esquisse latérale du hero. Doit vivre      */
+/*  dans l'arbre d'un <ScrollStage>.                                     */
+/* ═══════════════════════════════════════════════════════════════════ */
+function HeroArchTower() {
+  const progress = useSlideProgress(0);
+  return (
+    <div className="hidden lg:block absolute right-[-18%] top-0 bottom-0 w-[42%] z-0 pointer-events-none">
+      <ArchTower className="w-full h-full" scrollProgress={progress} />
     </div>
   );
 }
@@ -387,11 +990,11 @@ function HomePageContent() {
 
       <ScrollStage>
       {/* ═══════════════════════ HERO (left-aligned, brutaliste) ═══════════════════════ */}
-      <section className="scroll-slide bg-black relative">
-        {/* Strip vertical d'architecture sur le bord droit (se déforme au scroll) */}
-        <div className="hidden lg:block absolute right-0 top-0 bottom-0 z-20 pointer-events-none">
-          <HeroSideStrip />
-        </div>
+      <section className="scroll-slide bg-black relative overflow-hidden">
+        {/* Esquisse gratte-ciel — remplit toute la zone latérale droite et
+            se dessine puis disparaît trait par trait au scroll de la slide
+            (piloté par useSlideProgress du ScrollStage parent). */}
+        <HeroArchTower />
 
         <div className="min-h-screen flex items-center px-6 sm:px-12 md:px-20 lg:px-32 pt-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-center">
@@ -412,7 +1015,31 @@ function HomePageContent() {
                 <span className="text-[#1e9df1] italic">{t("hero.title2")}</span>
               </h1>
               <p className="text-base sm:text-lg text-gray-400 leading-relaxed font-light mb-10 max-w-xl">
-                {t("hero.subtitle")}
+                {lang === "en" ? (
+                  <>
+                    Support the project by expressing your interest.{" "}
+                    <span className="text-white font-semibold">
+                      A simple questionnaire, free and with no commitment
+                    </span>
+                    , that proves real market demand and helps us build the platform that suits you.
+                  </>
+                ) : lang === "th" ? (
+                  <>
+                    สนับสนุนโครงการโดยการแสดงความสนใจของคุณ{" "}
+                    <span className="text-white font-semibold">
+                      แบบสอบถามง่ายๆ ฟรีและไม่มีข้อผูกมัด
+                    </span>{" "}
+                    ที่พิสูจน์ความต้องการที่แท้จริงของตลาด และช่วยเราสร้างแพลตฟอร์มที่เหมาะกับคุณ
+                  </>
+                ) : (
+                  <>
+                    Soutenez le projet en manifestant votre intérêt.{" "}
+                    <span className="text-white font-semibold">
+                      Un simple questionnaire, gratuit et sans engagement
+                    </span>
+                    , qui prouve une vraie demande sur le marché et nous aide à construire la plateforme qui vous correspond.
+                  </>
+                )}
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
@@ -431,7 +1058,7 @@ function HomePageContent() {
             </motion.div>
 
             {/* Colonne droite : badge fondateur + 6 avantages (accordéon cliquable) */}
-            <motion.div {...fadeUp} className="hidden lg:block lg:col-span-5">
+            <motion.div {...fadeUp} className="hidden lg:block lg:col-span-5 lg:-ml-16">
               <HeroBenefitsAccordion
                 lang={lang}
                 badgeTitle={
@@ -447,122 +1074,295 @@ function HomePageContent() {
         </div>
       </section>
 
-      {/* ═══════════════════════ LE CONSTAT ═══════════════════════ */}
-      <section id="probleme" className="scroll-slide bg-black relative">
-        <div className="min-h-screen flex items-center px-6 py-12">
+      {/* ═══════════════════════ LE CONSTAT ═══════════════════════
+          Refonte éditoriale brutaliste. Titre punchy "L'immobilier
+          travaille à l'envers", intro courte, 6 constats en liste
+          print-style (numéro mono / phrase unique). Pas de cartes,
+          pas d'icônes : que de la typographie et des règles
+          horizontales. */}
+      <section id="probleme" className="scroll-slide bg-black relative overflow-hidden">
+        {/* Façade haute brutaliste (Le Corbusier-esque) en bleu, ancrée à
+            gauche, avec parallaxe scroll vertical. */}
+        <div className="hidden lg:block absolute left-[-3%] top-0 bottom-0 w-[18%] z-0 pointer-events-none">
+          <ArchTallFacade className="w-full h-full" />
+        </div>
+        <div className="min-h-screen flex items-center px-6 py-10 relative z-10">
         <div className="max-w-5xl mx-auto w-full">
           {(() => {
-            const data =
+            type Pb = { title: string; body: string; resolution: string };
+            type Data = {
+              intro: React.ReactNode;
+              constats: Pb[];
+              closing: string;
+            };
+            const data: Data =
               lang === "en"
                 ? {
-                    intro:
-                      "Real estate is a business of network and visibility. Yet today, every actor works in their own silo, on tools that don't talk to each other, and gives away their audience to platforms that don't belong to them. Three invisible walls, that everyone has come to find normal.",
-                    problems: [
+                    intro: (
+                      <>
+                        Real estate is, above all, a relationship business.
+                        Yet today everything is scattered — tools, revenue,
+                        content, actors. A lot of value is lost along the way.
+                      </>
+                    ),
+                    constats: [
                       {
-                        title: "One activity, ten tools.",
-                        body: "An agent posts listings on one portal, chats on another, tracks bookings in a spreadsheet, runs trainings on Zoom, follows commissions by hand. Every added tool is one more wall between them and their own activity.",
+                        title: "High commissions.",
+                        body: "Revenue split by hand, with no transparency, no central tracking, and no real traceability.",
+                        resolution:
+                          "Platform commission among the lowest on the market — fully automated and traceable.",
                       },
                       {
-                        title: "The audience we hand away.",
-                        body: "Real-estate content lives on Instagram, TikTok, Facebook — where every day we build an audience that never belongs to us. Every outbound click is a relationship that evaporates to the next platform.",
+                        title: "Real-estate content that redirects elsewhere.",
+                        body: "Every click that leaves the platform breaks the prospect's attention and fragments the experience.",
+                        resolution: "Integrated marketplace and social feed. The click stays inside.",
                       },
                       {
-                        title: "Roles kept apart.",
-                        body: "Host, referrer, trainer, photographer, prescriber, neighbour — they all make the market run. But each is locked in their own tool, with no way to compensate one another or share a single community.",
+                        title: "A trade scattered across dozens of tools.",
+                        body: "Every task has its own platform, its own subscription, its own data and its own limits.",
+                        resolution: "Listings, messaging, calendar, accounting, training — one single flow.",
+                      },
+                      {
+                        title: "No place where the ecosystem actually exists.",
+                        body: "Every real-estate trade already collaborates with the others — but on separate systems.",
+                        resolution: "All roles, on the same platform, connected to the same network.",
                       },
                     ],
+                    closing: "An ecosystem that doesn't know it's one.",
                   }
                 : lang === "th"
                 ? {
-                    intro:
-                      "อสังหาริมทรัพย์เป็นธุรกิจของเครือข่ายและการมองเห็น แต่วันนี้ ทุกผู้เล่นทำงานในไซโลของตัวเอง บนเครื่องมือที่ไม่สื่อสารกัน และยกผู้ชมให้กับแพลตฟอร์มที่ไม่ได้เป็นของพวกเขา กำแพงที่มองไม่เห็นสามด้าน ที่ทุกคนได้เริ่มมองว่าเป็นเรื่องปกติ",
-                    problems: [
+                    intro: (
+                      <>
+                        อสังหาริมทรัพย์ ก่อนอื่นใด คือธุรกิจของความสัมพันธ์
+                        แต่วันนี้ ทุกอย่างกระจัดกระจาย — เครื่องมือ รายได้
+                        คอนเทนต์ ผู้เล่น และคุณค่ามากมายสูญหายระหว่างทาง
+                      </>
+                    ),
+                    constats: [
                       {
-                        title: "หนึ่งกิจกรรม สิบเครื่องมือ",
-                        body: "นายหน้าลงประกาศบนพอร์ทัลหนึ่ง แชทบนอีกอันหนึ่ง ติดตามการจองในสเปรดชีต จัดอบรมบน Zoom ตามค่าคอมมิชชันด้วยมือ ทุกเครื่องมือที่เพิ่มเข้ามาคือกำแพงระหว่างเขาและกิจกรรมของเขาเอง",
+                        title: "ค่าคอมมิชชันสูง",
+                        body: "รายได้แบ่งด้วยมือ ไม่โปร่งใส ไม่มีการติดตามรวมศูนย์ และไม่มีการตรวจสอบที่แท้จริง",
+                        resolution:
+                          "ค่าคอมมิชชันแพลตฟอร์มต่ำที่สุดในตลาด — อัตโนมัติและตรวจสอบได้ทั้งหมด",
                       },
                       {
-                        title: "ผู้ชมที่เรายกให้ไป",
-                        body: "คอนเทนต์อสังหาฯ อยู่บน Instagram, TikTok, Facebook — ที่ซึ่งเราสร้างผู้ชมทุกวัน แต่ผู้ชมเหล่านั้นไม่เคยเป็นของเรา ทุกคลิกออกคือความสัมพันธ์ที่ระเหยไปยังแพลตฟอร์มถัดไป",
+                        title: "คอนเทนต์อสังหาฯ ที่นำไปที่อื่น",
+                        body: "ทุกคลิกที่ออกจากแพลตฟอร์มตัดความสนใจของผู้ที่อาจเป็นลูกค้าและทำให้ประสบการณ์แตกออก",
+                        resolution: "มาร์เก็ตเพลสและฟีดโซเชียลรวมกัน คลิกยังอยู่กับเรา",
                       },
                       {
-                        title: "บทบาทที่แยกจากกัน",
-                        body: "เจ้าของบ้าน ผู้แนะนำ ผู้ฝึกอบรม ช่างภาพ ผู้บอกต่อ เพื่อนบ้าน — ทุกคนทำให้ตลาดเดินไป แต่แต่ละคนถูกล็อกไว้ในเครื่องมือของตัวเอง โดยไม่มีทางได้รับค่าตอบแทนซึ่งกันและกัน หรือแบ่งปันชุมชนเดียวกัน",
+                        title: "อาชีพที่กระจายอยู่บนเครื่องมือหลายสิบตัว",
+                        body: "ทุกงานมีแพลตฟอร์มของมัน สมาชิกของมัน ข้อมูลของมัน และข้อจำกัดของมัน",
+                        resolution: "ประกาศ แชท ตารางนัด บัญชี อบรม — กระแสเดียวกัน",
+                      },
+                      {
+                        title: "ไม่มีที่ที่ระบบนิเวศมีอยู่จริง",
+                        body: "ทุกอาชีพในวงการอสังหาฯ ทำงานร่วมกันอยู่แล้ว — แต่บนระบบที่แยกกัน",
+                        resolution: "ทุกบทบาทอยู่บนแพลตฟอร์มเดียว เชื่อมต่อกับเครือข่ายเดียว",
                       },
                     ],
+                    closing: "ระบบนิเวศที่ไม่รู้ว่าตัวเองเป็นระบบนิเวศ",
                   }
                 : {
-                    intro:
-                      "L'immobilier est un métier de réseau et de visibilité. Pourtant, aujourd'hui, ses acteurs travaillent chacun dans leur silo, sur des outils qui ne se parlent pas, et cèdent leur audience à des plateformes qui ne leur appartiennent pas. Trois murs invisibles, que tout le monde a fini par trouver normaux.",
-                    problems: [
+                    intro: (
+                      <>
+                        L'immobilier est avant tout un métier de relations.
+                        Pourtant aujourd'hui, tout y est éparpillé — les
+                        outils, les revenus, le contenu, les acteurs. Beaucoup
+                        de valeur se perd en chemin.
+                      </>
+                    ),
+                    constats: [
                       {
-                        title: "Une activité, dix outils.",
-                        body: "Un agent publie ses biens sur un portail, échange sur un autre, suit ses réservations dans un tableur, anime ses formations sur Zoom, traque ses commissions à la main. Chaque outil ajouté est un mur de plus entre lui et sa propre activité.",
+                        title: "Des commissions élevées.",
+                        body: "Des revenus répartis manuellement, sans transparence, sans suivi centralisé et sans réelle traçabilité.",
+                        resolution:
+                          "Commission plateforme parmi les plus basses du marché — entièrement automatisée et traçable.",
                       },
                       {
-                        title: "L'audience que l'on cède.",
-                        body: "Le contenu immobilier vit sur Instagram, TikTok, Facebook — où l'on construit chaque jour une audience qui n'est jamais à nous. Chaque clic sortant est une relation qui s'évapore au profit de la plateforme suivante.",
+                        title: "Du contenu immobilier qui redirige ailleurs.",
+                        body: "Chaque clic qui fait quitter la plateforme casse l'attention du prospect et fragmente l'expérience.",
+                        resolution:
+                          "Marketplace et fil social intégrés. Le clic reste à l'intérieur.",
                       },
                       {
-                        title: "Des rôles tenus à l'écart.",
-                        body: "Hôte, apporteur, formateur, photographe, prescripteur, voisin — tous font tourner le marché. Mais chacun reste enfermé dans son outil, sans pouvoir se rémunérer mutuellement ni partager une même communauté.",
+                        title: "Un métier dispersé entre des dizaines d'outils.",
+                        body: "Chaque tâche a sa plateforme, son abonnement, ses données et ses limites.",
+                        resolution:
+                          "Annonces, messagerie, agenda, compta, formations — un seul flux.",
+                      },
+                      {
+                        title: "Aucun endroit où l'écosystème existe réellement.",
+                        body: "Tous les métiers de l'immobilier collaborent déjà entre eux — mais sur des systèmes séparés.",
+                        resolution:
+                          "Tous les rôles sur la même plateforme, connectés par un même réseau.",
                       },
                     ],
+                    closing: "Un écosystème qui ignore qu'il en est un.",
                   };
 
-            const problemTag =
-              lang === "en" ? "Problem" : lang === "th" ? "ปัญหา" : "Problème";
+            /* Graphique linéaire négatif rouge en arrière-plan, fragmenté
+               à travers les 4 encadrés mais visuellement continu : chaque
+               carte rend son propre segment de la courbe descendante, et
+               les Y aux frontières gauche/droite des cartes correspondent
+               aux Y des cartes voisines. Avec viewBox 0..100 / 0..100 et
+               preserveAspectRatio="none", la courbe s'étire pour remplir
+               la carte sans déborder. */
+            const chartSegments = [
+              // Carte 01 — Y 18 → 32 (légère chute initiale)
+              "0,18 12,15 28,22 45,17 62,28 78,24 100,32",
+              // Carte 02 — Y 32 → 52 (chute plus marquée)
+              "0,32 14,30 30,38 48,40 65,46 82,50 100,52",
+              // Carte 03 — Y 52 → 70 (creux en milieu)
+              "0,52 18,56 35,60 52,68 70,64 88,72 100,70",
+              // Carte 04 — Y 70 → 92 (effondrement final)
+              "0,70 16,73 32,78 50,82 68,86 86,89 100,92",
+            ];
 
             return (
               <>
-                {/* ── HEADER : label + titre + intro empilés, alignés à gauche ── */}
-                <motion.div {...fadeUp} className="mb-8">
-                  <p className="text-[#1e9df1] text-[0.65rem] tracking-[0.35em] uppercase font-semibold mb-3">
+                {/* HEADER — eyebrow + titre punchy + intro globale courte */}
+                <motion.div {...fadeUp} className="mb-8 max-w-3xl">
+                  <p className="text-[#1e9df1] text-[0.62rem] tracking-[0.35em] uppercase font-semibold mb-3">
                     {t("problem.label")}
                   </p>
                   <h2
-                    className="text-3xl sm:text-4xl md:text-5xl leading-[1.05] text-white mb-5 max-w-3xl"
+                    className="text-3xl sm:text-4xl md:text-5xl leading-[1.05] text-white mb-4"
                     style={{ fontFamily: "'Instrument Serif', serif" }}
                   >
-                    {t("problem.title1")}{" "}
-                    <span className="text-[#1e9df1]">{t("problem.title2")}</span>
+                    {lang === "en" ? (
+                      <>
+                        A disconnected
+                        <br />
+                        <span className="text-[#1e9df1] italic">
+                          ecosystem.
+                        </span>
+                      </>
+                    ) : lang === "th" ? (
+                      <>
+                        ระบบนิเวศ
+                        <br />
+                        <span className="text-[#1e9df1] italic">
+                          ที่ขาดการเชื่อมต่อ
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        Un écosystème
+                        <br />
+                        <span className="text-[#1e9df1] italic">
+                          déconnecté.
+                        </span>
+                      </>
+                    )}
                   </h2>
-                  <p className="max-w-3xl text-gray-300 text-sm md:text-base leading-relaxed font-light">
+                  <p className="text-gray-300 text-sm md:text-base leading-relaxed font-light">
                     {data.intro}
                   </p>
                 </motion.div>
 
-                {/* ── 3 PROBLÈMES — phrases concrètes, pas de chiffres ── */}
-                <motion.div
-                  {...fadeUp}
-                  className="grid sm:grid-cols-3 gap-0 border-t border-b border-neutral-800 py-7"
-                >
-                  {data.problems.map((p, i) => (
-                    <div
+                {/* 4 CONSTATS en encadrés avec graphique linéaire négatif
+                    rouge en arrière-plan, continu visuellement de gauche à
+                    droite (chaque carte = 1 segment, Y aux bords alignés). */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                  {data.constats.map((c, i) => (
+                    <motion.div
                       key={i}
-                      className="relative px-5 sm:px-7 py-3 border-l border-neutral-800 first:border-l-0 first:pl-0 sm:first:pl-0"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-40px" }}
+                      transition={{ duration: 0.5, delay: i * 0.07 }}
+                      className="relative bg-neutral-900/60 backdrop-blur-sm rounded-2xl border border-neutral-800 hover:border-red-500/30 transition-colors p-5 sm:p-5 flex flex-col overflow-hidden"
                     >
-                      {/* Tag PROBLÈME 0X rouge */}
-                      <div className="flex items-center gap-2 mb-4">
-                        <AlertTriangle size={10} className="text-red-500" strokeWidth={2.2} />
-                        <p className="font-mono text-red-400 text-[0.6rem] tracking-[0.3em] uppercase font-semibold">
-                          {problemTag} 0{i + 1}
-                        </p>
-                      </div>
-                      {/* Titre court — serif, le constat verbalisé */}
+                      {/* Graphique linéaire négatif en arrière-plan */}
+                      <svg
+                        aria-hidden
+                        className="absolute inset-0 w-full h-full pointer-events-none"
+                        viewBox="0 0 100 100"
+                        preserveAspectRatio="none"
+                      >
+                        <defs>
+                          <linearGradient
+                            id={`chart-fill-${i}`}
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.06" />
+                            <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
+                          </linearGradient>
+                        </defs>
+                        {/* Aire sous la courbe (très subtile) */}
+                        <motion.polygon
+                          points={`${chartSegments[i]} 100,100 0,100`}
+                          fill={`url(#chart-fill-${i})`}
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true, margin: "-40px" }}
+                          transition={{ duration: 1, delay: 0.3 + i * 0.1 }}
+                        />
+                        {/* Courbe linéaire */}
+                        <motion.polyline
+                          points={chartSegments[i]}
+                          fill="none"
+                          stroke="rgba(239, 68, 68, 0.42)"
+                          strokeWidth="0.7"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          vectorEffect="non-scaling-stroke"
+                          initial={{ pathLength: 0, opacity: 0 }}
+                          whileInView={{ pathLength: 1, opacity: 1 }}
+                          viewport={{ once: true, margin: "-40px" }}
+                          transition={{
+                            pathLength: {
+                              duration: 1.2,
+                              delay: i * 0.18,
+                              ease: [0.25, 0.1, 0.25, 1],
+                            },
+                            opacity: {
+                              duration: 0.4,
+                              delay: i * 0.18,
+                            },
+                          }}
+                        />
+                      </svg>
+
+                      {/* Contenu au-dessus du graphique */}
+                      <span className="relative font-mono text-[0.62rem] text-red-400/70 tracking-[0.22em] uppercase font-semibold mb-3">
+                        0{i + 1}
+                      </span>
                       <h3
-                        className="font-serif text-xl md:text-2xl text-white leading-snug mb-3"
+                        className="relative text-[1rem] sm:text-[1.05rem] font-semibold text-white leading-tight mb-2.5"
                         style={{ fontFamily: "'Instrument Serif', serif" }}
                       >
-                        {p.title}
+                        {c.title}
                       </h3>
-                      {/* Description concrète */}
-                      <p className="text-gray-400 text-[0.78rem] md:text-sm leading-relaxed font-light">
-                        {p.body}
+                      <p className="relative text-gray-400 text-[0.78rem] sm:text-[0.82rem] leading-relaxed font-light flex-1 mb-3">
+                        {c.body}
                       </p>
-                    </div>
+                      {/* Résolution E-Dome — petit, bleu, en pied de carte */}
+                      <div className="relative pt-3 border-t border-neutral-800/80">
+                        <p className="text-[0.65rem] sm:text-[0.7rem] text-blue-300/80 leading-snug font-medium">
+                          <span className="text-[#1e9df1] font-bold">
+                            E-Dome →
+                          </span>{" "}
+                          {c.resolution}
+                        </p>
+                      </div>
+                    </motion.div>
                   ))}
-                </motion.div>
+                </div>
+
+                {/* CLOSING — phrase italique serif, sans animation,
+                    constamment visible dès le rendu. */}
+                <p
+                  className="text-center text-base sm:text-lg md:text-xl mt-7 text-gray-300 italic font-light"
+                  style={{ fontFamily: "'Instrument Serif', serif" }}
+                >
+                  «&nbsp;{data.closing}&nbsp;»
+                </p>
               </>
             );
           })()}
@@ -593,56 +1393,228 @@ function HomePageContent() {
         }
         cardHeading={
           lang === "en"
-            ? "Five platforms. One account."
+            ? "Real estate, finally connected."
             : lang === "th"
-              ? "ห้าแพลตฟอร์ม บัญชีเดียว"
-              : "Cinq plateformes. Un compte."
+              ? "อสังหาฯ ที่เชื่อมโยงกันในที่สุด"
+              : "L'immobilier, enfin connecté."
         }
-        cardDescription={
-          lang === "en" ? (
+        cardDescription={(() => {
+          const features =
+            lang === "en"
+              ? [
+                  { icon: <Layers size={11} />, label: "Social feed", desc: "post, react, share", color: "#1e9df1" },
+                  { icon: <MapPin size={11} />, label: "Marketplace", desc: "rent, sell, book", color: "#22c55e" },
+                  { icon: <Video size={11} />, label: "Lives", desc: "live events, replays", color: "#ef4444" },
+                  { icon: <GraduationCap size={11} />, label: "Campus", desc: "courses + cohorts", color: "#a855f7" },
+                  { icon: <Handshake size={11} />, label: "Referrals", desc: "auto commissions", color: "#f59e0b" },
+                  { icon: <Briefcase size={11} />, label: "Pros directory", desc: "verified providers", color: "#06b6d4" },
+                ]
+              : lang === "th"
+                ? [
+                    { icon: <Layers size={11} />, label: "ฟีดโซเชียล", desc: "โพสต์ ตอบรีบ แชร์", color: "#1e9df1" },
+                    { icon: <MapPin size={11} />, label: "มาร์เก็ตเพลส", desc: "เช่า ขาย จอง", color: "#22c55e" },
+                    { icon: <Video size={11} />, label: "ไลฟ์", desc: "ไลฟ์สด & ดูย้อนหลัง", color: "#ef4444" },
+                    { icon: <GraduationCap size={11} />, label: "แคมปัส", desc: "คอร์ส + รุ่น", color: "#a855f7" },
+                    { icon: <Handshake size={11} />, label: "เครือข่ายแนะนำ", desc: "คอมมิชชันอัตโนมัติ", color: "#f59e0b" },
+                    { icon: <Briefcase size={11} />, label: "ไดเรกทอรีมืออาชีพ", desc: "ผู้ให้บริการที่ยืนยัน", color: "#06b6d4" },
+                  ]
+                : [
+                    { icon: <Layers size={11} />, label: "Fil social", desc: "publier, réagir, partager", color: "#1e9df1" },
+                    { icon: <MapPin size={11} />, label: "Marketplace", desc: "louer, vendre, réserver", color: "#22c55e" },
+                    { icon: <Video size={11} />, label: "Lives", desc: "événements en direct", color: "#ef4444" },
+                    { icon: <GraduationCap size={11} />, label: "Campus", desc: "formations & promos", color: "#a855f7" },
+                    { icon: <Handshake size={11} />, label: "Apporteurs", desc: "commissions traçables", color: "#f59e0b" },
+                    { icon: <Briefcase size={11} />, label: "Annuaire pros", desc: "prestataires vérifiés", color: "#06b6d4" },
+                  ];
+          return (
             <>
-              A social feed, a marketplace, a training campus, live events, a
-              referral network and a service directory — all in one app.{" "}
-              <span className="text-white font-semibold">
-                No more juggling ten tools to do one job.
+              <span className="block mb-3 leading-relaxed">
+                {lang === "en" ? (
+                  <>
+                    Publish a property, accept the booking, train your clients,
+                    stream a live, refer a contact for a commission and find
+                    your photographer — every action lives in the same app.{" "}
+                    <span className="text-white font-semibold">
+                      One signal, one inbox, one ledger.
+                    </span>
+                  </>
+                ) : lang === "th" ? (
+                  <>
+                    ลงประกาศ รับการจอง อบรมลูกค้า ไลฟ์สด แนะนำคนรับค่าคอม
+                    และหาช่างภาพ — ทุกการกระทำอยู่ในแอปเดียวกัน{" "}
+                    <span className="text-white font-semibold">
+                      สัญญาณเดียว กล่องเดียว บัญชีเดียว
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Publier un bien, encaisser une réservation, former vos
+                    clients, diffuser un live, recommander un contact contre
+                    commission, trouver le bon photographe — chaque action vit
+                    dans la même app.{" "}
+                    <span className="text-white font-semibold">
+                      Un seul signal, une seule boîte, un seul compteur.
+                    </span>
+                  </>
+                )}
+              </span>
+              <span
+                className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[12.5px] md:text-[13.5px] leading-snug"
+                style={{ display: "grid" }}
+              >
+                {features.map((f) => (
+                  <span key={f.label} className="flex items-center gap-2">
+                    <span
+                      className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
+                      style={{
+                        background: `${f.color}22`,
+                        color: f.color,
+                        boxShadow: `inset 0 0 0 1px ${f.color}33`,
+                      }}
+                    >
+                      {f.icon}
+                    </span>
+                    <span className="text-blue-100/85">
+                      <span className="text-white font-semibold">{f.label}</span>
+                      <span className="text-blue-100/60"> · {f.desc}</span>
+                    </span>
+                  </span>
+                ))}
               </span>
             </>
-          ) : lang === "th" ? (
-            <>
-              ฟีดโซเชียล มาร์เก็ตเพลส แคมปัสฝึกอบรม อีเวนต์สด เครือข่ายผู้แนะนำ
-              และไดเรกทอรีบริการ — ทั้งหมดในแอปเดียว{" "}
-              <span className="text-white font-semibold">
-                ไม่ต้องสลับเครื่องมือสิบตัวเพื่องานเดียวอีก
-              </span>
-            </>
-          ) : (
-            <>
-              Un fil social, une marketplace, un campus de formations, des lives,
-              un réseau d'apporteurs et un annuaire de prestataires — tout ça
-              dans une seule application.{" "}
-              <span className="text-white font-semibold">
-                Plus de jongle entre dix outils pour faire un seul métier.
-              </span>
-            </>
-          )
+          );
+        })()}
+        metricValue={1250}
+        metricLabel={lang === "en" ? "CHF" : lang === "th" ? "CHF" : "CHF"}
+        phoneStatLabel={
+          lang === "en"
+            ? "This week"
+            : lang === "th"
+              ? "สัปดาห์นี้"
+              : "Cette semaine"
         }
-        metricValue={100}
-        metricLabel={
-          lang === "en" ? "Founders" : lang === "th" ? "ผู้ก่อตั้ง" : "Fondateurs"
+        phoneStatDelta={
+          lang === "en"
+            ? "+18% vs last week"
+            : lang === "th"
+              ? "+18% เทียบสัปดาห์ที่แล้ว"
+              : "+18 % vs sem. dernière"
         }
+        phoneBellCount={3}
+        phoneModules={[
+          {
+            icon: <Layers size={14} />,
+            label: lang === "en" ? "Feed" : lang === "th" ? "ฟีด" : "Fil",
+            color: "#1e9df1",
+          },
+          {
+            icon: <MapPin size={14} />,
+            label:
+              lang === "en"
+                ? "Listings"
+                : lang === "th"
+                  ? "ทรัพย์"
+                  : "Biens",
+            color: "#22c55e",
+          },
+          {
+            icon: <Video size={14} />,
+            label: lang === "en" ? "Live" : lang === "th" ? "ไลฟ์" : "Lives",
+            color: "#ef4444",
+          },
+          {
+            icon: <GraduationCap size={14} />,
+            label:
+              lang === "en"
+                ? "Campus"
+                : lang === "th"
+                  ? "อบรม"
+                  : "Campus",
+            color: "#a855f7",
+          },
+          {
+            icon: <Handshake size={14} />,
+            label:
+              lang === "en"
+                ? "Network"
+                : lang === "th"
+                  ? "เครือข่าย"
+                  : "Apporteurs",
+            color: "#f59e0b",
+          },
+          {
+            icon: <Briefcase size={14} />,
+            label:
+              lang === "en" ? "Pros" : lang === "th" ? "ผู้ให้" : "Pros",
+            color: "#06b6d4",
+          },
+        ]}
+        phoneNotifications={[
+          {
+            icon: <TrendingUp size={11} />,
+            title:
+              lang === "en"
+                ? "+250 CHF · Referral"
+                : lang === "th"
+                  ? "+250 CHF · ค่าแนะนำ"
+                  : "+250 CHF · Apporteur",
+            subtitle:
+              lang === "en"
+                ? "Marie's link converted"
+                : lang === "th"
+                  ? "ลิงก์ของ Marie แปลงสำเร็จ"
+                  : "Lien de Marie · 1 conversion",
+            time: lang === "th" ? "2 น." : "2m",
+            color: "#22c55e",
+          },
+          {
+            icon: <BadgeCheck size={11} />,
+            title:
+              lang === "en"
+                ? "Booking accepted"
+                : lang === "th"
+                  ? "การจองได้รับการยืนยัน"
+                  : "Réservation acceptée",
+            subtitle:
+              lang === "en"
+                ? "Villa du Lac · 4 nights"
+                : lang === "th"
+                  ? "Villa du Lac · 4 คืน"
+                  : "Villa du Lac · 4 nuits",
+            time: lang === "th" ? "12 น." : "12m",
+            color: "#1e9df1",
+          },
+          {
+            icon: <Mic size={11} />,
+            title:
+              lang === "en"
+                ? "Live started"
+                : lang === "th"
+                  ? "ไลฟ์เริ่มแล้ว"
+                  : "Live démarré",
+            subtitle:
+              lang === "en"
+                ? "« Investing in 2026 »"
+                : lang === "th"
+                  ? "« ลงทุนในปี 2026 »"
+                  : "« Investir en 2026 »",
+            time: lang === "th" ? "1 ชม." : "1h",
+            color: "#ef4444",
+          },
+        ]}
         ctaHeading={
           lang === "en"
-            ? "Become a founding member."
+            ? "Not a single actor left aside."
             : lang === "th"
-              ? "เป็นสมาชิกผู้ก่อตั้ง"
-              : "Devenez membre fondateur."
+              ? "ไม่มีผู้เล่นใดถูกทิ้งไว้"
+              : "Pas un acteur laissé de côté."
         }
         ctaDescription={
           lang === "en"
-            ? "The first 100 profiles get exclusive perks and shape the platform with us."
+            ? "Whatever your role in real estate, E-Dome already has a place for you."
             : lang === "th"
-              ? "100 โปรไฟล์แรกได้รับสิทธิประโยชน์พิเศษและร่วมสร้างแพลตฟอร์มกับเรา"
-              : "Les 100 premiers profils accèdent à des avantages exclusifs et façonnent la plateforme avec nous."
+              ? "ไม่ว่าบทบาทของคุณในวงการอสังหาฯ จะเป็นอะไร E-Dome มีที่สำหรับคุณแล้ว"
+              : "Peu importe ton rôle dans l'immobilier, E-Dome a déjà une place pour toi."
         }
         phoneEyebrow={
           lang === "en" ? "E-Dome" : lang === "th" ? "E-Dome" : "E-Dome"
@@ -652,7 +1624,7 @@ function HomePageContent() {
         }
         phoneAvatar="ED"
         floatingBadgeTop={{
-          icon: "🏛",
+          icon: <Crown size={18} className="text-[#f5b945]" strokeWidth={2.2} />,
           title:
             lang === "en"
               ? "Founder unlocked"
@@ -681,375 +1653,189 @@ function HomePageContent() {
                 ? "มืออาชีพ + บุคคล"
                 : "Pros + particuliers",
         }}
-        ctaButtons={
-          <div className="flex flex-col sm:flex-row gap-6">
-            <Link
-              href="/acces"
-              className="btn-modern-light flex items-center justify-center gap-3 px-8 py-4 rounded-[1.25rem] group"
-            >
-              <Sparkles size={20} className="text-[#1e9df1]" />
-              <div className="text-left">
-                <div className="text-[10px] font-bold tracking-wider text-neutral-500 uppercase mb-[-2px]">
-                  {lang === "en"
-                    ? "Reserve your spot"
-                    : lang === "th"
-                      ? "จองที่นั่งของคุณ"
-                      : "Réservez votre place"}
-                </div>
-                <div className="text-xl font-bold leading-none tracking-tight">
-                  {lang === "en"
-                    ? "Become founder"
-                    : lang === "th"
-                      ? "เป็นผู้ก่อตั้ง"
-                      : "Devenir fondateur"}
-                </div>
+        ctaButtons={(() => {
+          /* Section "Pas un acteur" entière, déplacée ici à la place du
+             CTA fondateur. 36 rôles répartis en 3 rangées qui défilent en
+             sens alterné (Marquee), suivies d'une trust line. */
+          type Role = {
+            icon: React.ReactNode;
+            color: string;
+            fr: string;
+            en: string;
+            th: string;
+          };
+          const roles: Role[] = [
+            { icon: <Home size={14} />, color: "#1e9df1", fr: "Hôte", en: "Host", th: "เจ้าของบ้าน" },
+            { icon: <KeyRound size={14} />, color: "#06b6d4", fr: "Locataire", en: "Tenant", th: "ผู้เช่า" },
+            { icon: <ShoppingBag size={14} />, color: "#f59e0b", fr: "Acheteur", en: "Buyer", th: "ผู้ซื้อ" },
+            { icon: <Tags size={14} />, color: "#ec4899", fr: "Vendeur", en: "Seller", th: "ผู้ขาย" },
+            { icon: <TrendingUp size={14} />, color: "#22c55e", fr: "Investisseur", en: "Investor", th: "นักลงทุน" },
+            { icon: <Briefcase size={14} />, color: "#1e9df1", fr: "Agent immobilier", en: "Real-estate agent", th: "นายหน้าอสังหาฯ" },
+            { icon: <Building2 size={14} />, color: "#a855f7", fr: "Agence immobilière", en: "Agency", th: "เอเจนซี่อสังหาฯ" },
+            { icon: <UserCheck size={14} />, color: "#10b981", fr: "Mandataire", en: "Mandated agent", th: "ตัวแทนที่ได้รับมอบหมาย" },
+            { icon: <Store size={14} />, color: "#f97316", fr: "Marchand de biens", en: "Property dealer", th: "พ่อค้าทรัพย์สิน" },
+            { icon: <Calculator size={14} />, color: "#06b6d4", fr: "Courtier", en: "Mortgage broker", th: "นายหน้าสินเชื่อ" },
+            { icon: <Scroll size={14} />, color: "#a855f7", fr: "Notaire", en: "Notary", th: "ทนายรับรองเอกสาร" },
+            { icon: <Scale size={14} />, color: "#1e9df1", fr: "Avocat immobilier", en: "Real-estate lawyer", th: "ทนายอสังหาฯ" },
+            { icon: <Receipt size={14} />, color: "#f59e0b", fr: "Conseiller fiscal", en: "Tax advisor", th: "ที่ปรึกษาภาษี" },
+            { icon: <ClipboardList size={14} />, color: "#22c55e", fr: "Expert-comptable", en: "Accountant", th: "นักบัญชี" },
+            { icon: <Compass size={14} />, color: "#ef4444", fr: "Architecte", en: "Architect", th: "สถาปนิก" },
+            { icon: <Building size={14} />, color: "#a855f7", fr: "Promoteur", en: "Property developer", th: "นักพัฒนาอสังหาฯ" },
+            { icon: <HardHat size={14} />, color: "#f97316", fr: "Constructeur", en: "Builder", th: "ผู้รับเหมาก่อสร้าง" },
+            { icon: <Ruler size={14} />, color: "#06b6d4", fr: "Géomètre", en: "Surveyor", th: "ผู้สำรวจ" },
+            { icon: <ClipboardCheck size={14} />, color: "#10b981", fr: "Diagnostiqueur", en: "Inspector", th: "ผู้ตรวจอาคาร" },
+            { icon: <Wrench size={14} />, color: "#eab308", fr: "Artisan", en: "Tradesman", th: "ช่างฝีมือ" },
+            { icon: <Camera size={14} />, color: "#ec4899", fr: "Photographe", en: "Photographer", th: "ช่างภาพ" },
+            { icon: <Video size={14} />, color: "#ef4444", fr: "Vidéaste", en: "Videographer", th: "ช่างวิดีโอ" },
+            { icon: <Sofa size={14} />, color: "#f59e0b", fr: "Home stager", en: "Home stager", th: "Home stager" },
+            { icon: <Paintbrush size={14} />, color: "#a855f7", fr: "Décorateur", en: "Decorator", th: "นักตกแต่ง" },
+            { icon: <Lamp size={14} />, color: "#06b6d4", fr: "Designer d'intérieur", en: "Interior designer", th: "นักออกแบบภายใน" },
+            { icon: <Landmark size={14} />, color: "#1e9df1", fr: "Banquier", en: "Banker", th: "นายธนาคาร" },
+            { icon: <Shield size={14} />, color: "#22c55e", fr: "Assureur", en: "Insurer", th: "นักประกัน" },
+            { icon: <Search size={14} />, color: "#f97316", fr: "Estimateur", en: "Appraiser", th: "ผู้ประเมินราคา" },
+            { icon: <GraduationCap size={14} />, color: "#a855f7", fr: "Formateur", en: "Trainer", th: "ผู้ฝึกอบรม" },
+            { icon: <Award size={14} />, color: "#ec4899", fr: "Coach immobilier", en: "Coach", th: "โค้ชอสังหาฯ" },
+            { icon: <Megaphone size={14} />, color: "#ef4444", fr: "Influenceur", en: "Influencer", th: "อินฟลูเอนเซอร์" },
+            { icon: <Handshake size={14} />, color: "#22c55e", fr: "Apporteur d'affaires", en: "Referrer", th: "ผู้แนะนำธุรกิจ" },
+            { icon: <Users size={14} />, color: "#1e9df1", fr: "Communauté locale", en: "Local community", th: "ชุมชนท้องถิ่น" },
+            { icon: <MapPin size={14} />, color: "#f59e0b", fr: "Voisin", en: "Neighbour", th: "เพื่อนบ้าน" },
+            { icon: <Bell size={14} />, color: "#06b6d4", fr: "Concierge", en: "Concierge", th: "ผู้ดูแลคอนโด" },
+            { icon: <Boxes size={14} />, color: "#10b981", fr: "Syndic", en: "Building manager", th: "ผู้จัดการอาคาร" },
+          ];
+          const rows = [roles.slice(0, 12), roles.slice(12, 24), roles.slice(24, 36)];
+          const rowConfigs: { direction: "left" | "right"; duration: number }[] = [
+            { direction: "left", duration: 60 },
+            { direction: "right", duration: 70 },
+            { direction: "left", duration: 55 },
+          ];
+          const Pill = ({ role }: { role: Role }) => {
+            const label = lang === "en" ? role.en : lang === "th" ? role.th : role.fr;
+            return (
+              <div className="group flex items-center gap-2.5 px-4 py-2.5 mx-2 rounded-full bg-neutral-900 border border-neutral-800 hover:border-[#1e9df1]/40 transition-colors duration-300 whitespace-nowrap">
+                <span
+                  className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                  style={{
+                    background: `${role.color}1f`,
+                    color: role.color,
+                    boxShadow: `inset 0 0 0 1px ${role.color}33`,
+                  }}
+                >
+                  {role.icon}
+                </span>
+                <span className="text-sm font-medium text-white tracking-tight">
+                  {label}
+                </span>
               </div>
-            </Link>
-            <Link
-              href="#fonctionnalites"
-              className="btn-modern-dark flex items-center justify-center gap-3 px-8 py-4 rounded-[1.25rem] group"
-            >
-              <ArrowRight size={20} />
-              <div className="text-left">
-                <div className="text-[10px] font-bold tracking-wider text-neutral-400 uppercase mb-[-2px]">
-                  {lang === "en"
-                    ? "What's inside"
-                    : lang === "th"
-                      ? "สิ่งที่อยู่ภายใน"
-                      : "Ce qu'il y a dedans"}
-                </div>
-                <div className="text-xl font-bold leading-none tracking-tight">
-                  {lang === "en"
-                    ? "Discover"
-                    : lang === "th"
-                      ? "ค้นพบ"
-                      : "Découvrir"}
-                </div>
+            );
+          };
+          return (
+            <div className="w-screen flex flex-col items-center">
+              <div className="space-y-3 w-full">
+                {rows.map((row, rIdx) => (
+                  <Marquee
+                    key={rIdx}
+                    direction={rowConfigs[rIdx].direction}
+                    duration={rowConfigs[rIdx].duration}
+                    pauseOnHover
+                    fadeAmount={6}
+                    className="py-1"
+                  >
+                    {row.map((role, i) => (
+                      <Pill key={`${rIdx}-${i}`} role={role} />
+                    ))}
+                  </Marquee>
+                ))}
               </div>
-            </Link>
-          </div>
-        }
+              <p className="max-w-2xl mx-auto px-6 mt-10 text-center text-gray-300 text-sm md:text-base leading-relaxed font-light">
+                {lang === "en" ? (
+                  <>
+                    <span className="text-white font-semibold">36+ professions</span>{" "}
+                    already have a profile, a dashboard and a role in E-Dome.{" "}
+                    <span className="text-gray-500">Yours is probably one of them.</span>
+                  </>
+                ) : lang === "th" ? (
+                  <>
+                    <span className="text-white font-semibold">36+ อาชีพ</span>{" "}
+                    มีโปรไฟล์ แดชบอร์ด และบทบาทใน E-Dome แล้ว{" "}
+                    <span className="text-gray-500">ของคุณอาจเป็นหนึ่งในนั้น</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-white font-semibold">36+ métiers</span>{" "}
+                    ont déjà un profil, un tableau de bord et un rôle dans E-Dome.{" "}
+                    <span className="text-gray-500">Le tien en fait sûrement partie.</span>
+                  </>
+                )}
+              </p>
+            </div>
+          );
+        })()}
       />
 
+      {/* Transition entre la fin du cinematic (CTA "Devenez membre fondateur"
+          visible) et la section "Pas un acteur". Au lieu d'un scroll
+          classique, on enveloppe le ScrollStage suivant dans un fade-in qui
+          se déclenche à l'entrée du viewport — la section apparaît via
+          transition d'opacité plutôt qu'en arrivant brutalement. */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.08 }}
+        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+      >
       <ScrollStage>
-      {/* ═══════════════════════ 1. POUR QUI ÇA CHANGE LA DONNE ═════════════
-          Le pitch "5 plateformes / 1 compte" a déménagé dans le CinematicHero
-          juste au-dessus. Ici on rend ça concret : 6 personas montrent ce
-          que chacun fait au quotidien sur E-Dome — l'utilité par rôle,
-          plutôt qu'une liste froide de modules. */}
-      <section id="fonctionnalites" className="scroll-slide py-20 px-6 bg-black">
-        <div className="max-w-6xl mx-auto">
-          <SectionHeading
-            label={
-              lang === "en"
-                ? "Who it changes the game for"
-                : lang === "th"
-                  ? "เปลี่ยนเกมให้ใคร"
-                  : "Pour qui ça change"
-            }
-            title1={
-              lang === "en"
-                ? "Six profiles."
-                : lang === "th"
-                  ? "หกโปรไฟล์"
-                  : "Six profils."
-            }
-            title2={
-              lang === "en"
-                ? "One platform."
-                : lang === "th"
-                  ? "แพลตฟอร์มเดียว"
-                  : "Une plateforme."
-            }
-            description={
-              lang === "en"
-                ? "Each role keeps its own dashboard, its own monetisation, its own audience — but everyone shares the same place."
-                : lang === "th"
-                  ? "ทุกบทบาทมีแดชบอร์ด การสร้างรายได้ และผู้ชมของตัวเอง — แต่ทุกคนใช้พื้นที่เดียวกัน"
-                  : "Chaque rôle garde son tableau de bord, sa monétisation, son audience — mais tout le monde partage le même endroit."
-            }
-          />
+      {/* La section "Pas un acteur laissé de côté" (heading + description +
+          marquee 36 rôles + trust line) a été déplacée dans le CTA du
+          CinematicHero ci-dessus. La ScrollStage commence maintenant
+          directement avec le moteur économique. */}
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {(lang === "en"
-              ? [
-                  {
-                    icon: <Handshake size={20} />,
-                    role: "Host",
-                    body: "Publish a property in the morning, accept bookings via push, and watch revenue land in the same dashboard. No more Airbnb + Excel + WhatsApp + accountant.",
-                  },
-                  {
-                    icon: <Briefcase size={20} />,
-                    role: "Agency / Agent",
-                    body: "Listings on the integrated portal, clients chat in the messenger, referrer commissions configured in one click. No more SeLoger + WhatsApp + spreadsheet.",
-                  },
-                  {
-                    icon: <Users size={20} />,
-                    role: "Referrer",
-                    body: "Generate a link, share it, and every conversion is automatically attributed to you. No manual emails, no Excel reconciliation, no fights about who gets what.",
-                  },
-                  {
-                    icon: <GraduationCap size={20} />,
-                    role: "Trainer",
-                    body: "Publish your course on the campus, your students buy on the platform, and you keep earning where they invest what they've learned. The revenue stays in the loop.",
-                  },
-                  {
-                    icon: <TrendingUp size={20} />,
-                    role: "Investor",
-                    body: "See listings with calculated yield, follow expert trainers, and chat directly with the host. The decision lives in one app, not in your browser tab graveyard.",
-                  },
-                  {
-                    icon: <Eye size={20} />,
-                    role: "Service provider",
-                    body: "Photographer, notary, broker, home stager — your portfolio is on display where every host already is. Quote requests come straight to you, no middlemen.",
-                  },
-                ]
-              : lang === "th"
-                ? [
-                    {
-                      icon: <Handshake size={20} />,
-                      role: "เจ้าของบ้าน",
-                      body: "ลงประกาศในตอนเช้า รับการจองผ่านการแจ้งเตือน และดูรายได้เข้าในแดชบอร์ดเดียวกัน ไม่ต้องใช้ Airbnb + Excel + WhatsApp + นักบัญชีอีก",
-                    },
-                    {
-                      icon: <Briefcase size={20} />,
-                      role: "เอเจนซี่ / นายหน้า",
-                      body: "ประกาศบนพอร์ทัลในตัว ลูกค้าแชทในเมสเซนเจอร์ ค่าคอมมิชชันผู้แนะนำตั้งค่าในคลิกเดียว ไม่ต้องใช้ SeLoger + WhatsApp + สเปรดชีตอีก",
-                    },
-                    {
-                      icon: <Users size={20} />,
-                      role: "ผู้แนะนำ",
-                      body: "สร้างลิงก์ แชร์ และทุกการแปลงถูกระบุเป็นของคุณโดยอัตโนมัติ ไม่มีอีเมลที่ต้องส่งมือ ไม่มีการสอบทาน Excel ไม่มีความขัดแย้งว่าใครได้อะไร",
-                    },
-                    {
-                      icon: <GraduationCap size={20} />,
-                      role: "ผู้ฝึกอบรม",
-                      body: "ลงคอร์สในแคมปัส ผู้เรียนซื้อบนแพลตฟอร์ม และคุณยังได้รายได้ที่พวกเขาลงทุนต่อ รายได้อยู่ในวงเดียวกัน",
-                    },
-                    {
-                      icon: <TrendingUp size={20} />,
-                      role: "นักลงทุน",
-                      body: "เห็นประกาศพร้อมผลตอบแทนคำนวณไว้ ตามผู้ฝึกอบรมผู้เชี่ยวชาญ และแชทกับเจ้าของบ้านโดยตรง การตัดสินใจอยู่ในแอปเดียว ไม่ใช่กราฟฟิกแท็บที่กระจัดกระจาย",
-                    },
-                    {
-                      icon: <Eye size={20} />,
-                      role: "ผู้ให้บริการ",
-                      body: "ช่างภาพ ทนาย โบรกเกอร์ home stager — พอร์ตของคุณแสดงในที่ที่เจ้าของบ้านทุกคนอยู่แล้ว คำขอใบเสนอราคามาถึงคุณตรงๆ ไม่มีตัวกลาง",
-                    },
-                  ]
-                : [
-                    {
-                      icon: <Handshake size={20} />,
-                      role: "Hôte",
-                      body: "Vous publiez un bien le matin, vous acceptez les réservations en notification, et vos revenus tombent dans le même tableau de bord. Plus d'Airbnb + Excel + WhatsApp + comptable.",
-                    },
-                    {
-                      icon: <Briefcase size={20} />,
-                      role: "Agence / Agent",
-                      body: "Vos annonces sortent sur le portail intégré, vos clients échangent dans la messagerie, vos commissions apporteurs se configurent en un clic. Plus de SeLoger + WhatsApp + tableur.",
-                    },
-                    {
-                      icon: <Users size={20} />,
-                      role: "Apporteur d'affaires",
-                      body: "Vous générez un lien, vous le partagez, et chaque conversion vous est attribuée automatiquement. Plus de mails manuels, plus de recoupement Excel, plus de disputes sur qui touche quoi.",
-                    },
-                    {
-                      icon: <GraduationCap size={20} />,
-                      role: "Formateur",
-                      body: "Vous publiez votre formation sur le campus, vos apprenants achètent sur la plateforme, et vous touchez là où ils investissent ensuite ce qu'ils ont appris. Le revenu reste dans la boucle.",
-                    },
-                    {
-                      icon: <TrendingUp size={20} />,
-                      role: "Investisseur",
-                      body: "Vous voyez les annonces avec leur rendement calculé, vous suivez les formateurs experts, vous discutez avec l'hôte directement. La décision se prend dans une seule app, plus dans dix onglets.",
-                    },
-                    {
-                      icon: <Eye size={20} />,
-                      role: "Prestataire",
-                      body: "Photographe, notaire, courtier, home stager — votre portfolio est exposé là où tous les hôtes sont déjà. Les demandes de devis vous arrivent en direct, sans intermédiaire.",
-                    },
-                  ]
-            ).map((p, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800 hover:border-[#1e9df1]/30 transition-all"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-9 h-9 rounded-lg bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center shrink-0">
-                    {p.icon}
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">{p.role}</h3>
-                </div>
-                <p className="text-gray-400 text-sm leading-relaxed font-light">{p.body}</p>
-              </motion.div>
-            ))}
-          </div>
+      {/* ═══════════════════════ MOTEUR ÉCONOMIQUE ═══════════════════════
+          Slide pleine hauteur avec graphique linéaire animé en BG (qui se
+          trace au scroll), 4 différenciateurs (commission fixe / sous-marché
+          / traçable / dashboard perso), 3 types de liens d'apporteur et un
+          rappel "votre tableau de bord en temps réel". */}
+      <MoteurEconomiqueSlide lang={lang} slideIdx={0} />
+
+
+      {/* ═══════════════════════ 4. LES FONDATEURS (zigzag éditorial) ═════════
+          Mise en page asymétrique demandée : Léonard ancré à gauche en
+          haut, la citation des fondateurs au centre en-dessous de son
+          bloc, Jean-Pierre ancré à droite en bas. Photos rondes. */}
+      <section id="fondateurs" className="scroll-slide bg-black overflow-hidden relative">
+        {/* Volume géométrique anguleux (Zaha Hadid-esque) coin haut-droit,
+            blanc, rotation très lente continue. */}
+        <div className="hidden lg:block absolute right-[-3%] top-[4%] w-[28%] z-0 pointer-events-none">
+          <ArchAngularVolume className="w-full h-auto" />
         </div>
-      </section>
-
-
-      {/* ═══════════════════════ 3. CHACUN GAGNE SA PART ═════════════════════
-          L'apporteur d'affaires comme moteur économique transparent.
-          3 types de liens visibles : amener un hôte, un client, un bien. */}
-      <section className="scroll-slide py-20 px-6 bg-neutral-900">
-        <div className="max-w-5xl mx-auto">
-          <SectionHeading
-            label={
-              lang === "en"
-                ? "The economic engine"
-                : lang === "th"
-                  ? "เครื่องยนต์เศรษฐกิจ"
-                  : "Le moteur économique"
-            }
-            title1={
-              lang === "en"
-                ? "Every role"
-                : lang === "th"
-                  ? "ทุกบทบาท"
-                  : "Chaque rôle"
-            }
-            title2={
-              lang === "en"
-                ? "earns a share."
-                : lang === "th"
-                  ? "ได้รับส่วนแบ่ง"
-                  : "a sa part."
-            }
-            description={
-              lang === "en"
-                ? "Recommend a host, a client or a property — every connection generates a traceable, automatic commission. No paper, no informal deal, no opacity. Each actor sees their own dashboard in real time."
-                : lang === "th"
-                  ? "แนะนำเจ้าของบ้าน ลูกค้า หรือทรัพย์สิน — ทุกการเชื่อมต่อสร้างค่าคอมมิชชันที่ติดตามได้และเป็นอัตโนมัติ ไม่มีกระดาษ ไม่มีข้อตกลงนอกระบบ ไม่มีความคลุมเครือ"
-                  : "Recommandez un hôte, un client ou un bien — chaque connexion génère une commission traçable, automatique. Pas de paperasse, pas d'accord informel, pas d'opacité. Chacun suit son tableau de bord en temps réel."
-            }
-          />
-
-          {/* 3 types de liens */}
-          <div className="grid md:grid-cols-3 gap-5 mb-12">
-            {[
-              {
-                icon: <Handshake size={22} />,
-                tag:
-                  lang === "en" ? "Bring a host" : lang === "th" ? "นำเจ้าของบ้าน" : "Amener un hôte",
-                title:
-                  lang === "en"
-                    ? "Reward per activation"
-                    : lang === "th"
-                      ? "รางวัลต่อการเปิดใช้งาน"
-                      : "Récompense par activation",
-                body:
-                  lang === "en"
-                    ? "A property owner publishes their first listing thanks to your link — you earn a fixed commission, paid out monthly."
-                    : lang === "th"
-                      ? "เจ้าของทรัพย์สินลงประกาศแรกผ่านลิงก์ของคุณ — คุณได้รับค่าคอมมิชชันคงที่ จ่ายรายเดือน"
-                      : "Un propriétaire publie son premier bien via votre lien — vous touchez une commission fixe, payée chaque mois.",
-              },
-              {
-                icon: <Users size={22} />,
-                tag:
-                  lang === "en" ? "Bring a client" : lang === "th" ? "นำลูกค้า" : "Amener un client",
-                title:
-                  lang === "en"
-                    ? "Percent of booking"
-                    : lang === "th"
-                      ? "เปอร์เซ็นต์ของการจอง"
-                      : "Pourcentage sur la réservation",
-                body:
-                  lang === "en"
-                    ? "Your contact books a property they discovered through you — you earn a percentage of every transaction, automatically."
-                    : lang === "th"
-                      ? "ผู้ติดต่อของคุณจองทรัพย์สินที่พวกเขาค้นพบผ่านคุณ — คุณได้รับเปอร์เซ็นต์ของทุกธุรกรรมโดยอัตโนมัติ"
-                      : "Votre contact réserve un bien qu'il a découvert via vous — vous touchez un pourcentage sur chaque transaction, automatiquement.",
-              },
-              {
-                icon: <BadgeCheck size={22} />,
-                tag:
-                  lang === "en" ? "Bring a property" : lang === "th" ? "นำทรัพย์สิน" : "Amener un bien",
-                title:
-                  lang === "en"
-                    ? "Percent on the sale"
-                    : lang === "th"
-                      ? "เปอร์เซ็นต์ของการขาย"
-                      : "Pourcentage sur la vente",
-                body:
-                  lang === "en"
-                    ? "A property is sold thanks to a referral chain you started — you stay in the chain and you stay paid."
-                    : lang === "th"
-                      ? "ทรัพย์สินถูกขายผ่านห่วงโซ่การแนะนำที่คุณเริ่มต้น — คุณยังอยู่ในห่วงโซ่และยังคงได้รับเงิน"
-                      : "Un bien est vendu via une chaîne de recommandation que vous avez initiée — vous restez dans la chaîne, vous restez payé.",
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="bg-black/40 rounded-2xl p-7 border border-neutral-800 hover:border-[#1e9df1]/40 transition-all"
-              >
-                <div className="w-10 h-10 rounded-xl bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center mb-4">
-                  {item.icon}
-                </div>
-                <p className="text-[#1e9df1] text-[0.65rem] tracking-[0.18em] uppercase font-semibold mb-2">
-                  {item.tag}
-                </p>
-                <h3 className="text-base font-semibold mb-2 text-white">{item.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed font-light">{item.body}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Trust line */}
-          <motion.div
-            {...fadeUp}
-            className="max-w-2xl mx-auto text-center border-t border-neutral-800 pt-8"
-          >
-            <p className="text-gray-300 text-sm md:text-base leading-relaxed font-light">
-              {lang === "en" ? (
-                <>
-                  100% traceable. 100% automatic.{" "}
-                  <strong className="text-white font-semibold">No hidden cost</strong> for the
-                  host or the client.
-                </>
-              ) : lang === "th" ? (
-                <>
-                  ตรวจสอบได้ 100% อัตโนมัติ 100%{" "}
-                  <strong className="text-white font-semibold">ไม่มีค่าใช้จ่ายแอบแฝง</strong>{" "}
-                  สำหรับเจ้าของบ้านหรือลูกค้า
-                </>
-              ) : (
-                <>
-                  100 % traçable. 100 % automatique.{" "}
-                  <strong className="text-white font-semibold">Aucun coût caché</strong> pour
-                  l'hôte ou le client.
-                </>
-              )}
-            </p>
-          </motion.div>
+        {/* Table à dessin d'architecte — ancrée TOUT EN BAS de la section,
+            forme horizontale qui s'étire le long du pied. Compas qui tourne,
+            lampe gooseneck dont le cône pulse, tasse de café qui fume. */}
+        <div className="hidden lg:block absolute bottom-0 left-0 w-[44%] z-0 pointer-events-none">
+          <ArchDraftingTable className="w-full h-auto" />
         </div>
-      </section>
-
-
-      {/* ═══════════════════════ 4. LES FONDATEURS (compressé) ═══════════════
-          2 cartes côte-à-côte, 1 quote forte, contact unique. */}
-      <section id="fondateurs" className="scroll-slide py-20 px-6 bg-black">
-        <div className="max-w-5xl mx-auto">
-          <motion.div {...fadeUp} className="text-center mb-12">
-            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
-              {lang === "th" ? "ผู้ก่อตั้ง" : lang === "en" ? "Founders" : "Les fondateurs"}
+        {/* Container plus large (max-w-6xl) + padding latéral réduit pour
+            que les blocs aient plus de marge à se "décaler" vers les bords.
+            Espacements verticaux resserrés afin que le bloc Jean-Pierre
+            ne soit plus rogné par le bas du slide. */}
+        <div className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 h-full flex flex-col justify-start pt-20 pb-4">
+          {/* ── Heading ── */}
+          <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto mb-7">
+            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-2">
+              {lang === "th" ? "ทีมงาน" : lang === "en" ? "The team" : "L'équipe"}
             </p>
             <h2
-              className="text-4xl sm:text-5xl md:text-6xl leading-[1.1] mb-5"
+              className="text-2xl sm:text-3xl md:text-4xl leading-[1.05] mb-3"
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
-              {lang === "th" ? "เบื้องหลัง" : lang === "en" ? "Behind" : "Derrière"}{" "}
-              <span className="text-[#1e9df1]">E-Dome</span>
+              {lang === "th" ? (
+                <>ทำความ<br /><span className="text-[#1e9df1]">รู้จักกัน</span></>
+              ) : lang === "en" ? (
+                <>Get to<br /><span className="text-[#1e9df1]">know us.</span></>
+              ) : (
+                <>Faites<br /><span className="text-[#1e9df1]">connaissance.</span></>
+              )}
             </h2>
-            <p className="text-gray-400 text-base sm:text-lg leading-relaxed font-light max-w-2xl mx-auto">
+            <p className="text-gray-300 text-[0.78rem] sm:text-sm leading-relaxed font-light">
               {lang === "en"
                 ? "Two profiles, one conviction: real estate doesn't change with one more app. It changes when its actors are finally connected."
                 : lang === "th"
@@ -1058,304 +1844,789 @@ function HomePageContent() {
             </p>
           </motion.div>
 
-          {/* 2 founder cards side by side */}
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-            {[
-              {
-                name: "Léonard Ansermet",
-                role: t("founders.label_leo"),
-                photo: "/images/founders/leonard.jpg",
-                whatsapp: "https://wa.me/41786091880",
-                email: "leonard@edome.world",
-              },
-              {
-                name: "Jean-Pierre Fallet",
-                role: t("founders.label_jp"),
-                photo: "/images/founders/jeanpierre.jpg",
-                whatsapp: "https://wa.me/41798267542",
-                email: "jeanpierre@edome.world",
-              },
-            ].map((f, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800 flex items-center gap-5"
+          {/* ── Léonard à gauche (max-w-sm, mr-auto → flush gauche) ── */}
+          <motion.article
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            className="flex items-center gap-4 max-w-sm mr-auto mb-6"
+          >
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shrink-0 ring-2 ring-[#1e9df1]/30 shadow-lg shadow-[#1e9df1]/10">
+              <img
+                src="/images/founders/leonard.jpg"
+                alt="Léonard Ansermet"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                Léonard Ansermet
+              </h3>
+              <p className="text-[#1e9df1] text-[0.62rem] sm:text-[0.66rem] font-semibold uppercase tracking-[0.18em] mt-0.5">
+                {t("founders.label_leo")}
+              </p>
+              <p
+                className="text-gray-400 text-[0.74rem] sm:text-[0.8rem] leading-snug font-light italic mt-1.5 border-l-2 border-[#1e9df1]/30 pl-2.5"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
               >
-                <div className="w-20 h-20 rounded-xl overflow-hidden shadow-lg shrink-0">
-                  <img src={f.photo} alt={f.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-lg font-semibold text-white">{f.name}</h3>
-                  <p className="text-[#1e9df1] text-xs font-medium mb-2">{f.role}</p>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <a
-                      href={f.whatsapp}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-[0.7rem] text-gray-400 hover:text-green-500 transition-colors"
-                    >
-                      <MessageCircle size={12} /> {t("founders.whatsapp")}
-                    </a>
-                    <a
-                      href={`mailto:${f.email}`}
-                      className="flex items-center gap-1.5 text-[0.7rem] text-gray-400 hover:text-[#1e9df1] transition-colors"
-                    >
-                      <Mail size={12} /> Email
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                {lang === "en"
+                  ? "You don't change a sector by adding another tool — you change it by building the place where everything finally connects."
+                  : lang === "th"
+                    ? "คุณไม่เปลี่ยนวงการด้วยการเพิ่มเครื่องมืออีกตัว — แต่ด้วยการสร้างที่ที่ทุกอย่างเชื่อมต่อกันในที่สุด"
+                    : "On ne change pas un secteur en empilant les outils — on le change en bâtissant l'endroit où tout finit enfin par se rejoindre."}
+              </p>
+            </div>
+          </motion.article>
 
-          {/* Founders quote */}
+          {/* ── Citation centrée (entre les deux fondateurs) ── */}
           <motion.blockquote
             {...fadeUp}
-            className="text-center max-w-3xl mx-auto border-l-2 border-[#1e9df1]/50 pl-6 py-2"
+            className="relative max-w-2xl mx-auto text-center mb-6 px-4"
           >
+            <span
+              className="absolute -top-2 left-1/2 -translate-x-1/2 text-[#1e9df1]/25 text-4xl leading-none select-none"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+              aria-hidden
+            >
+              "
+            </span>
             <p
-              className="text-xl sm:text-2xl text-white italic leading-snug"
+              className="text-sm sm:text-base md:text-lg text-white italic leading-snug px-6 pt-1"
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
-              «&nbsp;{t("founders.quote")}&nbsp;»
+              {t("founders.quote")}
+            </p>
+            <p className="text-[0.6rem] tracking-[0.22em] uppercase text-gray-500 font-bold mt-2">
+              — Léonard Ansermet &amp; Jean-Pierre Medard Garza
             </p>
           </motion.blockquote>
+
+          {/* ── Jean-Pierre à droite (max-w-sm, ml-auto → flush droite) ── */}
+          <motion.article
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            className="flex items-center gap-4 max-w-sm ml-auto mb-6"
+          >
+            <div className="min-w-0 flex-1 text-right">
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                Jean-Pierre Medard Garza
+              </h3>
+              <p className="text-[#1e9df1] text-[0.62rem] sm:text-[0.66rem] font-semibold uppercase tracking-[0.18em] mt-0.5">
+                {t("founders.label_jp")}
+              </p>
+              {/* Crédential : CFC employé de commerce + maturité professionnelle */}
+              <p className="text-gray-500 text-[0.62rem] sm:text-[0.66rem] tracking-wide mt-1">
+                {lang === "en"
+                  ? "Federal commerce diploma · Professional baccalaureate"
+                  : lang === "th"
+                    ? "ปวช. พาณิชย์ · มัธยมปลายวิชาชีพ"
+                    : "CFC employé de commerce · Maturité professionnelle"}
+              </p>
+              <p
+                className="text-gray-400 text-[0.74rem] sm:text-[0.8rem] leading-snug font-light italic mt-1.5 border-r-2 border-[#1e9df1]/30 pr-2.5"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
+              >
+                {lang === "en"
+                  ? "Structures the model, partnerships and execution. Convinced that a good idea is never enough — it takes rigorous foundations to make it grow."
+                  : lang === "th"
+                    ? "จัดโครงสร้างโมเดล พันธมิตร และการดำเนินงาน เชื่อมั่นว่าแนวคิดที่ดีไม่เพียงพอ ต้องมีรากฐานที่เข้มงวดเพื่อให้เติบโต"
+                    : "Structure le modèle, les partenariats et l'exécution. Convaincu qu'une bonne idée ne suffit pas — il faut une fondation rigoureuse pour la faire grandir."}
+              </p>
+            </div>
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shrink-0 ring-2 ring-[#1e9df1]/30 shadow-lg shadow-[#1e9df1]/10">
+              <img
+                src="/images/founders/jeanpierre.jpg"
+                alt="Jean-Pierre Medard Garza"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </motion.article>
+
+          {/* ── Bandeau de contact direct (sous J-P, footer du slide) ──
+              Les pills WhatsApp/Email ont été retirées des cartes pour
+              alléger ; on les regroupe ici pour un accès direct quand le
+              lecteur veut joindre l'un ou l'autre des fondateurs.
+              Pas de fadeUp : ce bloc en bas de slide doit être visible
+              immédiatement à l'arrivée sur la section (le whileInView
+              avec margin -80px ne se déclenchait pas tant que le bas du
+              slide n'était pas suffisamment dans le viewport). */}
+          <div
+            className="flex flex-col sm:flex-row items-center justify-center sm:justify-end gap-3 sm:gap-5 pt-3 border-t border-neutral-900"
+          >
+            <p className="text-[0.6rem] tracking-[0.22em] uppercase text-gray-500 font-bold">
+              {lang === "en"
+                ? "Direct contact"
+                : lang === "th"
+                  ? "ติดต่อโดยตรง"
+                  : "Contact direct"}
+            </p>
+
+            {/* Léonard pills — numéro thaï (+66) affiché brut, lien tel:
+                pour appel direct depuis mobile/desktop. */}
+            <div className="flex items-center gap-2">
+              <span className="text-[0.7rem] text-gray-300 font-semibold">Léonard</span>
+              <a
+                href="tel:+66910687928"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-semibold tabular-nums"
+              >
+                <Phone size={10} /> +66 91 068 7928
+              </a>
+              <a
+                href="mailto:leonard@edome.world"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/25 text-[#1e9df1] hover:bg-[#1e9df1]/20 transition-colors text-[0.65rem] font-semibold"
+              >
+                <Mail size={10} /> Email
+              </a>
+            </div>
+
+            <div className="hidden sm:block w-px h-4 bg-neutral-700" />
+
+            {/* Jean-Pierre pills — WhatsApp conservé (numéro CH). */}
+            <div className="flex items-center gap-2">
+              <span className="text-[0.7rem] text-gray-300 font-semibold">Jean-Pierre</span>
+              <a
+                href="https://wa.me/41798267542"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-semibold"
+              >
+                <MessageCircle size={10} /> {t("founders.whatsapp")}
+              </a>
+              <a
+                href="mailto:jeanpierre@edome.world"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/25 text-[#1e9df1] hover:bg-[#1e9df1]/20 transition-colors text-[0.65rem] font-semibold"
+              >
+                <Mail size={10} /> Email
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
 
-      {/* ═══════════════════════ 4. REJOINDRE LES 100 FONDATEURS ════════════
-          Section finale conversion qui agrège : la mini-timeline Phase 2
-          comme argument d'urgence + 100 places + 6 avantages + FAQ + CTA. */}
-      <section id="inscriptions" className="scroll-slide py-20 px-6 bg-neutral-900">
-        <div className="max-w-5xl mx-auto">
-          {/* Header — Phase 2 + 100 places fondues en une seule entrée */}
-          <motion.div {...fadeUp} className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/30 mb-5">
+      {/* ═══════════════════════ 4. AIDEZ-NOUS À PROUVER LE BESOIN ══════════
+          Refonte : section beaucoup plus développée — texte plus dense,
+          esthétique enrichie. Composition :
+            · Background décoratif (radial glow + dot grid)
+            · Header (chip Phase 2 + h2 + sous-titre serif italique +
+              paragraphe long + meta-row stats)
+            · 3 cartes "Ce que vos réponses débloquent" (validation,
+              orientation, partenaires) — explique la valeur de chaque
+              réponse
+            · Stepper horizontal compact (4 phases avec ligne de connexion)
+              à la place de l'ancienne grille de 4 cartes
+            · Double CTA (démo + questionnaire) avec badges enrichis
+            · Trust strip footer (RGPD, chiffré, anonyme, pas d'engagement) */}
+      <section id="inscriptions" className="scroll-slide py-12 px-6 bg-black relative overflow-hidden">
+        {/* Radial glow centré en haut (bleu) — donne un point focal et
+            adoucit le noir pur. */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-[55%] pointer-events-none z-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 65% 55% at 50% 0%, rgba(30,157,241,0.13), transparent 70%)",
+          }}
+        />
+        {/* Dot grid très subtil — texture blueprint discrète. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-[0.06] pointer-events-none z-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "26px 26px",
+          }}
+        />
+        {/* Petit volume bas avec auvent + tour technique, coin haut-gauche,
+            bleu, drift horizontal. */}
+        <div className="hidden lg:block absolute left-[2%] top-[6%] w-[16%] z-0 pointer-events-none">
+          <ArchSmallSlab className="w-full h-auto" />
+        </div>
+        {/* Immeuble cantilever moderne (étages décalés) côté droit, bleu,
+            parallaxe scroll vertical inverse. */}
+        <div className="hidden lg:block absolute right-[-3%] top-0 bottom-0 w-[22%] z-0 pointer-events-none">
+          <ArchCantilever className="w-full h-full" />
+        </div>
+
+        <div className="relative z-10 max-w-5xl mx-auto h-full flex flex-col justify-start pt-12 pb-3">
+          {/* ── Header : eyebrow + titre + sous-titre italique +
+                  paragraphe développé + meta-row de stats ── */}
+          <motion.div {...fadeUp} className="text-center mb-5 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/30 mb-3.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#1e9df1] animate-pulse" />
-              <span className="text-[#1e9df1] text-[0.65rem] tracking-[0.25em] uppercase font-semibold">
+              <span className="text-[#1e9df1] text-[0.62rem] tracking-[0.25em] uppercase font-semibold">
                 {lang === "en"
-                  ? "Phase 2 — happening now"
+                  ? "Phase 2 — validating the need"
                   : lang === "th"
-                    ? "เฟส 2 — เกิดขึ้นตอนนี้"
-                    : "Phase 2 — en cours"}
+                    ? "เฟส 2 — กำลังพิสูจน์ความต้องการ"
+                    : "Phase 2 — validation du besoin"}
               </span>
             </div>
             <h2
-              className="text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-5"
+              className="text-3xl sm:text-4xl md:text-5xl leading-[1.05] mb-3"
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
               {lang === "en" ? (
                 <>
-                  100 spots.
+                  Help us
                   <br />
-                  <span className="text-[#1e9df1]">Not one more.</span>
+                  <span className="text-[#1e9df1]">prove the need.</span>
                 </>
               ) : lang === "th" ? (
                 <>
-                  100 ที่นั่ง
+                  ช่วยเรา
                   <br />
-                  <span className="text-[#1e9df1]">ไม่มากกว่านั้น</span>
+                  <span className="text-[#1e9df1]">พิสูจน์ความต้องการ</span>
                 </>
               ) : (
                 <>
-                  100 places.
+                  Aidez-nous à
                   <br />
-                  <span className="text-[#1e9df1]">Pas une de plus.</span>
+                  <span className="text-[#1e9df1]">prouver le besoin.</span>
                 </>
               )}
             </h2>
-            <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
+            {/* Sous-titre serif italique — passerelle entre le titre et le
+                paragraphe. Cadence émotionnelle. */}
+            <p
+              className="text-[#1e9df1]/85 text-sm sm:text-base italic mb-3"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
               {lang === "en"
-                ? "Concept proven, mockup live. Every interest registered now is the proof that lets us raise funds, build the team and ship the platform — and that's why founding members keep their badge for life."
+                ? "Your voice is the raw material of this project."
                 : lang === "th"
-                  ? "แนวคิดได้รับการพิสูจน์แล้ว ตัวอย่างใช้งานได้จริง ทุกความสนใจที่ลงทะเบียนตอนนี้คือหลักฐานที่ทำให้เราสามารถระดมทุน สร้างทีม และเปิดตัวแพลตฟอร์มได้ — และนั่นคือเหตุผลที่สมาชิกผู้ก่อตั้งจะเก็บป้ายไว้ตลอดชีวิต"
-                  : "Concept prouvé, maquette en ligne. Chaque manifestation d'intérêt qu'on récolte maintenant est la preuve qui nous permettra de lever les fonds, constituer l'équipe et lancer la plateforme — c'est pour ça que les membres fondateurs gardent leur badge à vie."}
+                  ? "เสียงของคุณคือวัตถุดิบของโครงการนี้"
+                  : "Votre voix est la matière première du projet."}
             </p>
+            {/* Paragraphe développé — explique le pourquoi avant le quoi. */}
+            <p className="text-gray-300 text-[0.82rem] sm:text-sm leading-relaxed font-light">
+              {lang === "en"
+                ? "Before raising funds, before assembling a team, before writing a single production line — we want to be sure we're solving a problem that real people live every day. Each answer becomes concrete proof: a quote we can hand to investors, a priority that shapes the next sprint, a frustration we promise to take seriously. Two minutes of your time, weighed like gold on our side."
+                : lang === "th"
+                  ? "ก่อนระดมทุน ก่อนรวมทีม ก่อนเขียนโค้ดบรรทัดแรก — เราต้องการมั่นใจว่ากำลังแก้ปัญหาที่ผู้คนเผชิญจริง ทุกคำตอบกลายเป็นหลักฐานที่จับต้องได้ : คำพูดที่ส่งให้นักลงทุน ลำดับความสำคัญที่กำหนดสปรินต์ถัดไป ความหงุดหงิดที่เราสัญญาว่าจะรับฟังอย่างจริงจัง สองนาทีของคุณ มีน้ำหนักดั่งทองคำสำหรับเรา"
+                  : "Avant de lever les fonds, avant d'assembler l'équipe, avant d'écrire la moindre ligne de code de production — nous voulons être certains de résoudre un vrai problème, vécu au quotidien par de vraies personnes. Chaque réponse devient une preuve concrète : une citation à présenter aux investisseurs, une priorité qui façonne le prochain sprint, une frustration qu'on s'engage à prendre au sérieux. Deux minutes de votre temps — pesées comme de l'or de notre côté."}
+            </p>
+            {/* Meta-row : stats inline qui rassurent (durée · format ·
+                anonymat · engagement). */}
+            <div className="mt-3.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[0.7rem] text-gray-400 font-medium">
+              <span className="inline-flex items-center gap-1.5">
+                <Clock size={11} className="text-[#1e9df1]" />
+                {lang === "en" ? "≈ 2 min" : lang === "th" ? "≈ 2 นาที" : "≈ 2 min"}
+              </span>
+              <span className="text-neutral-700">·</span>
+              <span className="inline-flex items-center gap-1.5">
+                <ClipboardList size={11} className="text-[#1e9df1]" />
+                {lang === "en" ? "12 questions" : lang === "th" ? "12 คำถาม" : "12 questions"}
+              </span>
+              <span className="text-neutral-700">·</span>
+              <span className="inline-flex items-center gap-1.5">
+                <Lock size={11} className="text-[#1e9df1]" />
+                {lang === "en" ? "100% anonymous" : lang === "th" ? "100% นิรนาม" : "100 % anonyme"}
+              </span>
+              <span className="text-neutral-700">·</span>
+              <span className="inline-flex items-center gap-1.5">
+                <BadgeCheck size={11} className="text-[#1e9df1]" />
+                {lang === "en" ? "no commitment" : lang === "th" ? "ไม่ผูกพัน" : "sans engagement"}
+              </span>
+            </div>
           </motion.div>
 
-          {/* Mini-timeline 4 phases — Phase 2 highlightée */}
-          <motion.div {...fadeUp} className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-14">
-            {phases.map((phase, i) => {
-              const isCurrent = i === 1;
-              const isDone = i === 0;
+          {/* ── 3 cartes : "Ce que vos réponses débloquent" ──
+              Validation (emerald) · Orientation (blue) · Partenaires
+              (amber). Explique pour chaque axe ce que la voix de
+              l'utilisateur fait avancer dans le projet. */}
+          <motion.div {...fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-w-4xl mx-auto mb-5">
+            {[
+              {
+                icon: <ClipboardCheck size={16} />,
+                tone: "emerald" as const,
+                eyebrow: lang === "en" ? "Validation" : lang === "th" ? "การยืนยัน" : "Validation",
+                title:
+                  lang === "en"
+                    ? "Confirm the need"
+                    : lang === "th"
+                      ? "ยืนยันความต้องการ"
+                      : "Confirmer le besoin",
+                desc:
+                  lang === "en"
+                    ? "Every answer joins the fundraising deck — direct evidence the market is asking for this platform."
+                    : lang === "th"
+                      ? "ทุกคำตอบถูกบรรจุในเอกสารระดมทุน — หลักฐานตรงว่าตลาดต้องการแพลตฟอร์มนี้"
+                      : "Chaque réponse est versée au dossier de levée — la preuve directe que le marché demande cette plateforme.",
+              },
+              {
+                icon: <Compass size={16} />,
+                tone: "blue" as const,
+                eyebrow: lang === "en" ? "Direction" : lang === "th" ? "ทิศทาง" : "Orientation",
+                title:
+                  lang === "en"
+                    ? "Shape the priorities"
+                    : lang === "th"
+                      ? "กำหนดลำดับความสำคัญ"
+                      : "Cibler les priorités",
+                desc:
+                  lang === "en"
+                    ? "Your frustrations dictate what we build first. The features you need most are the ones that ship soonest."
+                    : lang === "th"
+                      ? "ความหงุดหงิดของคุณกำหนดสิ่งที่เราจะสร้างก่อน ฟีเจอร์ที่คุณต้องการที่สุดจะมาก่อน"
+                      : "Vos frustrations dictent l'ordre de construction. Les fonctionnalités que vous attendez le plus arrivent en premier.",
+              },
+              {
+                icon: <Megaphone size={16} />,
+                tone: "amber" as const,
+                eyebrow: lang === "en" ? "Partners" : lang === "th" ? "พันธมิตร" : "Partenaires",
+                title:
+                  lang === "en"
+                    ? "Convince the ecosystem"
+                    : lang === "th"
+                      ? "โน้มน้าวระบบนิเวศ"
+                      : "Convaincre l'écosystème",
+                desc:
+                  lang === "en"
+                    ? "Investors, providers, first ambassadors — they all want concrete signals. Your voices give them exactly that."
+                    : lang === "th"
+                      ? "นักลงทุน ผู้ให้บริการ ทูตคนแรก — พวกเขาต้องการสัญญาณที่เป็นรูปธรรม เสียงของคุณคือสิ่งนั้น"
+                      : "Investisseurs, prestataires, premiers ambassadeurs : tous veulent des signaux concrets. Vos voix les leur donnent.",
+              },
+            ].map((card, i) => {
+              const tone = {
+                emerald: {
+                  border: "border-emerald-500/30 hover:border-emerald-500/60",
+                  bg: "bg-emerald-500/15",
+                  text: "text-emerald-400",
+                  ring: "ring-emerald-500/20",
+                },
+                blue: {
+                  border: "border-[#1e9df1]/30 hover:border-[#1e9df1]/60",
+                  bg: "bg-[#1e9df1]/15",
+                  text: "text-[#1e9df1]",
+                  ring: "ring-[#1e9df1]/20",
+                },
+                amber: {
+                  border: "border-amber-500/30 hover:border-amber-500/60",
+                  bg: "bg-amber-500/15",
+                  text: "text-amber-400",
+                  ring: "ring-amber-500/20",
+                },
+              }[card.tone];
               return (
                 <div
                   key={i}
-                  className={`rounded-xl p-4 border transition-all ${
-                    isCurrent
-                      ? "bg-[#1e9df1]/10 border-[#1e9df1]/50"
-                      : "bg-black/40 border-neutral-800"
-                  }`}
+                  className={`relative rounded-xl border p-3.5 bg-neutral-950/60 backdrop-blur-sm transition-colors ${tone.border}`}
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <span
-                      className={`text-[0.7rem] font-mono ${
-                        isDone
-                          ? "text-gray-600"
-                          : isCurrent
-                            ? "text-[#1e9df1]"
-                            : "text-gray-500"
-                      }`}
-                    >
-                      0{i + 1}
+                    <div className={`w-7 h-7 rounded-md flex items-center justify-center ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}>
+                      {card.icon}
+                    </div>
+                    <span className={`text-[0.55rem] tracking-[0.22em] uppercase font-bold ${tone.text}`}>
+                      {card.eyebrow}
                     </span>
-                    {isCurrent && (
-                      <span className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[#1e9df1]">
-                        {lang === "en" ? "Now" : lang === "th" ? "ตอนนี้" : "Maintenant"}
-                      </span>
-                    )}
-                    {isDone && (
-                      <span className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-gray-500">
-                        {lang === "en" ? "Done" : lang === "th" ? "เสร็จแล้ว" : "Fait"}
-                      </span>
-                    )}
                   </div>
-                  <h3 className="text-xs sm:text-sm font-semibold leading-snug text-white">
-                    {t(phase.titleKey)}
+                  <h3 className="text-[0.82rem] font-bold text-white leading-tight mb-1">
+                    {card.title}
                   </h3>
+                  <p className="text-[0.68rem] text-gray-400 leading-snug">
+                    {card.desc}
+                  </p>
                 </div>
               );
             })}
           </motion.div>
 
-          {/* 6 benefits compact grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-            {benefits.map((b, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="bg-neutral-900 rounded-xl p-5 border border-neutral-800 flex items-start gap-4"
-              >
-                <div className="w-9 h-9 rounded-lg bg-[#1e9df1]/10 text-[#1e9df1] flex items-center justify-center shrink-0">
-                  {b.icon}
-                </div>
-                <div className="min-w-0">
-                  <h4 className="text-sm font-semibold mb-1 text-white">{t(b.titleKey)}</h4>
-                  <p className="text-gray-400 text-xs leading-relaxed font-light">
-                    {t(b.descKey)}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* FAQ — handle objections inline */}
-          <motion.div {...fadeUp} className="max-w-2xl mx-auto mb-12">
-            <p className="text-center text-[0.65rem] tracking-[0.3em] uppercase font-semibold text-gray-500 mb-5">
-              {lang === "en" ? "Common questions" : lang === "th" ? "คำถามที่พบบ่อย" : "Questions fréquentes"}
-            </p>
-            <div className="border-t border-neutral-800">
-              {(() => {
-                const faqs =
-                  lang === "en"
-                    ? [
-                        {
-                          q: "Is it free?",
-                          a: "Yes, completely. Registering is a no-commitment expression of interest — no card, no payment.",
-                        },
-                        {
-                          q: "When does the platform launch?",
-                          a: "Phase 3 — fundraising and team — starts as soon as we have enough proof. Phase 4 — public launch — follows. The mockup at /feed already shows what's being built.",
-                        },
-                        {
-                          q: "Who can become a founding member?",
-                          a: "Anyone who fits one of the 12 ecosystem roles: host, agent, agency, referrer, trainer, photographer, broker, notary, architect, developer, investor, or simply a future client.",
-                        },
-                        {
-                          q: "What if I change my mind later?",
-                          a: "You haven't signed up to anything binding. The form is a market signal, not a contract.",
-                        },
-                      ]
-                    : lang === "th"
-                      ? [
-                          {
-                            q: "ฟรีหรือไม่?",
-                            a: "ใช่ ฟรีทั้งหมด การลงทะเบียนเป็นการแสดงความสนใจโดยไม่ผูกพัน ไม่ต้องใช้บัตร ไม่มีการชำระเงิน",
-                          },
-                          {
-                            q: "แพลตฟอร์มเปิดตัวเมื่อไหร่?",
-                            a: "เฟส 3 — การระดมทุนและทีม — เริ่มต้นทันทีที่เรามีหลักฐานเพียงพอ จากนั้นเฟส 4 — การเปิดตัวสาธารณะ — จะตามมา ตัวอย่างที่ /feed แสดงสิ่งที่กำลังสร้างอยู่แล้ว",
-                          },
-                          {
-                            q: "ใครสามารถเป็นสมาชิกผู้ก่อตั้งได้?",
-                            a: "ทุกคนที่อยู่ใน 12 บทบาทของระบบนิเวศ: เจ้าของบ้าน นายหน้า เอเจนซี่ ผู้แนะนำ ผู้ฝึกอบรม ช่างภาพ ที่ปรึกษาสินเชื่อ ทนาย สถาปนิก ผู้พัฒนา นักลงทุน หรือเพียงแค่ลูกค้าในอนาคต",
-                          },
-                          {
-                            q: "ถ้าฉันเปลี่ยนใจในภายหลังล่ะ?",
-                            a: "คุณไม่ได้ลงนามในสิ่งที่มีผลผูกพัน แบบฟอร์มเป็นสัญญาณตลาด ไม่ใช่สัญญา",
-                          },
-                        ]
-                      : [
-                          {
-                            q: "Est-ce gratuit ?",
-                            a: "Oui, totalement. S'inscrire est une simple manifestation d'intérêt sans engagement — pas de carte, pas de paiement.",
-                          },
-                          {
-                            q: "Quand sort la plateforme ?",
-                            a: "La phase 3 — levée de fonds et constitution de l'équipe — démarre dès que la preuve est suffisante. La phase 4 — lancement public — suit. La maquette sur /feed montre déjà ce qui est en construction.",
-                          },
-                          {
-                            q: "Qui peut devenir membre fondateur ?",
-                            a: "Tous les profils qui correspondent à l'un des 12 rôles de l'écosystème : hôte, agent, agence, apporteur, formateur, photographe, courtier, notaire, architecte, promoteur, investisseur ou simplement futur client.",
-                          },
-                          {
-                            q: "Et si je change d'avis ensuite ?",
-                            a: "Vous ne vous êtes engagé à rien de contraignant. Le formulaire est un signal de marché, pas un contrat.",
-                          },
-                        ];
-                return faqs.map((f, i) => (
-                  <details
-                    key={i}
-                    className="group border-b border-neutral-800 py-4 cursor-pointer"
-                  >
-                    <summary className="flex items-start gap-3 list-none select-none">
-                      <ChevronDown
-                        size={16}
-                        className="text-[#1e9df1] mt-0.5 transition-transform group-open:rotate-180 shrink-0"
-                      />
-                      <span className="text-sm font-medium text-white flex-1">{f.q}</span>
-                    </summary>
-                    <p className="text-gray-400 text-sm leading-relaxed font-light mt-3 pl-7">
-                      {f.a}
-                    </p>
-                  </details>
-                ));
-              })()}
+          {/* ── Stepper horizontal compact — remplace l'ancienne grille
+                de 4 cartes. Une ligne de connexion gradient relie les
+                noeuds (Fait → Maintenant → 2× À venir). Plus dense
+                visuellement, plus narratif (on lit la progression). ── */}
+          <motion.div {...fadeUp} className="mb-5 max-w-3xl mx-auto w-full">
+            <div className="relative">
+              {/* Ligne de connexion entre les noeuds — gradient
+                  emerald → bleu → neutral. Calée à la hauteur des dots. */}
+              <div className="absolute left-[12%] right-[12%] top-[14px] h-px bg-gradient-to-r from-emerald-500/60 via-[#1e9df1]/60 to-neutral-700 z-0" />
+              <div className="relative grid grid-cols-4 gap-2">
+                {phases.map((phase, i) => {
+                  const isDone = i === 0;
+                  const isCurrent = i === 1;
+                  const dotCls = isDone
+                    ? "bg-emerald-500 ring-emerald-500/25"
+                    : isCurrent
+                      ? "bg-[#1e9df1] ring-[#1e9df1]/25"
+                      : "bg-neutral-800 ring-neutral-700/40";
+                  const labelText = isDone
+                    ? lang === "en" ? "Done" : lang === "th" ? "เสร็จแล้ว" : "Fait"
+                    : isCurrent
+                      ? lang === "en" ? "Now" : lang === "th" ? "ตอนนี้" : "Maintenant"
+                      : lang === "en" ? "Upcoming" : lang === "th" ? "เร็วๆ นี้" : "À venir";
+                  const labelCls = isDone
+                    ? "text-emerald-400"
+                    : isCurrent
+                      ? "text-[#1e9df1]"
+                      : "text-gray-500";
+                  const titleCls = isDone || isCurrent ? "text-white" : "text-gray-400";
+                  return (
+                    <div key={i} className="relative flex flex-col items-center text-center px-1">
+                      <div className={`relative z-10 w-7 h-7 rounded-full ring-4 ring-black flex items-center justify-center ${dotCls}`}>
+                        {isDone ? (
+                          <BadgeCheck size={13} className="text-white" strokeWidth={2.6} />
+                        ) : isCurrent ? (
+                          <span className="text-[0.58rem] font-bold text-white">02</span>
+                        ) : (
+                          <span className="text-[0.58rem] font-bold text-gray-400">0{i + 1}</span>
+                        )}
+                        {isCurrent && (
+                          <span className="absolute inset-0 rounded-full bg-[#1e9df1] opacity-40 animate-ping" />
+                        )}
+                      </div>
+                      <p className={`mt-1.5 text-[0.55rem] tracking-[0.22em] uppercase font-bold ${labelCls}`}>
+                        {labelText}
+                      </p>
+                      <h3 className={`mt-0.5 text-[0.7rem] font-semibold leading-tight ${titleCls}`}>
+                        {t(phase.titleKey)}
+                      </h3>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </motion.div>
 
-          {/* Final CTA */}
-          <motion.div {...fadeUp} className="text-center">
+          {/* ── Bloc CTA double : 2 façons de contribuer ──
+              Card 1 (outline) : voir la démo /feed — bas de l'engagement
+              Card 2 (filled)  : répondre au questionnaire /acces — conversion */}
+          <motion.div
+            {...fadeUp}
+            className="grid sm:grid-cols-2 gap-3 max-w-3xl mx-auto mb-3"
+          >
+            {/* Voir la démo — outline */}
+            <Link
+              href="/feed"
+              className="group relative bg-neutral-900/80 hover:bg-neutral-800 rounded-2xl p-4 border border-neutral-800 hover:border-[#1e9df1]/40 transition-all flex items-center gap-3 backdrop-blur-sm"
+            >
+              <div className="w-11 h-11 rounded-xl bg-[#1e9df1]/15 text-[#1e9df1] flex items-center justify-center shrink-0 ring-1 ring-[#1e9df1]/30">
+                <Eye size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1e9df1] font-bold">
+                  {lang === "en" ? "Discover" : lang === "th" ? "ค้นพบ" : "Découvrir"}
+                </p>
+                <h3 className="text-[0.95rem] font-bold text-white tracking-tight mt-0.5 leading-tight">
+                  {lang === "en"
+                    ? "See the demo"
+                    : lang === "th"
+                      ? "ดูตัวอย่าง"
+                      : "Voir la démo"}
+                </h3>
+                <p className="text-[0.68rem] text-gray-400 mt-0.5 leading-tight">
+                  {lang === "en"
+                    ? "Interactive mockup · 30+ pages"
+                    : lang === "th"
+                      ? "ตัวอย่างใช้งานได้ · 30+ หน้า"
+                      : "Maquette interactive · 30+ pages"}
+                </p>
+              </div>
+              <ArrowRight
+                size={16}
+                className="text-gray-500 group-hover:text-[#1e9df1] group-hover:translate-x-1 transition-all shrink-0"
+              />
+            </Link>
+
+            {/* Répondre au questionnaire — primary, badge "Recommandé" */}
             <Link
               href="/acces"
-              className="inline-flex items-center gap-3 bg-[#1e9df1] text-white rounded-xl px-10 py-4 text-base font-semibold hover:bg-[#1a8fd9] transition-all shadow-lg shadow-[#1e9df1]/30"
+              className="group relative bg-gradient-to-br from-[#1e9df1]/20 to-[#1e9df1]/5 hover:from-[#1e9df1]/25 hover:to-[#1e9df1]/10 rounded-2xl p-4 border border-[#1e9df1]/40 hover:border-[#1e9df1]/70 transition-all flex items-center gap-3 shadow-lg shadow-[#1e9df1]/10 overflow-hidden"
             >
-              <Sparkles size={18} />
-              {lang === "en"
-                ? "Become a founding member"
-                : lang === "th"
-                  ? "เป็นสมาชิกผู้ก่อตั้ง"
-                  : "Devenir membre fondateur"}
-              <ArrowRight size={18} />
+              {/* Badge "Recommandé" en haut-droite */}
+              <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-[0.18em] uppercase font-bold bg-[#1e9df1] text-white px-1.5 py-0.5 rounded-md">
+                {lang === "en" ? "Recommended" : lang === "th" ? "แนะนำ" : "Recommandé"}
+              </span>
+              <div className="w-11 h-11 rounded-xl bg-[#1e9df1] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#1e9df1]/40">
+                <Sparkles size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1e9df1] font-bold">
+                  {lang === "en" ? "Contribute" : lang === "th" ? "มีส่วนร่วม" : "Contribuer"}
+                </p>
+                <h3 className="text-[0.95rem] font-bold text-white tracking-tight mt-0.5 leading-tight">
+                  {lang === "en"
+                    ? "Take the survey"
+                    : lang === "th"
+                      ? "ตอบแบบสอบถาม"
+                      : "Répondre au questionnaire"}
+                </h3>
+                <p className="text-[0.68rem] text-gray-400 mt-0.5 leading-tight">
+                  {lang === "en"
+                    ? "2 min · free · no commitment"
+                    : lang === "th"
+                      ? "2 นาที · ฟรี · ไม่ผูกพัน"
+                      : "2 min · gratuit · sans engagement"}
+                </p>
+              </div>
+              <ArrowRight
+                size={16}
+                className="text-[#1e9df1] group-hover:translate-x-1 transition-all shrink-0"
+              />
             </Link>
-            <p className="text-[0.7rem] text-gray-500 mt-4 max-w-md mx-auto">
-              {lang === "en"
-                ? "Two minutes. Free. No commitment. The form helps us prove the demand and build what you actually need."
-                : lang === "th"
-                  ? "สองนาที ฟรี ไม่ผูกพัน แบบฟอร์มช่วยให้เราพิสูจน์ความต้องการและสร้างสิ่งที่คุณต้องการจริงๆ"
-                  : "Deux minutes. Gratuit. Sans engagement. Le formulaire nous aide à prouver la demande et à construire ce dont vous avez vraiment besoin."}
-            </p>
+          </motion.div>
+
+          {/* ── Trust strip footer — rappel discret des engagements
+                (RGPD, données chiffrées, aucune revente, anonymat). ── */}
+          <motion.div
+            {...fadeUp}
+            className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[0.6rem] text-gray-500 font-medium"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <ShieldCheck size={10} className="text-emerald-500/80" />
+              {lang === "en" ? "GDPR-compliant" : lang === "th" ? "เป็นไปตาม GDPR" : "Conforme RGPD"}
+            </span>
+            <span className="text-neutral-800">·</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Lock size={10} className="text-emerald-500/80" />
+              {lang === "en" ? "Encrypted data" : lang === "th" ? "ข้อมูลถูกเข้ารหัส" : "Données chiffrées"}
+            </span>
+            <span className="text-neutral-800">·</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Eye size={10} className="text-emerald-500/80" />
+              {lang === "en" ? "No reselling" : lang === "th" ? "ไม่ขายต่อ" : "Aucune revente"}
+            </span>
+            <span className="text-neutral-800">·</span>
+            <span className="inline-flex items-center gap-1.5">
+              <UserCheck size={10} className="text-emerald-500/80" />
+              {lang === "en" ? "Anonymous answers" : lang === "th" ? "คำตอบนิรนาม" : "Réponses anonymes"}
+            </span>
           </motion.div>
         </div>
       </section>
       </ScrollStage>
+      </motion.div>
+
+      {/* ═══════════════════════ VRAIE FAQ PROJET ═══════════════════════
+          Section autonome (hors ScrollStage) avec les 8 questions clés
+          sur E-Dome — la promesse, l'audience, le calendrier, le coût,
+          le système d'apporteur, les données, la portée géographique et
+          la façon de contribuer. Accordéon `<details>` numéroté. */}
+      <section
+        id="faq"
+        className="bg-black border-t border-neutral-900 py-20 px-6"
+      >
+        <div className="max-w-4xl mx-auto">
+          {/* Heading */}
+          <motion.div {...fadeUp} className="text-center mb-10">
+            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-3">
+              FAQ
+            </p>
+            <h2
+              className="text-3xl sm:text-4xl md:text-5xl leading-[1.05] mb-4"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              {lang === "en" ? (
+                <>
+                  Your questions,
+                  <br />
+                  <span className="text-[#1e9df1]">our answers.</span>
+                </>
+              ) : lang === "th" ? (
+                <>
+                  คำถามของคุณ
+                  <br />
+                  <span className="text-[#1e9df1]">คำตอบของเรา</span>
+                </>
+              ) : (
+                <>
+                  Vos questions,
+                  <br />
+                  <span className="text-[#1e9df1]">nos réponses.</span>
+                </>
+              )}
+            </h2>
+            <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light max-w-xl mx-auto">
+              {lang === "en"
+                ? "The questions we hear most often about E-Dome — the project, the model, the data, the launch."
+                : lang === "th"
+                  ? "คำถามที่เราได้ยินบ่อยที่สุดเกี่ยวกับ E-Dome — โครงการ โมเดล ข้อมูล การเปิดตัว"
+                  : "Les questions qu'on nous pose le plus souvent sur E-Dome — le projet, le modèle, vos données, le lancement."}
+            </p>
+          </motion.div>
+
+          {/* FAQ accordion */}
+          <div className="space-y-2.5">
+            {(() => {
+              const faqs =
+                lang === "en"
+                  ? [
+                      {
+                        q: "What exactly is E-Dome?",
+                        a: "E-Dome is an all-in-one platform that brings together the entire real estate ecosystem — hosts, agents, referrers, trainers, service providers — in a single space: a social feed, a marketplace, a training campus, live events, a referral network and a verified service directory.",
+                      },
+                      {
+                        q: "Who is E-Dome for?",
+                        a: "Anyone connected — closely or loosely — to real estate: owners, agencies, agents, tenants, investors, photographers, notaries, architects, trainers, referrers, neighbours, service providers. We've already mapped 36+ roles, and the list stays open.",
+                      },
+                      {
+                        q: "When will the platform be available?",
+                        a: "Public launch happens after Phase 3 — once we've raised funds, assembled a team of designers and developers, and built the final platform together with them. The exact timeline depends on the validation results we're collecting now. The interactive mockup at /feed already lets you explore the future product.",
+                      },
+                      {
+                        q: "How much does it cost?",
+                        a: "Sign-up, browsing and networking are free. Premium features (advanced training, profile boost, pro tools) will be paid down the road. The platform's commission on transactions is taken at source — never added on top for the host or the client.",
+                      },
+                      {
+                        q: "How does the referral system work?",
+                        a: "You generate a personal link for each referral type (host, client, property, course, service). Each conversion is automatically attributed to you. You see every commission in real time on your dashboard. The referrer's share comes out of E-Dome's own slice — never added to the price.",
+                      },
+                      {
+                        q: "Is my data protected?",
+                        a: "Yes. No reselling, no sharing with third parties. You stay in control of your profile, your visibility and your data. GDPR-compliant from day one.",
+                      },
+                      {
+                        q: "Where will E-Dome be available?",
+                        a: "Initial launch is planned in Switzerland and Thailand, followed by international expansion. The platform is multilingual from day one (French, English, Thai) — every market can plug in directly.",
+                      },
+                      {
+                        q: "How can I contribute right now?",
+                        a: "By taking the survey (2 min) — every answer is concrete proof that helps validate the need and shape the right priorities. You can also reach the founders directly if you want to go further.",
+                      },
+                    ]
+                  : lang === "th"
+                    ? [
+                        {
+                          q: "E-Dome คืออะไรกันแน่?",
+                          a: "E-Dome คือแพลตฟอร์มแบบครบวงจรที่รวบรวมระบบนิเวศอสังหาริมทรัพย์ทั้งหมด — เจ้าของ นายหน้า ผู้แนะนำ ผู้ฝึกอบรม ผู้ให้บริการ — ในพื้นที่เดียว: ฟีดโซเชียล มาร์เก็ตเพลส แคมปัสฝึกอบรม อีเวนต์สด เครือข่ายผู้แนะนำ และไดเรกทอรีผู้ให้บริการที่ผ่านการยืนยัน",
+                        },
+                        {
+                          q: "E-Dome เหมาะกับใคร?",
+                          a: "ทุกคนที่เกี่ยวข้องกับอสังหาฯ ไม่ว่าใกล้ชิดหรือห่างไกล: เจ้าของ เอเจนซี่ นายหน้า ผู้เช่า นักลงทุน ช่างภาพ ทนาย สถาปนิก ผู้ฝึกอบรม ผู้แนะนำ เพื่อนบ้าน ผู้ให้บริการ เราระบุ 36+ บทบาทแล้ว และรายการยังเปิดกว้าง",
+                        },
+                        {
+                          q: "แพลตฟอร์มจะเปิดตัวเมื่อไหร่?",
+                          a: "การเปิดตัวสาธารณะจะเกิดขึ้นหลังจากเฟส 3 — เมื่อเราระดมทุนได้แล้ว สร้างทีมนักออกแบบและนักพัฒนา และสร้างแพลตฟอร์มเวอร์ชันสุดท้ายร่วมกับพวกเขา ระยะเวลาขึ้นอยู่กับผลการพิสูจน์ความต้องการที่เรากำลังรวบรวมตอนนี้ ตัวอย่างที่ใช้งานได้ที่ /feed ให้คุณสำรวจผลิตภัณฑ์ในอนาคตได้แล้ว",
+                        },
+                        {
+                          q: "มีค่าใช้จ่ายเท่าไหร่?",
+                          a: "การลงทะเบียน การเรียกดู และการเชื่อมต่อเครือข่ายฟรี ฟีเจอร์พรีเมียมจะมีค่าใช้จ่ายในอนาคต ค่าคอมมิชชันของแพลตฟอร์มถูกหักที่แหล่งที่มา — ไม่เพิ่มเข้าไปในราคาสำหรับเจ้าของบ้านหรือลูกค้า",
+                        },
+                        {
+                          q: "ระบบผู้แนะนำทำงานอย่างไร?",
+                          a: "คุณสร้างลิงก์ส่วนตัวสำหรับแต่ละประเภทการแนะนำ (เจ้าของบ้าน ลูกค้า ทรัพย์สิน คอร์ส บริการ) ทุกการแปลงถูกระบุเป็นของคุณโดยอัตโนมัติ คุณเห็นค่าคอมมิชชันทั้งหมดเรียลไทม์บนแดชบอร์ดของคุณ ค่าคอมมิชชันของผู้แนะนำหักจากส่วนของ E-Dome — ไม่เพิ่มเข้าไปในราคา",
+                        },
+                        {
+                          q: "ข้อมูลของฉันได้รับการปกป้องหรือไม่?",
+                          a: "ใช่ ไม่ขายต่อ ไม่แบ่งปันกับบุคคลที่สาม คุณยังควบคุมโปรไฟล์ การมองเห็น และข้อมูลของคุณ ปฏิบัติตาม GDPR ตั้งแต่วันแรก",
+                        },
+                        {
+                          q: "E-Dome จะเปิดให้ใช้งานในประเทศใดบ้าง?",
+                          a: "การเปิดตัวเริ่มต้นวางแผนไว้ในสวิตเซอร์แลนด์และไทย ตามด้วยการขยายระดับสากล แพลตฟอร์มรองรับหลายภาษาตั้งแต่วันแรก (ฝรั่งเศส อังกฤษ ไทย) — ทุกตลาดสามารถเข้าร่วมได้ทันที",
+                        },
+                        {
+                          q: "ฉันสามารถมีส่วนร่วมตอนนี้ได้อย่างไร?",
+                          a: "โดยตอบแบบสอบถาม (2 นาที) — ทุกคำตอบเป็นหลักฐานที่เป็นรูปธรรมที่ช่วยยืนยันความต้องการและกำหนดลำดับความสำคัญที่ถูกต้อง คุณยังสามารถติดต่อผู้ก่อตั้งโดยตรงได้หากคุณต้องการก้าวต่อไป",
+                        },
+                      ]
+                    : [
+                        {
+                          q: "Qu'est-ce qu'E-Dome exactement ?",
+                          a: "E-Dome est une plateforme tout-en-un qui réunit l'écosystème immobilier — hôtes, agents, apporteurs, formateurs, prestataires — dans un seul espace : un fil social, une marketplace, un campus de formations, des lives, un réseau d'apporteurs et un annuaire de prestataires vérifiés.",
+                        },
+                        {
+                          q: "À qui s'adresse E-Dome ?",
+                          a: "À tout acteur lié de près ou de loin à l'immobilier : propriétaires, agences, agents, locataires, investisseurs, photographes, notaires, architectes, formateurs, apporteurs, voisins, prestataires. 36+ rôles déjà identifiés, et la liste reste ouverte.",
+                        },
+                        {
+                          q: "Quand la plateforme sera-t-elle disponible ?",
+                          a: "Le lancement public a lieu après la Phase 3 — une fois la levée de fonds bouclée, l'équipe de designers et développeurs constituée, et la plateforme finale construite avec eux. Le calendrier exact dépend des résultats de validation que nous collectons maintenant. La maquette interactive sur /feed vous permet déjà d'explorer le futur produit.",
+                        },
+                        {
+                          q: "Combien ça coûte ?",
+                          a: "L'inscription, la consultation et la mise en réseau sont gratuites. Certaines fonctionnalités premium (formations avancées, mise en avant de profil, outils pros) seront payantes à terme. La commission de la plateforme est prélevée à la source sur les transactions — jamais ajoutée au prix pour l'hôte ou le client.",
+                        },
+                        {
+                          q: "Comment fonctionne le système d'apporteur ?",
+                          a: "Vous générez un lien personnel pour chaque type d'apport (hôte, client, bien, formation, prestation). Chaque conversion vous est attribuée automatiquement. Vous voyez toutes vos commissions en temps réel sur votre tableau de bord. La part de l'apporteur est prélevée sur celle d'E-Dome — jamais ajoutée au prix.",
+                        },
+                        {
+                          q: "Mes données sont-elles protégées ?",
+                          a: "Oui. Aucune revente, aucun partage à des tiers. Vous gardez le contrôle de votre profil, de votre visibilité et de vos données. Conformité RGPD respectée dès le premier jour.",
+                        },
+                        {
+                          q: "Dans quels pays sera disponible E-Dome ?",
+                          a: "Le lancement initial est prévu en Suisse et en Thaïlande, suivi d'une expansion à l'international. La plateforme est multilingue dès le départ (français, anglais, thaï) — chaque marché peut s'y greffer directement.",
+                        },
+                        {
+                          q: "Comment puis-je contribuer dès maintenant ?",
+                          a: "En répondant au questionnaire (2 min) — chaque réponse est une preuve concrète qui aide à valider le besoin et à orienter les priorités. Vous pouvez aussi contacter directement les fondateurs si vous voulez aller plus loin.",
+                        },
+                      ];
+              return faqs.map((f, i) => (
+                <motion.details
+                  key={i}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.45, delay: i * 0.04 }}
+                  className="group bg-neutral-900 rounded-xl border border-neutral-800 hover:border-[#1e9df1]/30 transition-colors overflow-hidden"
+                >
+                  <summary className="flex items-center gap-4 cursor-pointer list-none px-5 py-4 select-none">
+                    <span className="font-mono text-[0.62rem] tracking-[0.22em] text-gray-500 shrink-0 w-6">
+                      0{i + 1}
+                    </span>
+                    <span className="text-[0.95rem] sm:text-base font-semibold text-white flex-1 leading-snug">
+                      {f.q}
+                    </span>
+                    <ChevronDown
+                      size={18}
+                      className="text-[#1e9df1] group-open:rotate-180 transition-transform shrink-0"
+                    />
+                  </summary>
+                  <div className="px-5 pb-5">
+                    <p className="text-gray-400 text-sm leading-relaxed font-light pl-10">
+                      {f.a}
+                    </p>
+                  </div>
+                </motion.details>
+              ));
+            })()}
+          </div>
+
+          {/* Petit CTA en bas — pour les questions hors-FAQ */}
+          <motion.div {...fadeUp} className="text-center mt-10">
+            <p className="text-gray-500 text-sm font-light">
+              {lang === "en" ? (
+                <>
+                  Another question?{" "}
+                  <a
+                    href="mailto:contact@edome.world"
+                    className="text-[#1e9df1] hover:text-[#1a8fd9] underline-offset-4 hover:underline transition-colors font-medium"
+                  >
+                    contact@edome.world
+                  </a>
+                </>
+              ) : lang === "th" ? (
+                <>
+                  มีคำถามอื่น?{" "}
+                  <a
+                    href="mailto:contact@edome.world"
+                    className="text-[#1e9df1] hover:text-[#1a8fd9] underline-offset-4 hover:underline transition-colors font-medium"
+                  >
+                    contact@edome.world
+                  </a>
+                </>
+              ) : (
+                <>
+                  Une autre question ?{" "}
+                  <a
+                    href="mailto:contact@edome.world"
+                    className="text-[#1e9df1] hover:text-[#1a8fd9] underline-offset-4 hover:underline transition-colors font-medium"
+                  >
+                    contact@edome.world
+                  </a>
+                </>
+              )}
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
       {/* ═══════════════════════ FOOTER ═══════════════════════ */}
       <footer className="bg-gray-900 text-white pt-20 pb-10 px-6">

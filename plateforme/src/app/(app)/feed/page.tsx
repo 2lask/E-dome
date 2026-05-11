@@ -4,12 +4,14 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import Link from "next/link";
 import {
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send,
-  MapPin, Image as ImageIcon, Video, X, ChevronUp, Plus,
+  MapPin, Video, X, ChevronUp, Plus,
   Edit3, Trash2, Flag, EyeOff, Copy, Play, Pause,
   TrendingUp, Calendar, Users, Building2, GraduationCap,
+  UserPlus,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import { StoryViewer } from "@/components/ui/story-viewer";
 import { timeAgo, formatCount } from "@/lib/utils";
 import { roleBadgeColors, roleLabels } from "@/lib/types";
 import type { User, SocialPost, Comment, Role } from "@/lib/types";
@@ -47,11 +49,52 @@ const MOCK_USERS: User[] = [
   },
 ];
 
-const MOCK_STORIES = [
-  { id: "s1", user: MOCK_USERS[0], image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400", storyImage: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=1067&fit=crop", viewed: false },
-  { id: "s2", user: MOCK_USERS[1], image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400", storyImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=1067&fit=crop", viewed: false },
-  { id: "s3", user: MOCK_USERS[2], image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=400", storyImage: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=600&h=1067&fit=crop", viewed: true },
-  { id: "s4", user: MOCK_USERS[3], image: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=400", storyImage: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=600&h=1067&fit=crop", viewed: false },
+// Stories regroupées par hôte — alimentent le composant <StoryViewer />.
+// Chaque user possède 2 à 4 stories (mix images Unsplash haute résolution
+// 9:16 + miniatures vidéos pour la démo). Les URLs Unsplash sont déjà
+// utilisées ailleurs dans la démo, donc le navigateur les met en cache.
+import type { Story as StoryItem } from "@/components/ui/story-viewer";
+
+const MOCK_STORY_FEEDS: Array<{
+  user: User;
+  timestamp: string;
+  stories: StoryItem[];
+}> = [
+  {
+    user: MOCK_USERS[0], // Sophie — hôte Lausanne
+    timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+    stories: [
+      { id: "sophie-1", type: "image", src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=720&h=1280&fit=crop" },
+      { id: "sophie-2", type: "image", src: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=720&h=1280&fit=crop" },
+      { id: "sophie-3", type: "image", src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=720&h=1280&fit=crop" },
+    ],
+  },
+  {
+    user: MOCK_USERS[1], // Marc — investisseur Genève
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    stories: [
+      { id: "marc-1", type: "image", src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=720&h=1280&fit=crop" },
+      { id: "marc-2", type: "image", src: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=720&h=1280&fit=crop" },
+    ],
+  },
+  {
+    user: MOCK_USERS[2], // Amira — agence Marrakech
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+    stories: [
+      { id: "amira-1", type: "image", src: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=720&h=1280&fit=crop" },
+      { id: "amira-2", type: "image", src: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=720&h=1280&fit=crop" },
+      { id: "amira-3", type: "image", src: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=720&h=1280&fit=crop" },
+      { id: "amira-4", type: "image", src: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=720&h=1280&fit=crop" },
+    ],
+  },
+  {
+    user: MOCK_USERS[3], // Thomas — promoteur Zurich
+    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+    stories: [
+      { id: "thomas-1", type: "image", src: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=720&h=1280&fit=crop" },
+      { id: "thomas-2", type: "image", src: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=720&h=1280&fit=crop" },
+    ],
+  },
 ];
 
 const generatePosts = (count: number, startId: number = 1): SocialPost[] =>
@@ -191,11 +234,6 @@ const TRENDING_HASHTAGS = [
   { tag: "#suisse", count: 4300 },
 ];
 
-const UPCOMING_EVENTS = [
-  { id: "e1", title: "Networking investisseurs romands", date: "5 mai 2026", location: "Hôtel Royal, Montreux" },
-  { id: "e2", title: "Webinaire : Optimiser son rendement locatif", date: "20 mai 2026", location: "En ligne" },
-];
-
 const FONDATEUR_NUMBERS: Record<string, number> = { "Léo": 1, "Sophie": 2, "Marc": 3, "Amira": 4, "Thomas": 5 };
 
 const CURRENT_USER_ID = "u1";
@@ -203,22 +241,18 @@ const CURRENT_USER_ID = "u1";
 export default function FeedPage() {
   const { formatPrice, toggleFollow, isFollowing, activeRole } = useApp();
   const [posts, setPosts] = useState<SocialPost[]>(() => generatePosts(5));
-  const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis" | "tendances">("pour-vous");
-  const [showStoryViewer, setShowStoryViewer] = useState<number | null>(null);
-  const [storyProgress, setStoryProgress] = useState(0);
-  const [viewedStories, setViewedStories] = useState<Set<string>>(() => new Set(MOCK_STORIES.filter((s) => s.viewed).map((s) => s.id)));
+  const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis">("pour-vous");
+  // Le composant <StoryViewer /> gère lui-même son état (viewer ouvert,
+  // index courant, vues, progression, pause, sourdine, swipe). Plus besoin
+  // des states custom showStoryViewer / storyProgress / viewedStories.
   const [showStoryUpload, setShowStoryUpload] = useState(false);
   const [storyText, setStoryText] = useState("");
   const [storyGradient, setStoryGradient] = useState("linear-gradient(135deg, #f6d365, #fda085)");
 
-  // Create post
-  const [newPostContent, setNewPostContent] = useState("");
-  const [newPostLocation, setNewPostLocation] = useState("");
-  const [showLocationInput, setShowLocationInput] = useState(false);
-  const [newPostType, setNewPostType] = useState<"post" | "reel">("post");
-  const [selectedGradient, setSelectedGradient] = useState<string | null>(null);
-  const [createTab, setCreateTab] = useState<"post" | "story" | "reel">("post");
-
+  // POST_GRADIENTS reste utilisé par le modal de création de story (overlay
+  // showStoryUpload). Les states du composer post (newPostContent,
+  // newPostLocation, showLocationInput, selectedGradient) ainsi que la
+  // fonction createPost ont été supprimés en même temps que le composer.
   const POST_GRADIENTS = [
     { name: "Beige E-Dome", value: "linear-gradient(135deg, #f5f0e8, #e8dcc8)" },
     { name: "Or Premium", value: "linear-gradient(135deg, #f6d365, #fda085)" },
@@ -246,26 +280,6 @@ export default function FeedPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);
-
-  // Story viewer — mark as viewed + auto-close after 5s
-  useEffect(() => {
-    if (showStoryViewer === null) return;
-    const story = MOCK_STORIES[showStoryViewer];
-    if (story) {
-      setViewedStories((prev) => new Set([...prev, story.id]));
-    }
-    setStoryProgress(0);
-    const interval = setInterval(() => {
-      setStoryProgress((prev) => {
-        if (prev >= 100) {
-          setShowStoryViewer(null);
-          return 0;
-        }
-        return prev + 2;
-      });
-    }, 100);
-    return () => clearInterval(interval);
-  }, [showStoryViewer]);
 
   // Infinite scroll
   useEffect(() => {
@@ -339,28 +353,6 @@ export default function FeedPage() {
     setExpandedComments((prev) => new Set([...prev, postId]));
   };
 
-  const createPost = () => {
-    if (!newPostContent.trim()) return;
-    const newPost: SocialPost = {
-      id: `p-new-${Date.now()}`,
-      author: MOCK_USERS[0],
-      content: newPostContent,
-      media: [],
-      type: newPostType,
-      likes: 0,
-      comments: [],
-      createdAt: new Date().toISOString(),
-      location: newPostLocation || undefined,
-    };
-    setPosts((prev) => [newPost, ...prev]);
-    setNewPostContent("");
-    setNewPostLocation("");
-    setShowLocationInput(false);
-    setSelectedGradient(null);
-    setFeedToast("Post publié ! (démonstration)");
-    setTimeout(() => setFeedToast(null), 3000);
-  };
-
   const deletePost = (postId: string) => {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
     setMoreMenuPost(null);
@@ -376,9 +368,7 @@ export default function FeedPage() {
 
   // ─── Tab filtering ──────────────────────────────────────────────────────
   const filteredPosts = useMemo(() => {
-    if (activeTab === "pour-vous") return posts;
     if (activeTab === "suivis") return posts.filter((p) => isFollowing(p.author.id));
-    if (activeTab === "tendances") return [...posts].sort((a, b) => b.likes - a.likes);
     return posts;
   }, [posts, activeTab, isFollowing]);
 
@@ -410,81 +400,43 @@ export default function FeedPage() {
           ✓ {feedToast}
         </div>
       )}
-      {/* Stories bar */}
+      {/* Stories bar — composant <StoryViewer /> shadcn-style.
+          Chaque user a son propre StoryViewer (thumbnail anneau segmenté
+          + viewer modal complet : progress bars par story, swipe, hold
+          to pause, mute video, navigation clavier, sortie au glisser bas).
+          Le bouton "Votre story" reste custom car il déclenche le modal
+          de création (showStoryUpload) qui est une feature distincte. */}
       <div className="mb-6 overflow-x-auto no-scrollbar">
-        <div className="flex gap-4 pb-2">
-          {/* Your story */}
+        <div className="flex gap-4 pb-2 items-start">
+          {/* Your story — bouton de création, ouvre le modal upload */}
           <button
+            type="button"
             onClick={() => setShowStoryUpload(true)}
-            className="flex flex-col items-center gap-1.5 shrink-0"
+            className="relative flex flex-col items-center gap-2 shrink-0 group"
+            aria-label="Créer votre story"
           >
-            <div className="w-16 h-16 rounded-full border-2 border-dashed border-[var(--text-muted)] flex items-center justify-center bg-[var(--card)] hover:border-[#1e9df1] transition-colors">
-              <Plus className="w-6 h-6 text-[var(--text-muted)]" />
-            </div>
-            <span className="text-xs text-[var(--text-muted)]">Votre story</span>
-          </button>
-          {MOCK_STORIES.map((story, idx) => (
-            <button
-              key={story.id}
-              onClick={() => setShowStoryViewer(idx)}
-              className="flex flex-col items-center gap-1.5 shrink-0"
-            >
-              <div
-                className={`w-16 h-16 rounded-full p-0.5 ${
-                  viewedStories.has(story.id) ? "bg-[var(--text-muted)]" : "bg-gradient-to-br from-[#1e9df1] to-[#e8c89e]"
-                }`}
-              >
-                <img
-                  src={story.user.avatar}
-                  alt={story.user.firstName}
-                  className="w-full h-full rounded-full object-cover border-2 border-[var(--background)]"
-                />
+            <div className="w-[72px] h-[72px] rounded-full p-1">
+              <div className="w-full h-full rounded-full flex items-center justify-center border-2 border-dashed border-muted-foreground/40 bg-muted/30 group-hover:border-[#1e9df1]/60 group-hover:bg-muted/50 transition-all duration-200">
+                <Plus className="w-7 h-7 text-muted-foreground/60" strokeWidth={2} />
               </div>
-              <span className="text-xs text-[var(--text-secondary)] truncate w-16 text-center">
-                {story.user.firstName}
-              </span>
-            </button>
+            </div>
+            <span className="text-xs text-muted-foreground truncate max-w-[80px]">
+              Votre story
+            </span>
+          </button>
+
+          {MOCK_STORY_FEEDS.map((feed) => (
+            <StoryViewer
+              key={feed.user.id}
+              stories={feed.stories}
+              username={feed.user.firstName}
+              avatar={feed.user.avatar}
+              timestamp={feed.timestamp}
+              className="shrink-0"
+            />
           ))}
         </div>
       </div>
-
-      {/* Story viewer */}
-      {showStoryViewer !== null && MOCK_STORIES[showStoryViewer] && (
-        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
-          <button
-            onClick={() => setShowStoryViewer(null)}
-            className="absolute top-4 right-4 z-10 text-white/80 hover:text-white"
-          >
-            <X className="w-8 h-8" />
-          </button>
-          {/* Progress bar */}
-          <div className="absolute top-2 left-4 right-4 h-1 bg-white/20 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-white rounded-full transition-all duration-100"
-              style={{ width: `${storyProgress}%` }}
-            />
-          </div>
-          {/* User info */}
-          <div className="absolute top-6 left-4 flex items-center gap-3">
-            <img
-              src={MOCK_STORIES[showStoryViewer].user.avatar}
-              alt=""
-              className="w-8 h-8 rounded-full object-cover"
-            />
-            <span className="text-white text-sm font-medium">
-              {MOCK_STORIES[showStoryViewer].user.firstName} {MOCK_STORIES[showStoryViewer].user.lastName}
-            </span>
-          </div>
-          {/* Story image — immersive 9:16 */}
-          <div className="relative w-[340px] max-w-[90vw] rounded-2xl overflow-hidden" style={{ aspectRatio: "9/16" }}>
-            <img
-              src={MOCK_STORIES[showStoryViewer].storyImage}
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-      )}
 
       {/* Story creator overlay */}
       {showStoryUpload && (
@@ -577,194 +529,12 @@ export default function FeedPage() {
         </div>
       )}
 
-      {/* Create post */}
-      <div className="mb-6 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden">
-        {/* Tabs: Post / Story / Reel */}
-        <div className="flex border-b border-[var(--card-border)]">
-          {([
-            { key: "post" as const, label: "📝 Post" },
-            { key: "story" as const, label: "📱 Story" },
-            { key: "reel" as const, label: "🎬 Reel" },
-          ]).map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setCreateTab(t.key)}
-              className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
-                createTab === t.key
-                  ? "text-[#1e9df1]"
-                  : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
-              }`}
-            >
-              {t.label}
-              {createTab === t.key && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1e9df1] rounded-full" />
-              )}
-            </button>
-          ))}
-        </div>
-
-        <div className="p-5">
-          {createTab === "post" && (
-            <div className="flex gap-3">
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=88&h=88&fit=crop"
-                alt=""
-                className="w-10 h-10 rounded-full object-cover shrink-0"
-              />
-              <div className="flex-1">
-                <div className="flex gap-4">
-                  {/* Left: editor */}
-                  <div className="flex-1 min-w-0">
-                    <textarea
-                      value={newPostContent}
-                      onChange={(e) => setNewPostContent(e.target.value)}
-                      placeholder="Partagez une actualité, un bien, une idée..."
-                      maxLength={2000}
-                      rows={3}
-                      className="w-full bg-transparent text-[var(--foreground)] placeholder:text-[var(--text-muted)] resize-none outline-none text-sm"
-                    />
-                    {/* Gradient selector — rectangular thumbnails */}
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs text-[var(--text-muted)] shrink-0">Fond :</span>
-                      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                        {/* No gradient option */}
-                        <button
-                          onClick={() => setSelectedGradient(null)}
-                          className={`w-12 h-12 rounded-lg border-2 transition-all shrink-0 bg-[var(--card)] flex items-center justify-center ${selectedGradient === null ? "border-[#1e9df1] scale-105" : "border-[var(--card-border)] hover:border-[#1e9df1]/40"}`}
-                          title="Aucun fond"
-                        >
-                          <span className="text-[11px] text-[var(--text-muted)]">Aa</span>
-                        </button>
-                        {POST_GRADIENTS.map((g) => (
-                          <button
-                            key={g.name}
-                            onClick={() => setSelectedGradient(g.value)}
-                            className={`w-12 h-12 rounded-lg border-2 transition-all shrink-0 ${selectedGradient === g.value ? "border-[#1e9df1] scale-105" : "border-transparent hover:border-[#1e9df1]/40"}`}
-                            style={{ background: g.value }}
-                            title={g.name}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Right: live preview (desktop only) */}
-                  {newPostContent.trim() && (
-                    <div className="hidden lg:block w-56 shrink-0">
-                      <p className="text-[10px] text-[var(--text-muted)] mb-1.5 uppercase tracking-wider">Aperçu</p>
-                      <div
-                        className="rounded-xl border border-[var(--card-border)] overflow-hidden"
-                        style={{ background: selectedGradient || "var(--card)" }}
-                      >
-                        <div className="p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=88&h=88&fit=crop" alt="" className="w-5 h-5 rounded-full object-cover" />
-                            <span className={`text-[10px] font-semibold ${selectedGradient?.includes("#0c0c0c") ? "text-white" : "text-[var(--foreground)]"}`}>
-                              Léo Martin
-                            </span>
-                          </div>
-                          <p className={`text-xs whitespace-pre-line leading-relaxed line-clamp-6 ${selectedGradient?.includes("#0c0c0c") ? "text-white" : "text-[var(--foreground)]"}`}>
-                            {newPostContent}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* Media icons row */}
-                <div className="flex items-center justify-between mt-3">
-                  <div className="flex items-center gap-1 flex-wrap">
-                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
-                      <span>📷</span> Photo
-                    </button>
-                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
-                      <span>🏠</span> Bien
-                    </button>
-                    <button
-                      onClick={() => setShowLocationInput(!showLocationInput)}
-                      className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-colors text-xs ${
-                        showLocationInput ? "bg-[#1e9df1]/10 text-[#1e9df1]" : "hover:bg-[var(--hover-bg)] text-[var(--text-muted)]"
-                      }`}
-                    >
-                      <span>📍</span> Lieu
-                    </button>
-                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
-                      <span>#️⃣</span> Tag
-                    </button>
-                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
-                      <span>👤</span> Mention
-                    </button>
-                    <button className="flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors text-xs">
-                      <span>📊</span> Sondage
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-xs text-[var(--text-muted)]">
-                      {newPostContent.length}/2000
-                    </span>
-                    <button
-                      onClick={createPost}
-                      disabled={!newPostContent.trim()}
-                      className="px-4 py-2 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors disabled:opacity-40"
-                    >
-                      Publier
-                    </button>
-                  </div>
-                </div>
-                {showLocationInput && (
-                  <input
-                    type="text"
-                    value={newPostLocation}
-                    onChange={(e) => setNewPostLocation(e.target.value)}
-                    placeholder="Ajouter un lieu..."
-                    className="mt-2 w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]"
-                  />
-                )}
-              </div>
-            </div>
-          )}
-
-          {createTab === "story" && (
-            <div className="flex flex-col items-center gap-4 py-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1e9df1] to-[#e8c89e] flex items-center justify-center">
-                <span className="text-2xl">📱</span>
-              </div>
-              <p className="text-sm text-[var(--text-secondary)] text-center">
-                Créez une story visuelle avec texte, arrière-plan et effets.
-              </p>
-              <Link
-                href="/creer-story"
-                className="px-6 py-2.5 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors"
-              >
-                Ouvrir l&apos;éditeur de story →
-              </Link>
-            </div>
-          )}
-
-          {createTab === "reel" && (
-            <div className="flex flex-col items-center gap-4 py-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1e9df1] to-[#e8c89e] flex items-center justify-center">
-                <span className="text-2xl">🎬</span>
-              </div>
-              <p className="text-sm text-[var(--text-secondary)] text-center">
-                Créez un reel immobilier captivant avec musique et effets.
-              </p>
-              <Link
-                href="/creer-reel"
-                className="px-6 py-2.5 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white text-sm font-medium transition-colors"
-              >
-                Ouvrir l&apos;éditeur de reel →
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-
       <div className="flex gap-6">
         {/* Main feed column */}
         <div className="flex-1 min-w-0">
           {/* Feed tabs */}
           <div className="flex gap-1 mb-6 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-            {(["pour-vous", "suivis", "tendances"] as const).map((tab) => (
+            {(["pour-vous", "suivis"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -774,7 +544,7 @@ export default function FeedPage() {
                     : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
                 }`}
               >
-                {tab === "pour-vous" ? "Pour vous" : tab === "suivis" ? "Suivis" : "Tendances"}
+                {tab === "pour-vous" ? "Pour vous" : "Suivis"}
               </button>
             ))}
           </div>
@@ -794,21 +564,25 @@ export default function FeedPage() {
             {filteredPosts.map((post, idx) => (
               <article
                 key={post.id}
-                className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden animate-fade-in"
+                /* Style inspiré du composant PostCard : grand rayon de
+                   bordure, bordure quasi invisible (l'accent bleu à 10 %
+                   d'opacité), ombre douce. Plus de padding intérieur que
+                   l'ancienne version pour respirer. */
+                className="rounded-3xl border border-[#1e9df1]/10 bg-[var(--card)] shadow-xl shadow-black/10 overflow-hidden animate-fade-in"
                 style={{ animationDelay: `${idx * 50}ms` }}
               >
                 {/* Post header */}
-                <div className="flex items-start justify-between p-4 pb-0">
+                <div className="flex items-start justify-between p-5 pb-0">
                   <div className="flex items-center gap-3">
                     <Link href={`/profil/${post.author.id}`}>
                       <img
                         src={post.author.avatar}
                         alt={post.author.firstName}
-                        className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity"
+                        className="w-11 h-11 rounded-full object-cover hover:opacity-80 transition-opacity"
                       />
                     </Link>
-                    <div>
-                      <div className="flex items-center gap-2">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                         <Link
                           href={`/profil/${post.author.id}`}
                           className="text-sm font-semibold text-[var(--foreground)] hover:underline"
@@ -823,22 +597,26 @@ export default function FeedPage() {
                           {roleLabels[post.author.activeRole]}
                         </span>
                         {FONDATEUR_NUMBERS[post.author.firstName] && (
-                          <span
-                            className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
-                            style={{ background: "linear-gradient(135deg, #d4a832, #f5d679)", color: "#3d2b00" }}
-                          >
-                            🏅 #{FONDATEUR_NUMBERS[post.author.firstName]}
+                          /* Badge Membre Fondateur — palette ambre sémantique
+                             au lieu du gradient or orphelin. */
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold tracking-wide bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/30">
+                            #{FONDATEUR_NUMBERS[post.author.firstName]}
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                      {/* @handle · localisation · temps — pattern Twitter-like
+                          sous le nom. Plus dense que l'ancienne version qui
+                          avait juste localisation + temps. */}
+                      <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
+                        <span className="opacity-80">@{post.author.firstName.toLowerCase()}</span>
                         {post.location && (
                           <>
-                            <MapPin className="w-3 h-3" />
-                            <span>{post.location}</span>
                             <span>·</span>
+                            <MapPin className="w-3 h-3" />
+                            <span className="truncate max-w-[140px]">{post.location}</span>
                           </>
                         )}
+                        <span>·</span>
                         <span>{timeAgo(post.createdAt)}</span>
                       </div>
                     </div>
@@ -894,7 +672,7 @@ export default function FeedPage() {
                 </div>
 
                 {/* Post content */}
-                <div className="px-4 py-3">
+                <div className="px-5 pt-3 pb-1">
                   {editingPost === post.id ? (
                     <div>
                       <textarea
@@ -907,29 +685,31 @@ export default function FeedPage() {
                       <div className="flex gap-2 mt-2">
                         <button
                           onClick={() => saveEdit(post.id)}
-                          className="px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium"
+                          className="px-4 py-2 rounded-lg bg-[#1e9df1] hover:bg-[#1583c9] text-white text-sm font-medium transition-colors"
                         >
                           Sauvegarder
                         </button>
                         <button
                           onClick={() => setEditingPost(null)}
-                          className="px-4 py-2 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm"
+                          className="px-4 py-2 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm transition-colors"
                         >
                           Annuler
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-sm text-[var(--foreground)] whitespace-pre-line leading-relaxed">
+                    <p className="text-[15px] text-[var(--foreground)] whitespace-pre-wrap leading-relaxed">
                       {renderContent(post.content)}
                     </p>
                   )}
                 </div>
 
-                {/* Media grid */}
+                {/* Media grid — image inline avec marge latérale et coin
+                    arrondi (style PostCard). Single = full width, multi =
+                    grille 2 colonnes carrée. */}
                 {post.media.filter((s) => !s.startsWith("youtube:")).length > 0 && (
                   <div
-                    className={`grid gap-0.5 ${
+                    className={`mx-5 mt-3 rounded-2xl overflow-hidden grid gap-0.5 ${
                       post.media.filter((s) => !s.startsWith("youtube:")).length === 1 ? "grid-cols-1" : "grid-cols-2"
                     }`}
                   >
@@ -952,26 +732,26 @@ export default function FeedPage() {
 
                 {/* Property link card */}
                 {post.property && (
-                  <div className="mx-4 my-3 rounded-xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
+                  <div className="mx-5 mt-3 rounded-2xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
                     <Link href={`/explorer/${post.property.id}`} className="flex gap-3 p-3">
                       <img
                         src={post.property.images[0]}
                         alt=""
-                        className="w-20 h-20 rounded-lg object-cover shrink-0"
+                        className="w-20 h-20 rounded-xl object-cover shrink-0"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-[var(--foreground)] truncate">
                           {post.property.title}
                         </p>
-                        <p className="text-sm font-bold text-[#1e9df1] mt-1">
+                        <p className="text-sm font-bold text-[#1e9df1] mt-1 tabular-nums">
                           {formatPrice(post.property.price, post.property.currency)}
                         </p>
                         <p className="text-xs text-[var(--text-muted)] mt-1">
                           {post.property.bedrooms} ch · {post.property.area}m²
                         </p>
                         {post.property.transactionType === "vente" && post.property.analytics && (
-                          <p className="text-xs text-green-400 mt-1">
-                            Rendement: {post.property.analytics.rendementBrut.toFixed(1)}% brut
+                          <p className="text-xs text-emerald-400 mt-1 tabular-nums">
+                            Rendement : {post.property.analytics.rendementBrut.toFixed(1)} % brut
                           </p>
                         )}
                       </div>
@@ -981,12 +761,12 @@ export default function FeedPage() {
 
                 {/* Formation link card */}
                 {post.formation && (
-                  <div className="mx-4 my-3 rounded-xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
+                  <div className="mx-5 mt-3 rounded-2xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
                     <Link href={`/formations/${post.formation.id}`} className="flex gap-3 p-3">
                       <img
                         src={post.formation.thumbnail}
                         alt=""
-                        className="w-20 h-20 rounded-lg object-cover shrink-0"
+                        className="w-20 h-20 rounded-xl object-cover shrink-0"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
@@ -998,7 +778,7 @@ export default function FeedPage() {
                         <p className="text-xs text-[var(--text-muted)] mt-1">
                           {post.formation.instructor} · {post.formation.students} étudiants
                         </p>
-                        <p className="text-sm font-bold text-[#1e9df1] mt-1">
+                        <p className="text-sm font-bold text-[#1e9df1] mt-1 tabular-nums">
                           {formatPrice(post.formation.price)}
                         </p>
                       </div>
@@ -1006,73 +786,112 @@ export default function FeedPage() {
                   </div>
                 )}
 
-                {/* Engagement bar */}
-                <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--card-border)]">
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => toggleLike(post.id)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors ${
+                {/* Engagement bar — 4 boutons de largeur égale (Like /
+                    Commenter / Partager / Enregistrer) inspirés du
+                    composant PostCard. Chaque bouton prend `flex grow`,
+                    icône + label, hover bg subtil. Labels masqués sous
+                    sm pour rester compact mobile. États actifs colorés :
+                    rouge pour Like, bleu accent pour Save. */}
+                <div className="mt-4 flex items-center gap-1 px-3 py-2 border-t border-[var(--card-border)]">
+                  {/* Like */}
+                  <button
+                    onClick={() => toggleLike(post.id)}
+                    className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
+                  >
+                    <Heart
+                      className={`w-5 h-5 transition-colors ${
                         likedPosts.has(post.id)
-                          ? "text-red-400 bg-red-400/10"
-                          : "text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
+                          ? "fill-rose-500 text-rose-500"
+                          : "text-[var(--text-muted)]"
+                      }`}
+                    />
+                    <span
+                      className={`text-sm font-medium tabular-nums max-sm:hidden ${
+                        likedPosts.has(post.id) ? "text-rose-500" : "text-[var(--foreground)]/85"
                       }`}
                     >
-                      <Heart className={`w-5 h-5 ${likedPosts.has(post.id) ? "fill-current" : ""}`} />
-                      <span className="text-sm">{formatCount(post.likes)}</span>
-                    </button>
+                      {formatCount(post.likes)}
+                    </span>
+                  </button>
+
+                  {/* Comment */}
+                  <button
+                    onClick={() =>
+                      setExpandedComments((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(post.id)) next.delete(post.id);
+                        else next.add(post.id);
+                        return next;
+                      })
+                    }
+                    className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
+                  >
+                    <MessageCircle
+                      className={`w-5 h-5 transition-colors ${
+                        expandedComments.has(post.id)
+                          ? "text-[#1e9df1]"
+                          : "text-[var(--text-muted)]"
+                      }`}
+                    />
+                    <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85">
+                      {formatCount(post.comments.length)}
+                    </span>
+                  </button>
+
+                  {/* Share */}
+                  <div className="relative grow flex">
                     <button
                       onClick={() =>
-                        setExpandedComments((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(post.id)) next.delete(post.id);
-                          else next.add(post.id);
-                          return next;
-                        })
+                        setShareMenuPost(shareMenuPost === post.id ? null : post.id)
                       }
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--hover-bg)] transition-colors"
+                      className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
                     >
-                      <MessageCircle className="w-5 h-5" />
-                      <span className="text-sm">{formatCount(post.comments.length)}</span>
+                      <Share2 className="w-5 h-5 text-[var(--text-muted)]" />
+                      <span className="text-sm font-medium max-sm:hidden text-[var(--foreground)]/85">
+                        Partager
+                      </span>
                     </button>
-                    {/* Share */}
-                    <div className="relative">
-                      <button
-                        onClick={() =>
-                          setShareMenuPost(shareMenuPost === post.id ? null : post.id)
-                        }
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--hover-bg)] transition-colors"
-                      >
-                        <Share2 className="w-5 h-5" />
-                      </button>
-                      {shareMenuPost === post.id && (
-                        <div className="absolute left-0 bottom-10 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden">
-                          {[
-                            { label: "Republier", icon: Share2 },
-                            { label: "Email", icon: Send },
-                            { label: "Copier le lien", icon: Copy },
-                          ].map(({ label, icon: Icon }) => (
-                            <button
-                              key={label}
-                              onClick={() => setShareMenuPost(null)}
-                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-                            >
-                              <Icon className="w-4 h-4" />
-                              {label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    {shareMenuPost === post.id && (
+                      <div className="absolute left-0 bottom-12 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden">
+                        {[
+                          { label: "Republier", icon: Share2 },
+                          { label: "Email", icon: Send },
+                          { label: "Copier le lien", icon: Copy },
+                        ].map(({ label, icon: Icon }) => (
+                          <button
+                            key={label}
+                            onClick={() => setShareMenuPost(null)}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+                          >
+                            <Icon className="w-4 h-4" />
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
+
+                  {/* Save */}
                   <button
                     onClick={() => toggleSave(post.id)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      savedPosts.has(post.id)
-                        ? "text-[#1e9df1] bg-[#1e9df1]/10"
-                        : "text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
-                    }`}
+                    className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
                   >
-                    <Bookmark className={`w-5 h-5 ${savedPosts.has(post.id) ? "fill-current" : ""}`} />
+                    <Bookmark
+                      className={`w-5 h-5 transition-colors ${
+                        savedPosts.has(post.id)
+                          ? "fill-[#1e9df1] text-[#1e9df1]"
+                          : "text-[var(--text-muted)]"
+                      }`}
+                    />
+                    <span
+                      className={`text-sm font-medium max-sm:hidden ${
+                        savedPosts.has(post.id)
+                          ? "text-[#1e9df1]"
+                          : "text-[var(--foreground)]/85"
+                      }`}
+                    >
+                      {savedPosts.has(post.id) ? "Enregistré" : "Enregistrer"}
+                    </span>
                   </button>
                 </div>
 
@@ -1187,16 +1006,26 @@ export default function FeedPage() {
           </div>
         </div>
 
-        {/* Right sidebar - desktop only */}
-        <aside className="hidden lg:block w-72 shrink-0 space-y-6">
+        {/* Right sidebar — desktop only.
+            Allégée : 2 widgets (Suggestions max 3 + Tendances max 5).
+            Le widget "Événements à venir" a été retiré (doublon avec
+            la page /evenements). Le Lottie animé en tête de Suggestions
+            a été remplacé par une icône lucide statique pour gagner en
+            sobriété et réduire le bruit visuel. */}
+        <aside className="hidden lg:block w-72 shrink-0 space-y-5">
           {/* Suggestions */}
           <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <div className="flex items-center gap-2 mb-4">
-              <LottiePlayer src="/lottie/lottieflow-social-networks-15-11-000000-easey.json" width={32} height={32} />
-              <h3 className="text-sm font-semibold text-[var(--foreground)]">Suggestions</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-[var(--foreground)] flex items-center gap-2">
+                <UserPlus className="w-4 h-4 text-[#1e9df1]" />
+                Suggestions
+              </h3>
+              <Link href="/recherche" className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] hover:text-[#1e9df1] transition-colors">
+                Voir tout
+              </Link>
             </div>
             <div className="space-y-3">
-              {MOCK_USERS.slice(1).map((user) => (
+              {MOCK_USERS.slice(1, 4).map((user) => (
                 <div key={user.id} className="flex items-center gap-3">
                   <Link href={`/profil/${user.id}`}>
                     <img
@@ -1221,7 +1050,7 @@ export default function FeedPage() {
                     className={`text-xs px-3 py-1 rounded-lg font-medium transition-colors ${
                       isFollowing(user.id)
                         ? "bg-[var(--hover-bg)] text-[var(--text-secondary)]"
-                        : "bg-[#1e9df1] text-white"
+                        : "bg-[#1e9df1] text-white hover:bg-[#1583c9]"
                     }`}
                   >
                     {isFollowing(user.id) ? "Suivi" : "Suivre"}
@@ -1238,35 +1067,15 @@ export default function FeedPage() {
               Tendances
             </h3>
             <div className="space-y-3">
-              {TRENDING_HASHTAGS.map((item) => (
+              {TRENDING_HASHTAGS.slice(0, 5).map((item) => (
                 <Link
                   key={item.tag}
                   href={`/recherche?q=${encodeURIComponent(item.tag)}`}
                   className="flex items-center justify-between group"
                 >
                   <span className="text-sm text-[#1e9df1] group-hover:underline">{item.tag}</span>
-                  <span className="text-xs text-[var(--text-muted)]">{formatCount(item.count)}</span>
+                  <span className="text-xs text-[var(--text-muted)] tabular-nums">{formatCount(item.count)}</span>
                 </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Upcoming events */}
-          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#1e9df1]" />
-              Événements à venir
-            </h3>
-            <div className="space-y-3">
-              {UPCOMING_EVENTS.map((event) => (
-                <div key={event.id} className="group cursor-pointer">
-                  <p className="text-sm font-medium text-[var(--foreground)] group-hover:text-[#1e9df1] transition-colors">
-                    {event.title}
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    {event.date} · {event.location}
-                  </p>
-                </div>
               ))}
             </div>
           </div>

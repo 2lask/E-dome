@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { Award, BadgeCheck, MapPin } from "lucide-react";
 import { useApp } from "@/lib/context";
 import type { Property, User } from "@/lib/types";
 import { formatCount } from "@/lib/utils";
@@ -151,21 +152,30 @@ export default function ProfilPage() {
             alt=""
             className="w-28 h-28 rounded-full object-cover border-4 border-[var(--background)]"
           />
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold text-[var(--foreground)]">
-              {currentUser.firstName} {currentUser.lastName}
-            </h1>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style={{ background: "linear-gradient(135deg, #d4a832, #f5d679, #c9961e)", color: "#3d2b00", border: "1px solid rgba(212,168,50,0.4)", boxShadow: "0 2px 8px rgba(212,168,50,0.3)" }}>
-              🏅 Membre Fondateur #1
-            </span>
-            <p className="text-sm text-[var(--text-secondary)]">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h1 className="text-2xl page-heading text-[var(--foreground)]">
+                {currentUser.firstName} {currentUser.lastName}
+              </h1>
+              {/* Membre Fondateur — palette ambre sémantique au lieu du
+                  gradient or orphelin de l'ancien thème */}
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/30">
+                <Award className="w-3 h-3" /> Membre Fondateur #1
+              </span>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] flex items-center gap-1.5 mt-1">
+              <MapPin className="w-3.5 h-3.5 text-[var(--text-muted)]" />
               {currentUser.city}, {currentUser.country}
             </p>
-            <div className="flex flex-wrap gap-1.5 mt-1.5">
-              {roleBadges.map((r) => (
+            {/* Hiérarchie rôles : 1 primaire en plein, autres mutés */}
+            <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+              <span className="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-[#1e9df1] text-white">
+                {roleBadges[0].label}
+              </span>
+              {roleBadges.slice(1).map((r) => (
                 <span
                   key={r.key}
-                  className="px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-[#1e9df1]/10 text-[#1e9df1]"
+                  className="px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-white/[0.04] text-[var(--text-muted)] ring-1 ring-white/[0.06]"
                 >
                   {r.label}
                 </span>
@@ -180,38 +190,33 @@ export default function ProfilPage() {
           </button>
         </div>
 
-        {/* Certifications / Badges */}
-        <div className="flex flex-wrap gap-2 mt-4">
+        {/* Stats \u2014 3 colonnes essentielles (Suivis retir\u00E9 : peu pertinent
+            publiquement). Note avec valeur ambre, monospace tabular-nums.
+            Les 4 cert badges pr\u00E9c\u00E9dents (Superh\u00F4te, Identit\u00E9 v\u00E9rifi\u00E9e,
+            Formateur certifi\u00E9, Apporteur Bronze) ont \u00E9t\u00E9 condens\u00E9s en 2
+            verified pills sobres \u00E0 droite, avec ic\u00F4nes Lucide au lieu
+            d'emojis pour un rendu plus pro. */}
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mt-6">
           {[
-            { emoji: "\u{1F3C6}", label: "Superh\u00F4te E-Dome" },
-            { emoji: "\u2705", label: "Identit\u00E9 v\u00E9rifi\u00E9e" },
-            { emoji: "\u{1F4DA}", label: "Formateur certifi\u00E9" },
-            { emoji: "\u{1F91D}", label: "Apporteur Bronze" },
-          ].map((b) => (
-            <span
-              key={b.label}
-              className="px-3 py-1 text-xs font-medium rounded-full bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)]"
-            >
-              {b.emoji} {b.label}
-            </span>
-          ))}
-        </div>
-
-        {/* Stats */}
-        <div className="flex gap-6 mt-6 flex-wrap">
-          {[
-            { label: "Biens", value: currentUser.stats.properties },
-            { label: "Abonn\u00E9s", value: currentUser.stats.followers },
-            { label: "Suivis", value: currentUser.stats.following },
-            { label: "Note", value: `${currentUser.stats.rating}/5` },
+            { label: "Biens", value: formatCount(currentUser.stats.properties) },
+            { label: "Abonn\u00E9s", value: formatCount(currentUser.stats.followers) },
+            { label: "Note", value: `${currentUser.stats.rating}/5`, accent: true },
           ].map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="text-lg font-bold text-[var(--foreground)]">
-                {typeof s.value === "number" ? formatCount(s.value) : s.value}
+            <div key={s.label}>
+              <div className={`text-lg font-bold tabular-nums ${s.accent ? "text-amber-300" : "text-[var(--foreground)]"}`}>
+                {s.value}
               </div>
-              <div className="text-xs text-[var(--text-muted)]">{s.label}</div>
+              <div className="text-[11px] uppercase tracking-wider text-[var(--text-muted)]">{s.label}</div>
             </div>
           ))}
+          <div className="flex items-center gap-1.5 ml-auto">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-full bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-500/25">
+              <BadgeCheck className="w-3 h-3" /> Identit\u00E9 v\u00E9rifi\u00E9e
+            </span>
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-full bg-[#1e9df1]/10 text-[#1e9df1] ring-1 ring-[#1e9df1]/25">
+              <Award className="w-3 h-3" /> Superh\u00F4te
+            </span>
+          </div>
         </div>
       </div>
 
@@ -515,7 +520,7 @@ export default function ProfilPage() {
               </button>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="flex-1 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a]"
+                className="flex-1 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9]"
               >
                 Sauvegarder
               </button>

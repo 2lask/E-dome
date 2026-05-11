@@ -165,7 +165,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                       active && "font-medium"
                     )}
                     style={{
-                      background: active ? "rgba(200,169,78,0.1)" : "transparent",
+                      // Active state : accent bleu E-Dome (avant : gold
+                      // orphelin rgba(200,169,78,...) hérité de l'ancien thème)
+                      background: active ? "rgba(30,157,241,0.1)" : "transparent",
                       color: active ? "var(--gold)" : "var(--text-secondary)",
                     }}
                     onMouseEnter={(e) => {
@@ -219,7 +221,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               title={collapsed ? item.label : undefined}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200"
               style={{
-                background: active ? "rgba(200,169,78,0.1)" : "transparent",
+                background: active ? "rgba(30,157,241,0.1)" : "transparent",
                 color: isQuit
                   ? "#ef4444"
                   : active

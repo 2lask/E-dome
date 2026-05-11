@@ -81,7 +81,7 @@ export default function ConditionsPage() {
       </div>
 
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Conditions Générales d&apos;Utilisation</h1>
+        <h1 className="text-3xl page-heading text-[var(--foreground)]">Conditions Générales d&apos;Utilisation</h1>
         <p className="text-[var(--text-secondary)]">Dernière mise à jour : 1er janvier 2026</p>
       </div>
 

@@ -67,7 +67,7 @@ export default function ContactPage() {
             <div
               className="w-20 h-20 rounded-full flex items-center justify-center"
               style={{
-                background: "linear-gradient(135deg, #1e9df1, #d4a574)",
+                background: "#1e9df1",
                 animation: "scaleIn 0.5s ease-out",
               }}
             >
@@ -108,7 +108,7 @@ export default function ContactPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Contactez-nous</h1>
+        <h1 className="text-3xl page-heading text-[var(--foreground)]">Contactez-nous</h1>
         <p className="text-[var(--text-secondary)]">Une question, une suggestion ou un probleme ? Nous sommes la pour vous aider.</p>
       </div>
 

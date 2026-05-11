@@ -118,7 +118,7 @@ export default function ApporteursPage() {
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
       {/* Hero */}
       <section className="text-center space-y-3">
-        <h1 className="text-3xl md:text-4xl font-bold text-[var(--foreground)]">
+        <h1 className="text-3xl md:text-4xl page-heading text-[var(--foreground)]">
           Programme Apporteurs d&apos;Affaires
         </h1>
         <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">

@@ -52,11 +52,14 @@ const statusColors: Record<string, string> = {
   completed: "bg-blue-500/20 text-blue-400",
 };
 
-const calendarStatusColors: Record<string, string> = {
-  confirmed: "bg-emerald-500/30 text-emerald-300",
-  pending: "bg-amber-500/30 text-amber-300",
-  completed: "bg-gray-500/30 text-gray-300",
-  cancelled: "bg-red-500/30 text-red-300",
+// Calendar dot colors — un point coloré sous le numéro du jour, beaucoup
+// plus lisible que la cell entière colorée (qui devenait illisible quand
+// plusieurs réservations chevauchent et dévorait le chiffre du jour).
+const calendarDotColors: Record<string, string> = {
+  confirmed: "bg-emerald-500",
+  pending: "bg-amber-400",
+  completed: "bg-gray-500",
+  cancelled: "bg-red-500",
 };
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -167,7 +170,7 @@ export default function ReservationsPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 animate-fade-in">
-      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Réservations</h1>
+      <h1 className="text-2xl page-heading text-[var(--foreground)] mb-6">Réservations</h1>
 
       {/* Summary stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -235,34 +238,41 @@ export default function ReservationsPage() {
           </div>
           <div className="grid grid-cols-7 gap-1 text-center">
             {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
-              <div key={d} className="text-xs text-[var(--text-muted)] py-2">{d}</div>
+              <div key={d} className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] py-2 font-semibold">{d}</div>
             ))}
-            {calendarDays.map((d, i) => (
-              <div
-                key={i}
-                className={`py-2 text-sm rounded-lg ${
-                  d.day === 0
-                    ? ""
-                    : d.reservation
-                    ? `${calendarStatusColors[d.reservation.status]} font-medium`
-                    : "text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
-                }`}
-                title={d.reservation ? `${d.reservation.property.title} - ${statusLabels[d.reservation.status]}` : ""}
-              >
-                {d.day > 0 ? d.day : ""}
-              </div>
-            ))}
+            {calendarDays.map((d, i) => {
+              const hasRes = d.day > 0 && d.reservation;
+              const dotColor = hasRes ? calendarDotColors[d.reservation!.status] : "";
+              return (
+                <div
+                  key={i}
+                  className={`relative aspect-square flex flex-col items-center justify-center rounded-lg text-sm tabular-nums transition-colors ${
+                    d.day === 0
+                      ? ""
+                      : hasRes
+                        ? "text-[var(--foreground)] font-semibold hover:bg-[var(--hover-bg)] cursor-pointer"
+                        : "text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+                  }`}
+                  title={hasRes ? `${d.reservation!.property.title} — ${statusLabels[d.reservation!.status]}` : ""}
+                >
+                  {d.day > 0 && d.day}
+                  {hasRes && (
+                    <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${dotColor}`} />
+                  )}
+                </div>
+              );
+            })}
           </div>
-          {/* Legend */}
-          <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-[var(--card-border)]">
+          {/* Legend — dots compacts, palette sémantique cohérente */}
+          <div className="flex flex-wrap gap-x-5 gap-y-2 mt-5 pt-4 border-t border-[var(--card-border)]">
             {[
-              { label: "Confirmée", color: "bg-emerald-500/30" },
-              { label: "En attente", color: "bg-amber-500/30" },
-              { label: "Terminée", color: "bg-gray-500/30" },
-              { label: "Annulée", color: "bg-red-500/30" },
+              { label: "Confirmée", color: "bg-emerald-500" },
+              { label: "En attente", color: "bg-amber-400" },
+              { label: "Terminée", color: "bg-gray-500" },
+              { label: "Annulée", color: "bg-red-500" },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                <div className={`w-3 h-3 rounded ${item.color}`} />
+                <span className={`w-1.5 h-1.5 rounded-full ${item.color}`} />
                 {item.label}
               </div>
             ))}
@@ -348,7 +358,7 @@ export default function ReservationsPage() {
                           <>
                             <button
                               onClick={() => setConfirmModal({ id: res.id, action: "confirm" })}
-                              className="px-3 py-1.5 text-xs rounded-lg bg-[#1e9df1] text-white hover:bg-[#b8845a]"
+                              className="px-3 py-1.5 text-xs rounded-lg bg-[#1e9df1] text-white hover:bg-[#1583c9]"
                             >
                               Confirmer
                             </button>
@@ -437,7 +447,7 @@ export default function ReservationsPage() {
                 onClick={() => handleAction(confirmModal.id, confirmModal.action)}
                 className={`flex-1 py-2.5 text-sm rounded-xl text-white ${
                   confirmModal.action === "confirm"
-                    ? "bg-[#1e9df1] hover:bg-[#b8845a]"
+                    ? "bg-[#1e9df1] hover:bg-[#1583c9]"
                     : "bg-red-500 hover:bg-red-600"
                 }`}
               >
@@ -493,7 +503,7 @@ export default function ReservationsPage() {
               <button
                 onClick={handleReviewSubmit}
                 disabled={!reviewRating || reviewText.trim().length < 20}
-                className="flex-1 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a] disabled:opacity-40"
+                className="flex-1 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9] disabled:opacity-40"
               >
                 Publier
               </button>

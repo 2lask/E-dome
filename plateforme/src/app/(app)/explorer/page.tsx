@@ -8,6 +8,7 @@ import {
   Search, SlidersHorizontal, Heart, MapPin, Bed, Bath, Maximize,
   Star, ChevronDown, Grid3X3, List, Map, Bookmark, BookmarkCheck,
   X, Loader2, SortAsc, Building2, TrendingUp, Rocket,
+  Building, Home, Mountain, Landmark, Crown, Square, TreePine,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { LottiePlayer } from "@/components/ui/lottie-player";
@@ -287,7 +288,7 @@ export default function ExplorerPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Explorer</h1>
+      <h1 className="text-2xl page-heading text-[var(--foreground)] mb-6">Explorer</h1>
 
       {/* Recently viewed */}
       {recentlyViewed.length > 0 && (
@@ -317,42 +318,41 @@ export default function ExplorerPage() {
         </div>
       )}
 
-      {/* Interactive Property Type Selector */}
-      <div className="mb-8">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+      {/* Type categories — barre horizontale Airbnb-style.
+          Remplace l'ancienne grille 5 grandes cartes-images qui prenait
+          ~280px de hauteur pour un simple filtre redondant avec le drawer
+          Filtres. Cette barre fait 64px, scroll horizontal, et expose
+          plus de types d'un coup. */}
+      <div className="mb-6 -mx-1 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1 px-1 min-w-max">
           {[
-            { type: "appartement" as PropertyType, label: "Appartement", subtitle: "Urbain & pratique", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=250&fit=crop" },
-            { type: "villa" as PropertyType, label: "Villa", subtitle: "Espace & confort", img: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=250&fit=crop" },
-            { type: "chalet" as PropertyType, label: "Chalet", subtitle: "Montagne & charme", img: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=400&h=250&fit=crop" },
-            { type: "riad" as PropertyType, label: "Riad", subtitle: "Tradition & art", img: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=400&h=250&fit=crop" },
-            { type: "penthouse" as PropertyType, label: "Penthouse", subtitle: "Luxe & panorama", img: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=250&fit=crop" },
-          ].map((item) => (
-            <button
-              key={item.type}
-              onClick={() => setFilterType(filterType === item.type ? "" : item.type)}
-              className={`relative rounded-2xl overflow-hidden aspect-[3/2] group transition-all duration-300 ${
-                filterType === item.type
-                  ? "ring-2 ring-[#1e9df1] ring-offset-2 ring-offset-[var(--background)] scale-[1.02]"
-                  : "hover:scale-[1.03]"
-              }`}
-            >
-              <img src={item.img} alt={item.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className={`absolute inset-0 transition-colors duration-300 ${
-                filterType === item.type
-                  ? "bg-gradient-to-t from-[#1e9df1]/90 via-[#1e9df1]/40 to-transparent"
-                  : "bg-gradient-to-t from-black/70 via-black/30 to-transparent"
-              }`} />
-              <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
-                <p className="text-white font-semibold text-sm drop-shadow-lg">{item.label}</p>
-                <p className="text-white/70 text-xs drop-shadow">{item.subtitle}</p>
-              </div>
-              {filterType === item.type && (
-                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#1e9df1] flex items-center justify-center text-white text-xs font-bold shadow-lg">
-                  ✓
-                </div>
-              )}
-            </button>
-          ))}
+            { type: "" as PropertyType | "", label: "Tous", icon: Building2 },
+            { type: "appartement" as const, label: "Appartement", icon: Building },
+            { type: "villa" as const, label: "Villa", icon: Home },
+            { type: "chalet" as const, label: "Chalet", icon: Mountain },
+            { type: "riad" as const, label: "Riad", icon: Landmark },
+            { type: "penthouse" as const, label: "Penthouse", icon: Crown },
+            { type: "studio" as const, label: "Studio", icon: Square },
+            { type: "maison" as const, label: "Maison", icon: Building2 },
+            { type: "terrain" as const, label: "Terrain", icon: TreePine },
+          ].map((item) => {
+            const active = filterType === item.type;
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.label}
+                onClick={() => setFilterType(item.type as PropertyType | "")}
+                className={`flex flex-col items-center justify-center gap-1.5 shrink-0 min-w-[78px] px-3 py-2.5 rounded-xl transition-colors ${
+                  active
+                    ? "text-[#1e9df1] bg-[#1e9df1]/10 ring-1 ring-[#1e9df1]/25"
+                    : "text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)]"
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-[11px] font-medium tracking-tight">{item.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -547,7 +547,7 @@ export default function ExplorerPage() {
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex gap-2">
                   {prop.featured && (
-                    <span className="px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}>
+                    <span className="px-2.5 py-1 rounded-lg text-amber-300 text-xs font-medium flex items-center gap-1 bg-amber-400/15 ring-1 ring-amber-400/30 backdrop-blur-sm">
                       <Rocket className="w-3 h-3" /> Mis en avant
                     </span>
                   )}
@@ -562,24 +562,22 @@ export default function ExplorerPage() {
                 >
                   <Heart className={`w-5 h-5 ${isFavorite(prop.id) ? "fill-red-400 text-red-400" : ""}`} />
                 </button>
-                {/* Rendement badge */}
-                {prop.analytics && prop.analytics.rendementBrut > 0 && prop.transactionType === "vente" && (
-                  <span
-                    className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold backdrop-blur-sm flex items-center gap-1"
-                    style={{
-                      background: prop.analytics.rendementBrut > 7
-                        ? "linear-gradient(135deg, #1e9df1, #d4a574)"
-                        : prop.analytics.rendementBrut >= 5
-                        ? "rgba(34,197,94,0.85)"
-                        : prop.analytics.rendementBrut >= 3
-                        ? "rgba(59,130,246,0.85)"
-                        : "rgba(107,114,128,0.85)",
-                      color: "white",
-                    }}
-                  >
-                    📈 {prop.analytics.rendementBrut.toFixed(1)}%
-                  </span>
-                )}
+                {/* Rendement badge — palette sémantique */}
+                {prop.analytics && prop.analytics.rendementBrut > 0 && prop.transactionType === "vente" && (() => {
+                  const r = prop.analytics.rendementBrut;
+                  const tone = r > 7
+                    ? "bg-amber-400/15 text-amber-300 ring-amber-400/30"
+                    : r >= 5
+                      ? "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30"
+                      : r >= 3
+                        ? "bg-[#1e9df1]/15 text-[#1e9df1] ring-[#1e9df1]/30"
+                        : "bg-zinc-700/40 text-zinc-300 ring-zinc-600/40";
+                  return (
+                    <span className={`absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex items-center gap-1 ring-1 tabular-nums ${tone}`}>
+                      <TrendingUp className="w-3 h-3" /> {r.toFixed(1)}%
+                    </span>
+                  );
+                })()}
               </div>
 
               {/* Info */}
@@ -595,7 +593,7 @@ export default function ExplorerPage() {
                     )}
                   </p>
                   <div className="flex items-center gap-1 text-[var(--text-muted)]">
-                    <Star className="w-4 h-4 fill-[#1e9df1] text-[#1e9df1]" />
+                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                     <span className="text-sm">{prop.rating}</span>
                   </div>
                 </div>
@@ -651,7 +649,7 @@ export default function ExplorerPage() {
                   <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover" />
                 </Link>
                 {prop.featured && (
-                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}>
+                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "#1e9df1" }}>
                     <Rocket className="w-3 h-3" /> Mis en avant
                   </span>
                 )}
@@ -661,24 +659,22 @@ export default function ExplorerPage() {
                 >
                   <Heart className={`w-4 h-4 ${isFavorite(prop.id) ? "fill-red-400 text-red-400" : ""}`} />
                 </button>
-                {/* Rendement badge */}
-                {prop.analytics && prop.analytics.rendementBrut > 0 && prop.transactionType === "vente" && (
-                  <span
-                    className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold backdrop-blur-sm flex items-center gap-1"
-                    style={{
-                      background: prop.analytics.rendementBrut > 7
-                        ? "linear-gradient(135deg, #1e9df1, #d4a574)"
-                        : prop.analytics.rendementBrut >= 5
-                        ? "rgba(34,197,94,0.85)"
-                        : prop.analytics.rendementBrut >= 3
-                        ? "rgba(59,130,246,0.85)"
-                        : "rgba(107,114,128,0.85)",
-                      color: "white",
-                    }}
-                  >
-                    📈 {prop.analytics.rendementBrut.toFixed(1)}%
-                  </span>
-                )}
+                {/* Rendement badge — palette sémantique */}
+                {prop.analytics && prop.analytics.rendementBrut > 0 && prop.transactionType === "vente" && (() => {
+                  const r = prop.analytics.rendementBrut;
+                  const tone = r > 7
+                    ? "bg-amber-400/15 text-amber-300 ring-amber-400/30"
+                    : r >= 5
+                      ? "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30"
+                      : r >= 3
+                        ? "bg-[#1e9df1]/15 text-[#1e9df1] ring-[#1e9df1]/30"
+                        : "bg-zinc-700/40 text-zinc-300 ring-zinc-600/40";
+                  return (
+                    <span className={`absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex items-center gap-1 ring-1 tabular-nums ${tone}`}>
+                      <TrendingUp className="w-3 h-3" /> {r.toFixed(1)}%
+                    </span>
+                  );
+                })()}
               </div>
               <div className="flex-1 p-4">
                 <div className="flex items-start justify-between">
@@ -701,7 +697,7 @@ export default function ExplorerPage() {
                   {prop.bedrooms > 0 && <span className="flex items-center gap-1"><Bed className="w-4 h-4" /> {prop.bedrooms} ch</span>}
                   {prop.bathrooms > 0 && <span className="flex items-center gap-1"><Bath className="w-4 h-4" /> {prop.bathrooms} sdb</span>}
                   <span className="flex items-center gap-1"><Maximize className="w-4 h-4" /> {prop.area}m²</span>
-                  <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-[#1e9df1] text-[#1e9df1]" /> {prop.rating}</span>
+                  <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-amber-400 text-amber-400" /> {prop.rating}</span>
                 </div>
                 {prop.transactionType === "vente" && prop.analytics && (
                   <p className="mt-2 text-xs text-green-400 flex items-center gap-1">
@@ -744,7 +740,7 @@ export default function ExplorerPage() {
       <button
         onClick={() => setShowMap((v) => !v)}
         className="fixed bottom-20 md:bottom-8 right-6 z-30 px-5 py-3 rounded-full font-medium flex items-center gap-2 shadow-xl text-white hover:opacity-90 transition-opacity"
-        style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}
+        style={{ background: "#1e9df1" }}
       >
         <span className="text-lg">🗺</span>
         Carte
@@ -756,7 +752,7 @@ export default function ExplorerPage() {
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--card-border)] bg-[var(--card)] shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base" style={{ background: "linear-gradient(135deg, #1e9df1, #d4a574)" }}>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base" style={{ background: "#1e9df1" }}>
                 🗺
               </div>
               <div>

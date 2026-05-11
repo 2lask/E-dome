@@ -208,11 +208,11 @@ export default function MessagesPage() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <LottiePlayer src="/lottie/lottieflow-chat-17-9-000000-easey.json" width={32} height={32} />
-              <h1 className="text-xl font-bold text-[var(--foreground)]">Messages</h1>
+              <h1 className="text-xl page-heading text-[var(--foreground)]">Messages</h1>
             </div>
             <button
               onClick={() => setShowNewConv(true)}
-              className="w-8 h-8 rounded-full bg-[#1e9df1] text-white flex items-center justify-center hover:bg-[#b8845a] transition-colors"
+              className="w-8 h-8 rounded-full bg-[#1e9df1] text-white flex items-center justify-center hover:bg-[#1583c9] transition-colors"
               title="Nouvelle conversation"
             >
               <LottiePlayer src="/lottie/lottieflow-chat-17-1-000000-easey.json" width={24} height={24} />
@@ -461,7 +461,7 @@ export default function MessagesPage() {
                 <button
                   onClick={sendMessage}
                   disabled={!message.trim()}
-                  className="p-2.5 rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a] disabled:opacity-40 transition-colors"
+                  className="p-2.5 rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9] disabled:opacity-40 transition-colors"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="22" y1="2" x2="11" y2="13" />

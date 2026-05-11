@@ -24,7 +24,7 @@ export default function ReplayPage({ params }: { params: Promise<{ id: string }>
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-6 animate-fade-in">
         <div className="text-6xl">🎬</div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Replay introuvable</h1>
+        <h1 className="text-2xl page-heading text-[var(--foreground)]">Replay introuvable</h1>
         <p className="text-[var(--text-secondary)]">Ce replay n&apos;existe pas ou a ete supprime.</p>
         <Link
           href="/live"
@@ -59,7 +59,7 @@ export default function ReplayPage({ params }: { params: Promise<{ id: string }>
 
       {/* Info */}
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">{replay.title}</h1>
+        <h1 className="text-2xl page-heading text-[var(--foreground)]">{replay.title}</h1>
         <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--text-secondary)]">
           <span className="font-medium text-[#1e9df1]">{replay.speaker}</span>
           <span className="text-[var(--text-muted)]">&middot;</span>

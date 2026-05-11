@@ -21,7 +21,7 @@ interface LandingLangContextValue {
 export const translations: Record<LandingLang, TranslationMap> = {
   fr: {
     // ── Hero ──────────────────────────────────────────────────────────────
-    "hero.label": "L'ecosysteme immobilier",
+    "hero.label": "Un ecosysteme immobilier",
     "hero.title1": "L'immobilier",
     "hero.title2": "sous un meme toit.",
     "hero.subtitle":
@@ -247,10 +247,10 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "roadmap.phase2_item4": "Structuration juridique de la societe",
     "roadmap.phase2_item5": "Premiers partenariats strategiques avec des agences et prestataires",
 
-    "roadmap.phase3_title": "Lever les fonds & recruter",
-    "roadmap.phase3_item1": "Levee de fonds pour financer le developpement",
-    "roadmap.phase3_item2": "Recrutement d'une equipe de developpeurs",
-    "roadmap.phase3_item3": "Developpement du site web et de l'application mobile (iOS & Android)",
+    "roadmap.phase3_title": "Lever les fonds & batir la plateforme finale",
+    "roadmap.phase3_item1": "Levee de fonds pour financer la suite",
+    "roadmap.phase3_item2": "Constitution d'une equipe de designers et de developpeurs",
+    "roadmap.phase3_item3": "Developpement de la plateforme finale (web + iOS + Android) avec l'equipe de design",
     "roadmap.phase3_item4": "Paiements securises et systeme d'escrow",
     "roadmap.phase3_item5": "Commissions automatisees et tracables",
     "roadmap.phase3_item6": "Beta privee Suisse + Thailande",
@@ -412,7 +412,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
 
   en: {
     // ── Hero ──────────────────────────────────────────────────────────────
-    "hero.label": "The real estate ecosystem",
+    "hero.label": "A real estate ecosystem",
     "hero.title1": "Real estate",
     "hero.title2": "under one roof.",
     "hero.subtitle":
@@ -638,10 +638,10 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "roadmap.phase2_item4": "Legal structuring of the company",
     "roadmap.phase2_item5": "First strategic partnerships with agencies and service providers",
 
-    "roadmap.phase3_title": "Raise funds & recruit",
-    "roadmap.phase3_item1": "Fundraising to finance development",
-    "roadmap.phase3_item2": "Recruiting a development team",
-    "roadmap.phase3_item3": "Development of the website and mobile app (iOS & Android)",
+    "roadmap.phase3_title": "Raise funds & build the final platform",
+    "roadmap.phase3_item1": "Fundraising to finance what comes next",
+    "roadmap.phase3_item2": "Building a team of designers and developers",
+    "roadmap.phase3_item3": "Development of the final platform (web + iOS + Android) with the design team",
     "roadmap.phase3_item4": "Secure payments and escrow system",
     "roadmap.phase3_item5": "Automated and traceable commissions",
     "roadmap.phase3_item6": "Private beta Switzerland + Thailand",
@@ -803,7 +803,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
 
   th: {
     // ── Hero ──────────────────────────────────────────────────────────────
-    "hero.label": "ระบบนิเวศด้านอสังหาริมทรัพย์",
+    "hero.label": "ระบบนิเวศอสังหาริมทรัพย์หนึ่ง",
     "hero.title1": "อสังหาริมทรัพย์",
     "hero.title2": "ภายใต้หลังคาเดียวกัน",
     "hero.subtitle":
@@ -1029,10 +1029,10 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "roadmap.phase2_item4": "การจัดโครงสร้างทางกฎหมายของบริษัท",
     "roadmap.phase2_item5": "ความร่วมมือเชิงกลยุทธ์แรกกับเอเจนซีและผู้ให้บริการ",
 
-    "roadmap.phase3_title": "ระดมทุนและรับสมัครทีม",
-    "roadmap.phase3_item1": "การระดมทุนเพื่อสนับสนุนการพัฒนา",
-    "roadmap.phase3_item2": "การรับสมัครทีมพัฒนา",
-    "roadmap.phase3_item3": "การพัฒนาเว็บไซต์และแอปมือถือ (iOS & Android)",
+    "roadmap.phase3_title": "ระดมทุนและสร้างแพลตฟอร์มเวอร์ชันสุดท้าย",
+    "roadmap.phase3_item1": "การระดมทุนเพื่อสนับสนุนขั้นต่อไป",
+    "roadmap.phase3_item2": "สร้างทีมนักออกแบบและนักพัฒนา",
+    "roadmap.phase3_item3": "พัฒนาแพลตฟอร์มเวอร์ชันสุดท้าย (เว็บ + iOS + Android) ร่วมกับทีมออกแบบ",
     "roadmap.phase3_item4": "การชำระเงินที่ปลอดภัยและระบบ Escrow",
     "roadmap.phase3_item5": "ค่าคอมมิชชันอัตโนมัติและตรวจสอบได้",
     "roadmap.phase3_item6": "เบต้าส่วนตัว สวิตเซอร์แลนด์ + ประเทศไทย",

@@ -92,7 +92,7 @@ export default function FavorisPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 animate-fade-in">
-      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Favoris</h1>
+      <h1 className="text-2xl page-heading text-[var(--foreground)] mb-6">Favoris</h1>
 
       {/* Tabs */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
@@ -145,7 +145,7 @@ export default function FavorisPage() {
               </p>
               <Link
                 href="/explorer"
-                className="inline-block px-6 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#b8845a]"
+                className="inline-block px-6 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9]"
               >
                 Explorer
               </Link>

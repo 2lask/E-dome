@@ -64,7 +64,7 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-6 animate-fade-in">
         <div className="text-6xl">📚</div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Lecon introuvable</h1>
+        <h1 className="text-2xl page-heading text-[var(--foreground)]">Lecon introuvable</h1>
         <p className="text-[var(--text-secondary)]">Cette lecon n&apos;existe pas.</p>
         <Link
           href={`/formations/${id}`}
@@ -102,7 +102,7 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
 
           {/* Lesson title */}
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-[var(--foreground)]">
+            <h1 className="text-2xl page-heading text-[var(--foreground)]">
               Lecon {lessonNum} : {LESSON_TITLES[lessonNum - 1]}
             </h1>
             <p className="text-sm text-[var(--text-secondary)]">{formation.title}</p>
