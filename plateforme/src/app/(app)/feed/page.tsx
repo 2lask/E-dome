@@ -4,14 +4,13 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import Link from "next/link";
 import {
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send,
-  MapPin, Video, X, ChevronUp, Plus,
+  MapPin, Video, X, ChevronUp,
   Edit3, Trash2, Flag, EyeOff, Copy, Play, Pause,
   TrendingUp, Calendar, Users, Building2, GraduationCap,
   UserPlus,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { LottiePlayer } from "@/components/ui/lottie-player";
-import { StoryViewer } from "@/components/ui/story-viewer";
 import { timeAgo, formatCount } from "@/lib/utils";
 import { roleBadgeColors, roleLabels } from "@/lib/types";
 import type { User, SocialPost, Comment, Role } from "@/lib/types";
@@ -46,54 +45,6 @@ const MOCK_USERS: User[] = [
     city: "Zurich", country: "Suisse", roles: ["promoteur"], activeRole: "promoteur",
     stats: { followers: 2100, following: 90, properties: 6, reviews: 34, rating: 4.6, transactions: 18, revenue: 5600000 },
     bio: "Promoteur de projets haut de gamme",
-  },
-];
-
-// Stories regroupées par hôte — alimentent le composant <StoryViewer />.
-// Chaque user possède 2 à 4 stories (mix images Unsplash haute résolution
-// 9:16 + miniatures vidéos pour la démo). Les URLs Unsplash sont déjà
-// utilisées ailleurs dans la démo, donc le navigateur les met en cache.
-import type { Story as StoryItem } from "@/components/ui/story-viewer";
-
-const MOCK_STORY_FEEDS: Array<{
-  user: User;
-  timestamp: string;
-  stories: StoryItem[];
-}> = [
-  {
-    user: MOCK_USERS[0], // Sophie — hôte Lausanne
-    timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
-    stories: [
-      { id: "sophie-1", type: "image", src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=720&h=1280&fit=crop" },
-      { id: "sophie-2", type: "image", src: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=720&h=1280&fit=crop" },
-      { id: "sophie-3", type: "image", src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=720&h=1280&fit=crop" },
-    ],
-  },
-  {
-    user: MOCK_USERS[1], // Marc — investisseur Genève
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    stories: [
-      { id: "marc-1", type: "image", src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=720&h=1280&fit=crop" },
-      { id: "marc-2", type: "image", src: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=720&h=1280&fit=crop" },
-    ],
-  },
-  {
-    user: MOCK_USERS[2], // Amira — agence Marrakech
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-    stories: [
-      { id: "amira-1", type: "image", src: "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=720&h=1280&fit=crop" },
-      { id: "amira-2", type: "image", src: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=720&h=1280&fit=crop" },
-      { id: "amira-3", type: "image", src: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=720&h=1280&fit=crop" },
-      { id: "amira-4", type: "image", src: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=720&h=1280&fit=crop" },
-    ],
-  },
-  {
-    user: MOCK_USERS[3], // Thomas — promoteur Zurich
-    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-    stories: [
-      { id: "thomas-1", type: "image", src: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=720&h=1280&fit=crop" },
-      { id: "thomas-2", type: "image", src: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=720&h=1280&fit=crop" },
-    ],
   },
 ];
 
@@ -242,27 +193,6 @@ export default function FeedPage() {
   const { formatPrice, toggleFollow, isFollowing, activeRole } = useApp();
   const [posts, setPosts] = useState<SocialPost[]>(() => generatePosts(5));
   const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis">("pour-vous");
-  // Le composant <StoryViewer /> gère lui-même son état (viewer ouvert,
-  // index courant, vues, progression, pause, sourdine, swipe). Plus besoin
-  // des states custom showStoryViewer / storyProgress / viewedStories.
-  const [showStoryUpload, setShowStoryUpload] = useState(false);
-  const [storyText, setStoryText] = useState("");
-  const [storyGradient, setStoryGradient] = useState("linear-gradient(135deg, #f6d365, #fda085)");
-
-  // POST_GRADIENTS reste utilisé par le modal de création de story (overlay
-  // showStoryUpload). Les states du composer post (newPostContent,
-  // newPostLocation, showLocationInput, selectedGradient) ainsi que la
-  // fonction createPost ont été supprimés en même temps que le composer.
-  const POST_GRADIENTS = [
-    { name: "Beige E-Dome", value: "linear-gradient(135deg, #f5f0e8, #e8dcc8)" },
-    { name: "Or Premium", value: "linear-gradient(135deg, #f6d365, #fda085)" },
-    { name: "Bleu Ciel", value: "linear-gradient(135deg, #84fab0, #8fd3f4)" },
-    { name: "Nuit", value: "linear-gradient(135deg, #0c0c0c, #1a1a2e)" },
-    { name: "Coucher de soleil", value: "linear-gradient(135deg, #fa709a, #fee140)" },
-    { name: "Vert Nature", value: "linear-gradient(135deg, #43e97b, #38f9d7)" },
-    { name: "Violet Royal", value: "linear-gradient(135deg, #667eea, #764ba2)" },
-    { name: "Rose Luxe", value: "linear-gradient(135deg, #f093fb, #f5576c)" },
-  ];
 
   // Post interactions
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
@@ -400,135 +330,6 @@ export default function FeedPage() {
           ✓ {feedToast}
         </div>
       )}
-      {/* Stories bar — composant <StoryViewer /> shadcn-style.
-          Chaque user a son propre StoryViewer (thumbnail anneau segmenté
-          + viewer modal complet : progress bars par story, swipe, hold
-          to pause, mute video, navigation clavier, sortie au glisser bas).
-          Le bouton "Votre story" reste custom car il déclenche le modal
-          de création (showStoryUpload) qui est une feature distincte. */}
-      <div className="mb-6 overflow-x-auto no-scrollbar">
-        <div className="flex gap-4 pb-2 items-start">
-          {/* Your story — bouton de création, ouvre le modal upload */}
-          <button
-            type="button"
-            onClick={() => setShowStoryUpload(true)}
-            className="relative flex flex-col items-center gap-2 shrink-0 group"
-            aria-label="Créer votre story"
-          >
-            <div className="w-[72px] h-[72px] rounded-full p-1">
-              <div className="w-full h-full rounded-full flex items-center justify-center border-2 border-dashed border-muted-foreground/40 bg-muted/30 group-hover:border-[#1e9df1]/60 group-hover:bg-muted/50 transition-all duration-200">
-                <Plus className="w-7 h-7 text-muted-foreground/60" strokeWidth={2} />
-              </div>
-            </div>
-            <span className="text-xs text-muted-foreground truncate max-w-[80px]">
-              Votre story
-            </span>
-          </button>
-
-          {MOCK_STORY_FEEDS.map((feed) => (
-            <StoryViewer
-              key={feed.user.id}
-              stories={feed.stories}
-              username={feed.user.firstName}
-              avatar={feed.user.avatar}
-              timestamp={feed.timestamp}
-              className="shrink-0"
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Story creator overlay */}
-      {showStoryUpload && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setShowStoryUpload(false)}>
-          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl w-full max-w-lg p-6 animate-scale-in" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-semibold text-[var(--foreground)]">Créer une story</h3>
-              <button
-                onClick={() => setShowStoryUpload(false)}
-                className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            {/* Background selector */}
-            <div className="mb-4">
-              <p className="text-xs text-[var(--text-muted)] mb-2">Arrière-plan</p>
-              <div className="flex items-center gap-2 flex-wrap">
-                {POST_GRADIENTS.map((g) => (
-                  <button
-                    key={g.name}
-                    onClick={() => setStoryGradient(g.value)}
-                    className={`w-9 h-9 rounded-full border-2 transition-all shrink-0 ${storyGradient === g.value ? "border-[#1e9df1] scale-110 ring-2 ring-[#1e9df1]/30" : "border-transparent hover:border-[#1e9df1]/40"}`}
-                    style={{ background: g.value }}
-                    title={g.name}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Preview area (9:16 aspect ratio) */}
-            <div
-              className="relative mx-auto rounded-2xl overflow-hidden flex items-center justify-center"
-              style={{
-                background: storyGradient,
-                aspectRatio: "9 / 16",
-                maxHeight: "420px",
-                width: "auto",
-              }}
-            >
-              {/* Text overlay on the story */}
-              <div className="absolute inset-0 flex items-center justify-center p-6">
-                <p
-                  className="text-center font-bold text-lg leading-relaxed break-words max-w-full"
-                  style={{
-                    color: storyGradient.includes("#0c0c0c") || storyGradient.includes("#667eea") || storyGradient.includes("#f5576c") ? "#ffffff" : "#1a1a1a",
-                    textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                  }}
-                >
-                  {storyText || "Votre texte ici..."}
-                </p>
-              </div>
-              {/* E-Dome watermark */}
-              <div className="absolute bottom-3 left-0 right-0 text-center">
-                <span className="text-[10px] font-medium opacity-40" style={{
-                  color: storyGradient.includes("#0c0c0c") || storyGradient.includes("#667eea") || storyGradient.includes("#f5576c") ? "#ffffff" : "#1a1a1a",
-                }}>
-                  E-Dome
-                </span>
-              </div>
-            </div>
-
-            {/* Text input */}
-            <div className="mt-4">
-              <textarea
-                value={storyText}
-                onChange={(e) => setStoryText(e.target.value)}
-                placeholder="Écrivez le texte de votre story..."
-                maxLength={200}
-                rows={2}
-                className="w-full px-4 py-3 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors text-sm resize-none"
-              />
-              <p className="text-[10px] text-[var(--text-muted)] text-right mt-1">{storyText.length}/200</p>
-            </div>
-
-            {/* Publish button */}
-            <button
-              onClick={() => {
-                setShowStoryUpload(false);
-                setStoryText("");
-                setFeedToast("Story publiée ! (démonstration)");
-                setTimeout(() => setFeedToast(null), 3000);
-              }}
-              className="w-full mt-3 py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors"
-            >
-              Publier la story
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="flex gap-6">
         {/* Main feed column */}
         <div className="flex-1 min-w-0">
