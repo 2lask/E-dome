@@ -7,7 +7,7 @@ import {
   Bold, Italic, AlignLeft, AlignCenter, AlignRight,
   X, Plus, ChevronDown, ChevronUp, Eye, Save, Send,
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal,
-  Upload, Image as ImageIcon, Trash2, Check,
+  Image as ImageIcon, Trash2, Check,
 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { LottiePlayer } from "@/components/ui/lottie-player";
@@ -33,20 +33,10 @@ interface AttachedProperty {
 
 const GOLD = "#1e9df1";
 
-const BACKGROUNDS = [
-  { name: "Aucun", value: "none", color: "#ffffff", border: true },
-  { name: "Noir", value: "solid", color: "#000000" },
-  { name: "Blanc", value: "solid", color: "#ffffff", border: true },
-  { name: "Beige E-Dome", value: "gradient", color: "linear-gradient(135deg, #f5f0e8, #e8dcc8)" },
-  { name: "Sunset", value: "gradient", color: "linear-gradient(135deg, #f6d365, #fda085)" },
-  { name: "Océan", value: "gradient", color: "linear-gradient(135deg, #4facfe, #00f2fe)" },
-  { name: "Nature", value: "gradient", color: "linear-gradient(135deg, #43e97b, #38f9d7)" },
-  { name: "Nuit", value: "gradient", color: "linear-gradient(135deg, #0f0c29, #302b63)" },
-  { name: "Luxe Or", value: "gradient", color: "linear-gradient(135deg, #d4a832, #f5d679)" },
-  { name: "Rose", value: "gradient", color: "linear-gradient(135deg, #f093fb, #f5576c)" },
-  { name: "Violet", value: "gradient", color: "linear-gradient(135deg, #667eea, #764ba2)" },
-  { name: "Image", value: "custom", color: "transparent" },
-];
+// Fond du post hardcodé en noir basique. Le sélecteur de fond (11
+// gradients + upload image custom) a été retiré pour rester sobre :
+// un seul rendu, pas de personnalisation possible.
+const POST_BG_COLOR = "#000000";
 
 const FONTS = [
   { label: "Classique", value: "system-ui, sans-serif" },
@@ -109,17 +99,15 @@ export default function CreerPostPage() {
   const router = useRouter();
   const { addToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const customBgInputRef = useRef<HTMLInputElement>(null);
 
   // Editor state
   const [content, setContent] = useState("");
-  const [selectedBg, setSelectedBg] = useState(0);
-  const [customBgUrl, setCustomBgUrl] = useState<string | null>(null);
   const [selectedFont, setSelectedFont] = useState(0);
   const [fontSize, setFontSize] = useState("M");
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
-  const [textColor, setTextColor] = useState("#000000");
+  // Couleur de texte par défaut blanche puisque le fond est noir.
+  const [textColor, setTextColor] = useState("#ffffff");
   const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("left");
 
   // Media & attachments
@@ -158,34 +146,10 @@ export default function CreerPostPage() {
   const [previewMode, setPreviewMode] = useState<"feed" | "profil">("feed");
 
   // ─── Helpers ────────────────────────────────────────────────────────────
-
-  const bgStyle = useMemo(() => {
-    const bg = BACKGROUNDS[selectedBg];
-    if (!bg) return {};
-    if (bg.value === "none") return { background: "var(--card)" };
-    if (bg.value === "solid") return { background: bg.color };
-    if (bg.value === "gradient") return { background: bg.color };
-    if (bg.value === "custom" && customBgUrl) {
-      return { backgroundImage: `url(${customBgUrl})`, backgroundSize: "cover", backgroundPosition: "center" };
-    }
-    return { background: "var(--card)" };
-  }, [selectedBg, customBgUrl]);
-
-  const needsWhiteText = useMemo(() => {
-    const bg = BACKGROUNDS[selectedBg];
-    if (!bg) return false;
-    if (bg.value === "solid" && bg.color === "#000000") return true;
-    if (bg.name === "Nuit" || bg.name === "Violet" || bg.name === "Rose") return true;
-    if (bg.value === "custom") return true;
-    return false;
-  }, [selectedBg]);
-
-  const effectiveTextColor = useMemo(() => {
-    if (selectedBg > 0 && BACKGROUNDS[selectedBg]?.value !== "none") {
-      return needsWhiteText ? "#ffffff" : textColor;
-    }
-    return textColor;
-  }, [selectedBg, needsWhiteText, textColor]);
+  // Fond hardcodé noir. effectiveTextColor utilise simplement la couleur
+  // de texte choisie par l'utilisateur (par défaut blanche pour contraste).
+  const bgStyle = { background: POST_BG_COLOR };
+  const effectiveTextColor = textColor;
 
   const handlePhotoUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -198,14 +162,6 @@ export default function CreerPostPage() {
     setPhotos((prev) => [...prev, ...newPhotos]);
     e.target.value = "";
   }, [photos.length]);
-
-  const handleCustomBgUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setCustomBgUrl(URL.createObjectURL(file));
-    setSelectedBg(11);
-    e.target.value = "";
-  }, []);
 
   const removePhoto = useCallback((index: number) => {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
@@ -1163,22 +1119,22 @@ export default function CreerPostPage() {
               <MoreHorizontal size={18} style={{ color: "var(--text-muted)" }} />
             </div>
 
-            {/* Content area */}
+            {/* Content area — fond noir hardcodé, contenu centré */}
             {content.trim() && (
               <div style={{
                 ...bgStyle,
-                padding: selectedBg > 0 && BACKGROUNDS[selectedBg]?.value !== "none" ? "32px 20px" : "0 16px 12px",
-                minHeight: selectedBg > 0 && BACKGROUNDS[selectedBg]?.value !== "none" ? 160 : "auto",
+                padding: "32px 20px",
+                minHeight: 160,
                 display: "flex",
-                alignItems: selectedBg > 0 ? "center" : "flex-start",
-                justifyContent: selectedBg > 0 ? "center" : "flex-start",
+                alignItems: "center",
+                justifyContent: "center",
               }}>
                 <p style={{
                   fontSize: FONT_SIZES[fontSize],
                   fontFamily: FONTS[selectedFont].value,
                   fontWeight: isBold ? 700 : 400,
                   fontStyle: isItalic ? "italic" : "normal",
-                  color: selectedBg > 0 && BACKGROUNDS[selectedBg]?.value !== "none" ? effectiveTextColor : "var(--text-primary)",
+                  color: effectiveTextColor,
                   textAlign,
                   lineHeight: 1.5,
                   whiteSpace: "pre-wrap",
@@ -1365,7 +1321,7 @@ export default function CreerPostPage() {
                 fontFamily: FONTS[selectedFont].value,
                 fontWeight: isBold ? 700 : 400,
                 fontStyle: isItalic ? "italic" : "normal",
-                color: selectedBg > 0 ? effectiveTextColor : "var(--text-primary)",
+                color: effectiveTextColor,
                 textAlign: "center",
                 padding: 16,
                 lineHeight: 1.4,
@@ -1406,86 +1362,9 @@ export default function CreerPostPage() {
 
   const renderEditor = () => (
     <div>
-      {/* Background selector */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", marginBottom: 8 }}>
-          Arrière-plan
-        </div>
-        <div style={{
-          display: "flex",
-          gap: 8,
-          overflowX: "auto",
-          paddingBottom: 4,
-          scrollbarWidth: "thin",
-        }}>
-          {BACKGROUNDS.map((bg, i) => (
-            <button
-              key={bg.name}
-              onClick={() => {
-                if (bg.value === "custom") {
-                  customBgInputRef.current?.click();
-                } else {
-                  setSelectedBg(i);
-                }
-              }}
-              title={bg.name}
-              style={{
-                width: 40,
-                height: 40,
-                minWidth: 40,
-                borderRadius: "50%",
-                background: bg.value === "gradient" ? bg.color : bg.value === "custom" ? "var(--background)" : bg.color,
-                border: selectedBg === i
-                  ? `3px solid ${GOLD}`
-                  : bg.border
-                  ? "2px solid var(--card-border)"
-                  : "2px solid transparent",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "transform 0.15s, border-color 0.15s",
-                transform: selectedBg === i ? "scale(1.15)" : "scale(1)",
-                position: "relative",
-              }}
-            >
-              {bg.value === "custom" && (
-                <Upload size={14} style={{ color: "var(--text-muted)" }} />
-              )}
-            </button>
-          ))}
-          <input
-            ref={customBgInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleCustomBgUpload}
-            style={{ display: "none" }}
-          />
-        </div>
-        {/* Background name labels */}
-        <div style={{
-          display: "flex",
-          gap: 8,
-          overflowX: "auto",
-          paddingTop: 4,
-        }}>
-          {BACKGROUNDS.map((bg, i) => (
-            <span
-              key={bg.name}
-              style={{
-                minWidth: 40,
-                textAlign: "center",
-                fontSize: 9,
-                color: selectedBg === i ? GOLD : "var(--text-muted)",
-                fontWeight: selectedBg === i ? 600 : 400,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {bg.name}
-            </span>
-          ))}
-        </div>
-      </div>
+      {/* Sélecteur de fond retiré : fond du post hardcodé en noir basique
+          (POST_BG_COLOR). L'utilisateur garde la main sur la couleur de
+          texte, la police, la taille, le gras/italique, l'alignement. */}
 
       {/* Text area with background */}
       <div style={{
@@ -1512,7 +1391,7 @@ export default function CreerPostPage() {
             fontFamily: FONTS[selectedFont].value,
             fontWeight: isBold ? 700 : 400,
             fontStyle: isItalic ? "italic" : "normal",
-            color: selectedBg > 0 && BACKGROUNDS[selectedBg]?.value !== "none" ? effectiveTextColor : textColor,
+            color: effectiveTextColor,
             textAlign,
             lineHeight: 1.6,
             ...bgStyle,
