@@ -7,11 +7,10 @@ import {
   MapPin, X, ChevronRight, Play,
   Edit3, Trash2, Flag, EyeOff, Copy,
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
-  Users, Plus,
+  Users, Building2, GraduationCap,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { timeAgo, formatCount } from "@/lib/utils";
-import { roleBadgeColors, roleLabels } from "@/lib/types";
 import type { User, SocialPost, Comment, Property } from "@/lib/types";
 
 // ─── Users ─────────────────────────────────────────────────────────────────
@@ -455,7 +454,7 @@ const VIDEO_POSTS: SocialPost[] = [
   },
 ];
 
-// CTAs custom (apporteurs / recherche / profil) par id de post.
+// CTAs custom par id de post.
 type CustomCTA = { href: string; title: string; subtitle: string; icon: "users" | "search" | "user" | "calendar" };
 const CUSTOM_CTA: Record<string, CustomCTA> = {
   p6: { href: "/apporteurs", title: "Rejoindre le réseau d'apporteurs", subtitle: "Accès aux deals off-market", icon: "users" },
@@ -477,13 +476,12 @@ const EVENTS_BY_POST: Record<string, EventCTA> = {
 
 // ─── Misc ──────────────────────────────────────────────────────────────────
 
-const FONDATEUR_NUMBERS: Record<string, number> = { "Léo": 1, "Sophie": 2, "Marc": 3, "Amira": 4, "Thomas": 5 };
 const CURRENT_USER_ID = "u1";
 const CURRENT_USER = U_SOPHIE;
 const formatEventDate = (iso: string) =>
   new Date(iso).toLocaleDateString("fr-CH", { day: "numeric", month: "short", year: "numeric" });
 
-// Render @mentions et #hashtags dans le contenu.
+// Render @mentions et #hashtags.
 function renderContent(content: string) {
   return content.split(/([@#]\S+)/g).map((part, i) => {
     if (part.startsWith("@")) {
@@ -502,13 +500,93 @@ function renderContent(content: string) {
   });
 }
 
-// ─── ReelCard ──────────────────────────────────────────────────────────────
+// ─── Media (VideoPlayer / ImageView) ───────────────────────────────────────
 
-type ReelCardProps = {
+type MediaProps = { src: string; muted: boolean; onToggleMute: () => void };
+
+function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [paused, setPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.intersectionRatio >= 0.6) {
+          v.currentTime = 0;
+          v.play().then(() => setPaused(false)).catch(() => {});
+        } else {
+          v.pause();
+        }
+      },
+      { threshold: [0, 0.3, 0.6, 0.8] }
+    );
+    obs.observe(v);
+    return () => obs.disconnect();
+  }, []);
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) {
+      v.play().then(() => setPaused(false)).catch(() => {});
+    } else {
+      v.pause();
+      setPaused(true);
+    }
+  };
+
+  return (
+    <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
+      <video
+        ref={videoRef}
+        src={src}
+        muted={muted}
+        loop
+        playsInline
+        preload="metadata"
+        className="absolute inset-0 w-full h-full object-cover cursor-pointer"
+        onClick={togglePlay}
+        onTimeUpdate={(e) => {
+          const v = e.currentTarget;
+          if (v.duration > 0) setProgress((v.currentTime / v.duration) * 100);
+        }}
+      />
+      {paused && (
+        <button
+          onClick={togglePlay}
+          className="absolute inset-0 flex items-center justify-center bg-black/25"
+          aria-label="Lire la vidéo"
+        >
+          <div className="w-16 h-16 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center ring-1 ring-white/30">
+            <Play className="w-7 h-7 text-white fill-white" />
+          </div>
+        </button>
+      )}
+      <button
+        onClick={(e) => { e.stopPropagation(); onToggleMute(); }}
+        className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-black/55 backdrop-blur-sm flex items-center justify-center hover:bg-black/75 transition-colors z-10"
+        aria-label={muted ? "Activer le son" : "Couper le son"}
+      >
+        {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
+      </button>
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/15">
+        <div className="h-full bg-[#1e9df1]" style={{ width: `${progress}%` }} />
+      </div>
+    </div>
+  );
+}
+
+// ─── PostCard ──────────────────────────────────────────────────────────────
+
+type PostCardProps = {
   post: SocialPost;
-  active: boolean;
   liked: boolean;
   saved: boolean;
+  muted: boolean;
+  onToggleMute: () => void;
   onToggleLike: () => void;
   onToggleSave: () => void;
   onOpenComments: () => void;
@@ -522,226 +600,252 @@ type ReelCardProps = {
   onSignal: () => void;
 };
 
-function ReelCard({
-  post, active, liked, saved,
+function PostCard({
+  post, liked, saved, muted, onToggleMute,
   onToggleLike, onToggleSave, onOpenComments, onOpenShare, onOpenMore,
   shareOpen, moreOpen, closeMenus, onEdit, onDelete, onSignal,
-}: ReelCardProps) {
-  const { formatPrice, toggleFollow, isFollowing } = useApp();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [muted, setMuted] = useState(true);
-  const [paused, setPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
+}: PostCardProps) {
+  const { formatPrice } = useApp();
   const [captionExpanded, setCaptionExpanded] = useState(false);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (active) {
-      setPaused(false);
-      v.currentTime = 0;
-      v.play().catch(() => {});
-    } else {
-      v.pause();
-      setProgress(0);
-    }
-  }, [active]);
-
-  const togglePlay = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (v.paused) {
-      v.play().then(() => setPaused(false)).catch(() => {});
-    } else {
-      v.pause();
-      setPaused(true);
-    }
-  };
 
   const cta = CUSTOM_CTA[post.id];
   const event = EVENTS_BY_POST[post.id];
   const isOwn = post.author.id === CURRENT_USER_ID;
-  const showFollowDot = !isOwn && !isFollowing(post.author.id);
-
-  // CTA pill : property > formation > event > custom
-  let ctaHref: string | null = null;
-  let ctaTitle = "";
-  let ctaSub = "";
-  let CtaIcon = ChevronRight;
-  if (post.property) {
-    ctaHref = `/explorer/${post.property.id}`;
-    ctaTitle = post.property.title;
-    ctaSub = `${formatPrice(post.property.price, post.property.currency)} · ${post.property.bedrooms} ch · ${post.property.area} m²`;
-    CtaIcon = Search;
-  } else if (post.formation) {
-    ctaHref = `/formations/${post.formation.id}`;
-    ctaTitle = post.formation.title;
-    ctaSub = `Formation · ${formatPrice(post.formation.price)} · ${post.formation.students} étudiants`;
-    CtaIcon = UserIcon;
-  } else if (event) {
-    ctaHref = `/evenements/${event.id}`;
-    ctaTitle = event.titre;
-    ctaSub = `${event.type} · ${formatEventDate(event.date)} · ${event.lieu}`;
-    CtaIcon = Calendar;
-  } else if (cta) {
-    ctaHref = cta.href;
-    ctaTitle = cta.title;
-    ctaSub = cta.subtitle;
-    CtaIcon = cta.icon === "users" ? Users : cta.icon === "search" ? Search : cta.icon === "calendar" ? Calendar : UserIcon;
-  }
+  const isVideo = post.media[0]?.endsWith(".mp4");
+  const handle = post.author.firstName.toLowerCase();
 
   return (
     <article
       onClick={closeMenus}
-      className="h-full w-full snap-start snap-always relative bg-black overflow-hidden md:rounded-3xl md:mb-3 first:md:mt-0"
+      className="w-full max-w-[540px] bg-[var(--card)] rounded-3xl border border-[var(--card-border)] shadow-xl shadow-black/25 overflow-hidden"
     >
-      {/* Video */}
-      <video
-        ref={videoRef}
-        src={post.media[0]}
-        muted={muted}
-        loop
-        playsInline
-        preload="metadata"
-        className="absolute inset-0 w-full h-full object-contain"
-        onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-        onTimeUpdate={(e) => {
-          const v = e.currentTarget;
-          if (v.duration > 0) setProgress((v.currentTime / v.duration) * 100);
-        }}
-      />
-
-      {/* Pause overlay */}
-      {paused && (
-        <button
-          onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-          className="absolute inset-0 flex items-center justify-center bg-black/20 z-[5]"
-          aria-label="Lire la vidéo"
-        >
-          <div className="w-20 h-20 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center ring-1 ring-white/30">
-            <Play className="w-9 h-9 text-white fill-white" />
-          </div>
-        </button>
-      )}
-
-      {/* Top gradient */}
-      <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-none" />
-
-      {/* More menu (top right) */}
-      <div className="absolute top-3 right-3 z-20">
-        <button
-          onClick={(e) => { e.stopPropagation(); onOpenMore(); }}
-          className="w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors"
-          aria-label="Plus d'options"
-        >
-          <MoreHorizontal className="w-5 h-5 text-white" />
-        </button>
-        {moreOpen && (
-          <div
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3 p-4 pb-3">
+        <Link href={`/profil/${post.author.id}`} onClick={(e) => e.stopPropagation()} className="shrink-0">
+          <img
+            src={post.author.avatar}
+            alt={post.author.firstName}
+            className="w-11 h-11 rounded-full object-cover hover:opacity-80 transition-opacity"
+          />
+        </Link>
+        <div className="flex-1 min-w-0">
+          <Link
+            href={`/profil/${post.author.id}`}
             onClick={(e) => e.stopPropagation()}
-            className="absolute right-0 top-11 w-48 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl animate-scale-in overflow-hidden"
+            className="text-[15px] font-semibold text-[var(--foreground)] hover:underline truncate block leading-tight"
           >
-            {isOwn ? (
+            {post.author.firstName} {post.author.lastName}
+          </Link>
+          <div className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] mt-0.5">
+            <span>@{handle}</span>
+            {post.location && (
               <>
-                <button
-                  onClick={onEdit}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-                >
-                  <Edit3 className="w-4 h-4" /> Modifier
-                </button>
-                <button
-                  onClick={onDelete}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-[var(--hover-bg)] transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" /> Supprimer
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={onSignal}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-                >
-                  <Flag className="w-4 h-4" /> Signaler
-                </button>
-                <button
-                  onClick={closeMenus}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-                >
-                  <EyeOff className="w-4 h-4" /> Ne plus afficher
-                </button>
+                <span aria-hidden>·</span>
+                <MapPin className="w-3 h-3" />
+                <span className="truncate max-w-[160px]">{post.location}</span>
               </>
             )}
+            <span aria-hidden>·</span>
+            <span>{timeAgo(post.createdAt)}</span>
           </div>
-        )}
-      </div>
-
-      {/* Bottom gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-2/5 bg-gradient-to-t from-black/85 via-black/45 to-transparent pointer-events-none" />
-
-      {/* Right action column */}
-      <div className="absolute right-3 bottom-5 z-10 flex flex-col items-center gap-4">
-        {/* Avatar + follow dot */}
-        <div className="relative">
-          <Link href={`/profil/${post.author.id}`} onClick={(e) => e.stopPropagation()}>
-            <img
-              src={post.author.avatar}
-              alt={post.author.firstName}
-              className="w-11 h-11 rounded-full object-cover ring-2 ring-white"
-            />
-          </Link>
-          {showFollowDot && (
-            <button
-              onClick={(e) => { e.stopPropagation(); toggleFollow(post.author.id); }}
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-[#1e9df1] flex items-center justify-center ring-2 ring-black hover:scale-110 transition-transform"
-              aria-label="Suivre"
+        </div>
+        {/* More menu */}
+        <div className="relative shrink-0">
+          <button
+            onClick={(e) => { e.stopPropagation(); onOpenMore(); }}
+            className="p-2 -mr-1 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors"
+            aria-label="Plus d'options"
+          >
+            <MoreHorizontal className="w-5 h-5" />
+          </button>
+          {moreOpen && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="absolute right-0 top-10 w-48 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden"
             >
-              <Plus className="w-3 h-3 text-white" />
-            </button>
+              {isOwn ? (
+                <>
+                  <button onClick={onEdit} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+                    <Edit3 className="w-4 h-4" /> Modifier
+                  </button>
+                  <button onClick={onDelete} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-[var(--hover-bg)] transition-colors">
+                    <Trash2 className="w-4 h-4" /> Supprimer
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button onClick={onSignal} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+                    <Flag className="w-4 h-4" /> Signaler
+                  </button>
+                  <button onClick={closeMenus} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+                    <EyeOff className="w-4 h-4" /> Ne plus afficher
+                  </button>
+                </>
+              )}
+            </div>
           )}
         </div>
+      </div>
 
-        {/* Like */}
+      {/* Media */}
+      {post.media[0] && (
+        <div className="px-4">
+          {isVideo ? (
+            <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
+          ) : (
+            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
+              <img src={post.media[0]} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Caption */}
+      {post.content && (
+        <div className="px-4 pt-3">
+          <p
+            onClick={(e) => { e.stopPropagation(); setCaptionExpanded((v) => !v); }}
+            className={`text-[14px] text-[var(--foreground)] whitespace-pre-wrap leading-relaxed cursor-pointer ${
+              captionExpanded ? "" : "line-clamp-3"
+            }`}
+          >
+            {renderContent(post.content)}
+          </p>
+        </div>
+      )}
+
+      {/* Property CTA */}
+      {post.property && (
+        <Link
+          href={`/explorer/${post.property.id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="mx-4 mt-3 flex gap-3 p-3 rounded-2xl border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition-colors"
+        >
+          <img src={post.property.images[0]} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5">
+              <Building2 className="w-3.5 h-3.5 text-[#1e9df1]" />
+              <span className="text-[10px] uppercase tracking-wider text-[#1e9df1] font-semibold">Bien</span>
+            </div>
+            <p className="text-sm font-medium text-[var(--foreground)] truncate">{post.property.title}</p>
+            <p className="text-sm font-bold text-[#1e9df1] mt-0.5 tabular-nums">
+              {formatPrice(post.property.price, post.property.currency)}
+            </p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              {post.property.bedrooms} ch · {post.property.area} m²
+              {post.property.transactionType === "vente" && post.property.analytics &&
+                ` · ${post.property.analytics.rendementBrut.toFixed(1)} % brut`}
+            </p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
+        </Link>
+      )}
+
+      {/* Formation CTA */}
+      {post.formation && (
+        <Link
+          href={`/formations/${post.formation.id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="mx-4 mt-3 flex gap-3 p-3 rounded-2xl border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition-colors"
+        >
+          <img src={post.formation.thumbnail} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5">
+              <GraduationCap className="w-3.5 h-3.5 text-[#1e9df1]" />
+              <span className="text-[10px] uppercase tracking-wider text-[#1e9df1] font-semibold">Formation</span>
+            </div>
+            <p className="text-sm font-medium text-[var(--foreground)] truncate">{post.formation.title}</p>
+            <p className="text-sm font-bold text-[#1e9df1] mt-0.5 tabular-nums">
+              {formatPrice(post.formation.price)}
+            </p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              {post.formation.instructor} · {post.formation.students} étudiants
+            </p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
+        </Link>
+      )}
+
+      {/* Event CTA */}
+      {event && (
+        <Link
+          href={`/evenements/${event.id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="mx-4 mt-3 flex gap-3 p-3 rounded-2xl border border-[var(--card-border)] hover:border-violet-400/40 transition-colors"
+        >
+          <img src={event.thumbnail} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5">
+              <Calendar className="w-3.5 h-3.5 text-violet-300" />
+              <span className="text-[10px] uppercase tracking-wider text-violet-300 font-semibold">Événement · {event.type}</span>
+            </div>
+            <p className="text-sm font-medium text-[var(--foreground)] truncate">{event.titre}</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              {formatEventDate(event.date)} · {event.heure} · {event.lieu}
+            </p>
+            <p className="text-sm font-bold text-[#1e9df1] mt-0.5 tabular-nums">
+              {event.prix === 0 ? "Gratuit" : formatPrice(event.prix)}
+            </p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
+        </Link>
+      )}
+
+      {/* Custom CTA */}
+      {cta && (
+        <Link
+          href={cta.href}
+          onClick={(e) => e.stopPropagation()}
+          className="mx-4 mt-3 flex items-center gap-3 p-3 rounded-2xl border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition-colors"
+        >
+          <div className="w-12 h-12 rounded-xl bg-[#1e9df1]/10 flex items-center justify-center shrink-0">
+            {cta.icon === "users" ? <Users className="w-5 h-5 text-[#1e9df1]" />
+              : cta.icon === "search" ? <Search className="w-5 h-5 text-[#1e9df1]" />
+              : cta.icon === "calendar" ? <Calendar className="w-5 h-5 text-[#1e9df1]" />
+              : <UserIcon className="w-5 h-5 text-[#1e9df1]" />}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-[var(--foreground)] truncate">{cta.title}</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">{cta.subtitle}</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
+        </Link>
+      )}
+
+      {/* Actions */}
+      <div className="mt-3 flex items-center gap-1 px-3 py-2 border-t border-[var(--card-border)]">
         <button
           onClick={(e) => { e.stopPropagation(); onToggleLike(); }}
-          className="flex flex-col items-center gap-1"
+          className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
         >
-          <div className="w-11 h-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors">
-            <Heart className={`w-6 h-6 transition-colors ${liked ? "fill-rose-500 text-rose-500" : "text-white"}`} />
-          </div>
-          <span className="text-[11px] font-semibold text-white tabular-nums drop-shadow">
+          <Heart className={`w-5 h-5 transition-colors ${liked ? "fill-rose-500 text-rose-500" : "text-[var(--text-muted)]"}`} />
+          <span className={`text-sm font-medium tabular-nums max-sm:hidden ${liked ? "text-rose-500" : "text-[var(--foreground)]/85"}`}>
             {formatCount(post.likes)}
           </span>
         </button>
 
-        {/* Comment */}
         <button
           onClick={(e) => { e.stopPropagation(); onOpenComments(); }}
-          className="flex flex-col items-center gap-1"
+          className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
         >
-          <div className="w-11 h-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors">
-            <MessageCircle className="w-6 h-6 text-white" />
-          </div>
-          <span className="text-[11px] font-semibold text-white tabular-nums drop-shadow">
+          <MessageCircle className="w-5 h-5 text-[var(--text-muted)]" />
+          <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85">
             {formatCount(post.comments.length)}
           </span>
         </button>
 
-        {/* Share */}
-        <div className="relative">
+        <div className="relative grow flex">
           <button
             onClick={(e) => { e.stopPropagation(); onOpenShare(); }}
-            className="flex flex-col items-center gap-1"
+            className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
           >
-            <div className="w-11 h-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors">
-              <Share2 className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-[11px] font-semibold text-white drop-shadow">Partager</span>
+            <Share2 className="w-5 h-5 text-[var(--text-muted)]" />
+            <span className="text-sm font-medium max-sm:hidden text-[var(--foreground)]/85">Partager</span>
           </button>
           {shareOpen && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="absolute right-12 bottom-0 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl animate-scale-in overflow-hidden"
+              className="absolute left-0 bottom-12 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden"
             >
               {[
                 { label: "Republier", icon: Share2 },
@@ -761,87 +865,15 @@ function ReelCard({
           )}
         </div>
 
-        {/* Save */}
         <button
           onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
-          className="flex flex-col items-center gap-1"
+          className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
         >
-          <div className="w-11 h-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors">
-            <Bookmark className={`w-6 h-6 transition-colors ${saved ? "fill-[#1e9df1] text-[#1e9df1]" : "text-white"}`} />
-          </div>
-          <span className="text-[11px] font-semibold text-white drop-shadow">
+          <Bookmark className={`w-5 h-5 transition-colors ${saved ? "fill-[#1e9df1] text-[#1e9df1]" : "text-[var(--text-muted)]"}`} />
+          <span className={`text-sm font-medium max-sm:hidden ${saved ? "text-[#1e9df1]" : "text-[var(--foreground)]/85"}`}>
             {saved ? "Enregistré" : "Enregistrer"}
           </span>
         </button>
-
-        {/* Mute */}
-        <button
-          onClick={(e) => { e.stopPropagation(); setMuted((m) => !m); }}
-          className="w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors"
-          aria-label={muted ? "Activer le son" : "Couper le son"}
-        >
-          {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
-        </button>
-      </div>
-
-      {/* Bottom-left caption */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="absolute left-4 right-20 bottom-5 z-10 text-white space-y-2"
-      >
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <Link
-            href={`/profil/${post.author.id}`}
-            className="text-sm font-bold hover:underline drop-shadow"
-          >
-            {post.author.firstName} {post.author.lastName}
-          </Link>
-          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${roleBadgeColors[post.author.activeRole]}`}>
-            {roleLabels[post.author.activeRole]}
-          </span>
-          {FONDATEUR_NUMBERS[post.author.firstName] && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold tracking-wide bg-amber-400/15 text-amber-300 ring-1 ring-amber-400/30">
-              #{FONDATEUR_NUMBERS[post.author.firstName]}
-            </span>
-          )}
-        </div>
-
-        <p
-          onClick={() => setCaptionExpanded((v) => !v)}
-          className={`text-[13px] leading-relaxed whitespace-pre-wrap drop-shadow cursor-pointer ${
-            captionExpanded ? "" : "line-clamp-3"
-          }`}
-        >
-          {renderContent(post.content)}
-        </p>
-
-        {post.location && (
-          <p className="text-[11px] text-white/80 flex items-center gap-1 drop-shadow">
-            <MapPin className="w-3 h-3" />
-            <span>{post.location}</span>
-            <span>·</span>
-            <span>{timeAgo(post.createdAt)}</span>
-          </p>
-        )}
-
-        {ctaHref && (
-          <Link
-            href={ctaHref}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/25 hover:bg-white/20 transition-colors max-w-full"
-          >
-            <CtaIcon className="w-4 h-4 text-white shrink-0" />
-            <span className="text-xs text-white min-w-0">
-              <span className="font-semibold block truncate">{ctaTitle}</span>
-              <span className="text-white/75 block truncate">{ctaSub}</span>
-            </span>
-            <ChevronRight className="w-3.5 h-3.5 text-white/70 shrink-0" />
-          </Link>
-        )}
-      </div>
-
-      {/* Progress bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/20 z-10">
-        <div className="h-full bg-[#1e9df1]" style={{ width: `${progress}%` }} />
       </div>
     </article>
   );
@@ -854,8 +886,8 @@ export default function FeedPage() {
   const [posts, setPosts] = useState<SocialPost[]>(VIDEO_POSTS);
   const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis">("pour-vous");
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [activeIdx, setActiveIdx] = useState(0);
+  // Persiste l'état mute entre les posts (le user ne doit pas le réajuster à chaque card).
+  const [muted, setMuted] = useState(true);
 
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set());
@@ -868,37 +900,17 @@ export default function FeedPage() {
   const [commentInput, setCommentInput] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const filteredPosts = useMemo(() => {
     if (activeTab === "suivis") return posts.filter((p) => isFollowing(p.author.id));
     return posts;
   }, [posts, activeTab, isFollowing]);
 
-  // Reset active index when filter changes.
+  // Reset scroll position when tab changes.
   useEffect(() => {
-    setActiveIdx(0);
     if (containerRef.current) containerRef.current.scrollTop = 0;
   }, [activeTab]);
-
-  // Track active index on scroll.
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const h = container.clientHeight;
-        if (h === 0) return;
-        const idx = Math.round(container.scrollTop / h);
-        setActiveIdx((prev) => (prev === idx ? prev : idx));
-      });
-    };
-    container.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      container.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
 
   const toggleLike = (postId: string) => {
     const wasLiked = likedPosts.has(postId);
@@ -981,7 +993,7 @@ export default function FeedPage() {
 
       {/* Tabs */}
       <div className="px-4 pt-3 pb-2 md:px-6">
-        <div className="max-w-[480px] mx-auto flex gap-1 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+        <div className="max-w-[540px] mx-auto flex gap-1 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
           {(["pour-vous", "suivis"] as const).map((tab) => (
             <button
               key={tab}
@@ -998,28 +1010,30 @@ export default function FeedPage() {
         </div>
       </div>
 
-      {/* Reels container — chrome : banner ~28 + header 64 + tabs 56 + mobile-nav 64 = 212px mobile / 148px desktop. */}
-      <div className="h-[calc(100svh-220px)] md:h-[calc(100svh-160px)] flex justify-center">
+      {/* Snap-scroll container — 1 post par viewport. Chrome : banner 28 + header 64 + tabs 56 + mobile-nav 64 = 212px mobile / 148px desktop. */}
+      <div
+        ref={containerRef}
+        className="h-[calc(100svh-220px)] md:h-[calc(100svh-160px)] snap-y snap-mandatory overflow-y-scroll no-scrollbar"
+      >
         {filteredPosts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center px-6">
+          <div className="flex flex-col items-center justify-center text-center h-full px-6">
             <Users className="w-12 h-12 text-[var(--text-muted)] mb-3" />
             <p className="text-sm text-[var(--text-secondary)] max-w-xs">
               Vous n'êtes abonné à personne pour le moment. Abonnez-vous à des utilisateurs pour voir leurs publications ici.
             </p>
           </div>
         ) : (
-          <div
-            ref={containerRef}
-            className="w-full md:max-w-[480px] h-full snap-y snap-mandatory overflow-y-scroll no-scrollbar"
-            style={{ scrollSnapStop: "always" }}
-          >
-            {filteredPosts.map((post, idx) => (
-              <ReelCard
-                key={post.id}
+          filteredPosts.map((post) => (
+            <div
+              key={post.id}
+              className="snap-center snap-always min-h-full flex items-center justify-center px-4 py-4"
+            >
+              <PostCard
                 post={post}
-                active={idx === activeIdx}
                 liked={likedPosts.has(post.id)}
                 saved={savedPosts.has(post.id)}
+                muted={muted}
+                onToggleMute={() => setMuted((m) => !m)}
                 onToggleLike={() => toggleLike(post.id)}
                 onToggleSave={() => toggleSave(post.id)}
                 onOpenComments={() => setCommentsModalPost(post.id)}
@@ -1045,8 +1059,8 @@ export default function FeedPage() {
                   showToast("Publication signalée");
                 }}
               />
-            ))}
-          </div>
+            </div>
+          ))
         )}
       </div>
 
@@ -1078,17 +1092,10 @@ export default function FeedPage() {
               )}
               {commentsForPost.comments.map((c) => (
                 <div key={c.id} className="flex gap-3">
-                  <img
-                    src={c.author.avatar}
-                    alt=""
-                    className="w-9 h-9 rounded-full object-cover shrink-0"
-                  />
+                  <img src={c.author.avatar} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <Link
-                        href={`/profil/${c.author.id}`}
-                        className="text-sm font-semibold text-[var(--foreground)] hover:underline"
-                      >
+                      <Link href={`/profil/${c.author.id}`} className="text-sm font-semibold text-[var(--foreground)] hover:underline">
                         {c.author.firstName}
                       </Link>
                       <span className="text-xs text-[var(--text-muted)]">{timeAgo(c.createdAt)}</span>
@@ -1122,11 +1129,7 @@ export default function FeedPage() {
                 </div>
               )}
               <div className="flex gap-2 items-center">
-                <img
-                  src={CURRENT_USER.avatar}
-                  alt=""
-                  className="w-8 h-8 rounded-full object-cover shrink-0"
-                />
+                <img src={CURRENT_USER.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
                 <input
                   type="text"
                   value={commentInput}
@@ -1152,10 +1155,7 @@ export default function FeedPage() {
       {/* Edit modal */}
       {editModalPost && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center px-4">
-          <div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-            onClick={() => setEditModalPost(null)}
-          />
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setEditModalPost(null)} />
           <div className="relative w-full max-w-[500px] rounded-2xl bg-[var(--card)] shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--card-border)]">
               <h3 className="text-sm font-semibold">Modifier la publication</h3>
