@@ -4,8 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
-  Sun,
-  Moon,
   Bell,
   Menu,
   ChevronDown,
@@ -16,7 +14,6 @@ import {
   LogOut,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { useTheme } from "@/lib/theme-context";
 import { useLanguage, type Language } from "@/lib/i18n";
 import { roleLabels, roleBadgeColors } from "@/lib/types";
 import type { Currency, Role } from "@/lib/types";
@@ -45,7 +42,6 @@ interface HeaderProps {
 export function Header({ onMenuToggle }: HeaderProps) {
   const router = useRouter();
   const { activeRole, setActiveRole, availableRoles, currency, setCurrency } = useApp();
-  const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -229,17 +225,8 @@ export function Header({ onMenuToggle }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-1 md:gap-2">
-        {/* Theme toggle */}
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-lg transition-colors cursor-pointer"
-          style={{ color: "var(--text-secondary)" }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          title={theme === "dark" ? "Mode clair" : "Mode sombre"}
-        >
-          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
+        {/* Toggle sombre/clair retiré : la démo est forcée en mode sombre,
+            le mode clair n'a pas été conçu pour aller jusqu'au bout. */}
 
         {/* Language selector */}
         <div className="relative hidden md:block" data-dropdown>

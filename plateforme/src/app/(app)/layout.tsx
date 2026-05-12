@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { AppProvider } from "@/lib/context";
-import { ThemeProvider } from "@/lib/theme-context";
 import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/components/ui/toast";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -15,10 +14,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <AppProvider>
-      <ThemeProvider>
-        <LanguageProvider>
-          <ToastProvider>
-            <div className="flex min-h-screen">
+      <LanguageProvider>
+        <ToastProvider>
+          <div className="flex min-h-screen">
               {/* Sidebar - desktop */}
               <div className="hidden md:block">
                 <Sidebar
@@ -62,12 +60,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </main>
               </div>
 
-              {/* Mobile bottom nav */}
-              <MobileNav />
-            </div>
-          </ToastProvider>
-        </LanguageProvider>
-      </ThemeProvider>
+          {/* Mobile bottom nav */}
+          <MobileNav />
+        </div>
+        </ToastProvider>
+      </LanguageProvider>
     </AppProvider>
   );
 }
