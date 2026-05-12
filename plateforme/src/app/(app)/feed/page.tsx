@@ -504,10 +504,19 @@ function renderContent(content: string) {
 
 type MediaProps = { src: string; muted: boolean; onToggleMute: () => void };
 
+// Clamp l'aspect ratio entre 0.75 (≈ 4:5 portrait, ~720 px tall en max-width 540)
+// et 16/9 (≈ 1.78 landscape, ~304 px tall). Évite les vidéos ultra-verticales
+// 9:16 qui ne tiendraient pas dans un viewport sans casser le snap.
+const ASPECT_MIN = 0.75;
+const ASPECT_MAX = 16 / 9;
+const clampAspect = (r: number) => Math.max(ASPECT_MIN, Math.min(r, ASPECT_MAX));
+
 function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
+  // Aspect ratio natif détecté à onLoadedMetadata, fallback 16:9.
+  const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -539,7 +548,10 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
   };
 
   return (
-    <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
+    <div
+      className="relative bg-black rounded-2xl overflow-hidden"
+      style={{ aspectRatio }}
+    >
       <video
         ref={videoRef}
         src={src}
@@ -549,6 +561,12 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
         preload="metadata"
         className="absolute inset-0 w-full h-full object-cover cursor-pointer"
         onClick={togglePlay}
+        onLoadedMetadata={(e) => {
+          const v = e.currentTarget;
+          if (v.videoWidth > 0 && v.videoHeight > 0) {
+            setAspectRatio(clampAspect(v.videoWidth / v.videoHeight));
+          }
+        }}
         onTimeUpdate={(e) => {
           const v = e.currentTarget;
           if (v.duration > 0) setProgress((v.currentTime / v.duration) * 100);
@@ -575,6 +593,29 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
       <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/15">
         <div className="h-full bg-[#1e9df1]" style={{ width: `${progress}%` }} />
       </div>
+    </div>
+  );
+}
+
+function ImageView({ src }: { src: string }) {
+  // Aspect ratio natif lu à onLoad, clampé identique aux vidéos.
+  const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
+  return (
+    <div
+      className="relative bg-black rounded-2xl overflow-hidden"
+      style={{ aspectRatio }}
+    >
+      <img
+        src={src}
+        alt=""
+        onLoad={(e) => {
+          const img = e.currentTarget;
+          if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+            setAspectRatio(clampAspect(img.naturalWidth / img.naturalHeight));
+          }
+        }}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
     </div>
   );
 }
@@ -693,9 +734,7 @@ function PostCard({
           {isVideo ? (
             <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
           ) : (
-            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
-              <img src={post.media[0]} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            </div>
+            <ImageView src={post.media[0]} />
           )}
         </div>
       )}
