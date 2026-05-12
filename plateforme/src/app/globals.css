@@ -509,3 +509,12 @@ body {
     animation-delay: 0s !important;
   }
 }
+
+/* Mode Reels du feed : masque la scrollbar sans casser le scroll snap. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

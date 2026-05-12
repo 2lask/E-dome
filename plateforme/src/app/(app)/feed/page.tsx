@@ -4,10 +4,10 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import {
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send,
-  MapPin, X, ChevronUp,
-  Edit3, Trash2, Flag, EyeOff, Copy, Play,
+  MapPin, X, ChevronRight, Play,
+  Edit3, Trash2, Flag, EyeOff, Copy,
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
-  TrendingUp, Users, UserPlus,
+  Users, Plus,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { timeAgo, formatCount } from "@/lib/utils";
@@ -71,8 +71,6 @@ const U_YASMIN: User = {
   stats: { followers: 6800, following: 180, properties: 0, reviews: 145, rating: 4.9, transactions: 92, revenue: 4_800_000 },
   bio: "Apporteuse d'affaires — off-market Dubaï & Émirats.",
 };
-
-const ALL_USERS: User[] = [U_LEO, U_SOPHIE, U_MARC, U_AMIRA, U_THOMAS, U_AMINA, U_YASMIN];
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -457,7 +455,7 @@ const VIDEO_POSTS: SocialPost[] = [
   },
 ];
 
-// Custom CTA (apporteurs / recherche / profil) par id de post
+// CTAs custom (apporteurs / recherche / profil) par id de post.
 type CustomCTA = { href: string; title: string; subtitle: string; icon: "users" | "search" | "user" | "calendar" };
 const CUSTOM_CTA: Record<string, CustomCTA> = {
   p6: { href: "/apporteurs", title: "Rejoindre le réseau d'apporteurs", subtitle: "Accès aux deals off-market", icon: "users" },
@@ -466,7 +464,7 @@ const CUSTOM_CTA: Record<string, CustomCTA> = {
   p25: { href: "/recherche?q=marrakech", title: "Découvrir le Maroc", subtitle: "Riads & investissements patrimoine", icon: "search" },
 };
 
-// Events (lookup par id de post)
+// Événements (lookup par id de post).
 type EventCTA = { id: string; titre: string; type: string; date: string; heure: string; lieu: string; prix: number; thumbnail: string };
 const EVENTS_BY_POST: Record<string, EventCTA> = {
   p9: { id: "e1", titre: "Salon de l'immobilier Suisse 2026", type: "Conférence", date: "2026-05-15", heure: "09:00", lieu: "Palexpo, Genève", prix: 45, thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop" },
@@ -479,126 +477,427 @@ const EVENTS_BY_POST: Record<string, EventCTA> = {
 
 // ─── Misc ──────────────────────────────────────────────────────────────────
 
-const TRENDING_HASHTAGS = [
-  { tag: "#immobilier", count: 12400 },
-  { tag: "#investissement", count: 8900 },
-  { tag: "#luxe", count: 7200 },
-  { tag: "#dubai", count: 5800 },
-  { tag: "#marrakech", count: 4300 },
-];
-
 const FONDATEUR_NUMBERS: Record<string, number> = { "Léo": 1, "Sophie": 2, "Marc": 3, "Amira": 4, "Thomas": 5 };
 const CURRENT_USER_ID = "u1";
+const CURRENT_USER = U_SOPHIE;
 const formatEventDate = (iso: string) =>
   new Date(iso).toLocaleDateString("fr-CH", { day: "numeric", month: "short", year: "numeric" });
 
-// ─── Inline video player ───────────────────────────────────────────────────
+// Render @mentions et #hashtags dans le contenu.
+function renderContent(content: string) {
+  return content.split(/([@#]\S+)/g).map((part, i) => {
+    if (part.startsWith("@")) {
+      return (
+        <span key={i} className="text-[#1e9df1] cursor-pointer hover:underline">{part}</span>
+      );
+    }
+    if (part.startsWith("#")) {
+      return (
+        <Link key={i} href={`/recherche?q=${encodeURIComponent(part)}`} className="text-[#1e9df1] hover:underline">
+          {part}
+        </Link>
+      );
+    }
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+}
 
-function VideoPlayer({ src }: { src: string }) {
+// ─── ReelCard ──────────────────────────────────────────────────────────────
+
+type ReelCardProps = {
+  post: SocialPost;
+  active: boolean;
+  liked: boolean;
+  saved: boolean;
+  onToggleLike: () => void;
+  onToggleSave: () => void;
+  onOpenComments: () => void;
+  onOpenShare: () => void;
+  onOpenMore: () => void;
+  shareOpen: boolean;
+  moreOpen: boolean;
+  closeMenus: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onSignal: () => void;
+};
+
+function ReelCard({
+  post, active, liked, saved,
+  onToggleLike, onToggleSave, onOpenComments, onOpenShare, onOpenMore,
+  shareOpen, moreOpen, closeMenus, onEdit, onDelete, onSignal,
+}: ReelCardProps) {
+  const { formatPrice, toggleFollow, isFollowing } = useApp();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
-  const [playing, setPlaying] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [captionExpanded, setCaptionExpanded] = useState(false);
 
   useEffect(() => {
-    const vid = videoRef.current;
-    if (!vid) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-          vid.play().then(() => setPlaying(true)).catch(() => {});
-        } else {
-          vid.pause();
-          setPlaying(false);
-        }
-      },
-      { threshold: [0, 0.5, 0.75] }
-    );
-    obs.observe(vid);
-    return () => obs.disconnect();
-  }, []);
+    const v = videoRef.current;
+    if (!v) return;
+    if (active) {
+      setPaused(false);
+      v.currentTime = 0;
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+      setProgress(0);
+    }
+  }, [active]);
 
   const togglePlay = () => {
-    const vid = videoRef.current;
-    if (!vid) return;
-    if (vid.paused) {
-      vid.play().then(() => setPlaying(true)).catch(() => {});
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) {
+      v.play().then(() => setPaused(false)).catch(() => {});
     } else {
-      vid.pause();
-      setPlaying(false);
+      v.pause();
+      setPaused(true);
     }
   };
 
+  const cta = CUSTOM_CTA[post.id];
+  const event = EVENTS_BY_POST[post.id];
+  const isOwn = post.author.id === CURRENT_USER_ID;
+  const showFollowDot = !isOwn && !isFollowing(post.author.id);
+
+  // CTA pill : property > formation > event > custom
+  let ctaHref: string | null = null;
+  let ctaTitle = "";
+  let ctaSub = "";
+  let CtaIcon = ChevronRight;
+  if (post.property) {
+    ctaHref = `/explorer/${post.property.id}`;
+    ctaTitle = post.property.title;
+    ctaSub = `${formatPrice(post.property.price, post.property.currency)} · ${post.property.bedrooms} ch · ${post.property.area} m²`;
+    CtaIcon = Search;
+  } else if (post.formation) {
+    ctaHref = `/formations/${post.formation.id}`;
+    ctaTitle = post.formation.title;
+    ctaSub = `Formation · ${formatPrice(post.formation.price)} · ${post.formation.students} étudiants`;
+    CtaIcon = UserIcon;
+  } else if (event) {
+    ctaHref = `/evenements/${event.id}`;
+    ctaTitle = event.titre;
+    ctaSub = `${event.type} · ${formatEventDate(event.date)} · ${event.lieu}`;
+    CtaIcon = Calendar;
+  } else if (cta) {
+    ctaHref = cta.href;
+    ctaTitle = cta.title;
+    ctaSub = cta.subtitle;
+    CtaIcon = cta.icon === "users" ? Users : cta.icon === "search" ? Search : cta.icon === "calendar" ? Calendar : UserIcon;
+  }
+
   return (
-    <div className="relative aspect-video bg-black overflow-hidden">
+    <article
+      onClick={closeMenus}
+      className="h-full w-full snap-start snap-always relative bg-black overflow-hidden md:rounded-3xl md:mb-3 first:md:mt-0"
+    >
+      {/* Video */}
       <video
         ref={videoRef}
-        src={src}
+        src={post.media[0]}
         muted={muted}
         loop
         playsInline
         preload="metadata"
-        className="w-full h-full object-cover cursor-pointer"
-        onClick={togglePlay}
+        className="absolute inset-0 w-full h-full object-contain"
+        onClick={(e) => { e.stopPropagation(); togglePlay(); }}
         onTimeUpdate={(e) => {
           const v = e.currentTarget;
           if (v.duration > 0) setProgress((v.currentTime / v.duration) * 100);
         }}
       />
-      {/* Mute toggle */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setMuted((m) => !m);
-        }}
-        className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors z-10"
-        aria-label={muted ? "Activer le son" : "Couper le son"}
-      >
-        {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
-      </button>
-      {/* Progress bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/20">
-        <div className="h-full bg-[#1e9df1] transition-all" style={{ width: `${progress}%` }} />
-      </div>
-      {/* Play overlay when paused */}
-      {!playing && (
+
+      {/* Pause overlay */}
+      {paused && (
         <button
-          onClick={togglePlay}
-          className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors"
+          onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+          className="absolute inset-0 flex items-center justify-center bg-black/20 z-[5]"
           aria-label="Lire la vidéo"
         >
-          <div className="w-16 h-16 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center ring-1 ring-white/20">
-            <Play className="w-7 h-7 text-white fill-white" />
+          <div className="w-20 h-20 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center ring-1 ring-white/30">
+            <Play className="w-9 h-9 text-white fill-white" />
           </div>
         </button>
       )}
-    </div>
+
+      {/* Top gradient */}
+      <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-black/70 via-black/30 to-transparent pointer-events-none" />
+
+      {/* More menu (top right) */}
+      <div className="absolute top-3 right-3 z-20">
+        <button
+          onClick={(e) => { e.stopPropagation(); onOpenMore(); }}
+          className="w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors"
+          aria-label="Plus d'options"
+        >
+          <MoreHorizontal className="w-5 h-5 text-white" />
+        </button>
+        {moreOpen && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="absolute right-0 top-11 w-48 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl animate-scale-in overflow-hidden"
+          >
+            {isOwn ? (
+              <>
+                <button
+                  onClick={onEdit}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+                >
+                  <Edit3 className="w-4 h-4" /> Modifier
+                </button>
+                <button
+                  onClick={onDelete}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-[var(--hover-bg)] transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" /> Supprimer
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={onSignal}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+                >
+                  <Flag className="w-4 h-4" /> Signaler
+                </button>
+                <button
+                  onClick={closeMenus}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+                >
+                  <EyeOff className="w-4 h-4" /> Ne plus afficher
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom gradient */}
+      <div className="absolute bottom-0 left-0 right-0 h-2/5 bg-gradient-to-t from-black/85 via-black/45 to-transparent pointer-events-none" />
+
+      {/* Right action column */}
+      <div className="absolute right-3 bottom-5 z-10 flex flex-col items-center gap-4">
+        {/* Avatar + follow dot */}
+        <div className="relative">
+          <Link href={`/profil/${post.author.id}`} onClick={(e) => e.stopPropagation()}>
+            <img
+              src={post.author.avatar}
+              alt={post.author.firstName}
+              className="w-11 h-11 rounded-full object-cover ring-2 ring-white"
+            />
+          </Link>
+          {showFollowDot && (
+            <button
+              onClick={(e) => { e.stopPropagation(); toggleFollow(post.author.id); }}
+              className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-[#1e9df1] flex items-center justify-center ring-2 ring-black hover:scale-110 transition-transform"
+              aria-label="Suivre"
+            >
+              <Plus className="w-3 h-3 text-white" />
+            </button>
+          )}
+        </div>
+
+        {/* Like */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleLike(); }}
+          className="flex flex-col items-center gap-1"
+        >
+          <div className="w-11 h-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors">
+            <Heart className={`w-6 h-6 transition-colors ${liked ? "fill-rose-500 text-rose-500" : "text-white"}`} />
+          </div>
+          <span className="text-[11px] font-semibold text-white tabular-nums drop-shadow">
+            {formatCount(post.likes)}
+          </span>
+        </button>
+
+        {/* Comment */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onOpenComments(); }}
+          className="flex flex-col items-center gap-1"
+        >
+          <div className="w-11 h-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors">
+            <MessageCircle className="w-6 h-6 text-white" />
+          </div>
+          <span className="text-[11px] font-semibold text-white tabular-nums drop-shadow">
+            {formatCount(post.comments.length)}
+          </span>
+        </button>
+
+        {/* Share */}
+        <div className="relative">
+          <button
+            onClick={(e) => { e.stopPropagation(); onOpenShare(); }}
+            className="flex flex-col items-center gap-1"
+          >
+            <div className="w-11 h-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors">
+              <Share2 className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-[11px] font-semibold text-white drop-shadow">Partager</span>
+          </button>
+          {shareOpen && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="absolute right-12 bottom-0 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl animate-scale-in overflow-hidden"
+            >
+              {[
+                { label: "Republier", icon: Share2 },
+                { label: "Email", icon: Send },
+                { label: "Copier le lien", icon: Copy },
+              ].map(({ label, icon: Icon }) => (
+                <button
+                  key={label}
+                  onClick={closeMenus}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Save */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
+          className="flex flex-col items-center gap-1"
+        >
+          <div className="w-11 h-11 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors">
+            <Bookmark className={`w-6 h-6 transition-colors ${saved ? "fill-[#1e9df1] text-[#1e9df1]" : "text-white"}`} />
+          </div>
+          <span className="text-[11px] font-semibold text-white drop-shadow">
+            {saved ? "Enregistré" : "Enregistrer"}
+          </span>
+        </button>
+
+        {/* Mute */}
+        <button
+          onClick={(e) => { e.stopPropagation(); setMuted((m) => !m); }}
+          className="w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center hover:bg-black/60 transition-colors"
+          aria-label={muted ? "Activer le son" : "Couper le son"}
+        >
+          {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
+        </button>
+      </div>
+
+      {/* Bottom-left caption */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="absolute left-4 right-20 bottom-5 z-10 text-white space-y-2"
+      >
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <Link
+            href={`/profil/${post.author.id}`}
+            className="text-sm font-bold hover:underline drop-shadow"
+          >
+            {post.author.firstName} {post.author.lastName}
+          </Link>
+          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${roleBadgeColors[post.author.activeRole]}`}>
+            {roleLabels[post.author.activeRole]}
+          </span>
+          {FONDATEUR_NUMBERS[post.author.firstName] && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold tracking-wide bg-amber-400/15 text-amber-300 ring-1 ring-amber-400/30">
+              #{FONDATEUR_NUMBERS[post.author.firstName]}
+            </span>
+          )}
+        </div>
+
+        <p
+          onClick={() => setCaptionExpanded((v) => !v)}
+          className={`text-[13px] leading-relaxed whitespace-pre-wrap drop-shadow cursor-pointer ${
+            captionExpanded ? "" : "line-clamp-3"
+          }`}
+        >
+          {renderContent(post.content)}
+        </p>
+
+        {post.location && (
+          <p className="text-[11px] text-white/80 flex items-center gap-1 drop-shadow">
+            <MapPin className="w-3 h-3" />
+            <span>{post.location}</span>
+            <span>·</span>
+            <span>{timeAgo(post.createdAt)}</span>
+          </p>
+        )}
+
+        {ctaHref && (
+          <Link
+            href={ctaHref}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/25 hover:bg-white/20 transition-colors max-w-full"
+          >
+            <CtaIcon className="w-4 h-4 text-white shrink-0" />
+            <span className="text-xs text-white min-w-0">
+              <span className="font-semibold block truncate">{ctaTitle}</span>
+              <span className="text-white/75 block truncate">{ctaSub}</span>
+            </span>
+            <ChevronRight className="w-3.5 h-3.5 text-white/70 shrink-0" />
+          </Link>
+        )}
+      </div>
+
+      {/* Progress bar */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/20 z-10">
+        <div className="h-full bg-[#1e9df1]" style={{ width: `${progress}%` }} />
+      </div>
+    </article>
   );
 }
 
 // ─── Page ──────────────────────────────────────────────────────────────────
 
 export default function FeedPage() {
-  const { formatPrice, toggleFollow, isFollowing } = useApp();
+  const { isFollowing } = useApp();
   const [posts, setPosts] = useState<SocialPost[]>(VIDEO_POSTS);
   const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis">("pour-vous");
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
+
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set());
-  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
-  const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
-  const [replyTo, setReplyTo] = useState<Record<string, string>>({});
   const [shareMenuPost, setShareMenuPost] = useState<string | null>(null);
   const [moreMenuPost, setMoreMenuPost] = useState<string | null>(null);
-  const [feedToast, setFeedToast] = useState<string | null>(null);
-  const [editingPost, setEditingPost] = useState<string | null>(null);
+  const [commentsModalPost, setCommentsModalPost] = useState<string | null>(null);
+  const [editModalPost, setEditModalPost] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [feedToast, setFeedToast] = useState<string | null>(null);
+  const [commentInput, setCommentInput] = useState("");
+  const [replyTo, setReplyTo] = useState<string | null>(null);
 
+  const filteredPosts = useMemo(() => {
+    if (activeTab === "suivis") return posts.filter((p) => isFollowing(p.author.id));
+    return posts;
+  }, [posts, activeTab, isFollowing]);
+
+  // Reset active index when filter changes.
   useEffect(() => {
-    const handleScroll = () => setShowScrollTop(window.scrollY > 600);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    setActiveIdx(0);
+    if (containerRef.current) containerRef.current.scrollTop = 0;
+  }, [activeTab]);
+
+  // Track active index on scroll.
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const h = container.clientHeight;
+        if (h === 0) return;
+        const idx = Math.round(container.scrollTop / h);
+        setActiveIdx((prev) => (prev === idx ? prev : idx));
+      });
+    };
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      container.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   const toggleLike = (postId: string) => {
@@ -626,12 +925,12 @@ export default function FeedPage() {
   };
 
   const addComment = (postId: string) => {
-    const text = commentInputs[postId]?.trim();
+    const text = commentInput.trim();
     if (!text) return;
     const newComment: Comment = {
       id: `c-new-${Date.now()}`,
-      author: U_SOPHIE,
-      content: replyTo[postId] ? `@${replyTo[postId]} ${text}` : text,
+      author: CURRENT_USER,
+      content: replyTo ? `@${replyTo} ${text}` : text,
       createdAt: new Date().toISOString(),
       likes: 0,
     };
@@ -640,13 +939,8 @@ export default function FeedPage() {
         p.id === postId ? { ...p, comments: [...p.comments, newComment] } : p
       )
     );
-    setCommentInputs((prev) => ({ ...prev, [postId]: "" }));
-    setReplyTo((prev) => {
-      const next = { ...prev };
-      delete next[postId];
-      return next;
-    });
-    setExpandedComments((prev) => new Set([...prev, postId]));
+    setCommentInput("");
+    setReplyTo(null);
   };
 
   const deletePost = (postId: string) => {
@@ -658,610 +952,242 @@ export default function FeedPage() {
     setPosts((prev) =>
       prev.map((p) => (p.id === postId ? { ...p, content: editContent } : p))
     );
-    setEditingPost(null);
+    setEditModalPost(null);
     setEditContent("");
   };
 
-  const filteredPosts = useMemo(() => {
-    if (activeTab === "suivis") return posts.filter((p) => isFollowing(p.author.id));
-    return posts;
-  }, [posts, activeTab, isFollowing]);
-
-  const renderContent = (content: string) => {
-    return content.split(/([@#]\S+)/g).map((part, i) => {
-      if (part.startsWith("@")) {
-        return (
-          <span key={i} className="text-[#1e9df1] cursor-pointer hover:underline">
-            {part}
-          </span>
-        );
-      }
-      if (part.startsWith("#")) {
-        return (
-          <Link key={i} href={`/recherche?q=${encodeURIComponent(part)}`} className="text-[#1e9df1] hover:underline">
-            {part}
-          </Link>
-        );
-      }
-      return part;
-    });
+  const showToast = (msg: string) => {
+    setFeedToast(msg);
+    setTimeout(() => setFeedToast(null), 2400);
   };
 
-  const ctaIcon = (icon: CustomCTA["icon"]) => {
-    const Icon = icon === "users" ? Users : icon === "search" ? Search : icon === "calendar" ? Calendar : UserIcon;
-    return <Icon className="w-5 h-5 text-[#1e9df1]" />;
+  const closeMenus = () => {
+    setShareMenuPost(null);
+    setMoreMenuPost(null);
   };
+
+  const commentsForPost = commentsModalPost
+    ? posts.find((p) => p.id === commentsModalPost)
+    : null;
 
   return (
-    <div className="max-w-3xl mx-auto relative">
+    <div className="-mx-4 -mt-6 -mb-20 md:-mx-6 md:-mb-6">
+      {/* Toast */}
       {feedToast && (
-        <div className="fixed top-6 right-6 z-[60] px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
+        <div className="fixed top-6 right-6 z-[100] px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
           ✓ {feedToast}
         </div>
       )}
-      <div className="flex gap-6">
-        <div className="flex-1 min-w-0">
-          {/* Feed tabs */}
-          <div className="flex gap-1 mb-6 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-            {(["pour-vous", "suivis"] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                  activeTab === tab
-                    ? "bg-[#1e9df1] text-white"
-                    : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
-                }`}
-              >
-                {tab === "pour-vous" ? "Pour vous" : "Suivis"}
-              </button>
+
+      {/* Tabs */}
+      <div className="px-4 pt-3 pb-2 md:px-6">
+        <div className="max-w-[480px] mx-auto flex gap-1 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+          {(["pour-vous", "suivis"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === tab
+                  ? "bg-[#1e9df1] text-white"
+                  : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {tab === "pour-vous" ? "Pour vous" : "Suivis"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Reels container — chrome : banner ~28 + header 64 + tabs 56 + mobile-nav 64 = 212px mobile / 148px desktop. */}
+      <div className="h-[calc(100svh-220px)] md:h-[calc(100svh-160px)] flex justify-center">
+        {filteredPosts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center text-center px-6">
+            <Users className="w-12 h-12 text-[var(--text-muted)] mb-3" />
+            <p className="text-sm text-[var(--text-secondary)] max-w-xs">
+              Vous n'êtes abonné à personne pour le moment. Abonnez-vous à des utilisateurs pour voir leurs publications ici.
+            </p>
+          </div>
+        ) : (
+          <div
+            ref={containerRef}
+            className="w-full md:max-w-[480px] h-full snap-y snap-mandatory overflow-y-scroll no-scrollbar"
+            style={{ scrollSnapStop: "always" }}
+          >
+            {filteredPosts.map((post, idx) => (
+              <ReelCard
+                key={post.id}
+                post={post}
+                active={idx === activeIdx}
+                liked={likedPosts.has(post.id)}
+                saved={savedPosts.has(post.id)}
+                onToggleLike={() => toggleLike(post.id)}
+                onToggleSave={() => toggleSave(post.id)}
+                onOpenComments={() => setCommentsModalPost(post.id)}
+                onOpenShare={() => {
+                  setShareMenuPost(shareMenuPost === post.id ? null : post.id);
+                  setMoreMenuPost(null);
+                }}
+                onOpenMore={() => {
+                  setMoreMenuPost(moreMenuPost === post.id ? null : post.id);
+                  setShareMenuPost(null);
+                }}
+                shareOpen={shareMenuPost === post.id}
+                moreOpen={moreMenuPost === post.id}
+                closeMenus={closeMenus}
+                onEdit={() => {
+                  setEditContent(post.content);
+                  setEditModalPost(post.id);
+                  setMoreMenuPost(null);
+                }}
+                onDelete={() => deletePost(post.id)}
+                onSignal={() => {
+                  setMoreMenuPost(null);
+                  showToast("Publication signalée");
+                }}
+              />
             ))}
           </div>
+        )}
+      </div>
 
-          <div className="space-y-6">
-            {filteredPosts.length === 0 && (
-              <div className="text-center py-16">
-                <Users className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-                <p className="text-sm text-[var(--text-secondary)]">
-                  {activeTab === "suivis"
-                    ? "Vous n'êtes abonné à personne pour le moment. Abonnez-vous à des utilisateurs pour voir leurs publications ici."
-                    : "Aucune publication à afficher."}
-                </p>
-              </div>
-            )}
-
-            {filteredPosts.map((post, idx) => {
-              const customCta = CUSTOM_CTA[post.id];
-              const eventCta = EVENTS_BY_POST[post.id];
-              return (
-                <article
-                  key={post.id}
-                  className="rounded-3xl border border-[#1e9df1]/10 bg-[var(--card)] shadow-xl shadow-black/10 overflow-hidden animate-fade-in"
-                  style={{ animationDelay: `${idx * 50}ms` }}
-                >
-                  {/* Post header */}
-                  <div className="flex items-start justify-between p-5 pb-0">
-                    <div className="flex items-center gap-3">
-                      <Link href={`/profil/${post.author.id}`}>
-                        <img
-                          src={post.author.avatar}
-                          alt={post.author.firstName}
-                          className="w-11 h-11 rounded-full object-cover hover:opacity-80 transition-opacity"
-                        />
-                      </Link>
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                          <Link
-                            href={`/profil/${post.author.id}`}
-                            className="text-sm font-semibold text-[var(--foreground)] hover:underline"
-                          >
-                            {post.author.firstName} {post.author.lastName}
-                          </Link>
-                          <span
-                            className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                              roleBadgeColors[post.author.activeRole]
-                            }`}
-                          >
-                            {roleLabels[post.author.activeRole]}
-                          </span>
-                          {FONDATEUR_NUMBERS[post.author.firstName] && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold tracking-wide bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/30">
-                              #{FONDATEUR_NUMBERS[post.author.firstName]}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
-                          <span className="opacity-80">@{post.author.firstName.toLowerCase()}</span>
-                          {post.location && (
-                            <>
-                              <span>·</span>
-                              <MapPin className="w-3 h-3" />
-                              <span className="truncate max-w-[140px]">{post.location}</span>
-                            </>
-                          )}
-                          <span>·</span>
-                          <span>{timeAgo(post.createdAt)}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="relative">
-                      <button
-                        onClick={() => setMoreMenuPost(moreMenuPost === post.id ? null : post.id)}
-                        className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors"
-                      >
-                        <MoreHorizontal className="w-5 h-5" />
-                      </button>
-                      {moreMenuPost === post.id && (
-                        <div className="absolute right-0 top-10 w-48 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden">
-                          {post.author.id === CURRENT_USER_ID ? (
-                            <>
-                              <button
-                                onClick={() => {
-                                  setEditingPost(post.id);
-                                  setEditContent(post.content);
-                                  setMoreMenuPost(null);
-                                }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-                              >
-                                <Edit3 className="w-4 h-4" /> Modifier
-                              </button>
-                              <button
-                                onClick={() => deletePost(post.id)}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-[var(--hover-bg)] transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" /> Supprimer
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => {
-                                  setMoreMenuPost(null);
-                                  setFeedToast("Publication signalée");
-                                  setTimeout(() => setFeedToast(null), 2500);
-                                }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-                              >
-                                <Flag className="w-4 h-4" /> Signaler
-                              </button>
-                              <button
-                                onClick={() => setMoreMenuPost(null)}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-                              >
-                                <EyeOff className="w-4 h-4" /> Ne plus afficher
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Post content */}
-                  <div className="px-5 pt-3 pb-1">
-                    {editingPost === post.id ? (
-                      <div>
-                        <textarea
-                          value={editContent}
-                          onChange={(e) => setEditContent(e.target.value)}
-                          maxLength={2000}
-                          rows={4}
-                          className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl p-3 text-sm text-[var(--foreground)] outline-none resize-none focus:border-[#1e9df1]"
-                        />
-                        <div className="flex gap-2 mt-2">
-                          <button
-                            onClick={() => saveEdit(post.id)}
-                            className="px-4 py-2 rounded-lg bg-[#1e9df1] hover:bg-[#1583c9] text-white text-sm font-medium transition-colors"
-                          >
-                            Sauvegarder
-                          </button>
-                          <button
-                            onClick={() => setEditingPost(null)}
-                            className="px-4 py-2 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm transition-colors"
-                          >
-                            Annuler
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-[15px] text-[var(--foreground)] whitespace-pre-wrap leading-relaxed">
-                        {renderContent(post.content)}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Video */}
-                  {post.media.length > 0 && (
-                    <div className="mx-5 mt-3 rounded-2xl overflow-hidden">
-                      <VideoPlayer src={post.media[0]} />
-                    </div>
-                  )}
-
-                  {/* Property CTA */}
-                  {post.property && (
-                    <div className="mx-5 mt-3 rounded-2xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
-                      <Link href={`/explorer/${post.property.id}`} className="flex gap-3 p-3">
-                        <img
-                          src={post.property.images[0]}
-                          alt=""
-                          className="w-20 h-20 rounded-xl object-cover shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[var(--foreground)] truncate">
-                            {post.property.title}
-                          </p>
-                          <p className="text-sm font-bold text-[#1e9df1] mt-1 tabular-nums">
-                            {formatPrice(post.property.price, post.property.currency)}
-                          </p>
-                          <p className="text-xs text-[var(--text-muted)] mt-1">
-                            {post.property.bedrooms} ch · {post.property.area}m²
-                          </p>
-                          {post.property.transactionType === "vente" && post.property.analytics && (
-                            <p className="text-xs text-emerald-400 mt-1 tabular-nums">
-                              Rendement : {post.property.analytics.rendementBrut.toFixed(1)} % brut
-                            </p>
-                          )}
-                        </div>
-                      </Link>
-                    </div>
-                  )}
-
-                  {/* Formation CTA */}
-                  {post.formation && (
-                    <div className="mx-5 mt-3 rounded-2xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
-                      <Link href={`/formations/${post.formation.id}`} className="flex gap-3 p-3">
-                        <img
-                          src={post.formation.thumbnail}
-                          alt=""
-                          className="w-20 h-20 rounded-xl object-cover shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="px-2 py-0.5 bg-[#1e9df1]/20 text-[#1e9df1] text-[10px] font-medium rounded-full">Formation</span>
-                          </div>
-                          <p className="text-sm font-medium text-[var(--foreground)] truncate">
-                            {post.formation.title}
-                          </p>
-                          <p className="text-xs text-[var(--text-muted)] mt-1">
-                            {post.formation.instructor} · {post.formation.students} étudiants
-                          </p>
-                          <p className="text-sm font-bold text-[#1e9df1] mt-1 tabular-nums">
-                            {formatPrice(post.formation.price)}
-                          </p>
-                        </div>
-                      </Link>
-                    </div>
-                  )}
-
-                  {/* Event CTA */}
-                  {eventCta && (
-                    <div className="mx-5 mt-3 rounded-2xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
-                      <Link href={`/evenements/${eventCta.id}`} className="flex gap-3 p-3">
-                        <img
-                          src={eventCta.thumbnail}
-                          alt=""
-                          className="w-20 h-20 rounded-xl object-cover shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="px-2 py-0.5 bg-violet-500/20 text-violet-300 text-[10px] font-medium rounded-full">Événement · {eventCta.type}</span>
-                          </div>
-                          <p className="text-sm font-medium text-[var(--foreground)] truncate">
-                            {eventCta.titre}
-                          </p>
-                          <p className="text-xs text-[var(--text-muted)] mt-1 flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {formatEventDate(eventCta.date)} · {eventCta.heure} · {eventCta.lieu}
-                          </p>
-                          <p className="text-sm font-bold text-[#1e9df1] mt-1 tabular-nums">
-                            {eventCta.prix === 0 ? "Gratuit" : formatPrice(eventCta.prix)}
-                          </p>
-                        </div>
-                      </Link>
-                    </div>
-                  )}
-
-                  {/* Custom CTA */}
-                  {customCta && (
-                    <div className="mx-5 mt-3 rounded-2xl border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors">
-                      <Link href={customCta.href} className="flex items-center gap-3 p-3">
-                        <div className="w-12 h-12 rounded-xl bg-[#1e9df1]/10 flex items-center justify-center shrink-0">
-                          {ctaIcon(customCta.icon)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[var(--foreground)] truncate">
-                            {customCta.title}
-                          </p>
-                          <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">
-                            {customCta.subtitle}
-                          </p>
-                        </div>
-                        <span className="text-xs text-[#1e9df1] font-medium">Découvrir →</span>
-                      </Link>
-                    </div>
-                  )}
-
-                  {/* Engagement bar */}
-                  <div className="mt-4 flex items-center gap-1 px-3 py-2 border-t border-[var(--card-border)]">
-                    <button
-                      onClick={() => toggleLike(post.id)}
-                      className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
-                    >
-                      <Heart
-                        className={`w-5 h-5 transition-colors ${
-                          likedPosts.has(post.id) ? "fill-rose-500 text-rose-500" : "text-[var(--text-muted)]"
-                        }`}
-                      />
-                      <span
-                        className={`text-sm font-medium tabular-nums max-sm:hidden ${
-                          likedPosts.has(post.id) ? "text-rose-500" : "text-[var(--foreground)]/85"
-                        }`}
-                      >
-                        {formatCount(post.likes)}
-                      </span>
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        setExpandedComments((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(post.id)) next.delete(post.id);
-                          else next.add(post.id);
-                          return next;
-                        })
-                      }
-                      className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
-                    >
-                      <MessageCircle
-                        className={`w-5 h-5 transition-colors ${
-                          expandedComments.has(post.id) ? "text-[#1e9df1]" : "text-[var(--text-muted)]"
-                        }`}
-                      />
-                      <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85">
-                        {formatCount(post.comments.length)}
-                      </span>
-                    </button>
-
-                    <div className="relative grow flex">
-                      <button
-                        onClick={() => setShareMenuPost(shareMenuPost === post.id ? null : post.id)}
-                        className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
-                      >
-                        <Share2 className="w-5 h-5 text-[var(--text-muted)]" />
-                        <span className="text-sm font-medium max-sm:hidden text-[var(--foreground)]/85">
-                          Partager
-                        </span>
-                      </button>
-                      {shareMenuPost === post.id && (
-                        <div className="absolute left-0 bottom-12 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden">
-                          {[
-                            { label: "Republier", icon: Share2 },
-                            { label: "Email", icon: Send },
-                            { label: "Copier le lien", icon: Copy },
-                          ].map(({ label, icon: Icon }) => (
-                            <button
-                              key={label}
-                              onClick={() => {
-                                setShareMenuPost(null);
-                                setFeedToast(label === "Copier le lien" ? "Lien copié" : `${label} envoyé`);
-                                setTimeout(() => setFeedToast(null), 2500);
-                              }}
-                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-                            >
-                              <Icon className="w-4 h-4" />
-                              {label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => toggleSave(post.id)}
-                      className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
-                    >
-                      <Bookmark
-                        className={`w-5 h-5 transition-colors ${
-                          savedPosts.has(post.id) ? "fill-[#1e9df1] text-[#1e9df1]" : "text-[var(--text-muted)]"
-                        }`}
-                      />
-                      <span
-                        className={`text-sm font-medium max-sm:hidden ${
-                          savedPosts.has(post.id) ? "text-[#1e9df1]" : "text-[var(--foreground)]/85"
-                        }`}
-                      >
-                        {savedPosts.has(post.id) ? "Enregistré" : "Enregistrer"}
-                      </span>
-                    </button>
-                  </div>
-
-                  {/* Comments */}
-                  {expandedComments.has(post.id) && (
-                    <div className="px-4 pb-4 border-t border-[var(--card-border)] animate-fade-in">
-                      <div className="space-y-3 pt-3">
-                        {post.comments.map((comment) => (
-                          <div key={comment.id} className="flex gap-2.5">
-                            <img
-                              src={comment.author.avatar}
-                              alt=""
-                              className="w-8 h-8 rounded-full object-cover shrink-0"
-                            />
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <Link
-                                  href={`/profil/${comment.author.id}`}
-                                  className="text-xs font-semibold text-[var(--foreground)] hover:underline"
-                                >
-                                  {comment.author.firstName}
-                                </Link>
-                                <span className="text-xs text-[var(--text-muted)]">
-                                  {timeAgo(comment.createdAt)}
-                                </span>
-                              </div>
-                              <p className="text-sm text-[var(--text-secondary)] mt-0.5">
-                                {renderContent(comment.content)}
-                              </p>
-                              <div className="flex items-center gap-3 mt-1">
-                                <button className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]">
-                                  {comment.likes > 0 && `${comment.likes} `}J&apos;aime
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    setReplyTo((prev) => ({
-                                      ...prev,
-                                      [post.id]: comment.author.firstName,
-                                    }))
-                                  }
-                                  className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)]"
-                                >
-                                  Répondre
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex gap-2 mt-3 pt-3 border-t border-[var(--card-border)]">
-                        <img
-                          src={U_SOPHIE.avatar}
-                          alt=""
-                          className="w-8 h-8 rounded-full object-cover shrink-0"
-                        />
-                        <div className="flex-1 relative">
-                          {replyTo[post.id] && (
-                            <div className="flex items-center gap-1 mb-1">
-                              <span className="text-xs text-[#1e9df1]">
-                                @{replyTo[post.id]}
-                              </span>
-                              <button
-                                onClick={() =>
-                                  setReplyTo((prev) => {
-                                    const next = { ...prev };
-                                    delete next[post.id];
-                                    return next;
-                                  })
-                                }
-                                className="text-[var(--text-muted)]"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={commentInputs[post.id] || ""}
-                              onChange={(e) =>
-                                setCommentInputs((prev) => ({
-                                  ...prev,
-                                  [post.id]: e.target.value,
-                                }))
-                              }
-                              onKeyDown={(e) => e.key === "Enter" && addComment(post.id)}
-                              placeholder="Écrire un commentaire..."
-                              className="flex-1 px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]"
-                            />
-                            <button
-                              onClick={() => addComment(post.id)}
-                              className="p-2 rounded-lg bg-[#1e9df1] text-white hover:bg-[var(--gold-hover)] transition-colors disabled:opacity-40"
-                              disabled={!commentInputs[post.id]?.trim()}
-                            >
-                              <Send className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-
-          {/* End of feed */}
-          {filteredPosts.length > 0 && (
-            <div className="py-10 text-center text-xs text-[var(--text-muted)]">
-              Vous avez parcouru tout le feed — {filteredPosts.length} publications.
-            </div>
-          )}
-        </div>
-
-        {/* Right sidebar */}
-        <aside className="hidden lg:block w-72 shrink-0 space-y-5">
-          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-[var(--foreground)] flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-[#1e9df1]" />
-                Suggestions
+      {/* Comments modal */}
+      {commentsForPost && (
+        <div className="fixed inset-0 z-[80] flex items-end md:items-center md:justify-center">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => { setCommentsModalPost(null); setReplyTo(null); setCommentInput(""); }}
+          />
+          <div className="relative w-full md:w-[480px] md:max-w-[90vw] h-[75vh] md:h-[640px] md:rounded-2xl rounded-t-3xl bg-[var(--card)] flex flex-col overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--card-border)]">
+              <h3 className="text-sm font-semibold text-[var(--foreground)]">
+                Commentaires · {commentsForPost.comments.length}
               </h3>
-              <Link href="/recherche" className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] hover:text-[#1e9df1] transition-colors">
-                Voir tout
-              </Link>
+              <button
+                onClick={() => { setCommentsModalPost(null); setReplyTo(null); setCommentInput(""); }}
+                className="p-1 rounded-lg hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                <X className="w-5 h-5 text-[var(--text-muted)]" />
+              </button>
             </div>
-            <div className="space-y-3">
-              {ALL_USERS.filter((u) => u.id !== "u1").slice(0, 3).map((user) => (
-                <div key={user.id} className="flex items-center gap-3">
-                  <Link href={`/profil/${user.id}`}>
-                    <img
-                      src={user.avatar}
-                      alt=""
-                      className="w-9 h-9 rounded-full object-cover hover:opacity-80 transition-opacity"
-                    />
-                  </Link>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {commentsForPost.comments.length === 0 && (
+                <p className="text-center text-sm text-[var(--text-muted)] py-12">
+                  Aucun commentaire pour l'instant. Sois le premier !
+                </p>
+              )}
+              {commentsForPost.comments.map((c) => (
+                <div key={c.id} className="flex gap-3">
+                  <img
+                    src={c.author.avatar}
+                    alt=""
+                    className="w-9 h-9 rounded-full object-cover shrink-0"
+                  />
                   <div className="flex-1 min-w-0">
-                    <Link
-                      href={`/profil/${user.id}`}
-                      className="text-sm font-medium text-[var(--foreground)] hover:underline truncate block"
-                    >
-                      {user.firstName} {user.lastName}
-                    </Link>
-                    <p className="text-xs text-[var(--text-muted)] truncate">
-                      {roleLabels[user.activeRole]}
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <Link
+                        href={`/profil/${c.author.id}`}
+                        className="text-sm font-semibold text-[var(--foreground)] hover:underline"
+                      >
+                        {c.author.firstName}
+                      </Link>
+                      <span className="text-xs text-[var(--text-muted)]">{timeAgo(c.createdAt)}</span>
+                    </div>
+                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                      {renderContent(c.content)}
                     </p>
+                    <div className="flex items-center gap-4 mt-1">
+                      <button className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors">
+                        {c.likes > 0 && `${c.likes} `}J&apos;aime
+                      </button>
+                      <button
+                        onClick={() => setReplyTo(c.author.firstName)}
+                        className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
+                      >
+                        Répondre
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => toggleFollow(user.id)}
-                    className={`text-xs px-3 py-1 rounded-lg font-medium transition-colors ${
-                      isFollowing(user.id)
-                        ? "bg-[var(--hover-bg)] text-[var(--text-secondary)]"
-                        : "bg-[#1e9df1] text-white hover:bg-[#1583c9]"
-                    }`}
-                  >
-                    {isFollowing(user.id) ? "Suivi" : "Suivre"}
-                  </button>
                 </div>
               ))}
             </div>
-          </div>
 
-          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-[#1e9df1]" />
-              Tendances
-            </h3>
-            <div className="space-y-3">
-              {TRENDING_HASHTAGS.slice(0, 5).map((item) => (
-                <Link
-                  key={item.tag}
-                  href={`/recherche?q=${encodeURIComponent(item.tag)}`}
-                  className="flex items-center justify-between group"
+            <div className="border-t border-[var(--card-border)] p-3">
+              {replyTo && (
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs text-[#1e9df1]">Réponse à @{replyTo}</span>
+                  <button onClick={() => setReplyTo(null)} className="text-[var(--text-muted)]">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+              <div className="flex gap-2 items-center">
+                <img
+                  src={CURRENT_USER.avatar}
+                  alt=""
+                  className="w-8 h-8 rounded-full object-cover shrink-0"
+                />
+                <input
+                  type="text"
+                  value={commentInput}
+                  onChange={(e) => setCommentInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addComment(commentsForPost.id)}
+                  placeholder={replyTo ? `Répondre à ${replyTo}...` : "Écrire un commentaire..."}
+                  className="flex-1 px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]"
+                  autoFocus
+                />
+                <button
+                  onClick={() => addComment(commentsForPost.id)}
+                  disabled={!commentInput.trim()}
+                  className="p-2.5 rounded-lg bg-[#1e9df1] text-white hover:bg-[#1583c9] transition-colors disabled:opacity-40"
                 >
-                  <span className="text-sm text-[#1e9df1] group-hover:underline">{item.tag}</span>
-                  <span className="text-xs text-[var(--text-muted)] tabular-nums">{formatCount(item.count)}</span>
-                </Link>
-              ))}
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
-        </aside>
-      </div>
+        </div>
+      )}
 
-      {showScrollTop && (
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-20 md:bottom-8 right-6 z-30 w-10 h-10 rounded-full bg-[#1e9df1] text-white flex items-center justify-center shadow-lg hover:bg-[var(--gold-hover)] transition-colors animate-scale-in"
-        >
-          <ChevronUp className="w-5 h-5" />
-        </button>
+      {/* Edit modal */}
+      {editModalPost && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center px-4">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setEditModalPost(null)}
+          />
+          <div className="relative w-full max-w-[500px] rounded-2xl bg-[var(--card)] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--card-border)]">
+              <h3 className="text-sm font-semibold">Modifier la publication</h3>
+              <button onClick={() => setEditModalPost(null)} className="p-1 rounded-lg hover:bg-[var(--hover-bg)]">
+                <X className="w-5 h-5 text-[var(--text-muted)]" />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                maxLength={2000}
+                rows={6}
+                className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl p-3 text-sm text-[var(--foreground)] outline-none resize-none focus:border-[#1e9df1]"
+              />
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => setEditModalPost(null)}
+                  className="px-4 py-2 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={() => saveEdit(editModalPost)}
+                  className="px-4 py-2 rounded-lg bg-[#1e9df1] hover:bg-[#1583c9] text-white text-sm font-medium transition-colors"
+                >
+                  Sauvegarder
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
