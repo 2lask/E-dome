@@ -7,8 +7,9 @@ import {
   MapPin, X, ChevronRight, Play,
   Edit3, Trash2, Flag, EyeOff, Copy,
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
-  Users, Building2, GraduationCap,
+  Users, Building2, GraduationCap, Newspaper, TrendingUp, UserPlus,
 } from "lucide-react";
+import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
 import { timeAgo, formatCount } from "@/lib/utils";
 import type { User, SocialPost, Comment, Property } from "@/lib/types";
@@ -474,6 +475,56 @@ const EVENTS_BY_POST: Record<string, EventCTA> = {
   p24: { id: "e6", titre: "Conférence : Marché immobilier 2026", type: "Conférence", date: "2026-03-10", heure: "17:00", lieu: "EPFL, Lausanne", prix: 0, thumbnail: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=300&fit=crop" },
 };
 
+// Actualités pour la sidebar (mock, marché immobilier).
+type NewsItem = { id: string; title: string; source: string; date: string; image: string };
+const NEWS: NewsItem[] = [
+  {
+    id: "n1",
+    title: "Le Conseil fédéral maintient son taux directeur à 1.5 % — impact direct sur les hypothèques romandes",
+    source: "E-Dome News",
+    date: hAgo(3),
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=200&fit=crop",
+  },
+  {
+    id: "n2",
+    title: "Marrakech : afflux record de touristes en mars 2026, +24 % sur un an",
+    source: "E-Dome News",
+    date: hAgo(12),
+    image: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=200&h=200&fit=crop",
+  },
+  {
+    id: "n3",
+    title: "Dubaï : les plans de paiement 60/40 deviennent la norme sur l'off-plan",
+    source: "E-Dome News",
+    date: hAgo(36),
+    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=200&h=200&fit=crop",
+  },
+  {
+    id: "n4",
+    title: "Lugano consolide sa place forte du Minergie-P après trois projets A+ certifiés",
+    source: "E-Dome News",
+    date: hAgo(48),
+    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=200&h=200&fit=crop",
+  },
+  {
+    id: "n5",
+    title: "Verbier sous tension — la location alpine atteint 92 % d'occupation en haute saison",
+    source: "E-Dome News",
+    date: hAgo(72),
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=200&h=200&fit=crop",
+  },
+];
+
+const TRENDING_HASHTAGS = [
+  { tag: "#immobilier", count: 12400 },
+  { tag: "#investissement", count: 8900 },
+  { tag: "#luxe", count: 7200 },
+  { tag: "#dubai", count: 5800 },
+  { tag: "#marrakech", count: 4300 },
+];
+
+const SUGGESTIONS = [U_LEO, U_AMIRA, U_THOMAS, U_YASMIN];
+
 // ─── Misc ──────────────────────────────────────────────────────────────────
 
 const CURRENT_USER_ID = "u1";
@@ -504,12 +555,14 @@ function renderContent(content: string) {
 
 type MediaProps = { src: string; muted: boolean; onToggleMute: () => void };
 
-// Clamp l'aspect ratio entre 0.75 (≈ 4:5 portrait, ~720 px tall en max-width 540)
-// et 16/9 (≈ 1.78 landscape, ~304 px tall). Évite les vidéos ultra-verticales
-// 9:16 qui ne tiendraient pas dans un viewport sans casser le snap.
+// Clamp l'aspect ratio entre 0.75 (≈ 4:5 portrait) et 16/9 (≈ 1.78 landscape).
+// Combiné avec un maxHeight CSS, on garantit que le média ne dépasse jamais
+// ~520 px de haut (≈ ce que fait Twitter) : les vidéos très verticales sont
+// affichées en object-cover dans un cadre capé.
 const ASPECT_MIN = 0.75;
 const ASPECT_MAX = 16 / 9;
 const clampAspect = (r: number) => Math.max(ASPECT_MIN, Math.min(r, ASPECT_MAX));
+const MEDIA_MAX_HEIGHT = "min(60svh, 520px)";
 
 function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -550,7 +603,7 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
   return (
     <div
       className="relative bg-black rounded-2xl overflow-hidden"
-      style={{ aspectRatio }}
+      style={{ aspectRatio, maxHeight: MEDIA_MAX_HEIGHT }}
     >
       <video
         ref={videoRef}
@@ -603,7 +656,7 @@ function ImageView({ src }: { src: string }) {
   return (
     <div
       className="relative bg-black rounded-2xl overflow-hidden"
-      style={{ aspectRatio }}
+      style={{ aspectRatio, maxHeight: MEDIA_MAX_HEIGHT }}
     >
       <img
         src={src}
@@ -617,6 +670,58 @@ function ImageView({ src }: { src: string }) {
         className="absolute inset-0 w-full h-full object-cover"
       />
     </div>
+  );
+}
+
+// Légende avec ellipsis automatique + lien « Voir plus » en bleu (style Twitter)
+// quand le texte est tronqué. Détecte le débordement via scrollHeight vs
+// clientHeight (ref-based) après le rendu, recalcule à chaque changement
+// de contenu et au resize.
+function PostCaption({ content }: { content: string }) {
+  const pRef = useRef<HTMLParagraphElement>(null);
+  const [overflowing, setOverflowing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    const p = pRef.current;
+    if (!p) return;
+    const check = () => {
+      // 2 px de tolérance pour les arrondis sub-pixel.
+      setOverflowing(p.scrollHeight > p.clientHeight + 2);
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(p);
+    return () => ro.disconnect();
+  }, [content, expanded]);
+
+  return (
+    <>
+      <p
+        ref={pRef}
+        className={`text-[14px] text-[var(--foreground)] whitespace-pre-wrap leading-relaxed ${
+          expanded ? "" : "line-clamp-3"
+        }`}
+      >
+        {renderContent(content)}
+      </p>
+      {!expanded && overflowing && (
+        <button
+          onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+          className="text-[#1e9df1] text-sm font-medium hover:underline mt-1"
+        >
+          Voir plus
+        </button>
+      )}
+      {expanded && (
+        <button
+          onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
+          className="text-[#1e9df1] text-sm font-medium hover:underline mt-1"
+        >
+          Voir moins
+        </button>
+      )}
+    </>
   );
 }
 
@@ -647,8 +752,6 @@ function PostCard({
   shareOpen, moreOpen, closeMenus, onEdit, onDelete, onSignal,
 }: PostCardProps) {
   const { formatPrice } = useApp();
-  const [captionExpanded, setCaptionExpanded] = useState(false);
-
   const cta = CUSTOM_CTA[post.id];
   const event = EVENTS_BY_POST[post.id];
   const isOwn = post.author.id === CURRENT_USER_ID;
@@ -739,17 +842,10 @@ function PostCard({
         </div>
       )}
 
-      {/* Caption */}
+      {/* Caption avec « Voir plus » bleu si tronquée */}
       {post.content && (
         <div className="px-4 pt-3">
-          <p
-            onClick={(e) => { e.stopPropagation(); setCaptionExpanded((v) => !v); }}
-            className={`text-[14px] text-[var(--foreground)] whitespace-pre-wrap leading-relaxed cursor-pointer ${
-              captionExpanded ? "" : "line-clamp-3"
-            }`}
-          >
-            {renderContent(post.content)}
-          </p>
+          <PostCaption content={post.content} />
         </div>
       )}
 
@@ -921,7 +1017,7 @@ function PostCard({
 // ─── Page ──────────────────────────────────────────────────────────────────
 
 export default function FeedPage() {
-  const { isFollowing } = useApp();
+  const { isFollowing, toggleFollow } = useApp();
   const [posts, setPosts] = useState<SocialPost[]>(VIDEO_POSTS);
   const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis">("pour-vous");
 
@@ -939,17 +1035,10 @@ export default function FeedPage() {
   const [commentInput, setCommentInput] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const filteredPosts = useMemo(() => {
     if (activeTab === "suivis") return posts.filter((p) => isFollowing(p.author.id));
     return posts;
   }, [posts, activeTab, isFollowing]);
-
-  // Reset scroll position when tab changes.
-  useEffect(() => {
-    if (containerRef.current) containerRef.current.scrollTop = 0;
-  }, [activeTab]);
 
   const toggleLike = (postId: string) => {
     const wasLiked = likedPosts.has(postId);
@@ -1022,7 +1111,7 @@ export default function FeedPage() {
     : null;
 
   return (
-    <div className="-mx-4 -mt-6 -mb-20 md:-mx-6 md:-mb-6">
+    <div className="max-w-6xl mx-auto">
       {/* Toast */}
       {feedToast && (
         <div className="fixed top-6 right-6 z-[100] px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
@@ -1030,77 +1119,188 @@ export default function FeedPage() {
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="px-4 pt-3 pb-2 md:px-6">
-        <div className="max-w-[540px] mx-auto flex gap-1 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-          {(["pour-vous", "suivis"] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                activeTab === tab
-                  ? "bg-[#1e9df1] text-white"
-                  : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
-              }`}
-            >
-              {tab === "pour-vous" ? "Pour vous" : "Suivis"}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Snap-scroll container — 1 post par viewport. Chrome : banner 28 + header 64 + tabs 56 + mobile-nav 64 = 212px mobile / 148px desktop. */}
-      <div
-        ref={containerRef}
-        className="h-[calc(100svh-220px)] md:h-[calc(100svh-160px)] snap-y snap-mandatory overflow-y-scroll no-scrollbar"
-      >
-        {filteredPosts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center h-full px-6">
-            <Users className="w-12 h-12 text-[var(--text-muted)] mb-3" />
-            <p className="text-sm text-[var(--text-secondary)] max-w-xs">
-              Vous n'êtes abonné à personne pour le moment. Abonnez-vous à des utilisateurs pour voir leurs publications ici.
-            </p>
-          </div>
-        ) : (
-          filteredPosts.map((post) => (
-            <div
-              key={post.id}
-              className="snap-center snap-always min-h-full flex items-center justify-center px-4 py-4"
-            >
-              <PostCard
-                post={post}
-                liked={likedPosts.has(post.id)}
-                saved={savedPosts.has(post.id)}
-                muted={muted}
-                onToggleMute={() => setMuted((m) => !m)}
-                onToggleLike={() => toggleLike(post.id)}
-                onToggleSave={() => toggleSave(post.id)}
-                onOpenComments={() => setCommentsModalPost(post.id)}
-                onOpenShare={() => {
-                  setShareMenuPost(shareMenuPost === post.id ? null : post.id);
-                  setMoreMenuPost(null);
-                }}
-                onOpenMore={() => {
-                  setMoreMenuPost(moreMenuPost === post.id ? null : post.id);
-                  setShareMenuPost(null);
-                }}
-                shareOpen={shareMenuPost === post.id}
-                moreOpen={moreMenuPost === post.id}
-                closeMenus={closeMenus}
-                onEdit={() => {
-                  setEditContent(post.content);
-                  setEditModalPost(post.id);
-                  setMoreMenuPost(null);
-                }}
-                onDelete={() => deletePost(post.id)}
-                onSignal={() => {
-                  setMoreMenuPost(null);
-                  showToast("Publication signalée");
-                }}
-              />
+      <div className="flex gap-6">
+        {/* Colonne centrale — timeline */}
+        <div className="flex-1 min-w-0">
+          {/* Tabs sticky (suivent le scroll de la page) */}
+          <div className="sticky top-16 z-20 -mx-4 px-4 py-3 bg-[var(--background)]/85 backdrop-blur-md border-b border-[var(--card-border)] md:-mx-0 md:px-0 md:rounded-xl md:border-0 md:bg-transparent md:backdrop-blur-0">
+            <div className="max-w-[600px] mx-auto flex gap-1 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+              {(["pour-vous", "suivis"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                    activeTab === tab
+                      ? "bg-[#1e9df1] text-white"
+                      : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {tab === "pour-vous" ? "Pour vous" : "Suivis"}
+                </button>
+              ))}
             </div>
-          ))
-        )}
+          </div>
+
+          {/* Timeline naturelle, scroll classique de la page */}
+          <div className="space-y-4 mt-4 max-w-[600px] mx-auto">
+            {filteredPosts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-center py-16 px-6">
+                <Users className="w-12 h-12 text-[var(--text-muted)] mb-3" />
+                <p className="text-sm text-[var(--text-secondary)] max-w-xs">
+                  Vous n'êtes abonné à personne pour le moment. Abonnez-vous à des utilisateurs pour voir leurs publications ici.
+                </p>
+              </div>
+            ) : (
+              filteredPosts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  liked={likedPosts.has(post.id)}
+                  saved={savedPosts.has(post.id)}
+                  muted={muted}
+                  onToggleMute={() => setMuted((m) => !m)}
+                  onToggleLike={() => toggleLike(post.id)}
+                  onToggleSave={() => toggleSave(post.id)}
+                  onOpenComments={() => setCommentsModalPost(post.id)}
+                  onOpenShare={() => {
+                    setShareMenuPost(shareMenuPost === post.id ? null : post.id);
+                    setMoreMenuPost(null);
+                  }}
+                  onOpenMore={() => {
+                    setMoreMenuPost(moreMenuPost === post.id ? null : post.id);
+                    setShareMenuPost(null);
+                  }}
+                  shareOpen={shareMenuPost === post.id}
+                  moreOpen={moreMenuPost === post.id}
+                  closeMenus={closeMenus}
+                  onEdit={() => {
+                    setEditContent(post.content);
+                    setEditModalPost(post.id);
+                    setMoreMenuPost(null);
+                  }}
+                  onDelete={() => deletePost(post.id)}
+                  onSignal={() => {
+                    setMoreMenuPost(null);
+                    showToast("Publication signalée");
+                  }}
+                />
+              ))
+            )}
+
+            {filteredPosts.length > 0 && (
+              <div className="py-10 text-center text-xs text-[var(--text-muted)]">
+                Vous avez parcouru tout le feed — {filteredPosts.length} publications.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Sidebar droite — Suggestions / Actualités / Tendances (desktop large uniquement) */}
+        <aside className="hidden lg:block w-[320px] shrink-0 sticky top-20 self-start space-y-5">
+          {/* Suggestions */}
+          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-[var(--foreground)] flex items-center gap-2">
+                <UserPlus className="w-4 h-4 text-[#1e9df1]" />
+                Suggestions
+              </h3>
+              <Link href="/recherche" className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] hover:text-[#1e9df1] transition-colors">
+                Voir tout
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {SUGGESTIONS.map((user) => (
+                <div key={user.id} className="flex items-center gap-3">
+                  <Link href={`/profil/${user.id}`}>
+                    <img
+                      src={user.avatar}
+                      alt=""
+                      className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity"
+                    />
+                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      href={`/profil/${user.id}`}
+                      className="text-sm font-medium text-[var(--foreground)] hover:underline truncate block"
+                    >
+                      {user.firstName} {user.lastName}
+                    </Link>
+                    <p className="text-xs text-[var(--text-muted)] truncate">
+                      {roleLabels[user.activeRole]} · {user.city}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => toggleFollow(user.id)}
+                    className={`text-xs px-3 py-1 rounded-lg font-medium transition-colors ${
+                      isFollowing(user.id)
+                        ? "bg-[var(--hover-bg)] text-[var(--text-secondary)]"
+                        : "bg-[#1e9df1] text-white hover:bg-[#1583c9]"
+                    }`}
+                  >
+                    {isFollowing(user.id) ? "Suivi" : "Suivre"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Actualités */}
+          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden">
+            <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-[var(--foreground)] flex items-center gap-2">
+                <Newspaper className="w-4 h-4 text-[#1e9df1]" />
+                Actualités
+              </h3>
+              <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+                Marché immobilier
+              </span>
+            </div>
+            <div className="divide-y divide-[var(--card-border)]">
+              {NEWS.slice(0, 4).map((n) => (
+                <button
+                  key={n.id}
+                  onClick={() => {
+                    setFeedToast("Article ouvert");
+                    setTimeout(() => setFeedToast(null), 2000);
+                  }}
+                  className="w-full flex gap-3 p-3 text-left hover:bg-[var(--hover-bg)] transition-colors"
+                >
+                  <img src={n.image} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium text-[var(--foreground)] leading-snug line-clamp-2">
+                      {n.title}
+                    </p>
+                    <p className="text-[11px] text-[var(--text-muted)] mt-1">
+                      {n.source} · {timeAgo(n.date)}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tendances */}
+          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
+            <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-[#1e9df1]" />
+              Tendances
+            </h3>
+            <div className="space-y-3">
+              {TRENDING_HASHTAGS.slice(0, 5).map((item) => (
+                <Link
+                  key={item.tag}
+                  href={`/recherche?q=${encodeURIComponent(item.tag)}`}
+                  className="flex items-center justify-between group"
+                >
+                  <span className="text-sm text-[#1e9df1] group-hover:underline">{item.tag}</span>
+                  <span className="text-xs text-[var(--text-muted)] tabular-nums">
+                    {formatCount(item.count)}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </aside>
       </div>
 
       {/* Comments modal */}
