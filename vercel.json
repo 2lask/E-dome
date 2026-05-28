@@ -1,12 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "installCommand": "cd site && npm install",
-  "buildCommand": "cd site && npm run build",
-  "outputDirectory": "site/out",
+  "installCommand": "cd plateforme && npm install",
+  "buildCommand": "cd plateforme && npm run build",
+  "outputDirectory": "plateforme/.next",
   "git": {
     "deploymentEnabled": {
-      "main": true
+      "main": true,
+      "master": true
     }
   }
 }
