@@ -196,8 +196,8 @@ function HeroBenefitsAccordion({
   return (
     <div className="border-l border-neutral-800 pl-8 max-w-md">
       <div className="flex items-center gap-3 mb-6">
-        <span className="block w-8 h-px bg-[#1e9df1]" />
-        <p className="text-[#1e9df1] text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
+        <span className="block w-8 h-px bg-white" />
+        <p className="text-white text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
           {eyebrow}
         </p>
       </div>
