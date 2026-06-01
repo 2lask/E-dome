@@ -33,9 +33,10 @@ interface PublishForm {
   etatGeneral: string;
   potentielPlusValue: number;
   tauxOccupation: number;
-  // Apporteurs
+  // Apporteurs — V1.0 : seul controle vendeur = ON/OFF (opt-in).
+  // Le taux 10-30 % est fixe par la plateforme selon le pole, jamais
+  // par le vendeur. Aucun champ commissionApporteur cote form.
   autoriserApporteurs: boolean;
-  commissionApporteur: number;
   // Options
   optionMiseEnAvant: boolean;
   optionPhotosPro: boolean;
@@ -80,7 +81,7 @@ const emptyForm: PublishForm = {
   photos: [], video: "", equipements: [], documents: [],
   rendementBrut: 0, dpe: "C", roi5ans: 0, roi10ans: 0, chargesAnnuelles: 0,
   anneeConstruction: 2000, etatGeneral: "Bon", potentielPlusValue: 0, tauxOccupation: 0,
-  autoriserApporteurs: true, commissionApporteur: 15,
+  autoriserApporteurs: true,
   optionMiseEnAvant: false, optionPhotosPro: false, optionVisite3D: false, termsAccepted: false,
 };
 

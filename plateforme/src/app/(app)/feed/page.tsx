@@ -555,46 +555,6 @@ const EVENTS_BY_POST: Record<string, EventCTA> = {
   p24: { id: "e6", titre: "Conférence : Marché immobilier 2026", type: "Conférence", date: "2026-03-10", heure: "17:00", lieu: "EPFL, Lausanne", prix: 0, thumbnail: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=300&fit=crop" },
 };
 
-// Actualités pour la sidebar (mock, marché immobilier).
-type NewsItem = { id: string; title: string; source: string; date: string; image: string };
-const NEWS: NewsItem[] = [
-  {
-    id: "n1",
-    title: "Le Conseil fédéral maintient son taux directeur à 1.5 % — impact direct sur les hypothèques romandes",
-    source: "E-Dome News",
-    date: hAgo(3),
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=200&fit=crop",
-  },
-  {
-    id: "n2",
-    title: "Marrakech : afflux record de touristes en mars 2026, +24 % sur un an",
-    source: "E-Dome News",
-    date: hAgo(12),
-    image: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=200&h=200&fit=crop",
-  },
-  {
-    id: "n3",
-    title: "Dubaï : les plans de paiement 60/40 deviennent la norme sur l'off-plan",
-    source: "E-Dome News",
-    date: hAgo(36),
-    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=200&h=200&fit=crop",
-  },
-  {
-    id: "n4",
-    title: "Lugano consolide sa place forte du Minergie-P après trois projets A+ certifiés",
-    source: "E-Dome News",
-    date: hAgo(48),
-    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=200&h=200&fit=crop",
-  },
-  {
-    id: "n5",
-    title: "Verbier sous tension — la location alpine atteint 92 % d'occupation en haute saison",
-    source: "E-Dome News",
-    date: hAgo(72),
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=200&h=200&fit=crop",
-  },
-];
-
 const TRENDING_HASHTAGS = [
   { tag: "#immobilier", count: 12400 },
   { tag: "#investissement", count: 8900 },

@@ -208,8 +208,10 @@ export default function ApporteursPage() {
               </button>
             </div>
             {showQR === idx && (
-              <div className="flex items-center justify-center p-4 rounded-lg bg-white">
-                <div className="w-32 h-32 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs text-center">
+              <div className="flex items-center justify-center p-4 rounded-lg" style={{ background: "var(--background)" }}>
+                <div className="w-32 h-32 rounded flex items-center justify-center text-xs text-center"
+                  style={{ background: "var(--hover-bg)", color: "var(--text-muted)", border: "1px solid var(--card-border)" }}
+                >
                   QR Code<br />pour<br />{link.label}
                 </div>
               </div>

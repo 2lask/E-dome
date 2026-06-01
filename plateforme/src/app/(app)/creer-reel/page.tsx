@@ -119,10 +119,10 @@ export default function CreerReelPage() {
 
   // ─── Shared styles ───────────────────────────────────────────────────────
   const cardStyle: React.CSSProperties = {
-    background: "var(--bg-secondary, rgba(255,255,255,0.03))",
+    background: "var(--bg-secondary, var(--hover-bg))",
     borderRadius: 16,
     padding: 20,
-    border: "1px solid var(--border, rgba(255,255,255,0.08))",
+    border: "1px solid var(--border, var(--hover-bg))",
   };
 
   const goldBtnStyle: React.CSSProperties = {
@@ -136,8 +136,8 @@ export default function CreerReelPage() {
   const outlineBtnStyle: React.CSSProperties = {
     display: "flex", alignItems: "center", gap: 6,
     padding: "10px 24px", borderRadius: 12, fontSize: 14,
-    background: "transparent", color: "var(--text, #fff)",
-    border: "1px solid var(--border, rgba(255,255,255,0.15))",
+    background: "transparent", color: "var(--foreground)",
+    border: "1px solid var(--border, var(--card-border))",
     cursor: "pointer", fontWeight: 500, transition: "all 0.2s",
   };
 
@@ -146,20 +146,20 @@ export default function CreerReelPage() {
     <div style={{
       minHeight: "100vh",
       background: "var(--bg-primary, #0a0a0a)",
-      color: "var(--text, #fff)",
+      color: "var(--foreground)",
       fontFamily: "var(--font-sans, Inter, sans-serif)",
     }}>
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "16px 20px",
-        borderBottom: "1px solid var(--border, rgba(255,255,255,0.08))",
+        borderBottom: "1px solid var(--border, var(--hover-bg))",
       }}>
         <button
           onClick={() => step > 1 ? setStep((step - 1) as Step) : router.push("/feed")}
           style={{
             display: "flex", alignItems: "center", gap: 6,
-            background: "none", border: "none", color: "var(--text, #fff)",
+            background: "none", border: "none", color: "var(--foreground)",
             cursor: "pointer", fontSize: 14,
           }}
         >
@@ -185,7 +185,7 @@ export default function CreerReelPage() {
                 width: 28, height: 28, borderRadius: "50%",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 13, fontWeight: 700,
-                background: step >= s ? "#1e9df1" : "rgba(255,255,255,0.08)",
+                background: step >= s ? "#1e9df1" : "var(--hover-bg)",
                 color: step >= s ? "#fff" : "var(--text-muted, #666)",
                 transition: "all 0.3s",
               }}>
@@ -193,7 +193,7 @@ export default function CreerReelPage() {
               </div>
               <span style={{
                 fontSize: 12, fontWeight: step === s ? 600 : 400,
-                color: step >= s ? "var(--text, #fff)" : "var(--text-muted, #666)",
+                color: step >= s ? "var(--foreground)" : "var(--text-muted, #666)",
                 display: "none",
               }}
               className="step-label"
@@ -204,7 +204,7 @@ export default function CreerReelPage() {
             {s < 3 && (
               <div style={{
                 width: 40, height: 2, borderRadius: 1,
-                background: step > s ? "#1e9df1" : "rgba(255,255,255,0.1)",
+                background: step > s ? "#1e9df1" : "var(--divider)",
                 transition: "background 0.3s",
               }} />
             )}
@@ -230,8 +230,8 @@ export default function CreerReelPage() {
                     aspectRatio: "9/16",
                     maxHeight: "60vh",
                     borderRadius: 16,
-                    border: `2px dashed ${isDragging ? "#1e9df1" : "rgba(255,255,255,0.15)"}`,
-                    background: isDragging ? "rgba(30, 157, 242,0.08)" : "rgba(255,255,255,0.03)",
+                    border: `2px dashed ${isDragging ? "#1e9df1" : "var(--card-border)"}`,
+                    background: isDragging ? "rgba(30, 157, 242,0.08)" : "var(--hover-bg)",
                     display: "flex", flexDirection: "column",
                     alignItems: "center", justifyContent: "center",
                     cursor: "pointer", transition: "all 0.3s", gap: 16,
@@ -327,8 +327,8 @@ export default function CreerReelPage() {
                 <div style={{
                   display: "flex", alignItems: "center", gap: 10,
                   padding: "12px 16px", borderRadius: 12,
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "var(--hover-bg)",
+                  border: "1px solid var(--hover-bg)",
                 }}>
                   <FileVideo size={18} color="#1e9df1" />
                   <div style={{ flex: 1 }}>
@@ -412,7 +412,7 @@ export default function CreerReelPage() {
               </div>
               <div style={{
                 position: "relative", height: 32, borderRadius: 8,
-                background: "rgba(255,255,255,0.08)", overflow: "hidden",
+                background: "var(--hover-bg)", overflow: "hidden",
               }}>
                 {/* Trim region */}
                 <div style={{
@@ -464,9 +464,9 @@ export default function CreerReelPage() {
                     flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                     padding: "10px 0", borderRadius: 12, fontSize: 13, fontWeight: 500,
                     cursor: "pointer", transition: "all 0.2s",
-                    background: activeTool2 === tool.key ? "rgba(30, 157, 242,0.2)" : "rgba(255,255,255,0.05)",
-                    color: activeTool2 === tool.key ? "#1e9df1" : "var(--text, #fff)",
-                    border: activeTool2 === tool.key ? "1px solid #1e9df1" : "1px solid var(--border, rgba(255,255,255,0.1))",
+                    background: activeTool2 === tool.key ? "rgba(30, 157, 242,0.2)" : "var(--hover-bg)",
+                    color: activeTool2 === tool.key ? "#1e9df1" : "var(--foreground)",
+                    border: activeTool2 === tool.key ? "1px solid #1e9df1" : "1px solid var(--border, var(--divider))",
                   }}
                 >
                   {tool.icon} {tool.label}
@@ -529,9 +529,9 @@ export default function CreerReelPage() {
                         onChange={(e) => setCaption({ ...caption, text: e.target.value })}
                         style={{
                           width: "100%", padding: "10px 14px", borderRadius: 10,
-                          background: "rgba(255,255,255,0.08)",
-                          border: "1px solid var(--border, rgba(255,255,255,0.1))",
-                          color: "var(--text, #fff)", fontSize: 14, outline: "none",
+                          background: "var(--hover-bg)",
+                          border: "1px solid var(--border, var(--divider))",
+                          color: "var(--foreground)", fontSize: 14, outline: "none",
                           boxSizing: "border-box",
                         }}
                       />
@@ -547,7 +547,7 @@ export default function CreerReelPage() {
                               style={{
                                 flex: 1, padding: "8px 0", borderRadius: 8,
                                 fontSize: 12, fontWeight: 500, cursor: "pointer",
-                                background: caption.position === pos ? "#1e9df1" : "rgba(255,255,255,0.08)",
+                                background: caption.position === pos ? "#1e9df1" : "var(--hover-bg)",
                                 color: caption.position === pos ? "#fff" : "var(--text-muted, #aaa)",
                                 border: "none", transition: "all 0.2s",
                               }}
@@ -628,8 +628,8 @@ export default function CreerReelPage() {
             {/* Preview thumbnail */}
             <div style={{
               display: "flex", gap: 14, padding: 14, borderRadius: 14,
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid var(--border, rgba(255,255,255,0.08))",
+              background: "var(--hover-bg)",
+              border: "1px solid var(--border, var(--hover-bg))",
             }}>
               <div style={{
                 width: 80, height: 120, borderRadius: 10, overflow: "hidden", flexShrink: 0,
@@ -665,9 +665,9 @@ export default function CreerReelPage() {
                 rows={4}
                 style={{
                   width: "100%", padding: "12px", borderRadius: 10,
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid var(--border, rgba(255,255,255,0.1))",
-                  color: "var(--text, #fff)", fontSize: 14, outline: "none",
+                  background: "var(--hover-bg)",
+                  border: "1px solid var(--border, var(--divider))",
+                  color: "var(--foreground)", fontSize: 14, outline: "none",
                   resize: "vertical", fontFamily: "inherit", boxSizing: "border-box",
                 }}
               />
@@ -694,9 +694,9 @@ export default function CreerReelPage() {
                   placeholder="Ajouter un hashtag..."
                   style={{
                     flex: 1, padding: "8px 12px", borderRadius: 8,
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid var(--border, rgba(255,255,255,0.1))",
-                    color: "var(--text, #fff)", fontSize: 13, outline: "none",
+                    background: "var(--hover-bg)",
+                    border: "1px solid var(--border, var(--divider))",
+                    color: "var(--foreground)", fontSize: 13, outline: "none",
                   }}
                 />
                 <button
@@ -751,7 +751,7 @@ export default function CreerReelPage() {
                       style={{
                         padding: "5px 12px", borderRadius: 8, fontSize: 12,
                         cursor: "pointer", fontWeight: 500,
-                        background: visibility === v ? "#1e9df1" : "rgba(255,255,255,0.08)",
+                        background: visibility === v ? "#1e9df1" : "var(--hover-bg)",
                         color: visibility === v ? "#fff" : "var(--text-muted, #aaa)",
                         border: "none", transition: "all 0.2s",
                       }}
@@ -776,7 +776,7 @@ export default function CreerReelPage() {
                       style={{
                         padding: "5px 12px", borderRadius: 8, fontSize: 12,
                         cursor: "pointer", fontWeight: 500,
-                        background: comments === c ? "#1e9df1" : "rgba(255,255,255,0.08)",
+                        background: comments === c ? "#1e9df1" : "var(--hover-bg)",
                         color: comments === c ? "#fff" : "var(--text-muted, #aaa)",
                         border: "none", transition: "all 0.2s",
                       }}
@@ -798,7 +798,7 @@ export default function CreerReelPage() {
                   style={{
                     width: 44, height: 24, borderRadius: 12, border: "none",
                     cursor: "pointer", position: "relative",
-                    background: lienApporteur ? "#1e9df1" : "rgba(255,255,255,0.15)",
+                    background: lienApporteur ? "#1e9df1" : "var(--card-border)",
                     transition: "background 0.3s",
                   }}
                 >

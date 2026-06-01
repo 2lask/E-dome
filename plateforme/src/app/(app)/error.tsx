@@ -25,7 +25,7 @@ export default function ErrorPage({
         <button
           onClick={reset}
           className="px-6 py-3 rounded-xl font-medium transition-colors cursor-pointer"
-          style={{ background: "var(--gold)", color: "#000" }}
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
         >
           Réessayer
         </button>
