@@ -62,14 +62,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 />
               </div>
 
-              {/* Mobile sidebar overlay */}
+              {/* Mobile sidebar overlay : fade-in du voile, slide-in de la sidebar */}
               {mobileMenuOpen && (
                 <div className="fixed inset-0 z-50 md:hidden">
                   <div
-                    className="absolute inset-0 bg-black/60"
+                    className="absolute inset-0 bg-black/60 animate-fade-in"
                     onClick={() => setMobileMenuOpen(false)}
                   />
-                  <div className="relative z-10 h-full w-[280px]">
+                  <div className="relative z-10 h-full w-[280px] animate-slide-in-left">
                     <Sidebar
                       collapsed={false}
                       onToggle={() => setMobileMenuOpen(false)}

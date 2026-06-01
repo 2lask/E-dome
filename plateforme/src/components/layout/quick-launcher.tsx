@@ -175,7 +175,7 @@ export function QuickLauncher({ open, onClose }: QuickLauncherProps) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl rounded-2xl overflow-hidden flex flex-col max-h-[calc(100vh-8rem)]"
+        className="w-full max-w-3xl rounded-2xl overflow-hidden flex flex-col max-h-[calc(100vh-8rem)] animate-scale-in"
         style={{
           background: "var(--card)",
           border: "1px solid var(--card-border)",

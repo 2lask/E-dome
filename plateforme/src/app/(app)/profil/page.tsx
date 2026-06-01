@@ -76,7 +76,7 @@ export default function ProfilPage() {
 
       {showEditModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
           style={{ background: "rgba(0,0,0,0.5)" }}
           onClick={() => setShowEditModal(false)}
         >

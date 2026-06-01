@@ -331,8 +331,8 @@ export function ProfileVitrine({
         </div>
       </nav>
 
-      {/* Contenu par onglet */}
-      <div className="px-4 md:px-6">
+      {/* Contenu par onglet — fade-in léger au changement d'onglet via key */}
+      <div key={tab} className="px-4 md:px-6 animate-fade-in">
         {tab === "publications" && (
           data.publications.length === 0 ? <EmptyState label="Aucune publication" /> : (
             <ul className="grid grid-cols-2 md:grid-cols-3 gap-3">

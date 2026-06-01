@@ -611,9 +611,9 @@ export default function BoutiquePage() {
         {/* Drawer panier */}
         {cartOpen && (
           <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setCartOpen(false)}>
-            <div className="absolute inset-0" style={{ background: "rgba(15,23,42,0.4)" }} />
+            <div className="absolute inset-0 animate-fade-in" style={{ background: "rgba(15,23,42,0.4)" }} />
             <aside onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md h-full flex flex-col animate-fade-in"
+              className="relative w-full max-w-md h-full flex flex-col animate-slide-in-right"
               style={{ background: "var(--card)", borderLeft: "1px solid var(--card-border)" }}
             >
               <header className="flex items-center justify-between px-5 py-4"
