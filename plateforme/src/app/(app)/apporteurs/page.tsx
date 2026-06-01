@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useApp } from "@/lib/context";
-import { LottiePlayer } from "@/components/ui/lottie-player";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -187,7 +186,6 @@ export default function ApporteursPage() {
               <span className="text-xs text-[var(--text-muted)] truncate flex-1">{link.url}</span>
             </div>
             <div className="flex gap-2 items-center">
-              <LottiePlayer src="/lottie/lottieflow-social-networks-16-11-000000-easey.json" width={40} height={40} className="flex-shrink-0" />
               <button
                 onClick={() => handleCopy(link.url, idx)}
                 className="flex-1 px-3 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"

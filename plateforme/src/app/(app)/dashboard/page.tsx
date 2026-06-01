@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useApp } from "@/lib/context";
 import type { Transaction, MonthlyRevenue } from "@/lib/types";
-import { LottiePlayer } from "@/components/ui/lottie-player";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -304,13 +303,10 @@ export default function DashboardPage() {
                 <Sparkline data={kpi.sparkline} />
               </div>
               <div className="flex items-center gap-2">
-                <div className="text-2xl font-bold text-[var(--foreground)]">
+                <div className="text-2xl font-bold text-[var(--foreground)] tabular-nums">
                   {kpi.isCurrency ? formatPrice(kpi.value) : kpi.value}
                   {kpi.suffix || ""}
                 </div>
-                {kpi.isCurrency && (
-                  <LottiePlayer src="/lottie/lottieflow-ecommerce-14-17-000000-easey.json" width={48} height={48} />
-                )}
               </div>
               <div className={`text-xs mt-1 ${isUp ? "text-emerald-400" : "text-red-400"}`}>
                 {isUp ? "+" : ""}

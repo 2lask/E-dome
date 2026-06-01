@@ -21,10 +21,12 @@ import {
   Video,
   CalendarDays,
   Briefcase,
+  LayoutGrid,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { conversations } from "@/lib/mock-data";
+import { QuickLauncher } from "./quick-launcher";
 
 /* ─────────────────────────────────────────────────────────────
    Sidebar refonte épurée — 6 entrées visibles.
@@ -84,6 +86,19 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
+  const [launcherOpen, setLauncherOpen] = useState(false);
+
+  // Raccourci global Cmd+K / Ctrl+K pour ouvrir le launcher
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
+        e.preventDefault();
+        setLauncherOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const createRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
 
@@ -134,6 +149,45 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
+
+      {/* Bouton "Tout" — lanceur d'accès rapide à toutes les fonctionnalités.
+          Ne surcharge pas la sidebar (qui reste à 6 entrées) — ouvre un
+          panneau plein écran avec recherche + grille de catégories. */}
+      <div className="px-3 pt-1 pb-1">
+        <button
+          onClick={() => setLauncherOpen(true)}
+          className={cn(
+            "w-full flex items-center gap-3 rounded-xl transition-colors cursor-pointer",
+            collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
+          )}
+          style={{
+            background: "var(--hover-bg)",
+            color: "var(--foreground)",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--card-border)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+          title={collapsed ? "Tout (⌘K)" : "Toutes les fonctionnalités"}
+        >
+          <LayoutGrid size={18} />
+          {!collapsed && (
+            <>
+              <span className="font-medium text-sm">Tout</span>
+              <span
+                className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md font-medium tabular-nums"
+                style={{
+                  background: "var(--card)",
+                  color: "var(--text-muted)",
+                  border: "1px solid var(--card-border)",
+                }}
+              >
+                ⌘K
+              </span>
+            </>
+          )}
+        </button>
+      </div>
+
+      <QuickLauncher open={launcherOpen} onClose={() => setLauncherOpen(false)} />
 
       {/* Bouton + Créer */}
       <div className="px-3 pt-1 pb-2 relative" ref={createRef}>
