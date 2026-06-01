@@ -17,8 +17,12 @@ import {
   ChefHat,
   Sparkles,
   MapPin,
+  SlidersHorizontal,
+  ChevronRight,
+  ArrowUpDown,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { BlurImage } from "@/components/ui/blur-image";
 
 /* ─── Pôle Boutique e-commerce (V1.0) ────────────────────────────────────────
    Refonte style marketplace e-commerce (esprit eBay) :
@@ -136,6 +140,16 @@ export default function BoutiquePage() {
   const [sort, setSort] = useState<SortKey>("popular");
   const [toastVisible, setToastVisible] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false); // mobile drawer
+
+  const activeFiltersCount =
+    (conditions.size) +
+    (freeShippingOnly ? 1 : 0) +
+    (topRatedOnly ? 1 : 0) +
+    (priceMin ? 1 : 0) +
+    (priceMax ? 1 : 0);
+
+  const activeCategory = CATEGORIES.find((c) => c.key === category);
 
   const toggleCondition = (c: Condition) => {
     setConditions((prev) => {
@@ -252,11 +266,36 @@ export default function BoutiquePage() {
           />
         </div>
 
+        {/* Breadcrumb façon eBay : Boutique > Catégorie active */}
+        <nav aria-label="Fil d'Ariane" className="flex items-center gap-1.5 text-xs" style={{ color: "var(--text-muted)" }}>
+          <Link href="/boutique" className="hover:underline transition-colors" style={{ color: "var(--text-secondary)" }}>
+            Boutique
+          </Link>
+          {activeCategory && activeCategory.key !== "all" && (
+            <>
+              <ChevronRight size={12} />
+              <span style={{ color: "var(--foreground)" }} className="font-medium">
+                {activeCategory.label}
+              </span>
+            </>
+          )}
+          {search && (
+            <>
+              <ChevronRight size={12} />
+              <span style={{ color: "var(--foreground)" }} className="font-medium">
+                « {search} »
+              </span>
+            </>
+          )}
+        </nav>
+
         {/* Grid : sidebar filtres + grille produits */}
         <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-5 items-start">
 
-          {/* Sidebar filtres */}
-          <aside className="lg:sticky lg:top-20 self-start space-y-5">
+          {/* Sidebar filtres — desktop sticky, mobile drawer */}
+          <aside
+            className={`${filtersOpen ? "block" : "hidden lg:block"} lg:sticky lg:top-20 self-start space-y-5`}
+          >
 
             {/* Catégories */}
             <div className="rounded-xl overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
@@ -388,47 +427,73 @@ export default function BoutiquePage() {
           {/* Contenu : tri + grille produits */}
           <div className="space-y-4 min-w-0">
 
-            {/* Bar de tri */}
+            {/* Bar de tri + filtres mobile */}
             <div className="flex items-center justify-between gap-3 flex-wrap">
-              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
-                  {filtered.length}
-                </span>
-                {" "}produit{filtered.length > 1 ? "s" : ""} trouvé{filtered.length > 1 ? "s" : ""}
-                {category !== "all" && (
-                  <> dans <span className="font-medium" style={{ color: "var(--foreground)" }}>{CATEGORIES.find((c) => c.key === category)?.label}</span></>
-                )}
-              </p>
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as SortKey)}
-                className="px-3 py-1.5 rounded-lg text-xs outline-none cursor-pointer"
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Bouton Filtres mobile uniquement (la sidebar est cachee < lg) */}
+                <button
+                  onClick={() => setFiltersOpen((v) => !v)}
+                  className="lg:hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                  style={{ background: "var(--card)", border: "1px solid var(--card-border)", color: "var(--foreground)" }}
+                >
+                  <SlidersHorizontal size={13} />
+                  Filtres
+                  {activeFiltersCount > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-semibold px-1 tabular-nums"
+                      style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
+                      {activeFiltersCount}
+                    </span>
+                  )}
+                </button>
+                <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+                  <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
+                    {filtered.length}
+                  </span>
+                  {" "}résultat{filtered.length > 1 ? "s" : ""}
+                </p>
+              </div>
+              <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-colors"
                 style={{ background: "var(--card)", border: "1px solid var(--card-border)", color: "var(--foreground)" }}
               >
-                {SORTS.map((s) => (
-                  <option key={s.key} value={s.key}>
-                    Trier : {s.label}
-                  </option>
-                ))}
-              </select>
+                <ArrowUpDown size={13} style={{ color: "var(--text-muted)" }} />
+                <span style={{ color: "var(--text-muted)" }}>Trier :</span>
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as SortKey)}
+                  className="bg-transparent outline-none cursor-pointer font-medium"
+                  style={{ color: "var(--foreground)" }}
+                >
+                  {SORTS.map((s) => (
+                    <option key={s.key} value={s.key}>{s.label}</option>
+                  ))}
+                </select>
+              </label>
             </div>
 
             {/* Grille produits dense */}
             {filtered.length === 0 ? (
-              <p className="text-center py-12 text-sm" style={{ color: "var(--text-muted)" }}>
-                Aucun produit ne correspond à vos critères.
-              </p>
+              <div className="py-16 text-center space-y-3" style={{ color: "var(--text-muted)" }}>
+                <Search size={32} className="mx-auto opacity-40" />
+                <p className="text-sm">Aucun produit ne correspond à vos critères.</p>
+                <button
+                  onClick={resetFilters}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                  style={{ background: "var(--hover-bg)", color: "var(--foreground)" }}
+                >
+                  Réinitialiser les filtres
+                </button>
+              </div>
             ) : (
               <ul className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
                 {filtered.map((p) => {
                   const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
                   return (
-                    <li key={p.id} className="rounded-xl overflow-hidden flex flex-col transition-colors"
+                    <li key={p.id} className="rounded-xl overflow-hidden flex flex-col transition-all duration-200 hover:shadow-[0_4px_16px_rgba(15,23,42,0.06)] hover:-translate-y-0.5"
                       style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
 
                       {/* Photo + badges */}
-                      <Link href={`/boutique/${p.id}`} className="relative block bg-[var(--hover-bg)]" style={{ aspectRatio: "4/3" }}>
-                        <img src={p.cover} alt={p.title} className="absolute inset-0 w-full h-full object-cover" />
+                      <Link href={`/boutique/${p.id}`} className="relative block bg-[var(--hover-bg)] overflow-hidden group" style={{ aspectRatio: "4/3" }}>
+                        <BlurImage src={p.cover} alt={p.title} className="group-hover:scale-105 transition-transform duration-500" />
                         {p.topRated && (
                           <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold"
                             style={{ background: "#0f172a", color: "#fff" }}>
