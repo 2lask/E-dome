@@ -2,99 +2,190 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { ShoppingBag, X } from "lucide-react";
+import {
+  ShoppingBag,
+  X,
+  Search,
+  Star,
+  Truck,
+  Shield,
+  Sofa,
+  Lamp,
+  Wrench,
+  Plug,
+  Hammer,
+  ChefHat,
+  Sparkles,
+  MapPin,
+} from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Pôle Boutique e-commerce (V1.0) ────────────────────────────────────────
-   Marketplace produits intégrée : meubles, décoration, matériaux de
-   construction, cuisines, équipements, électroménager. Les vendeurs créent
-   leur boutique et restent entièrement responsables de leurs produits.
-   E-Dome fournit la vitrine, le paiement sécurisé et la visibilité.
-   Commission marketplace 4–8 % au lancement. Aucun abonnement imposé. */
+   Refonte style marketplace e-commerce (esprit eBay) :
+   - Sidebar gauche : catégories + filtres (état, prix, livraison, top vendeur)
+   - Recherche en tête + tri
+   - Grille dense de cartes produit avec toutes les infos clés visibles
+     (photo, titre, prix, frais de port, vendeur + note, état, localisation,
+     délai de livraison)
+   - Panier persistant + drawer (via useApp)
+   E-Dome fournit la vitrine + paiement + visibilité. Vendeurs responsables
+   de produits, expéditions et SAV. Commission marketplace 4–8 %, jamais
+   ajoutée au prix payé par l'acheteur. */
 
-const CATEGORIES = [
-  { label: "Tous", icon: "🛍️" },
-  { label: "Meubles", icon: "🛋️" },
-  { label: "Décoration", icon: "🖼️" },
-  { label: "Matériaux", icon: "🧱" },
-  { label: "Cuisines", icon: "🍳" },
-  { label: "Équipements", icon: "🔧" },
-  { label: "Électroménager", icon: "🔌" },
+// ─── Types ────────────────────────────────────────────────────────────────
+
+type Condition = "Neuf" | "Reconditionné" | "Occasion";
+
+interface Product {
+  id: string;
+  title: string;
+  category: string;
+  cover: string;
+  price: number;
+  oldPrice?: number;
+  condition: Condition;
+  vendor: string;
+  vendorCity: string;
+  vendorRating: number;
+  vendorReviews: number;
+  topRated?: boolean;
+  shipping: number; // 0 = gratuit
+  shippingDays: string;
+  stock: number;
+  reviews: number;
+  rating: number;
+  sold: number;
+}
+
+// ─── Catégories (sidebar tree) ────────────────────────────────────────────
+
+const CATEGORIES: { key: string; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
+  { key: "all", label: "Tout", icon: Sparkles },
+  { key: "Meubles", label: "Meubles", icon: Sofa },
+  { key: "Décoration", label: "Décoration", icon: Lamp },
+  { key: "Matériaux", label: "Matériaux", icon: Hammer },
+  { key: "Cuisines", label: "Cuisines", icon: ChefHat },
+  { key: "Équipements", label: "Équipements", icon: Wrench },
+  { key: "Électroménager", label: "Électroménager", icon: Plug },
 ];
 
-const GRADIENTS = [
-  "from-amber-500 to-orange-600",
-  "from-rose-500 to-pink-600",
-  "from-slate-500 to-zinc-700",
-  "from-emerald-500 to-teal-600",
-  "from-purple-500 to-violet-600",
-  "from-blue-500 to-indigo-600",
-  "from-cyan-500 to-sky-600",
-  "from-red-500 to-rose-600",
-  "from-yellow-500 to-amber-600",
+const CONDITIONS: Condition[] = ["Neuf", "Reconditionné", "Occasion"];
+
+// ─── Mocks (produits enrichis) ────────────────────────────────────────────
+
+const PRODUCTS: Product[] = [
+  { id: "b1",  title: "Canapé d'angle modulable lin naturel",           category: "Meubles",         cover: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600", price: 2490,  oldPrice: 2890, condition: "Neuf",           vendor: "Maison Léman",     vendorCity: "Lausanne",   vendorRating: 4.8, vendorReviews: 412, topRated: true,  shipping: 0,   shippingDays: "3-5 j",   stock: 4,  reviews: 142, rating: 4.8, sold: 86 },
+  { id: "b2",  title: "Lampadaire design laiton noir",                  category: "Décoration",      cover: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=600", price: 389,                   condition: "Neuf",           vendor: "Studio Verbier",   vendorCity: "Verbier",    vendorRating: 4.6, vendorReviews: 218,                  shipping: 12,  shippingDays: "2-4 j",   stock: 12, reviews: 67,  rating: 4.6, sold: 132 },
+  { id: "b3",  title: "Parquet chêne massif huilé — 18 m²",              category: "Matériaux",       cover: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=600", price: 1480,                  condition: "Neuf",           vendor: "Bois & Co.",       vendorCity: "Bulle",      vendorRating: 4.9, vendorReviews: 318, topRated: true,  shipping: 89,  shippingDays: "7-10 j",  stock: 22, reviews: 203, rating: 4.9, sold: 56 },
+  { id: "b4",  title: "Cuisine sur mesure noyer + îlot quartz",         category: "Cuisines",        cover: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600", price: 18900,                 condition: "Neuf",           vendor: "Cuisinea Geneva",  vendorCity: "Genève",     vendorRating: 4.7, vendorReviews: 92,                   shipping: 0,   shippingDays: "Sur RDV", stock: 1,  reviews: 38,  rating: 4.7, sold: 12 },
+  { id: "b5",  title: "Robinet mitigeur cuivre brossé",                 category: "Équipements",     cover: "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=600", price: 245,                   condition: "Neuf",           vendor: "Plumbing Pro",     vendorCity: "Zurich",     vendorRating: 4.5, vendorReviews: 156,                  shipping: 9,   shippingDays: "2-3 j",   stock: 35, reviews: 88,  rating: 4.5, sold: 240 },
+  { id: "b6",  title: "Lave-vaisselle encastrable A+++",                category: "Électroménager",  cover: "https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?w=600", price: 1290,  oldPrice: 1490, condition: "Reconditionné",  vendor: "ElectroMax",       vendorCity: "Bâle",       vendorRating: 4.4, vendorReviews: 184,                  shipping: 49,  shippingDays: "5-7 j",   stock: 8,  reviews: 56,  rating: 4.4, sold: 41 },
+  { id: "b7",  title: "Table basse marbre travertin",                   category: "Meubles",         cover: "https://images.unsplash.com/photo-1554995207-c18c203602cb?w=600", price: 690,                   condition: "Neuf",           vendor: "Maison Léman",     vendorCity: "Lausanne",   vendorRating: 4.8, vendorReviews: 412, topRated: true,  shipping: 0,   shippingDays: "3-5 j",   stock: 6,  reviews: 41,  rating: 4.7, sold: 28 },
+  { id: "b8",  title: "Set de 4 chaises bouclette écru",                category: "Meubles",         cover: "https://images.unsplash.com/photo-1592078615290-033ee584e267?w=600", price: 980,                   condition: "Neuf",           vendor: "Deco Studio",      vendorCity: "Neuchâtel",  vendorRating: 4.6, vendorReviews: 134,                  shipping: 0,   shippingDays: "3-5 j",   stock: 14, reviews: 92,  rating: 4.6, sold: 62 },
+  { id: "b9",  title: "Carrelage grès cérame XXL — 24 m²",               category: "Matériaux",       cover: "https://images.unsplash.com/photo-1615875605825-5eb9bb5d52ac?w=600", price: 2160,                  condition: "Neuf",           vendor: "TileMaster",       vendorCity: "Sion",       vendorRating: 4.8, vendorReviews: 286,                  shipping: 120, shippingDays: "7-12 j",  stock: 18, reviews: 117, rating: 4.8, sold: 34 },
+  { id: "b10", title: "Vase grès noir mat — 35 cm",                     category: "Décoration",      cover: "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600", price: 65,                    condition: "Neuf",           vendor: "Atelier Argile",   vendorCity: "Fribourg",   vendorRating: 4.9, vendorReviews: 76,  topRated: true,  shipping: 7,   shippingDays: "2-3 j",   stock: 22, reviews: 31,  rating: 4.9, sold: 88 },
+  { id: "b11", title: "Plaid lin lavé bleu nuit",                       category: "Décoration",      cover: "https://images.unsplash.com/photo-1576020799627-aeac74d58064?w=600", price: 89,                    condition: "Neuf",           vendor: "Linen House",      vendorCity: "Vevey",      vendorRating: 4.7, vendorReviews: 168,                  shipping: 0,   shippingDays: "2-4 j",   stock: 14, reviews: 54,  rating: 4.7, sold: 174 },
+  { id: "b12", title: "Four pyrolyse encastrable 71 L",                 category: "Électroménager",  cover: "https://images.unsplash.com/photo-1574269910231-bc508bcb8e29?w=600", price: 749,   oldPrice: 899,  condition: "Neuf",           vendor: "ElectroMax",       vendorCity: "Bâle",       vendorRating: 4.4, vendorReviews: 184,                  shipping: 35,  shippingDays: "5-7 j",   stock: 11, reviews: 73,  rating: 4.5, sold: 49 },
+  { id: "b13", title: "Plan de travail bois massif chêne",              category: "Cuisines",        cover: "https://images.unsplash.com/photo-1556909114-44e3e9636da7?w=600", price: 540,                   condition: "Neuf",           vendor: "Bois & Co.",       vendorCity: "Bulle",      vendorRating: 4.9, vendorReviews: 318, topRated: true,  shipping: 65,  shippingDays: "5-8 j",   stock: 9,  reviews: 28,  rating: 4.8, sold: 22 },
+  { id: "b14", title: "Perceuse visseuse 18 V (occasion testée)",       category: "Équipements",     cover: "https://images.unsplash.com/photo-1583858175013-d3b7ec3a0f44?w=600", price: 89,    oldPrice: 159,  condition: "Occasion",       vendor: "OutilsRéparés",    vendorCity: "Genève",     vendorRating: 4.3, vendorReviews: 64,                   shipping: 12,  shippingDays: "3-5 j",   stock: 3,  reviews: 14,  rating: 4.2, sold: 17 },
+  { id: "b15", title: "Suspension cuivre artisanale",                   category: "Décoration",      cover: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=600", price: 215,                   condition: "Neuf",           vendor: "Atelier Argile",   vendorCity: "Fribourg",   vendorRating: 4.9, vendorReviews: 76,  topRated: true,  shipping: 15,  shippingDays: "2-3 j",   stock: 8,  reviews: 22,  rating: 4.9, sold: 41 },
+  { id: "b16", title: "Hotte aspirante îlot inox",                      category: "Électroménager",  cover: "https://images.unsplash.com/photo-1556909114-37c9b8aacc7e?w=600", price: 1190,                  condition: "Neuf",           vendor: "ElectroMax",       vendorCity: "Bâle",       vendorRating: 4.4, vendorReviews: 184,                  shipping: 0,   shippingDays: "7-10 j",  stock: 4,  reviews: 19,  rating: 4.4, sold: 12 },
 ];
 
-const PRODUCTS = [
-  { id: "b1", title: "Canapé d'angle modulable lin naturel", category: "Meubles", vendor: "Maison Léman", vendorAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop", rating: 4.8, reviews: 142, price: 2490, stock: 4, gradient: 0 },
-  { id: "b2", title: "Lampadaire design laiton noir", category: "Décoration", vendor: "Studio Verbier", vendorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop", rating: 4.6, reviews: 67, price: 389, stock: 12, gradient: 1 },
-  { id: "b3", title: "Parquet chêne massif huilé — 18 m²", category: "Matériaux", vendor: "Bois & Co.", vendorAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 4.9, reviews: 203, price: 1480, unit: "/ 18 m²", stock: 22, gradient: 2 },
-  { id: "b4", title: "Cuisine sur mesure noyer + îlot quartz", category: "Cuisines", vendor: "Cuisinea Geneva", vendorAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 4.7, reviews: 38, price: 18900, stock: 1, gradient: 3 },
-  { id: "b5", title: "Robinet mitigeur cuivre brossé", category: "Équipements", vendor: "Plumbing Pro", vendorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop", rating: 4.5, reviews: 88, price: 245, stock: 35, gradient: 4 },
-  { id: "b6", title: "Lave-vaisselle encastrable A+++", category: "Électroménager", vendor: "ElectroMax", vendorAvatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=60&h=60&fit=crop", rating: 4.4, reviews: 56, price: 1290, stock: 8, gradient: 5 },
-  { id: "b7", title: "Table basse marbre travertin", category: "Meubles", vendor: "Maison Léman", vendorAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop", rating: 4.7, reviews: 41, price: 690, stock: 6, gradient: 6 },
-  { id: "b8", title: "Set de 4 chaises bouclette écru", category: "Meubles", vendor: "Deco Studio", vendorAvatar: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=60&h=60&fit=crop", rating: 4.6, reviews: 92, price: 980, unit: "/ set 4", stock: 14, gradient: 7 },
-  { id: "b9", title: "Carrelage grès cérame XXL — 24 m²", category: "Matériaux", vendor: "TileMaster", vendorAvatar: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=60&h=60&fit=crop", rating: 4.8, reviews: 117, price: 2160, unit: "/ 24 m²", stock: 18, gradient: 8 },
-];
+const SORTS = [
+  { key: "popular",   label: "Plus populaires" },
+  { key: "price-asc", label: "Prix croissant" },
+  { key: "price-desc",label: "Prix décroissant" },
+  { key: "rating",    label: "Meilleures notes" },
+  { key: "new",       label: "Nouveautés" },
+] as const;
 
-const STEPS = [
-  { number: "1", title: "Parcourez le catalogue", desc: "Filtrez par catégorie ou recherchez directement le produit qu'il vous faut. Vendeurs vérifiés, fiches détaillées." },
-  { number: "2", title: "Ajoutez au panier", desc: "Comparez, ajoutez vos produits au panier, profitez du paiement sécurisé E-Dome." },
-  { number: "3", title: "Livraison et SAV", desc: "Le vendeur expédie et reste responsable du produit. Le SAV passe par la messagerie E-Dome." },
-];
+type SortKey = typeof SORTS[number]["key"];
 
-/* ─── Stars ──────────────────────────────────────────────────────────────── */
+// ─── Étoiles ────────────────────────────────────────────────────────────
 
-function Stars({ rating }: { rating: number }) {
+function Stars({ rating, size = 13 }: { rating: number; size?: number }) {
   return (
-    <span className="flex items-center gap-0.5">
+    <span className="inline-flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((s) => (
-        <svg key={s} className={`w-3.5 h-3.5 ${s <= Math.round(rating) ? "text-amber-400" : "text-[var(--text-muted)]"}`} fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
+        <Star
+          key={s}
+          size={size}
+          style={{
+            color: s <= Math.round(rating) ? "#fbbf24" : "var(--card-border)",
+            fill: s <= Math.round(rating) ? "#fbbf24" : "transparent",
+          }}
+        />
       ))}
-      <span className="text-xs text-[var(--text-muted)] ml-1">{rating.toFixed(1)}</span>
     </span>
   );
 }
 
-/* ─── Page ───────────────────────────────────────────────────────────────── */
+// ─── Page ──────────────────────────────────────────────────────────────
 
 export default function BoutiquePage() {
   const { formatPrice, cart, cartCount, addToCart, updateCartQty, removeFromCart, clearCart } = useApp();
+
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("Tous");
+  const [category, setCategory] = useState("all");
+  const [conditions, setConditions] = useState<Set<Condition>>(new Set());
+  const [freeShippingOnly, setFreeShippingOnly] = useState(false);
+  const [topRatedOnly, setTopRatedOnly] = useState(false);
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+  const [sort, setSort] = useState<SortKey>("popular");
   const [toastVisible, setToastVisible] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const filtered = useMemo(() => {
-    return PRODUCTS.filter((p) => {
-      const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.vendor.toLowerCase().includes(search.toLowerCase());
-      const matchCat = category === "Tous" || p.category === category;
-      return matchSearch && matchCat;
+  const toggleCondition = (c: Condition) => {
+    setConditions((prev) => {
+      const next = new Set(prev);
+      if (next.has(c)) next.delete(c);
+      else next.add(c);
+      return next;
     });
-  }, [search, category]);
+  };
+
+  const resetFilters = () => {
+    setSearch("");
+    setCategory("all");
+    setConditions(new Set());
+    setFreeShippingOnly(false);
+    setTopRatedOnly(false);
+    setPriceMin("");
+    setPriceMax("");
+  };
+
+  const filtered = useMemo(() => {
+    const minN = priceMin ? Number(priceMin) : 0;
+    const maxN = priceMax ? Number(priceMax) : Infinity;
+    const arr = PRODUCTS.filter((p) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch = !q || p.title.toLowerCase().includes(q) || p.vendor.toLowerCase().includes(q);
+      const matchCat = category === "all" || p.category === category;
+      const matchCond = conditions.size === 0 || conditions.has(p.condition);
+      const matchShip = !freeShippingOnly || p.shipping === 0;
+      const matchTop = !topRatedOnly || p.topRated === true;
+      const matchPrice = p.price >= minN && p.price <= maxN;
+      return matchSearch && matchCat && matchCond && matchShip && matchTop && matchPrice;
+    });
+    switch (sort) {
+      case "price-asc":   arr.sort((a, b) => a.price - b.price); break;
+      case "price-desc":  arr.sort((a, b) => b.price - a.price); break;
+      case "rating":      arr.sort((a, b) => b.rating - a.rating); break;
+      case "new":         arr.sort((a, b) => b.stock - a.stock); break;
+      case "popular":
+      default:            arr.sort((a, b) => b.sold - a.sold); break;
+    }
+    return arr;
+  }, [search, category, conditions, freeShippingOnly, topRatedOnly, priceMin, priceMax, sort]);
 
   const isInCart = (id: string) => cart.some((c) => c.id === id);
 
-  const handleAddToCart = (product: typeof PRODUCTS[number]) => {
-    addToCart({
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      currency: "CHF",
-    });
+  const handleAddToCart = (p: Product) => {
+    addToCart({ id: p.id, title: p.title, price: p.price, currency: "CHF", cover: p.cover });
     setToastVisible(true);
-    setTimeout(() => setToastVisible(false), 2500);
+    setTimeout(() => setToastVisible(false), 2200);
   };
 
   const cartSubtotal = useMemo(
@@ -103,122 +194,351 @@ export default function BoutiquePage() {
   );
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
+    <div className="min-h-screen text-[var(--foreground)]">
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <header className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl page-heading">Boutique</h1>
-            <p className="text-[var(--text-secondary)] mt-1">Meubles, décoration, matériaux, équipements — tout pour votre bien</p>
+            <h1 className="text-3xl page-heading">Boutique E-Dome</h1>
+            <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
+              Marketplace : meubles, déco, matériaux, cuisines, équipements, électroménager — vendeurs vérifiés.
+            </p>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap w-full sm:w-auto">
             <button
               onClick={() => setCartOpen(true)}
-              className="relative inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
-              style={{
-                border: "1px solid var(--card-border)",
-                background: "var(--card)",
-                color: "var(--foreground)",
-              }}
+              className="relative inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
+              style={{ border: "1px solid var(--card-border)", background: "var(--card)", color: "var(--foreground)" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "var(--card)")}
-              aria-label={`Panier (${cartCount} articles)`}
             >
               <ShoppingBag size={16} />
               Panier
               {cartCount > 0 && (
-                <span
-                  className="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 rounded-full text-[11px] font-semibold px-1.5 tabular-nums"
-                  style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-                >
+                <span className="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 rounded-full text-[11px] font-semibold px-1.5 tabular-nums"
+                  style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
                   {cartCount}
                 </span>
               )}
             </button>
-            <Link href="/boutique/vendre" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
+            <Link href="/boutique/vendre" className="px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-white"
+              style={{ background: "var(--primary)" }}>
               Vendre un produit
             </Link>
           </div>
+        </header>
+
+        {/* Cadrage V1.0 — discret */}
+        <div className="rounded-xl px-3 py-2 text-xs flex items-start gap-2"
+          style={{ background: "var(--card)", border: "1px solid var(--card-border)", color: "var(--text-secondary)" }}>
+          <Shield size={14} style={{ color: "var(--primary)", marginTop: 1 }} className="shrink-0" />
+          <span>
+            <strong style={{ color: "var(--foreground)" }}>E-Dome fournit la vitrine + paiement + visibilité.</strong>{" "}
+            Vendeurs responsables des produits, expéditions et SAV. Commission marketplace 4–8 %, jamais ajoutée au prix payé.
+          </span>
         </div>
 
-        {/* Cadrage V1.0 — petit bandeau qui rappelle la responsabilité des vendeurs */}
-        <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] px-4 py-3 text-xs text-[var(--text-secondary)] leading-relaxed">
-          <strong className="text-[var(--foreground)]">E-Dome fournit la vitrine, le paiement sécurisé et la visibilité.</strong>{" "}
-          Les vendeurs restent responsables de leurs produits, du SAV et des livraisons. Commission marketplace 4–8 % au lancement, jamais ajoutée au prix payé par l&apos;acheteur.
-        </div>
-
-        {/* Search */}
+        {/* Recherche large */}
         <div className="relative">
-          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input type="text" placeholder="Rechercher un produit ou une boutique..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-12 pr-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors" />
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
+          <input
+            type="search"
+            placeholder="Rechercher un produit, une boutique, un matériau…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 rounded-xl text-sm outline-none transition-colors"
+            style={{ background: "var(--card)", border: "1px solid var(--card-border)", color: "var(--foreground)" }}
+          />
         </div>
 
-        {/* Category chips */}
-        <div className="flex gap-2 flex-wrap">
-          {CATEGORIES.map((cat) => (
-            <button key={cat.label} onClick={() => setCategory(cat.label)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${category === cat.label ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
-              {cat.icon} {cat.label}
-            </button>
-          ))}
-        </div>
+        {/* Grid : sidebar filtres + grille produits */}
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-5 items-start">
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((product) => (
-            <div key={product.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#1e9df1]/40 transition-colors flex flex-col">
-              {/* Gradient thumbnail (placeholder en attendant les vraies photos vendeurs) */}
-              <Link href={`/boutique/${product.id}`} className={`block h-40 bg-gradient-to-br ${GRADIENTS[product.gradient]} flex items-center justify-center`}>
-                <span className="text-5xl">{CATEGORIES.find((c) => c.label === product.category)?.icon ?? "🛍️"}</span>
-              </Link>
-              <div className="p-4 space-y-3 flex flex-col flex-1">
-                <span className="inline-block w-fit px-2 py-0.5 bg-[#1e9df1]/20 text-[#1e9df1] rounded-full text-xs font-medium">{product.category}</span>
-                <Link href={`/boutique/${product.id}`} className="font-semibold line-clamp-2 hover:text-[#1e9df1] transition-colors">
-                  {product.title}
-                </Link>
-                <div className="flex items-center gap-2">
-                  <img src={product.vendorAvatar} alt={product.vendor} className="w-6 h-6 rounded-full object-cover" />
-                  <span className="text-sm text-[var(--text-secondary)]">{product.vendor}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Stars rating={product.rating} />
-                  <span className="text-xs text-[var(--text-muted)]">({product.reviews} avis)</span>
-                </div>
-                <p className="text-xs text-[var(--text-muted)]">
-                  {product.stock > 0 ? `${product.stock} en stock` : "Rupture"}
-                </p>
-                <div className="flex items-center justify-between pt-2 mt-auto">
-                  <div>
-                    <span className="font-bold text-[#1e9df1]">{formatPrice(product.price)}</span>
-                    {product.unit && <span className="text-xs text-[var(--text-muted)]"> {product.unit}</span>}
-                  </div>
-                  {isInCart(product.id) ? (
-                    <button
-                      onClick={() => setCartOpen(true)}
-                      className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-                      style={{ background: "rgba(16,185,129,0.12)", color: "#059669" }}
-                    >
-                      Au panier ✓
-                    </button>
-                  ) : (
-                    <button onClick={() => handleAddToCart(product)} disabled={product.stock === 0} className="px-3 py-1.5 bg-[#1e9df1] hover:bg-[#1583c9] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors">
-                      Ajouter
-                    </button>
-                  )}
+          {/* Sidebar filtres */}
+          <aside className="lg:sticky lg:top-20 self-start space-y-5">
+
+            {/* Catégories */}
+            <div className="rounded-xl overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
+              <h3 className="text-[11px] uppercase tracking-wider font-semibold px-4 pt-3 pb-2"
+                style={{ color: "var(--text-muted)" }}>
+                Catégories
+              </h3>
+              <ul className="pb-2">
+                {CATEGORIES.map((c) => {
+                  const Icon = c.icon;
+                  const active = category === c.key;
+                  const count = c.key === "all" ? PRODUCTS.length : PRODUCTS.filter((p) => p.category === c.key).length;
+                  return (
+                    <li key={c.key}>
+                      <button
+                        onClick={() => setCategory(c.key)}
+                        className="w-full flex items-center gap-2.5 px-4 py-1.5 text-sm transition-colors"
+                        style={{
+                          color: active ? "var(--primary)" : "var(--foreground)",
+                          fontWeight: active ? 600 : 500,
+                          background: active ? "rgba(30,157,241,0.08)" : "transparent",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!active) e.currentTarget.style.background = "var(--hover-bg)";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!active) e.currentTarget.style.background = "transparent";
+                        }}
+                      >
+                        <Icon size={15} />
+                        <span className="flex-1 text-left">{c.label}</span>
+                        <span className="text-[11px] tabular-nums" style={{ color: "var(--text-muted)" }}>
+                          {count}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            {/* Filtres */}
+            <div className="rounded-xl p-4 space-y-4" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
+              <div className="flex items-center justify-between">
+                <h3 className="text-[11px] uppercase tracking-wider font-semibold"
+                  style={{ color: "var(--text-muted)" }}>
+                  Filtres
+                </h3>
+                <button
+                  onClick={resetFilters}
+                  className="text-[11px]"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Réinitialiser
+                </button>
+              </div>
+
+              {/* Prix */}
+              <div>
+                <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--foreground)" }}>
+                  Prix (CHF)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={priceMin}
+                    onChange={(e) => setPriceMin(e.target.value)}
+                    className="w-full px-2 py-1.5 rounded-lg text-xs outline-none"
+                    style={{ background: "var(--background)", border: "1px solid var(--card-border)", color: "var(--foreground)" }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={priceMax}
+                    onChange={(e) => setPriceMax(e.target.value)}
+                    className="w-full px-2 py-1.5 rounded-lg text-xs outline-none"
+                    style={{ background: "var(--background)", border: "1px solid var(--card-border)", color: "var(--foreground)" }}
+                  />
                 </div>
               </div>
+
+              {/* État */}
+              <div>
+                <p className="text-xs font-medium mb-1.5" style={{ color: "var(--foreground)" }}>État</p>
+                <ul className="space-y-1">
+                  {CONDITIONS.map((c) => (
+                    <li key={c}>
+                      <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "var(--text-secondary)" }}>
+                        <input
+                          type="checkbox"
+                          checked={conditions.has(c)}
+                          onChange={() => toggleCondition(c)}
+                          className="accent-[#1e9df1]"
+                        />
+                        {c}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Livraison + top vendeur */}
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "var(--text-secondary)" }}>
+                  <input
+                    type="checkbox"
+                    checked={freeShippingOnly}
+                    onChange={(e) => setFreeShippingOnly(e.target.checked)}
+                    className="accent-[#1e9df1]"
+                  />
+                  <Truck size={13} style={{ color: "var(--text-muted)" }} />
+                  Livraison gratuite
+                </label>
+                <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "var(--text-secondary)" }}>
+                  <input
+                    type="checkbox"
+                    checked={topRatedOnly}
+                    onChange={(e) => setTopRatedOnly(e.target.checked)}
+                    className="accent-[#1e9df1]"
+                  />
+                  <Sparkles size={13} style={{ color: "var(--text-muted)" }} />
+                  Top vendeur
+                </label>
+              </div>
             </div>
-          ))}
+          </aside>
+
+          {/* Contenu : tri + grille produits */}
+          <div className="space-y-4 min-w-0">
+
+            {/* Bar de tri */}
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+                <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
+                  {filtered.length}
+                </span>
+                {" "}produit{filtered.length > 1 ? "s" : ""} trouvé{filtered.length > 1 ? "s" : ""}
+                {category !== "all" && (
+                  <> dans <span className="font-medium" style={{ color: "var(--foreground)" }}>{CATEGORIES.find((c) => c.key === category)?.label}</span></>
+                )}
+              </p>
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as SortKey)}
+                className="px-3 py-1.5 rounded-lg text-xs outline-none cursor-pointer"
+                style={{ background: "var(--card)", border: "1px solid var(--card-border)", color: "var(--foreground)" }}
+              >
+                {SORTS.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    Trier : {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Grille produits dense */}
+            {filtered.length === 0 ? (
+              <p className="text-center py-12 text-sm" style={{ color: "var(--text-muted)" }}>
+                Aucun produit ne correspond à vos critères.
+              </p>
+            ) : (
+              <ul className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                {filtered.map((p) => {
+                  const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+                  return (
+                    <li key={p.id} className="rounded-xl overflow-hidden flex flex-col transition-colors"
+                      style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
+
+                      {/* Photo + badges */}
+                      <Link href={`/boutique/${p.id}`} className="relative block bg-[var(--hover-bg)]" style={{ aspectRatio: "4/3" }}>
+                        <img src={p.cover} alt={p.title} className="absolute inset-0 w-full h-full object-cover" />
+                        {p.topRated && (
+                          <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                            style={{ background: "#0f172a", color: "#fff" }}>
+                            <Sparkles size={10} /> Top vendeur
+                          </span>
+                        )}
+                        {discount > 0 && (
+                          <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded text-[10px] font-bold text-white"
+                            style={{ background: "#dc2626" }}>
+                            -{discount}%
+                          </span>
+                        )}
+                        <span className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded text-[10px] font-medium"
+                          style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}>
+                          {p.condition}
+                        </span>
+                      </Link>
+
+                      {/* Contenu */}
+                      <div className="p-3 flex flex-col flex-1 gap-1.5">
+                        <Link href={`/boutique/${p.id}`}
+                          className="text-[13px] font-medium leading-tight line-clamp-2 hover:underline"
+                          style={{ color: "var(--foreground)" }}
+                        >
+                          {p.title}
+                        </Link>
+
+                        {/* Prix */}
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-base font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
+                            {formatPrice(p.price)}
+                          </span>
+                          {p.oldPrice && (
+                            <span className="text-xs line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
+                              {formatPrice(p.oldPrice)}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Étoiles produit + nb avis */}
+                        <div className="flex items-center gap-1">
+                          <Stars rating={p.rating} size={12} />
+                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                            ({p.reviews})
+                          </span>
+                        </div>
+
+                        {/* Livraison */}
+                        <div className="flex items-center gap-1 text-[11px]" style={{ color: p.shipping === 0 ? "#059669" : "var(--text-muted)" }}>
+                          <Truck size={11} />
+                          {p.shipping === 0 ? "Livraison gratuite" : `+${formatPrice(p.shipping)} livraison`}
+                          <span style={{ color: "var(--text-muted)" }}>· {p.shippingDays}</span>
+                        </div>
+
+                        {/* Vendeur */}
+                        <Link href="#" className="flex items-center gap-1 text-[11px] truncate hover:underline" style={{ color: "var(--text-secondary)" }}>
+                          <span className="truncate">{p.vendor}</span>
+                          <span style={{ color: "var(--text-muted)" }}>·</span>
+                          <Star size={10} style={{ color: "#fbbf24", fill: "#fbbf24" }} />
+                          <span className="tabular-nums">{p.vendorRating.toFixed(1)}</span>
+                          <span style={{ color: "var(--text-muted)" }} className="tabular-nums">({p.vendorReviews})</span>
+                        </Link>
+
+                        {/* Localisation + ventes */}
+                        <div className="flex items-center justify-between text-[11px]" style={{ color: "var(--text-muted)" }}>
+                          <span className="inline-flex items-center gap-0.5"><MapPin size={11} /> {p.vendorCity}</span>
+                          <span className="tabular-nums">{p.sold} vendus</span>
+                        </div>
+
+                        {/* CTA */}
+                        <div className="mt-1.5 flex gap-1.5">
+                          {isInCart(p.id) ? (
+                            <button
+                              onClick={() => setCartOpen(true)}
+                              className="flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                              style={{ background: "rgba(16,185,129,0.12)", color: "#059669" }}
+                            >
+                              Au panier ✓
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleAddToCart(p)}
+                              disabled={p.stock === 0}
+                              className="flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                              style={{ background: p.stock === 0 ? "var(--text-muted)" : "var(--primary)" }}
+                            >
+                              Ajouter
+                            </button>
+                          )}
+                          <Link
+                            href={`/boutique/${p.id}`}
+                            className="px-2 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                            style={{ border: "1px solid var(--card-border)", color: "var(--text-secondary)" }}
+                          >
+                            Voir
+                          </Link>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
         </div>
-        {filtered.length === 0 && (
-          <p className="text-center text-[var(--text-muted)] py-12">Aucun produit trouvé.</p>
-        )}
 
         {/* Toast notification */}
         {toastVisible && (
-          <div className="fixed bottom-6 right-6 z-50 px-5 py-3 bg-green-600 text-white rounded-xl shadow-lg text-sm font-medium animate-fade-in">
+          <div className="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-xl text-sm font-medium animate-fade-in"
+            style={{ background: "#059669", color: "#fff", boxShadow: "0 4px 14px rgba(5,150,105,0.25)" }}>
             Produit ajouté au panier
           </div>
         )}
@@ -226,22 +546,20 @@ export default function BoutiquePage() {
         {/* Drawer panier */}
         {cartOpen && (
           <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setCartOpen(false)}>
-            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
-            <aside
-              onClick={(e) => e.stopPropagation()}
+            <div className="absolute inset-0" style={{ background: "rgba(15,23,42,0.4)" }} />
+            <aside onClick={(e) => e.stopPropagation()}
               className="relative w-full max-w-md h-full flex flex-col animate-fade-in"
               style={{ background: "var(--card)", borderLeft: "1px solid var(--card-border)" }}
             >
-              <header className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid var(--card-border)" }}>
+              <header className="flex items-center justify-between px-5 py-4"
+                style={{ borderBottom: "1px solid var(--card-border)" }}>
                 <div className="flex items-center gap-2">
                   <ShoppingBag size={18} style={{ color: "var(--foreground)" }} />
                   <h3 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
                     Panier ({cartCount})
                   </h3>
                 </div>
-                <button
-                  onClick={() => setCartOpen(false)}
-                  aria-label="Fermer"
+                <button onClick={() => setCartOpen(false)} aria-label="Fermer"
                   className="p-1.5 rounded-lg transition-colors"
                   style={{ color: "var(--text-secondary)" }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
@@ -259,45 +577,32 @@ export default function BoutiquePage() {
                 ) : (
                   <ul className="space-y-3">
                     {cart.map((item) => (
-                      <li
-                        key={item.id}
-                        className="flex gap-3 p-3 rounded-xl"
-                        style={{ border: "1px solid var(--card-border)" }}
-                      >
+                      <li key={item.id} className="flex gap-3 p-3 rounded-xl"
+                        style={{ border: "1px solid var(--card-border)" }}>
+                        {item.cover && (
+                          <img src={item.cover} alt="" className="w-16 h-16 rounded-lg object-cover shrink-0" />
+                        )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium leading-tight line-clamp-2" style={{ color: "var(--foreground)" }}>
-                            {item.title}
-                          </p>
-                          <p className="text-sm font-semibold mt-1 tabular-nums" style={{ color: "var(--primary)" }}>
+                          <p className="text-sm font-medium leading-tight line-clamp-2"
+                            style={{ color: "var(--foreground)" }}>{item.title}</p>
+                          <p className="text-sm font-semibold mt-1 tabular-nums"
+                            style={{ color: "var(--primary)" }}>
                             {formatPrice((item.price ?? 0) * item.qty)}
                           </p>
                           <div className="flex items-center gap-2 mt-2">
-                            <button
-                              onClick={() => updateCartQty(item.id, item.qty - 1)}
+                            <button onClick={() => updateCartQty(item.id, item.qty - 1)}
                               className="w-7 h-7 rounded-md transition-colors"
                               style={{ background: "var(--hover-bg)", color: "var(--foreground)" }}
-                              aria-label="Diminuer la quantité"
-                            >
-                              −
-                            </button>
-                            <span className="text-sm font-medium tabular-nums w-6 text-center" style={{ color: "var(--foreground)" }}>
-                              {item.qty}
-                            </span>
-                            <button
-                              onClick={() => updateCartQty(item.id, item.qty + 1)}
+                              aria-label="Diminuer">−</button>
+                            <span className="text-sm font-medium tabular-nums w-6 text-center"
+                              style={{ color: "var(--foreground)" }}>{item.qty}</span>
+                            <button onClick={() => updateCartQty(item.id, item.qty + 1)}
                               className="w-7 h-7 rounded-md transition-colors"
                               style={{ background: "var(--hover-bg)", color: "var(--foreground)" }}
-                              aria-label="Augmenter la quantité"
-                            >
-                              +
-                            </button>
-                            <button
-                              onClick={() => removeFromCart(item.id)}
-                              className="ml-auto text-xs transition-colors"
-                              style={{ color: "var(--text-muted)" }}
-                            >
-                              Retirer
-                            </button>
+                              aria-label="Augmenter">+</button>
+                            <button onClick={() => removeFromCart(item.id)}
+                              className="ml-auto text-xs"
+                              style={{ color: "var(--text-muted)" }}>Retirer</button>
                           </div>
                         </div>
                       </li>
@@ -307,35 +612,27 @@ export default function BoutiquePage() {
               </div>
 
               {cart.length > 0 && (
-                <footer className="px-5 py-4 space-y-3" style={{ borderTop: "1px solid var(--card-border)" }}>
-                  <div className="flex items-center justify-between text-sm" style={{ color: "var(--text-secondary)" }}>
+                <footer className="px-5 py-4 space-y-3"
+                  style={{ borderTop: "1px solid var(--card-border)" }}>
+                  <div className="flex items-center justify-between text-sm"
+                    style={{ color: "var(--text-secondary)" }}>
                     <span>Sous-total</span>
                     <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
                       {formatPrice(cartSubtotal)}
                     </span>
                   </div>
                   <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                    Paiement sécurisé E-Dome (démonstration). Commission marketplace 4–8 %, déjà incluse côté vendeur — jamais ajoutée au prix payé par l&apos;acheteur.
+                    Paiement sécurisé E-Dome (démonstration). Commission marketplace 4–8 %, déjà incluse côté vendeur — jamais ajoutée au prix payé.
                   </p>
                   <div className="flex gap-2">
-                    <button
-                      onClick={clearCart}
+                    <button onClick={clearCart}
                       className="px-3 py-2 text-sm rounded-xl transition-colors"
-                      style={{
-                        border: "1px solid var(--card-border)",
-                        color: "var(--text-secondary)",
-                        background: "var(--card)",
-                      }}
-                    >
+                      style={{ border: "1px solid var(--card-border)", color: "var(--text-secondary)", background: "var(--card)" }}>
                       Vider
                     </button>
-                    <button
-                      onClick={() => {
-                        alert("Paiement (démo) : Stripe Connect sera intégré en Phase 4 V1.0.");
-                      }}
-                      className="flex-1 px-4 py-2 text-sm font-medium rounded-xl transition-colors"
-                      style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-                    >
+                    <button onClick={() => alert("Paiement (démo) : Stripe Connect sera intégré en Phase 4 V1.0.")}
+                      className="flex-1 px-4 py-2 text-sm font-medium rounded-xl transition-colors text-white"
+                      style={{ background: "var(--primary)" }}>
                       Passer commande
                     </button>
                   </div>
@@ -345,21 +642,6 @@ export default function BoutiquePage() {
           </div>
         )}
 
-        {/* Comment ça marche */}
-        <section className="py-10">
-          <h2 className="text-2xl font-bold text-center mb-8">Comment ça marche</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {STEPS.map((step) => (
-              <div key={step.number} className="text-center p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl">
-                <div className="w-12 h-12 bg-[#1e9df1]/20 text-[#1e9df1] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                  {step.number}
-                </div>
-                <h3 className="font-semibold mb-2">{step.title}</h3>
-                <p className="text-sm text-[var(--text-secondary)]">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
     </div>
   );
