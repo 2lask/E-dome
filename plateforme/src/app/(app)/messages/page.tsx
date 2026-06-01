@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Check, CheckCheck } from "lucide-react";
 import type { Conversation, Message } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 
@@ -372,9 +373,7 @@ export default function MessagesPage() {
                                   }`}
                                 >
                                   {formatTime(msg.timestamp)}
-                                  {isMine && (
-                                    <span>{msg.read ? "✓✓" : "✓"}</span>
-                                  )}
+                                  {isMine && (msg.read ? <CheckCheck size={12} /> : <Check size={12} />)}
                                 </div>
                               </>
                             )}

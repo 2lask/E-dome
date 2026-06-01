@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
 import type { Reservation, User, Property } from "@/lib/types";
@@ -475,9 +475,10 @@ export default function ReservationsPage() {
                 <button
                   key={star}
                   onClick={() => setReviewRating(star)}
-                  className={`text-2xl cursor-pointer transition-colors ${star <= reviewRating ? "text-[#1e9df1]" : "text-[var(--text-muted)]"}`}
+                  aria-label={`${star} étoile${star > 1 ? "s" : ""}`}
+                  className={`cursor-pointer transition-colors ${star <= reviewRating ? "text-[#1e9df1]" : "text-[var(--text-muted)]"}`}
                 >
-                  ★
+                  <Star size={26} fill={star <= reviewRating ? "currentColor" : "none"} strokeWidth={1.8} />
                 </button>
               ))}
             </div>

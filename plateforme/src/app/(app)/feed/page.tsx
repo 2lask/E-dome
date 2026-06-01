@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import {
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send, Repeat2, Eye,
-  MapPin, X, ChevronRight, Play,
+  MapPin, X, ChevronRight, Play, Check,
   Edit3, Trash2, Flag, EyeOff, Copy,
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
   Users, Building2, GraduationCap,
@@ -1280,7 +1280,7 @@ export default function FeedPage() {
       const wasReposted = next.has(postId);
       if (wasReposted) next.delete(postId);
       else next.add(postId);
-      setFeedToast(wasReposted ? "Repost annulé" : "Reposté ✓");
+      setFeedToast(wasReposted ? "Repost annulé" : "Reposté");
       setTimeout(() => setFeedToast(null), 1800);
       return next;
     });
@@ -1290,7 +1290,7 @@ export default function FeedPage() {
     const url = `${typeof window !== "undefined" ? window.location.origin : "https://edome.world"}/feed#${postId}`;
     try {
       navigator.clipboard.writeText(url);
-      setFeedToast("Lien copié ✓");
+      setFeedToast("Lien copié");
     } catch {
       setFeedToast("Impossible de copier");
     }
@@ -1348,8 +1348,8 @@ export default function FeedPage() {
     <div className="max-w-6xl mx-auto">
       {/* Toast */}
       {feedToast && (
-        <div className="fixed top-6 right-6 z-[100] px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
-          ✓ {feedToast}
+        <div className="fixed top-6 right-6 z-[100] inline-flex items-center gap-1.5 px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
+          <Check size={14} strokeWidth={2.5} /> {feedToast}
         </div>
       )}
 

@@ -2,6 +2,7 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
+import { BookOpen, Check } from "lucide-react";
 import { getFormationById } from "@/lib/mock-data";
 
 /* ─── Constants ──────────────────────────────────────────────────────────── */
@@ -63,7 +64,9 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
   if (!formation || isNaN(lessonNum) || lessonNum < 1 || lessonNum > TOTAL_LESSONS) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-6 animate-fade-in">
-        <div className="text-6xl">📚</div>
+        <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
+          <BookOpen size={32} strokeWidth={1.6} />
+        </div>
         <h1 className="text-2xl page-heading text-[var(--foreground)]">Lecon introuvable</h1>
         <p className="text-[var(--text-secondary)]">Cette lecon n&apos;existe pas.</p>
         <Link
@@ -140,13 +143,14 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
 
             <button
               onClick={toggleComplete}
-              className={`flex-1 sm:flex-none px-5 py-2.5 rounded-lg text-sm font-medium transition text-center ${
+              className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-medium transition text-center ${
                 isCompleted
                   ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
                   : "bg-[#1e9df1] text-white hover:opacity-90"
               }`}
             >
-              {isCompleted ? "Terminee ✓" : "Marquer comme terminee ✓"}
+              <Check size={14} strokeWidth={2.5} />
+              {isCompleted ? "Terminee" : "Marquer comme terminee"}
             </button>
 
             {lessonNum < TOTAL_LESSONS ? (
@@ -184,9 +188,9 @@ export default function LeconPage({ params }: { params: Promise<{ id: string; n:
                       isCurrent ? "bg-[#1e9df1]/10" : ""
                     }`}
                   >
-                    <span className="shrink-0 w-5 text-center">
+                    <span className="shrink-0 w-5 flex items-center justify-center">
                       {isDone ? (
-                        <span className="text-green-500">✓</span>
+                        <Check size={14} strokeWidth={2.5} className="text-green-500" />
                       ) : isCurrent ? (
                         <span className="text-[#1e9df1]">&rarr;</span>
                       ) : (

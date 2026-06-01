@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { Calendar, Check } from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data (same as evenements list) ──────────────────────────────── */
@@ -38,7 +39,9 @@ export default function EvenementDetailPage() {
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="text-6xl">📅</div>
+          <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
+            <Calendar size={32} strokeWidth={1.6} />
+          </div>
           <h1 className="text-2xl page-heading text-[var(--foreground)]">Événement introuvable</h1>
           <p className="text-[var(--text-secondary)]">Cet événement n&apos;existe pas ou a été supprimé.</p>
           <button onClick={() => router.push("/evenements")} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
@@ -151,8 +154,8 @@ export default function EvenementDetailPage() {
 
               {/* CTA */}
               {registered ? (
-                <div className="text-center py-3 bg-green-500/20 text-green-400 rounded-xl font-medium">
-                  Inscrit ✓
+                <div className="flex items-center justify-center gap-1.5 py-3 bg-green-500/20 text-green-400 rounded-xl font-medium">
+                  <Check size={16} strokeWidth={2.5} /> Inscrit
                 </div>
               ) : isPast ? (
                 <div className="text-center py-3 bg-[var(--background)] text-[var(--text-muted)] rounded-xl font-medium">

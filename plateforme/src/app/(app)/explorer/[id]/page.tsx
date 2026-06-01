@@ -10,6 +10,7 @@ import {
   TrendingUp, BarChart3, Shield, Check, Send, Flag,
   Mail, Copy, Phone, MessageCircle, Users,
   Building2, Layers, DollarSign, Percent, Award, Rocket,
+  Handshake, QrCode, Wallet, Info,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
@@ -877,7 +878,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           {/* Section Apporteurs */}
           <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 space-y-4 mb-8">
             <h3 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
-              🤝 Devenez apporteur sur ce bien
+              <Handshake size={18} className="text-[#1e9df1]" />
+              Devenez apporteur sur ce bien
             </h3>
             <p className="text-sm text-[var(--text-secondary)]">
               Partagez ce bien avec votre réseau et touchez une commission automatique si une transaction se conclut via votre lien.
@@ -888,15 +890,19 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <div className="flex-1 px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-xs text-[var(--text-secondary)] truncate">
                 edome.world/ref/bien/AP-{Math.floor(Math.random()*9000+1000)}/{property.id}
               </div>
-              <button onClick={() => { navigator.clipboard.writeText(`edome.world/ref/bien/${property.id}`); setCopyFeedback(true); setTimeout(() => setCopyFeedback(false), 2000); }} className="px-3 py-2 rounded-lg bg-[#1e9df1] text-white text-xs font-medium hover:bg-[#1583c9]">
-                {copyFeedback ? "✓ Copié" : "📋 Copier"}
+              <button onClick={() => { navigator.clipboard.writeText(`edome.world/ref/bien/${property.id}`); setCopyFeedback(true); setTimeout(() => setCopyFeedback(false), 2000); }} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#1e9df1] text-white text-xs font-medium hover:bg-[#1583c9]">
+                {copyFeedback ? <><Check size={12} strokeWidth={2.5} /> Copié</> : <><Copy size={12} /> Copier</>}
               </button>
             </div>
 
             {/* Share buttons */}
             <div className="flex gap-2">
-              <a href={`mailto:?subject=Bien E-Dome&body=${encodeURIComponent("Découvrez ce bien : edome.world/ref/bien/" + property.id)}`} className="px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">📧 Email</a>
-              <button className="px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">📱 QR Code</button>
+              <a href={`mailto:?subject=Bien E-Dome&body=${encodeURIComponent("Découvrez ce bien : edome.world/ref/bien/" + property.id)}`} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">
+                <Mail size={12} /> Email
+              </a>
+              <button className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">
+                <QrCode size={12} /> QR Code
+              </button>
             </div>
 
             {/* Rémunération apporteur V1.0 — différencié par pôle.
@@ -927,15 +933,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 const apporteurHigh = Math.round(edomeRevenue * 0.30);
                 return (
                   <>
-                    <p className="text-sm font-medium text-[#1e9df1]">
-                      💰 Rémunération apporteur : 10 à 30 % de la part E-Dome
+                    <p className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1e9df1]">
+                      <Wallet size={14} /> Rémunération apporteur : 10 à 30 % de la part E-Dome
                     </p>
                     <p className="text-xs text-[var(--text-secondary)] mt-1">
                       → {baseLabel}<br />
                       → Soit potentiellement {formatPrice(apporteurLow, property.currency as any)} à {formatPrice(apporteurHigh, property.currency as any)} pour vous
                     </p>
-                    <p className="text-[10px] text-[var(--text-muted)] mt-2">
-                      ℹ️ La part de l&apos;apporteur est prélevée sur les revenus de plateforme d&apos;E-Dome — frais fixe pour les ventes et la location longue durée, commission marketplace pour la location courte. Jamais ajoutée au prix payé par l&apos;hôte ou le client. Vous ne représentez aucune partie et n&apos;êtes ni agent ni courtier.
+                    <p className="inline-flex items-start gap-1.5 text-[10px] text-[var(--text-muted)] mt-2">
+                      <Info size={11} className="mt-px shrink-0" />
+                      <span>La part de l&apos;apporteur est prélevée sur les revenus de plateforme d&apos;E-Dome — frais fixe pour les ventes et la location longue durée, commission marketplace pour la location courte. Jamais ajoutée au prix payé par l&apos;hôte ou le client. Vous ne représentez aucune partie et n&apos;êtes ni agent ni courtier.</span>
                     </p>
                   </>
                 );

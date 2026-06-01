@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { BellOff } from "lucide-react";
 import type { Notification } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
@@ -163,8 +164,8 @@ export default function NotificationsPage() {
       {/* Notifications list */}
       {Object.keys(grouped).length === 0 ? (
         <div className="text-center py-20">
-          <div className="w-16 h-16 rounded-full bg-[var(--card)] flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">🔔</span>
+          <div className="w-16 h-16 rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center mx-auto mb-4">
+            <BellOff size={26} strokeWidth={1.8} />
           </div>
           <p className="text-[var(--text-muted)]">Aucune notification.</p>
         </div>

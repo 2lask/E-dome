@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
+import { Heart, FileText } from "lucide-react";
 import { useApp } from "@/lib/context";
 import type { Property } from "@/lib/types";
 
@@ -134,8 +135,8 @@ export default function FavorisPage() {
         <>
           {favoriteProperties.length === 0 ? (
             <div className="text-center py-20">
-              <div className="w-16 h-16 rounded-full bg-[var(--card)] flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">❤️</span>
+              <div className="w-16 h-16 rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center mx-auto mb-4">
+                <Heart size={26} strokeWidth={1.8} />
               </div>
               <h2 className="text-lg font-semibold text-[var(--foreground)] mb-2">
                 Aucun favori
@@ -196,8 +197,8 @@ export default function FavorisPage() {
 
       {tab === "publications" && (
         <div className="text-center py-20">
-          <div className="w-16 h-16 rounded-full bg-[var(--card)] flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">📝</span>
+          <div className="w-16 h-16 rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center mx-auto mb-4">
+            <FileText size={26} strokeWidth={1.8} />
           </div>
           <h2 className="text-lg font-semibold text-[var(--foreground)] mb-2">
             Aucune publication sauvegardée

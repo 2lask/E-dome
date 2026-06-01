@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Video } from "lucide-react";
+import { Video, Bell, CalendarPlus, Radio, Check } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { CameraPreview } from "@/components/live/camera-preview";
 
@@ -121,8 +121,8 @@ export default function LivePage() {
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
       {/* Toast */}
       {toastVisible && (
-        <div className="fixed top-6 right-6 z-[60] px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
-          ✓ Live programmé ! (démonstration)
+        <div className="fixed top-6 right-6 z-[60] flex items-center gap-1.5 px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
+          <Check size={14} strokeWidth={2.5} /> Live programmé ! (démonstration)
         </div>
       )}
 
@@ -146,9 +146,9 @@ export default function LivePage() {
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
           >
-            📡 Programmer un live
+            <Radio size={16} /> Programmer un live
           </button>
         </div>
       </div>
@@ -271,7 +271,7 @@ export default function LivePage() {
                   }}
                   className="px-6 py-3 rounded-xl bg-white text-[#1e9df1] font-semibold text-sm hover:bg-white/90 transition shadow-lg flex items-center gap-2"
                 >
-                  🔔 S&apos;inscrire
+                  <Bell size={16} /> S&apos;inscrire
                 </button>
                 <button
                   onClick={() => {
@@ -281,7 +281,7 @@ export default function LivePage() {
                   }}
                   className="px-6 py-3 rounded-xl bg-white/20 backdrop-blur-sm text-white font-semibold text-sm hover:bg-white/30 transition border border-white/30 flex items-center gap-2"
                 >
-                  📅 Ajouter au calendrier
+                  <CalendarPlus size={16} /> Ajouter au calendrier
                 </button>
               </div>
             </div>
@@ -289,7 +289,9 @@ export default function LivePage() {
 
           {/* Standard empty state */}
           <div className="text-center py-10 space-y-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-            <div className="text-5xl">📡</div>
+            <div className="w-16 h-16 mx-auto rounded-full bg-[var(--hover-bg)] text-[var(--text-muted)] flex items-center justify-center">
+              <Radio size={28} strokeWidth={1.8} />
+            </div>
             <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun live en cours</h2>
             <p className="text-[var(--text-secondary)] max-w-md mx-auto text-sm">
               Il n&apos;y a pas de diffusion en direct pour le moment. Consultez les prochains lives programm&eacute;s ou regardez les replays.
@@ -313,9 +315,9 @@ export default function LivePage() {
               {inscriptions.has(live.id) ? (
                 <button
                   onClick={() => handleInscription(live.id)}
-                  className="w-full px-4 py-2 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium hover:bg-green-500/30 transition"
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium hover:bg-green-500/30 transition"
                 >
-                  Inscrit ✓
+                  <Check size={14} strokeWidth={2.5} /> Inscrit
                 </button>
               ) : (
                 <button
@@ -390,7 +392,9 @@ export default function LivePage() {
             className="w-full max-w-lg mx-4 p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-5 animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl font-semibold text-[var(--foreground)]">📡 Programmer un live</h2>
+            <h2 className="inline-flex items-center gap-2 text-xl font-semibold text-[var(--foreground)]">
+              <Radio size={20} /> Programmer un live
+            </h2>
             <div className="space-y-4">
               <div className="space-y-1">
                 <label className="text-sm text-[var(--text-secondary)]">Titre</label>

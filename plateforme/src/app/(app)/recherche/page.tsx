@@ -2,6 +2,7 @@
 
 import React, { Suspense, useState, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Search as SearchIcon, SearchX } from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
@@ -133,7 +134,9 @@ function SearchResults() {
   if (!query.trim()) {
     return (
       <div className="text-center py-16 space-y-6">
-        <div className="text-6xl">🔍</div>
+        <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
+          <SearchIcon size={32} strokeWidth={1.6} />
+        </div>
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Rechercher sur E-Dome</h2>
         <p className="text-[var(--text-secondary)] max-w-md mx-auto">
           Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou événements.
@@ -161,7 +164,9 @@ function SearchResults() {
     return (
       <div className="space-y-8">
         <div className="text-center py-16 space-y-4">
-          <div className="text-6xl">😕</div>
+          <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
+            <SearchX size={32} strokeWidth={1.6} />
+          </div>
           <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun résultat</h2>
           <p className="text-[var(--text-secondary)]">
             Aucun résultat pour &laquo;{query}&raquo;. Essayez avec d&apos;autres termes.

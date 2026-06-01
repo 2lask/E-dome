@@ -1,22 +1,26 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import {
+  Search as SearchIcon, Hotel, Car, Camera, Palette, Ruler, HardHat,
+  Scale, Briefcase, Hammer, Package, Check, type LucideIcon,
+} from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
-const CATEGORIES = [
-  { label: "Tous", icon: "🔍" },
-  { label: "Conciergerie", icon: "🏨" },
-  { label: "Transport", icon: "🚗" },
-  { label: "Photographie", icon: "📸" },
-  { label: "Décoration", icon: "🎨" },
-  { label: "Architecture & Design", icon: "📐" },
-  { label: "Construction & Gros œuvre", icon: "🏗️" },
-  { label: "Juridique", icon: "⚖️" },
-  { label: "Finance", icon: "💼" },
-  { label: "Rénovation", icon: "🔨" },
-  { label: "Déménagement", icon: "📦" },
+const CATEGORIES: { label: string; Icon: LucideIcon }[] = [
+  { label: "Tous", Icon: SearchIcon },
+  { label: "Conciergerie", Icon: Hotel },
+  { label: "Transport", Icon: Car },
+  { label: "Photographie", Icon: Camera },
+  { label: "Décoration", Icon: Palette },
+  { label: "Architecture & Design", Icon: Ruler },
+  { label: "Construction & Gros œuvre", Icon: HardHat },
+  { label: "Juridique", Icon: Scale },
+  { label: "Finance", Icon: Briefcase },
+  { label: "Rénovation", Icon: Hammer },
+  { label: "Déménagement", Icon: Package },
 ];
 
 const GRADIENTS = [
@@ -128,11 +132,20 @@ export default function ServicesPage() {
 
         {/* Category chips */}
         <div className="flex gap-2 flex-wrap">
-          {CATEGORIES.map((cat) => (
-            <button key={cat.label} onClick={() => setCategory(cat.label)} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${category === cat.label ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
-              {cat.icon} {cat.label}
-            </button>
-          ))}
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.Icon;
+            const active = category === cat.label;
+            return (
+              <button
+                key={cat.label}
+                onClick={() => setCategory(cat.label)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${active ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}
+              >
+                <Icon size={14} />
+                {cat.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* ── Service Grid ────────────────────────────────────────────── */}
@@ -141,7 +154,10 @@ export default function ServicesPage() {
             <div key={service.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#1e9df1]/40 transition-colors">
               {/* Gradient thumbnail */}
               <div className={`h-32 bg-gradient-to-br ${GRADIENTS[service.gradient]} flex items-center justify-center`}>
-                <span className="text-5xl">{CATEGORIES.find((c) => c.label === service.category)?.icon || service.category.charAt(0)}</span>
+                {(() => {
+                  const CatIcon = CATEGORIES.find((c) => c.label === service.category)?.Icon;
+                  return CatIcon ? <CatIcon size={48} className="text-white/90" strokeWidth={1.5} /> : null;
+                })()}
               </div>
               <div className="p-4 space-y-3">
                 <span className="inline-block px-2 py-0.5 bg-[#1e9df1]/20 text-[#1e9df1] rounded-full text-xs font-medium">{service.category}</span>
@@ -158,7 +174,9 @@ export default function ServicesPage() {
                     <span className="text-xs text-[var(--text-muted)]"> {service.unit}</span>
                   </div>
                   {devisSent.has(service.id) ? (
-                    <span className="px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">Devis envoy&eacute; ✓</span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">
+                      <Check size={14} strokeWidth={2.5} /> Devis envoy&eacute;
+                    </span>
                   ) : devisOpenId === service.id ? (
                     <button onClick={() => setDevisOpenId(null)} className="px-3 py-1.5 border border-[var(--card-border)] rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
                       Annuler

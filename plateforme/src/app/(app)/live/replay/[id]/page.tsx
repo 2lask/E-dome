@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
+import { Film } from "lucide-react";
 
 /* ─── Replay Data ───────────────────────────────────────────────────────── */
 
@@ -23,7 +24,9 @@ export default function ReplayPage({ params }: { params: Promise<{ id: string }>
   if (!replay) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-6 animate-fade-in">
-        <div className="text-6xl">🎬</div>
+        <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
+          <Film size={32} strokeWidth={1.6} />
+        </div>
         <h1 className="text-2xl page-heading text-[var(--foreground)]">Replay introuvable</h1>
         <p className="text-[var(--text-secondary)]">Ce replay n&apos;existe pas ou a ete supprime.</p>
         <Link

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Trophy, Medal, Award } from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
@@ -356,21 +357,27 @@ export default function ApporteursPage() {
         <div className="flex items-end justify-center gap-4 py-6">
           {/* 2nd */}
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 mx-auto rounded-full bg-gray-400/20 flex items-center justify-center text-2xl">🥈</div>
+            <div className="w-16 h-16 mx-auto rounded-full bg-gray-400/20 text-gray-300 flex items-center justify-center">
+              <Medal size={28} strokeWidth={2} />
+            </div>
             <p className="text-sm font-medium text-[var(--foreground)]">{LEADERBOARD[1].nom}</p>
             <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[1].commissions)}</p>
             <div className="w-20 h-24 bg-gray-400/10 rounded-t-lg mx-auto" />
           </div>
           {/* 1st */}
           <div className="text-center space-y-2">
-            <div className="w-20 h-20 mx-auto rounded-full bg-[#1e9df1]/20 flex items-center justify-center text-3xl">🥇</div>
+            <div className="w-20 h-20 mx-auto rounded-full bg-[#1e9df1]/20 text-[#1e9df1] flex items-center justify-center">
+              <Trophy size={36} strokeWidth={2} />
+            </div>
             <p className="text-sm font-bold text-[#1e9df1]">{LEADERBOARD[0].nom}</p>
             <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[0].commissions)}</p>
             <div className="w-20 h-32 bg-[#1e9df1]/10 rounded-t-lg mx-auto" />
           </div>
           {/* 3rd */}
           <div className="text-center space-y-2">
-            <div className="w-14 h-14 mx-auto rounded-full bg-amber-700/20 flex items-center justify-center text-xl">🥉</div>
+            <div className="w-14 h-14 mx-auto rounded-full bg-amber-700/20 text-amber-500 flex items-center justify-center">
+              <Award size={22} strokeWidth={2} />
+            </div>
             <p className="text-sm font-medium text-[var(--foreground)]">{LEADERBOARD[2].nom}</p>
             <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[2].commissions)}</p>
             <div className="w-20 h-16 bg-amber-700/10 rounded-t-lg mx-auto" />

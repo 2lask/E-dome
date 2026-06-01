@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
+import { Star } from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
@@ -201,7 +202,9 @@ export default function FormationsPage() {
                 <span className="text-sm text-[var(--text-muted)]">{inst.specialty}</span>
                 <div className="flex items-center gap-3 mt-2 text-xs text-[var(--text-secondary)]">
                   <span>{inst.students} étudiants</span>
-                  <span className="text-[#1e9df1]">{inst.rating.toFixed(1)} ★</span>
+                  <span className="inline-flex items-center gap-0.5 text-[#1e9df1]">
+                    <Star size={11} fill="currentColor" /> {inst.rating.toFixed(1)}
+                  </span>
                 </div>
               </Link>
             ))}

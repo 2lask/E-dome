@@ -2,6 +2,7 @@
 
 import React, { useState, use, useMemo } from "react";
 import Link from "next/link";
+import { Star } from "lucide-react";
 import { useApp } from "@/lib/context";
 import {
   getFormationById,
@@ -331,7 +332,9 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
               <p className="text-sm text-[var(--text-secondary)] mb-3">{instructor.bio}</p>
               <div className="flex gap-4 text-xs text-[var(--text-muted)]">
                 <span>{instructor.stats.followers} abonnés</span>
-                <span className="text-[#1e9df1]">{instructor.stats.rating} ★</span>
+                <span className="inline-flex items-center gap-0.5 text-[#1e9df1]">
+                  <Star size={11} fill="currentColor" /> {instructor.stats.rating}
+                </span>
               </div>
             </Link>
 
@@ -347,7 +350,9 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                       <p className="text-xs text-[var(--text-muted)]">{s.instructor.firstName} {s.instructor.lastName}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-sm font-bold text-[#1e9df1]">{formatPrice(s.price)}</span>
-                        <span className="text-xs text-[var(--text-muted)]">{s.rating} ★</span>
+                        <span className="inline-flex items-center gap-0.5 text-xs text-[var(--text-muted)]">
+                          <Star size={10} fill="currentColor" className="text-amber-400" /> {s.rating}
+                        </span>
                       </div>
                     </div>
                   </Link>

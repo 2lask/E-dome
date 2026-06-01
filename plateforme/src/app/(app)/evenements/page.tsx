@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { Check } from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
@@ -204,7 +205,9 @@ export default function EvenementsPage() {
                           </div>
                           {/* Register */}
                           {isRegistered ? (
-                            <span className="px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">Inscrit ✓</span>
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">
+                              <Check size={14} strokeWidth={2.5} /> Inscrit
+                            </span>
                           ) : isFull ? (
                             <span className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium">Complet</span>
                           ) : (

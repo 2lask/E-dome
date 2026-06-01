@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+import { X } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { roleLabels } from "@/lib/types";
 import type { Role } from "@/lib/types";
@@ -469,9 +470,10 @@ export default function ParametresPage() {
                           </div>
                           <button
                             onClick={() => removeAlert(alert.id)}
+                            aria-label="Supprimer l'alerte"
                             className="w-7 h-7 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-red-400 hover:bg-red-400/10 transition-colors"
                           >
-                            ✕
+                            <X size={14} />
                           </button>
                         </div>
                       ))}

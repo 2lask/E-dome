@@ -624,9 +624,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
               <div className="space-y-2">
                 {added ? (
-                  <div className="w-full text-center px-4 py-3 rounded-xl text-sm font-medium animate-fade-in"
+                  <div className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-medium animate-fade-in"
                     style={{ background: "rgba(16,185,129,0.12)", color: "#059669" }}>
-                    Ajouté au panier ✓
+                    <CheckCircle2 size={16} strokeWidth={2.5} /> Ajouté au panier
                   </div>
                 ) : (
                   <>

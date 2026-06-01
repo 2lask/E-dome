@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* Formulaire « Vendre un produit » — pôle E-commerce V1.0.
@@ -60,7 +61,9 @@ export default function VendreProduitPage() {
   if (published) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-6 animate-fade-in">
-        <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-4xl">✓</div>
+        <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 text-green-400 flex items-center justify-center">
+          <Check size={40} strokeWidth={2.5} />
+        </div>
         <h1 className="text-2xl font-bold">Produit mis en ligne</h1>
         <p className="text-[var(--text-secondary)]">
           Votre produit est en cours de validation par l&apos;équipe E-Dome. Vous serez notifié(e) dès qu&apos;il sera visible dans la boutique. Les premières commandes apparaîtront dans votre dashboard.

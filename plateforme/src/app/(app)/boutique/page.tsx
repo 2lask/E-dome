@@ -20,6 +20,7 @@ import {
   SlidersHorizontal,
   ChevronRight,
   ArrowUpDown,
+  Check,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { BlurImage } from "@/components/ui/blur-image";
@@ -568,10 +569,10 @@ export default function BoutiquePage() {
                           {isInCart(p.id) ? (
                             <button
                               onClick={() => setCartOpen(true)}
-                              className="flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                              className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                               style={{ background: "rgba(16,185,129,0.12)", color: "#059669" }}
                             >
-                              Au panier ✓
+                              <Check size={12} strokeWidth={2.5} /> Au panier
                             </button>
                           ) : (
                             <button

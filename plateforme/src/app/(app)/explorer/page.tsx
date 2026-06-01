@@ -752,7 +752,7 @@ export default function ExplorerPage() {
         className="fixed bottom-20 md:bottom-8 right-6 z-30 px-5 py-3 rounded-full font-medium flex items-center gap-2 shadow-xl text-white hover:opacity-90 transition-opacity"
         style={{ background: "#1e9df1" }}
       >
-        <span className="text-lg">🗺</span>
+        <Map size={18} />
         Carte
       </button>
 
@@ -762,8 +762,8 @@ export default function ExplorerPage() {
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--card-border)] bg-[var(--card)] shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base" style={{ background: "#1e9df1" }}>
-                🗺
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white" style={{ background: "#1e9df1" }}>
+                <Map size={18} />
               </div>
               <div>
                 <h3 className="font-semibold text-[var(--foreground)] text-sm">Carte des biens</h3>
