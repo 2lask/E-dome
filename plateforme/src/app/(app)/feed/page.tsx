@@ -453,6 +453,86 @@ const VIDEO_POSTS: SocialPost[] = [
     ]),
     formation: { id: "f3", title: "Marketing digital immobilier", instructor: "Claire Bernard", price: 149, students: 670, thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop" },
   },
+
+  /* ── Posts varies (formats Twitter-like) ──────────────────────────────
+     Ajoutes pour casser l'uniformite du flux video. Mix texte seul,
+     photo unique, galerie 2/3/4 photos. Inseres au debut du feed grace
+     a un createdAt recent. */
+  {
+    id: "p-text-1", author: U_LEO,
+    content: "Question simple : si vous deviez investir 100 K CHF aujourd'hui dans un seul canton suisse, lequel et pourquoi ?\n\nVaud, Geneve, Zurich, Tessin, Valais… Les commentaires sont a vous. #investissement #debat #suisse",
+    media: [], type: "post", likes: 932, location: "Geneve, Suisse",
+    createdAt: hAgo(1),
+    comments: mkComments("p-text-1", [
+      { author: U_MARC, content: "Tessin, sans hesiter. Marche sous-cote et rendements LT corrects.", h: 0.8, likes: 41 },
+      { author: U_SOPHIE, content: "Valais bas pour la location courte duree premium. Marche encore artisanal.", h: 0.5, likes: 33 },
+      { author: U_THOMAS, content: "Zurich pour la liquidite a la revente. Les autres pour les rendements.", h: 0.3, likes: 28 },
+    ]),
+  },
+  {
+    id: "p-photo-1", author: U_AMINA,
+    content: "Riad de la semaine. 6 chambres, 2 patios, hammam d'epoque restaure a l'identique. Mise en marche dans 10 jours. #marrakech #patrimoine",
+    media: ["https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=900"],
+    type: "post", likes: 612, location: "Marrakech, Maroc",
+    createdAt: hAgo(3),
+    comments: mkComments("p-photo-1", [
+      { author: U_AMIRA, content: "Magnifique. La fontaine du patio nord est d'origine ?", h: 2.5, likes: 9 },
+    ]),
+  },
+  {
+    id: "p-gal-2", author: U_SOPHIE,
+    content: "Avant / apres — renovation cuisine de notre 4.5 pieces a Vevey. Petit budget, gros effet visuel. #renovation #avantapres",
+    media: [
+      "https://images.unsplash.com/photo-1556909211-d5b0c0b3a4b8?w=900",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900",
+    ],
+    type: "post", likes: 408, location: "Vevey, Suisse",
+    createdAt: hAgo(6),
+    comments: mkComments("p-gal-2", [
+      { author: U_LEO, content: "Le plan de travail change tout. Quel materiau ?", h: 4, likes: 7 },
+    ]),
+  },
+  {
+    id: "p-gal-3", author: U_THOMAS,
+    content: "Visite du chantier ce matin — Programme Minergie-P Zurich Nord. Gros oeuvre quasi termine, livraison Q3 2026 tient le cap. #promotion #chantier",
+    media: [
+      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=900",
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=900",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900",
+    ],
+    type: "post", likes: 541, location: "Zurich, Suisse",
+    createdAt: hAgo(9),
+    comments: mkComments("p-gal-3", [
+      { author: U_MARC, content: "Belle qualite de finition deja visible. Hate de voir les terrasses.", h: 8, likes: 14 },
+    ]),
+  },
+  {
+    id: "p-gal-4", author: U_YASMIN,
+    content: "Petit tour photos d'un penthouse Dubai Marina que je propose en off-market. 4 chambres, vue 270deg, livre meuble. DM pour la fiche complete. #dubai #penthouse",
+    media: [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900",
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=900",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900",
+    ],
+    type: "post", likes: 1102, location: "Dubai, EAU",
+    createdAt: hAgo(14),
+    comments: mkComments("p-gal-4", [
+      { author: U_MARC, content: "Penthouse Marina avec vue Burj : la rarete absolue. Interesse.", h: 12, likes: 26 },
+      { author: U_LEO, content: "Yasmin reste la reference off-market a Dubai.", h: 10, likes: 47 },
+    ]),
+  },
+  {
+    id: "p-photo-formation", author: U_MARC,
+    content: "Slide cle de ma nouvelle formation : comprendre le rendement net (apres charges, impots, vacance). C'est LA donnee qui separe les amateurs des serieux. #formation #investissement",
+    media: ["https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=900"],
+    type: "post", likes: 856, location: "Geneve, Suisse",
+    createdAt: hAgo(18),
+    comments: mkComments("p-photo-formation", [
+      { author: U_SOPHIE, content: "Le passage du brut au net surprend toujours les nouveaux investisseurs.", h: 16, likes: 22 },
+    ]),
+    formation: { id: "f5", title: "Analyse financiere pour investisseurs", instructor: "Marc Dubois", price: 349, students: 420, thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop" },
+  },
 ];
 
 // CTAs custom par id de post.
@@ -674,6 +754,66 @@ function ImageView({ src }: { src: string }) {
   );
 }
 
+/* MediaGallery — rendu Twitter/X façon galerie selon la longueur :
+   1 image : aspect ratio natif (ImageView).
+   2 images : 2 colonnes 1:1.
+   3 images : 1 grande à gauche (occupe les 2 lignes) + 2 petites à droite empilées.
+   4 images : grille 2x2 carrée.
+   ≥5 : limite à 4 visibles avec un overlay "+N" sur la dernière. */
+function MediaGallery({ media }: { media: string[] }) {
+  const n = Math.min(media.length, 4);
+  const extra = media.length - 4;
+
+  if (n === 1) return <ImageView src={media[0]} />;
+
+  const tileCls = "relative overflow-hidden bg-[var(--hover-bg)]";
+  const imgCls = "absolute inset-0 w-full h-full object-cover";
+
+  if (n === 2) {
+    return (
+      <div className="grid grid-cols-2 gap-0.5 rounded-2xl overflow-hidden" style={{ aspectRatio: "16/10" }}>
+        {media.slice(0, 2).map((src, i) => (
+          <div key={i} className={tileCls}>
+            <img src={src} alt="" className={imgCls} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (n === 3) {
+    return (
+      <div className="grid grid-cols-2 grid-rows-2 gap-0.5 rounded-2xl overflow-hidden" style={{ aspectRatio: "16/10" }}>
+        <div className={tileCls + " row-span-2"}>
+          <img src={media[0]} alt="" className={imgCls} />
+        </div>
+        <div className={tileCls}>
+          <img src={media[1]} alt="" className={imgCls} />
+        </div>
+        <div className={tileCls}>
+          <img src={media[2]} alt="" className={imgCls} />
+        </div>
+      </div>
+    );
+  }
+
+  // n === 4
+  return (
+    <div className="grid grid-cols-2 grid-rows-2 gap-0.5 rounded-2xl overflow-hidden" style={{ aspectRatio: "1/1" }}>
+      {media.slice(0, 4).map((src, i) => (
+        <div key={i} className={tileCls}>
+          <img src={src} alt="" className={imgCls} />
+          {i === 3 && extra > 0 && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/55 text-white text-2xl font-semibold">
+              +{extra}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Légende avec ellipsis automatique + lien « Voir plus » en bleu (style Twitter)
 // quand le texte est tronqué. Détecte le débordement via scrollHeight vs
 // clientHeight (ref-based) après le rendu, recalcule à chaque changement
@@ -832,13 +972,16 @@ function PostCard({
         </div>
       </div>
 
-      {/* Media */}
-      {post.media[0] && (
+      {/* Media — video unique, image unique ou galerie multi-photos.
+          Detection : si le 1er media est .mp4, on affiche le player video,
+          sinon on bascule sur la galerie qui choisit le layout selon la
+          longueur (1/2/3/4+). Posts texte seul : aucun bloc media. */}
+      {post.media.length > 0 && (
         <div className="px-4">
           {isVideo ? (
             <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
           ) : (
-            <ImageView src={post.media[0]} />
+            <MediaGallery media={post.media} />
           )}
         </div>
       )}
@@ -1037,8 +1180,15 @@ export default function FeedPage() {
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
   const filteredPosts = useMemo(() => {
-    if (activeTab === "suivis") return posts.filter((p) => isFollowing(p.author.id));
-    return posts;
+    // Tri par date desc pour que les nouveaux formats varies (texte seul,
+    // galeries photo) se melangent naturellement avec les videos selon
+    // leur createdAt, plutot que d'apparaitre en bas du tableau.
+    const base = activeTab === "suivis"
+      ? posts.filter((p) => isFollowing(p.author.id))
+      : posts;
+    return [...base].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   }, [posts, activeTab, isFollowing]);
 
   const toggleLike = (postId: string) => {
