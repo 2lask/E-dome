@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/toast";
 import type { Reservation, User, Property } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import { Calendar as BookingCallout } from "@/components/ui/calendar";
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
@@ -399,6 +400,21 @@ export default function ReservationsPage() {
           )}
         </div>
       )}
+
+      {/* Coaching CTA — réservé aux hôtes courte durée : un appel
+          conseil gratuit avec un expert E-Dome (pricing dynamique,
+          photos pro, optimisation des annonces). Renvoie sur cal.com.
+          Affiché en bas, sous la liste/calendrier, hors-flux du
+          dashboard pour ne pas bruiter les actions principales. */}
+      <div className="mt-10">
+        <BookingCallout
+          bookingLink="https://cal.com/edome/conseil-location-courte"
+          title="Optimisez vos locations courte durée"
+          subtitle="Réservez un appel gratuit avec un expert E-Dome : pricing dynamique, photos pro, taux de remplissage."
+          ctaLabel="Réserver un appel conseil"
+          duration="30 min"
+        />
+      </div>
 
       {/* Confirm/Cancel modal */}
       {confirmModal && (
