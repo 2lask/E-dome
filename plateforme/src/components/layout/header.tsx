@@ -5,13 +5,9 @@ import { useRouter } from "next/navigation";
 import {
   Search,
   Bell,
-  Menu,
   ChevronDown,
   X,
   Globe,
-  User,
-  Settings,
-  LogOut,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useLanguage, type Language } from "@/lib/i18n";
@@ -51,7 +47,6 @@ export function Header({ onMenuToggle }: HeaderProps) {
   const [showLanguage, setShowLanguage] = useState(false);
   const [showRole, setShowRole] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showUser, setShowUser] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
 
@@ -74,7 +69,6 @@ export function Header({ onMenuToggle }: HeaderProps) {
         setShowLanguage(false);
         setShowRole(false);
         setShowNotifications(false);
-        setShowUser(false);
       }
       if (searchRef.current && !searchRef.current.contains(target as Node)) {
         setSearchFocused(false);
@@ -89,7 +83,6 @@ export function Header({ onMenuToggle }: HeaderProps) {
     setShowLanguage(false);
     setShowRole(false);
     setShowNotifications(false);
-    setShowUser(false);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -375,70 +368,6 @@ export function Header({ onMenuToggle }: HeaderProps) {
           )}
         </div>
 
-        {/* User avatar */}
-        <div className="relative" data-dropdown>
-          <button
-            onClick={() => {
-              closeAllDropdowns();
-              setShowUser(!showUser);
-            }}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold cursor-pointer"
-            style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-          >
-            LM
-          </button>
-          {showUser && (
-            <div style={dropdownStyle}>
-              <div className="px-3 py-2 mb-1" style={{ borderBottom: "1px solid var(--divider)" }}>
-                <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                  Léo Martin
-                </p>
-                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                  leo@edome.ch
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  router.push("/profil");
-                  setShowUser(false);
-                }}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm cursor-pointer"
-                style={{ color: "var(--text-secondary)" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-              >
-                <User size={16} />
-                Profil
-              </button>
-              <button
-                onClick={() => {
-                  router.push("/parametres");
-                  setShowUser(false);
-                }}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm cursor-pointer"
-                style={{ color: "var(--text-secondary)" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-              >
-                <Settings size={16} />
-                Paramètres
-              </button>
-              <button
-                onClick={() => {
-                  router.push("/auth/connexion");
-                  setShowUser(false);
-                }}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm cursor-pointer"
-                style={{ color: "#ef4444" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-              >
-                <LogOut size={16} />
-                Déconnexion
-              </button>
-            </div>
-          )}
-        </div>
       </div>
     </header>
   );

@@ -1,16 +1,33 @@
 "use client";
 
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import { AppProvider } from "@/lib/context";
 import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/components/ui/toast";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { ExplorerTabs } from "@/components/layout/explorer-tabs";
+import { DashboardTabs } from "@/components/layout/dashboard-tabs";
+
+/* Routes regroupées sous les hubs Explorer / Dashboard.
+   Quand le pathname commence par l'un de ces préfixes, la barre
+   d'onglets du hub correspondant est rendue au-dessus du contenu. */
+const EXPLORER_ROUTES = ["/explorer", "/boutique", "/services", "/formations", "/live", "/evenements"];
+const DASHBOARD_ROUTES = ["/dashboard", "/statistiques", "/reservations", "/apporteurs", "/favoris"];
+
+function matchesHub(pathname: string, prefixes: string[]) {
+  return prefixes.some((p) => pathname === p || pathname.startsWith(p + "/"));
+}
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const showExplorerTabs = matchesHub(pathname, EXPLORER_ROUTES);
+  const showDashboardTabs = matchesHub(pathname, DASHBOARD_ROUTES);
 
   return (
     <AppProvider>
@@ -56,6 +73,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
                 />
                 <main className="flex-1 px-4 py-6 md:px-6 pb-20 md:pb-6">
+                  {showExplorerTabs && <ExplorerTabs />}
+                  {showDashboardTabs && <DashboardTabs />}
                   {children}
                 </main>
               </div>
