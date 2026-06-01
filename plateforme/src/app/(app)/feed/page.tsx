@@ -555,14 +555,15 @@ function renderContent(content: string) {
 
 type MediaProps = { src: string; muted: boolean; onToggleMute: () => void };
 
-// Clamp l'aspect ratio entre 0.75 (≈ 4:5 portrait) et 16/9 (≈ 1.78 landscape).
-// Combiné avec un maxHeight CSS, on garantit que le média ne dépasse jamais
-// ~520 px de haut (≈ ce que fait Twitter) : les vidéos très verticales sont
-// affichées en object-cover dans un cadre capé.
-const ASPECT_MIN = 0.75;
-const ASPECT_MAX = 16 / 9;
+// Clamp inspiré Reels Instagram : on tolère des médias plus verticaux (0.6 ≈ 3:5
+// portrait, équivalent à Reels Instagram en aspect le plus haut) sans pousser
+// jusqu'au 9:16 pur, qui casserait le viewport. Max 1.5 (3:2 landscape doux).
+// Combiné avec MEDIA_MAX_HEIGHT, garantit que la carte reste lisible en
+// scroll Twitter sans qu'une vidéo monopolise tout l'écran.
+const ASPECT_MIN = 0.6;
+const ASPECT_MAX = 1.5;
 const clampAspect = (r: number) => Math.max(ASPECT_MIN, Math.min(r, ASPECT_MAX));
-const MEDIA_MAX_HEIGHT = "min(60svh, 520px)";
+const MEDIA_MAX_HEIGHT = "min(72svh, 620px)";
 
 function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -1196,22 +1197,118 @@ export default function FeedPage() {
         </div>
 
         {/* Sidebar droite — Suggestions / Actualités / Tendances (desktop large uniquement) */}
-        <aside className="hidden lg:block w-[320px] shrink-0 sticky top-20 self-start space-y-5">
-          {/* Suggestions */}
-          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-[var(--foreground)] flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-[#1e9df1]" />
-                Suggestions
+        {/* Sidebar droite — ordre Twitter (X) : Recherche → Actualités → Tendances → Suggestions */}
+        <aside className="hidden lg:block w-[320px] shrink-0 sticky top-20 self-start space-y-4">
+          {/* Search bar style X */}
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="relative"
+          >
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
+            <input
+              type="search"
+              placeholder="Rechercher sur E-Dome"
+              className="w-full pl-11 pr-4 py-3 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] focus:ring-1 focus:ring-[#1e9df1]/30 transition-colors"
+            />
+          </form>
+
+          {/* Actualités — style « Actualités du jour » X (titre + sub-label « Tendance ») */}
+          <div className="rounded-2xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden">
+            <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+              <h3 className="text-base font-bold text-[var(--foreground)]">
+                Actualités du jour
               </h3>
-              <Link href="/recherche" className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] hover:text-[#1e9df1] transition-colors">
-                Voir tout
+              <button
+                aria-label="Fermer"
+                onClick={(e) => e.preventDefault()}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div>
+              {NEWS.slice(0, 5).map((n, idx) => (
+                <button
+                  key={n.id}
+                  onClick={() => {
+                    setFeedToast("Article ouvert");
+                    setTimeout(() => setFeedToast(null), 2000);
+                  }}
+                  className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-[var(--hover-bg)] transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] text-[var(--text-muted)] mb-0.5 flex items-center gap-1.5">
+                      <span>{idx === 0 ? "À la une" : "Tendance"} · {n.source}</span>
+                      <span aria-hidden>·</span>
+                      <span>{timeAgo(n.date)}</span>
+                    </p>
+                    <p className="text-[14px] font-semibold text-[var(--foreground)] leading-snug line-clamp-3">
+                      {n.title}
+                    </p>
+                  </div>
+                  <img
+                    src={n.image}
+                    alt=""
+                    className="w-16 h-16 rounded-xl object-cover shrink-0"
+                  />
+                </button>
+              ))}
+              <Link
+                href="/notifications"
+                className="block px-4 py-3 text-[14px] text-[#1e9df1] hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                Voir plus
               </Link>
             </div>
-            <div className="space-y-3">
+          </div>
+
+          {/* Tendances — style « What's happening » X */}
+          <div className="rounded-2xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden">
+            <div className="px-4 pt-4 pb-2">
+              <h3 className="text-base font-bold text-[var(--foreground)] flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-[#1e9df1]" />
+                Tendances pour vous
+              </h3>
+            </div>
+            <div>
+              {TRENDING_HASHTAGS.slice(0, 5).map((item, idx) => (
+                <Link
+                  key={item.tag}
+                  href={`/recherche?q=${encodeURIComponent(item.tag)}`}
+                  className="block px-4 py-2.5 hover:bg-[var(--hover-bg)] transition-colors"
+                >
+                  <p className="text-[11px] text-[var(--text-muted)] mb-0.5">
+                    Tendance immobilière · {idx + 1}
+                  </p>
+                  <p className="text-[14px] font-semibold text-[var(--foreground)] leading-tight">
+                    {item.tag}
+                  </p>
+                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5 tabular-nums">
+                    {formatCount(item.count)} publications
+                  </p>
+                </Link>
+              ))}
+              <Link
+                href="/recherche"
+                className="block px-4 py-3 text-[14px] text-[#1e9df1] hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                Voir plus
+              </Link>
+            </div>
+          </div>
+
+          {/* Suggestions — style « Qui suivre ? » X */}
+          <div className="rounded-2xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden">
+            <div className="px-4 pt-4 pb-2">
+              <h3 className="text-base font-bold text-[var(--foreground)] flex items-center gap-2">
+                <UserPlus className="w-4 h-4 text-[#1e9df1]" />
+                Suggestions pour vous
+              </h3>
+            </div>
+            <div>
               {SUGGESTIONS.map((user) => (
-                <div key={user.id} className="flex items-center gap-3">
-                  <Link href={`/profil/${user.id}`}>
+                <div key={user.id} className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--hover-bg)] transition-colors">
+                  <Link href={`/profil/${user.id}`} className="shrink-0">
                     <img
                       src={user.avatar}
                       alt=""
@@ -1221,83 +1318,32 @@ export default function FeedPage() {
                   <div className="flex-1 min-w-0">
                     <Link
                       href={`/profil/${user.id}`}
-                      className="text-sm font-medium text-[var(--foreground)] hover:underline truncate block"
+                      className="text-sm font-semibold text-[var(--foreground)] hover:underline truncate block"
                     >
                       {user.firstName} {user.lastName}
                     </Link>
                     <p className="text-xs text-[var(--text-muted)] truncate">
-                      {roleLabels[user.activeRole]} · {user.city}
+                      @{user.firstName.toLowerCase()} · {roleLabels[user.activeRole]}
                     </p>
                   </div>
                   <button
                     onClick={() => toggleFollow(user.id)}
-                    className={`text-xs px-3 py-1 rounded-lg font-medium transition-colors ${
+                    className={`text-xs px-3.5 py-1.5 rounded-full font-semibold transition-colors shrink-0 ${
                       isFollowing(user.id)
-                        ? "bg-[var(--hover-bg)] text-[var(--text-secondary)]"
-                        : "bg-[#1e9df1] text-white hover:bg-[#1583c9]"
+                        ? "border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+                        : "bg-[var(--foreground)] text-[var(--background)] hover:opacity-85"
                     }`}
                   >
                     {isFollowing(user.id) ? "Suivi" : "Suivre"}
                   </button>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Actualités */}
-          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden">
-            <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-[var(--foreground)] flex items-center gap-2">
-                <Newspaper className="w-4 h-4 text-[#1e9df1]" />
-                Actualités
-              </h3>
-              <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
-                Marché immobilier
-              </span>
-            </div>
-            <div className="divide-y divide-[var(--card-border)]">
-              {NEWS.slice(0, 4).map((n) => (
-                <button
-                  key={n.id}
-                  onClick={() => {
-                    setFeedToast("Article ouvert");
-                    setTimeout(() => setFeedToast(null), 2000);
-                  }}
-                  className="w-full flex gap-3 p-3 text-left hover:bg-[var(--hover-bg)] transition-colors"
-                >
-                  <img src={n.image} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-medium text-[var(--foreground)] leading-snug line-clamp-2">
-                      {n.title}
-                    </p>
-                    <p className="text-[11px] text-[var(--text-muted)] mt-1">
-                      {n.source} · {timeAgo(n.date)}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Tendances */}
-          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-[#1e9df1]" />
-              Tendances
-            </h3>
-            <div className="space-y-3">
-              {TRENDING_HASHTAGS.slice(0, 5).map((item) => (
-                <Link
-                  key={item.tag}
-                  href={`/recherche?q=${encodeURIComponent(item.tag)}`}
-                  className="flex items-center justify-between group"
-                >
-                  <span className="text-sm text-[#1e9df1] group-hover:underline">{item.tag}</span>
-                  <span className="text-xs text-[var(--text-muted)] tabular-nums">
-                    {formatCount(item.count)}
-                  </span>
-                </Link>
-              ))}
+              <Link
+                href="/recherche"
+                className="block px-4 py-3 text-[14px] text-[#1e9df1] hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                Voir plus
+              </Link>
             </div>
           </div>
         </aside>
