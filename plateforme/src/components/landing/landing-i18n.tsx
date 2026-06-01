@@ -44,7 +44,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "about.p1":
       "E-Dome n'est pas une plateforme de plus. C'est un ecosysteme ou chaque professionnel \u2014 hote, agent, promoteur, photographe, courtier, notaire, architecte, formateur \u2014 dispose d'un espace pense pour son metier. Un compte unique, un profil configurable qui s'adapte a votre activite du moment.",
     "about.p2":
-      "Au coeur du modele : un systeme de commissions transparent qui remunere chaque maillon de la chaine. L'apporteur d'affaires touche sa part, le formateur monetise son expertise, l'hote gere ses reservations, le prestataire propose ses services \u2014 tout depuis un seul endroit, sans dispersion.",
+      "Au coeur du modele : un systeme de remuneration transparent, differencie par pole \u2014 frais fixes de plateforme pour les ventes entre particuliers et la location longue duree, commission marketplace pour les services, formations, lives, evenements et e-commerce, revenue share B2B pour les partenariats agences. Chaque maillon est remunere, chaque flux est trace.",
     "about.roles_label":
       "Des profils interchangeables qui s'adaptent a chaque metier de l'immobilier \u2014 un seul compte pour toutes vos activites.",
     "about.more": "et plus encore\u2026",
@@ -64,12 +64,12 @@ export const translations: Record<LandingLang, TranslationMap> = {
     // ── Featured video ────────────────────────────────────────────────────
     "featured.label": "La plateforme",
     "featured.desc":
-      "Plus de 30 pages fonctionnelles : feed social avec stories et reels, marketplace avec carte interactive et calcul de rendement, messagerie, dashboard adaptatif selon votre role, formations video par modules, systeme de commissions en temps reel, reservations avec options personnalisables (conciergerie, petit-dejeuner, transport, decoration) et gestion de paiements.",
+      "Plus de 30 pages fonctionnelles : feed social avec stories et reels, marketplace avec carte interactive et calcul de rendement, messagerie, dashboard adaptatif selon votre role, formations video par modules, suivi des remunerations en temps reel, reservations avec options personnalisables (conciergerie, petit-dejeuner, transport, decoration) et gestion de paiements.",
     "featured.disclaimer":
       "Maquette de visualisation \u2014 les donnees presentees sont fictives et servent uniquement a illustrer les fonctionnalites prevues",
     "featured.cta": "Entrer dans la demo",
     "featured.mobile_desc":
-      "Plus de 30 pages fonctionnelles : feed social, marketplace avec carte interactive, messagerie, dashboard multi-role, formations video, systeme de commissions, reservations avec options personnalisables et gestion de paiements.",
+      "Plus de 30 pages fonctionnelles : feed social, marketplace avec carte interactive, messagerie, dashboard multi-role, formations video, suivi des remunerations en temps reel, reservations avec options personnalisables et gestion de paiements.",
     "featured.mobile_disclaimer": "Maquette de visualisation \u2014 donnees fictives",
 
     // ── Problem ───────────────────────────────────────────────────────────
@@ -128,20 +128,25 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "services.f3_desc":
       "Catalogue de formations video par des experts du terrain : investissement locatif, gestion de biens, analyse financiere, fiscalite internationale. Modules structures et certifications.",
 
-    "services.f4_tag": "Systeme de commissions",
+    "services.f4_tag": "Programme apporteur d'affaires",
     "services.f4_title": "Apporter, recommander, gagner",
     "services.f4_desc":
-      "Le coeur economique d'E-Dome : chaque utilisateur peut devenir apporteur d'affaires. Commissions sur les locations, les ventes, les formations \u2014 liens tracables, dashboard de suivi, paiements automatiques.",
+      "Referral marketing digital : chaque utilisateur eligible peut activer le programme apres verification d'identite (KYC). Reversement transparent par pole \u2014 frais fixes pour les ventes entre particuliers et la location longue duree, commission marketplace pour les services, formations, lives, evenements, e-commerce et location courte duree, revenue share B2B pour les partenariats agences. Liens tracables, dashboard de suivi, paiements automatiques. La part de l'apporteur est toujours prelevee sur les revenus d'E-Dome, jamais ajoutee au prix.",
 
-    "services.f5_tag": "Live & Evenements",
-    "services.f5_title": "Webinaires et conferences",
+    "services.f5_tag": "Lives & Billetterie evenements",
+    "services.f5_title": "Webinaires, conferences, salons",
     "services.f5_desc":
-      "Programmez des lives de visites virtuelles, des webinaires d'analyse de marche, des sessions Q&A. Replays disponibles, inscriptions avec notifications, evenements physiques et virtuels.",
+      "Lives de visites virtuelles, webinaires d'analyse de marche, sessions Q&A, masterclass, coaching prive. Billetterie integree pour conferences, meetups, salons, masterclass, workshops \u2014 l'organisateur fixe son prix, encaisse via E-Dome, reste responsable du contenu et de l'organisation. E-Dome gere la billetterie, n'est pas l'organisateur officiel. Replays disponibles, inscriptions avec notifications, evenements physiques et virtuels.",
 
     "services.f6_tag": "Services professionnels",
     "services.f6_title": "Marketplace de prestataires",
     "services.f6_desc":
       "Photographes, home stagers, gestionnaires de cles, renovateurs, notaires, courtiers \u2014 trouvez et sollicitez des prestataires qualifies depuis la plateforme. Demandes de devis integrees.",
+
+    "services.f7_tag": "Boutique e-commerce",
+    "services.f7_title": "Meubles, deco, materiaux",
+    "services.f7_desc":
+      "Marketplace produits integree : meubles, decoration, materiaux de construction, cuisines, equipements, electromenager. Les vendeurs creent leur boutique et restent responsables de leurs produits \u2014 E-Dome fournit la vitrine, le paiement securise et la visibilite. Commission marketplace sur chaque vente, jamais d'abonnement impose.",
 
     // ── Philosophy ────────────────────────────────────────────────────────
     "philosophy.label": "Notre approche",
@@ -158,9 +163,9 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "philosophy.p2_desc":
       "Vous demarrez comme apporteur d'affaires, puis vous devenez hote, puis formateur. Sur E-Dome, votre profil s'adapte. Pas besoin de creer un nouveau compte ou de recommencer. Activez un role, desactivez-le \u2014 votre historique, vos contacts et vos donnees restent.",
 
-    "philosophy.p3_title": "Commissions transparentes",
+    "philosophy.p3_title": "Une remuneration transparente, par pole",
     "philosophy.p3_desc":
-      "Chaque acteur remunere dispose de son propre dashboard revenus. L'apporteur suit ses commissions en temps reel, l'hote visualise ses reservations et gains, le formateur controle ses ventes. Tout est tracable, documente et transparent \u2014 plus de zones d'ombre.",
+      "Chaque acteur remunere dispose de son propre dashboard revenus. Le modele est differencie : frais fixes pour les ventes entre particuliers et la location longue duree, commission marketplace pour les services, formations, lives, evenements, e-commerce et location courte duree, revenue share B2B pour les partenariats agences. L'apporteur suit sa part en temps reel, l'hote visualise ses reservations et gains, le formateur controle ses ventes. Tout est tracable, documente et transparent \u2014 plus de zones d'ombre.",
 
     "philosophy.p4_title": "Le social au service du business",
     "philosophy.p4_desc":
@@ -171,7 +176,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "philosophy.video_title2": "pour tout l'immobilier.",
 
     "philosophy.video_desktop_p1":
-      "Chercher un bien, publier une annonce, reserver une visite, suivre une formation, recommander un contact et toucher sa commission.",
+      "Chercher un bien, publier une annonce, reserver une visite, suivre une formation, recommander un contact via le programme apporteur et toucher sa part.",
     "philosophy.video_desktop_p2":
       "Sans jamais quitter la plateforme \u2014 E-Dome centralise chaque etape du parcours pour que chaque acteur gagne en temps, en visibilite et en revenus.",
 
@@ -236,7 +241,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "roadmap.phase1_item2": "Reseau social immobilier (feed, stories, reels)",
     "roadmap.phase1_item3": "Marketplace avec carte, filtres et calcul de rendement",
     "roadmap.phase1_item4": "Dashboard adaptatif selon le profil metier",
-    "roadmap.phase1_item5": "Systeme de commissions pour apporteurs d'affaires",
+    "roadmap.phase1_item5": "Systeme de remuneration pour le programme apporteur d'affaires",
     "roadmap.phase1_item6": "Formations video avec modules et certifications",
     "roadmap.phase1_item7": "Messagerie, reservations, evenements et services",
 
@@ -252,13 +257,13 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "roadmap.phase3_item2": "Constitution d'une equipe de designers et de developpeurs",
     "roadmap.phase3_item3": "Developpement de la plateforme finale (web + iOS + Android) avec l'equipe de design",
     "roadmap.phase3_item4": "Paiements securises et systeme d'escrow",
-    "roadmap.phase3_item5": "Commissions automatisees et tracables",
+    "roadmap.phase3_item5": "Remuneration automatisee et tracable par pole",
     "roadmap.phase3_item6": "Beta privee Suisse + Thailande",
 
     "roadmap.phase4_title": "Lancer & s'etendre",
-    "roadmap.phase4_item1": "Lancement public Suisse & Thailande",
+    "roadmap.phase4_item1": "Lancement public sur les marches envisages (Suisse, Thailande) selon les opportunites",
     "roadmap.phase4_item2": "Publication de l'app mobile sur les stores",
-    "roadmap.phase4_item3": "Expansion vers la France, le Maroc et les EAU",
+    "roadmap.phase4_item3": "Expansion vers d'autres marches (France, Maroc, EAU envisages) selon validation juridique locale",
     "roadmap.phase4_item4": "Ouverture de l'API pour les integrations tierces",
     "roadmap.phase4_item5": "Programme ambassadeurs et apporteurs certifies",
 
@@ -435,7 +440,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "about.p1":
       "E-Dome is not just another platform. It is an ecosystem where every professional \u2014 host, agent, developer, photographer, broker, notary, architect, trainer \u2014 has a space designed for their trade. One account, one configurable profile that adapts to your current activity.",
     "about.p2":
-      "At the heart of the model: a transparent commission system that rewards every link in the chain. The business referrer earns their share, the trainer monetizes their expertise, the host manages their bookings, the service provider offers their services \u2014 all from a single place, with no fragmentation.",
+      "At the heart of the model: a transparent compensation system, differentiated by p\u00f4le \u2014 flat platform fees for sales between individuals and long-term rental, marketplace commission for services, training, lives, events and e-commerce, B2B revenue share for agency partnerships. Every link is compensated, every flow is traced.",
     "about.roles_label":
       "Interchangeable profiles that adapt to every real estate profession \u2014 one account for all your activities.",
     "about.more": "and more\u2026",
@@ -455,12 +460,12 @@ export const translations: Record<LandingLang, TranslationMap> = {
     // ── Featured video ────────────────────────────────────────────────────
     "featured.label": "The platform",
     "featured.desc":
-      "Over 30 functional pages: social feed with stories and reels, marketplace with interactive map and yield calculation, messaging, adaptive dashboard based on your role, video training modules, real-time commission system, bookings with customizable options (concierge, breakfast, transport, decoration) and payment management.",
+      "Over 30 functional pages: social feed with stories and reels, marketplace with interactive map and yield calculation, messaging, adaptive dashboard based on your role, video training modules, real-time compensation tracking, bookings with customizable options (concierge, breakfast, transport, decoration) and payment management.",
     "featured.disclaimer":
       "Visualization mockup \u2014 the data shown is fictitious and serves only to illustrate the planned features",
     "featured.cta": "Enter the demo",
     "featured.mobile_desc":
-      "Over 30 functional pages: social feed, marketplace with interactive map, messaging, multi-role dashboard, video training, commission system, bookings with customizable options and payment management.",
+      "Over 30 functional pages: social feed, marketplace with interactive map, messaging, multi-role dashboard, video training, real-time compensation tracking, bookings with customizable options and payment management.",
     "featured.mobile_disclaimer": "Visualization mockup \u2014 fictitious data",
 
     // ── Problem ───────────────────────────────────────────────────────────
@@ -519,20 +524,25 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "services.f3_desc":
       "Video training catalog by field experts: rental investment, property management, financial analysis, international taxation. Structured modules and certifications.",
 
-    "services.f4_tag": "Commission system",
+    "services.f4_tag": "Business referrer programme",
     "services.f4_title": "Refer, recommend, earn",
     "services.f4_desc":
-      "The economic engine of E-Dome: every user can become a business referrer. Commissions on rentals, sales, training \u2014 trackable links, monitoring dashboard, automatic payments.",
+      "Digital referral marketing: every eligible user can activate the programme after identity verification (KYC). Transparent compensation by p\u00f4le \u2014 flat fees for sales between individuals and long-term rental, marketplace commission for services, training, lives, events, e-commerce and short-term rental, B2B revenue share for agency partnerships. Trackable links, monitoring dashboard, automatic payments. The referrer's share is always taken from E-Dome's own revenue, never added on top of the price.",
 
-    "services.f5_tag": "Live & Events",
-    "services.f5_title": "Webinars and conferences",
+    "services.f5_tag": "Lives & Event ticketing",
+    "services.f5_title": "Webinars, conferences, trade shows",
     "services.f5_desc":
-      "Schedule live virtual tours, market analysis webinars, Q&A sessions. Replays available, registrations with notifications, in-person and virtual events.",
+      "Live virtual tours, market analysis webinars, Q&A sessions, masterclasses, private coaching. Integrated ticketing for conferences, meetups, trade shows, masterclasses and workshops \u2014 the organiser sets the price, collects through E-Dome, and remains responsible for the content and the event itself. E-Dome handles the ticketing, never the organisation. Replays available, registrations with notifications, in-person and virtual events.",
 
     "services.f6_tag": "Professional services",
     "services.f6_title": "Service provider marketplace",
     "services.f6_desc":
       "Photographers, home stagers, key managers, renovators, notaries, brokers \u2014 find and engage qualified service providers from the platform. Integrated quote requests.",
+
+    "services.f7_tag": "E-commerce store",
+    "services.f7_title": "Furniture, decor, materials",
+    "services.f7_desc":
+      "Integrated product marketplace: furniture, decoration, building materials, kitchens, equipment, appliances. Sellers run their own store and remain responsible for their products \u2014 E-Dome provides the storefront, secure payment and visibility. Marketplace commission on each sale, never a forced subscription.",
 
     // ── Philosophy ────────────────────────────────────────────────────────
     "philosophy.label": "Our approach",
@@ -549,9 +559,9 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "philosophy.p2_desc":
       "You start as a business referrer, then become a host, then a trainer. On E-Dome, your profile adapts. No need to create a new account or start over. Activate a role, deactivate it \u2014 your history, contacts and data remain.",
 
-    "philosophy.p3_title": "Transparent commissions",
+    "philosophy.p3_title": "Transparent compensation, per p\u00f4le",
     "philosophy.p3_desc":
-      "Every compensated professional has their own revenue dashboard. The referrer tracks commissions in real time, the host sees bookings and earnings, the trainer monitors sales. Everything is traceable, documented and transparent \u2014 no more gray areas.",
+      "Every compensated professional has their own revenue dashboard. The model is differentiated: flat platform fees for sales between individuals and long-term rental, marketplace commission for services, training, lives, events, e-commerce and short-term rental, B2B revenue share for agency partnerships. The referrer tracks their share in real time, the host sees bookings and earnings, the trainer monitors sales. Everything is traceable, documented and transparent \u2014 no more gray areas.",
 
     "philosophy.p4_title": "Social media at the service of business",
     "philosophy.p4_desc":
@@ -562,7 +572,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "philosophy.video_title2": "for all real estate.",
 
     "philosophy.video_desktop_p1":
-      "Search for a property, publish a listing, book a visit, take a training course, recommend a contact and earn your commission.",
+      "Search for a property, publish a listing, book a visit, take a training course, recommend a contact through the referrer programme and earn your share.",
     "philosophy.video_desktop_p2":
       "Without ever leaving the platform \u2014 E-Dome centralizes every step of the journey so every professional saves time, gains visibility and increases revenue.",
 
@@ -627,7 +637,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "roadmap.phase1_item2": "Real estate social network (feed, stories, reels)",
     "roadmap.phase1_item3": "Marketplace with map, filters and yield calculation",
     "roadmap.phase1_item4": "Adaptive dashboard based on professional profile",
-    "roadmap.phase1_item5": "Commission system for business referrers",
+    "roadmap.phase1_item5": "Compensation system for the business referrer programme",
     "roadmap.phase1_item6": "Video training with modules and certifications",
     "roadmap.phase1_item7": "Messaging, bookings, events and services",
 
@@ -643,13 +653,13 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "roadmap.phase3_item2": "Building a team of designers and developers",
     "roadmap.phase3_item3": "Development of the final platform (web + iOS + Android) with the design team",
     "roadmap.phase3_item4": "Secure payments and escrow system",
-    "roadmap.phase3_item5": "Automated and traceable commissions",
+    "roadmap.phase3_item5": "Automated and traceable compensation per pôle",
     "roadmap.phase3_item6": "Private beta Switzerland + Thailand",
 
     "roadmap.phase4_title": "Launch & expand",
-    "roadmap.phase4_item1": "Public launch Switzerland & Thailand",
+    "roadmap.phase4_item1": "Public launch on markets under consideration (Switzerland, Thailand) depending on opportunities",
     "roadmap.phase4_item2": "Mobile app publication on app stores",
-    "roadmap.phase4_item3": "Expansion to France, Morocco and the UAE",
+    "roadmap.phase4_item3": "Expansion to other markets (France, Morocco, UAE under consideration) subject to local legal validation",
     "roadmap.phase4_item4": "API opening for third-party integrations",
     "roadmap.phase4_item5": "Ambassador and certified referrer program",
 
@@ -826,7 +836,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "about.p1":
       "E-Dome ไม่ใช่แค่อีกหนึ่งแพลตฟอร์ม แต่เป็นระบบนิเวศที่ผู้เชี่ยวชาญทุกคน — เจ้าของที่พัก ตัวแทน ผู้พัฒนาโครงการ ช่างภาพ นายหน้า ทนายความ สถาปนิก ผู้ฝึกอบรม — มีพื้นที่ที่ออกแบบมาเพื่ออาชีพของตน บัญชีเดียว โปรไฟล์ที่ปรับแต่งได้ตามกิจกรรมปัจจุบันของคุณ",
     "about.p2":
-      "หัวใจของโมเดล: ระบบค่าคอมมิชชันที่โปร่งใส ตอบแทนทุกส่วนของห่วงโซ่ ผู้แนะนำธุรกิจได้รับส่วนแบ่ง ผู้ฝึกอบรมสร้างรายได้จากความเชี่ยวชาญ เจ้าของที่พักจัดการการจอง ผู้ให้บริการนำเสนอบริการ — ทั้งหมดจากที่เดียว ไม่กระจัดกระจาย",
+      "หัวใจของโมเดล: ระบบค่าตอบแทนที่โปร่งใส แตกต่างตามแต่ละพอล — ค่าธรรมเนียมแพลตฟอร์มแบบคงที่สำหรับการซื้อขายระหว่างบุคคลและการเช่ารายยาว ค่าคอมมิชชัน Marketplace สำหรับบริการ การฝึกอบรม ไลฟ์ อีเวนต์ และอีคอมเมิร์ซ Revenue share B2B สำหรับความร่วมมือกับเอเจนซี่ ทุกส่วนได้รับการตอบแทน ทุกกระแสถูกติดตาม",
     "about.roles_label":
       "โปรไฟล์ที่สลับเปลี่ยนได้ ปรับตัวตามทุกอาชีพด้านอสังหาริมทรัพย์ — บัญชีเดียวสำหรับทุกกิจกรรมของคุณ",
     "about.more": "และอื่นๆ อีกมาก…",
@@ -846,12 +856,12 @@ export const translations: Record<LandingLang, TranslationMap> = {
     // ── Featured video ────────────────────────────────────────────────────
     "featured.label": "แพลตฟอร์ม",
     "featured.desc":
-      "มากกว่า 30 หน้าที่ใช้งานได้: Feed สังคมพร้อม Stories และ Reels, ตลาดซื้อขายพร้อมแผนที่แบบโต้ตอบและการคำนวณผลตอบแทน, ระบบส่งข้อความ, Dashboard ที่ปรับตัวตามบทบาทของคุณ, โมดูลฝึกอบรมวิดีโอ, ระบบค่าคอมมิชชันแบบเรียลไทม์, การจองพร้อมตัวเลือกที่ปรับแต่งได้ (บริการดูแล อาหารเช้า ขนส่ง ตกแต่ง) และการจัดการการชำระเงิน",
+      "มากกว่า 30 หน้าที่ใช้งานได้: Feed สังคมพร้อม Stories และ Reels, ตลาดซื้อขายพร้อมแผนที่แบบโต้ตอบและการคำนวณผลตอบแทน, ระบบส่งข้อความ, Dashboard ที่ปรับตัวตามบทบาทของคุณ, โมดูลฝึกอบรมวิดีโอ, ติดตามค่าตอบแทนแบบเรียลไทม์, การจองพร้อมตัวเลือกที่ปรับแต่งได้ (บริการดูแล อาหารเช้า ขนส่ง ตกแต่ง) และการจัดการการชำระเงิน",
     "featured.disclaimer":
       "แบบจำลองเพื่อการแสดงผล — ข้อมูลที่แสดงเป็นข้อมูลสมมติ มีจุดประสงค์เพื่อแสดงฟีเจอร์ที่วางแผนไว้เท่านั้น",
     "featured.cta": "เข้าสู่เดโม",
     "featured.mobile_desc":
-      "มากกว่า 30 หน้าที่ใช้งานได้: Feed สังคม, ตลาดซื้อขายพร้อมแผนที่แบบโต้ตอบ, ระบบส่งข้อความ, Dashboard หลายบทบาท, ฝึกอบรมวิดีโอ, ระบบค่าคอมมิชชัน, การจองพร้อมตัวเลือกที่ปรับแต่งได้และการจัดการการชำระเงิน",
+      "มากกว่า 30 หน้าที่ใช้งานได้: Feed สังคม, ตลาดซื้อขายพร้อมแผนที่แบบโต้ตอบ, ระบบส่งข้อความ, Dashboard หลายบทบาท, ฝึกอบรมวิดีโอ, ติดตามค่าตอบแทนแบบเรียลไทม์, การจองพร้อมตัวเลือกที่ปรับแต่งได้และการจัดการการชำระเงิน",
     "featured.mobile_disclaimer": "แบบจำลองเพื่อการแสดงผล — ข้อมูลสมมติ",
 
     // ── Problem ───────────────────────────────────────────────────────────
@@ -910,20 +920,25 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "services.f3_desc":
       "แคตตาล็อกการฝึกอบรมวิดีโอโดยผู้เชี่ยวชาญภาคสนาม: การลงทุนให้เช่า การจัดการอสังหาริมทรัพย์ การวิเคราะห์ทางการเงิน ภาษีระหว่างประเทศ โมดูลที่มีโครงสร้างและใบรับรอง",
 
-    "services.f4_tag": "ระบบค่าคอมมิชชัน",
+    "services.f4_tag": "โปรแกรมผู้แนะนำธุรกิจ",
     "services.f4_title": "แนะนำ บอกต่อ สร้างรายได้",
     "services.f4_desc":
-      "หัวใจทางเศรษฐกิจของ E-Dome: ผู้ใช้ทุกคนสามารถเป็นผู้แนะนำธุรกิจ ค่าคอมมิชชันจากการเช่า การขาย การฝึกอบรม — ลิงก์ที่ติดตามได้ Dashboard การติดตาม การชำระเงินอัตโนมัติ",
+      "การตลาดแบบ Referral ดิจิทัล: ผู้ใช้ที่มีสิทธิ์ทุกคนเปิดใช้งานโปรแกรมได้หลังตรวจยืนยันตัวตน (KYC) ค่าตอบแทนแตกต่างตามพอล — ค่าธรรมเนียมคงที่สำหรับการซื้อขายระหว่างบุคคลและการเช่ารายยาว ค่าคอมมิชชัน Marketplace สำหรับบริการ การฝึกอบรม ไลฟ์ อีเวนต์ อีคอมเมิร์ซ และการเช่าระยะสั้น Revenue share B2B สำหรับความร่วมมือกับเอเจนซี่ ลิงก์ที่ติดตามได้ Dashboard การติดตาม การชำระเงินอัตโนมัติ ส่วนแบ่งของผู้แนะนำหักจากรายได้ของ E-Dome เสมอ ไม่บวกเพิ่มในราคา",
 
-    "services.f5_tag": "ถ่ายทอดสดและกิจกรรม",
-    "services.f5_title": "สัมมนาออนไลน์และการประชุม",
+    "services.f5_tag": "ถ่ายทอดสด & ระบบจำหน่ายบัตรอีเวนต์",
+    "services.f5_title": "สัมมนาออนไลน์ การประชุม งานแสดงสินค้า",
     "services.f5_desc":
-      "จัดกำหนดการถ่ายทอดสดการเยี่ยมชมเสมือนจริง สัมมนาวิเคราะห์ตลาด เซสชันถาม-ตอบ มีรีเพลย์ การลงทะเบียนพร้อมการแจ้งเตือน กิจกรรมแบบพบหน้าและออนไลน์",
+      "ถ่ายทอดสดการเยี่ยมชมเสมือนจริง สัมมนาวิเคราะห์ตลาด เซสชันถาม-ตอบ มาสเตอร์คลาส โค้ชชิ่งส่วนตัว ระบบจำหน่ายบัตรในตัวสำหรับการประชุม Meetup งานแสดงสินค้า มาสเตอร์คลาส และเวิร์กชอป — ผู้จัดงานตั้งราคาเอง รับเงินผ่าน E-Dome และยังคงรับผิดชอบเนื้อหาและการจัดงาน E-Dome ดูแลระบบจำหน่ายบัตร ไม่ใช่ผู้จัดงานอย่างเป็นทางการ มีรีเพลย์ การลงทะเบียนพร้อมการแจ้งเตือน กิจกรรมแบบพบหน้าและออนไลน์",
 
     "services.f6_tag": "บริการมืออาชีพ",
     "services.f6_title": "ตลาดผู้ให้บริการ",
     "services.f6_desc":
       "ช่างภาพ นักจัดบ้าน ผู้จัดการกุญแจ ผู้ปรับปรุง ทนายความ นายหน้า — ค้นหาและติดต่อผู้ให้บริการที่มีคุณภาพจากแพลตฟอร์ม คำขอใบเสนอราคาแบบบูรณาการ",
+
+    "services.f7_tag": "ร้านค้าอีคอมเมิร์ซ",
+    "services.f7_title": "เฟอร์นิเจอร์ ของตกแต่ง วัสดุก่อสร้าง",
+    "services.f7_desc":
+      "Marketplace สินค้าในตัว: เฟอร์นิเจอร์ ของตกแต่ง วัสดุก่อสร้าง ห้องครัว อุปกรณ์ เครื่องใช้ไฟฟ้า ผู้ขายเปิดร้านของตนและรับผิดชอบสินค้าของตนเอง E-Dome ให้พื้นที่หน้าร้าน ระบบชำระเงินที่ปลอดภัย และการมองเห็น ค่าคอมมิชชัน Marketplace ต่อการขายแต่ละครั้ง ไม่มีการสมัครรายเดือนบังคับ",
 
     // ── Philosophy ────────────────────────────────────────────────────────
     "philosophy.label": "แนวทางของเรา",
@@ -940,9 +955,9 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "philosophy.p2_desc":
       "คุณเริ่มต้นเป็นผู้แนะนำธุรกิจ จากนั้นกลายเป็นเจ้าของที่พัก แล้วเป็นผู้ฝึกอบรม บน E-Dome โปรไฟล์ของคุณปรับตัวได้ ไม่ต้องสร้างบัญชีใหม่หรือเริ่มต้นใหม่ เปิดใช้งานบทบาท ปิดใช้งาน — ประวัติ ผู้ติดต่อ และข้อมูลของคุณยังคงอยู่",
 
-    "philosophy.p3_title": "ค่าคอมมิชชันที่โปร่งใส",
+    "philosophy.p3_title": "ค่าตอบแทนโปร่งใส แตกต่างตามพอล",
     "philosophy.p3_desc":
-      "ผู้เชี่ยวชาญทุกคนที่ได้รับค่าตอบแทนมี Dashboard รายได้ของตนเอง ผู้แนะนำติดตามค่าคอมมิชชันแบบเรียลไทม์ เจ้าของที่พักดูการจองและรายได้ ผู้ฝึกอบรมติดตามยอดขาย ทุกอย่างตรวจสอบได้ มีเอกสาร และโปร่งใส — ไม่มีพื้นที่เทาอีกต่อไป",
+      "ผู้เชี่ยวชาญทุกคนที่ได้รับค่าตอบแทนมี Dashboard รายได้ของตนเอง โมเดลแตกต่างตามแต่ละพอล: ค่าธรรมเนียมแพลตฟอร์มแบบคงที่สำหรับการซื้อขายระหว่างบุคคลและการเช่ารายยาว ค่าคอมมิชชัน Marketplace สำหรับบริการ การฝึกอบรม ไลฟ์ อีเวนต์ อีคอมเมิร์ซ และการเช่าระยะสั้น Revenue share B2B สำหรับความร่วมมือกับเอเจนซี่ ผู้แนะนำติดตามส่วนแบ่งแบบเรียลไทม์ เจ้าของที่พักดูการจองและรายได้ ผู้ฝึกอบรมติดตามยอดขาย ทุกอย่างตรวจสอบได้ มีเอกสาร และโปร่งใส — ไม่มีพื้นที่เทาอีกต่อไป",
 
     "philosophy.p4_title": "โซเชียลมีเดียเพื่อธุรกิจ",
     "philosophy.p4_desc":
@@ -953,7 +968,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "philosophy.video_title2": "สำหรับอสังหาริมทรัพย์ทั้งหมด",
 
     "philosophy.video_desktop_p1":
-      "ค้นหาอสังหาริมทรัพย์ ลงประกาศ จองการเยี่ยมชม เข้ารับการฝึกอบรม แนะนำผู้ติดต่อ และรับค่าคอมมิชชัน",
+      "ค้นหาอสังหาริมทรัพย์ ลงประกาศ จองการเยี่ยมชม เข้ารับการฝึกอบรม แนะนำผู้ติดต่อผ่านโปรแกรมผู้แนะนำ และรับส่วนแบ่งของคุณ",
     "philosophy.video_desktop_p2":
       "โดยไม่ต้องออกจากแพลตฟอร์ม — E-Dome รวมศูนย์ทุกขั้นตอนของเส้นทาง เพื่อให้ผู้เชี่ยวชาญทุกคนประหยัดเวลา เพิ่มการมองเห็น และเพิ่มรายได้",
 
@@ -1018,7 +1033,7 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "roadmap.phase1_item2": "เครือข่ายสังคมอสังหาริมทรัพย์ (Feed, Stories, Reels)",
     "roadmap.phase1_item3": "ตลาดซื้อขายพร้อมแผนที่ ตัวกรอง และการคำนวณผลตอบแทน",
     "roadmap.phase1_item4": "Dashboard ที่ปรับตัวตามโปรไฟล์วิชาชีพ",
-    "roadmap.phase1_item5": "ระบบค่าคอมมิชชันสำหรับผู้แนะนำธุรกิจ",
+    "roadmap.phase1_item5": "ระบบค่าตอบแทนสำหรับโปรแกรมผู้แนะนำธุรกิจ",
     "roadmap.phase1_item6": "การฝึกอบรมวิดีโอพร้อมโมดูลและใบรับรอง",
     "roadmap.phase1_item7": "ระบบส่งข้อความ การจอง กิจกรรม และบริการ",
 
@@ -1034,13 +1049,13 @@ export const translations: Record<LandingLang, TranslationMap> = {
     "roadmap.phase3_item2": "สร้างทีมนักออกแบบและนักพัฒนา",
     "roadmap.phase3_item3": "พัฒนาแพลตฟอร์มเวอร์ชันสุดท้าย (เว็บ + iOS + Android) ร่วมกับทีมออกแบบ",
     "roadmap.phase3_item4": "การชำระเงินที่ปลอดภัยและระบบ Escrow",
-    "roadmap.phase3_item5": "ค่าคอมมิชชันอัตโนมัติและตรวจสอบได้",
+    "roadmap.phase3_item5": "ค่าตอบแทนอัตโนมัติและตรวจสอบได้ตามแต่ละพอล",
     "roadmap.phase3_item6": "เบต้าส่วนตัว สวิตเซอร์แลนด์ + ประเทศไทย",
 
     "roadmap.phase4_title": "เปิดตัวและขยาย",
-    "roadmap.phase4_item1": "เปิดตัวสาธารณะ สวิตเซอร์แลนด์ & ประเทศไทย",
+    "roadmap.phase4_item1": "เปิดตัวสาธารณะในตลาดที่อยู่ระหว่างพิจารณา (สวิตเซอร์แลนด์ ประเทศไทย) ตามโอกาส",
     "roadmap.phase4_item2": "เผยแพร่แอปมือถือบน App Store",
-    "roadmap.phase4_item3": "ขยายสู่ฝรั่งเศส โมร็อกโก และสหรัฐอาหรับเอมิเรตส์",
+    "roadmap.phase4_item3": "ขยายสู่ตลาดอื่น (ฝรั่งเศส โมร็อกโก สหรัฐอาหรับเอมิเรตส์ — อยู่ระหว่างพิจารณา) ขึ้นกับการตรวจสอบกฎหมายในประเทศนั้น ๆ",
     "roadmap.phase4_item4": "เปิด API สำหรับการเชื่อมต่อบุคคลที่สาม",
     "roadmap.phase4_item5": "โปรแกรมแอมบาสเดอร์และผู้แนะนำที่ได้รับการรับรอง",
 

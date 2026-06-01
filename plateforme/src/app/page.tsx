@@ -392,7 +392,7 @@ function MoteurEconomiqueSlide({
     {
       icon: <Lock size={13} />,
       color: "#1e9df1",
-      label: lang === "en" ? "Fixed commission" : lang === "th" ? "คอมมิชชันคงที่" : "Commission fixe",
+      label: lang === "en" ? "Per-pôle model" : lang === "th" ? "โมเดลตามแต่ละพอล" : "Modèle par pôle",
     },
     {
       icon: <ShieldCheck size={13} />,
@@ -624,7 +624,7 @@ function MoteurEconomiqueSlide({
                     color: "#a855f7",
                     eyebrow: "A shared commission",
                     title: "Business referrer program",
-                    body: "Toggleable by the seller on every listing. Once open, anyone (a neighbor, a friend, an agent…) generates their own referral link: each conversion through it credits a share of E-Dome's commission to the referrer — tracked in real time, never added on top of the price. Off by default, fully under the seller's control.",
+                    body: "Digital referral marketing — the referrer activates the function after identity verification (KYC), then generates their own link. Each conversion through it credits a share of E-Dome's own platform revenue to the referrer — tracked in real time, never added on top of the price. The seller, organiser or service provider can disable the programme on any listing or piece of content. The referrer never negotiates a price, never represents either party, is never paid directly by buyer or seller, and is neither an estate agent nor a broker. Applies across every pôle.",
                   },
                   {
                     icon: <LineChart size={14} />,
@@ -636,9 +636,9 @@ function MoteurEconomiqueSlide({
                   {
                     icon: <Wallet size={14} />,
                     color: "#22c55e",
-                    eyebrow: "Platform model",
-                    title: "A contained, transparent commission",
-                    body: "E-Dome takes a fixed, transparent share — sitting several points below what's standard on real-estate marketplaces. Most of the value stays with the seller, and nothing is added to the buyer's price.",
+                    eyebrow: "Per-pôle model",
+                    title: "Transparent fees, differentiated by pôle",
+                    body: "Sales between individuals → flat platform fee (500 CHF below 1M, 2,500 CHF above) — independent of the sale price, paid at publication, never a percentage. Long-term rental → flat listing fee (150 / 250 / 400 CHF by lease length). Short-term rental, services, events, lives, training, e-commerce → marketplace commission (4–12 % depending on the pôle). Agency partnerships → B2B revenue share on the agency's own commission — the agency keeps its licence and its margin. Most of the value stays with the seller, and nothing is added to the buyer's price.",
                   },
                 ]
               : lang === "th"
@@ -648,7 +648,7 @@ function MoteurEconomiqueSlide({
                       color: "#a855f7",
                       eyebrow: "ค่าคอมมิชชันที่แบ่ง",
                       title: "โปรแกรมผู้แนะนำธุรกิจ",
-                      body: "ผู้ขายเปิด/ปิดได้ในแต่ละประกาศ เมื่อเปิดแล้ว ใครก็ได้ (เพื่อนบ้าน เพื่อน นายหน้า…) สร้างลิงก์แนะนำของตนเอง ทุกการแปลงผ่านลิงก์ให้ส่วนแบ่งค่าคอมมิชชันของ E-Dome แก่ผู้แนะนำ ตรวจสอบได้แบบเรียลไทม์ ไม่บวกเพิ่มในราคา ปิดเป็นค่าเริ่มต้น อยู่ในมือผู้ขายทั้งหมด",
+                      body: "การตลาดแบบ Referral ดิจิทัล — ผู้แนะนำเปิดใช้งานหลังตรวจยืนยันตัวตน (KYC) จากนั้นสร้างลิงก์ของตนเอง ทุกการแปลงผ่านลิงก์ให้ส่วนแบ่งจากรายได้ของ E-Dome แก่ผู้แนะนำ ตรวจสอบได้แบบเรียลไทม์ ไม่บวกเพิ่มในราคา ผู้ขาย ผู้จัดงาน หรือผู้ให้บริการ สามารถปิดโปรแกรมในประกาศหรือเนื้อหาของตนได้ตลอด ผู้แนะนำไม่ต่อรองราคา ไม่เป็นตัวแทนคู่สัญญาใด ไม่รับเงินตรงจากผู้ซื้อหรือผู้ขาย และไม่ใช่ทั้งนายหน้าและตัวแทนอสังหาฯ ใช้ได้ทุกพอล",
                     },
                     {
                       icon: <LineChart size={14} />,
@@ -660,9 +660,9 @@ function MoteurEconomiqueSlide({
                     {
                       icon: <Wallet size={14} />,
                       color: "#22c55e",
-                      eyebrow: "โมเดลแพลตฟอร์ม",
-                      title: "ค่าคอมมิชชันที่ควบคุม โปร่งใส",
-                      body: "E-Dome เก็บส่วนแบ่งคงที่และโปร่งใส ต่ำกว่ามาตรฐานของตลาดอสังหาฯ หลายเปอร์เซ็นต์ ผู้ขายเก็บส่วนใหญ่ของรายได้ และผู้ซื้อไม่เสียเพิ่ม",
+                      eyebrow: "โมเดลตามแต่ละพอล",
+                      title: "ค่าธรรมเนียมโปร่งใส แตกต่างตามพอล",
+                      body: "ซื้อขายระหว่างบุคคล → ค่าธรรมเนียมแพลตฟอร์มแบบคงที่ (500 CHF สำหรับทรัพย์ต่ำกว่า 1 ล้าน, 2,500 CHF สำหรับทรัพย์เกิน 1 ล้าน) — ไม่ขึ้นกับราคาขาย เก็บตอนลงประกาศ ไม่ใช่เปอร์เซ็นต์ เช่ารายยาว → ค่าธรรมเนียมคงที่ (150 / 250 / 400 CHF ตามระยะสัญญา) เช่าระยะสั้น บริการ อีเวนต์ ไลฟ์ การฝึกอบรม อีคอมเมิร์ซ → ค่าคอมมิชชัน Marketplace (4–12 % ตามพอล) ความร่วมมือกับเอเจนซี่ → Revenue share B2B จากค่าคอมมิชชันของเอเจนซี่เอง — เอเจนซี่ถือใบอนุญาตและกำไรของตน ส่วนใหญ่อยู่กับผู้ขาย และผู้ซื้อไม่จ่ายเพิ่ม",
                     },
                   ]
                 : [
@@ -671,7 +671,7 @@ function MoteurEconomiqueSlide({
                       color: "#a855f7",
                       eyebrow: "Une commission partagée",
                       title: "Programme apporteur d'affaires",
-                      body: "Activable par le vendeur sur chaque offre. Une fois ouvert, n'importe qui (un voisin, un ami, un agent…) génère son lien de recommandation : chaque conversion via ce lien reverse une part de la commission d'E-Dome à l'apporteur — tracée en temps réel, jamais ajoutée au prix. Désactivé par défaut, entièrement sous le contrôle du vendeur.",
+                      body: "Referral marketing digital — l'apporteur active la fonction après vérification d'identité (KYC), puis génère son lien personnel. Chaque conversion via ce lien reverse une part des revenus de plateforme d'E-Dome à l'apporteur — tracée en temps réel, jamais ajoutée au prix. Le vendeur, l'organisateur ou le prestataire peut désactiver le programme sur chaque annonce ou contenu. L'apporteur ne négocie aucun prix, ne représente aucune partie, n'est jamais payé directement par le vendeur ou l'acheteur, et n'est ni agent immobilier ni courtier. Applicable sur tous les pôles.",
                     },
                     {
                       icon: <LineChart size={14} />,
@@ -683,9 +683,9 @@ function MoteurEconomiqueSlide({
                     {
                       icon: <Wallet size={14} />,
                       color: "#22c55e",
-                      eyebrow: "Modèle plateforme",
-                      title: "Une commission contenue, transparente",
-                      body: "E-Dome prélève une part fixe et transparente, plusieurs points en-dessous des standards des marketplaces immobilières. L'essentiel reste chez celui qui vend, et le prix payé par le client ne bouge pas.",
+                      eyebrow: "Modèle par pôle",
+                      title: "Des frais transparents, différenciés par pôle",
+                      body: "Ventes entre particuliers → frais fixes de plateforme (500 CHF jusqu'à 1 M, 2 500 CHF au-delà) — indépendants du prix, dus à la publication, jamais un pourcentage. Location longue durée → frais fixes (150 / 250 / 400 CHF selon la durée du bail). Location courte, services, événements, lives, formations, e-commerce → commission marketplace (4–12 % selon le pôle). Partenariats agences → revenue share B2B sur la commission de l'agence — l'agence garde sa licence et sa marge. L'essentiel reste chez celui qui vend, et rien n'est ajouté au prix payé par le client.",
                     },
                   ]
             ).map((card, i) => (
@@ -1110,7 +1110,7 @@ function HomePageContent() {
                         title: "High commissions.",
                         body: "Revenue split by hand, with no transparency, no central tracking, and no real traceability.",
                         resolution:
-                          "Platform commission among the lowest on the market — fully automated and traceable.",
+                          "Transparent fees per pôle — flat fees for sales between individuals and long-term rental, marketplace commission below market for services, events, lives, training, e-commerce and short-term rental. Fully automated and traceable.",
                       },
                       {
                         title: "Real-estate content that redirects elsewhere.",
@@ -1144,7 +1144,7 @@ function HomePageContent() {
                         title: "ค่าคอมมิชชันสูง",
                         body: "รายได้แบ่งด้วยมือ ไม่โปร่งใส ไม่มีการติดตามรวมศูนย์ และไม่มีการตรวจสอบที่แท้จริง",
                         resolution:
-                          "ค่าคอมมิชชันแพลตฟอร์มต่ำที่สุดในตลาด — อัตโนมัติและตรวจสอบได้ทั้งหมด",
+                          "ค่าธรรมเนียมโปร่งใสตามแต่ละพอล — ค่าธรรมเนียมคงที่สำหรับการซื้อขายระหว่างบุคคลและการเช่ารายยาว ค่าคอมมิชชัน Marketplace ต่ำกว่าตลาดสำหรับบริการ อีเวนต์ ไลฟ์ การฝึกอบรม อีคอมเมิร์ซ และการเช่าระยะสั้น อัตโนมัติและตรวจสอบได้ทั้งหมด",
                       },
                       {
                         title: "คอนเทนต์อสังหาฯ ที่นำไปที่อื่น",
@@ -1178,7 +1178,7 @@ function HomePageContent() {
                         title: "Des commissions élevées.",
                         body: "Des revenus répartis manuellement, sans transparence, sans suivi centralisé et sans réelle traçabilité.",
                         resolution:
-                          "Commission plateforme parmi les plus basses du marché — entièrement automatisée et traçable.",
+                          "Frais transparents par pôle — frais fixes pour les ventes entre particuliers et la location longue durée, commission marketplace sous-marché pour les services, événements, lives, formations, e-commerce et location courte durée. Entièrement automatisé et traçable.",
                       },
                       {
                         title: "Du contenu immobilier qui redirige ailleurs.",
@@ -2470,11 +2470,11 @@ function HomePageContent() {
                       },
                       {
                         q: "How much does it cost?",
-                        a: "Sign-up, browsing and networking are free. Premium features (advanced training, profile boost, pro tools) will be paid down the road. The platform's commission on transactions is taken at source — never added on top for the host or the client.",
+                        a: "All platform tools are free. E-Dome is paid only on platform fees (sales between individuals, long-term rental), marketplace commissions (services, events, lives, training, e-commerce, short-term rental) and B2B revenue share on agency partnerships — never a monthly subscription. Optional visibility boosts remain available à la carte. The platform's share is taken at source on each transaction — never added on top for the host or the client.",
                       },
                       {
                         q: "How does the referral system work?",
-                        a: "You generate a personal link for each referral type (host, client, property, course, service). Each conversion is automatically attributed to you. You see every commission in real time on your dashboard. The referrer's share comes out of E-Dome's own slice — never added to the price.",
+                        a: "Digital referral marketing. The referrer activates the programme after identity verification (KYC) and generates a personal link for each referral type (host, client, property, course, service). Each conversion is automatically attributed to them. They see their share in real time on their dashboard. The referrer's share is taken from E-Dome's own platform revenue — never added on top of the price. The seller, organiser or service provider can disable the programme on any listing or piece of content. The referrer never negotiates, never represents either party, and is neither an estate agent nor a broker.",
                       },
                       {
                         q: "Is my data protected?",
@@ -2482,7 +2482,7 @@ function HomePageContent() {
                       },
                       {
                         q: "Where will E-Dome be available?",
-                        a: "Initial launch is planned in Switzerland and Thailand, followed by international expansion. The platform is multilingual from day one (French, English, Thai) — every market can plug in directly.",
+                        a: "Switzerland and Thailand are markets under consideration for launch — nothing is fixed yet. The final markets will be defined once the company is set up, depending on the situation at that time and the opportunities on the ground. The platform is multilingual from day one (French, English, Thai), so every market can plug in directly. Local legal validation is mandatory before each new market.",
                       },
                       {
                         q: "How can I contribute right now?",
@@ -2505,11 +2505,11 @@ function HomePageContent() {
                         },
                         {
                           q: "มีค่าใช้จ่ายเท่าไหร่?",
-                          a: "การลงทะเบียน การเรียกดู และการเชื่อมต่อเครือข่ายฟรี ฟีเจอร์พรีเมียมจะมีค่าใช้จ่ายในอนาคต ค่าคอมมิชชันของแพลตฟอร์มถูกหักที่แหล่งที่มา — ไม่เพิ่มเข้าไปในราคาสำหรับเจ้าของบ้านหรือลูกค้า",
+                          a: "เครื่องมือทั้งหมดบนแพลตฟอร์มฟรี E-Dome ได้รับค่าตอบแทนเฉพาะจาก ค่าธรรมเนียมแพลตฟอร์ม (ซื้อขายระหว่างบุคคล เช่ารายยาว) ค่าคอมมิชชัน Marketplace (บริการ อีเวนต์ ไลฟ์ การฝึกอบรม อีคอมเมิร์ซ เช่าระยะสั้น) และ Revenue share B2B จากความร่วมมือกับเอเจนซี่ — ไม่มีการสมัครรายเดือนบังคับ ตัวเลือกการเพิ่มการมองเห็นมีให้แบบ à la carte ส่วนแบ่งของแพลตฟอร์มถูกหักที่แหล่งที่มา — ไม่เพิ่มเข้าไปในราคาสำหรับเจ้าของบ้านหรือลูกค้า",
                         },
                         {
                           q: "ระบบผู้แนะนำทำงานอย่างไร?",
-                          a: "คุณสร้างลิงก์ส่วนตัวสำหรับแต่ละประเภทการแนะนำ (เจ้าของบ้าน ลูกค้า ทรัพย์สิน คอร์ส บริการ) ทุกการแปลงถูกระบุเป็นของคุณโดยอัตโนมัติ คุณเห็นค่าคอมมิชชันทั้งหมดเรียลไทม์บนแดชบอร์ดของคุณ ค่าคอมมิชชันของผู้แนะนำหักจากส่วนของ E-Dome — ไม่เพิ่มเข้าไปในราคา",
+                          a: "การตลาดแบบ Referral ดิจิทัล ผู้แนะนำเปิดใช้งานหลังตรวจยืนยันตัวตน (KYC) แล้วสร้างลิงก์ส่วนตัวสำหรับแต่ละประเภทการแนะนำ (เจ้าของบ้าน ลูกค้า ทรัพย์สิน คอร์ส บริการ) ทุกการแปลงถูกระบุเป็นของพวกเขาโดยอัตโนมัติ พวกเขาเห็นส่วนแบ่งเรียลไทม์บนแดชบอร์ด ส่วนแบ่งของผู้แนะนำหักจากรายได้ของ E-Dome — ไม่เพิ่มเข้าไปในราคา ผู้ขาย ผู้จัดงาน หรือผู้ให้บริการ สามารถปิดโปรแกรมในประกาศหรือเนื้อหาของตน ผู้แนะนำไม่ต่อรองราคา ไม่เป็นตัวแทนคู่สัญญาใด และไม่ใช่ทั้งนายหน้าและตัวแทนอสังหาฯ",
                         },
                         {
                           q: "ข้อมูลของฉันได้รับการปกป้องหรือไม่?",
@@ -2517,7 +2517,7 @@ function HomePageContent() {
                         },
                         {
                           q: "E-Dome จะเปิดให้ใช้งานในประเทศใดบ้าง?",
-                          a: "การเปิดตัวเริ่มต้นวางแผนไว้ในสวิตเซอร์แลนด์และไทย ตามด้วยการขยายระดับสากล แพลตฟอร์มรองรับหลายภาษาตั้งแต่วันแรก (ฝรั่งเศส อังกฤษ ไทย) — ทุกตลาดสามารถเข้าร่วมได้ทันที",
+                          a: "สวิตเซอร์แลนด์และไทยเป็นตลาดที่อยู่ระหว่างการพิจารณา ยังไม่มีการตัดสินใจขั้นสุดท้าย ตลาดจะถูกกำหนดในจังหวะที่ตั้งบริษัท ตามสถานการณ์จริงและโอกาสในพื้นที่ แพลตฟอร์มรองรับหลายภาษาตั้งแต่วันแรก (ฝรั่งเศส อังกฤษ ไทย) ทุกตลาดสามารถเข้าร่วมได้ทันที การตรวจสอบทางกฎหมายในประเทศนั้น ๆ จำเป็นต้องทำก่อนเปิดทุกตลาดใหม่",
                         },
                         {
                           q: "ฉันสามารถมีส่วนร่วมตอนนี้ได้อย่างไร?",
@@ -2539,11 +2539,11 @@ function HomePageContent() {
                         },
                         {
                           q: "Combien ça coûte ?",
-                          a: "L'inscription, la consultation et la mise en réseau sont gratuites. Certaines fonctionnalités premium (formations avancées, mise en avant de profil, outils pros) seront payantes à terme. La commission de la plateforme est prélevée à la source sur les transactions — jamais ajoutée au prix pour l'hôte ou le client.",
+                          a: "Tous les outils de la plateforme sont gratuits. E-Dome se rémunère uniquement sur des frais de plateforme (ventes entre particuliers, location longue durée), des commissions marketplace (services, événements, lives, formations, e-commerce, location courte durée) et un revenue share B2B sur les partenariats agences — pas d'abonnement mensuel imposé. Des options de mise en avant restent disponibles à la carte. La part de la plateforme est prélevée à la source sur chaque transaction — jamais ajoutée au prix pour l'hôte ou le client.",
                         },
                         {
                           q: "Comment fonctionne le système d'apporteur ?",
-                          a: "Vous générez un lien personnel pour chaque type d'apport (hôte, client, bien, formation, prestation). Chaque conversion vous est attribuée automatiquement. Vous voyez toutes vos commissions en temps réel sur votre tableau de bord. La part de l'apporteur est prélevée sur celle d'E-Dome — jamais ajoutée au prix.",
+                          a: "Referral marketing digital. L'apporteur active la fonction après vérification d'identité (KYC) puis génère un lien personnel pour chaque type d'apport (hôte, client, bien, formation, prestation). Chaque conversion lui est attribuée automatiquement. Il voit sa part en temps réel sur son tableau de bord. La part de l'apporteur est prélevée sur les revenus de plateforme d'E-Dome — jamais ajoutée au prix. Le vendeur, l'organisateur ou le prestataire peut désactiver le programme sur chaque annonce ou contenu. L'apporteur ne négocie pas, ne représente aucune partie, et n'est ni agent immobilier ni courtier.",
                         },
                         {
                           q: "Mes données sont-elles protégées ?",
@@ -2551,7 +2551,7 @@ function HomePageContent() {
                         },
                         {
                           q: "Dans quels pays sera disponible E-Dome ?",
-                          a: "Le lancement initial est prévu en Suisse et en Thaïlande, suivi d'une expansion à l'international. La plateforme est multilingue dès le départ (français, anglais, thaï) — chaque marché peut s'y greffer directement.",
+                          a: "La Suisse et la Thaïlande sont des marchés envisagés au lancement — rien n'est figé. Les marchés finaux seront définis au moment de la création de la société, selon la situation réelle et les opportunités terrain. La plateforme est multilingue dès le départ (français, anglais, thaï) — chaque marché peut s'y greffer directement. Une validation juridique locale est indispensable avant chaque nouveau marché.",
                         },
                         {
                           q: "Comment puis-je contribuer dès maintenant ?",

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Home, GraduationCap, Handshake, Radio, Briefcase } from "lucide-react";
+import { Users, Home, GraduationCap, Handshake, Radio, Briefcase, ShoppingBag } from "lucide-react";
 import { useLandingLang } from "@/components/landing/landing-i18n";
 
 export function ServicesSection() {
@@ -57,6 +57,17 @@ export function ServicesSection() {
       video: "/videos/services.mp4",
       startTime: 5,
       poster: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=70",
+    },
+    {
+      // Pôle Boutique e-commerce — explicité au même niveau que les autres
+      // pôles (V1.0 du document interne). Réutilise le poster meubles/déco ;
+      // pas de vidéo dédiée pour le moment (le rendu accepte l'absence).
+      tag: t("services.f7_tag"),
+      title: t("services.f7_title"),
+      description: t("services.f7_desc"),
+      icon: ShoppingBag,
+      video: "/videos/services.mp4",
+      poster: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=70",
     },
   ];
 
