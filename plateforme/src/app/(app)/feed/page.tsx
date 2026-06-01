@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import {
-  Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send,
+  Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send, Repeat2, Eye,
   MapPin, X, ChevronRight, Play,
   Edit3, Trash2, Flag, EyeOff, Copy,
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
@@ -861,10 +861,12 @@ type PostCardProps = {
   post: SocialPost;
   liked: boolean;
   saved: boolean;
+  reposted: boolean;
   muted: boolean;
   onToggleMute: () => void;
   onToggleLike: () => void;
   onToggleSave: () => void;
+  onToggleRepost: () => void;
   onOpenComments: () => void;
   onOpenShare: () => void;
   onOpenMore: () => void;
@@ -874,12 +876,13 @@ type PostCardProps = {
   onEdit: () => void;
   onDelete: () => void;
   onSignal: () => void;
+  onShareCopy: () => void;
 };
 
 function PostCard({
-  post, liked, saved, muted, onToggleMute,
-  onToggleLike, onToggleSave, onOpenComments, onOpenShare, onOpenMore,
-  shareOpen, moreOpen, closeMenus, onEdit, onDelete, onSignal,
+  post, liked, saved, reposted, muted, onToggleMute,
+  onToggleLike, onToggleSave, onToggleRepost, onOpenComments, onOpenShare, onOpenMore,
+  shareOpen, moreOpen, closeMenus, onEdit, onDelete, onSignal, onShareCopy,
 }: PostCardProps) {
   const { formatPrice } = useApp();
   const cta = CUSTOM_CTA[post.id];
@@ -1080,15 +1083,53 @@ function PostCard({
         </Link>
       )}
 
-      {/* Actions — hover couleurs sémantiques façon Twitter/X.
-          Like : rose (état actif + animation pop au moment du like).
-          Comment : bleu primary au hover.
-          Share : vert emerald au hover.
-          Bookmark : primary. */}
+      {/* Actions — ordre Twitter/X : Reply | Repost | Like | View | Bookmark | Share.
+          Couleurs sémantiques au hover : reply=bleu, repost=vert, like=rose,
+          bookmark=primary. View count en lecture seule à droite. */}
       <div className="mt-3 flex items-center gap-1 px-3 py-2 border-t border-[var(--card-border)]">
+
+        {/* Reply (commentaire) */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onOpenComments(); }}
+          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[#1e9df1]/10"
+          aria-label="Répondre"
+        >
+          <MessageCircle className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[#1e9df1] transition-colors" />
+          <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85 group-hover:text-[#1e9df1] transition-colors">
+            {formatCount(post.comments.length)}
+          </span>
+        </button>
+
+        {/* Repost (Twitter retweet) */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleRepost(); }}
+          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-emerald-500/10"
+          aria-label={reposted ? "Annuler le repost" : "Reposter"}
+          aria-pressed={reposted}
+        >
+          <Repeat2
+            key={reposted ? "reposted" : "not-reposted"}
+            className={`w-5 h-5 transition-colors ${
+              reposted
+                ? "text-emerald-500 animate-pop"
+                : "text-[var(--text-muted)] group-hover:text-emerald-500"
+            }`}
+          />
+          <span className={`text-sm font-medium tabular-nums max-sm:hidden transition-colors ${
+            reposted
+              ? "text-emerald-500"
+              : "text-[var(--foreground)]/85 group-hover:text-emerald-500"
+          }`}>
+            {formatCount(Math.round(post.likes / 8) + (reposted ? 1 : 0))}
+          </span>
+        </button>
+
+        {/* Like */}
         <button
           onClick={(e) => { e.stopPropagation(); onToggleLike(); }}
           className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-rose-500/10"
+          aria-label={liked ? "Retirer le j'aime" : "J'aime"}
+          aria-pressed={liked}
         >
           <Heart
             key={liked ? "liked" : "unliked"}
@@ -1107,56 +1148,69 @@ function PostCard({
           </span>
         </button>
 
-        <button
-          onClick={(e) => { e.stopPropagation(); onOpenComments(); }}
-          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[#1e9df1]/10"
+        {/* View count (lecture seule, mock derive likes * 25 + comments * 50) */}
+        <div
+          className="hidden md:flex grow items-center justify-center gap-1.5 px-3 py-2 cursor-default"
+          title="Vues estimées"
+          aria-label={`${formatCount(post.likes * 25 + post.comments.length * 50)} vues`}
         >
-          <MessageCircle className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[#1e9df1] transition-colors" />
-          <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85 group-hover:text-[#1e9df1] transition-colors">
-            {formatCount(post.comments.length)}
+          <Eye className="w-4 h-4 text-[var(--text-muted)]" />
+          <span className="text-sm font-medium tabular-nums text-[var(--foreground)]/85">
+            {formatCount(post.likes * 25 + post.comments.length * 50)}
           </span>
+        </div>
+
+        {/* Bookmark */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
+          className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[#1e9df1]/10 shrink-0"
+          aria-label={saved ? "Retirer du marque-pages" : "Enregistrer"}
+          aria-pressed={saved}
+        >
+          <Bookmark className={`w-5 h-5 transition-colors ${
+            saved ? "fill-[#1e9df1] text-[#1e9df1]" : "text-[var(--text-muted)] group-hover:text-[#1e9df1]"
+          }`} />
         </button>
 
-        <div className="relative grow flex">
+        {/* Share menu */}
+        <div className="relative shrink-0">
           <button
             onClick={(e) => { e.stopPropagation(); onOpenShare(); }}
-            className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-emerald-500/10"
+            className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[#1e9df1]/10"
+            aria-label="Partager"
+            aria-expanded={shareOpen}
           >
-            <Share2 className="w-5 h-5 text-[var(--text-muted)] group-hover:text-emerald-500 transition-colors" />
-            <span className="text-sm font-medium max-sm:hidden text-[var(--foreground)]/85 group-hover:text-emerald-500 transition-colors">Partager</span>
+            <Share2 className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[#1e9df1] transition-colors" />
           </button>
           {shareOpen && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="absolute left-0 bottom-12 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden"
+              className="absolute right-0 bottom-12 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden"
             >
-              {[
-                { label: "Republier", icon: Share2 },
-                { label: "Email", icon: Send },
-                { label: "Copier le lien", icon: Copy },
-              ].map(({ label, icon: Icon }) => (
-                <button
-                  key={label}
-                  onClick={closeMenus}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-                >
-                  <Icon className="w-4 h-4" />
-                  {label}
-                </button>
-              ))}
+              <button
+                onClick={(e) => { e.stopPropagation(); onShareCopy(); }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                <Copy className="w-4 h-4" />
+                Copier le lien
+              </button>
+              <button
+                onClick={closeMenus}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                <Send className="w-4 h-4" />
+                Envoyer par message
+              </button>
+              <button
+                onClick={closeMenus}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                <Share2 className="w-4 h-4" />
+                Partager via…
+              </button>
             </div>
           )}
         </div>
-
-        <button
-          onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
-          className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
-        >
-          <Bookmark className={`w-5 h-5 transition-colors ${saved ? "fill-[#1e9df1] text-[#1e9df1]" : "text-[var(--text-muted)]"}`} />
-          <span className={`text-sm font-medium max-sm:hidden ${saved ? "text-[#1e9df1]" : "text-[var(--foreground)]/85"}`}>
-            {saved ? "Enregistré" : "Enregistrer"}
-          </span>
-        </button>
       </div>
     </article>
   );
@@ -1174,6 +1228,7 @@ export default function FeedPage() {
 
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set());
+  const [repostedPosts, setRepostedPosts] = useState<Set<string>>(new Set());
   const [shareMenuPost, setShareMenuPost] = useState<string | null>(null);
   const [moreMenuPost, setMoreMenuPost] = useState<string | null>(null);
   const [commentsModalPost, setCommentsModalPost] = useState<string | null>(null);
@@ -1217,6 +1272,30 @@ export default function FeedPage() {
       else next.add(postId);
       return next;
     });
+  };
+
+  const toggleRepost = (postId: string) => {
+    setRepostedPosts((prev) => {
+      const next = new Set(prev);
+      const wasReposted = next.has(postId);
+      if (wasReposted) next.delete(postId);
+      else next.add(postId);
+      setFeedToast(wasReposted ? "Repost annulé" : "Reposté ✓");
+      setTimeout(() => setFeedToast(null), 1800);
+      return next;
+    });
+  };
+
+  const handleShareCopy = (postId: string) => {
+    const url = `${typeof window !== "undefined" ? window.location.origin : "https://edome.world"}/feed#${postId}`;
+    try {
+      navigator.clipboard.writeText(url);
+      setFeedToast("Lien copié ✓");
+    } catch {
+      setFeedToast("Impossible de copier");
+    }
+    setShareMenuPost(null);
+    setTimeout(() => setFeedToast(null), 1800);
   };
 
   const addComment = (postId: string) => {
@@ -1312,10 +1391,12 @@ export default function FeedPage() {
                   post={post}
                   liked={likedPosts.has(post.id)}
                   saved={savedPosts.has(post.id)}
+                  reposted={repostedPosts.has(post.id)}
                   muted={muted}
                   onToggleMute={() => setMuted((m) => !m)}
                   onToggleLike={() => toggleLike(post.id)}
                   onToggleSave={() => toggleSave(post.id)}
+                  onToggleRepost={() => toggleRepost(post.id)}
                   onOpenComments={() => setCommentsModalPost(post.id)}
                   onOpenShare={() => {
                     setShareMenuPost(shareMenuPost === post.id ? null : post.id);
@@ -1338,6 +1419,7 @@ export default function FeedPage() {
                     setMoreMenuPost(null);
                     showToast("Publication signalée");
                   }}
+                  onShareCopy={() => handleShareCopy(post.id)}
                 />
               ))
             )}
