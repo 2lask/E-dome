@@ -3,6 +3,7 @@
 import React, { useState, use, useMemo } from "react";
 import Link from "next/link";
 import { Star } from "lucide-react";
+import { Calendar as BookingCallout } from "@/components/ui/calendar";
 import { useApp } from "@/lib/context";
 import {
   getFormationById,
@@ -360,6 +361,20 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
               </div>
             </div>
           </div>
+        </div>
+
+        {/* CTA appel formateur — pour les indécis, un appel avec le
+            formateur lève le doute mieux que la page produit. Slug
+            personnalisé par formateur pour que chaque cal.com soit
+            le bon. */}
+        <div className="mt-10">
+          <BookingCallout
+            bookingLink={`https://cal.com/edome/formateur-${instructor.id}`}
+            title={`Une question pour ${instructor.firstName} ?`}
+            subtitle="Réservez un appel de présentation gratuit avant de vous inscrire — programme, prérequis, accompagnement."
+            ctaLabel="Réserver avec le formateur"
+            duration="20 min"
+          />
         </div>
       </div>
 

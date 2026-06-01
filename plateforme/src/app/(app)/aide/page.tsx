@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { Calendar as BookingCallout } from "@/components/ui/calendar";
 
 /* ─── FAQ Data ───────────────────────────────────────────────────────────── */
 
@@ -158,18 +159,26 @@ export default function AidePage() {
         </div>
       )}
 
-      {/* Contact CTA */}
-      <section className="text-center p-8 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">Vous n&apos;avez pas trouvé votre réponse ?</h2>
-        <p className="text-[var(--text-secondary)]">
-          Notre équipe support est disponible du lundi au vendredi, de 9h à 18h (CET).
-        </p>
-        <a
-          href="/contact"
-          className="inline-block px-6 py-3 rounded-lg bg-[#1e9df1] text-white font-medium hover:opacity-90 transition"
-        >
-          Contacter le support
-        </a>
+      {/* Contact CTA — deux pistes : appel direct (Calendar / cal.com)
+          ou formulaire support. L'appel passe en premier car c'est
+          souvent ce que les nouveaux utilisateurs cherchent quand ils
+          ne trouvent pas dans la FAQ. */}
+      <section className="space-y-4">
+        <BookingCallout
+          bookingLink="https://cal.com/edome/support"
+          title="Vous n'avez pas trouvé votre réponse ?"
+          subtitle="Réservez un appel avec notre équipe support. Lundi-vendredi, 9h-18h (CET)."
+          ctaLabel="Réserver un appel"
+          duration="20 min"
+        />
+        <div className="text-center">
+          <a
+            href="/contact"
+            className="inline-block text-sm text-[var(--text-secondary)] hover:text-[var(--foreground)] underline"
+          >
+            Ou ouvrir un ticket support écrit
+          </a>
+        </div>
       </section>
     </div>
   );

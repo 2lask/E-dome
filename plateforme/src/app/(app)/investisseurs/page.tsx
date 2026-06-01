@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Calendar as BookingCallout } from "@/components/ui/calendar";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
@@ -230,6 +231,17 @@ export default function InvestisseursPage() {
           ))}
         </div>
       </section>
+
+      {/* CTA stratégie investisseur — un appel 1:1 avec l'équipe E-Dome
+          pour challenger les projections, identifier les opportunités
+          off-market et calibrer le ratio rendement/risque. */}
+      <BookingCallout
+        bookingLink="https://cal.com/edome/strategie-investisseur"
+        title="Affinez votre stratégie d'investissement"
+        subtitle="Réservez un appel 1:1 avec un conseiller E-Dome : projections, opportunités off-market, calibration risque/rendement."
+        ctaLabel="Réserver un appel stratégie"
+        duration="45 min"
+      />
     </div>
   );
 }
