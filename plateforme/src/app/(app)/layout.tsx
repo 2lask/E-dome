@@ -53,7 +53,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <AppProvider>
       <LanguageProvider>
         <ToastProvider>
-          <div className="app-light flex min-h-screen" style={{ background: "var(--background)", color: "var(--foreground)" }}>
+          <div className="app-shell flex min-h-screen" style={{ background: "var(--background)", color: "var(--foreground)" }}>
               {/* Sidebar - desktop */}
               <div className="hidden md:block">
                 <Sidebar

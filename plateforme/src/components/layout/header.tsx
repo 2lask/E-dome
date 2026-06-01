@@ -126,7 +126,8 @@ export function Header({ onMenuToggle }: HeaderProps) {
       {/* Mobile menu button */}
       <button
         onClick={onMenuToggle}
-        className="md:hidden p-2 rounded-lg cursor-pointer"
+        aria-label="Ouvrir le menu"
+        className="md:hidden flex items-center justify-center w-11 h-11 -ml-2 rounded-lg cursor-pointer active:opacity-60 transition-opacity"
         style={{ color: "var(--text-secondary)" }}
       >
         <LottiePlayer src="/lottie/lottieflow-menu-nav-03-000000-easey.json" width={24} height={24} />

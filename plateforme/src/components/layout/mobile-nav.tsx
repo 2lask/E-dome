@@ -65,10 +65,13 @@ export function MobileNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 md:hidden flex items-center justify-around h-16 px-2"
+      aria-label="Navigation mobile"
+      className="fixed bottom-0 left-0 right-0 z-40 md:hidden flex items-center justify-around px-2"
       style={{
         background: "var(--card)",
         borderTop: "1px solid var(--card-border)",
+        height: "calc(64px + env(safe-area-inset-bottom))",
+        paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
       {navItems.map((item) => {
@@ -142,11 +145,13 @@ export function MobileNav() {
           <Link
             key={item.href}
             href={item.href}
-            className="flex flex-col items-center gap-1 py-1 px-3"
+            aria-label={item.label}
+            aria-current={active ? "page" : undefined}
+            className="flex flex-col items-center justify-center gap-1 px-3 min-w-[44px] min-h-[44px] active:opacity-60 transition-opacity"
             style={{ color: active ? "var(--primary)" : "var(--text-muted)" }}
           >
             <Icon size={20} />
-            <span className="text-[10px]">{item.label}</span>
+            <span className="text-[10px] font-medium">{item.label}</span>
           </Link>
         );
       })}

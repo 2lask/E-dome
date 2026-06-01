@@ -100,6 +100,29 @@
   --destructive-foreground: #ffffff;
   --sidebar-accent-foreground: #1c9cf0;
   --sidebar-primary-foreground: #ffffff;
+
+  /* Tokens custom utilisés par les composants (étendent shadcn de base).
+     Auparavant définis uniquement dans .app-light — il faut donc leurs
+     équivalents sombres ici pour que tout reste lisible quand on
+     applique le dark mode globalement à la maquette. */
+  --card-border: #242628;
+  --text-primary: #e7e9ea;
+  --text-secondary: #a8b3bc;
+  --text-muted: #72767a;
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --divider: #242628;
+  --input-bg: #16181c;
+  --input-border: #2f3336;
+
+  /* Ombres très douces sur fond noir : volontairement quasi invisibles,
+     l'élévation se lit surtout via les bordures fines. */
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.55);
+
+  /* Accent hover dérivé du brand bleu : un cran plus clair, lisible
+     contre noir. Sert aux boutons primaires en hover/focus. */
+  --accent-hover: #3bafff;
+  --gold-hover: #3bafff;
 }
 
 /* Mappage Tailwind v4 : ces alias rendent disponibles les utilitaires
@@ -185,14 +208,53 @@ body {
   --tag: #a78bfa;           /* violet-400 */
 }
 
-/* ─── Mode CLAIR app (refonte épurée) ───────────────────
-   Override appliqué UNIQUEMENT sur le sous-arbre (app)/
-   via le wrapper du layout (app)/. La landing (page d'accueil
-   vitrine) reste en mode sombre, intacte.
+/* ─── Wrapper .app-shell : maquette en MODE SOMBRE ──────
+   Override de fond appliqué sur le sous-arbre (app)/ via le
+   layout. La maquette est intégralement en dark mode (palette
+   X/Twitter : noir profond, accent bleu #1e9df1, bordures gris
+   foncé). On enforce ici la typo Inter pour rester cohérent
+   avec l'esprit Twitter / Linear / Notion. */
+.app-shell {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  /* Prévient le scroll horizontal accidentel sur mobile (un seul élément qui
+     déborde de quelques pixels suffit à casser l'expérience tactile). */
+  overflow-x: hidden;
+}
 
-   Palette : blanc / gris très clair, accent bleu E-Dome unique,
-   bordures fines, ombres très douces, beaucoup d'espace blanc.
-   Style esprit Twitter / Linear / Notion.
+/* Sur mobile, on relâche le margin-left de la sidebar et on garantit
+   l'espace nécessaire pour la bottom-nav + le home indicator iOS. */
+@media (max-width: 767px) {
+  .app-shell .app-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .app-shell main {
+    /* 64px nav + 16px buffer + safe area iOS */
+    padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+  }
+}
+.app-shell,
+.app-shell * {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.app-shell .page-heading,
+.app-shell .page-heading * {
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+.app-shell .font-mono,
+.app-shell code,
+.app-shell pre {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+/* ─── (Ancien) Mode CLAIR app — conservé inactif ────────
+   Le wrapper .app-light n'est plus appliqué nulle part. On
+   garde la définition CSS au cas où on voudrait re-tester un
+   passage en clair sur un sous-arbre précis. La maquette par
+   défaut est dark.
    ─────────────────────────────────────────────────── */
 .app-light {
   /* Surfaces */
@@ -330,13 +392,15 @@ body {
 .animate-fade-in { animation: fade-in 180ms ease-out; }
 .animate-pop { animation: pop 320ms cubic-bezier(0.16, 1, 0.3, 1); }
 
-/* Skeleton shimmer pour les images en cours de chargement */
+/* Skeleton shimmer pour les images en cours de chargement.
+   Réglé pour fond sombre : barres claires translucides qui se
+   lisent contre le noir/gris du card. */
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(15, 23, 42, 0.04) 0%,
-    rgba(15, 23, 42, 0.08) 50%,
-    rgba(15, 23, 42, 0.04) 100%
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.10) 50%,
+    rgba(255, 255, 255, 0.04) 100%
   );
   background-size: 800px 100%;
   animation: shimmer 1.4s linear infinite;
@@ -393,7 +457,8 @@ body {
 /* ─── Scrollbar ──────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.24); }
 
 /* ─── Mobile ─────────────────────────────────────────── */
 @media (max-width: 767px) {
