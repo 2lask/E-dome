@@ -288,6 +288,79 @@ body {
   background: rgba(0, 0, 0, 0.12);
 }
 
+/* ─── Animations & transitions globales ───────────────
+   Sobre mais présentes : drawers slide-in, modals scale-in,
+   skeletons, like bounce, blur-up image. Toutes les durées
+   restent courtes (180-260ms) pour ne pas alourdir le scroll. */
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes slide-in-bottom {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes scale-in {
+  from { transform: scale(0.96); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.animate-slide-in-right { animation: slide-in-right 240ms cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-slide-in-bottom { animation: slide-in-bottom 240ms cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-scale-in { animation: scale-in 180ms cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-fade-in { animation: fade-in 180ms ease-out; }
+.animate-pop { animation: pop 320ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Skeleton shimmer pour les images en cours de chargement */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 23, 42, 0.04) 0%,
+    rgba(15, 23, 42, 0.08) 50%,
+    rgba(15, 23, 42, 0.04) 100%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Blur-up : image floue au chargement, devient nette à .loaded.
+   Combiné avec onLoad qui ajoute la classe .loaded. */
+.blur-up {
+  filter: blur(8px);
+  transition: filter 320ms ease-out;
+}
+.blur-up.loaded {
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-in-right,
+  .animate-slide-in-bottom,
+  .animate-scale-in,
+  .animate-fade-in,
+  .animate-pop,
+  .skeleton,
+  .blur-up {
+    animation: none !important;
+    transition: none !important;
+    filter: none !important;
+  }
+}
+
 /* ─── Utilitaire : H1 / titre de page éditorial ───────
    Toutes les pages de la démo doivent utiliser
    `.page-heading` sur leur H1 pour avoir l'identité

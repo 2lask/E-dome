@@ -731,24 +731,54 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
   );
 }
 
+/* BlurImage — image avec skeleton + blur-up + onLoad propre.
+   Affiche un fond shimmer le temps du chargement, puis l'image
+   apparaît avec un léger déflou. Combiné avec object-cover sur
+   un container à aspect ratio fixe (tuile galerie). */
+function BlurImage({
+  src,
+  alt = "",
+  onLoad,
+}: {
+  src: string;
+  alt?: string;
+  onLoad?: (e: React.SyntheticEvent<HTMLImageElement>) => void;
+}) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <>
+      {!loaded && <div className="absolute inset-0 skeleton" aria-hidden />}
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        onLoad={(e) => {
+          setLoaded(true);
+          onLoad?.(e);
+        }}
+        className={`absolute inset-0 w-full h-full object-cover blur-up ${loaded ? "loaded" : ""}`}
+      />
+    </>
+  );
+}
+
 function ImageView({ src }: { src: string }) {
   // Aspect ratio natif lu à onLoad, clampé identique aux vidéos.
   const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
   return (
     <div
-      className="relative bg-black rounded-2xl overflow-hidden"
+      className="relative bg-[var(--hover-bg)] rounded-2xl overflow-hidden"
       style={{ aspectRatio, maxHeight: MEDIA_MAX_HEIGHT }}
     >
-      <img
+      <BlurImage
         src={src}
-        alt=""
         onLoad={(e) => {
           const img = e.currentTarget;
           if (img.naturalWidth > 0 && img.naturalHeight > 0) {
             setAspectRatio(clampAspect(img.naturalWidth / img.naturalHeight));
           }
         }}
-        className="absolute inset-0 w-full h-full object-cover"
       />
     </div>
   );
@@ -767,14 +797,13 @@ function MediaGallery({ media }: { media: string[] }) {
   if (n === 1) return <ImageView src={media[0]} />;
 
   const tileCls = "relative overflow-hidden bg-[var(--hover-bg)]";
-  const imgCls = "absolute inset-0 w-full h-full object-cover";
 
   if (n === 2) {
     return (
       <div className="grid grid-cols-2 gap-0.5 rounded-2xl overflow-hidden" style={{ aspectRatio: "16/10" }}>
         {media.slice(0, 2).map((src, i) => (
           <div key={i} className={tileCls}>
-            <img src={src} alt="" className={imgCls} />
+            <BlurImage src={src} />
           </div>
         ))}
       </div>
@@ -785,13 +814,13 @@ function MediaGallery({ media }: { media: string[] }) {
     return (
       <div className="grid grid-cols-2 grid-rows-2 gap-0.5 rounded-2xl overflow-hidden" style={{ aspectRatio: "16/10" }}>
         <div className={tileCls + " row-span-2"}>
-          <img src={media[0]} alt="" className={imgCls} />
+          <BlurImage src={media[0]} />
         </div>
         <div className={tileCls}>
-          <img src={media[1]} alt="" className={imgCls} />
+          <BlurImage src={media[1]} />
         </div>
         <div className={tileCls}>
-          <img src={media[2]} alt="" className={imgCls} />
+          <BlurImage src={media[2]} />
         </div>
       </div>
     );
@@ -802,7 +831,7 @@ function MediaGallery({ media }: { media: string[] }) {
     <div className="grid grid-cols-2 grid-rows-2 gap-0.5 rounded-2xl overflow-hidden" style={{ aspectRatio: "1/1" }}>
       {media.slice(0, 4).map((src, i) => (
         <div key={i} className={tileCls}>
-          <img src={src} alt="" className={imgCls} />
+          <BlurImage src={src} />
           {i === 3 && extra > 0 && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/55 text-white text-2xl font-semibold">
               +{extra}
@@ -1091,24 +1120,39 @@ function PostCard({
         </Link>
       )}
 
-      {/* Actions */}
+      {/* Actions — hover couleurs sémantiques façon Twitter/X.
+          Like : rose (état actif + animation pop au moment du like).
+          Comment : bleu primary au hover.
+          Share : vert emerald au hover.
+          Bookmark : primary. */}
       <div className="mt-3 flex items-center gap-1 px-3 py-2 border-t border-[var(--card-border)]">
         <button
           onClick={(e) => { e.stopPropagation(); onToggleLike(); }}
-          className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
+          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-rose-500/10"
         >
-          <Heart className={`w-5 h-5 transition-colors ${liked ? "fill-rose-500 text-rose-500" : "text-[var(--text-muted)]"}`} />
-          <span className={`text-sm font-medium tabular-nums max-sm:hidden ${liked ? "text-rose-500" : "text-[var(--foreground)]/85"}`}>
+          <Heart
+            key={liked ? "liked" : "unliked"}
+            className={`w-5 h-5 transition-colors ${
+              liked
+                ? "fill-rose-500 text-rose-500 animate-pop"
+                : "text-[var(--text-muted)] group-hover:text-rose-500"
+            }`}
+          />
+          <span className={`text-sm font-medium tabular-nums max-sm:hidden transition-colors ${
+            liked
+              ? "text-rose-500"
+              : "text-[var(--foreground)]/85 group-hover:text-rose-500"
+          }`}>
             {formatCount(post.likes)}
           </span>
         </button>
 
         <button
           onClick={(e) => { e.stopPropagation(); onOpenComments(); }}
-          className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
+          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[#1e9df1]/10"
         >
-          <MessageCircle className="w-5 h-5 text-[var(--text-muted)]" />
-          <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85">
+          <MessageCircle className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[#1e9df1] transition-colors" />
+          <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85 group-hover:text-[#1e9df1] transition-colors">
             {formatCount(post.comments.length)}
           </span>
         </button>
@@ -1116,10 +1160,10 @@ function PostCard({
         <div className="relative grow flex">
           <button
             onClick={(e) => { e.stopPropagation(); onOpenShare(); }}
-            className="flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--hover-bg)]"
+            className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-emerald-500/10"
           >
-            <Share2 className="w-5 h-5 text-[var(--text-muted)]" />
-            <span className="text-sm font-medium max-sm:hidden text-[var(--foreground)]/85">Partager</span>
+            <Share2 className="w-5 h-5 text-[var(--text-muted)] group-hover:text-emerald-500 transition-colors" />
+            <span className="text-sm font-medium max-sm:hidden text-[var(--foreground)]/85 group-hover:text-emerald-500 transition-colors">Partager</span>
           </button>
           {shareOpen && (
             <div
