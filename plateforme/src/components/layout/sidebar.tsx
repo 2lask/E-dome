@@ -26,6 +26,7 @@ import {
   ChevronRight,
   GraduationCap,
   Video,
+  ShoppingBag,
   type LucideIcon,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
@@ -71,6 +72,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         { key: "nav.formations", label: t("nav.formations"), href: "/formations", icon: BookOpen },
         { key: "nav.evenements", label: t("nav.evenements"), href: "/evenements", icon: CalendarDays },
         { key: "nav.services", label: t("nav.services"), href: "/services", icon: Briefcase },
+        { key: "nav.boutique", label: t("nav.boutique"), href: "/boutique", icon: ShoppingBag },
       ],
     },
     {
@@ -91,6 +93,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         { key: "nav.publier", label: "Publier un bien", href: "/publier", icon: Plus },
         { key: "nav.creer-formation", label: "Créer une formation", href: "/formations/creer", icon: GraduationCap },
         { key: "nav.programmer-live", label: "Programmer un live", href: "/live", icon: Video },
+        { key: "nav.vendre-produit", label: "Vendre un produit", href: "/boutique/vendre", icon: ShoppingBag },
       ],
     },
   ], [t, unreadMessages, unreadNotifications]);

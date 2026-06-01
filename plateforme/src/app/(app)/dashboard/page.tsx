@@ -84,10 +84,10 @@ const mockRevenueData: MonthlyRevenue[] = [
 const mockTransactions: Transaction[] = [
   { id: "t1", type: "payment", amount: 1200, currency: "CHF", status: "completed", description: "Réservation #R-2024-001", date: "2026-03-28", counterpart: "Jean Dupont" },
   { id: "t2", type: "payout", amount: 3500, currency: "CHF", status: "completed", description: "Virement mensuel", date: "2026-03-25" },
-  { id: "t3", type: "commission", amount: 250, currency: "CHF", status: "pending", description: "Commission apporteur", date: "2026-03-22", counterpart: "Marie Leroy" },
+  { id: "t3", type: "commission", amount: 250, currency: "CHF", status: "pending", description: "Rémunération apporteur", date: "2026-03-22", counterpart: "Marie Leroy" },
   { id: "t4", type: "refund", amount: 800, currency: "CHF", status: "completed", description: "Annulation #R-2024-042", date: "2026-03-20", counterpart: "Paul Moreau" },
   { id: "t5", type: "payment", amount: 2100, currency: "CHF", status: "completed", description: "Réservation #R-2024-003", date: "2026-03-18", counterpart: "Sophie Martin" },
-  { id: "t6", type: "commission", amount: 180, currency: "CHF", status: "completed", description: "Commission formation", date: "2026-03-15" },
+  { id: "t6", type: "commission", amount: 180, currency: "CHF", status: "completed", description: "Commission marketplace formation", date: "2026-03-15" },
 ];
 
 const mockActivity = [
@@ -425,8 +425,8 @@ export default function DashboardPage() {
                 }}
                 cursor={{ stroke: "rgba(30,157,241,0.3)", strokeWidth: 1 }}
               />
-              <Area type="monotone" dataKey="revenus" stroke="#1e9df1" fill="url(#colorRevenus)" strokeWidth={1.8} dot={false} activeDot={{ r: 4, fill: "#1e9df1", stroke: "#0a0a0a", strokeWidth: 2 }} />
-              <Area type="monotone" dataKey="commissions" stroke="#34d399" fill="url(#colorCommissions)" strokeWidth={1.8} dot={false} activeDot={{ r: 4, fill: "#34d399", stroke: "#0a0a0a", strokeWidth: 2 }} />
+              <Area type="monotone" dataKey="revenus" name="Revenus" stroke="#1e9df1" fill="url(#colorRevenus)" strokeWidth={1.8} dot={false} activeDot={{ r: 4, fill: "#1e9df1", stroke: "#0a0a0a", strokeWidth: 2 }} />
+              <Area type="monotone" dataKey="commissions" name="Rémunération" stroke="#34d399" fill="url(#colorCommissions)" strokeWidth={1.8} dot={false} activeDot={{ r: 4, fill: "#34d399", stroke: "#0a0a0a", strokeWidth: 2 }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -607,13 +607,13 @@ export default function DashboardPage() {
       <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
         <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Apporteurs actifs sur mes biens</h2>
         <p className="text-sm text-[var(--text-secondary)] mb-4">
-          3 apporteurs actifs · 8 réservations générées · {formatPrice(342)} de commissions versées
+          3 apporteurs actifs · 8 réservations générées · {formatPrice(342)} de rémunération versée
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--card-border)]">
-                {["Apporteur", "Bien", "Réservations", "Commissions"].map((h) => (
+                {["Apporteur", "Bien", "Réservations", "Rémunération"].map((h) => (
                   <th key={h} className="text-left py-3 px-2 text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -709,7 +709,7 @@ export default function DashboardPage() {
           {[
             { label: "Clics", value: "23" },
             { label: "Conversions", value: "8" },
-            { label: "Commissions", value: formatPrice(2400) },
+            { label: "Rémunération", value: formatPrice(2400) },
             { label: "En attente", value: formatPrice(633) },
           ].map((kpi) => (
             <div key={kpi.label} className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
@@ -851,7 +851,7 @@ export default function DashboardPage() {
               Inviter un contact
             </h3>
             <p className="text-sm text-[var(--text-secondary)] mb-4">
-              Partagez votre lien de parrainage et gagnez des commissions sur les revenus generes.
+              Partagez votre lien de recommandation et touchez une part des revenus de plateforme d&apos;E-Dome (10 à 30 %) générés par les conversions. Jamais ajoutée au prix payé par les utilisateurs.
             </p>
             <div className="flex gap-2 mb-4">
               <input

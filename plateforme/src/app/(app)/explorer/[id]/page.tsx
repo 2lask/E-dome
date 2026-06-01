@@ -883,20 +883,47 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <button className="px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">📱 QR Code</button>
             </div>
 
-            {/* Commission info */}
+            {/* Rémunération apporteur V1.0 — différencié par pôle.
+                · Vente entre particuliers : base = frais fixe E-Dome
+                  (500 ou 2 500 CHF selon prix).
+                · Location courte durée : base = commission marketplace E-Dome
+                  (8 % indicatif).
+                · Location longue durée : base = frais fixe E-Dome
+                  (250 CHF tarif médian).
+                Part apporteur : 10–30 % de cette base (fourchette V1.0). */}
             <div className="p-4 rounded-xl bg-[#1e9df1]/5 border border-[#1e9df1]/20">
-              <p className="text-sm font-medium text-[#1e9df1]">
-                💰 Commission : {property.transactionType === "vente" ? "2% de la vente" : "5% de la réservation"} · prélevée sur la part E-Dome
-              </p>
-              <p className="text-xs text-[var(--text-secondary)] mt-1">
-                {property.transactionType === "vente"
-                  ? `→ Sur ce bien (${formatPrice(property.price, property.currency as any)}) = potentiellement ${formatPrice(Math.round(property.price * 0.02), property.currency as any)} pour vous`
-                  : `→ Sur une réservation de 7 nuits (${formatPrice(property.price * 7, property.currency as any)}) = ${formatPrice(Math.round(property.price * 7 * 0.05), property.currency as any)} pour vous`
+              {(() => {
+                let edomeRevenue = 0;
+                let baseLabel = "";
+                if (property.transactionType === "vente") {
+                  edomeRevenue = property.price < 1_000_000 ? 500 : 2500;
+                  baseLabel = property.price < 1_000_000
+                    ? "Frais fixe plateforme : 500 CHF (vente < 1 M)"
+                    : "Frais fixe plateforme : 2 500 CHF (vente ≥ 1 M)";
+                } else if (property.transactionType === "location-ct") {
+                  edomeRevenue = property.price * 7 * 0.08;
+                  baseLabel = "Commission marketplace E-Dome : 8 % d'une réservation 7 nuits";
+                } else {
+                  edomeRevenue = 250;
+                  baseLabel = "Frais fixe plateforme : 250 CHF (bail médian 6–12 mois)";
                 }
-              </p>
-              <p className="text-[10px] text-[var(--text-muted)] mt-2">
-                ℹ️ La commission est prélevée sur la commission E-Dome. Aucun coût supplémentaire pour l'hôte ou le client.
-              </p>
+                const apporteurLow = Math.round(edomeRevenue * 0.10);
+                const apporteurHigh = Math.round(edomeRevenue * 0.30);
+                return (
+                  <>
+                    <p className="text-sm font-medium text-[#1e9df1]">
+                      💰 Rémunération apporteur : 10 à 30 % de la part E-Dome
+                    </p>
+                    <p className="text-xs text-[var(--text-secondary)] mt-1">
+                      → {baseLabel}<br />
+                      → Soit potentiellement {formatPrice(apporteurLow, property.currency as any)} à {formatPrice(apporteurHigh, property.currency as any)} pour vous
+                    </p>
+                    <p className="text-[10px] text-[var(--text-muted)] mt-2">
+                      ℹ️ La part de l&apos;apporteur est prélevée sur les revenus de plateforme d&apos;E-Dome — frais fixe pour les ventes et la location longue durée, commission marketplace pour la location courte. Jamais ajoutée au prix payé par l&apos;hôte ou le client. Vous ne représentez aucune partie et n&apos;êtes ni agent ni courtier.
+                    </p>
+                  </>
+                );
+              })()}
             </div>
 
             <a href="/apporteurs" className="text-xs text-[#1e9df1] hover:underline">

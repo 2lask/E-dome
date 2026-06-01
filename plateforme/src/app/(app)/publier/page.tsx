@@ -464,59 +464,92 @@ export default function PublierPage() {
               </div>
             </button>
 
-            {/* Commission slider + calculations */}
+            {/* Slider + simulation V1.0 : la base de calcul dépend du pôle.
+                - Vente entre particuliers → base = frais fixe plateforme (500
+                  ou 2 500 CHF). L'apporteur touche un % de ce frais fixe.
+                - Location courte durée → base = commission marketplace (~8 %
+                  du loyer) que E-Dome prélève. L'apporteur touche un % de
+                  cette commission, jamais du prix payé par le voyageur.
+                - Location longue durée → base = frais fixe (150/250/400 CHF).
+                  Comme on ne connaît pas encore la durée, on simule sur le
+                  tarif médian 250 CHF.
+                La part apporteur (V1.0) est sur la fourchette 10–30 %. */}
             {form.autoriserApporteurs && (
               <div className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-5">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-[var(--text-secondary)]">Commission apporteur</label>
+                  <label className="text-sm font-medium text-[var(--text-secondary)]">Part de la rémunération E-Dome reversée à l&apos;apporteur</label>
                   <span className="text-lg font-bold text-[#1e9df1]">{form.commissionApporteur}%</span>
                 </div>
                 <input
                   type="range"
-                  min={5}
-                  max={25}
+                  min={10}
+                  max={30}
                   step={1}
                   value={form.commissionApporteur}
                   onChange={(e) => update("commissionApporteur", Number(e.target.value))}
                   className="w-full accent-[#1e9df1]"
                 />
                 <div className="flex justify-between text-xs text-[var(--text-muted)]">
-                  <span>5%</span>
                   <span>10%</span>
                   <span>15%</span>
                   <span>20%</span>
                   <span>25%</span>
+                  <span>30%</span>
                 </div>
 
-                {/* Real-time calculation example */}
-                {form.prix > 0 && (
-                  <div className="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-2.5">
-                    <h4 className="text-sm font-semibold text-[var(--foreground)] mb-3">Simulation pour votre bien</h4>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-[var(--text-secondary)]">Prix du bien</span>
-                      <span className="font-medium text-[var(--foreground)]">{formatPrice(form.prix)}</span>
+                {/* Simulation adaptative par pôle */}
+                {(() => {
+                  // base = ce que E-Dome encaisse sur cette transaction.
+                  let edomeRevenue = 0;
+                  let baseLabel = "";
+                  let priceLabel = "Prix";
+                  if (form.transactionType === "vente" && form.prix > 0) {
+                    edomeRevenue = form.prix < 1_000_000 ? 500 : 2500;
+                    baseLabel = "Frais fixe E-Dome (vente particuliers)";
+                    priceLabel = "Prix de vente";
+                  } else if (form.transactionType === "location-ct" && form.prix > 0) {
+                    edomeRevenue = form.prix * 0.08;
+                    baseLabel = "Commission marketplace E-Dome (8 % standard)";
+                    priceLabel = "Loyer par nuit";
+                  } else if (form.transactionType === "location-lt") {
+                    edomeRevenue = 250;
+                    baseLabel = "Frais fixe E-Dome (bail médian, 6–12 mois)";
+                  }
+                  if (edomeRevenue === 0) return null;
+                  const apporteurShare = edomeRevenue * (form.commissionApporteur / 100);
+                  return (
+                    <div className="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-2.5">
+                      <h4 className="text-sm font-semibold text-[var(--foreground)] mb-3">Simulation pour cette annonce</h4>
+                      {form.prix > 0 && form.transactionType !== "location-lt" && (
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-[var(--text-secondary)]">{priceLabel}</span>
+                          <span className="font-medium text-[var(--foreground)]">{formatPrice(form.prix)}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-[var(--text-secondary)]">{baseLabel}</span>
+                        <span className="font-medium text-[var(--foreground)]">{formatPrice(edomeRevenue)}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-[var(--text-secondary)]">Part apporteur ({form.commissionApporteur} % de la rémunération E-Dome)</span>
+                        <span className="font-medium text-[#1e9df1]">{formatPrice(apporteurShare)}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-[var(--text-secondary)]">Reste E-Dome après reversement</span>
+                        <span className="font-medium text-[var(--foreground)]">{formatPrice(edomeRevenue - apporteurShare)}</span>
+                      </div>
+                      <div className="h-px bg-[var(--card-border)] my-1" />
+                      <p className="text-xs text-green-400/80 italic">
+                        Votre revenu reste identique avec ou sans apporteur — la part est prélevée sur ce qu&apos;E-Dome encaisse, jamais ajoutée à ce que paie l&apos;acheteur, le locataire ou le voyageur.
+                      </p>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-[var(--text-secondary)]">Commission E-Dome standard : 8%</span>
-                      <span className="font-medium text-[var(--foreground)]">{formatPrice(form.prix * 0.08)}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-[var(--text-secondary)]">Part apporteur ({form.commissionApporteur}%)</span>
-                      <span className="font-medium text-[#1e9df1]">{formatPrice(form.prix * 0.08 * form.commissionApporteur / 100)}</span>
-                    </div>
-                    <div className="h-px bg-[var(--card-border)] my-1" />
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-[var(--text-secondary)] font-medium">Votre revenu net</span>
-                      <span className="font-bold text-green-400">{formatPrice(form.prix - form.prix * 0.08)}</span>
-                    </div>
-                    <p className="text-xs text-green-400/80 italic">(identique avec ou sans apporteur)</p>
-                  </div>
-                )}
+                  );
+                })()}
 
-                {/* Info text */}
+                {/* Info text V1.0 */}
                 <div className="p-3 rounded-lg bg-[#1e9df1]/5 border border-[#1e9df1]/20">
                   <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                    La commission apporteur est prélevée sur la part E-Dome. Aucun coût supplémentaire pour vous.
+                    La part de l&apos;apporteur est toujours prélevée sur les revenus de plateforme d&apos;E-Dome (frais fixe ou commission marketplace selon le pôle). Aucun coût supplémentaire pour vous, et l&apos;apporteur n&apos;est jamais payé directement par l&apos;acheteur ou le locataire.
                   </p>
                 </div>
 
@@ -541,12 +574,84 @@ export default function PublierPage() {
           </div>
         )}
 
-        {/* ── Final Step: Options + Preview + Publish ─────────────────── */}
+        {/* ── Final Step: Frais de publication + Options + Preview + Publish ────── */}
         {step === totalSteps && (
           <div className="space-y-6 animate-fade-in">
-            {/* Paid options */}
+            {/* Bloc « Frais de publication » — V1.0 : adapte au type de transaction.
+                - Vente : frais fixe 500 CHF (< 1 M) ou 2 500 CHF (≥ 1 M), dû à
+                  la publication, indépendant du prix de vente, jamais un %.
+                - Location LT : 150 / 250 / 400 CHF selon la durée du bail
+                  (tarifs affichés à titre indicatif — la durée est précisée
+                  au moment du contrat).
+                - Location CT : publication gratuite, commission marketplace
+                  5-10 % prélevée sur chaque réservation. */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Options payantes</h2>
+              <h2 className="text-xl font-semibold mb-4">Frais de publication</h2>
+              {form.transactionType === "vente" && (
+                <div className="p-5 rounded-2xl border border-[#1e9df1]/30 bg-[#1e9df1]/5 space-y-3">
+                  <div className="flex items-baseline justify-between">
+                    <p className="text-sm text-[var(--text-secondary)]">
+                      {form.prix > 0 && form.prix < 1_000_000
+                        ? "Bien inférieur à 1 000 000 CHF"
+                        : form.prix >= 1_000_000
+                        ? "Bien supérieur ou égal à 1 000 000 CHF"
+                        : "Selon le prix renseigné à l'étape 2"}
+                    </p>
+                    <span className="text-2xl font-bold text-[#1e9df1] tabular-nums">
+                      {form.prix > 0
+                        ? formatPrice(form.prix < 1_000_000 ? 500 : 2500)
+                        : formatPrice(500) + " ou " + formatPrice(2500)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                    Frais fixe de plateforme, dû à la publication — indépendant du résultat de la vente.
+                    Couvre la publication premium, les outils de gestion, la messagerie et la diffusion sur E-Dome.
+                    <strong className="text-[var(--text-secondary)]"> Ce n&apos;est pas un pourcentage du prix.</strong>
+                  </p>
+                </div>
+              )}
+              {form.transactionType === "location-lt" && (
+                <div className="p-5 rounded-2xl border border-[#1e9df1]/30 bg-[#1e9df1]/5 space-y-3">
+                  <p className="text-sm text-[var(--text-secondary)] mb-2">
+                    Frais fixe de mise en ligne, selon la durée du bail :
+                  </p>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+                      <p className="text-xs text-[var(--text-muted)]">Bail 1–6 mois</p>
+                      <p className="text-lg font-bold text-[#1e9df1] tabular-nums">{formatPrice(150)}</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+                      <p className="text-xs text-[var(--text-muted)]">Bail 6–12 mois</p>
+                      <p className="text-lg font-bold text-[#1e9df1] tabular-nums">{formatPrice(250)}</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+                      <p className="text-xs text-[var(--text-muted)]">Bail 12 mois +</p>
+                      <p className="text-lg font-bold text-[#1e9df1] tabular-nums">{formatPrice(400)}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                    Frais fixe — la durée du bail définitif est précisée lors de la signature.
+                    <strong className="text-[var(--text-secondary)]"> Ce n&apos;est pas un pourcentage du loyer.</strong>
+                  </p>
+                </div>
+              )}
+              {form.transactionType === "location-ct" && (
+                <div className="p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
+                  <div className="flex items-baseline justify-between">
+                    <p className="text-sm text-[var(--text-secondary)]">Publication</p>
+                    <span className="text-2xl font-bold text-emerald-400">Gratuite</span>
+                  </div>
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                    Publication gratuite. E-Dome prélève une <strong className="text-[var(--text-secondary)]">commission marketplace
+                    de 5 à 10 %</strong> sur chaque réservation réalisée via la plateforme — jamais ajoutée au prix payé par le voyageur.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Options de visibilité (facultatives) — anciennement « Options payantes ». */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Options de visibilité (facultatives)</h2>
               <div className="space-y-3">
                 {[
                   { key: "optionMiseEnAvant" as const, label: "Mise en avant", desc: "Votre annonce apparaît en tête des résultats", price: 29 },

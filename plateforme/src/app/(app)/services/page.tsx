@@ -11,6 +11,8 @@ const CATEGORIES = [
   { label: "Transport", icon: "🚗" },
   { label: "Photographie", icon: "📸" },
   { label: "Décoration", icon: "🎨" },
+  { label: "Architecture & Design", icon: "📐" },
+  { label: "Construction & Gros œuvre", icon: "🏗️" },
   { label: "Juridique", icon: "⚖️" },
   { label: "Finance", icon: "💼" },
   { label: "Rénovation", icon: "🔨" },
@@ -39,6 +41,10 @@ const SERVICES = [
   { id: "s7", title: "Rénovation complète appartement", category: "Rénovation", provider: "RenovaPro", providerAvatar: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=60&h=60&fit=crop", rating: 4.8, reviews: 178, price: 5000, unit: "/projet", gradient: 6 },
   { id: "s8", title: "Déménagement professionnel", category: "Déménagement", provider: "MoveSwiss", providerAvatar: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=60&h=60&fit=crop", rating: 4.7, reviews: 92, price: 600, unit: "/déménagement", gradient: 7 },
   { id: "s9", title: "Gestion clés et accueil voyageurs", category: "Conciergerie", provider: "KeyMaster", providerAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop", rating: 4.6, reviews: 67, price: 30, unit: "/accueil", gradient: 8 },
+  { id: "s10", title: "Plans d'architecte et maîtrise d'œuvre", category: "Architecture & Design", provider: "Atelier Léman", providerAvatar: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=60&h=60&fit=crop", rating: 4.9, reviews: 74, price: 4500, unit: "/projet", gradient: 4 },
+  { id: "s11", title: "Design intérieur sur mesure", category: "Architecture & Design", provider: "Studio Verbier", providerAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 4.7, reviews: 52, price: 1800, unit: "/projet", gradient: 3 },
+  { id: "s12", title: "Construction gros œuvre clé en main", category: "Construction & Gros œuvre", provider: "BâtiSuisse", providerAvatar: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=60&h=60&fit=crop", rating: 4.8, reviews: 41, price: 1850, unit: "/m²", gradient: 6 },
+  { id: "s13", title: "Charpente bois & couverture", category: "Construction & Gros œuvre", provider: "Charpentes Alpines", providerAvatar: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=60&h=60&fit=crop", rating: 4.7, reviews: 28, price: 12500, unit: "/projet", gradient: 1 },
 ];
 
 const STEPS = [

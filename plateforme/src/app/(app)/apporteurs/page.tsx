@@ -8,11 +8,22 @@ import { LottiePlayer } from "@/components/ui/lottie-player";
 
 const REFERRAL_ID = "AP-7291";
 
+/* ── Modèle de rémunération (V1.0) ──────────────────────────────────────────
+   L'apporteur est rémunéré sur le REVENU D'E-DOME (10–30 % de ce qu'E-Dome
+   gagne sur le trafic apporté), JAMAIS sur un % du prix payé par le client,
+   JAMAIS en sus du prix. Pour les ventes entre particuliers (frais fixes
+   plateforme 500 / 2 500 CHF) et la location longue durée (150 / 250 / 400 CHF),
+   l'apporteur touche une PART de ce frais fixe E-Dome. Pour les pôles
+   marketplace (location courte, services, événements, lives, formations,
+   e-commerce), il touche une PART de la commission marketplace E-Dome.
+   Les bounties fixes (hôte activé, prestataire qualifié) sont du referral
+   pur — ce ne sont pas des % de transaction. */
+
 const REFERRAL_LINKS = [
   {
     label: "Amener un hôte",
     url: `edome.world/ref/hote/${REFERRAL_ID}`,
-    description: "Partagez ce lien pour inviter un propriétaire à publier ses biens sur E-Dome. Commission : 100 CHF par hôte activé.",
+    description: "Partagez ce lien pour inviter un propriétaire à publier ses biens sur E-Dome. Bounty fixe de 100 CHF dès activation du compte (referral marketing).",
     commission: "100 CHF / hôte activé",
     clicks: 8,
     conversions: 2,
@@ -22,57 +33,64 @@ const REFERRAL_LINKS = [
   {
     label: "Amener un client",
     url: `edome.world/ref/client/${REFERRAL_ID}`,
-    description: "Invitez des locataires ou acheteurs potentiels à rejoindre la plateforme. Commission : 5% de la réservation.",
-    commission: "5% de la réservation",
+    description: "Invitez des locataires ou acheteurs potentiels à rejoindre la plateforme. Sur une location courte ou un achat marketplace, vous touchez une part de la commission marketplace d'E-Dome — jamais ajoutée au prix payé.",
+    commission: "10–30 % de la commission E-Dome",
     clicks: 12,
     conversions: 5,
-    earned: 1800,
+    earned: 320,
     color: "bg-blue-500/20 text-blue-400",
   },
   {
     label: "Amener un bien",
     url: `edome.world/ref/bien/${REFERRAL_ID}`,
-    description: "Recommandez un bien spécifique et touchez une commission sur la transaction. Commission : 2% de la vente.",
-    commission: "2% de la vente",
+    description: "Recommandez un bien à la vente entre particuliers ou à la location longue durée. Vous touchez une part du frais fixe de plateforme E-Dome (500 ou 2 500 CHF en vente, 150 / 250 / 400 CHF en location LT) — pas un % du prix.",
+    commission: "10–30 % du frais plateforme",
     clicks: 3,
     conversions: 1,
-    earned: 400,
+    earned: 250,
     color: "bg-emerald-500/20 text-emerald-400",
   },
 ];
 
 const APPORT_TYPES = [
-  { title: "Amener un hôte", desc: "Invitez un propriétaire à publier ses biens sur E-Dome", icon: "\uD83C\uDFE0", commission: "100 CHF / hôte activé" },
-  { title: "Amener un client", desc: "Présentez un acheteur ou locataire qualifié", icon: "\uD83D\uDC64", commission: "5% de la réservation" },
-  { title: "Amener un bien", desc: "Recommandez un bien spécifique pour la vente", icon: "\uD83C\uDFD7\uFE0F", commission: "2% de la vente" },
-  { title: "Prestataire", desc: "Recommandez un photographe, architecte, notaire...", icon: "\uD83D\uDCF7", commission: "100-500 CHF" },
-  { title: "Partenariat local", desc: "Connectez E-Dome avec un acteur local", icon: "\uD83E\uDD1D", commission: "Variable" },
-  { title: "Parrainage réseau", desc: "Parrainez d'autres apporteurs d'affaires", icon: "\uD83D\uDD17", commission: "10% indirect" },
+  { title: "Amener un hôte", desc: "Invitez un propriétaire à publier ses biens sur E-Dome", icon: "\uD83C\uDFE0", commission: "Bounty fixe 100 CHF" },
+  { title: "Amener un client", desc: "Présentez un acheteur ou locataire qualifié — réservation ou achat marketplace", icon: "\uD83D\uDC64", commission: "10–30 % de la commission E-Dome" },
+  { title: "Amener un bien", desc: "Recommandez un bien à la vente entre particuliers ou à la location longue durée", icon: "\uD83C\uDFD7\uFE0F", commission: "10–30 % du frais plateforme" },
+  { title: "Amener un prestataire", desc: "Recommandez un photographe, architecte, notaire qualifi\u00E9", icon: "\uD83D\uDCF7", commission: "Bounty fixe 100\u2013500 CHF" },
+  { title: "Partenariat local", desc: "Connectez E-Dome avec un acteur local (agence, salon, association)", icon: "\uD83E\uDD1D", commission: "À négocier (B2B)" },
+  { title: "Amener une formation / un événement", desc: "Recommandez une formation, un live, un événement à billetterie", icon: "\uD83D\uDD17", commission: "10–30 % de la commission marketplace" },
 ];
 
+/* Mock data — montants calibrés sur le modèle V1.0 : bounties fixes pour
+   hôtes / prestataires, parts (10–30 %) des frais E-Dome pour ventes et
+   marketplace. Exemples :
+   · Appartement Lausanne (vente ≥ 1 M) → 30 % de 2 500 CHF = 750 CHF
+   · Sophie Meier (location courte 6 nuits × 200 CHF, comm. marketplace 10 %
+     = 120 CHF) → 30 % de 120 = 36 CHF
+   · Marc / Pierre (hôte activé) → bounty fixe 100 CHF */
 const MOCK_APPORTS = [
   { id: "A-001", type: "Amener un hôte", ref: "Marc Dupont", date: "2026-03-15", status: "converti", commission: 100 },
-  { id: "A-002", type: "Amener un bien", ref: "Villa Montreux", date: "2026-03-10", status: "en_cours", commission: 0 },
-  { id: "A-003", type: "Amener un client", ref: "Sophie Meier", date: "2026-02-28", status: "converti", commission: 450 },
+  { id: "A-002", type: "Amener un bien", ref: "Villa Montreux (vente)", date: "2026-03-10", status: "en_cours", commission: 0 },
+  { id: "A-003", type: "Amener un client", ref: "Sophie Meier (location courte)", date: "2026-02-28", status: "converti", commission: 36 },
   { id: "A-004", type: "Amener un hôte", ref: "Pierre Blanc", date: "2026-02-20", status: "converti", commission: 100 },
-  { id: "A-005", type: "Amener un bien", ref: "Appartement Lausanne", date: "2026-02-15", status: "converti", commission: 1400 },
-  { id: "A-006", type: "Amener un client", ref: "Nadia Schmid", date: "2026-01-30", status: "converti", commission: 350 },
+  { id: "A-005", type: "Amener un bien", ref: "Appartement Lausanne (vente ≥ 1 M)", date: "2026-02-15", status: "converti", commission: 750 },
+  { id: "A-006", type: "Amener un client", ref: "Nadia Schmid (location courte)", date: "2026-01-30", status: "converti", commission: 48 },
 ];
 
 const MOCK_VERSEMENTS = [
-  { id: "V-001", date: "2026-03-01", montant: 1400, methode: "Virement IBAN", statut: "verse" },
-  { id: "V-002", date: "2026-02-01", montant: 650, methode: "Virement IBAN", statut: "verse" },
+  { id: "V-001", date: "2026-03-01", montant: 886, methode: "Virement IBAN", statut: "verse" },
+  { id: "V-002", date: "2026-02-01", montant: 48, methode: "Virement IBAN", statut: "verse" },
 ];
 
 const LEADERBOARD = [
-  { rank: 1, nom: "Sarah K.", apports: 52, commissions: 21300 },
-  { rank: 2, nom: "Jean-Pierre D.", apports: 41, commissions: 16800 },
-  { rank: 3, nom: "Laura M.", apports: 39, commissions: 15200 },
-  { rank: 4, nom: "Léo M. (Vous)", apports: 28, commissions: 9500, isYou: true },
-  { rank: 5, nom: "Nadia S.", apports: 25, commissions: 8700 },
-  { rank: 6, nom: "Thomas R.", apports: 22, commissions: 7400 },
-  { rank: 7, nom: "Amina K.", apports: 19, commissions: 6100 },
-  { rank: 8, nom: "Patrick L.", apports: 15, commissions: 4900 },
+  { rank: 1, nom: "Sarah K.", apports: 52, commissions: 4200 },
+  { rank: 2, nom: "Jean-Pierre D.", apports: 41, commissions: 3380 },
+  { rank: 3, nom: "Laura M.", apports: 39, commissions: 3010 },
+  { rank: 4, nom: "Léo M. (Vous)", apports: 28, commissions: 1184, isYou: true },
+  { rank: 5, nom: "Nadia S.", apports: 25, commissions: 1050 },
+  { rank: 6, nom: "Thomas R.", apports: 22, commissions: 920 },
+  { rank: 7, nom: "Amina K.", apports: 19, commissions: 780 },
+  { rank: 8, nom: "Patrick L.", apports: 15, commissions: 610 },
 ];
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
@@ -122,8 +140,36 @@ export default function ApporteursPage() {
           Programme Apporteurs d&apos;Affaires
         </h1>
         <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-          Générez des revenus en recommandant E-Dome à votre réseau. Chaque conversion vous rapporte une commission prélevée sur la part plateforme, sans surcharge pour les utilisateurs.
+          Générez des revenus en recommandant E-Dome à votre réseau. Chaque conversion vous reverse une part des revenus de plateforme d&apos;E-Dome (10 à 30 %) ou un bounty fixe selon le pôle, jamais ajoutée au prix payé par le client. L&apos;apporteur fait du referral marketing digital : il ne négocie aucun prix, ne représente aucune partie, n&apos;est jamais payé directement par le vendeur ou l&apos;acheteur, et n&apos;est ni agent immobilier ni courtier.
         </p>
+      </section>
+
+      {/* Bloc cadrage juridique V1.0 — KYC + double opt-in.
+          Placé juste sous le hero, avant la grille d'apport, pour qu'aucun
+          utilisateur n'active le programme sans avoir vu ces 2 conditions. */}
+      <section className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-5 space-y-3">
+        <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
+          <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-[#1e9df1]/15 text-[#1e9df1] font-bold">Cadrage V1.0</span>
+          Conditions du programme apporteur
+        </div>
+        <ul className="text-sm text-[var(--text-secondary)] space-y-2 list-none">
+          <li className="flex gap-2">
+            <span className="text-[#1e9df1] mt-0.5">·</span>
+            <span><strong className="text-[var(--foreground)]">Activation après KYC.</strong> Vous activez vous-même la fonction apporteur après vérification d&apos;identité — c&apos;est la première opt-in.</span>
+          </li>
+          <li className="flex gap-2">
+            <span className="text-[#1e9df1] mt-0.5">·</span>
+            <span><strong className="text-[var(--foreground)]">Double opt-in.</strong> Le vendeur, l&apos;organisateur ou le prestataire peut désactiver le programme sur chaque annonce ou contenu — c&apos;est la seconde opt-in. Les deux parties gardent le contrôle.</span>
+          </li>
+          <li className="flex gap-2">
+            <span className="text-[#1e9df1] mt-0.5">·</span>
+            <span><strong className="text-[var(--foreground)]">Part prélevée sur E-Dome.</strong> Votre rémunération est toujours prélevée sur les revenus de plateforme d&apos;E-Dome (10 à 30 % de la part E-Dome, ou un bounty fixe). Elle n&apos;est jamais ajoutée au prix payé par le client.</span>
+          </li>
+          <li className="flex gap-2">
+            <span className="text-[#1e9df1] mt-0.5">·</span>
+            <span><strong className="text-[var(--foreground)]">Pas de courtage.</strong> Vous ne négociez aucun prix, ne signez aucun mandat, ne représentez aucune partie. Vous faites du referral marketing digital — vous n&apos;êtes ni agent immobilier ni courtier.</span>
+          </li>
+        </ul>
       </section>
 
       {/* Referral Link Cards */}
@@ -135,7 +181,7 @@ export default function ApporteursPage() {
             </div>
             <p className="text-sm text-[var(--text-secondary)]">{link.description}</p>
             <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#1e9df1]/20 text-[#1e9df1]">
-              {link.commission}
+              Rémunération : {link.commission}
             </span>
             <div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
               <span className="text-xs text-[var(--text-muted)] truncate flex-1">{link.url}</span>
@@ -191,7 +237,7 @@ export default function ApporteursPage() {
               </div>
               <p className="text-sm text-[var(--text-secondary)]">{type.desc}</p>
               <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#1e9df1]/20 text-[#1e9df1]">
-                Commission: {type.commission}
+                Rémunération : {type.commission}
               </span>
             </div>
           ))}
@@ -203,9 +249,9 @@ export default function ApporteursPage() {
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Comment ça fonctionne</h2>
         <div className="flex flex-col md:flex-row items-center gap-4">
           {[
-            { step: "1", title: "Lien cliqué", desc: "Un prospect clique sur votre lien de parrainage" },
-            { step: "2", title: "Conversion confirmée", desc: "Le prospect s'inscrit et réalise une transaction" },
-            { step: "3", title: "Commission versée", desc: "Votre commission est calculée et virée mensuellement" },
+            { step: "1", title: "Lien cliqué", desc: "Un prospect clique sur votre lien de recommandation (activé après KYC)" },
+            { step: "2", title: "Conversion confirmée", desc: "Le prospect s'inscrit et finalise une transaction sur la plateforme" },
+            { step: "3", title: "Part versée", desc: "Votre part — calculée sur les revenus de plateforme d'E-Dome (10–30 %) ou un bounty fixe — est virée mensuellement" },
           ].map((s, idx) => (
             <React.Fragment key={idx}>
               {idx > 0 && <div className="hidden md:block text-[var(--text-muted)] text-2xl">→</div>}
@@ -220,7 +266,7 @@ export default function ApporteursPage() {
           ))}
         </div>
         <p className="text-sm text-[var(--text-muted)] text-center italic">
-          La commission est prélevée sur la part plateforme E-Dome. Aucun coût supplémentaire pour l&apos;hôte ou le client.
+          La part de l&apos;apporteur est prélevée sur les revenus de plateforme d&apos;E-Dome — jamais ajoutée au prix payé par l&apos;hôte ou le client.
         </p>
       </section>
 
@@ -236,7 +282,7 @@ export default function ApporteursPage() {
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Référence</th>
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Date</th>
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Statut</th>
-                <th className="text-right p-4 text-[var(--text-muted)] font-medium">Commission</th>
+                <th className="text-right p-4 text-[var(--text-muted)] font-medium">Rémunération</th>
               </tr>
             </thead>
             <tbody>
@@ -265,7 +311,7 @@ export default function ApporteursPage() {
       <section className="grid md:grid-cols-2 gap-6">
         {/* Summary */}
         <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
-          <h3 className="font-semibold text-[var(--foreground)]">Résumé des commissions</h3>
+          <h3 className="font-semibold text-[var(--foreground)]">Résumé de ma rémunération</h3>
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">Total gagné</span>
@@ -339,7 +385,7 @@ export default function ApporteursPage() {
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">#</th>
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Apporteur</th>
                 <th className="text-right p-4 text-[var(--text-muted)] font-medium">Apports</th>
-                <th className="text-right p-4 text-[var(--text-muted)] font-medium">Commissions</th>
+                <th className="text-right p-4 text-[var(--text-muted)] font-medium">Rémunération</th>
               </tr>
             </thead>
             <tbody>

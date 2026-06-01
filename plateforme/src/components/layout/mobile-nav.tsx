@@ -35,6 +35,7 @@ const publishMenuItems = [
   { emoji: "\u{1F4DA}", label: "Créer une formation", href: "/formations/creer" },
   { emoji: "\u{1F4E1}", label: "Programmer un live", href: "/live" },
   { emoji: "\u{1F4C5}", label: "Créer un événement", href: "/evenements/creer" },
+  { emoji: "\u{1F6CD}\u{FE0F}", label: "Vendre un produit", href: "/boutique/vendre" },
 ];
 
 export function MobileNav() {
