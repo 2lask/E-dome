@@ -464,40 +464,33 @@ export default function PublierPage() {
               </div>
             </button>
 
-            {/* Slider + simulation V1.0 : la base de calcul dépend du pôle.
-                - Vente entre particuliers → base = frais fixe plateforme (500
-                  ou 2 500 CHF). L'apporteur touche un % de ce frais fixe.
-                - Location courte durée → base = commission marketplace (~8 %
-                  du loyer) que E-Dome prélève. L'apporteur touche un % de
-                  cette commission, jamais du prix payé par le voyageur.
-                - Location longue durée → base = frais fixe (150/250/400 CHF).
-                  Comme on ne connaît pas encore la durée, on simule sur le
-                  tarif médian 250 CHF.
-                La part apporteur (V1.0) est sur la fourchette 10–30 %. */}
+            {/* Bloc lecture seule V1.0 — le taux apporteur est fixé par
+                E-Dome, jamais par le vendeur. Le seul contrôle du vendeur est
+                le toggle ON/OFF au-dessus (opt-out). Ici on affiche :
+                - le rappel du modèle ("taux fixé par la plateforme"),
+                - la fourchette indicative simulée sur le pôle de l'annonce,
+                - le tracking. Pas de slider, pas d'input. */}
             {form.autoriserApporteurs && (
               <div className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-5">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-[var(--text-secondary)]">Part de la rémunération E-Dome reversée à l&apos;apporteur</label>
-                  <span className="text-lg font-bold text-[#1e9df1]">{form.commissionApporteur}%</span>
-                </div>
-                <input
-                  type="range"
-                  min={10}
-                  max={30}
-                  step={1}
-                  value={form.commissionApporteur}
-                  onChange={(e) => update("commissionApporteur", Number(e.target.value))}
-                  className="w-full accent-[#1e9df1]"
-                />
-                <div className="flex justify-between text-xs text-[var(--text-muted)]">
-                  <span>10%</span>
-                  <span>15%</span>
-                  <span>20%</span>
-                  <span>25%</span>
-                  <span>30%</span>
+                {/* Bandeau lecture seule */}
+                <div className="p-4 rounded-xl bg-[#1e9df1]/5 border border-[#1e9df1]/20 space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm font-medium text-[var(--foreground)]">
+                      Taux apporteur fixé par la plateforme
+                    </span>
+                    <span
+                      className="text-sm font-semibold tabular-nums px-2.5 py-1 rounded-full"
+                      style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}
+                    >
+                      10 – 30 %
+                    </span>
+                  </div>
+                  <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
+                    Si activé, E-Dome reverse une part fixe de <strong>sa propre rémunération</strong> aux apporteurs — jamais ajoutée à ton prix, jamais payée par toi. Le taux (10 – 30 % selon le pôle) est défini par E-Dome, pas par le vendeur.
+                  </p>
                 </div>
 
-                {/* Simulation adaptative par pôle */}
+                {/* Simulation adaptative par pôle — fourchette basse/haute */}
                 {(() => {
                   // base = ce que E-Dome encaisse sur cette transaction.
                   let edomeRevenue = 0;
@@ -516,7 +509,8 @@ export default function PublierPage() {
                     baseLabel = "Frais fixe E-Dome (bail médian, 6–12 mois)";
                   }
                   if (edomeRevenue === 0) return null;
-                  const apporteurShare = edomeRevenue * (form.commissionApporteur / 100);
+                  const apporteurLow = edomeRevenue * 0.10;
+                  const apporteurHigh = edomeRevenue * 0.30;
                   return (
                     <div className="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-2.5">
                       <h4 className="text-sm font-semibold text-[var(--foreground)] mb-3">Simulation pour cette annonce</h4>
@@ -531,27 +525,18 @@ export default function PublierPage() {
                         <span className="font-medium text-[var(--foreground)]">{formatPrice(edomeRevenue)}</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-[var(--text-secondary)]">Part apporteur ({form.commissionApporteur} % de la rémunération E-Dome)</span>
-                        <span className="font-medium text-[#1e9df1]">{formatPrice(apporteurShare)}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-[var(--text-secondary)]">Reste E-Dome après reversement</span>
-                        <span className="font-medium text-[var(--foreground)]">{formatPrice(edomeRevenue - apporteurShare)}</span>
+                        <span className="text-[var(--text-secondary)]">Part apporteur (10 – 30 % de la rémunération E-Dome)</span>
+                        <span className="font-medium text-[#1e9df1] tabular-nums">
+                          {formatPrice(apporteurLow)} – {formatPrice(apporteurHigh)}
+                        </span>
                       </div>
                       <div className="h-px bg-[var(--card-border)] my-1" />
-                      <p className="text-xs text-green-400/80 italic">
+                      <p className="text-xs italic text-[var(--text-muted)]">
                         Votre revenu reste identique avec ou sans apporteur — la part est prélevée sur ce qu&apos;E-Dome encaisse, jamais ajoutée à ce que paie l&apos;acheteur, le locataire ou le voyageur.
                       </p>
                     </div>
                   );
                 })()}
-
-                {/* Info text V1.0 */}
-                <div className="p-3 rounded-lg bg-[#1e9df1]/5 border border-[#1e9df1]/20">
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                    La part de l&apos;apporteur est toujours prélevée sur les revenus de plateforme d&apos;E-Dome (frais fixe ou commission marketplace selon le pôle). Aucun coût supplémentaire pour vous, et l&apos;apporteur n&apos;est jamais payé directement par l&apos;acheteur ou le locataire.
-                  </p>
-                </div>
 
                 {/* Tracking details */}
                 <div className="grid grid-cols-2 gap-3">
