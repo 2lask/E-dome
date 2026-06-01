@@ -342,7 +342,23 @@ export default function PublierPage() {
                   <span className="text-xs">Glisser-déposer</span>
                 </button>
               </div>
-              <input ref={fileRef} type="file" accept="image/*" className="hidden" />
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  /* Upload reel local : URL.createObjectURL genere un blob:
+                     accessible par le navigateur. Aucune requete reseau, l'image
+                     vit en memoire jusqu'au rafraichissement de la page. */
+                  const files = Array.from(e.target.files ?? []);
+                  if (files.length === 0) return;
+                  const urls = files.map((f) => URL.createObjectURL(f));
+                  update("photos", [...form.photos, ...urls]);
+                  e.target.value = "";
+                }}
+              />
             </div>
 
             {/* Video */}
