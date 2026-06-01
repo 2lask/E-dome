@@ -189,12 +189,12 @@ export default function VendreProduitPage() {
 
         {/* Photos */}
         <div>
-          <label className={labelCls}>Photos du produit (URLs)</label>
-          <div className="flex gap-2 mb-2">
+          <label className={labelCls}>Photos du produit</label>
+          <div className="flex gap-2 mb-2 flex-wrap">
             <input
               type="url"
-              className={`${inputCls} flex-1`}
-              placeholder="https://…"
+              className={`${inputCls} flex-1 min-w-[200px]`}
+              placeholder="URL https://… ou téléverser →"
               value={photoUrl}
               onChange={(e) => setPhotoUrl(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addPhoto())}
@@ -206,6 +206,25 @@ export default function VendreProduitPage() {
             >
               Ajouter
             </button>
+            <label
+              className="cursor-pointer px-4 py-3 rounded-xl text-sm font-medium transition-colors"
+              style={{ border: "1px solid var(--card-border)", background: "var(--card)", color: "var(--foreground)" }}
+            >
+              Téléverser
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files ?? []);
+                  if (files.length === 0) return;
+                  const urls = files.map((f) => URL.createObjectURL(f));
+                  update("photos", [...form.photos, ...urls]);
+                  e.target.value = "";
+                }}
+              />
+            </label>
           </div>
           {form.photos.length > 0 && (
             <div className="flex flex-wrap gap-2">

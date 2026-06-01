@@ -125,7 +125,7 @@ const PRODUCTS: Product[] = [
 ];
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const { formatPrice } = useApp();
+  const { formatPrice, addToCart } = useApp();
   const { id } = use(params);
   const product = PRODUCTS.find((p) => p.id === id);
   const [selectedImg, setSelectedImg] = useState(0);
@@ -221,12 +221,24 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   <button onClick={() => setQty((q) => Math.min(product.stock, q + 1))} className="px-3 py-2 hover:bg-[var(--hover-bg)] transition-colors">+</button>
                 </div>
                 {added ? (
-                  <span className="flex-1 text-center px-4 py-2.5 rounded-xl bg-green-500/20 text-green-400 text-sm font-medium">
+                  <span className="flex-1 text-center px-4 py-2.5 rounded-xl text-sm font-medium"
+                    style={{ background: "rgba(16,185,129,0.12)", color: "#059669" }}
+                  >
                     Ajouté au panier ✓
                   </span>
                 ) : (
                   <button
-                    onClick={() => { setAdded(true); setTimeout(() => setAdded(false), 2500); }}
+                    onClick={() => {
+                      addToCart({
+                        id: product.id,
+                        title: product.title,
+                        price: product.price,
+                        currency: "CHF",
+                        qty,
+                      });
+                      setAdded(true);
+                      setTimeout(() => setAdded(false), 2500);
+                    }}
                     disabled={product.stock === 0}
                     className="flex-1 px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
                   >

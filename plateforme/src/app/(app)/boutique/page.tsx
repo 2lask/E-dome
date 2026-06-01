@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
+import { ShoppingBag, X } from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Pôle Boutique e-commerce (V1.0) ────────────────────────────────────────
@@ -69,11 +70,11 @@ function Stars({ rating }: { rating: number }) {
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function BoutiquePage() {
-  const { formatPrice } = useApp();
+  const { formatPrice, cart, cartCount, addToCart, updateCartQty, removeFromCart, clearCart } = useApp();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Tous");
-  const [cart, setCart] = useState<Set<string>>(new Set());
   const [toastVisible, setToastVisible] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   const filtered = useMemo(() => {
     return PRODUCTS.filter((p) => {
@@ -83,15 +84,23 @@ export default function BoutiquePage() {
     });
   }, [search, category]);
 
-  const addToCart = (productId: string) => {
-    setCart((prev) => {
-      const next = new Set(prev);
-      next.add(productId);
-      return next;
+  const isInCart = (id: string) => cart.some((c) => c.id === id);
+
+  const handleAddToCart = (product: typeof PRODUCTS[number]) => {
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      currency: "CHF",
     });
     setToastVisible(true);
     setTimeout(() => setToastVisible(false), 2500);
   };
+
+  const cartSubtotal = useMemo(
+    () => cart.reduce((s, c) => s + (c.price ?? 0) * c.qty, 0),
+    [cart]
+  );
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -103,9 +112,34 @@ export default function BoutiquePage() {
             <h1 className="text-3xl page-heading">Boutique</h1>
             <p className="text-[var(--text-secondary)] mt-1">Meubles, décoration, matériaux, équipements — tout pour votre bien</p>
           </div>
-          <Link href="/boutique/vendre" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
-            Vendre un produit
-          </Link>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setCartOpen(true)}
+              className="relative inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
+              style={{
+                border: "1px solid var(--card-border)",
+                background: "var(--card)",
+                color: "var(--foreground)",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "var(--card)")}
+              aria-label={`Panier (${cartCount} articles)`}
+            >
+              <ShoppingBag size={16} />
+              Panier
+              {cartCount > 0 && (
+                <span
+                  className="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 rounded-full text-[11px] font-semibold px-1.5 tabular-nums"
+                  style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+                >
+                  {cartCount}
+                </span>
+              )}
+            </button>
+            <Link href="/boutique/vendre" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
+              Vendre un produit
+            </Link>
+          </div>
         </div>
 
         {/* Cadrage V1.0 — petit bandeau qui rappelle la responsabilité des vendeurs */}
@@ -160,10 +194,16 @@ export default function BoutiquePage() {
                     <span className="font-bold text-[#1e9df1]">{formatPrice(product.price)}</span>
                     {product.unit && <span className="text-xs text-[var(--text-muted)]"> {product.unit}</span>}
                   </div>
-                  {cart.has(product.id) ? (
-                    <span className="px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">Au panier ✓</span>
+                  {isInCart(product.id) ? (
+                    <button
+                      onClick={() => setCartOpen(true)}
+                      className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                      style={{ background: "rgba(16,185,129,0.12)", color: "#059669" }}
+                    >
+                      Au panier ✓
+                    </button>
                   ) : (
-                    <button onClick={() => addToCart(product.id)} disabled={product.stock === 0} className="px-3 py-1.5 bg-[#1e9df1] hover:bg-[#1583c9] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors">
+                    <button onClick={() => handleAddToCart(product)} disabled={product.stock === 0} className="px-3 py-1.5 bg-[#1e9df1] hover:bg-[#1583c9] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors">
                       Ajouter
                     </button>
                   )}
@@ -180,6 +220,128 @@ export default function BoutiquePage() {
         {toastVisible && (
           <div className="fixed bottom-6 right-6 z-50 px-5 py-3 bg-green-600 text-white rounded-xl shadow-lg text-sm font-medium animate-fade-in">
             Produit ajouté au panier
+          </div>
+        )}
+
+        {/* Drawer panier */}
+        {cartOpen && (
+          <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setCartOpen(false)}>
+            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.4)" }} />
+            <aside
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md h-full flex flex-col animate-fade-in"
+              style={{ background: "var(--card)", borderLeft: "1px solid var(--card-border)" }}
+            >
+              <header className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid var(--card-border)" }}>
+                <div className="flex items-center gap-2">
+                  <ShoppingBag size={18} style={{ color: "var(--foreground)" }} />
+                  <h3 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
+                    Panier ({cartCount})
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setCartOpen(false)}
+                  aria-label="Fermer"
+                  className="p-1.5 rounded-lg transition-colors"
+                  style={{ color: "var(--text-secondary)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <X size={18} />
+                </button>
+              </header>
+
+              <div className="flex-1 overflow-y-auto px-5 py-4">
+                {cart.length === 0 ? (
+                  <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+                    Votre panier est vide.
+                  </div>
+                ) : (
+                  <ul className="space-y-3">
+                    {cart.map((item) => (
+                      <li
+                        key={item.id}
+                        className="flex gap-3 p-3 rounded-xl"
+                        style={{ border: "1px solid var(--card-border)" }}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium leading-tight line-clamp-2" style={{ color: "var(--foreground)" }}>
+                            {item.title}
+                          </p>
+                          <p className="text-sm font-semibold mt-1 tabular-nums" style={{ color: "var(--primary)" }}>
+                            {formatPrice((item.price ?? 0) * item.qty)}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <button
+                              onClick={() => updateCartQty(item.id, item.qty - 1)}
+                              className="w-7 h-7 rounded-md transition-colors"
+                              style={{ background: "var(--hover-bg)", color: "var(--foreground)" }}
+                              aria-label="Diminuer la quantité"
+                            >
+                              −
+                            </button>
+                            <span className="text-sm font-medium tabular-nums w-6 text-center" style={{ color: "var(--foreground)" }}>
+                              {item.qty}
+                            </span>
+                            <button
+                              onClick={() => updateCartQty(item.id, item.qty + 1)}
+                              className="w-7 h-7 rounded-md transition-colors"
+                              style={{ background: "var(--hover-bg)", color: "var(--foreground)" }}
+                              aria-label="Augmenter la quantité"
+                            >
+                              +
+                            </button>
+                            <button
+                              onClick={() => removeFromCart(item.id)}
+                              className="ml-auto text-xs transition-colors"
+                              style={{ color: "var(--text-muted)" }}
+                            >
+                              Retirer
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              {cart.length > 0 && (
+                <footer className="px-5 py-4 space-y-3" style={{ borderTop: "1px solid var(--card-border)" }}>
+                  <div className="flex items-center justify-between text-sm" style={{ color: "var(--text-secondary)" }}>
+                    <span>Sous-total</span>
+                    <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
+                      {formatPrice(cartSubtotal)}
+                    </span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                    Paiement sécurisé E-Dome (démonstration). Commission marketplace 4–8 %, déjà incluse côté vendeur — jamais ajoutée au prix payé par l&apos;acheteur.
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={clearCart}
+                      className="px-3 py-2 text-sm rounded-xl transition-colors"
+                      style={{
+                        border: "1px solid var(--card-border)",
+                        color: "var(--text-secondary)",
+                        background: "var(--card)",
+                      }}
+                    >
+                      Vider
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert("Paiement (démo) : Stripe Connect sera intégré en Phase 4 V1.0.");
+                      }}
+                      className="flex-1 px-4 py-2 text-sm font-medium rounded-xl transition-colors"
+                      style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+                    >
+                      Passer commande
+                    </button>
+                  </div>
+                </footer>
+              )}
+            </aside>
           </div>
         )}
 

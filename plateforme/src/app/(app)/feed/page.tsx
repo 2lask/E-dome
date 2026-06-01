@@ -7,7 +7,7 @@ import {
   MapPin, X, ChevronRight, Play,
   Edit3, Trash2, Flag, EyeOff, Copy,
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
-  Users, Building2, GraduationCap, Newspaper, TrendingUp, UserPlus,
+  Users, Building2, GraduationCap,
 } from "lucide-react";
 import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
@@ -762,7 +762,7 @@ function PostCard({
   return (
     <article
       onClick={closeMenus}
-      className="w-full max-w-[540px] bg-[var(--card)] rounded-3xl border border-[var(--card-border)] shadow-xl shadow-black/25 overflow-hidden"
+      className="w-full max-w-[600px] border-b border-[var(--card-border)] last:border-b-0 transition-colors hover:bg-[var(--hover-bg)]/40"
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-3 p-4 pb-3">
@@ -855,7 +855,7 @@ function PostCard({
         <Link
           href={`/explorer/${post.property.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="mx-4 mt-3 flex gap-3 p-3 rounded-2xl border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition-colors"
+          className="mx-4 mt-3 flex gap-3 p-2.5 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
         >
           <img src={post.property.images[0]} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
           <div className="flex-1 min-w-0">
@@ -882,7 +882,7 @@ function PostCard({
         <Link
           href={`/formations/${post.formation.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="mx-4 mt-3 flex gap-3 p-3 rounded-2xl border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition-colors"
+          className="mx-4 mt-3 flex gap-3 p-2.5 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
         >
           <img src={post.formation.thumbnail} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
           <div className="flex-1 min-w-0">
@@ -907,7 +907,7 @@ function PostCard({
         <Link
           href={`/evenements/${event.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="mx-4 mt-3 flex gap-3 p-3 rounded-2xl border border-[var(--card-border)] hover:border-violet-400/40 transition-colors"
+          className="mx-4 mt-3 flex gap-3 p-2.5 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
         >
           <img src={event.thumbnail} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
           <div className="flex-1 min-w-0">
@@ -932,7 +932,7 @@ function PostCard({
         <Link
           href={cta.href}
           onClick={(e) => e.stopPropagation()}
-          className="mx-4 mt-3 flex items-center gap-3 p-3 rounded-2xl border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition-colors"
+          className="mx-4 mt-3 flex items-center gap-3 p-2.5 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
         >
           <div className="w-12 h-12 rounded-xl bg-[#1e9df1]/10 flex items-center justify-center shrink-0">
             {cta.icon === "users" ? <Users className="w-5 h-5 text-[#1e9df1]" />
@@ -1142,8 +1142,8 @@ export default function FeedPage() {
             </div>
           </div>
 
-          {/* Timeline naturelle, scroll classique de la page */}
-          <div className="space-y-4 mt-4 max-w-[600px] mx-auto">
+          {/* Timeline Twitter-like : posts contigus, séparés par filet fin */}
+          <div className="mt-2 max-w-[600px] mx-auto">
             {filteredPosts.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-16 px-6">
                 <Users className="w-12 h-12 text-[var(--text-muted)] mb-3" />
@@ -1196,155 +1196,95 @@ export default function FeedPage() {
           </div>
         </div>
 
-        {/* Sidebar droite — Suggestions / Actualités / Tendances (desktop large uniquement) */}
-        {/* Sidebar droite — ordre Twitter (X) : Recherche → Actualités → Tendances → Suggestions */}
-        <aside className="hidden lg:block w-[320px] shrink-0 sticky top-20 self-start space-y-4">
-          {/* Search bar style X */}
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="relative"
-          >
+        {/* Colonne droite — minimale et discrete (desktop large uniquement).
+            On a retire le bloc Actualites pour epurer. Restent : recherche,
+            tendances (3 items max), suggestions (3 items max). Fond transparent,
+            pas de cartes bordees lourdes. */}
+        <aside className="hidden lg:block w-[300px] shrink-0 sticky top-20 self-start space-y-6">
+          {/* Search */}
+          <form onSubmit={(e) => e.preventDefault()} className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
             <input
               type="search"
               placeholder="Rechercher sur E-Dome"
-              className="w-full pl-11 pr-4 py-3 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] focus:ring-1 focus:ring-[#1e9df1]/30 transition-colors"
+              className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] transition-colors"
             />
           </form>
 
-          {/* Actualités — style « Actualités du jour » X (titre + sub-label « Tendance ») */}
-          <div className="rounded-2xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden">
-            <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-              <h3 className="text-base font-bold text-[var(--foreground)]">
-                Actualités du jour
-              </h3>
-              <button
-                aria-label="Fermer"
-                onClick={(e) => e.preventDefault()}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--hover-bg)] transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div>
-              {NEWS.slice(0, 5).map((n, idx) => (
-                <button
-                  key={n.id}
-                  onClick={() => {
-                    setFeedToast("Article ouvert");
-                    setTimeout(() => setFeedToast(null), 2000);
-                  }}
-                  className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-[var(--hover-bg)] transition-colors"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] text-[var(--text-muted)] mb-0.5 flex items-center gap-1.5">
-                      <span>{idx === 0 ? "À la une" : "Tendance"} · {n.source}</span>
-                      <span aria-hidden>·</span>
-                      <span>{timeAgo(n.date)}</span>
-                    </p>
-                    <p className="text-[14px] font-semibold text-[var(--foreground)] leading-snug line-clamp-3">
-                      {n.title}
-                    </p>
-                  </div>
-                  <img
-                    src={n.image}
-                    alt=""
-                    className="w-16 h-16 rounded-xl object-cover shrink-0"
-                  />
-                </button>
+          {/* Tendances — minimal */}
+          <div>
+            <h3 className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              Tendances
+            </h3>
+            <ul className="space-y-0.5">
+              {TRENDING_HASHTAGS.slice(0, 3).map((item) => (
+                <li key={item.tag}>
+                  <Link
+                    href={`/recherche?q=${encodeURIComponent(item.tag)}`}
+                    className="flex items-center justify-between gap-2 px-2 py-2 rounded-lg hover:bg-[var(--hover-bg)] transition-colors"
+                  >
+                    <span className="text-sm font-medium text-[var(--foreground)] truncate">{item.tag}</span>
+                    <span className="text-[11px] text-[var(--text-muted)] tabular-nums shrink-0">
+                      {formatCount(item.count)}
+                    </span>
+                  </Link>
+                </li>
               ))}
-              <Link
-                href="/notifications"
-                className="block px-4 py-3 text-[14px] text-[#1e9df1] hover:bg-[var(--hover-bg)] transition-colors"
-              >
-                Voir plus
-              </Link>
-            </div>
+            </ul>
+            <Link
+              href="/recherche"
+              className="block mt-1 px-2 py-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--foreground)] transition-colors"
+            >
+              Voir plus →
+            </Link>
           </div>
 
-          {/* Tendances — style « What's happening » X */}
-          <div className="rounded-2xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden">
-            <div className="px-4 pt-4 pb-2">
-              <h3 className="text-base font-bold text-[var(--foreground)] flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-[#1e9df1]" />
-                Tendances pour vous
-              </h3>
-            </div>
-            <div>
-              {TRENDING_HASHTAGS.slice(0, 5).map((item, idx) => (
-                <Link
-                  key={item.tag}
-                  href={`/recherche?q=${encodeURIComponent(item.tag)}`}
-                  className="block px-4 py-2.5 hover:bg-[var(--hover-bg)] transition-colors"
-                >
-                  <p className="text-[11px] text-[var(--text-muted)] mb-0.5">
-                    Tendance immobilière · {idx + 1}
-                  </p>
-                  <p className="text-[14px] font-semibold text-[var(--foreground)] leading-tight">
-                    {item.tag}
-                  </p>
-                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5 tabular-nums">
-                    {formatCount(item.count)} publications
-                  </p>
-                </Link>
-              ))}
-              <Link
-                href="/recherche"
-                className="block px-4 py-3 text-[14px] text-[#1e9df1] hover:bg-[var(--hover-bg)] transition-colors"
-              >
-                Voir plus
-              </Link>
-            </div>
-          </div>
-
-          {/* Suggestions — style « Qui suivre ? » X */}
-          <div className="rounded-2xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden">
-            <div className="px-4 pt-4 pb-2">
-              <h3 className="text-base font-bold text-[var(--foreground)] flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-[#1e9df1]" />
-                Suggestions pour vous
-              </h3>
-            </div>
-            <div>
-              {SUGGESTIONS.map((user) => (
-                <div key={user.id} className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--hover-bg)] transition-colors">
+          {/* Suggestions — minimal */}
+          <div>
+            <h3 className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              Suggestions
+            </h3>
+            <ul className="space-y-1">
+              {SUGGESTIONS.slice(0, 3).map((user) => (
+                <li key={user.id} className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[var(--hover-bg)] transition-colors">
                   <Link href={`/profil/${user.id}`} className="shrink-0">
                     <img
                       src={user.avatar}
                       alt=""
-                      className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity"
+                      className="w-9 h-9 rounded-full object-cover hover:opacity-80 transition-opacity"
                     />
                   </Link>
                   <div className="flex-1 min-w-0">
                     <Link
                       href={`/profil/${user.id}`}
-                      className="text-sm font-semibold text-[var(--foreground)] hover:underline truncate block"
+                      className="text-sm font-medium text-[var(--foreground)] hover:underline truncate block leading-tight"
                     >
                       {user.firstName} {user.lastName}
                     </Link>
-                    <p className="text-xs text-[var(--text-muted)] truncate">
-                      @{user.firstName.toLowerCase()} · {roleLabels[user.activeRole]}
+                    <p className="text-[11px] text-[var(--text-muted)] truncate">
+                      {roleLabels[user.activeRole]}
                     </p>
                   </div>
                   <button
                     onClick={() => toggleFollow(user.id)}
-                    className={`text-xs px-3.5 py-1.5 rounded-full font-semibold transition-colors shrink-0 ${
-                      isFollowing(user.id)
-                        ? "border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
-                        : "bg-[var(--foreground)] text-[var(--background)] hover:opacity-85"
-                    }`}
+                    className="text-xs px-3 py-1 rounded-full font-medium transition-colors shrink-0"
+                    style={{
+                      background: isFollowing(user.id) ? "transparent" : "var(--foreground)",
+                      color: isFollowing(user.id) ? "var(--text-secondary)" : "var(--background)",
+                      border: isFollowing(user.id) ? "1px solid var(--card-border)" : "none",
+                    }}
                   >
                     {isFollowing(user.id) ? "Suivi" : "Suivre"}
                   </button>
-                </div>
+                </li>
               ))}
-              <Link
-                href="/recherche"
-                className="block px-4 py-3 text-[14px] text-[#1e9df1] hover:bg-[var(--hover-bg)] transition-colors"
-              >
-                Voir plus
-              </Link>
-            </div>
+            </ul>
+            <Link
+              href="/recherche"
+              className="block mt-1 px-2 py-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--foreground)] transition-colors"
+            >
+              Voir plus →
+            </Link>
           </div>
         </aside>
       </div>

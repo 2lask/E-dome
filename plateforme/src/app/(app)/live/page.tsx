@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { Video } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { CameraPreview } from "@/components/live/camera-preview";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -50,6 +52,7 @@ export default function LivePage() {
   const [newLive, setNewLive] = useState({ titre: "", type: "webinaire", date: "", duree: "60", description: "", prix: "0" });
 
   const [toastVisible, setToastVisible] = useState(false);
+  const [showCameraPreview, setShowCameraPreview] = useState(false);
   // Button visible to all users in demo mode
   const canCreateLive = true;
 
@@ -125,13 +128,32 @@ export default function LivePage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl page-heading text-[var(--foreground)]">Live</h1>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
-        >
-          📡 Programmer un live
-        </button>
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setShowCameraPreview(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            style={{
+              border: "1px solid var(--card-border)",
+              background: "var(--card)",
+              color: "var(--foreground)",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "var(--card)")}
+            title="Allume votre caméra pour un aperçu local — aucune diffusion"
+          >
+            <Video size={16} />
+            Tester ma caméra
+          </button>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
+          >
+            📡 Programmer un live
+          </button>
+        </div>
       </div>
+
+      <CameraPreview open={showCameraPreview} onClose={() => setShowCameraPreview(false)} />
 
       {/* Live Viewer (when live) */}
       {isLive ? (

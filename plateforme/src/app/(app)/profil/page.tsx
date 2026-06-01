@@ -1,526 +1,112 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
-import { Award, BadgeCheck, MapPin } from "lucide-react";
-import { useApp } from "@/lib/context";
-import type { Property, User } from "@/lib/types";
-import { formatCount } from "@/lib/utils";
+import { ProfileVitrine, type ProfileUser, type ProfileData } from "@/components/profile/profile-vitrine";
 
-// ─── Mock data ──────────────────────────────────────────────────────────────
+/* /profil — mon profil. Consomme <ProfileVitrine> avec isOwn=true.
+   Données fictives partagées avec /profil/[id] pour cohérence visuelle. */
 
-const currentUser: User = {
+const ME: ProfileUser = {
   id: "me",
   firstName: "Léo",
   lastName: "Martin",
-  email: "leo@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200",
+  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=240",
   city: "Lausanne",
   country: "Suisse",
-  roles: ["hote", "formateur", "apporteur", "investisseur"],
-  activeRole: "hote",
-  stats: {
-    followers: 2340,
-    following: 812,
-    properties: 4,
-    reviews: 56,
-    rating: 4.8,
-    transactions: 124,
-    revenue: 185000,
-  },
-  bio: "Passionné d'immobilier depuis 15 ans. Hôte actif en Suisse romande, formateur certifié USPI et apporteur d'affaires. Spécialiste des investissements locatifs et de la location courte durée haut de gamme.",
-  languages: ["🇫🇷 Français", "🇬🇧 Anglais", "🇩🇪 Allemand (bases)"],
-  certifications: ["🎓 Investissement locatif — Certifié E-Dome · Mars 2024", "🎓 Location courte durée Pro — Certifié E-Dome · Juin 2024"],
-  responseTime: "< 1 heure",
+  roles: ["Hôte", "Formateur", "Apporteur", "Investisseur"],
+  bio: "Passionné d'immobilier depuis 15 ans. Hôte actif en Suisse romande, formateur certifié USPI et apporteur d'affaires.",
+  isMembreFondateur: true,
+  stats: { followers: 2340, following: 812, rating: 4.8, reviewsCount: 56 },
 };
 
-const mockProperties: Property[] = [
-  {
-    id: "prop1", title: "Chalet Alpin Premium", description: "", type: "chalet", transactionType: "location-ct",
-    price: 350, currency: "CHF", location: { city: "Verbier", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=300&fit=crop"],
-    host: currentUser, bedrooms: 4, bathrooms: 3, area: 180, amenities: [], rating: 4.9, reviewCount: 28,
-  },
-  {
-    id: "prop2", title: "Appartement Vue Lac", description: "", type: "appartement", transactionType: "vente",
-    price: 1250000, currency: "CHF", location: { city: "Montreux", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop"],
-    host: currentUser, bedrooms: 3, bathrooms: 2, area: 120, amenities: [], rating: 4.7, reviewCount: 15,
-  },
-  {
-    id: "prop3", title: "Villa Prestige", description: "", type: "villa", transactionType: "vente",
-    price: 3200000, currency: "CHF", location: { city: "Lausanne", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop"],
-    host: currentUser, bedrooms: 6, bathrooms: 4, area: 320, amenities: [], rating: 5.0, reviewCount: 8,
-  },
-  {
-    id: "prop4", title: "Studio Zurich Centre", description: "", type: "appartement", transactionType: "location-ct",
-    price: 180, currency: "CHF", location: { city: "Zurich", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop"],
-    host: currentUser, bedrooms: 1, bathrooms: 1, area: 45, amenities: [], rating: 4.6, reviewCount: 12,
-  },
-];
-
-const publicationPhotos = [
-  { id: "pub1", src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop", label: "Villa avec piscine" },
-  { id: "pub2", src: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=400&h=300&fit=crop", label: "Chalet sous la neige" },
-  { id: "pub3", src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop", label: "Intérieur moderne" },
-  { id: "pub4", src: "https://images.unsplash.com/photo-1590073242678-70ee818e55fb?w=400&h=300&fit=crop", label: "Riad avec patio" },
-  { id: "pub5", src: "https://images.unsplash.com/photo-1600047509807-ba7fdd402464?w=400&h=300&fit=crop", label: "Vue mer" },
-  { id: "pub6", src: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=400&h=300&fit=crop", label: "Graphique immobilier" },
-];
-
-const mockReviews = [
-  { id: "r1", author: "Jean-Pierre M.", rating: 5, text: "Hôte exceptionnel, chalet magnifique et communication parfaite.", date: "15 mars 2026", reply: null },
-  { id: "r2", author: "Marie L.", rating: 5, text: "Formation très claire et actionnable. J'ai investi 3 mois après.", date: "28 fév. 2026", reply: null },
-  { id: "r3", author: "Thomas K.", rating: 5, text: "Appartement propre, moderne et lumineux. Vue sur le Léman à couper le souffle.", date: "10 jan. 2026", reply: null },
-  { id: "r4", author: "Amira B.", rating: 5, text: "Formation investissement top niveau. Les modules fiscalité sont très utiles.", date: "5 jan. 2026", reply: null },
-  { id: "r5", author: "Pierre S.", rating: 4, text: "Apporteur fiable et sérieux. Commission versée rapidement.", date: "20 déc. 2025", reply: null },
-];
-
-const ratingBreakdown = [
-  { stars: 5, count: 4 },
-  { stars: 4, count: 1 },
-  { stars: 3, count: 0 },
-  { stars: 2, count: 0 },
-  { stars: 1, count: 0 },
-];
-
-// ─── Component ──────────────────────────────────────────────────────────────
+const DATA: ProfileData = {
+  publications: [
+    { id: "pub1", src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600", caption: "Visite du jour : villa contemporaine à Genolier." },
+    { id: "pub2", src: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=600", caption: "Chalet Verbier sous la première neige." },
+    { id: "pub3", src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600", caption: "Aménagement intérieur signé Studio Verbier." },
+    { id: "pub4", src: "https://images.unsplash.com/photo-1590073242678-70ee818e55fb?w=600", caption: "Riad Marrakech — patio rénové." },
+    { id: "pub5", src: "https://images.unsplash.com/photo-1600047509807-ba7fdd402464?w=600", caption: "Penthouse Montreux, vue lac." },
+    { id: "pub6", src: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=600", caption: "Évolution du rendement locatif 2026." },
+  ],
+  biens: [
+    { id: "prop1", title: "Chalet Alpin Premium", cover: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=600", price: 350, currency: "CHF", unit: "/nuit", location: "Verbier, Suisse" },
+    { id: "prop2", title: "Appartement Vue Lac", cover: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600", price: 1_250_000, currency: "CHF", unit: "", location: "Montreux, Suisse" },
+    { id: "prop3", title: "Villa Prestige", cover: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600", price: 3_200_000, currency: "CHF", unit: "", location: "Lausanne, Suisse" },
+    { id: "prop4", title: "Studio Zurich Centre", cover: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600", price: 180, currency: "CHF", unit: "/nuit", location: "Zurich, Suisse" },
+  ],
+  produits: [
+    { id: "prod1", title: "Plaid lin lavé bleu nuit", cover: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600", price: 89, currency: "CHF", stock: 14 },
+    { id: "prod2", title: "Lampe céramique nordique", cover: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=600", price: 145, currency: "CHF", stock: 6 },
+    { id: "prod3", title: "Vase grès noir mat", cover: "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600", price: 65, currency: "CHF", stock: 22 },
+  ],
+  formations: [
+    { id: "form-001", title: "Investissement locatif : de zéro à rentier", cover: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600", price: 497, currency: "CHF", students: 342, rating: 4.9 },
+    { id: "form-002", title: "Maîtriser la gestion locative CT", cover: "https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=600", price: 397, currency: "CHF", students: 178, rating: 4.8 },
+  ],
+  lives: [
+    { id: "live1", title: "Décrypter les annonces immobilières", cover: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=600", status: "scheduled", scheduledAt: "2026-06-12 19:00", expectedViewers: 320 },
+    { id: "live2", title: "Q&R : fiscalité locative en Suisse", cover: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600", status: "replay", replayViews: 1240 },
+  ],
+  services: [
+    { id: "s1", title: "Conseil investissement personnalisé", cover: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600", price: 250, currency: "CHF", unit: "/h" },
+    { id: "s2", title: "Audit de portefeuille immobilier", cover: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600", price: 1800, currency: "CHF", unit: "" },
+  ],
+  avis: [
+    { id: "r1", author: "Jean-Pierre M.", rating: 5, text: "Hôte exceptionnel, chalet magnifique et communication parfaite.", date: "15 mars 2026" },
+    { id: "r2", author: "Marie L.", rating: 5, text: "Formation très claire et actionnable. J'ai investi 3 mois après.", date: "28 fév. 2026" },
+    { id: "r3", author: "Thomas K.", rating: 5, text: "Appartement propre, moderne et lumineux. Vue sur le Léman à couper le souffle.", date: "10 jan. 2026" },
+    { id: "r4", author: "Amira B.", rating: 5, text: "Formation investissement top niveau. Les modules fiscalité sont très utiles.", date: "5 jan. 2026" },
+    { id: "r5", author: "Pierre S.", rating: 4, text: "Apporteur fiable et sérieux. Rémunération versée rapidement.", date: "20 déc. 2025" },
+  ],
+  ratingBreakdown: [
+    { stars: 5, count: 4 },
+    { stars: 4, count: 1 },
+    { stars: 3, count: 0 },
+    { stars: 2, count: 0 },
+    { stars: 1, count: 0 },
+  ],
+};
 
 export default function ProfilPage() {
-  const { formatPrice } = useApp();
-  const [tab, setTab] = useState<"biens" | "publications" | "formations" | "avis" | "apropos">("biens");
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editForm, setEditForm] = useState({
-    photo: currentUser.avatar,
-    firstName: currentUser.firstName,
-    lastName: currentUser.lastName,
-    bio: currentUser.bio,
-    city: currentUser.city,
-    country: currentUser.country,
-    website: "",
-  });
-
-  const totalReviews = ratingBreakdown.reduce((s, r) => s + r.count, 0);
-  const propertyCount = mockProperties.length;
-
-  const roleBadges = [
-    { key: "hote", label: "Hôte" },
-    { key: "formateur", label: "Formateur" },
-    { key: "apporteur", label: "Apporteur" },
-    { key: "investisseur", label: "Investisseur" },
-  ];
-
-  const tabs = [
-    { key: "biens" as const, label: "Mes Biens" },
-    { key: "publications" as const, label: "Publications" },
-    { key: "formations" as const, label: "Formations" },
-    { key: "avis" as const, label: "Avis" },
-    { key: "apropos" as const, label: "À propos" },
-  ];
-
-  const mockFormations = [
-    {
-      id: "form-001",
-      title: "Investissement locatif : de zéro à rentier",
-      students: 342,
-      rating: 4.9,
-      price: 497,
-      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
-    },
-    {
-      id: "form-002",
-      title: "Maîtriser la gestion locative CT",
-      students: 178,
-      rating: 4.8,
-      price: 397,
-      image: "https://images.unsplash.com/photo-1460472178825-e5240623afd5?w=400&h=300&fit=crop",
-    },
-  ];
 
   return (
-    <div className="max-w-4xl mx-auto pb-12 animate-fade-in">
-      {/* Cover + Avatar */}
-      <div className="relative h-48 md:h-56 rounded-b-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1e9df1] via-[#1e9df1]/60 to-[var(--background)]" />
-      </div>
-      <div className="px-4 md:px-6 -mt-16 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end gap-4">
-          <img
-            src={currentUser.avatar}
-            alt=""
-            className="w-28 h-28 rounded-full object-cover border-4 border-[var(--background)]"
-          />
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h1 className="text-2xl page-heading text-[var(--foreground)]">
-                {currentUser.firstName} {currentUser.lastName}
-              </h1>
-              {/* Membre Fondateur — palette ambre sémantique au lieu du
-                  gradient or orphelin de l'ancien thème */}
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-amber-400/10 text-amber-300 ring-1 ring-amber-400/30">
-                <Award className="w-3 h-3" /> Membre Fondateur #1
-              </span>
-            </div>
-            <p className="text-sm text-[var(--text-secondary)] flex items-center gap-1.5 mt-1">
-              <MapPin className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-              {currentUser.city}, {currentUser.country}
-            </p>
-            {/* Hiérarchie rôles : 1 primaire en plein, autres mutés */}
-            <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-              <span className="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-[#1e9df1] text-white">
-                {roleBadges[0].label}
-              </span>
-              {roleBadges.slice(1).map((r) => (
-                <span
-                  key={r.key}
-                  className="px-2.5 py-0.5 text-[11px] font-medium rounded-full bg-white/[0.04] text-[var(--text-muted)] ring-1 ring-white/[0.06]"
-                >
-                  {r.label}
-                </span>
-              ))}
-            </div>
-          </div>
-          <button
-            onClick={() => setShowEditModal(true)}
-            className="px-5 py-2 text-sm rounded-xl border border-[var(--card-border)] text-[var(--foreground)] hover:border-[#1e9df1]/50 transition-colors self-start md:self-auto"
-          >
-            Modifier le profil
-          </button>
-        </div>
+    <>
+      <ProfileVitrine user={ME} data={DATA} isOwn onEdit={() => setShowEditModal(true)} />
 
-        {/* Stats \u2014 3 colonnes essentielles (Suivis retir\u00E9 : peu pertinent
-            publiquement). Note avec valeur ambre, monospace tabular-nums.
-            Les 4 cert badges pr\u00E9c\u00E9dents (Superh\u00F4te, Identit\u00E9 v\u00E9rifi\u00E9e,
-            Formateur certifi\u00E9, Apporteur Bronze) ont \u00E9t\u00E9 condens\u00E9s en 2
-            verified pills sobres \u00E0 droite, avec ic\u00F4nes Lucide au lieu
-            d'emojis pour un rendu plus pro. */}
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mt-6">
-          {[
-            { label: "Biens", value: formatCount(currentUser.stats.properties) },
-            { label: "Abonn\u00E9s", value: formatCount(currentUser.stats.followers) },
-            { label: "Note", value: `${currentUser.stats.rating}/5`, accent: true },
-          ].map((s) => (
-            <div key={s.label}>
-              <div className={`text-lg font-bold tabular-nums ${s.accent ? "text-amber-300" : "text-[var(--foreground)]"}`}>
-                {s.value}
-              </div>
-              <div className="text-[11px] uppercase tracking-wider text-[var(--text-muted)]">{s.label}</div>
-            </div>
-          ))}
-          <div className="flex items-center gap-1.5 ml-auto">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-full bg-emerald-500/10 text-emerald-300 ring-1 ring-emerald-500/25">
-              <BadgeCheck className="w-3 h-3" /> Identit\u00E9 v\u00E9rifi\u00E9e
-            </span>
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-full bg-[#1e9df1]/10 text-[#1e9df1] ring-1 ring-[#1e9df1]/25">
-              <Award className="w-3 h-3" /> Superh\u00F4te
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="px-4 md:px-6 mt-8">
-        <div className="flex gap-1 border-b border-[var(--card-border)]">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
-                tab === t.key
-                  ? "text-[#1e9df1]"
-                  : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
-              }`}
-            >
-              {t.label}
-              {tab === t.key && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1e9df1] rounded-full" />
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        <div className="mt-6">
-          {tab === "biens" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mockProperties.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/explorer/${p.id}`}
-                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#1e9df1]/30 transition-colors"
-                >
-                  <img src={p.images[0]} alt={p.title} className="w-full h-40 object-cover" />
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-[var(--foreground)] truncate">{p.title}</h3>
-                    <p className="text-xs text-[var(--text-muted)] mt-1">
-                      {p.location.city}, {p.location.country}
-                    </p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-bold text-[#1e9df1]">
-                        {formatPrice(p.price, p.currency)}
-                        {p.transactionType === "location-ct" ? "/nuit" : ""}
-                      </span>
-                      <span className="text-xs text-[var(--text-muted)]">
-                        {p.rating} ({p.reviewCount})
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {tab === "publications" && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {publicationPhotos.map((photo) => (
-                <div
-                  key={photo.id}
-                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#1e9df1]/30 transition-colors group"
-                >
-                  <div className="relative">
-                    <img src={photo.src} alt={photo.label} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                  <div className="p-3">
-                    <p className="text-xs font-medium text-[var(--text-secondary)] truncate">{photo.label}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {tab === "formations" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {mockFormations.map((f) => (
-                <Link
-                  key={f.id}
-                  href={`/formations/${f.id}`}
-                  className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden hover:border-[#1e9df1]/30 transition-colors"
-                >
-                  <img src={f.image} alt={f.title} className="w-full h-40 object-cover" />
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-[var(--foreground)]">{f.title}</h3>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-[var(--text-muted)]">
-                      <span>{f.students} étudiants</span>
-                      <span>★ {f.rating}</span>
-                    </div>
-                    <div className="mt-2 text-sm font-bold text-[#1e9df1]">
-                      {formatPrice(f.price)}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {tab === "avis" && (
-            <div className="space-y-6">
-              {/* Rating breakdown */}
-              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                <div className="flex items-center gap-6">
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-[var(--foreground)]">{currentUser.stats.rating}</div>
-                    <div className="text-sm text-[var(--text-muted)]">{totalReviews} avis</div>
-                  </div>
-                  <div className="flex-1 space-y-1.5">
-                    {ratingBreakdown.map((r) => (
-                      <div key={r.stars} className="flex items-center gap-2">
-                        <span className="text-xs text-[var(--text-muted)] w-3">{r.stars}</span>
-                        <div className="flex-1 h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-[#1e9df1] rounded-full"
-                            style={{ width: `${totalReviews > 0 ? (r.count / totalReviews) * 100 : 0}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-[var(--text-muted)] w-6 text-right">{r.count}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Review cards */}
-              {mockReviews.map((review) => (
-                <div key={review.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[var(--foreground)]">{review.author}</span>
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <span key={i} className={`text-sm ${i < review.rating ? "text-[#1e9df1]" : "text-[var(--text-muted)]"}`}>
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-sm text-[var(--text-secondary)]">{review.text}</p>
-                  <div className="text-xs text-[var(--text-muted)] mt-2">{review.date}</div>
-                  {review.reply && (
-                    <div className="mt-3 pl-4 border-l-2 border-[#1e9df1]/30">
-                      <p className="text-sm text-[var(--text-secondary)] italic">{review.reply}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {tab === "apropos" && (
-            <div className="space-y-6">
-              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Bio</h3>
-                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{currentUser.bio}</p>
-              </div>
-              {currentUser.languages && (
-                <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                  <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Langues</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {currentUser.languages.map((l) => (
-                      <span key={l} className="px-3 py-1 text-xs rounded-full bg-[#1e9df1]/10 text-[#1e9df1]">
-                        {l}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {currentUser.certifications && (
-                <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                  <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Certifications</h3>
-                  <ul className="space-y-2">
-                    {currentUser.certifications.map((c) => (
-                      <li key={c} className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-                        <span className="text-[#1e9df1]">✓</span> {c}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Zones</h3>
-                <div className="flex flex-wrap gap-2">
-                  {["Suisse romande", "Côte d'Azur", "Maroc"].map((z) => (
-                    <span key={z} className="px-3 py-1 text-xs rounded-full bg-[#1e9df1]/10 text-[#1e9df1]">
-                      {z}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Spécialités</h3>
-                <div className="flex flex-wrap gap-2">
-                  {["Location courte durée premium", "Investissement immobilier", "Formation"].map((s) => (
-                    <span key={s} className="px-3 py-1 text-xs rounded-full bg-[#1e9df1]/10 text-[#1e9df1]">
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              {currentUser.responseTime && (
-                <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                  <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Temps de réponse</h3>
-                  <p className="text-sm text-[var(--text-secondary)]">{currentUser.responseTime}</p>
-                </div>
-              )}
-              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Membre depuis</h3>
-                <p className="text-sm text-[var(--text-secondary)]">Janvier 2024</p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Edit Profile Modal */}
       {showEditModal && (
         <div
-          className="fixed inset-0 bg-[var(--overlay)] flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.5)" }}
           onClick={() => setShowEditModal(false)}
         >
           <div
-            className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto animate-scale-in"
             onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md rounded-2xl p-6 animate-scale-in"
+            style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
           >
-            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-6">Modifier le profil</h3>
-
-            <div className="space-y-4">
-              {/* Avatar */}
-              <div className="flex items-center gap-4">
-                <img src={editForm.photo} alt="" className="w-16 h-16 rounded-full object-cover" />
-                <button className="px-4 py-2 text-sm rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]">
-                  Changer la photo
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs text-[var(--text-muted)] mb-1">Prénom</label>
-                  <input
-                    value={editForm.firstName}
-                    onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
-                    className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-[var(--text-muted)] mb-1">Nom</label>
-                  <input
-                    value={editForm.lastName}
-                    onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
-                    className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Bio</label>
-                <textarea
-                  value={editForm.bio}
-                  onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                  rows={3}
-                  className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] resize-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs text-[var(--text-muted)] mb-1">Ville</label>
-                  <input
-                    value={editForm.city}
-                    onChange={(e) => setEditForm({ ...editForm, city: e.target.value })}
-                    className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-[var(--text-muted)] mb-1">Pays</label>
-                  <input
-                    value={editForm.country}
-                    onChange={(e) => setEditForm({ ...editForm, country: e.target.value })}
-                    className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Site web</label>
-                <input
-                  value={editForm.website}
-                  onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
-                  placeholder="https://"
-                  className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)]"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
+            <h3 className="text-lg font-semibold mb-4" style={{ color: "var(--foreground)" }}>
+              Modifier le profil
+            </h3>
+            <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
+              Formulaire d&apos;édition (maquette).
+            </p>
+            <div className="flex gap-3">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="flex-1 py-2.5 text-sm rounded-xl border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+                className="flex-1 py-2.5 text-sm rounded-xl transition-colors"
+                style={{
+                  border: "1px solid var(--card-border)",
+                  color: "var(--text-secondary)",
+                  background: "var(--card)",
+                }}
               >
                 Annuler
               </button>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="flex-1 py-2.5 text-sm rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9]"
+                className="flex-1 py-2.5 text-sm font-medium rounded-xl transition-colors"
+                style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
               >
                 Sauvegarder
               </button>
@@ -528,6 +114,6 @@ export default function ProfilPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

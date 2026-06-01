@@ -185,6 +185,109 @@ body {
   --tag: #a78bfa;           /* violet-400 */
 }
 
+/* ─── Mode CLAIR app (refonte épurée) ───────────────────
+   Override appliqué UNIQUEMENT sur le sous-arbre (app)/
+   via le wrapper du layout (app)/. La landing (page d'accueil
+   vitrine) reste en mode sombre, intacte.
+
+   Palette : blanc / gris très clair, accent bleu E-Dome unique,
+   bordures fines, ombres très douces, beaucoup d'espace blanc.
+   Style esprit Twitter / Linear / Notion.
+   ─────────────────────────────────────────────────── */
+.app-light {
+  /* Surfaces */
+  --background: #fafafa;
+  --card: #ffffff;
+  --card-border: #e6e8eb;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+
+  /* Texte */
+  --foreground: #0a0a0a;
+  --text-primary: #0a0a0a;
+  --text-secondary: #525252;
+  --text-muted: #737373;
+
+  /* Accent unique */
+  --primary: #1e9df1;
+  --primary-foreground: #ffffff;
+  --accent: #1e9df1;
+  --accent-foreground: #1e9df1;
+  --accent-hover: #1583c9;
+  --ring: #1e9df1;
+
+  /* Inputs / interactifs */
+  --input: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #e6e8eb;
+  --hover-bg: #f3f4f6;
+  --divider: #e6e8eb;
+  --border: #e6e8eb;
+  --muted: #f3f4f6;
+  --muted-foreground: #737373;
+
+  /* Sidebar tokens (réutilisés par le composant Sidebar) */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-border: #e6e8eb;
+  --sidebar-accent: #f3f4f6;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-primary: #1e9df1;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-ring: #1e9df1;
+
+  /* Alias rétro-compat (gold/bg/text) — vers les nouveaux */
+  --gold: #1e9df1;
+  --gold-hover: #1583c9;
+  --bg: #fafafa;
+  --bg-alt: #ffffff;
+  --bg-primary: #fafafa;
+  --bg-secondary: #ffffff;
+  --text: #0a0a0a;
+
+  /* Tokens d'espacement / élévation propres au mode clair.
+     Ombre très douce, à utiliser via var(--shadow-soft) sur
+     les cartes qui en bénéficient. Sinon, bordure seule. */
+  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.02);
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04);
+
+  /* Force la couleur de texte par défaut (utile car le body
+     hérite encore du .dark au root pour la landing). */
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Inter doit l'emporter sur le Poppins forcé par body{}.
+   On ne touche pas aux éléments qui ont leur propre identité
+   typographique (titres serif éditoriaux .page-heading,
+   monospace, brand .holo-*) — sinon, Inter partout. */
+.app-light,
+.app-light * {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.app-light .page-heading,
+.app-light .page-heading * {
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+.app-light .font-mono,
+.app-light code,
+.app-light pre {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+/* Sur les sous-arbres app-light, override les tokens spécifiques
+   qui étaient en dur dans des composants existants (anciens) */
+.app-light ::selection {
+  background: rgba(30, 157, 241, 0.18);
+}
+
+/* Scrollbar mode clair : très discrète */
+.app-light ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+
 /* ─── Utilitaire : H1 / titre de page éditorial ───────
    Toutes les pages de la démo doivent utiliser
    `.page-heading` sur leur H1 pour avoir l'identité

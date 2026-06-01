@@ -573,7 +573,10 @@ export default function ExplorerPage() {
                         ? "bg-[#1e9df1]/15 text-[#1e9df1] ring-[#1e9df1]/30"
                         : "bg-zinc-700/40 text-zinc-300 ring-zinc-600/40";
                   return (
-                    <span className={`absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex items-center gap-1 ring-1 tabular-nums ${tone}`}>
+                    <span
+                      className={`absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex items-center gap-1 ring-1 tabular-nums ${tone}`}
+                      title="Donnée communiquée par le vendeur. À vérifier — E-Dome ne garantit pas ce chiffre."
+                    >
                       <TrendingUp className="w-3 h-3" /> {r.toFixed(1)}%
                     </span>
                   );
@@ -624,11 +627,15 @@ export default function ExplorerPage() {
                 </div>
                 {/* Analytics line for vente */}
                 {prop.transactionType === "vente" && prop.analytics && (
-                  <div className="mt-3 pt-3 border-t border-[var(--card-border)] flex items-center gap-2">
+                  <div
+                    className="mt-3 pt-3 border-t border-[var(--card-border)] flex items-center gap-2"
+                    title="Données communiquées par le vendeur. E-Dome ne garantit pas ces chiffres."
+                  >
                     <TrendingUp className="w-3.5 h-3.5 text-green-400" />
                     <span className="text-xs text-green-400">
                       {prop.analytics.rendementBrut.toFixed(1)}% brut · +{prop.analytics.potentielPlusValue}% potentiel
                     </span>
+                    <span className="text-[10px] text-[var(--text-muted)] ml-auto">déclaré vendeur</span>
                   </div>
                 )}
               </div>
@@ -670,7 +677,10 @@ export default function ExplorerPage() {
                         ? "bg-[#1e9df1]/15 text-[#1e9df1] ring-[#1e9df1]/30"
                         : "bg-zinc-700/40 text-zinc-300 ring-zinc-600/40";
                   return (
-                    <span className={`absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex items-center gap-1 ring-1 tabular-nums ${tone}`}>
+                    <span
+                      className={`absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex items-center gap-1 ring-1 tabular-nums ${tone}`}
+                      title="Donnée communiquée par le vendeur. À vérifier — E-Dome ne garantit pas ce chiffre."
+                    >
                       <TrendingUp className="w-3 h-3" /> {r.toFixed(1)}%
                     </span>
                   );

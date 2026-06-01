@@ -215,11 +215,30 @@ export default function CreerFormationPage() {
             </div>
             <div><label className={labelCls}>Description</label><textarea className={`${inputCls} min-h-[120px] resize-y`} placeholder="Décrivez votre formation..." value={form.description} onChange={(e) => updateField("description", e.target.value)} /></div>
             <div>
-              <label className={labelCls}>Image de couverture (URL)</label>
+              <label className={labelCls}>Image de couverture</label>
               <div className="flex items-center gap-3">
                 <LottiePlayer src="/lottie/lottieflow-multimedia-8-1-000000-easey.json" width={60} height={60} className="flex-shrink-0" />
-                <input className={`${inputCls} flex-1`} placeholder="https://..." value={form.image} onChange={(e) => updateField("image", e.target.value)} />
+                <input className={`${inputCls} flex-1`} placeholder="URL https://… ou téléverser →" value={form.image} onChange={(e) => updateField("image", e.target.value)} />
+                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
+                  style={{ border: "1px solid var(--card-border)", background: "var(--card)", color: "var(--foreground)" }}
+                >
+                  Téléverser
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      updateField("image", URL.createObjectURL(f));
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
               </div>
+              {form.image && (
+                <img src={form.image} alt="" className="mt-3 w-full max-w-md h-40 object-cover rounded-xl border border-[var(--card-border)]" />
+              )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>

@@ -17,25 +17,27 @@ interface MobileNavItem {
   href: string;
   icon: LucideIcon;
   label: string;
-  isGold?: boolean;
+  isPrimary?: boolean;
 }
 
+/* 5 onglets : Accueil · Explorer · + Créer (centre) · Messages · Profil.
+   Toutes les autres routes (Dashboard, Notifications, Paramètres, etc.)
+   sont accessibles depuis le Profil ou la sidebar overlay (hamburger header). */
 const navItems: MobileNavItem[] = [
-  { href: "/feed", icon: Home, label: "Feed" },
+  { href: "/feed", icon: Home, label: "Accueil" },
   { href: "/explorer", icon: Search, label: "Explorer" },
-  { href: "/publier", icon: Plus, label: "Publier", isGold: true },
+  { href: "/publier", icon: Plus, label: "Créer", isPrimary: true },
   { href: "/messages", icon: MessageCircle, label: "Messages" },
   { href: "/profil", icon: User, label: "Profil" },
 ];
 
 const publishMenuItems = [
-  { emoji: "\u{1F4DD}", label: "Publier un post", href: "/creer-post" },
-  { emoji: "\u{1F3AC}", label: "Créer un Reel", href: "/creer-reel" },
   { emoji: "\u{1F3E0}", label: "Publier un bien", href: "/publier" },
+  { emoji: "\u{1F6CD}\u{FE0F}", label: "Vendre un produit", href: "/boutique/vendre" },
   { emoji: "\u{1F4DA}", label: "Créer une formation", href: "/formations/creer" },
   { emoji: "\u{1F4E1}", label: "Programmer un live", href: "/live" },
   { emoji: "\u{1F4C5}", label: "Créer un événement", href: "/evenements/creer" },
-  { emoji: "\u{1F6CD}\u{FE0F}", label: "Vendre un produit", href: "/boutique/vendre" },
+  { emoji: "\u{1F4BC}", label: "Proposer un service", href: "/services" },
 ];
 
 export function MobileNav() {
@@ -76,7 +78,7 @@ export function MobileNav() {
             : pathname.startsWith(item.href);
         const Icon = item.icon;
 
-        if (item.isGold) {
+        if (item.isPrimary) {
           return (
             <div key={item.href} className="relative flex flex-col items-center gap-1" ref={menuRef}>
               {/* Popup menu */}
@@ -112,21 +114,22 @@ export function MobileNav() {
                 className="flex flex-col items-center gap-1"
               >
                 <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center -mt-4 shadow-lg transition-transform"
+                  className="w-11 h-11 rounded-full flex items-center justify-center -mt-4 transition-transform"
                   style={{
-                    background: "var(--gold)",
+                    background: "var(--primary)",
+                    boxShadow: "0 4px 12px rgba(30,157,241,0.25)",
                     transform: menuOpen ? "rotate(45deg)" : "rotate(0deg)",
                   }}
                 >
                   {menuOpen ? (
                     <LottiePlayer src="/lottie/lottieflow-menu-nav-09-000000-easey.json" width={24} height={24} />
                   ) : (
-                    <Icon size={22} color="#000" />
+                    <Icon size={22} color="#ffffff" />
                   )}
                 </div>
                 <span
                   className="text-[10px]"
-                  style={{ color: "var(--gold)" }}
+                  style={{ color: "var(--primary)" }}
                 >
                   {item.label}
                 </span>
@@ -140,7 +143,7 @@ export function MobileNav() {
             key={item.href}
             href={item.href}
             className="flex flex-col items-center gap-1 py-1 px-3"
-            style={{ color: active ? "var(--gold)" : "var(--text-muted)" }}
+            style={{ color: active ? "var(--primary)" : "var(--text-muted)" }}
           >
             <Icon size={20} />
             <span className="text-[10px]">{item.label}</span>

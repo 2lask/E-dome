@@ -564,13 +564,25 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             </div>
           )}
 
-          {/* Investment analytics - ONLY for vente */}
+          {/* Investment analytics - ONLY for vente.
+              IMPORTANT : ces chiffres sont DECLARES par le vendeur.
+              E-Dome ne les certifie pas — etiquetage explicite en tete
+              et mention de verification en pied de bloc. */}
           {property.transactionType === "vente" && property.analytics && (
             <div className="mb-8">
-              <h2 className="text-lg font-bold text-[var(--foreground)] mb-3 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-[#1e9df1]" />
-                Analyse d&apos;investissement
-              </h2>
+              <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
+                <h2 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-[#1e9df1]" />
+                  Analyse d&apos;investissement
+                </h2>
+                <span
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
+                  style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}
+                  title="Ces chiffres sont déclarés par le vendeur. E-Dome ne les certifie pas."
+                >
+                  Données communiquées par le vendeur
+                </span>
+              </div>
               <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   {[
@@ -642,6 +654,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   </div>
                 </div>
               </div>
+              {/* Mention juridique : ces chiffres ne sont pas certifies par E-Dome */}
+              <p className="text-[11px] mt-2 leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                Informations déclarées par le vendeur, à vérifier par l&apos;acheteur. E-Dome ne garantit pas ces chiffres.
+              </p>
             </div>
           )}
 

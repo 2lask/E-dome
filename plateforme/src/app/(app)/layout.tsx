@@ -1,22 +1,59 @@
 "use client";
 
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import { AppProvider } from "@/lib/context";
 import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/components/ui/toast";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { ExplorerTabs } from "@/components/layout/explorer-tabs";
+import { DashboardTabs } from "@/components/layout/dashboard-tabs";
+
+/* Routes des hubs Explorer / Dashboard — liste blanche explicite.
+   Les onglets de hub sont rendus uniquement sur ces pathnames exacts.
+   Toute sous-route détail (/explorer/[id], /boutique/[id], /formations/[id],
+   etc.) ne matche pas et n'affiche donc pas les onglets — c'est du bruit
+   sur une fiche.
+
+   Sous-routes "compagnes" listées car légitimes :
+   - /boutique/vendre, /formations/creer, /evenements/creer : formulaires
+     de création qui restent dans le pôle.
+   - /dashboard/annonces : sous-onglet du hub Dashboard. */
+const EXPLORER_PATHS = new Set([
+  "/explorer",
+  "/boutique",
+  "/boutique/vendre",
+  "/services",
+  "/formations",
+  "/formations/creer",
+  "/live",
+  "/evenements",
+  "/evenements/creer",
+]);
+const DASHBOARD_PATHS = new Set([
+  "/dashboard",
+  "/dashboard/annonces",
+  "/statistiques",
+  "/reservations",
+  "/apporteurs",
+  "/favoris",
+]);
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const showExplorerTabs = EXPLORER_PATHS.has(pathname);
+  const showDashboardTabs = DASHBOARD_PATHS.has(pathname);
 
   return (
     <AppProvider>
       <LanguageProvider>
         <ToastProvider>
-          <div className="flex min-h-screen">
+          <div className="app-light flex min-h-screen" style={{ background: "var(--background)", color: "var(--foreground)" }}>
               {/* Sidebar - desktop */}
               <div className="hidden md:block">
                 <Sidebar
@@ -45,7 +82,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div
                 className="flex-1 flex flex-col min-h-screen transition-all duration-300 app-content"
                 style={{
-                  marginLeft: sidebarCollapsed ? "72px" : "260px",
+                  marginLeft: sidebarCollapsed ? "72px" : "240px",
                 }}
               >
                 {/* Demo banner */}
@@ -56,6 +93,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
                 />
                 <main className="flex-1 px-4 py-6 md:px-6 pb-20 md:pb-6">
+                  {showExplorerTabs && <ExplorerTabs />}
+                  {showDashboardTabs && <DashboardTabs />}
                   {children}
                 </main>
               </div>
