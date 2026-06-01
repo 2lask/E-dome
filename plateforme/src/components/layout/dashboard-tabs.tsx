@@ -21,7 +21,7 @@ const DASHBOARD_TABS: HubTab[] = [
   { key: "overview", label: "Vue d'ensemble", href: "/dashboard", icon: LayoutDashboard, matchPrefix: false },
   { key: "stats", label: "Revenus & stats", href: "/statistiques", icon: BarChart3 },
   { key: "reservations", label: "Réservations", href: "/reservations", icon: Calendar },
-  { key: "annonces", label: "Mes annonces & produits", href: "/dashboard/annonces", icon: Package },
+  { key: "annonces", label: "Mes annonces", href: "/dashboard/annonces", icon: Package },
   { key: "apporteurs", label: "Apporteurs", href: "/apporteurs", icon: Users },
   { key: "favoris", label: "Favoris", href: "/favoris", icon: Heart },
 ];

@@ -11,23 +11,43 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { ExplorerTabs } from "@/components/layout/explorer-tabs";
 import { DashboardTabs } from "@/components/layout/dashboard-tabs";
 
-/* Routes regroupées sous les hubs Explorer / Dashboard.
-   Quand le pathname commence par l'un de ces préfixes, la barre
-   d'onglets du hub correspondant est rendue au-dessus du contenu. */
-const EXPLORER_ROUTES = ["/explorer", "/boutique", "/services", "/formations", "/live", "/evenements"];
-const DASHBOARD_ROUTES = ["/dashboard", "/statistiques", "/reservations", "/apporteurs", "/favoris"];
+/* Routes des hubs Explorer / Dashboard — liste blanche explicite.
+   Les onglets de hub sont rendus uniquement sur ces pathnames exacts.
+   Toute sous-route détail (/explorer/[id], /boutique/[id], /formations/[id],
+   etc.) ne matche pas et n'affiche donc pas les onglets — c'est du bruit
+   sur une fiche.
 
-function matchesHub(pathname: string, prefixes: string[]) {
-  return prefixes.some((p) => pathname === p || pathname.startsWith(p + "/"));
-}
+   Sous-routes "compagnes" listées car légitimes :
+   - /boutique/vendre, /formations/creer, /evenements/creer : formulaires
+     de création qui restent dans le pôle.
+   - /dashboard/annonces : sous-onglet du hub Dashboard. */
+const EXPLORER_PATHS = new Set([
+  "/explorer",
+  "/boutique",
+  "/boutique/vendre",
+  "/services",
+  "/formations",
+  "/formations/creer",
+  "/live",
+  "/evenements",
+  "/evenements/creer",
+]);
+const DASHBOARD_PATHS = new Set([
+  "/dashboard",
+  "/dashboard/annonces",
+  "/statistiques",
+  "/reservations",
+  "/apporteurs",
+  "/favoris",
+]);
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  const showExplorerTabs = matchesHub(pathname, EXPLORER_ROUTES);
-  const showDashboardTabs = matchesHub(pathname, DASHBOARD_ROUTES);
+  const showExplorerTabs = EXPLORER_PATHS.has(pathname);
+  const showDashboardTabs = DASHBOARD_PATHS.has(pathname);
 
   return (
     <AppProvider>
