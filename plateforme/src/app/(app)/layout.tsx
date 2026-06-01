@@ -16,7 +16,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <AppProvider>
       <LanguageProvider>
         <ToastProvider>
-          <div className="flex min-h-screen">
+          <div className="app-light flex min-h-screen" style={{ background: "var(--background)", color: "var(--foreground)" }}>
               {/* Sidebar - desktop */}
               <div className="hidden md:block">
                 <Sidebar
@@ -45,7 +45,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div
                 className="flex-1 flex flex-col min-h-screen transition-all duration-300 app-content"
                 style={{
-                  marginLeft: sidebarCollapsed ? "72px" : "260px",
+                  marginLeft: sidebarCollapsed ? "72px" : "240px",
                 }}
               >
                 {/* Demo banner */}

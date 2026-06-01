@@ -1,51 +1,47 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
-  Radio,
   Search,
-  Plus,
-  Heart,
   MessageCircle,
-  Bell,
-  Calendar,
   LayoutDashboard,
-  BarChart3,
-  Users,
-  BookOpen,
-  Briefcase,
-  CalendarDays,
-  Wallet,
-  User,
+  Plus,
   Settings,
+  Bell,
   LogOut,
+  User as UserIcon,
   ChevronLeft,
   ChevronRight,
+  Building2,
+  ShoppingBag,
   GraduationCap,
   Video,
-  ShoppingBag,
+  CalendarDays,
+  Briefcase,
   type LucideIcon,
 } from "lucide-react";
-import { useApp } from "@/lib/context";
-import { useLanguage } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { conversations, notifications } from "@/lib/mock-data";
+import { conversations } from "@/lib/mock-data";
+
+/* ─────────────────────────────────────────────────────────────
+   Sidebar refonte épurée — 6 entrées visibles.
+   - Accueil, Explorer, Messages, Dashboard, +Créer (popover),
+     Avatar (popover Profil/Paramètres/Notifications/Quitter).
+   - Toutes les routes existantes restent accessibles. Les anciennes
+     entrées /formations, /services, /boutique, /live, /evenements
+     seront atteintes via le hub Explorer (Étape 3) ; /statistiques,
+     /reservations, /apporteurs, /favoris via les onglets Dashboard
+     (Étape 3). En attendant, leurs URLs directes fonctionnent.
+   ───────────────────────────────────────────────────────────── */
 
 interface NavItem {
-  key: string;
   label: string;
   href: string;
   icon: LucideIcon;
   badge?: number;
-  indicator?: boolean;
-}
-
-interface NavGroup {
-  title: string;
-  items: NavItem[];
 }
 
 interface SidebarProps {
@@ -53,183 +49,173 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
+const CREATE_ITEMS: { label: string; href: string; icon: LucideIcon; desc: string }[] = [
+  { label: "Publier un bien", href: "/publier", icon: Building2, desc: "Vente ou location" },
+  { label: "Vendre un produit", href: "/boutique/vendre", icon: ShoppingBag, desc: "Catalogue boutique" },
+  { label: "Créer une formation", href: "/formations/creer", icon: GraduationCap, desc: "Cours en ligne" },
+  { label: "Programmer un live", href: "/live", icon: Video, desc: "Diffusion en direct" },
+  { label: "Créer un événement", href: "/evenements/creer", icon: CalendarDays, desc: "Atelier, visite, salon" },
+  { label: "Proposer un service", href: "/services", icon: Briefcase, desc: "Prestataire / artisan" },
+];
+
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
-  const { t } = useLanguage();
+  const router = useRouter();
 
-  // Dynamic badge counts from mock data
-  const unreadMessages = useMemo(() => conversations.reduce((sum, c) => sum + c.unreadCount, 0), []);
-  const unreadNotifications = useMemo(() => notifications.filter((n) => !n.read).length, []);
+  const unreadMessages = useMemo(
+    () => conversations.reduce((sum, c) => sum + c.unreadCount, 0),
+    []
+  );
 
-  // All nav groups — no role filtering
-  const navGroups: NavGroup[] = useMemo(() => [
-    {
-      title: "DÉCOUVRIR",
-      items: [
-        { key: "nav.feed", label: t("nav.feed"), href: "/feed", icon: Home },
-        { key: "nav.explorer", label: t("nav.explorer"), href: "/explorer", icon: Search },
-        { key: "nav.live", label: t("nav.live"), href: "/live", icon: Radio, indicator: true },
-        { key: "nav.formations", label: t("nav.formations"), href: "/formations", icon: BookOpen },
-        { key: "nav.evenements", label: t("nav.evenements"), href: "/evenements", icon: CalendarDays },
-        { key: "nav.services", label: t("nav.services"), href: "/services", icon: Briefcase },
-        { key: "nav.boutique", label: t("nav.boutique"), href: "/boutique", icon: ShoppingBag },
-      ],
-    },
-    {
-      title: "MON ESPACE",
-      items: [
-        { key: "nav.dashboard", label: t("nav.dashboard"), href: "/dashboard", icon: LayoutDashboard },
-        { key: "nav.statistiques", label: t("nav.statistiques"), href: "/statistiques", icon: BarChart3 },
-        { key: "nav.reservations", label: t("nav.reservations"), href: "/reservations", icon: Calendar },
-        { key: "nav.apporteurs", label: t("nav.apporteurs"), href: "/apporteurs", icon: Users },
-        { key: "nav.favoris", label: "Favoris", href: "/favoris", icon: Heart },
-        { key: "nav.messages", label: t("nav.messages"), href: "/messages", icon: MessageCircle, badge: unreadMessages > 0 ? unreadMessages : undefined },
-        { key: "nav.notifications", label: t("nav.notifications"), href: "/notifications", icon: Bell, badge: unreadNotifications > 0 ? unreadNotifications : undefined },
-      ],
-    },
-    {
-      title: "PUBLIER",
-      items: [
-        { key: "nav.publier", label: "Publier un bien", href: "/publier", icon: Plus },
-        { key: "nav.creer-formation", label: "Créer une formation", href: "/formations/creer", icon: GraduationCap },
-        { key: "nav.programmer-live", label: "Programmer un live", href: "/live", icon: Video },
-        { key: "nav.vendre-produit", label: "Vendre un produit", href: "/boutique/vendre", icon: ShoppingBag },
-      ],
-    },
-  ], [t, unreadMessages, unreadNotifications]);
-
-  const bottomItems: NavItem[] = useMemo(() => [
-    { key: "nav.profil", label: t("nav.profil"), href: "/profil", icon: User },
-    { key: "nav.parametres", label: t("nav.parametres"), href: "/parametres", icon: Settings },
-    { key: "nav.quitter", label: "Quitter la maquette", href: "/", icon: LogOut },
-  ], [t]);
+  const navItems: NavItem[] = useMemo(
+    () => [
+      { label: "Accueil", href: "/feed", icon: Home },
+      { label: "Explorer", href: "/explorer", icon: Search },
+      { label: "Messages", href: "/messages", icon: MessageCircle, badge: unreadMessages > 0 ? unreadMessages : undefined },
+      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    ],
+    [unreadMessages]
+  );
 
   const isActive = (href: string) => {
     if (href === "/feed") return pathname === "/feed" || pathname === "/";
     return pathname.startsWith(href);
   };
 
+  const [createOpen, setCreateOpen] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
+  const createRef = useRef<HTMLDivElement>(null);
+  const avatarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!createOpen && !avatarOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (createOpen && createRef.current && !createRef.current.contains(e.target as Node)) {
+        setCreateOpen(false);
+      }
+      if (avatarOpen && avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setAvatarOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [createOpen, avatarOpen]);
+
+  useEffect(() => {
+    setCreateOpen(false);
+    setAvatarOpen(false);
+  }, [pathname]);
+
   return (
     <aside
       className="fixed left-0 top-0 h-screen flex flex-col z-40 transition-all duration-300 overflow-hidden"
       style={{
-        width: collapsed ? 72 : 260,
+        width: collapsed ? 72 : 240,
         background: "var(--card)",
         borderRight: "1px solid var(--card-border)",
       }}
     >
-      {/* Logo & toggle */}
+      {/* Brand + toggle */}
       <div className="flex items-center justify-between px-4 h-16 shrink-0">
         {!collapsed && (
-          <Link href="/feed" className="text-xl font-bold tracking-tight">
-            <span style={{ color: "var(--gold)" }}>E-</span>
-            <span style={{ color: "var(--text-primary)" }}>Dome</span>
+          <Link href="/feed" className="text-xl font-semibold tracking-tight">
+            <span style={{ color: "var(--primary)" }}>E-</span>
+            <span style={{ color: "var(--foreground)" }}>Dome</span>
           </Link>
         )}
         <button
           onClick={onToggle}
           className="p-2 rounded-lg transition-colors cursor-pointer"
-          style={{ color: "var(--text-secondary)" }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.background = "var(--hover-bg)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.background = "transparent")
-          }
+          style={{ color: "var(--text-muted)" }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           title={collapsed ? "Agrandir" : "Réduire"}
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
 
-      {/* Main nav with groups */}
-      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-4 no-scrollbar">
-        {navGroups.map((group) => (
-          <div key={group.title}>
-            {!collapsed && (
-              <p
-                className="px-3 pb-1 pt-2 text-[10px] font-semibold tracking-wider uppercase"
-                style={{ color: "var(--text-muted)" }}
-              >
-                {group.title}
-              </p>
-            )}
-            <div className="space-y-0.5">
-              {group.items.map((item) => {
-                const active = isActive(item.href);
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.key}
-                    href={item.href}
-                    title={collapsed ? item.label : undefined}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
-                      active && "font-medium"
-                    )}
-                    style={{
-                      // Active state : accent bleu E-Dome (avant : gold
-                      // orphelin rgba(200,169,78,...) hérité de l'ancien thème)
-                      background: active ? "rgba(30,157,241,0.1)" : "transparent",
-                      color: active ? "var(--gold)" : "var(--text-secondary)",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!active) e.currentTarget.style.background = "var(--hover-bg)";
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!active) e.currentTarget.style.background = "transparent";
-                    }}
-                  >
-                    <div className="relative">
-                      <Icon size={20} />
-                      {item.indicator && (
-                        <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500" />
-                      )}
-                      {item.badge && item.badge > 0 && (
-                        <span
-                          className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold text-white px-1"
-                          style={{ background: "var(--gold)" }}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                    {!collapsed && <span className="truncate">{item.label}</span>}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </nav>
+      {/* Bouton + Créer */}
+      <div className="px-3 pt-1 pb-2 relative" ref={createRef}>
+        <button
+          onClick={() => setCreateOpen((v) => !v)}
+          className={cn(
+            "w-full flex items-center gap-3 rounded-xl transition-all duration-200 cursor-pointer",
+            collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
+          )}
+          style={{
+            background: "var(--primary)",
+            color: "var(--primary-foreground)",
+          }}
+          title={collapsed ? "Créer" : undefined}
+        >
+          <Plus size={18} strokeWidth={2.4} />
+          {!collapsed && <span className="font-medium text-sm">Créer</span>}
+        </button>
 
-      {/* Bottom nav (COMPTE) */}
-      <div className="px-3 py-2 space-y-0.5" style={{ borderTop: "1px solid var(--divider)" }}>
-        {!collapsed && (
-          <p
-            className="px-3 pb-1 pt-1 text-[10px] font-semibold tracking-wider uppercase"
-            style={{ color: "var(--text-muted)" }}
+        {createOpen && (
+          <div
+            className="absolute z-50 rounded-xl py-1.5 animate-fade-in"
+            style={{
+              top: "100%",
+              left: collapsed ? 64 : 12,
+              right: collapsed ? "auto" : 12,
+              width: collapsed ? 280 : "auto",
+              background: "var(--card)",
+              border: "1px solid var(--card-border)",
+              boxShadow: "var(--shadow-card)",
+            }}
           >
-            COMPTE
-          </p>
+            {CREATE_ITEMS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.href}
+                  onClick={() => {
+                    setCreateOpen(false);
+                    router.push(item.href);
+                  }}
+                  className="w-full flex items-start gap-3 px-3 py-2 text-left transition-colors"
+                  style={{ color: "var(--foreground)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}
+                  >
+                    <Icon size={16} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium leading-tight">{item.label}</span>
+                    <span className="text-[11px] leading-tight" style={{ color: "var(--text-muted)" }}>
+                      {item.desc}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         )}
-        {bottomItems.map((item) => {
+      </div>
+
+      {/* Nav principale */}
+      <nav className="flex-1 overflow-y-auto px-3 py-1 space-y-0.5 no-scrollbar">
+        {navItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
-          const isQuit = item.key === "nav.quitter";
           return (
             <Link
-              key={item.key}
+              key={item.href}
               href={item.href}
               title={collapsed ? item.label : undefined}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200"
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
+                active && "font-medium"
+              )}
               style={{
-                background: active ? "rgba(30,157,241,0.1)" : "transparent",
-                color: isQuit
-                  ? "#ef4444"
-                  : active
-                  ? "var(--gold)"
-                  : "var(--text-secondary)",
+                background: active ? "rgba(30,157,241,0.10)" : "transparent",
+                color: active ? "var(--primary)" : "var(--text-secondary)",
               }}
               onMouseEnter={(e) => {
                 if (!active) e.currentTarget.style.background = "var(--hover-bg)";
@@ -238,59 +224,102 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 if (!active) e.currentTarget.style.background = "transparent";
               }}
             >
-              <Icon size={20} />
+              <div className="relative">
+                <Icon size={20} />
+                {item.badge && item.badge > 0 && (
+                  <span
+                    className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
+                    style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+                  >
+                    {item.badge}
+                  </span>
+                )}
+              </div>
               {!collapsed && <span className="truncate">{item.label}</span>}
             </Link>
           );
         })}
-      </div>
+      </nav>
 
-      {/* User card */}
-      {!collapsed && (
-        <div
-          className="px-4 py-3 shrink-0"
-          style={{ borderTop: "1px solid var(--divider)" }}
+      {/* Avatar + menu compte */}
+      <div className="px-3 py-3 relative" style={{ borderTop: "1px solid var(--divider)" }} ref={avatarRef}>
+        <button
+          onClick={() => setAvatarOpen((v) => !v)}
+          className={cn(
+            "w-full flex items-center gap-3 rounded-xl transition-all duration-200 cursor-pointer",
+            collapsed ? "justify-center px-2 py-2" : "px-2 py-2"
+          )}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          title={collapsed ? "Léo Martin" : undefined}
         >
-          <div className="flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
-              style={{ background: "var(--gold)", color: "#000" }}
-            >
-              LM
-            </div>
-            <div className="flex-1 min-w-0">
-              <p
-                className="text-sm font-medium truncate"
-                style={{ color: "var(--text-primary)" }}
-              >
+          <div
+            className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
+            style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+          >
+            LM
+          </div>
+          {!collapsed && (
+            <div className="flex-1 min-w-0 text-left">
+              <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>
                 Léo Martin
               </p>
-              <p
-                className="text-[10px] truncate"
-                style={{ color: "var(--text-muted)" }}
-              >
-                Hôte · Formateur · Apporteur
+              <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>
+                Membre Fondateur
               </p>
-              <span className="text-[9px] font-bold" style={{ background: "linear-gradient(135deg, #d4a832, #f5d679)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                🏅 Membre Fondateur #1
-              </span>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+        </button>
 
-      {/* Footer links */}
-      {!collapsed && (
-        <div
-          className="px-4 py-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] shrink-0"
-          style={{ color: "var(--text-muted)", borderTop: "1px solid var(--divider)" }}
-        >
-          <Link href="/conditions" className="hover:underline">Conditions</Link>
-          <Link href="/confidentialite" className="hover:underline">Confidentialité</Link>
-          <Link href="/aide" className="hover:underline">Aide</Link>
-          <Link href="/contact" className="hover:underline">Contact</Link>
-        </div>
-      )}
+        {avatarOpen && (
+          <div
+            className="absolute z-50 rounded-xl py-1.5 animate-fade-in"
+            style={{
+              bottom: "calc(100% + 4px)",
+              left: collapsed ? 64 : 12,
+              right: collapsed ? "auto" : 12,
+              width: collapsed ? 220 : "auto",
+              background: "var(--card)",
+              border: "1px solid var(--card-border)",
+              boxShadow: "var(--shadow-card)",
+            }}
+          >
+            {[
+              { label: "Profil", href: "/profil", icon: UserIcon },
+              { label: "Notifications", href: "/notifications", icon: Bell },
+              { label: "Paramètres", href: "/parametres", icon: Settings },
+            ].map((it) => {
+              const Icon = it.icon;
+              return (
+                <Link
+                  key={it.href}
+                  href={it.href}
+                  className="flex items-center gap-3 px-3 py-2 text-sm transition-colors"
+                  style={{ color: "var(--foreground)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                  onClick={() => setAvatarOpen(false)}
+                >
+                  <Icon size={16} style={{ color: "var(--text-muted)" }} />
+                  <span>{it.label}</span>
+                </Link>
+              );
+            })}
+            <div className="my-1 h-px" style={{ background: "var(--divider)" }} />
+            <Link
+              href="/"
+              className="flex items-center gap-3 px-3 py-2 text-sm transition-colors"
+              style={{ color: "#dc2626" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(220,38,38,0.06)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              onClick={() => setAvatarOpen(false)}
+            >
+              <LogOut size={16} />
+              <span>Quitter la maquette</span>
+            </Link>
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

@@ -119,7 +119,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
     padding: 8,
     minWidth: 200,
     zIndex: 50,
-    boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
+    boxShadow: "var(--shadow-card)",
   };
 
   return (
@@ -383,7 +383,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
               setShowUser(!showUser);
             }}
             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold cursor-pointer"
-            style={{ background: "var(--gold)", color: "#000" }}
+            style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
           >
             LM
           </button>

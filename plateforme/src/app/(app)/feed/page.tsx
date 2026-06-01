@@ -762,7 +762,7 @@ function PostCard({
   return (
     <article
       onClick={closeMenus}
-      className="w-full max-w-[540px] bg-[var(--card)] rounded-3xl border border-[var(--card-border)] shadow-xl shadow-black/25 overflow-hidden"
+      className="w-full max-w-[540px] bg-[var(--card)] rounded-2xl border border-[var(--card-border)] overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-3 p-4 pb-3">
