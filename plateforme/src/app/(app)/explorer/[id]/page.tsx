@@ -277,8 +277,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
     setTimeout(() => setCopied(false), 2000);
   };
 
+  /* Clearance mobile : bottom-nav 64 px + sticky CTA 64 px + safe-area
+     (sinon le dernier contenu finit sous les deux barres). Sur lg+
+     la CTA est masquée — on revient à un pb-20 standard. */
   return (
-    <div className="max-w-5xl mx-auto pb-20">
+    <div className="max-w-5xl mx-auto pb-[calc(8rem+env(safe-area-inset-bottom))] lg:pb-20">
       {/* Back button */}
       <Link
         href="/explorer"
@@ -1395,8 +1398,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         </div>
       )}
 
-      {/* Sticky CTA bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden border-t border-[var(--card-border)] bg-[var(--card)] px-4 py-3 flex items-center justify-between">
+      {/* Sticky CTA bar — décalée AU-DESSUS de la bottom-nav mobile
+          (64 px nav + safe-area iOS). Sans ce décalage, le prix + CTA
+          se retrouvent sous la nav et le bouton "Réserver" devient
+          inatteignable au doigt. */}
+      <div
+        className="fixed left-0 right-0 z-30 lg:hidden border-t border-[var(--card-border)] bg-[var(--card)] px-4 py-3 flex items-center justify-between"
+        style={{ bottom: "calc(64px + env(safe-area-inset-bottom))" }}
+      >
         <div>
           <p className="text-lg font-bold text-[#1e9df1]">
             {formatPrice(property.price, property.currency)}

@@ -708,9 +708,14 @@ export default function PublierPage() {
           </div>
         )}
 
-        {/* Toast */}
+        {/* Toast — décalé au-dessus de la bottom-nav mobile sinon
+            "Brouillon enregistré" / "Publié" reste caché derrière. */}
         {toastMsg && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-green-600 text-white rounded-xl shadow-lg text-sm font-medium animate-fade-in">
+          <div
+            role="status"
+            aria-live="polite"
+            className="fixed bottom-[calc(80px+env(safe-area-inset-bottom)+1rem)] md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-green-600 text-white rounded-xl shadow-lg text-sm font-medium animate-fade-in"
+          >
             {toastMsg}
           </div>
         )}
