@@ -105,47 +105,23 @@ function AccesPageContent() {
             )}
           </p>
 
-          {/* Desktop: access demo */}
-          <div className="hidden md:block">
-            <p className="text-white/40 text-sm mb-3">
-              {t("form.success_desktop_desc")}
-            </p>
-            <p className="text-white/25 text-xs mb-8">
-              {t("form.success_desktop_disclaimer")}
-            </p>
-            <Link
-              href="/feed"
-              className="inline-flex items-center gap-2 bg-[#1e9df1] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
-            >
-              {t("form.success_desktop_cta")} <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          {/* Mobile: desktop only message */}
-          <div className="md:hidden">
-            <div className="rounded-2xl border border-[#1e9df1]/20 p-6 mb-6" style={{ background: "rgba(30, 157, 242, 0.05)" }}>
-              <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#1e9df1]">
-                  <rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
-                </svg>
-              </div>
-              <h2 className="text-white text-lg font-semibold mb-3">
-                {t("form.success_mobile_title")}
-              </h2>
-              <p className="text-white/50 text-sm leading-relaxed mb-2">
-                {t("form.success_mobile_desc")}
-              </p>
-              <p className="text-white/30 text-xs">
-                edome-demo.vercel.app
-              </p>
-            </div>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-white/50 text-sm hover:text-white/80 transition-colors"
-            >
-              <ArrowLeft size={16} /> {t("form.nav_back_site")}
-            </Link>
-          </div>
+          {/* Accès maquette unifié — mobile + desktop. L'ancien gate
+              "Maquette disponible sur ordinateur" en md:hidden a été
+              retiré une fois la maquette rendue mobile-friendly
+              (touch targets, safe-area, drawer fluide, sticky CTA
+              décalée). */}
+          <p className="text-white/40 text-sm mb-3">
+            {t("form.success_desktop_desc")}
+          </p>
+          <p className="text-white/25 text-xs mb-8">
+            {t("form.success_desktop_disclaimer")}
+          </p>
+          <Link
+            href="/feed"
+            className="inline-flex items-center gap-2 bg-[#1e9df1] text-black rounded-lg px-8 py-4 text-sm font-semibold hover:bg-[#d4a57a] transition-colors"
+          >
+            {t("form.success_desktop_cta")} <ArrowRight size={16} />
+          </Link>
 
         </div>
       </div>
