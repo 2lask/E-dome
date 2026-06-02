@@ -156,7 +156,7 @@ export default function FormationsPage() {
         {/* ── Formation Grid ─────────────────────────────────────────────────── */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Toutes les formations</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filtered.map((f) => (
               <Link key={f.id} href={`/formations/${f.id}`} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[#1e9df1]/40 transition-colors group">
                 <div className="relative">
@@ -194,12 +194,12 @@ export default function FormationsPage() {
         {/* ── Formateurs populaires ──────────────────────────────────────────── */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Formateurs populaires</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {INSTRUCTORS.map((inst) => (
               <Link key={inst.id} href={`/profil/${inst.id}`} className="flex flex-col items-center p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#1e9df1]/40 transition-colors group">
                 <img src={inst.avatar} alt={inst.name} className="w-16 h-16 rounded-full object-cover mb-3" />
-                <h3 className="font-medium text-[var(--foreground)] group-hover:text-[#1e9df1] transition-colors text-center">{inst.name}</h3>
-                <span className="text-sm text-[var(--text-muted)]">{inst.specialty}</span>
+                <h3 className="font-medium text-[var(--foreground)] group-hover:text-[#1e9df1] transition-colors text-center line-clamp-1">{inst.name}</h3>
+                <span className="text-sm text-[var(--text-muted)] line-clamp-1 text-center">{inst.specialty}</span>
                 <div className="flex items-center gap-3 mt-2 text-xs text-[var(--text-secondary)]">
                   <span>{inst.students} étudiants</span>
                   <span className="inline-flex items-center gap-0.5 text-[#1e9df1]">

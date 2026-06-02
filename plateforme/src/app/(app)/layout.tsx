@@ -70,7 +70,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     className="absolute inset-0 bg-black/60 animate-fade-in"
                     onClick={() => setMobileMenuOpen(false)}
                   />
-                  <div className="relative z-10 h-full w-[280px] animate-slide-in-left">
+                  <div
+                    className="relative z-10 h-full animate-slide-in-left"
+                    style={{ width: "min(280px, 88vw)" }}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Menu de navigation"
+                  >
                     <Sidebar
                       collapsed={false}
                       onToggle={() => setMobileMenuOpen(false)}

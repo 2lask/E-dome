@@ -838,12 +838,15 @@ export default function DashboardPage() {
         <div
           className="fixed inset-0 bg-[var(--overlay)] flex items-center justify-center z-50 p-4"
           onClick={() => setShowInvite(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="invite-modal-title"
         >
           <div
-            className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 w-full max-w-md animate-scale-in"
+            className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 w-full max-w-md max-h-[85vh] overflow-y-auto animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4">
+            <h3 id="invite-modal-title" className="text-lg font-semibold text-[var(--foreground)] mb-4">
               Inviter un contact
             </h3>
             <p className="text-sm text-[var(--text-secondary)] mb-4">

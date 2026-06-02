@@ -335,7 +335,10 @@ export default function OnboardingPage() {
         </div>
 
         {/* ─── Footer navigation ──────────────────────────────────────── */}
-        <div className="sticky bottom-0 bg-[var(--card)] border-t border-[var(--divider)] p-6 rounded-b-2xl">
+        {/* sticky `bottom-0` est sous la bottom-nav mobile (80 px + safe-area)
+            sur petits écrans. On décale `bottom-[88px]` en mobile et on
+            revient au sticky natif en md+ où la bottom-nav n'existe pas. */}
+        <div className="sticky bottom-[calc(80px+env(safe-area-inset-bottom))] md:bottom-0 bg-[var(--card)] border-t border-[var(--divider)] p-6 rounded-b-2xl">
           <div className="flex gap-3">
             {step < totalSteps && (
               <button

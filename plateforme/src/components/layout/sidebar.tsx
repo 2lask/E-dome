@@ -140,11 +140,12 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         )}
         <button
           onClick={onToggle}
-          className="p-2 rounded-lg transition-colors cursor-pointer"
+          aria-label={collapsed ? "Agrandir la barre latérale" : "Réduire la barre latérale"}
+          aria-expanded={!collapsed}
+          className="flex items-center justify-center w-11 h-11 rounded-lg transition-colors cursor-pointer"
           style={{ color: "var(--text-muted)" }}
           onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
           onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          title={collapsed ? "Agrandir" : "Réduire"}
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>

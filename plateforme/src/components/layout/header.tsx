@@ -346,14 +346,18 @@ export function Header({ onMenuToggle }: HeaderProps) {
               closeAllDropdowns();
               setShowNotifications(!showNotifications);
             }}
-            className="p-2 rounded-lg transition-colors cursor-pointer relative"
+            aria-label="Notifications"
+            aria-haspopup="menu"
+            aria-expanded={showNotifications}
+            className="flex items-center justify-center w-11 h-11 rounded-lg transition-colors cursor-pointer relative"
             style={{ color: "var(--text-secondary)" }}
             onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           >
             <Bell size={18} />
             <span
-              className="absolute top-1 right-1 w-2 h-2 rounded-full"
+              aria-hidden
+              className="absolute top-2 right-2 w-2 h-2 rounded-full"
               style={{ background: "var(--gold)" }}
             />
           </button>

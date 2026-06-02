@@ -1091,7 +1091,7 @@ function PostCard({
         {/* Reply (commentaire) */}
         <button
           onClick={(e) => { e.stopPropagation(); onOpenComments(); }}
-          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[#1e9df1]/10"
+          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[#1e9df1]/10"
           aria-label="Répondre"
         >
           <MessageCircle className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[#1e9df1] transition-colors" />
@@ -1103,7 +1103,7 @@ function PostCard({
         {/* Repost (Twitter retweet) */}
         <button
           onClick={(e) => { e.stopPropagation(); onToggleRepost(); }}
-          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-emerald-500/10"
+          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-emerald-500/10"
           aria-label={reposted ? "Annuler le repost" : "Reposter"}
           aria-pressed={reposted}
         >
@@ -1127,7 +1127,7 @@ function PostCard({
         {/* Like */}
         <button
           onClick={(e) => { e.stopPropagation(); onToggleLike(); }}
-          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-rose-500/10"
+          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-rose-500/10"
           aria-label={liked ? "Retirer le j'aime" : "J'aime"}
           aria-pressed={liked}
         >
@@ -1163,7 +1163,7 @@ function PostCard({
         {/* Bookmark */}
         <button
           onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
-          className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[#1e9df1]/10 shrink-0"
+          className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[#1e9df1]/10 shrink-0"
           aria-label={saved ? "Retirer du marque-pages" : "Enregistrer"}
           aria-pressed={saved}
         >
@@ -1176,7 +1176,7 @@ function PostCard({
         <div className="relative shrink-0">
           <button
             onClick={(e) => { e.stopPropagation(); onOpenShare(); }}
-            className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 transition-colors hover:bg-[#1e9df1]/10"
+            className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[#1e9df1]/10"
             aria-label="Partager"
             aria-expanded={shareOpen}
           >

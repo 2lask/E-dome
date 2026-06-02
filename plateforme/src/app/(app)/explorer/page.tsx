@@ -406,8 +406,12 @@ export default function ExplorerPage() {
               >
                 {s}
               </button>
-              <button onClick={() => removeSavedSearch(s)} className="text-[var(--text-muted)]">
-                <X className="w-3 h-3" />
+              <button
+                onClick={() => removeSavedSearch(s)}
+                aria-label={`Supprimer la recherche enregistrée « ${s} »`}
+                className="flex items-center justify-center w-8 h-8 -mr-1 text-[var(--text-muted)] hover:text-[var(--foreground)]"
+              >
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           ))}
@@ -505,16 +509,20 @@ export default function ExplorerPage() {
           </select>
           </div>
           {/* View toggle */}
-          <div className="flex rounded-lg border border-[var(--card-border)] overflow-hidden">
+          <div role="group" aria-label="Choix de l'affichage" className="flex rounded-lg border border-[var(--card-border)] overflow-hidden">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 transition-colors ${viewMode === "grid" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
+              aria-label="Vue en grille"
+              aria-pressed={viewMode === "grid"}
+              className={`flex items-center justify-center w-11 h-11 transition-colors ${viewMode === "grid" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
             >
               <Grid3X3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 transition-colors ${viewMode === "list" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
+              aria-label="Vue en liste"
+              aria-pressed={viewMode === "list"}
+              className={`flex items-center justify-center w-11 h-11 transition-colors ${viewMode === "list" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
             >
               <List className="w-4 h-4" />
             </button>
@@ -758,21 +766,27 @@ export default function ExplorerPage() {
 
       {/* Map modal — MapLibre interactive */}
       {showMap && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-[var(--background)]">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="map-modal-title"
+          className="fixed inset-0 z-50 flex flex-col bg-[var(--background)]"
+        >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--card-border)] bg-[var(--card)] shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white" style={{ background: "#1e9df1" }}>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0" style={{ background: "#1e9df1" }}>
                 <Map size={18} />
               </div>
               <div>
-                <h3 className="font-semibold text-[var(--foreground)] text-sm">Carte des biens</h3>
+                <h3 id="map-modal-title" className="font-semibold text-[var(--foreground)] text-sm">Carte des biens</h3>
                 <p className="text-xs text-[var(--text-muted)]">{filtered.length} bien{filtered.length > 1 ? "s" : ""} disponible{filtered.length > 1 ? "s" : ""}</p>
               </div>
             </div>
             <button
               onClick={() => setShowMap(false)}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+              aria-label="Fermer la carte"
+              className="flex items-center justify-center w-11 h-11 rounded-xl text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

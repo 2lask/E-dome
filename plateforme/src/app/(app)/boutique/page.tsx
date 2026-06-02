@@ -601,9 +601,13 @@ export default function BoutiquePage() {
           </div>
         </div>
 
-        {/* Toast notification */}
+        {/* Toast notification — décalé au-dessus de la bottom-nav mobile
+            (~80 px + safe-area), retour au bas standard en md+. */}
         {toastVisible && (
-          <div className="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-xl text-sm font-medium animate-fade-in"
+          <div
+            role="status"
+            aria-live="polite"
+            className="fixed bottom-[calc(80px+env(safe-area-inset-bottom)+1rem)] md:bottom-6 right-4 md:right-6 left-4 md:left-auto z-50 px-4 py-2.5 rounded-xl text-sm font-medium animate-fade-in text-center md:text-left"
             style={{ background: "#059669", color: "#fff", boxShadow: "0 4px 14px rgba(5,150,105,0.25)" }}>
             Produit ajouté au panier
           </div>

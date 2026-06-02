@@ -157,7 +157,7 @@ export default function LivePage() {
 
       {/* Live Viewer (when live) */}
       {isLive ? (
-        <section className="grid lg:grid-cols-3 gap-6">
+        <section className="grid lg:grid-cols-3 gap-4 md:gap-6">
           {/* Video area */}
           <div className="lg:col-span-2 space-y-4">
             <div className="relative aspect-video rounded-xl bg-gray-900 flex items-center justify-center overflow-hidden">

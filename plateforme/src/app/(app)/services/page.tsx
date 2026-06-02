@@ -240,7 +240,10 @@ export default function ServicesPage() {
 
         {/* Toast notification */}
         {toastVisible && (
-          <div className="fixed bottom-6 right-6 z-50 px-5 py-3 bg-green-600 text-white rounded-xl shadow-lg text-sm font-medium animate-fade-in">
+          <div
+            role="status"
+            aria-live="polite"
+            className="fixed bottom-[calc(80px+env(safe-area-inset-bottom)+1rem)] md:bottom-6 right-4 md:right-6 left-4 md:left-auto z-50 px-5 py-3 bg-green-600 text-white rounded-xl shadow-lg text-sm font-medium animate-fade-in text-center md:text-left">
             Demande de devis envoy&eacute;e avec succ&egrave;s !
           </div>
         )}
