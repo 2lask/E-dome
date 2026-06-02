@@ -1,9 +1,76 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Check, CheckCheck } from "lucide-react";
+import {
+  Check, CheckCheck,
+  Mic, MicOff, Video, VideoOff, MonitorUp, Hand,
+  Users as UsersIcon, MessageSquare, PhoneOff, ShieldCheck,
+  LayoutGrid, Maximize2, X as XIcon, Send as SendIcon, Link as LinkIcon,
+} from "lucide-react";
 import type { Conversation, Message } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+
+/* ─── Conférence privée (visio Zoom-style) ────────────────────────────────
+   Modèle volontairement multi-participants : on ouvre une "salle" à 4 — soi,
+   l'interlocuteur courant + 2 invités tiers mockés (un investisseur et un
+   courtier, deux profils typiques d'un deal immobilier). Chaque participant
+   a un état audio/vidéo/main levée indépendant. */
+interface ConferenceParticipant {
+  id: string;
+  name: string;
+  role: string;
+  avatar: string;
+  isHost: boolean;
+  isSelf: boolean;
+  muted: boolean;
+  cameraOff: boolean;
+  handRaised: boolean;
+}
+
+const CONF_SELF = {
+  id: "me",
+  name: "Léo Martin",
+  role: "Apporteur",
+  avatar:
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop",
+};
+
+const CONF_EXTRA_GUESTS: Omit<ConferenceParticipant, "isSelf">[] = [
+  {
+    id: "p-marc",
+    name: "Marc Dubois",
+    role: "Investisseur",
+    avatar:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop",
+    isHost: false,
+    muted: false,
+    cameraOff: false,
+    handRaised: false,
+  },
+  {
+    id: "p-yasmin",
+    name: "Yasmin Al Falasi",
+    role: "Courtier",
+    avatar:
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=160&h=160&fit=crop",
+    isHost: false,
+    muted: true,
+    cameraOff: false,
+    handRaised: true,
+  },
+];
+
+interface ConferenceChatMessage {
+  author: string;
+  text: string;
+  time: string;
+  isSelf?: boolean;
+}
+
+const INITIAL_CONF_CHAT: ConferenceChatMessage[] = [
+  { author: "Marc Dubois", text: "Bonjour à tous, prêts à démarrer ?", time: "13:42" },
+  { author: "Yasmin Al Falasi", text: "Oui, j'ai préparé les chiffres.", time: "13:42" },
+];
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
@@ -100,10 +167,22 @@ export default function MessagesPage() {
   const [search, setSearch] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
   const [showAttach, setShowAttach] = useState(false);
-  const [showVideoCall, setShowVideoCall] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isCameraOff, setIsCameraOff] = useState(false);
+  /* ─── Conférence privée ───────────────────────────────────────────────
+     Remplace l'ancien appel 1-1 par une visio multi-participants
+     style Zoom. L'état de soi (muted/camera/main) est dupliqué dans
+     `participants` à l'ouverture pour pouvoir le mettre à jour depuis
+     l'UI bas-de-page comme dans Zoom. */
+  const [showConference, setShowConference] = useState(false);
   const [callTimer, setCallTimer] = useState(0);
+  const [participants, setParticipants] = useState<ConferenceParticipant[]>([]);
+  const [confViewMode, setConfViewMode] = useState<"grid" | "speaker">("grid");
+  const [confSidePanel, setConfSidePanel] = useState<null | "participants" | "chat">(null);
+  const [confChat, setConfChat] = useState<ConferenceChatMessage[]>(INITIAL_CONF_CHAT);
+  const [confChatInput, setConfChatInput] = useState("");
+  const [confToast, setConfToast] = useState<string | null>(null);
+  const isSelfMuted = participants.find((p) => p.isSelf)?.muted ?? false;
+  const isSelfCameraOff = participants.find((p) => p.isSelf)?.cameraOff ?? false;
+  const isSelfHandRaised = participants.find((p) => p.isSelf)?.handRaised ?? false;
   const [typing, setTyping] = useState(false);
   const [deletedMessages, setDeletedMessages] = useState<Set<string>>(new Set());
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -132,16 +211,106 @@ export default function MessagesPage() {
     return () => { clearTimeout(t); clearTimeout(t2); };
   }, [activeConvId]);
 
-  // Call timer
+  // Conference timer
   useEffect(() => {
-    if (showVideoCall) {
+    if (showConference) {
       callIntervalRef.current = setInterval(() => setCallTimer((t) => t + 1), 1000);
     } else {
       if (callIntervalRef.current) clearInterval(callIntervalRef.current);
       setCallTimer(0);
     }
     return () => { if (callIntervalRef.current) clearInterval(callIntervalRef.current); };
-  }, [showVideoCall]);
+  }, [showConference]);
+
+  // Ferme la conférence avec Échap (UX clavier desktop)
+  useEffect(() => {
+    if (!showConference) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowConference(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showConference]);
+
+  // Auto-dismiss conf toast
+  useEffect(() => {
+    if (!confToast) return;
+    const t = setTimeout(() => setConfToast(null), 2200);
+    return () => clearTimeout(t);
+  }, [confToast]);
+
+  /* Démarre une conférence : peuple la liste avec soi (hôte), l'interlocuteur
+     courant et 2 invités tiers. Réinitialise les panneaux et le compteur. */
+  const startConference = useCallback(() => {
+    if (!activeConv) return;
+    const partRole =
+      (activeConv.participant.activeRole as string) || "client";
+    setParticipants([
+      {
+        id: CONF_SELF.id,
+        name: CONF_SELF.name,
+        role: CONF_SELF.role,
+        avatar: CONF_SELF.avatar,
+        isHost: true,
+        isSelf: true,
+        muted: false,
+        cameraOff: false,
+        handRaised: false,
+      },
+      {
+        id: activeConv.participant.id,
+        name: `${activeConv.participant.firstName} ${activeConv.participant.lastName}`,
+        role: partRole.charAt(0).toUpperCase() + partRole.slice(1),
+        avatar: activeConv.participant.avatar,
+        isHost: false,
+        isSelf: false,
+        muted: false,
+        cameraOff: false,
+        handRaised: false,
+      },
+      ...CONF_EXTRA_GUESTS.map((g) => ({ ...g, isSelf: false })),
+    ]);
+    setConfSidePanel(null);
+    setConfChat(INITIAL_CONF_CHAT);
+    setShowConference(true);
+  }, [activeConv]);
+
+  const endConference = useCallback(() => {
+    setShowConference(false);
+    setParticipants([]);
+    setConfSidePanel(null);
+  }, []);
+
+  const toggleSelf = useCallback(
+    (key: "muted" | "cameraOff" | "handRaised") => {
+      setParticipants((prev) =>
+        prev.map((p) => (p.isSelf ? { ...p, [key]: !p[key] } : p)),
+      );
+    },
+    [],
+  );
+
+  const sendConfChat = useCallback(() => {
+    const txt = confChatInput.trim();
+    if (!txt) return;
+    const time = new Date().toLocaleTimeString("fr-CH", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    setConfChat((prev) => [...prev, { author: "Vous", text: txt, time, isSelf: true }]);
+    setConfChatInput("");
+  }, [confChatInput]);
+
+  const copyInviteLink = useCallback(() => {
+    if (!activeConv) return;
+    const link = `https://edome.world/conf/${activeConv.id}-${Date.now().toString(36)}`;
+    try {
+      navigator.clipboard.writeText(link);
+      setConfToast("Lien d'invitation copié");
+    } catch {
+      setConfToast("Impossible de copier");
+    }
+  }, [activeConv]);
 
   const sendMessage = useCallback(() => {
     if (!message.trim() || !activeConvId) return;
@@ -324,14 +493,13 @@ export default function MessagesPage() {
                 </div>
               </div>
               <button
-                onClick={() => setShowVideoCall(true)}
-                className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-secondary)]"
-                title="Appel vidéo"
+                onClick={startConference}
+                aria-label="Démarrer une réunion privée"
+                title="Démarrer une réunion privée"
+                className="flex items-center gap-1.5 px-3 h-11 rounded-lg bg-[#1e9df1]/10 hover:bg-[#1e9df1]/15 text-[#1e9df1] text-xs font-medium transition-colors"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polygon points="23 7 16 12 23 17 23 7" />
-                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-                </svg>
+                <Video size={16} />
+                <span className="hidden sm:inline">Réunion</span>
               </button>
             </div>
 
@@ -573,77 +741,422 @@ export default function MessagesPage() {
         </div>
       )}
 
-      {/* Video Call Overlay */}
-      {showVideoCall && activeConv && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center">
-          <div className="flex items-center gap-8 mb-8">
-            <div className="text-center">
-              <img
-                src={activeConv.participant.avatar}
-                alt=""
-                className="w-24 h-24 rounded-full object-cover border-4 border-[#1e9df1] mx-auto mb-2"
-              />
-              <span className="text-white text-sm">
-                {activeConv.participant.firstName} {activeConv.participant.lastName}
+      {/* ─── Conférence privée (visio Zoom-style) ──────────────────────── */}
+      {showConference && activeConv && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Réunion privée"
+          className="fixed inset-0 z-50 bg-[#0a0a0a] flex flex-col text-white"
+        >
+          {/* Header */}
+          <header className="flex items-center justify-between px-3 md:px-6 py-2.5 border-b border-white/10 bg-black/40 shrink-0">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <span className="inline-flex items-center gap-1.5 text-emerald-400 text-xs font-medium">
+                <ShieldCheck size={14} />
+                <span className="hidden sm:inline">Réunion chiffrée</span>
+                <span className="sm:hidden">Chiffrée</span>
+              </span>
+              <span className="text-white/30">·</span>
+              <span className="text-white text-xs font-mono tabular-nums">
+                {formatCallTimer(callTimer)}
+              </span>
+              <span className="hidden md:inline text-white/30">·</span>
+              <span className="hidden md:inline text-white/70 text-xs truncate">
+                avec {activeConv.participant.firstName} {activeConv.participant.lastName}
               </span>
             </div>
-          </div>
-          <div className="text-white/60 text-lg mb-8 font-mono">{formatCallTimer(callTimer)}</div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsMuted(!isMuted)}
-              className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-                isMuted ? "bg-red-500/80" : "bg-white/20"
-              }`}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                {isMuted ? (
-                  <>
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                    <path d="M9 9v3a3 3 0 005.12 2.12M15 9.34V4a3 3 0 00-5.94-.6" />
-                    <path d="M17 16.95A7 7 0 015 12v-2m14 0v2c0 .76-.13 1.49-.36 2.18" />
-                    <line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" />
-                  </>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() =>
+                  setConfViewMode(confViewMode === "grid" ? "speaker" : "grid")
+                }
+                aria-label={
+                  confViewMode === "grid" ? "Vue intervenant" : "Vue grille"
+                }
+                className="hidden md:flex items-center justify-center w-9 h-9 rounded-lg text-white/70 hover:bg-white/10 transition-colors"
+              >
+                {confViewMode === "grid" ? (
+                  <Maximize2 size={16} />
                 ) : (
-                  <>
-                    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
-                    <path d="M19 10v2a7 7 0 01-14 0v-2" />
-                    <line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" />
-                  </>
+                  <LayoutGrid size={16} />
                 )}
-              </svg>
-            </button>
-            <button
-              onClick={() => setIsCameraOff(!isCameraOff)}
-              className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-                isCameraOff ? "bg-red-500/80" : "bg-white/20"
-              }`}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                {isCameraOff ? (
-                  <>
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                    <path d="M21 21H3a2 2 0 01-2-2V8a2 2 0 012-2h3l2-3h6l2 3h3a2 2 0 012 2v9.34" />
-                  </>
-                ) : (
-                  <>
-                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
-                    <circle cx="12" cy="13" r="4" />
-                  </>
+              </button>
+              <button
+                onClick={endConference}
+                aria-label="Fermer la réunion"
+                className="flex items-center justify-center w-11 h-11 rounded-lg text-white/70 hover:bg-white/10 transition-colors"
+              >
+                <XIcon size={18} />
+              </button>
+            </div>
+          </header>
+
+          {/* Stage + side panel */}
+          <div className="flex-1 flex overflow-hidden relative">
+            {/* Stage */}
+            <div className="flex-1 overflow-y-auto p-3 md:p-4">
+              {confViewMode === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 h-full content-start">
+                  {participants.map((p) => (
+                    <ConferenceTile key={p.id} p={p} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3 h-full">
+                  <div className="flex-1 min-h-[280px]">
+                    <ConferenceTile p={participants[0]} large />
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                    {participants.slice(1).map((p) => (
+                      <div key={p.id} className="shrink-0 w-40">
+                        <ConferenceTile p={p} compact />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Side panel : participants OU chat (drawer mobile / pan desktop) */}
+            {confSidePanel && (
+              <aside
+                className="absolute md:relative inset-y-0 right-0 w-full md:w-80 bg-[#12141a] border-l border-white/10 flex flex-col animate-slide-in-right z-10"
+                aria-label={
+                  confSidePanel === "participants"
+                    ? "Liste des participants"
+                    : "Discussion de la réunion"
+                }
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                  <h3 className="text-sm font-semibold text-white">
+                    {confSidePanel === "participants"
+                      ? `Participants (${participants.length})`
+                      : "Discussion"}
+                  </h3>
+                  <button
+                    onClick={() => setConfSidePanel(null)}
+                    aria-label="Fermer le panneau"
+                    className="w-9 h-9 flex items-center justify-center rounded-lg text-white/60 hover:text-white hover:bg-white/10"
+                  >
+                    <XIcon size={16} />
+                  </button>
+                </div>
+
+                {confSidePanel === "participants" && (
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <ul className="flex-1 overflow-y-auto py-1">
+                      {participants.map((p) => (
+                        <li
+                          key={p.id}
+                          className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5"
+                        >
+                          <img
+                            src={p.avatar}
+                            alt=""
+                            className="w-9 h-9 rounded-full object-cover shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-white truncate">
+                              {p.name}{" "}
+                              {p.isSelf && (
+                                <span className="text-white/50 text-xs">(Vous)</span>
+                              )}
+                            </p>
+                            <p className="text-xs text-white/50 truncate">
+                              {p.role}
+                              {p.isHost && " · Hôte"}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {p.handRaised && (
+                              <Hand size={14} className="text-amber-400" />
+                            )}
+                            {p.muted ? (
+                              <MicOff size={14} className="text-red-400" />
+                            ) : (
+                              <Mic size={14} className="text-white/70" />
+                            )}
+                            {p.cameraOff ? (
+                              <VideoOff size={14} className="text-white/40" />
+                            ) : (
+                              <Video size={14} className="text-white/70" />
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="p-3 border-t border-white/10">
+                      <button
+                        onClick={copyInviteLink}
+                        className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors"
+                      >
+                        <LinkIcon size={14} /> Copier le lien d&apos;invitation
+                      </button>
+                    </div>
+                  </div>
                 )}
-              </svg>
-            </button>
-            <button
-              onClick={() => setShowVideoCall(false)}
-              className="w-14 h-14 rounded-full bg-red-500 flex items-center justify-center"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-              </svg>
-            </button>
+
+                {confSidePanel === "chat" && (
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <ul className="flex-1 overflow-y-auto p-4 space-y-3">
+                      {confChat.map((m, i) => (
+                        <li key={i}>
+                          <p className="text-[11px] text-white/50">
+                            <span
+                              className={`font-medium ${
+                                m.isSelf ? "text-[#1e9df1]" : "text-white/80"
+                              }`}
+                            >
+                              {m.author}
+                            </span>{" "}
+                            · {m.time}
+                          </p>
+                          <p className="text-sm text-white/90 mt-0.5 break-words">
+                            {m.text}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="p-3 border-t border-white/10 flex gap-2">
+                      <input
+                        type="text"
+                        value={confChatInput}
+                        onChange={(e) => setConfChatInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") sendConfChat();
+                        }}
+                        placeholder="Message à tous…"
+                        aria-label="Message à tous les participants"
+                        className="flex-1 h-10 px-3 rounded-lg bg-white/10 text-white text-sm placeholder:text-white/40 outline-none focus:bg-white/15"
+                      />
+                      <button
+                        onClick={sendConfChat}
+                        aria-label="Envoyer le message"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#1e9df1] hover:bg-[#1583c9] text-white transition-colors"
+                      >
+                        <SendIcon size={14} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </aside>
+            )}
           </div>
+
+          {/* Barre de contrôles bas — Zoom-style. Scrollable horizontalement
+              en mobile si jamais l'écran est très étroit. */}
+          <div className="border-t border-white/10 bg-black/40 shrink-0">
+            <div className="px-3 md:px-6 py-2.5 flex items-center justify-between gap-2"
+              style={{ paddingBottom: "calc(0.625rem + env(safe-area-inset-bottom))" }}
+            >
+              <div className="hidden md:block text-white/40 text-xs">
+                E-Dome Réunions
+              </div>
+
+              <div className="flex items-center gap-1.5 md:gap-2 overflow-x-auto no-scrollbar mx-auto md:mx-0">
+                <ConferenceAction
+                  icon={isSelfMuted ? MicOff : Mic}
+                  label={isSelfMuted ? "Activer le micro" : "Couper le micro"}
+                  shortLabel="Micro"
+                  active={isSelfMuted}
+                  onClick={() => toggleSelf("muted")}
+                />
+                <ConferenceAction
+                  icon={isSelfCameraOff ? VideoOff : Video}
+                  label={isSelfCameraOff ? "Activer la caméra" : "Couper la caméra"}
+                  shortLabel="Caméra"
+                  active={isSelfCameraOff}
+                  onClick={() => toggleSelf("cameraOff")}
+                />
+                <ConferenceAction
+                  icon={MonitorUp}
+                  label="Partager l'écran"
+                  shortLabel="Partager"
+                  onClick={() => setConfToast("Partage d'écran activé (démo)")}
+                />
+                <ConferenceAction
+                  icon={Hand}
+                  label={isSelfHandRaised ? "Baisser la main" : "Lever la main"}
+                  shortLabel="Main"
+                  active={isSelfHandRaised}
+                  activeAmber
+                  onClick={() => toggleSelf("handRaised")}
+                />
+                <ConferenceAction
+                  icon={UsersIcon}
+                  label="Participants"
+                  shortLabel="Participants"
+                  badge={participants.length}
+                  active={confSidePanel === "participants"}
+                  onClick={() =>
+                    setConfSidePanel(
+                      confSidePanel === "participants" ? null : "participants",
+                    )
+                  }
+                />
+                <ConferenceAction
+                  icon={MessageSquare}
+                  label="Discussion"
+                  shortLabel="Chat"
+                  active={confSidePanel === "chat"}
+                  onClick={() =>
+                    setConfSidePanel(confSidePanel === "chat" ? null : "chat")
+                  }
+                />
+              </div>
+
+              <button
+                onClick={endConference}
+                aria-label="Quitter la réunion"
+                className="inline-flex items-center gap-2 h-11 px-3 md:px-5 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors shrink-0"
+              >
+                <PhoneOff size={16} />
+                <span className="hidden sm:inline">Quitter</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Toast interne à la conférence */}
+          {confToast && (
+            <div
+              role="status"
+              aria-live="polite"
+              className="absolute left-1/2 top-16 -translate-x-1/2 z-20 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm shadow-lg animate-fade-in flex items-center gap-1.5"
+            >
+              <Check size={14} strokeWidth={2.5} /> {confToast}
+            </div>
+          )}
         </div>
       )}
     </div>
+  );
+}
+
+/* ─── Sous-composants conférence ──────────────────────────────────────── */
+
+interface ConferenceTileProps {
+  p: ConferenceParticipant;
+  large?: boolean;
+  compact?: boolean;
+}
+
+function ConferenceTile({ p, large, compact }: ConferenceTileProps) {
+  if (!p) return null;
+  return (
+    <div
+      className={`relative rounded-2xl overflow-hidden border border-white/5 ${
+        compact ? "aspect-video" : large ? "h-full min-h-[280px]" : "aspect-video"
+      }`}
+      style={{
+        background: p.cameraOff
+          ? "linear-gradient(135deg, #1c2230, #0d1117)"
+          : "linear-gradient(135deg, #1e3a5f 0%, #0a1929 50%, #11203a 100%)",
+      }}
+    >
+      {/* Centered avatar (camera off → grand ; on → cercle moyen, simule
+          un "frame" de webcam). */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <img
+          src={p.avatar}
+          alt=""
+          className={`rounded-full object-cover ${
+            p.cameraOff
+              ? large
+                ? "w-32 h-32"
+                : "w-20 h-20"
+              : large
+                ? "w-28 h-28 ring-2 ring-white/15"
+                : "w-16 h-16 ring-2 ring-white/15"
+          } ${p.isSelf && !p.cameraOff ? "scale-x-[-1]" : ""}`}
+        />
+      </div>
+
+      {/* Badges haut */}
+      <div className="absolute top-2 left-2 right-2 flex items-center justify-between gap-2 pointer-events-none">
+        {p.handRaised ? (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/95 text-white text-[11px] font-medium">
+            <Hand size={11} /> Main levée
+          </span>
+        ) : (
+          <span />
+        )}
+        {p.isHost && (
+          <span className="px-1.5 py-0.5 rounded text-[10px] bg-white/15 text-white">
+            Hôte
+          </span>
+        )}
+      </div>
+
+      {/* Bandeau bas : nom + état audio/vidéo */}
+      <div className="absolute bottom-0 left-0 right-0 p-2 md:p-3 flex items-end justify-between gap-2 bg-gradient-to-t from-black/70 to-transparent">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-white truncate">
+            {p.name}
+            {p.isSelf && <span className="text-white/60 font-normal"> (Vous)</span>}
+          </p>
+          {!compact && (
+            <p className="text-[11px] text-white/60 truncate">{p.role}</p>
+          )}
+        </div>
+        <div className="flex items-center gap-1 shrink-0">
+          {p.muted && (
+            <div className="w-7 h-7 rounded-full bg-red-500/85 flex items-center justify-center">
+              <MicOff size={13} className="text-white" />
+            </div>
+          )}
+          {p.cameraOff && (
+            <div className="w-7 h-7 rounded-full bg-black/55 flex items-center justify-center">
+              <VideoOff size={13} className="text-white/85" />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ConferenceActionProps {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  label: string;
+  shortLabel: string;
+  active?: boolean;
+  activeAmber?: boolean;
+  badge?: number;
+  onClick: () => void;
+}
+
+function ConferenceAction({
+  icon: Icon,
+  label,
+  shortLabel,
+  active,
+  activeAmber,
+  badge,
+  onClick,
+}: ConferenceActionProps) {
+  const activeBg = activeAmber ? "bg-amber-500/90" : "bg-[#1e9df1]";
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={!!active}
+      className={`relative flex flex-col items-center justify-center gap-0.5 min-w-[60px] h-12 px-2.5 rounded-xl text-[10px] font-medium transition-colors ${
+        active
+          ? `${activeBg} text-white`
+          : "bg-white/10 text-white/85 hover:bg-white/15"
+      }`}
+    >
+      <Icon size={18} />
+      <span className="leading-none">{shortLabel}</span>
+      {typeof badge === "number" && badge > 0 && (
+        <span
+          aria-hidden
+          className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold tabular-nums"
+        >
+          {badge}
+        </span>
+      )}
+    </button>
   );
 }
