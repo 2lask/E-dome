@@ -941,7 +941,7 @@ function HomePageContent() {
 
       {/* ═══════════════════════ NAVBAR ═══════════════════════ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-[#e5e7eb]">
-        <div className="grid-12 py-4 flex items-center justify-between">
+        <div className="w-full max-w-[1440px] mx-auto px-6 md:px-10 lg:px-20 py-4 flex items-center justify-between">
           <a href="#" className="font-bold text-xl tracking-tight">
             E-<span className="text-[#1262b3]">Dome</span>
           </a>
