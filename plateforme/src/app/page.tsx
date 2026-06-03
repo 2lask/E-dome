@@ -556,7 +556,7 @@ function MoteurEconomiqueSlide({
           haut du titre quand le slide était centré ; on ancre désormais
           depuis le haut avec un padding qui dégage la navbar (≈48 px) plus
           un peu d'air. */}
-      <div className="relative z-10 max-w-6xl mx-auto px-20 h-full flex flex-col justify-start pt-24 pb-6">
+      <div className="relative z-10 max-w-6xl mx-auto px-20 h-full flex flex-col justify-start pt-24 pb-24">
         {/* Heading compact — pas de label "kicker" cette fois (la BG anime
             déjà l'idée du moteur économique). Titre direct, taille raisonnée
             pour ne pas pousser le contenu hors slide. */}
@@ -1061,7 +1061,7 @@ function HomePageContent() {
             (piloté par useSlideProgress du ScrollStage parent). */}
         <HeroArchTower />
 
-        <div className="min-h-screen flex items-center pt-24 pb-16">
+        <div className="min-h-screen flex items-center pt-24 pb-24">
           <div className="grid-12 grid grid-cols-12 gap-8 w-full items-center">
             {/* Colonne texte (gauche) */}
             <motion.div {...fadeUp} className="col-span-12 lg:col-span-7">
@@ -1150,7 +1150,7 @@ function HomePageContent() {
         <div className="hidden lg:block absolute left-[-3%] top-0 bottom-0 w-[18%] z-0 pointer-events-none">
           <ArchTallFacade className="w-full h-full" />
         </div>
-        <div className="min-h-screen flex items-center py-16 relative z-10">
+        <div className="min-h-screen flex items-center py-24 relative z-10">
         <div className="grid-12 grid grid-cols-12 w-full">
         <div className="col-span-12 md:col-span-10 md:col-start-2 lg:col-span-8 lg:col-start-3">
           {(() => {
@@ -1800,7 +1800,7 @@ function HomePageContent() {
             que les blocs aient plus de marge à se "décaler" vers les bords.
             Espacements verticaux resserrés afin que le bloc Jean-Pierre
             ne soit plus rogné par le bas du slide. */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-4 h-full flex flex-col justify-start pt-20 pb-4">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-4 h-full flex flex-col justify-start pt-24 pb-24">
           {/* ── Heading ── */}
           <motion.div {...fadeUp} className="text-center max-w-[600px] mx-auto mb-8">
             <p className="text-[#1262b3] text-xs tracking-widest uppercase font-bold mb-2">
@@ -1998,7 +1998,7 @@ function HomePageContent() {
               à la place de l'ancienne grille de 4 cartes
             · Double CTA (démo + questionnaire) avec badges enrichis
             · Trust strip footer (RGPD, chiffré, anonyme, pas d'engagement) */}
-      <section id="inscriptions" className="scroll-slide py-12 px-20 bg-white relative overflow-hidden">
+      <section id="inscriptions" className="scroll-slide py-24 px-20 bg-white relative overflow-hidden">
         {/* Radial glow centré en haut (bleu) — donne un point focal et
             adoucit le noir pur. */}
         <div
@@ -2030,7 +2030,7 @@ function HomePageContent() {
           <ArchCantilever className="w-full h-full" />
         </div>
 
-        <div className="relative z-10 max-w-[600px] mx-auto h-full flex flex-col justify-start pt-12 pb-4">
+        <div className="relative z-10 max-w-[600px] mx-auto h-full flex flex-col justify-start pt-24 pb-24">
           {/* ── Header : eyebrow + titre + sous-titre italique +
                   paragraphe développé + meta-row de stats ── */}
           <motion.div {...fadeUp} className="text-center mb-6 max-w-[600px] mx-auto">
@@ -2385,7 +2385,7 @@ function HomePageContent() {
           la façon de contribuer. Accordéon `<details>` numéroté. */}
       <section
         id="faq"
-        className="bg-white border-t border-neutral-900 py-20 px-20"
+        className="bg-white border-t border-neutral-900 py-24 px-20"
       >
         <div className="max-w-[600px] mx-auto">
           {/* Heading */}
@@ -2604,7 +2604,7 @@ function HomePageContent() {
       </section>
 
       {/* ═══════════════════════ FOOTER ═══════════════════════ */}
-      <footer className="bg-[#f5f5f5] text-[#1a1a1a] pt-20 pb-10 px-20">
+      <footer className="bg-[#f5f5f5] text-[#1a1a1a] py-24 px-20">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             {/* Brand */}
