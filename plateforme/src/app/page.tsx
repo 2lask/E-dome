@@ -980,7 +980,7 @@ function HomePageContent() {
             </div>
             <Link
               href="#inscriptions"
-              className="hidden sm:inline-flex bg-[#1e9df1] text-white rounded-lg px-5 py-2 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
+              className="hidden sm:inline-flex bg-[#1e9df1] text-white rounded-none px-5 py-2 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
             >
               {t("hero.cta")}
             </Link>
