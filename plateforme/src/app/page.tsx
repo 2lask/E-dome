@@ -982,7 +982,7 @@ function HomePageContent() {
             </div>
             <Link
               href="#inscriptions"
-              className="hidden md:inline-flex bg-[#1262b3] text-white rounded-none px-6 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
+              className="hidden md:inline-flex bg-[#1262b3] text-white chamfer-sm px-6 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
             >
               {t("hero.cta")}
             </Link>
@@ -1043,7 +1043,7 @@ function HomePageContent() {
                 <Link
                   href="#inscriptions"
                   onClick={() => setMobileNavOpen(false)}
-                  className="bg-[#1262b3] text-white px-6 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
+                  className="bg-[#1262b3] text-white chamfer-sm px-6 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
                 >
                   {t("hero.cta")}
                 </Link>
@@ -1108,13 +1108,13 @@ function HomePageContent() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link
                   href="#inscriptions"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-[#1262b3] text-white text-sm font-bold hover:bg-[#0f52a0] transition-all"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-[#1262b3] text-white chamfer-sm text-sm font-bold hover:bg-[#0f52a0] transition-all"
                 >
                   {t("hero.cta")} <ArrowRight size={16} />
                 </Link>
                 <Link
                   href="#vision"
-                  className="inline-flex items-center gap-2 px-8 py-4 border border-[#d1d5db] text-[#374151] text-sm font-medium hover:bg-[#f5f5f5] hover:border-neutral-600 transition-all"
+                  className="inline-flex items-center gap-2 px-8 py-4 border border-[#d1d5db] text-[#374151] chamfer-sm text-sm font-medium hover:bg-[#f5f5f5] hover:border-neutral-600 transition-all"
                 >
                   {t("hero.learn")}
                 </Link>
