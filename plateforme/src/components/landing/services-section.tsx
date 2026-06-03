@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { Users, Home, GraduationCap, Handshake, Radio, Briefcase, ShoppingBag } from "lucide-react";
@@ -172,7 +172,7 @@ export function ServicesSection() {
                   <h3 className="text-gray-900 text-lg font-medium tracking-tight mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">
+                  <p className="text-[#1a1a1a]/40 text-sm leading-relaxed">
                     {feature.description}
                   </p>
                 </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -63,11 +63,11 @@ export function FeaturedVideoSection() {
             {t("featured.label")}
           </p>
 
-          <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-4">
+          <p className="text-[#1a1a1a]/60 text-sm md:text-base leading-relaxed mb-4">
             {t("featured.desc")}
           </p>
 
-          <p className="text-gray-400 text-xs leading-relaxed mb-8">
+          <p className="text-[#1a1a1a]/50 text-xs leading-relaxed mb-8">
             {t("featured.disclaimer")}
           </p>
 
@@ -75,7 +75,7 @@ export function FeaturedVideoSection() {
             <motion.span
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2.5 bg-[#1e9df1] text-white text-sm font-semibold px-7 py-3.5 rounded-xl hover:bg-[#b8875e] transition-colors cursor-pointer shadow-md shadow-[#1e9df1]/20"
+              className="inline-flex items-center gap-2.5 bg-[#1e9df1] text-[#1a1a1a] text-sm font-semibold px-7 py-3.5 rounded-xl hover:bg-[#1e9df1] transition-colors cursor-pointer shadow-md shadow-[#1e9df1]/20"
             >
               {t("featured.cta")}
               <ArrowRight size={16} />

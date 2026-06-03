@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { Check, Loader2, Clock, ArrowRight, Award, KeyRound, Star, Mic, Handshake, Gift } from "lucide-react";
@@ -81,7 +81,7 @@ export function RoadmapSection() {
     },
     upcoming: {
       icon: Clock,
-      color: "text-gray-400",
+      color: "text-[#1a1a1a]/50",
       bg: "bg-gray-100",
       border: "border border-gray-200",
       dot: "bg-gray-300",
@@ -124,10 +124,10 @@ export function RoadmapSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <p className="text-gray-600 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
+            <p className="text-[#1a1a1a]/60 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
               {t("roadmap.desc")}
             </p>
-            <p className="text-gray-400 text-sm md:text-base max-w-3xl leading-relaxed">
+            <p className="text-[#1a1a1a]/50 text-sm md:text-base max-w-3xl leading-relaxed">
               {t("roadmap.desc2")}
             </p>
           </motion.div>
@@ -168,7 +168,7 @@ export function RoadmapSection() {
                   {phase.items.map((item) => (
                     <li key={item} className="flex items-start gap-2.5">
                       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
-                      <span className="text-gray-500 text-sm">{item}</span>
+                      <span className="text-[#1a1a1a]/40 text-sm">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -203,10 +203,10 @@ export function RoadmapSection() {
                 <br />
                 <span className="text-[#1e9df1]">{t("roadmap.cta_title2")}</span>
               </h3>
-              <p className="text-gray-500 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-2">
+              <p className="text-[#1a1a1a]/40 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-2">
                 {t("roadmap.cta_subtitle")}
               </p>
-              <p className="text-gray-400 text-xs max-w-xl mx-auto">
+              <p className="text-[#1a1a1a]/50 text-xs max-w-xl mx-auto">
                 {t("roadmap.cta_disclaimer")}
               </p>
             </div>
@@ -231,7 +231,7 @@ export function RoadmapSection() {
                       <ItemIcon size={20} className={item.iconColor} />
                     </div>
                     <h4 className="text-gray-900 text-sm font-semibold mb-2">{item.title}</h4>
-                    <p className="text-gray-500 text-xs leading-relaxed">{item.desc}</p>
+                    <p className="text-[#1a1a1a]/40 text-xs leading-relaxed">{item.desc}</p>
                   </div>
                 );
               })}
@@ -241,13 +241,13 @@ export function RoadmapSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/acces"
-                className="w-full sm:w-auto bg-[#1e9df1] rounded-lg px-8 py-4 text-white text-sm font-semibold hover:bg-[#b5866b] transition-colors flex items-center justify-center gap-2 shadow-md"
+                className="w-full sm:w-auto bg-[#1e9df1] rounded-lg px-8 py-4 text-[#1a1a1a] text-sm font-semibold hover:bg-[#1e9df1] transition-colors flex items-center justify-center gap-2 shadow-md"
               >
                 {t("roadmap.cta1")} <ArrowRight size={16} />
               </Link>
               <Link
                 href="/acces"
-                className="w-full sm:w-auto rounded-lg px-8 py-4 text-gray-600 text-sm font-medium hover:bg-gray-100 transition-colors border border-gray-200 flex items-center justify-center"
+                className="w-full sm:w-auto rounded-lg px-8 py-4 text-[#1a1a1a]/60 text-sm font-medium hover:bg-gray-100 transition-colors border border-gray-200 flex items-center justify-center"
               >
                 {t("roadmap.cta2")}
               </Link>
@@ -257,7 +257,7 @@ export function RoadmapSection() {
 
         {/* ── Architectural SVG decoration ── */}
         <svg
-          className="absolute -top-4 left-0 w-28 h-28 text-gray-300 opacity-30"
+          className="absolute -top-4 left-0 w-28 h-28 text-[#1a1a1a]/70 opacity-30"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

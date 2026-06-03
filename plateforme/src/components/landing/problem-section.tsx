@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
@@ -164,7 +164,7 @@ export function ProblemSection() {
           <motion.p
             {...fadeUp}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-gray-500 text-base md:text-lg max-w-3xl leading-relaxed"
+            className="text-[#1a1a1a]/40 text-base md:text-lg max-w-3xl leading-relaxed"
           >
             {t("problem.desc")}
           </motion.p>
@@ -190,17 +190,17 @@ export function ProblemSection() {
                     <p className="text-gray-900 text-3xl md:text-4xl font-semibold tracking-tight leading-none">
                       <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
                     </p>
-                    <p className="text-gray-400 text-sm mt-1">{t(stat.unitKey)}</p>
+                    <p className="text-[#1a1a1a]/50 text-sm mt-1">{t(stat.unitKey)}</p>
                   </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-gray-600 text-sm leading-relaxed mb-3">
+                <p className="text-[#1a1a1a]/60 text-sm leading-relaxed mb-3">
                   {t(stat.descKey)}
                 </p>
 
                 {/* Source */}
-                <p className="text-gray-400 text-xs italic">
+                <p className="text-[#1a1a1a]/50 text-xs italic">
                   {t(stat.sourceKey)}
                 </p>
               </motion.div>
@@ -216,7 +216,7 @@ export function ProblemSection() {
         >
           <div className="inline-flex items-center gap-3 rounded-2xl md:rounded-full px-6 md:px-8 py-4 border-2 border-emerald-200 bg-emerald-50">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <p className="text-gray-600 text-sm">
+            <p className="text-[#1a1a1a]/60 text-sm">
               {t("problem.pill")}{" "}
               <span className="text-emerald-600 font-medium">{t("problem.pill_bold")}</span>
             </p>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { Network, UserCog, Eye, MessageCircle } from "lucide-react";
@@ -99,7 +99,7 @@ export function PhilosophySection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <p className="text-gray-500 text-base md:text-lg max-w-3xl leading-relaxed">
+            <p className="text-[#1a1a1a]/40 text-base md:text-lg max-w-3xl leading-relaxed">
               {t("philosophy.desc")}
             </p>
           </motion.div>
@@ -129,7 +129,7 @@ export function PhilosophySection() {
                       {pillar.title}
                     </h3>
                   </div>
-                  <p className="text-gray-500 text-sm leading-relaxed">
+                  <p className="text-[#1a1a1a]/40 text-sm leading-relaxed">
                     {pillar.description}
                   </p>
                 </div>
@@ -156,7 +156,7 @@ export function PhilosophySection() {
               preload="auto"
               src="/videos/philosophy-bg.mp4"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-black/5" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white/50 via-black/10 to-white/5" />
 
             {/* Desktop overlay cards */}
             <div className="absolute top-0 left-0 p-8 lg:p-10 hidden md:block">
@@ -186,7 +186,7 @@ export function PhilosophySection() {
                       className={`text-[10px] px-3 py-1.5 rounded-full font-medium border ${
                         tag.gold
                           ? "text-[#1e9df1] border-[#1e9df1]/30 bg-[#1e9df1]/10"
-                          : "text-gray-600 border-gray-200 bg-white/60"
+                          : "text-[#1a1a1a]/60 border-gray-200 bg-white/60"
                       }`}
                     >
                       {tag.label}
@@ -203,12 +203,12 @@ export function PhilosophySection() {
                 <p className="text-gray-900 text-base leading-relaxed mb-3">
                   {t("philosophy.video_desktop_p1")}
                 </p>
-                <p className="text-gray-500 text-sm leading-relaxed mb-4">
+                <p className="text-[#1a1a1a]/40 text-sm leading-relaxed mb-4">
                   {t("philosophy.video_desktop_p2")}
                 </p>
                 <a
                   href="#inscriptions"
-                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#b8875e] transition-colors ml-auto shadow-md shadow-[#1e9df1]/20"
+                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-[#1a1a1a] text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#1e9df1] transition-colors ml-auto shadow-md shadow-[#1e9df1]/20"
                 >
                   {t("philosophy.video_cta")}
                 </a>
@@ -228,12 +228,12 @@ export function PhilosophySection() {
               {t("philosophy.video_title1")}{" "}
               <span className="text-[#1e9df1] italic">{t("philosophy.video_title2")}</span>
             </h3>
-            <p className="text-gray-500 text-sm leading-relaxed mb-4">
+            <p className="text-[#1a1a1a]/40 text-sm leading-relaxed mb-4">
               {t("philosophy.video_mobile_desc")}
             </p>
             <a
               href="#inscriptions"
-              className="inline-flex items-center gap-2 bg-[#1e9df1] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#b8875e] transition-colors shadow-md shadow-[#1e9df1]/20"
+              className="inline-flex items-center gap-2 bg-[#1e9df1] text-[#1a1a1a] text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#1e9df1] transition-colors shadow-md shadow-[#1e9df1]/20"
             >
               {t("philosophy.video_cta")}
             </a>

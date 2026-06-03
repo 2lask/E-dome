@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { useLandingLang } from "@/components/landing/landing-i18n";
@@ -72,7 +72,7 @@ export function AboutSection() {
           <motion.p
             {...fadeUp}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-gray-600 text-base md:text-lg leading-relaxed"
+            className="text-[#1a1a1a]/60 text-base md:text-lg leading-relaxed"
           >
             {t("about.p1")}
           </motion.p>
@@ -80,7 +80,7 @@ export function AboutSection() {
           <motion.p
             {...fadeUp}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-gray-600 text-base md:text-lg leading-relaxed"
+            className="text-[#1a1a1a]/60 text-base md:text-lg leading-relaxed"
           >
             {t("about.p2")}
           </motion.p>
@@ -91,7 +91,7 @@ export function AboutSection() {
           {...fadeUp}
           transition={{ duration: 0.6, delay: 0.35 }}
         >
-          <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-2xl">
+          <p className="text-[#1a1a1a]/50 text-sm leading-relaxed mb-6 max-w-2xl">
             {t("about.roles_label")}
           </p>
 
@@ -104,7 +104,7 @@ export function AboutSection() {
                 {t(role.key)}
               </span>
             ))}
-            <span className="text-xs font-medium px-4 py-2 rounded-full border border-gray-200 text-gray-400 bg-gray-50">
+            <span className="text-xs font-medium px-4 py-2 rounded-full border border-gray-200 text-[#1a1a1a]/50 bg-gray-50">
               {t("about.more")}
             </span>
           </div>

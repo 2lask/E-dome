@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
@@ -33,7 +33,7 @@ export function ArchBackground({ variant, className = "" }: ArchBackgroundProps)
   return (
     <div ref={ref} className={`hidden md:block absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
       {variant === "villa" && (
-        <motion.div className={`absolute right-[-5%] top-[-15%] w-[75%] md:w-[55%] text-white/[0.15] arch-shimmer arch-gradient-tint ${drawClass}`}
+        <motion.div className={`absolute right-[-5%] top-[-15%] w-[75%] md:w-[55%] text-[#1a1a1a]/[0.15] arch-shimmer arch-gradient-tint ${drawClass}`}
           style={{ y: y1, opacity, x: x1, rotate: rotate1 }}>
           <VillaLuxuryDrawing />
         </motion.div>
@@ -41,11 +41,11 @@ export function ArchBackground({ variant, className = "" }: ArchBackgroundProps)
 
       {variant === "floorplan" && (
         <>
-          <motion.div className={`absolute right-[-10%] top-[-5%] w-[85%] md:w-[60%] text-white/[0.18] arch-gradient-tint ${drawClass}`}
+          <motion.div className={`absolute right-[-10%] top-[-5%] w-[85%] md:w-[60%] text-[#1a1a1a]/[0.18] arch-gradient-tint ${drawClass}`}
             style={{ y: y2, opacity, x: x1, rotate: rotate2 }}>
             <ChaletAlpineDrawing />
           </motion.div>
-          <motion.div className={`absolute right-[-15%] bottom-[-5%] w-[70%] md:w-[50%] text-white/[0.15] arch-pulse arch-gradient-tint`}
+          <motion.div className={`absolute right-[-15%] bottom-[-5%] w-[70%] md:w-[50%] text-[#1a1a1a]/[0.15] arch-pulse arch-gradient-tint`}
             style={{ y: y1, opacity, x: x1 }}>
             <VillaLuxuryDrawing />
           </motion.div>
@@ -53,7 +53,7 @@ export function ArchBackground({ variant, className = "" }: ArchBackgroundProps)
       )}
 
       {variant === "building" && (
-        <motion.div className={`absolute right-[-5%] top-[-10%] w-[55%] md:w-[40%] text-white/[0.2] arch-float arch-gradient-tint ${drawClass}`}
+        <motion.div className={`absolute right-[-5%] top-[-10%] w-[55%] md:w-[40%] text-[#1a1a1a]/[0.2] arch-float arch-gradient-tint ${drawClass}`}
           style={{ y: y1, opacity, x: x1 }}>
           <TowerResidenceDrawing />
         </motion.div>
@@ -61,11 +61,11 @@ export function ArchBackground({ variant, className = "" }: ArchBackgroundProps)
 
       {variant === "mixed" && (
         <>
-          <motion.div className={`absolute right-[-10%] top-[-10%] w-[55%] md:w-[40%] text-white/[0.08] arch-gradient-tint ${drawClass}`}
+          <motion.div className={`absolute right-[-10%] top-[-10%] w-[55%] md:w-[40%] text-[#1a1a1a]/[0.08] arch-gradient-tint ${drawClass}`}
             style={{ y: y2, opacity, x: x1, rotate: rotate2 }}>
             <InteriorPenthouseDrawing />
           </motion.div>
-          <motion.div className={`absolute right-[-5%] bottom-[5%] w-[40%] md:w-[28%] text-white/[0.07] arch-shimmer arch-gradient-tint`}
+          <motion.div className={`absolute right-[-5%] bottom-[5%] w-[40%] md:w-[28%] text-[#1a1a1a]/[0.07] arch-shimmer arch-gradient-tint`}
             style={{ y: y1, opacity, x: x1, rotate: rotate1 }}>
             <TowerResidenceDrawing />
           </motion.div>

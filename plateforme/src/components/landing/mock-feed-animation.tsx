@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Home, Search, Plus, User, Bell } from "lucide-react";
 
 const stories = [
-  { name: "Votre story", color: "from-[#1e9df1] to-[#d4a832]", initials: "+" },
+  { name: "Votre story", color: "from-[#1e9df1] to-[#1e9df1]", initials: "+" },
   { name: "Sophie M.", color: "from-pink-500 to-rose-500", initials: "SM" },
   { name: "Marc D.", color: "from-blue-500 to-cyan-500", initials: "MD" },
   { name: "Amira F.", color: "from-purple-500 to-violet-500", initials: "AF" },
@@ -16,7 +16,7 @@ const posts = [
     author: "Sophie Martin",
     initials: "SM",
     role: "Hôte",
-    roleColor: "bg-amber-500/20 text-amber-400",
+    roleColor: "bg-amber-500/20 text-[#1e9df1]",
     time: "2h",
     text: "Nouvelle villa disponible à Lausanne ! Vue lac imprenable, 4 chambres, piscine. Rendement locatif estimé à 6.2%",
     image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=70",
@@ -28,7 +28,7 @@ const posts = [
     author: "Marc Dubois",
     initials: "MD",
     role: "Investisseur",
-    roleColor: "bg-emerald-500/20 text-emerald-400",
+    roleColor: "bg-emerald-500/20 text-[#1e9df1]",
     time: "5h",
     text: "Mon analyse du marché immobilier genevois Q1 2026 : les prix se stabilisent, opportunités en périphérie",
     image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&q=70",
@@ -76,9 +76,9 @@ export function MockFeedAnimation() {
   }, []);
 
   return (
-    <div className="w-full h-full bg-[#0a0a0a] rounded-2xl overflow-hidden relative flex flex-col" style={{ fontFamily: "system-ui, sans-serif" }}>
+    <div className="w-full h-full bg-white rounded-2xl overflow-hidden relative flex flex-col" style={{ fontFamily: "system-ui, sans-serif" }}>
       {/* Status bar */}
-      <div className="flex items-center justify-between px-4 py-2 text-white/40 text-[10px]">
+      <div className="flex items-center justify-between px-4 py-2 text-[#1a1a1a]/40 text-[10px]">
         <span>9:41</span>
         <div className="flex items-center gap-1">
           <div className="w-4 h-2 border border-white/30 rounded-sm relative">
@@ -89,10 +89,10 @@ export function MockFeedAnimation() {
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2">
-        <span className="text-white font-semibold text-sm">E-<span className="text-[#1e9df1]">Dome</span></span>
+        <span className="text-[#1a1a1a] font-semibold text-sm">E-<span className="text-[#1e9df1]">Dome</span></span>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Bell size={16} className="text-white/60" />
+            <Bell size={16} className="text-[#1a1a1a]/60" />
             {showNotif && (
               <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#1e9df1] rounded-full animate-pulse" />
             )}
@@ -105,7 +105,7 @@ export function MockFeedAnimation() {
         {stories.map((story, i) => (
           <div key={story.name} className="flex flex-col items-center gap-1 shrink-0">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center text-[10px] font-bold text-white transition-all duration-500 ${
+              className={`w-12 h-12 rounded-full flex items-center justify-center text-[10px] font-bold text-[#1a1a1a] transition-all duration-500 ${
                 activeStory === i ? "scale-110 ring-2 ring-[#1e9df1]" : ""
               }`}
               style={{
@@ -121,12 +121,12 @@ export function MockFeedAnimation() {
                 </div>
               )}
             </div>
-            <span className="text-white/40 text-[8px] truncate w-12 text-center">{story.name}</span>
+            <span className="text-[#1a1a1a]/40 text-[8px] truncate w-12 text-center">{story.name}</span>
           </div>
         ))}
       </div>
 
-      <div className="h-px bg-white/5 mx-4" />
+      <div className="h-px bg-[#1a1a1a]/5 mx-4" />
 
       {/* Feed */}
       <div className="flex-1 overflow-hidden px-0">
@@ -141,21 +141,21 @@ export function MockFeedAnimation() {
           >
             {/* Post header */}
             <div className="flex items-center gap-2.5 px-4 py-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1e9df1] to-[#d4a832] flex items-center justify-center text-[9px] font-bold text-black">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1e9df1] to-[#1e9df1] flex items-center justify-center text-[9px] font-bold text-black">
                 {post.initials}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-white text-xs font-medium">{post.author}</span>
+                  <span className="text-[#1a1a1a] text-xs font-medium">{post.author}</span>
                   <span className={`text-[8px] px-1.5 py-0.5 rounded-full ${post.roleColor}`}>{post.role}</span>
                 </div>
-                <span className="text-white/30 text-[9px]">{post.time}</span>
+                <span className="text-[#1a1a1a]/30 text-[9px]">{post.time}</span>
               </div>
-              <MoreHorizontal size={14} className="text-white/30" />
+              <MoreHorizontal size={14} className="text-[#1a1a1a]/30" />
             </div>
 
             {/* Post text */}
-            <p className="text-white/70 text-[10px] leading-relaxed px-4 mb-2">{post.text}</p>
+            <p className="text-[#1a1a1a]/70 text-[10px] leading-relaxed px-4 mb-2">{post.text}</p>
 
             {/* Hashtags */}
             <div className="flex gap-1.5 px-4 mb-2">
@@ -167,7 +167,7 @@ export function MockFeedAnimation() {
             {/* Post image */}
             <div className="relative mx-2 rounded-xl overflow-hidden mb-2">
               <img src={post.image} alt="" className="w-full h-28 object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent" />
             </div>
 
             {/* Actions */}
@@ -176,36 +176,36 @@ export function MockFeedAnimation() {
                 <Heart
                   size={14}
                   className={`transition-all duration-300 ${
-                    likedPosts.includes(i) ? "text-red-500 fill-red-500 scale-125" : "text-white/50"
+                    likedPosts.includes(i) ? "text-red-500 fill-red-500 scale-125" : "text-[#1a1a1a]/50"
                   }`}
                 />
-                <span className={`text-[10px] ${likedPosts.includes(i) ? "text-red-400" : "text-white/40"}`}>
+                <span className={`text-[10px] ${likedPosts.includes(i) ? "text-red-400" : "text-[#1a1a1a]/40"}`}>
                   {post.likes + (likedPosts.includes(i) ? 1 : 0)}
                 </span>
               </button>
               <button className="flex items-center gap-1">
-                <MessageCircle size={14} className="text-white/50" />
-                <span className="text-white/40 text-[10px]">{post.comments}</span>
+                <MessageCircle size={14} className="text-[#1a1a1a]/50" />
+                <span className="text-[#1a1a1a]/40 text-[10px]">{post.comments}</span>
               </button>
-              <button><Share2 size={14} className="text-white/50" /></button>
+              <button><Share2 size={14} className="text-[#1a1a1a]/50" /></button>
               <div className="flex-1" />
-              <button><Bookmark size={14} className="text-white/50" /></button>
+              <button><Bookmark size={14} className="text-[#1a1a1a]/50" /></button>
             </div>
 
-            <div className="h-px bg-white/5 mx-4" />
+            <div className="h-px bg-[#1a1a1a]/5 mx-4" />
           </div>
         ))}
       </div>
 
       {/* Bottom nav */}
-      <div className="flex items-center justify-around py-2.5 border-t border-white/5 bg-[#0a0a0a]">
+      <div className="flex items-center justify-around py-2.5 border-t border-white/5 bg-white">
         <Home size={16} className="text-[#1e9df1]" />
-        <Search size={16} className="text-white/30" />
+        <Search size={16} className="text-[#1a1a1a]/30" />
         <div className="w-8 h-8 rounded-full bg-[#1e9df1] flex items-center justify-center -mt-3 shadow-lg shadow-[#1e9df1]/20">
           <Plus size={16} className="text-black" />
         </div>
-        <MessageCircle size={16} className="text-white/30" />
-        <User size={16} className="text-white/30" />
+        <MessageCircle size={16} className="text-[#1a1a1a]/30" />
+        <User size={16} className="text-[#1a1a1a]/30" />
       </div>
 
       {/* Notification toast */}
@@ -214,10 +214,10 @@ export function MockFeedAnimation() {
           className="absolute top-12 left-3 right-3 rounded-xl p-3 flex items-center gap-3 animate-slide-up"
           style={{ background: "rgba(30, 157, 242, 0.15)", backdropFilter: "blur(12px)", border: "1px solid rgba(30, 157, 242,0.3)" }}
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-[9px] font-bold text-white shrink-0">AF</div>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-[9px] font-bold text-[#1a1a1a] shrink-0">AF</div>
           <div className="flex-1 min-w-0">
-            <p className="text-white text-[10px] font-medium">Amira F. a aimé votre bien</p>
-            <p className="text-white/40 text-[8px]">Villa Lausanne — il y a 2 min</p>
+            <p className="text-[#1a1a1a] text-[10px] font-medium">Amira F. a aimé votre bien</p>
+            <p className="text-[#1a1a1a]/40 text-[8px]">Villa Lausanne — il y a 2 min</p>
           </div>
           <Heart size={12} className="text-red-400 fill-red-400 shrink-0" />
         </div>

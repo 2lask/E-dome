@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -133,7 +133,7 @@ function SectionHeading({
         <span className="text-[#1e9df1]">{title2}</span>
       </motion.h2>
       {description && (
-        <motion.div {...fadeUp} className="text-gray-400 text-base sm:text-lg leading-relaxed font-light">
+        <motion.div {...fadeUp} className="text-[#1a1a1a]/50 text-base sm:text-lg leading-relaxed font-light">
           {description}
         </motion.div>
       )}
@@ -194,10 +194,10 @@ function HeroBenefitsAccordion({
       : "Avantages membres fondateurs";
 
   return (
-    <div className="border-l border-neutral-800 pl-8 max-w-md">
+    <div className="border-l border-[#1a1a1a]/10 pl-8 max-w-md">
       <div className="flex items-center gap-3 mb-6">
         <span className="block w-8 h-px bg-white" />
-        <p className="text-white text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
+        <p className="text-[#1a1a1a] text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
           {eyebrow}
         </p>
       </div>
@@ -216,7 +216,7 @@ function HeroBenefitsAccordion({
           const Icon = ICONS[i];
           const isOpen = open.includes(i);
           return (
-            <li key={i} className="border-t border-neutral-800 first:border-t-0">
+            <li key={i} className="border-t border-[#1a1a1a]/10 first:border-t-0">
               <button
                 type="button"
                 onClick={() => toggle(i)}
@@ -228,18 +228,18 @@ function HeroBenefitsAccordion({
                 <span
                   className={`flex items-center justify-center w-7 h-7 rounded-full border transition-colors duration-300 ${
                     isOpen
-                      ? "border-[#f5b945] bg-[#f5b945] text-black"
-                      : "border-[#f5b945]/40 bg-[#f5b945]/5 text-[#f5b945] group-hover:bg-[#f5b945] group-hover:text-black"
+                      ? "border-[#1e9df1] bg-[#1e9df1] text-black"
+                      : "border-[#1e9df1]/40 bg-[#1e9df1]/5 text-[#1e9df1] group-hover:bg-[#1e9df1] group-hover:text-black"
                   }`}
                 >
                   <Icon size={13} strokeWidth={1.8} />
                 </span>
                 <span
                   className={`block h-px transition-all duration-300 ${
-                    isOpen ? "w-5 bg-[#1e9df1]" : "w-3 bg-neutral-700 group-hover:w-5 group-hover:bg-[#1e9df1]"
+                    isOpen ? "w-5 bg-[#1e9df1]" : "w-3 bg-[#e0e0e0] group-hover:w-5 group-hover:bg-[#1e9df1]"
                   }`}
                 />
-                <span className="text-white text-[0.72rem] font-medium uppercase tracking-[0.15em] flex-1">
+                <span className="text-[#1a1a1a] text-[0.72rem] font-medium uppercase tracking-[0.15em] flex-1">
                   {b.title}
                 </span>
                 <ChevronDown
@@ -259,7 +259,7 @@ function HeroBenefitsAccordion({
                     transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                     className="overflow-hidden"
                   >
-                    <p className="text-gray-400 text-[0.7rem] leading-relaxed font-light pl-10 pr-2 pb-3">
+                    <p className="text-[#1a1a1a]/50 text-[0.7rem] leading-relaxed font-light pl-10 pr-2 pb-3">
                       {b.desc}
                     </p>
                   </motion.div>
@@ -360,7 +360,7 @@ function MoteurEconomiqueSlide({
     lang === "en" ? (
       <>
         E-Dome rebuilds the financial mechanics of real estate around{" "}
-        <span className="text-white font-semibold">
+        <span className="text-[#1a1a1a] font-semibold">
           a single principle: value stays where it's created
         </span>
         . No opaque margins, no fees stacked on top of the price, no invisible
@@ -370,7 +370,7 @@ function MoteurEconomiqueSlide({
     ) : lang === "th" ? (
       <>
         E-Dome สร้างกลไกการเงินของอสังหาฯ ขึ้นใหม่บน{" "}
-        <span className="text-white font-semibold">
+        <span className="text-[#1a1a1a] font-semibold">
           หลักการเดียว: คุณค่าอยู่กับคนที่สร้างมัน
         </span>
         . ไม่มีกำไรซ่อน ไม่มีค่าใช้จ่ายเพิ่มในราคา ไม่มีรายได้ที่มองไม่เห็น ทุกอย่างถูกติดตาม
@@ -379,7 +379,7 @@ function MoteurEconomiqueSlide({
     ) : (
       <>
         E-Dome rebâtit la mécanique financière de l'immobilier autour d'{" "}
-        <span className="text-white font-semibold">
+        <span className="text-[#1a1a1a] font-semibold">
           un seul principe : la valeur reste là où elle se crée
         </span>
         . Pas de marges opaques, pas de frais ajoutés au prix, pas de revenus
@@ -396,12 +396,12 @@ function MoteurEconomiqueSlide({
     },
     {
       icon: <ShieldCheck size={13} />,
-      color: "#a855f7",
+      color: "#1e9df1",
       label: lang === "en" ? "100% traceable" : lang === "th" ? "ตรวจสอบได้ 100%" : "100 % traçable",
     },
     {
       icon: <LineChart size={13} />,
-      color: "#f59e0b",
+      color: "#1e9df1",
       label:
         lang === "en"
           ? "Personal dashboard"
@@ -420,32 +420,32 @@ function MoteurEconomiqueSlide({
     lang === "en"
       ? [
           { icon: <Home size={14} />, color: "#1e9df1", tag: "Bring a host", rate: "% forever (active account)" },
-          { icon: <Users size={14} />, color: "#22c55e", tag: "Bring a client", rate: "% per booking" },
-          { icon: <MapPin size={14} />, color: "#a855f7", tag: "Bring a property", rate: "% on the sale" },
-          { icon: <GraduationCap size={14} />, color: "#f59e0b", tag: "Bring a course", rate: "% on every sale" },
-          { icon: <Briefcase size={14} />, color: "#06b6d4", tag: "Bring a service", rate: "% of the quote" },
-          { icon: <Mic size={14} />, color: "#ef4444", tag: "Bring an event", rate: "% per ticket" },
+          { icon: <Users size={14} />, color: "#1e9df1", tag: "Bring a client", rate: "% per booking" },
+          { icon: <MapPin size={14} />, color: "#1e9df1", tag: "Bring a property", rate: "% on the sale" },
+          { icon: <GraduationCap size={14} />, color: "#1e9df1", tag: "Bring a course", rate: "% on every sale" },
+          { icon: <Briefcase size={14} />, color: "#1e9df1", tag: "Bring a service", rate: "% of the quote" },
+          { icon: <Mic size={14} />, color: "#1e9df1", tag: "Bring an event", rate: "% per ticket" },
         ]
       : lang === "th"
         ? [
             { icon: <Home size={14} />, color: "#1e9df1", tag: "นำเจ้าของบ้าน", rate: "% ตลอดไป (บัญชีใช้งาน)" },
-            { icon: <Users size={14} />, color: "#22c55e", tag: "นำลูกค้า", rate: "% ต่อการจอง" },
-            { icon: <MapPin size={14} />, color: "#a855f7", tag: "นำทรัพย์สิน", rate: "% ของการขาย" },
-            { icon: <GraduationCap size={14} />, color: "#f59e0b", tag: "นำคอร์ส", rate: "% ทุกการขาย" },
-            { icon: <Briefcase size={14} />, color: "#06b6d4", tag: "นำบริการ", rate: "% ใบเสนอราคา" },
-            { icon: <Mic size={14} />, color: "#ef4444", tag: "นำอีเวนต์", rate: "% ต่อบัตร" },
+            { icon: <Users size={14} />, color: "#1e9df1", tag: "นำลูกค้า", rate: "% ต่อการจอง" },
+            { icon: <MapPin size={14} />, color: "#1e9df1", tag: "นำทรัพย์สิน", rate: "% ของการขาย" },
+            { icon: <GraduationCap size={14} />, color: "#1e9df1", tag: "นำคอร์ส", rate: "% ทุกการขาย" },
+            { icon: <Briefcase size={14} />, color: "#1e9df1", tag: "นำบริการ", rate: "% ใบเสนอราคา" },
+            { icon: <Mic size={14} />, color: "#1e9df1", tag: "นำอีเวนต์", rate: "% ต่อบัตร" },
           ]
         : [
             { icon: <Home size={14} />, color: "#1e9df1", tag: "Amener un hôte", rate: "% pour toujours (compte actif)" },
-            { icon: <Users size={14} />, color: "#22c55e", tag: "Amener un client", rate: "% par réservation" },
-            { icon: <MapPin size={14} />, color: "#a855f7", tag: "Amener un bien", rate: "% sur la vente" },
-            { icon: <GraduationCap size={14} />, color: "#f59e0b", tag: "Amener une formation", rate: "% à chaque vente" },
-            { icon: <Briefcase size={14} />, color: "#06b6d4", tag: "Amener un prestataire", rate: "% du devis" },
-            { icon: <Mic size={14} />, color: "#ef4444", tag: "Amener un événement", rate: "% par billet" },
+            { icon: <Users size={14} />, color: "#1e9df1", tag: "Amener un client", rate: "% par réservation" },
+            { icon: <MapPin size={14} />, color: "#1e9df1", tag: "Amener un bien", rate: "% sur la vente" },
+            { icon: <GraduationCap size={14} />, color: "#1e9df1", tag: "Amener une formation", rate: "% à chaque vente" },
+            { icon: <Briefcase size={14} />, color: "#1e9df1", tag: "Amener un prestataire", rate: "% du devis" },
+            { icon: <Mic size={14} />, color: "#1e9df1", tag: "Amener un événement", rate: "% par billet" },
           ];
 
   return (
-    <section className="relative scroll-slide bg-black overflow-hidden">
+    <section className="relative scroll-slide bg-white overflow-hidden">
       {/* ── BG : graphique linéaire qui se trace de bas-gauche en haut-droite,
               piloté par le progress du slide (la courbe naît au scroll). ── */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -475,7 +475,7 @@ function MoteurEconomiqueSlide({
             <linearGradient id="rev-line" x1="0" y1="1" x2="1" y2="0">
               <stop offset="0%" stopColor="#1e9df1" stopOpacity="0.05" />
               <stop offset="40%" stopColor="#1e9df1" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#22c55e" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#1e9df1" stopOpacity="0.9" />
             </linearGradient>
             <linearGradient id="rev-area" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#1e9df1" stopOpacity="0.22" />
@@ -536,8 +536,8 @@ function MoteurEconomiqueSlide({
           {/* Points clés — apparaissent en cascade après le tracé. */}
           <RevenueDot x={250} y={685} color="#1e9df1" delay={0.7} activated={activated} />
           <RevenueDot x={500} y={555} color="#1e9df1" delay={0.9} activated={activated} />
-          <RevenueDot x={750} y={360} color="#22c55e" delay={1.1} activated={activated} />
-          <RevenueDot x={1000} y={175} color="#22c55e" delay={1.3} activated={activated} />
+          <RevenueDot x={750} y={360} color="#1e9df1" delay={1.1} activated={activated} />
+          <RevenueDot x={1000} y={175} color="#1e9df1" delay={1.3} activated={activated} />
         </svg>
 
         {/* Voile radial central pour garder le texte lisible */}
@@ -571,7 +571,7 @@ function MoteurEconomiqueSlide({
           </motion.h2>
           <motion.p
             {...fadeUp}
-            className="text-gray-300 text-sm sm:text-base leading-relaxed font-light"
+            className="text-[#1a1a1a]/70 text-sm sm:text-base leading-relaxed font-light"
           >
             {lead}
           </motion.p>
@@ -585,7 +585,7 @@ function MoteurEconomiqueSlide({
           {chips.map((c, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-900/80 border border-neutral-800 backdrop-blur-sm"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f5f5f5]/80 border border-[#1a1a1a]/10 backdrop-blur-sm"
             >
               <span
                 className="w-5 h-5 rounded-full flex items-center justify-center"
@@ -597,7 +597,7 @@ function MoteurEconomiqueSlide({
               >
                 {c.icon}
               </span>
-              <span className="text-[0.72rem] sm:text-xs font-semibold text-white tracking-tight whitespace-nowrap">
+              <span className="text-[0.72rem] sm:text-xs font-semibold text-[#1a1a1a] tracking-tight whitespace-nowrap">
                 {c.label}
               </span>
             </div>
@@ -609,7 +609,7 @@ function MoteurEconomiqueSlide({
               que les hôtes peuvent ajouter à leurs annonces, (3) programme
               d'affiliation paramétrable. */}
         <motion.div {...fadeUp} className="max-w-5xl mx-auto px-4 mb-6">
-          <p className="text-center text-[0.6rem] tracking-[0.22em] uppercase text-gray-500 font-bold mb-3">
+          <p className="text-center text-[0.6rem] tracking-[0.22em] uppercase text-[#1a1a1a]/40 font-bold mb-3">
             {lang === "en"
               ? "What E-Dome brings"
               : lang === "th"
@@ -621,7 +621,7 @@ function MoteurEconomiqueSlide({
               ? [
                   {
                     icon: <Handshake size={14} />,
-                    color: "#a855f7",
+                    color: "#1e9df1",
                     eyebrow: "A shared commission",
                     title: "Business referrer program",
                     body: "Digital referral marketing — the referrer activates the function after identity verification (KYC), then generates their own link. Each conversion through it credits a share of E-Dome's own platform revenue to the referrer — tracked in real time, never added on top of the price. The seller, organiser or service provider can disable the programme on any listing or piece of content. The referrer never negotiates a price, never represents either party, is never paid directly by buyer or seller, and is neither an estate agent nor a broker. Applies across every pôle.",
@@ -635,7 +635,7 @@ function MoteurEconomiqueSlide({
                   },
                   {
                     icon: <Wallet size={14} />,
-                    color: "#22c55e",
+                    color: "#1e9df1",
                     eyebrow: "Per-pôle model",
                     title: "Transparent fees, differentiated by pôle",
                     body: "Sales between individuals → flat platform fee (500 CHF below 1M, 2,500 CHF above) — independent of the sale price, paid at publication, never a percentage. Long-term rental → flat listing fee (150 / 250 / 400 CHF by lease length). Short-term rental, services, events, lives, training, e-commerce → marketplace commission (4–12 % depending on the pôle). Agency partnerships → B2B revenue share on the agency's own commission — the agency keeps its licence and its margin. Most of the value stays with the seller, and nothing is added to the buyer's price.",
@@ -645,7 +645,7 @@ function MoteurEconomiqueSlide({
                 ? [
                     {
                       icon: <Handshake size={14} />,
-                      color: "#a855f7",
+                      color: "#1e9df1",
                       eyebrow: "ค่าคอมมิชชันที่แบ่ง",
                       title: "โปรแกรมผู้แนะนำธุรกิจ",
                       body: "การตลาดแบบ Referral ดิจิทัล — ผู้แนะนำเปิดใช้งานหลังตรวจยืนยันตัวตน (KYC) จากนั้นสร้างลิงก์ของตนเอง ทุกการแปลงผ่านลิงก์ให้ส่วนแบ่งจากรายได้ของ E-Dome แก่ผู้แนะนำ ตรวจสอบได้แบบเรียลไทม์ ไม่บวกเพิ่มในราคา ผู้ขาย ผู้จัดงาน หรือผู้ให้บริการ สามารถปิดโปรแกรมในประกาศหรือเนื้อหาของตนได้ตลอด ผู้แนะนำไม่ต่อรองราคา ไม่เป็นตัวแทนคู่สัญญาใด ไม่รับเงินตรงจากผู้ซื้อหรือผู้ขาย และไม่ใช่ทั้งนายหน้าและตัวแทนอสังหาฯ ใช้ได้ทุกพอล",
@@ -659,7 +659,7 @@ function MoteurEconomiqueSlide({
                     },
                     {
                       icon: <Wallet size={14} />,
-                      color: "#22c55e",
+                      color: "#1e9df1",
                       eyebrow: "โมเดลตามแต่ละพอล",
                       title: "ค่าธรรมเนียมโปร่งใส แตกต่างตามพอล",
                       body: "ซื้อขายระหว่างบุคคล → ค่าธรรมเนียมแพลตฟอร์มแบบคงที่ (500 CHF สำหรับทรัพย์ต่ำกว่า 1 ล้าน, 2,500 CHF สำหรับทรัพย์เกิน 1 ล้าน) — ไม่ขึ้นกับราคาขาย เก็บตอนลงประกาศ ไม่ใช่เปอร์เซ็นต์ เช่ารายยาว → ค่าธรรมเนียมคงที่ (150 / 250 / 400 CHF ตามระยะสัญญา) เช่าระยะสั้น บริการ อีเวนต์ ไลฟ์ การฝึกอบรม อีคอมเมิร์ซ → ค่าคอมมิชชัน Marketplace (4–12 % ตามพอล) ความร่วมมือกับเอเจนซี่ → Revenue share B2B จากค่าคอมมิชชันของเอเจนซี่เอง — เอเจนซี่ถือใบอนุญาตและกำไรของตน ส่วนใหญ่อยู่กับผู้ขาย และผู้ซื้อไม่จ่ายเพิ่ม",
@@ -668,7 +668,7 @@ function MoteurEconomiqueSlide({
                 : [
                     {
                       icon: <Handshake size={14} />,
-                      color: "#a855f7",
+                      color: "#1e9df1",
                       eyebrow: "Une commission partagée",
                       title: "Programme apporteur d'affaires",
                       body: "Referral marketing digital — l'apporteur active la fonction après vérification d'identité (KYC), puis génère son lien personnel. Chaque conversion via ce lien reverse une part des revenus de plateforme d'E-Dome à l'apporteur — tracée en temps réel, jamais ajoutée au prix. Le vendeur, l'organisateur ou le prestataire peut désactiver le programme sur chaque annonce ou contenu. L'apporteur ne négocie aucun prix, ne représente aucune partie, n'est jamais payé directement par le vendeur ou l'acheteur, et n'est ni agent immobilier ni courtier. Applicable sur tous les pôles.",
@@ -682,7 +682,7 @@ function MoteurEconomiqueSlide({
                     },
                     {
                       icon: <Wallet size={14} />,
-                      color: "#22c55e",
+                      color: "#1e9df1",
                       eyebrow: "Modèle par pôle",
                       title: "Des frais transparents, différenciés par pôle",
                       body: "Ventes entre particuliers → frais fixes de plateforme (500 CHF jusqu'à 1 M, 2 500 CHF au-delà) — indépendants du prix, dus à la publication, jamais un pourcentage. Location longue durée → frais fixes (150 / 250 / 400 CHF selon la durée du bail). Location courte, services, événements, lives, formations, e-commerce → commission marketplace (4–12 % selon le pôle). Partenariats agences → revenue share B2B sur la commission de l'agence — l'agence garde sa licence et sa marge. L'essentiel reste chez celui qui vend, et rien n'est ajouté au prix payé par le client.",
@@ -695,7 +695,7 @@ function MoteurEconomiqueSlide({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex flex-col gap-2 p-3.5 rounded-xl bg-neutral-900/70 backdrop-blur-sm border border-neutral-800 hover:border-neutral-700 transition-colors"
+                className="flex flex-col gap-2 p-3.5 rounded-xl bg-[#f5f5f5]/70 backdrop-blur-sm border border-[#1a1a1a]/10 hover:border-[#1a1a1a]/15 transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <span
@@ -715,10 +715,10 @@ function MoteurEconomiqueSlide({
                     {card.eyebrow}
                   </span>
                 </div>
-                <h4 className="text-[0.85rem] sm:text-[0.9rem] font-bold text-white tracking-tight leading-tight">
+                <h4 className="text-[0.85rem] sm:text-[0.9rem] font-bold text-[#1a1a1a] tracking-tight leading-tight">
                   {card.title}
                 </h4>
-                <p className="text-[0.7rem] sm:text-[0.74rem] text-gray-400 leading-snug font-light">
+                <p className="text-[0.7rem] sm:text-[0.74rem] text-[#1a1a1a]/50 leading-snug font-light">
                   {card.body}
                 </p>
               </motion.div>
@@ -734,18 +734,18 @@ function MoteurEconomiqueSlide({
           <div className="flex flex-col sm:flex-row items-stretch">
             {/* Côté gauche : pictogramme + libellé fort */}
             <div className="flex items-center gap-3 px-4 py-3 sm:pr-3 sm:border-r sm:border-emerald-500/20">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-emerald-500/15 text-[#1e9df1] border border-emerald-500/30">
                 <ShieldCheck size={18} />
               </div>
               <div className="leading-tight">
-                <p className="text-[0.6rem] tracking-[0.2em] uppercase text-emerald-400 font-bold">
+                <p className="text-[0.6rem] tracking-[0.2em] uppercase text-[#1e9df1] font-bold">
                   {lang === "en"
                     ? "Important"
                     : lang === "th"
                       ? "สำคัญ"
                       : "À savoir"}
                 </p>
-                <p className="text-[0.95rem] sm:text-base font-bold text-white tracking-tight mt-0.5">
+                <p className="text-[0.95rem] sm:text-base font-bold text-[#1a1a1a] tracking-tight mt-0.5">
                   {lang === "en"
                     ? "Zero extra cost for the host or client."
                     : lang === "th"
@@ -757,33 +757,33 @@ function MoteurEconomiqueSlide({
 
             {/* Côté droit : phrase d'explication centrée */}
             <div className="flex-1 px-4 py-3 flex items-center">
-              <p className="text-[0.78rem] sm:text-sm text-gray-300 font-light leading-snug">
+              <p className="text-[0.78rem] sm:text-sm text-[#1a1a1a]/70 font-light leading-snug">
                 {lang === "en" ? (
                   <>
                     The referrer's commission is{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-[#1a1a1a] font-semibold">
                       taken from E-Dome's own share
                     </span>{" "}
                     of the transaction —{" "}
-                    <span className="text-white font-semibold">never added on top</span>{" "}
+                    <span className="text-[#1a1a1a] font-semibold">never added on top</span>{" "}
                     of the price. Bringing a contact never makes the deal more
                     expensive.
                   </>
                 ) : lang === "th" ? (
                   <>
                     ค่าคอมมิชชันของผู้แนะนำ{" "}
-                    <span className="text-white font-semibold">หักจากส่วนของ E-Dome</span>{" "}
+                    <span className="text-[#1a1a1a] font-semibold">หักจากส่วนของ E-Dome</span>{" "}
                     เท่านั้น —{" "}
-                    <span className="text-white font-semibold">ไม่เพิ่มเข้าราคา</span>{" "}
+                    <span className="text-[#1a1a1a] font-semibold">ไม่เพิ่มเข้าราคา</span>{" "}
                     การพาผู้ติดต่อมาจึงไม่ทำให้ดีลแพงขึ้น
                   </>
                 ) : (
                   <>
                     La commission de l'apporteur est{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-[#1a1a1a] font-semibold">
                       prélevée sur la part d'E-Dome
                     </span>{" "}
-                    — <span className="text-white font-semibold">jamais ajoutée</span> au
+                    — <span className="text-[#1a1a1a] font-semibold">jamais ajoutée</span> au
                     prix. Amener un contact n'a jamais rendu une transaction plus chère.
                   </>
                 )}
@@ -794,22 +794,22 @@ function MoteurEconomiqueSlide({
 
         {/* Trust closing line */}
         <motion.div {...fadeUp} className="text-center px-4">
-          <p className="text-gray-400 text-[0.78rem] sm:text-sm leading-relaxed font-light">
+          <p className="text-[#1a1a1a]/50 text-[0.78rem] sm:text-sm leading-relaxed font-light">
             {lang === "en" ? (
               <>
                 100% traceable. 100% automatic.{" "}
-                <span className="text-white font-semibold">No hidden cost</span> for the
+                <span className="text-[#1a1a1a] font-semibold">No hidden cost</span> for the
                 host or the client.
               </>
             ) : lang === "th" ? (
               <>
                 ตรวจสอบได้ 100% อัตโนมัติ 100%{" "}
-                <span className="text-white font-semibold">ไม่มีค่าใช้จ่ายแอบแฝง</span>
+                <span className="text-[#1a1a1a] font-semibold">ไม่มีค่าใช้จ่ายแอบแฝง</span>
               </>
             ) : (
               <>
                 100 % traçable. 100 % automatique.{" "}
-                <span className="text-white font-semibold">Aucun coût caché</span> pour
+                <span className="text-[#1a1a1a] font-semibold">Aucun coût caché</span> pour
                 l'hôte ou le client.
               </>
             )}
@@ -894,25 +894,25 @@ function HomePageContent() {
     {
       titleKey: "roadmap.phase1_title",
       status: t("roadmap.status_done"),
-      statusColor: "bg-emerald-900/40 text-emerald-300",
+      statusColor: "bg-[#1e9df1]/10 text-[#1e9df1]",
       items: [1, 2, 3, 4, 5, 6, 7].map((n) => `roadmap.phase1_item${n}`),
     },
     {
       titleKey: "roadmap.phase2_title",
       status: t("roadmap.status_current"),
-      statusColor: "bg-amber-900/40 text-amber-300",
+      statusColor: "bg-[#1e9df1]/10 text-[#1e9df1]",
       items: [1, 2, 3, 4, 5].map((n) => `roadmap.phase2_item${n}`),
     },
     {
       titleKey: "roadmap.phase3_title",
       status: t("roadmap.status_upcoming"),
-      statusColor: "bg-neutral-800 text-gray-400",
+      statusColor: "bg-[#eeeeee] text-[#1a1a1a]/50",
       items: [1, 2, 3, 4, 5, 6].map((n) => `roadmap.phase3_item${n}`),
     },
     {
       titleKey: "roadmap.phase4_title",
       status: t("roadmap.status_upcoming"),
-      statusColor: "bg-neutral-800 text-gray-400",
+      statusColor: "bg-[#eeeeee] text-[#1a1a1a]/50",
       items: [1, 2, 3, 4, 5].map((n) => `roadmap.phase4_item${n}`),
     },
   ];
@@ -936,10 +936,10 @@ function HomePageContent() {
   ];
 
   return (
-    <div className="bg-black text-white antialiased" style={{ fontFamily: "'Poppins', system-ui, sans-serif" }}>
+    <div className="bg-white text-[#1a1a1a] antialiased" style={{ fontFamily: "'Poppins', system-ui, sans-serif" }}>
 
       {/* ═══════════════════════ NAVBAR ═══════════════════════ */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-neutral-800">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-[#1a1a1a]/10">
         <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
           <a href="#" className="font-semibold text-2xl tracking-tight">
             E-<span className="text-[#1e9df1]">Dome</span>
@@ -955,7 +955,7 @@ function HomePageContent() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-gray-400 hover:text-[#1e9df1] text-sm font-medium transition-colors"
+                className="text-[#1a1a1a]/50 hover:text-[#1e9df1] text-sm font-medium transition-colors"
               >
                 {link.label}
               </a>
@@ -963,15 +963,15 @@ function HomePageContent() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-0.5 rounded-lg border border-neutral-800 overflow-hidden">
+            <div className="flex items-center gap-0.5 rounded-lg border border-[#1a1a1a]/10 overflow-hidden">
               {(["fr", "en", "th"] as const).map((l) => (
                 <button
                   key={l}
                   onClick={() => setLang(l)}
                   className={`text-xs font-medium px-2.5 py-1.5 transition-colors uppercase ${
                     lang === l
-                      ? "bg-[#1e9df1] text-white"
-                      : "text-gray-400 hover:text-gray-700 hover:bg-gray-50"
+                      ? "bg-[#1e9df1] text-[#1a1a1a]"
+                      : "text-[#1a1a1a]/50 hover:text-gray-700 hover:bg-gray-50"
                   }`}
                 >
                   {l}
@@ -980,7 +980,7 @@ function HomePageContent() {
             </div>
             <Link
               href="#inscriptions"
-              className="hidden sm:inline-flex bg-[#1e9df1] text-white rounded-none px-5 py-2 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
+              className="hidden sm:inline-flex bg-[#1e9df1] text-[#1a1a1a] rounded-none px-5 py-2 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
             >
               {t("hero.cta")}
             </Link>
@@ -990,7 +990,7 @@ function HomePageContent() {
 
       <ScrollStage>
       {/* ═══════════════════════ HERO (left-aligned, brutaliste) ═══════════════════════ */}
-      <section className="scroll-slide bg-black relative overflow-hidden">
+      <section className="scroll-slide bg-white relative overflow-hidden">
         {/* Esquisse gratte-ciel — remplit toute la zone latérale droite et
             se dessine puis disparaît trait par trait au scroll de la slide
             (piloté par useSlideProgress du ScrollStage parent). */}
@@ -1007,18 +1007,18 @@ function HomePageContent() {
                 </p>
               </div>
               <h1
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-tight text-white leading-[1.02] mb-8"
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-tight text-[#1a1a1a] leading-[1.02] mb-8"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {t("hero.title1")}
                 <br />
                 <span className="text-[#1e9df1] italic">{t("hero.title2")}</span>
               </h1>
-              <p className="text-base sm:text-lg text-gray-400 leading-relaxed font-light mb-10 max-w-xl">
+              <p className="text-base sm:text-lg text-[#1a1a1a]/50 leading-relaxed font-light mb-10 max-w-xl">
                 {lang === "en" ? (
                   <>
                     Support the project by expressing your interest.{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-[#1a1a1a] font-semibold">
                       A simple questionnaire, free and with no commitment
                     </span>
                     , that proves real market demand and helps us build the platform that suits you.
@@ -1026,7 +1026,7 @@ function HomePageContent() {
                 ) : lang === "th" ? (
                   <>
                     สนับสนุนโครงการโดยการแสดงความสนใจของคุณ{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-[#1a1a1a] font-semibold">
                       แบบสอบถามง่ายๆ ฟรีและไม่มีข้อผูกมัด
                     </span>{" "}
                     ที่พิสูจน์ความต้องการที่แท้จริงของตลาด และช่วยเราสร้างแพลตฟอร์มที่เหมาะกับคุณ
@@ -1034,7 +1034,7 @@ function HomePageContent() {
                 ) : (
                   <>
                     Soutenez le projet en manifestant votre intérêt.{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-[#1a1a1a] font-semibold">
                       Un simple questionnaire, gratuit et sans engagement
                     </span>
                     , qui prouve une vraie demande sur le marché et nous aide à construire la plateforme qui vous correspond.
@@ -1044,13 +1044,13 @@ function HomePageContent() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link
                   href="#inscriptions"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1e9df1] text-white text-sm font-semibold hover:bg-[#1a8fd9] transition-all"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1e9df1] text-[#1a1a1a] text-sm font-semibold hover:bg-[#1a8fd9] transition-all"
                 >
                   {t("hero.cta")} <ArrowRight size={16} />
                 </Link>
                 <Link
                   href="#vision"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 border border-neutral-700 text-gray-300 text-sm font-medium hover:bg-neutral-900 hover:border-neutral-600 transition-all"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 border border-[#1a1a1a]/15 text-[#1a1a1a]/70 text-sm font-medium hover:bg-[#f5f5f5] hover:border-neutral-600 transition-all"
                 >
                   {t("hero.learn")}
                 </Link>
@@ -1080,7 +1080,7 @@ function HomePageContent() {
           print-style (numéro mono / phrase unique). Pas de cartes,
           pas d'icônes : que de la typographie et des règles
           horizontales. */}
-      <section id="probleme" className="scroll-slide bg-black relative overflow-hidden">
+      <section id="probleme" className="scroll-slide bg-white relative overflow-hidden">
         {/* Façade haute brutaliste (Le Corbusier-esque) en bleu, ancrée à
             gauche, avec parallaxe scroll vertical. */}
         <div className="hidden lg:block absolute left-[-3%] top-0 bottom-0 w-[18%] z-0 pointer-events-none">
@@ -1228,7 +1228,7 @@ function HomePageContent() {
                     {t("problem.label")}
                   </p>
                   <h2
-                    className="text-3xl sm:text-4xl md:text-5xl leading-[1.05] text-white mb-4"
+                    className="text-3xl sm:text-4xl md:text-5xl leading-[1.05] text-[#1a1a1a] mb-4"
                     style={{ fontFamily: "'Instrument Serif', serif" }}
                   >
                     {lang === "en" ? (
@@ -1257,7 +1257,7 @@ function HomePageContent() {
                       </>
                     )}
                   </h2>
-                  <p className="text-gray-300 text-sm md:text-base leading-relaxed font-light">
+                  <p className="text-[#1a1a1a]/70 text-sm md:text-base leading-relaxed font-light">
                     {data.intro}
                   </p>
                 </motion.div>
@@ -1273,7 +1273,7 @@ function HomePageContent() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-40px" }}
                       transition={{ duration: 0.5, delay: i * 0.07 }}
-                      className="relative bg-neutral-900/60 backdrop-blur-sm rounded-2xl border border-neutral-800 hover:border-red-500/30 transition-colors p-5 sm:p-5 flex flex-col overflow-hidden"
+                      className="relative bg-[#f5f5f5]/60 backdrop-blur-sm rounded-2xl border border-[#1a1a1a]/10 hover:border-red-500/30 transition-colors p-5 sm:p-5 flex flex-col overflow-hidden"
                     >
                       {/* Graphique linéaire négatif en arrière-plan */}
                       <svg
@@ -1290,8 +1290,8 @@ function HomePageContent() {
                             x2="0"
                             y2="1"
                           >
-                            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.06" />
-                            <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
+                            <stop offset="0%" stopColor="#1e9df1" stopOpacity="0.06" />
+                            <stop offset="100%" stopColor="#1e9df1" stopOpacity="0" />
                           </linearGradient>
                         </defs>
                         {/* Aire sous la courbe (très subtile) */}
@@ -1334,16 +1334,16 @@ function HomePageContent() {
                         0{i + 1}
                       </span>
                       <h3
-                        className="relative text-[1rem] sm:text-[1.05rem] font-semibold text-white leading-tight mb-2.5"
+                        className="relative text-[1rem] sm:text-[1.05rem] font-semibold text-[#1a1a1a] leading-tight mb-2.5"
                         style={{ fontFamily: "'Instrument Serif', serif" }}
                       >
                         {c.title}
                       </h3>
-                      <p className="relative text-gray-400 text-[0.78rem] sm:text-[0.82rem] leading-relaxed font-light flex-1 mb-3">
+                      <p className="relative text-[#1a1a1a]/50 text-[0.78rem] sm:text-[0.82rem] leading-relaxed font-light flex-1 mb-3">
                         {c.body}
                       </p>
                       {/* Résolution E-Dome — petit, bleu, en pied de carte */}
-                      <div className="relative pt-3 border-t border-neutral-800/80">
+                      <div className="relative pt-3 border-t border-[#1a1a1a]/10/80">
                         <p className="text-[0.65rem] sm:text-[0.7rem] text-blue-300/80 leading-snug font-medium">
                           <span className="text-[#1e9df1] font-bold">
                             E-Dome →
@@ -1358,7 +1358,7 @@ function HomePageContent() {
                 {/* CLOSING — phrase italique serif, sans animation,
                     constamment visible dès le rendu. */}
                 <p
-                  className="text-center text-base sm:text-lg md:text-xl mt-7 text-gray-300 italic font-light"
+                  className="text-center text-base sm:text-lg md:text-xl mt-7 text-[#1a1a1a]/70 italic font-light"
                   style={{ fontFamily: "'Instrument Serif', serif" }}
                 >
                   «&nbsp;{data.closing}&nbsp;»
@@ -1403,28 +1403,28 @@ function HomePageContent() {
             lang === "en"
               ? [
                   { icon: <Layers size={11} />, label: "Social feed", desc: "post, react, share", color: "#1e9df1" },
-                  { icon: <MapPin size={11} />, label: "Marketplace", desc: "rent, sell, book", color: "#22c55e" },
-                  { icon: <Video size={11} />, label: "Lives", desc: "live events, replays", color: "#ef4444" },
-                  { icon: <GraduationCap size={11} />, label: "Campus", desc: "courses + cohorts", color: "#a855f7" },
-                  { icon: <Handshake size={11} />, label: "Referrals", desc: "auto commissions", color: "#f59e0b" },
-                  { icon: <Briefcase size={11} />, label: "Pros directory", desc: "verified providers", color: "#06b6d4" },
+                  { icon: <MapPin size={11} />, label: "Marketplace", desc: "rent, sell, book", color: "#1e9df1" },
+                  { icon: <Video size={11} />, label: "Lives", desc: "live events, replays", color: "#1e9df1" },
+                  { icon: <GraduationCap size={11} />, label: "Campus", desc: "courses + cohorts", color: "#1e9df1" },
+                  { icon: <Handshake size={11} />, label: "Referrals", desc: "auto commissions", color: "#1e9df1" },
+                  { icon: <Briefcase size={11} />, label: "Pros directory", desc: "verified providers", color: "#1e9df1" },
                 ]
               : lang === "th"
                 ? [
                     { icon: <Layers size={11} />, label: "ฟีดโซเชียล", desc: "โพสต์ ตอบรีบ แชร์", color: "#1e9df1" },
-                    { icon: <MapPin size={11} />, label: "มาร์เก็ตเพลส", desc: "เช่า ขาย จอง", color: "#22c55e" },
-                    { icon: <Video size={11} />, label: "ไลฟ์", desc: "ไลฟ์สด & ดูย้อนหลัง", color: "#ef4444" },
-                    { icon: <GraduationCap size={11} />, label: "แคมปัส", desc: "คอร์ส + รุ่น", color: "#a855f7" },
-                    { icon: <Handshake size={11} />, label: "เครือข่ายแนะนำ", desc: "คอมมิชชันอัตโนมัติ", color: "#f59e0b" },
-                    { icon: <Briefcase size={11} />, label: "ไดเรกทอรีมืออาชีพ", desc: "ผู้ให้บริการที่ยืนยัน", color: "#06b6d4" },
+                    { icon: <MapPin size={11} />, label: "มาร์เก็ตเพลส", desc: "เช่า ขาย จอง", color: "#1e9df1" },
+                    { icon: <Video size={11} />, label: "ไลฟ์", desc: "ไลฟ์สด & ดูย้อนหลัง", color: "#1e9df1" },
+                    { icon: <GraduationCap size={11} />, label: "แคมปัส", desc: "คอร์ส + รุ่น", color: "#1e9df1" },
+                    { icon: <Handshake size={11} />, label: "เครือข่ายแนะนำ", desc: "คอมมิชชันอัตโนมัติ", color: "#1e9df1" },
+                    { icon: <Briefcase size={11} />, label: "ไดเรกทอรีมืออาชีพ", desc: "ผู้ให้บริการที่ยืนยัน", color: "#1e9df1" },
                   ]
                 : [
                     { icon: <Layers size={11} />, label: "Fil social", desc: "publier, réagir, partager", color: "#1e9df1" },
-                    { icon: <MapPin size={11} />, label: "Marketplace", desc: "louer, vendre, réserver", color: "#22c55e" },
-                    { icon: <Video size={11} />, label: "Lives", desc: "événements en direct", color: "#ef4444" },
-                    { icon: <GraduationCap size={11} />, label: "Campus", desc: "formations & promos", color: "#a855f7" },
-                    { icon: <Handshake size={11} />, label: "Apporteurs", desc: "commissions traçables", color: "#f59e0b" },
-                    { icon: <Briefcase size={11} />, label: "Annuaire pros", desc: "prestataires vérifiés", color: "#06b6d4" },
+                    { icon: <MapPin size={11} />, label: "Marketplace", desc: "louer, vendre, réserver", color: "#1e9df1" },
+                    { icon: <Video size={11} />, label: "Lives", desc: "événements en direct", color: "#1e9df1" },
+                    { icon: <GraduationCap size={11} />, label: "Campus", desc: "formations & promos", color: "#1e9df1" },
+                    { icon: <Handshake size={11} />, label: "Apporteurs", desc: "commissions traçables", color: "#1e9df1" },
+                    { icon: <Briefcase size={11} />, label: "Annuaire pros", desc: "prestataires vérifiés", color: "#1e9df1" },
                   ];
           return (
             <>
@@ -1434,7 +1434,7 @@ function HomePageContent() {
                     Publish a property, accept the booking, train your clients,
                     stream a live, refer a contact for a commission and find
                     your photographer — every action lives in the same app.{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-[#1a1a1a] font-semibold">
                       One signal, one inbox, one ledger.
                     </span>
                   </>
@@ -1442,7 +1442,7 @@ function HomePageContent() {
                   <>
                     ลงประกาศ รับการจอง อบรมลูกค้า ไลฟ์สด แนะนำคนรับค่าคอม
                     และหาช่างภาพ — ทุกการกระทำอยู่ในแอปเดียวกัน{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-[#1a1a1a] font-semibold">
                       สัญญาณเดียว กล่องเดียว บัญชีเดียว
                     </span>
                   </>
@@ -1452,7 +1452,7 @@ function HomePageContent() {
                     clients, diffuser un live, recommander un contact contre
                     commission, trouver le bon photographe — chaque action vit
                     dans la même app.{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-[#1a1a1a] font-semibold">
                       Un seul signal, une seule boîte, un seul compteur.
                     </span>
                   </>
@@ -1475,7 +1475,7 @@ function HomePageContent() {
                       {f.icon}
                     </span>
                     <span className="text-blue-100/85">
-                      <span className="text-white font-semibold">{f.label}</span>
+                      <span className="text-[#1a1a1a] font-semibold">{f.label}</span>
                       <span className="text-blue-100/60"> · {f.desc}</span>
                     </span>
                   </span>
@@ -1515,12 +1515,12 @@ function HomePageContent() {
                 : lang === "th"
                   ? "ทรัพย์"
                   : "Biens",
-            color: "#22c55e",
+            color: "#1e9df1",
           },
           {
             icon: <Video size={14} />,
             label: lang === "en" ? "Live" : lang === "th" ? "ไลฟ์" : "Lives",
-            color: "#ef4444",
+            color: "#1e9df1",
           },
           {
             icon: <GraduationCap size={14} />,
@@ -1530,7 +1530,7 @@ function HomePageContent() {
                 : lang === "th"
                   ? "อบรม"
                   : "Campus",
-            color: "#a855f7",
+            color: "#1e9df1",
           },
           {
             icon: <Handshake size={14} />,
@@ -1540,13 +1540,13 @@ function HomePageContent() {
                 : lang === "th"
                   ? "เครือข่าย"
                   : "Apporteurs",
-            color: "#f59e0b",
+            color: "#1e9df1",
           },
           {
             icon: <Briefcase size={14} />,
             label:
               lang === "en" ? "Pros" : lang === "th" ? "ผู้ให้" : "Pros",
-            color: "#06b6d4",
+            color: "#1e9df1",
           },
         ]}
         phoneNotifications={[
@@ -1565,7 +1565,7 @@ function HomePageContent() {
                   ? "ลิงก์ของ Marie แปลงสำเร็จ"
                   : "Lien de Marie · 1 conversion",
             time: lang === "th" ? "2 น." : "2m",
-            color: "#22c55e",
+            color: "#1e9df1",
           },
           {
             icon: <BadgeCheck size={11} />,
@@ -1599,7 +1599,7 @@ function HomePageContent() {
                   ? "« ลงทุนในปี 2026 »"
                   : "« Investir en 2026 »",
             time: lang === "th" ? "1 ชม." : "1h",
-            color: "#ef4444",
+            color: "#1e9df1",
           },
         ]}
         ctaHeading={
@@ -1624,7 +1624,7 @@ function HomePageContent() {
         }
         phoneAvatar="ED"
         floatingBadgeTop={{
-          icon: <Crown size={18} className="text-[#f5b945]" strokeWidth={2.2} />,
+          icon: <Crown size={18} className="text-[#1e9df1]" strokeWidth={2.2} />,
           title:
             lang === "en"
               ? "Founder unlocked"
@@ -1666,41 +1666,41 @@ function HomePageContent() {
           };
           const roles: Role[] = [
             { icon: <Home size={14} />, color: "#1e9df1", fr: "Hôte", en: "Host", th: "เจ้าของบ้าน" },
-            { icon: <KeyRound size={14} />, color: "#06b6d4", fr: "Locataire", en: "Tenant", th: "ผู้เช่า" },
-            { icon: <ShoppingBag size={14} />, color: "#f59e0b", fr: "Acheteur", en: "Buyer", th: "ผู้ซื้อ" },
-            { icon: <Tags size={14} />, color: "#ec4899", fr: "Vendeur", en: "Seller", th: "ผู้ขาย" },
-            { icon: <TrendingUp size={14} />, color: "#22c55e", fr: "Investisseur", en: "Investor", th: "นักลงทุน" },
+            { icon: <KeyRound size={14} />, color: "#1e9df1", fr: "Locataire", en: "Tenant", th: "ผู้เช่า" },
+            { icon: <ShoppingBag size={14} />, color: "#1e9df1", fr: "Acheteur", en: "Buyer", th: "ผู้ซื้อ" },
+            { icon: <Tags size={14} />, color: "#1e9df1", fr: "Vendeur", en: "Seller", th: "ผู้ขาย" },
+            { icon: <TrendingUp size={14} />, color: "#1e9df1", fr: "Investisseur", en: "Investor", th: "นักลงทุน" },
             { icon: <Briefcase size={14} />, color: "#1e9df1", fr: "Agent immobilier", en: "Real-estate agent", th: "นายหน้าอสังหาฯ" },
-            { icon: <Building2 size={14} />, color: "#a855f7", fr: "Agence immobilière", en: "Agency", th: "เอเจนซี่อสังหาฯ" },
-            { icon: <UserCheck size={14} />, color: "#10b981", fr: "Mandataire", en: "Mandated agent", th: "ตัวแทนที่ได้รับมอบหมาย" },
-            { icon: <Store size={14} />, color: "#f97316", fr: "Marchand de biens", en: "Property dealer", th: "พ่อค้าทรัพย์สิน" },
-            { icon: <Calculator size={14} />, color: "#06b6d4", fr: "Courtier", en: "Mortgage broker", th: "นายหน้าสินเชื่อ" },
-            { icon: <Scroll size={14} />, color: "#a855f7", fr: "Notaire", en: "Notary", th: "ทนายรับรองเอกสาร" },
+            { icon: <Building2 size={14} />, color: "#1e9df1", fr: "Agence immobilière", en: "Agency", th: "เอเจนซี่อสังหาฯ" },
+            { icon: <UserCheck size={14} />, color: "#1e9df1", fr: "Mandataire", en: "Mandated agent", th: "ตัวแทนที่ได้รับมอบหมาย" },
+            { icon: <Store size={14} />, color: "#1e9df1", fr: "Marchand de biens", en: "Property dealer", th: "พ่อค้าทรัพย์สิน" },
+            { icon: <Calculator size={14} />, color: "#1e9df1", fr: "Courtier", en: "Mortgage broker", th: "นายหน้าสินเชื่อ" },
+            { icon: <Scroll size={14} />, color: "#1e9df1", fr: "Notaire", en: "Notary", th: "ทนายรับรองเอกสาร" },
             { icon: <Scale size={14} />, color: "#1e9df1", fr: "Avocat immobilier", en: "Real-estate lawyer", th: "ทนายอสังหาฯ" },
-            { icon: <Receipt size={14} />, color: "#f59e0b", fr: "Conseiller fiscal", en: "Tax advisor", th: "ที่ปรึกษาภาษี" },
-            { icon: <ClipboardList size={14} />, color: "#22c55e", fr: "Expert-comptable", en: "Accountant", th: "นักบัญชี" },
-            { icon: <Compass size={14} />, color: "#ef4444", fr: "Architecte", en: "Architect", th: "สถาปนิก" },
-            { icon: <Building size={14} />, color: "#a855f7", fr: "Promoteur", en: "Property developer", th: "นักพัฒนาอสังหาฯ" },
-            { icon: <HardHat size={14} />, color: "#f97316", fr: "Constructeur", en: "Builder", th: "ผู้รับเหมาก่อสร้าง" },
-            { icon: <Ruler size={14} />, color: "#06b6d4", fr: "Géomètre", en: "Surveyor", th: "ผู้สำรวจ" },
-            { icon: <ClipboardCheck size={14} />, color: "#10b981", fr: "Diagnostiqueur", en: "Inspector", th: "ผู้ตรวจอาคาร" },
-            { icon: <Wrench size={14} />, color: "#eab308", fr: "Artisan", en: "Tradesman", th: "ช่างฝีมือ" },
-            { icon: <Camera size={14} />, color: "#ec4899", fr: "Photographe", en: "Photographer", th: "ช่างภาพ" },
-            { icon: <Video size={14} />, color: "#ef4444", fr: "Vidéaste", en: "Videographer", th: "ช่างวิดีโอ" },
-            { icon: <Sofa size={14} />, color: "#f59e0b", fr: "Home stager", en: "Home stager", th: "Home stager" },
-            { icon: <Paintbrush size={14} />, color: "#a855f7", fr: "Décorateur", en: "Decorator", th: "นักตกแต่ง" },
-            { icon: <Lamp size={14} />, color: "#06b6d4", fr: "Designer d'intérieur", en: "Interior designer", th: "นักออกแบบภายใน" },
+            { icon: <Receipt size={14} />, color: "#1e9df1", fr: "Conseiller fiscal", en: "Tax advisor", th: "ที่ปรึกษาภาษี" },
+            { icon: <ClipboardList size={14} />, color: "#1e9df1", fr: "Expert-comptable", en: "Accountant", th: "นักบัญชี" },
+            { icon: <Compass size={14} />, color: "#1e9df1", fr: "Architecte", en: "Architect", th: "สถาปนิก" },
+            { icon: <Building size={14} />, color: "#1e9df1", fr: "Promoteur", en: "Property developer", th: "นักพัฒนาอสังหาฯ" },
+            { icon: <HardHat size={14} />, color: "#1e9df1", fr: "Constructeur", en: "Builder", th: "ผู้รับเหมาก่อสร้าง" },
+            { icon: <Ruler size={14} />, color: "#1e9df1", fr: "Géomètre", en: "Surveyor", th: "ผู้สำรวจ" },
+            { icon: <ClipboardCheck size={14} />, color: "#1e9df1", fr: "Diagnostiqueur", en: "Inspector", th: "ผู้ตรวจอาคาร" },
+            { icon: <Wrench size={14} />, color: "#1e9df1", fr: "Artisan", en: "Tradesman", th: "ช่างฝีมือ" },
+            { icon: <Camera size={14} />, color: "#1e9df1", fr: "Photographe", en: "Photographer", th: "ช่างภาพ" },
+            { icon: <Video size={14} />, color: "#1e9df1", fr: "Vidéaste", en: "Videographer", th: "ช่างวิดีโอ" },
+            { icon: <Sofa size={14} />, color: "#1e9df1", fr: "Home stager", en: "Home stager", th: "Home stager" },
+            { icon: <Paintbrush size={14} />, color: "#1e9df1", fr: "Décorateur", en: "Decorator", th: "นักตกแต่ง" },
+            { icon: <Lamp size={14} />, color: "#1e9df1", fr: "Designer d'intérieur", en: "Interior designer", th: "นักออกแบบภายใน" },
             { icon: <Landmark size={14} />, color: "#1e9df1", fr: "Banquier", en: "Banker", th: "นายธนาคาร" },
-            { icon: <Shield size={14} />, color: "#22c55e", fr: "Assureur", en: "Insurer", th: "นักประกัน" },
-            { icon: <Search size={14} />, color: "#f97316", fr: "Estimateur", en: "Appraiser", th: "ผู้ประเมินราคา" },
-            { icon: <GraduationCap size={14} />, color: "#a855f7", fr: "Formateur", en: "Trainer", th: "ผู้ฝึกอบรม" },
-            { icon: <Award size={14} />, color: "#ec4899", fr: "Coach immobilier", en: "Coach", th: "โค้ชอสังหาฯ" },
-            { icon: <Megaphone size={14} />, color: "#ef4444", fr: "Influenceur", en: "Influencer", th: "อินฟลูเอนเซอร์" },
-            { icon: <Handshake size={14} />, color: "#22c55e", fr: "Apporteur d'affaires", en: "Referrer", th: "ผู้แนะนำธุรกิจ" },
+            { icon: <Shield size={14} />, color: "#1e9df1", fr: "Assureur", en: "Insurer", th: "นักประกัน" },
+            { icon: <Search size={14} />, color: "#1e9df1", fr: "Estimateur", en: "Appraiser", th: "ผู้ประเมินราคา" },
+            { icon: <GraduationCap size={14} />, color: "#1e9df1", fr: "Formateur", en: "Trainer", th: "ผู้ฝึกอบรม" },
+            { icon: <Award size={14} />, color: "#1e9df1", fr: "Coach immobilier", en: "Coach", th: "โค้ชอสังหาฯ" },
+            { icon: <Megaphone size={14} />, color: "#1e9df1", fr: "Influenceur", en: "Influencer", th: "อินฟลูเอนเซอร์" },
+            { icon: <Handshake size={14} />, color: "#1e9df1", fr: "Apporteur d'affaires", en: "Referrer", th: "ผู้แนะนำธุรกิจ" },
             { icon: <Users size={14} />, color: "#1e9df1", fr: "Communauté locale", en: "Local community", th: "ชุมชนท้องถิ่น" },
-            { icon: <MapPin size={14} />, color: "#f59e0b", fr: "Voisin", en: "Neighbour", th: "เพื่อนบ้าน" },
-            { icon: <Bell size={14} />, color: "#06b6d4", fr: "Concierge", en: "Concierge", th: "ผู้ดูแลคอนโด" },
-            { icon: <Boxes size={14} />, color: "#10b981", fr: "Syndic", en: "Building manager", th: "ผู้จัดการอาคาร" },
+            { icon: <MapPin size={14} />, color: "#1e9df1", fr: "Voisin", en: "Neighbour", th: "เพื่อนบ้าน" },
+            { icon: <Bell size={14} />, color: "#1e9df1", fr: "Concierge", en: "Concierge", th: "ผู้ดูแลคอนโด" },
+            { icon: <Boxes size={14} />, color: "#1e9df1", fr: "Syndic", en: "Building manager", th: "ผู้จัดการอาคาร" },
           ];
           const rows = [roles.slice(0, 12), roles.slice(12, 24), roles.slice(24, 36)];
           const rowConfigs: { direction: "left" | "right"; duration: number }[] = [
@@ -1711,7 +1711,7 @@ function HomePageContent() {
           const Pill = ({ role }: { role: Role }) => {
             const label = lang === "en" ? role.en : lang === "th" ? role.th : role.fr;
             return (
-              <div className="group flex items-center gap-2.5 px-4 py-2.5 mx-2 rounded-full bg-neutral-900 border border-neutral-800 hover:border-[#1e9df1]/40 transition-colors duration-300 whitespace-nowrap">
+              <div className="group flex items-center gap-2.5 px-4 py-2.5 mx-2 rounded-full bg-[#f5f5f5] border border-[#1a1a1a]/10 hover:border-[#1e9df1]/40 transition-colors duration-300 whitespace-nowrap">
                 <span
                   className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
                   style={{
@@ -1722,7 +1722,7 @@ function HomePageContent() {
                 >
                   {role.icon}
                 </span>
-                <span className="text-sm font-medium text-white tracking-tight">
+                <span className="text-sm font-medium text-[#1a1a1a] tracking-tight">
                   {label}
                 </span>
               </div>
@@ -1746,24 +1746,24 @@ function HomePageContent() {
                   </Marquee>
                 ))}
               </div>
-              <p className="max-w-2xl mx-auto px-6 mt-10 text-center text-gray-300 text-sm md:text-base leading-relaxed font-light">
+              <p className="max-w-2xl mx-auto px-6 mt-10 text-center text-[#1a1a1a]/70 text-sm md:text-base leading-relaxed font-light">
                 {lang === "en" ? (
                   <>
-                    <span className="text-white font-semibold">36+ professions</span>{" "}
+                    <span className="text-[#1a1a1a] font-semibold">36+ professions</span>{" "}
                     already have a profile, a dashboard and a role in E-Dome.{" "}
-                    <span className="text-gray-500">Yours is probably one of them.</span>
+                    <span className="text-[#1a1a1a]/40">Yours is probably one of them.</span>
                   </>
                 ) : lang === "th" ? (
                   <>
-                    <span className="text-white font-semibold">36+ อาชีพ</span>{" "}
+                    <span className="text-[#1a1a1a] font-semibold">36+ อาชีพ</span>{" "}
                     มีโปรไฟล์ แดชบอร์ด และบทบาทใน E-Dome แล้ว{" "}
-                    <span className="text-gray-500">ของคุณอาจเป็นหนึ่งในนั้น</span>
+                    <span className="text-[#1a1a1a]/40">ของคุณอาจเป็นหนึ่งในนั้น</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-white font-semibold">36+ métiers</span>{" "}
+                    <span className="text-[#1a1a1a] font-semibold">36+ métiers</span>{" "}
                     ont déjà un profil, un tableau de bord et un rôle dans E-Dome.{" "}
-                    <span className="text-gray-500">Le tien en fait sûrement partie.</span>
+                    <span className="text-[#1a1a1a]/40">Le tien en fait sûrement partie.</span>
                   </>
                 )}
               </p>
@@ -1801,7 +1801,7 @@ function HomePageContent() {
           Mise en page asymétrique demandée : Léonard ancré à gauche en
           haut, la citation des fondateurs au centre en-dessous de son
           bloc, Jean-Pierre ancré à droite en bas. Photos rondes. */}
-      <section id="fondateurs" className="scroll-slide bg-black overflow-hidden relative">
+      <section id="fondateurs" className="scroll-slide bg-white overflow-hidden relative">
         {/* Volume géométrique anguleux (Zaha Hadid-esque) coin haut-droit,
             blanc, rotation très lente continue. */}
         <div className="hidden lg:block absolute right-[-3%] top-[4%] w-[28%] z-0 pointer-events-none">
@@ -1835,7 +1835,7 @@ function HomePageContent() {
                 <>Faites<br /><span className="text-[#1e9df1]">connaissance.</span></>
               )}
             </h2>
-            <p className="text-gray-300 text-[0.78rem] sm:text-sm leading-relaxed font-light">
+            <p className="text-[#1a1a1a]/70 text-[0.78rem] sm:text-sm leading-relaxed font-light">
               {lang === "en"
                 ? "Two profiles, one conviction: real estate doesn't change with one more app. It changes when its actors are finally connected."
                 : lang === "th"
@@ -1860,14 +1860,14 @@ function HomePageContent() {
               />
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+              <h3 className="text-base sm:text-lg font-bold text-[#1a1a1a] tracking-tight">
                 Léonard Ansermet
               </h3>
               <p className="text-[#1e9df1] text-[0.62rem] sm:text-[0.66rem] font-semibold uppercase tracking-[0.18em] mt-0.5">
                 {t("founders.label_leo")}
               </p>
               <p
-                className="text-gray-400 text-[0.74rem] sm:text-[0.8rem] leading-snug font-light italic mt-1.5 border-l-2 border-[#1e9df1]/30 pl-2.5"
+                className="text-[#1a1a1a]/50 text-[0.74rem] sm:text-[0.8rem] leading-snug font-light italic mt-1.5 border-l-2 border-[#1e9df1]/30 pl-2.5"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {lang === "en"
@@ -1892,12 +1892,12 @@ function HomePageContent() {
               "
             </span>
             <p
-              className="text-sm sm:text-base md:text-lg text-white italic leading-snug px-6 pt-1"
+              className="text-sm sm:text-base md:text-lg text-[#1a1a1a] italic leading-snug px-6 pt-1"
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
               {t("founders.quote")}
             </p>
-            <p className="text-[0.6rem] tracking-[0.22em] uppercase text-gray-500 font-bold mt-2">
+            <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1a1a1a]/40 font-bold mt-2">
               — Léonard Ansermet &amp; Jean-Pierre Medard Garza
             </p>
           </motion.blockquote>
@@ -1911,14 +1911,14 @@ function HomePageContent() {
             className="flex items-center gap-4 max-w-sm ml-auto mb-6"
           >
             <div className="min-w-0 flex-1 text-right">
-              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+              <h3 className="text-base sm:text-lg font-bold text-[#1a1a1a] tracking-tight">
                 Jean-Pierre Medard Garza
               </h3>
               <p className="text-[#1e9df1] text-[0.62rem] sm:text-[0.66rem] font-semibold uppercase tracking-[0.18em] mt-0.5">
                 {t("founders.label_jp")}
               </p>
               {/* Crédential : CFC employé de commerce + maturité professionnelle */}
-              <p className="text-gray-500 text-[0.62rem] sm:text-[0.66rem] tracking-wide mt-1">
+              <p className="text-[#1a1a1a]/40 text-[0.62rem] sm:text-[0.66rem] tracking-wide mt-1">
                 {lang === "en"
                   ? "Federal commerce diploma · Professional baccalaureate"
                   : lang === "th"
@@ -1926,7 +1926,7 @@ function HomePageContent() {
                     : "CFC employé de commerce · Maturité professionnelle"}
               </p>
               <p
-                className="text-gray-400 text-[0.74rem] sm:text-[0.8rem] leading-snug font-light italic mt-1.5 border-r-2 border-[#1e9df1]/30 pr-2.5"
+                className="text-[#1a1a1a]/50 text-[0.74rem] sm:text-[0.8rem] leading-snug font-light italic mt-1.5 border-r-2 border-[#1e9df1]/30 pr-2.5"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {lang === "en"
@@ -1956,7 +1956,7 @@ function HomePageContent() {
           <div
             className="flex flex-col sm:flex-row items-center justify-center sm:justify-end gap-3 sm:gap-5 pt-3 border-t border-neutral-900"
           >
-            <p className="text-[0.6rem] tracking-[0.22em] uppercase text-gray-500 font-bold">
+            <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1a1a1a]/40 font-bold">
               {lang === "en"
                 ? "Direct contact"
                 : lang === "th"
@@ -1967,10 +1967,10 @@ function HomePageContent() {
             {/* Léonard pills — numéro thaï (+66) affiché brut, lien tel:
                 pour appel direct depuis mobile/desktop. */}
             <div className="flex items-center gap-2">
-              <span className="text-[0.7rem] text-gray-300 font-semibold">Léonard</span>
+              <span className="text-[0.7rem] text-[#1a1a1a]/70 font-semibold">Léonard</span>
               <a
                 href="tel:+66910687928"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-semibold tabular-nums"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[#1e9df1] hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-semibold tabular-nums"
               >
                 <Phone size={10} /> +66 91 068 7928
               </a>
@@ -1982,16 +1982,16 @@ function HomePageContent() {
               </a>
             </div>
 
-            <div className="hidden sm:block w-px h-4 bg-neutral-700" />
+            <div className="hidden sm:block w-px h-4 bg-[#e0e0e0]" />
 
             {/* Jean-Pierre pills — WhatsApp conservé (numéro CH). */}
             <div className="flex items-center gap-2">
-              <span className="text-[0.7rem] text-gray-300 font-semibold">Jean-Pierre</span>
+              <span className="text-[0.7rem] text-[#1a1a1a]/70 font-semibold">Jean-Pierre</span>
               <a
                 href="https://wa.me/41798267542"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-semibold"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[#1e9df1] hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-semibold"
               >
                 <MessageCircle size={10} /> {t("founders.whatsapp")}
               </a>
@@ -2020,7 +2020,7 @@ function HomePageContent() {
               à la place de l'ancienne grille de 4 cartes
             · Double CTA (démo + questionnaire) avec badges enrichis
             · Trust strip footer (RGPD, chiffré, anonyme, pas d'engagement) */}
-      <section id="inscriptions" className="scroll-slide py-12 px-6 bg-black relative overflow-hidden">
+      <section id="inscriptions" className="scroll-slide py-12 px-6 bg-white relative overflow-hidden">
         {/* Radial glow centré en haut (bleu) — donne un point focal et
             adoucit le noir pur. */}
         <div
@@ -2103,7 +2103,7 @@ function HomePageContent() {
                   : "Votre voix est la matière première du projet."}
             </p>
             {/* Paragraphe développé — explique le pourquoi avant le quoi. */}
-            <p className="text-gray-300 text-[0.82rem] sm:text-sm leading-relaxed font-light">
+            <p className="text-[#1a1a1a]/70 text-[0.82rem] sm:text-sm leading-relaxed font-light">
               {lang === "en"
                 ? "Before raising funds, before assembling a team, before writing a single production line — we want to be sure we're solving a problem that real people live every day. Each answer becomes concrete proof: a quote we can hand to investors, a priority that shapes the next sprint, a frustration we promise to take seriously. Two minutes of your time, weighed like gold on our side."
                 : lang === "th"
@@ -2112,7 +2112,7 @@ function HomePageContent() {
             </p>
             {/* Meta-row : stats inline qui rassurent (durée · format ·
                 anonymat · engagement). */}
-            <div className="mt-3.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[0.7rem] text-gray-400 font-medium">
+            <div className="mt-3.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[0.7rem] text-[#1a1a1a]/50 font-medium">
               <span className="inline-flex items-center gap-1.5">
                 <Clock size={11} className="text-[#1e9df1]" />
                 {lang === "en" ? "≈ 2 min" : lang === "th" ? "≈ 2 นาที" : "≈ 2 min"}
@@ -2197,7 +2197,7 @@ function HomePageContent() {
                 emerald: {
                   border: "border-emerald-500/30 hover:border-emerald-500/60",
                   bg: "bg-emerald-500/15",
-                  text: "text-emerald-400",
+                  text: "text-[#1e9df1]",
                   ring: "ring-emerald-500/20",
                 },
                 blue: {
@@ -2209,14 +2209,14 @@ function HomePageContent() {
                 amber: {
                   border: "border-amber-500/30 hover:border-amber-500/60",
                   bg: "bg-amber-500/15",
-                  text: "text-amber-400",
+                  text: "text-[#1e9df1]",
                   ring: "ring-amber-500/20",
                 },
               }[card.tone];
               return (
                 <div
                   key={i}
-                  className={`relative rounded-xl border p-3.5 bg-neutral-950/60 backdrop-blur-sm transition-colors ${tone.border}`}
+                  className={`relative rounded-xl border p-3.5 bg-[#f5f5f5]/60 backdrop-blur-sm transition-colors ${tone.border}`}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <div className={`w-7 h-7 rounded-md flex items-center justify-center ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}>
@@ -2226,10 +2226,10 @@ function HomePageContent() {
                       {card.eyebrow}
                     </span>
                   </div>
-                  <h3 className="text-[0.82rem] font-bold text-white leading-tight mb-1">
+                  <h3 className="text-[0.82rem] font-bold text-[#1a1a1a] leading-tight mb-1">
                     {card.title}
                   </h3>
-                  <p className="text-[0.68rem] text-gray-400 leading-snug">
+                  <p className="text-[0.68rem] text-[#1a1a1a]/50 leading-snug">
                     {card.desc}
                   </p>
                 </div>
@@ -2254,27 +2254,27 @@ function HomePageContent() {
                     ? "bg-emerald-500 ring-emerald-500/25"
                     : isCurrent
                       ? "bg-[#1e9df1] ring-[#1e9df1]/25"
-                      : "bg-neutral-800 ring-neutral-700/40";
+                      : "bg-[#eeeeee] ring-neutral-700/40";
                   const labelText = isDone
                     ? lang === "en" ? "Done" : lang === "th" ? "เสร็จแล้ว" : "Fait"
                     : isCurrent
                       ? lang === "en" ? "Now" : lang === "th" ? "ตอนนี้" : "Maintenant"
                       : lang === "en" ? "Upcoming" : lang === "th" ? "เร็วๆ นี้" : "À venir";
                   const labelCls = isDone
-                    ? "text-emerald-400"
+                    ? "text-[#1e9df1]"
                     : isCurrent
                       ? "text-[#1e9df1]"
-                      : "text-gray-500";
-                  const titleCls = isDone || isCurrent ? "text-white" : "text-gray-400";
+                      : "text-[#1a1a1a]/40";
+                  const titleCls = isDone || isCurrent ? "text-[#1a1a1a]" : "text-[#1a1a1a]/50";
                   return (
                     <div key={i} className="relative flex flex-col items-center text-center px-1">
                       <div className={`relative z-10 w-7 h-7 rounded-full ring-4 ring-black flex items-center justify-center ${dotCls}`}>
                         {isDone ? (
-                          <BadgeCheck size={13} className="text-white" strokeWidth={2.6} />
+                          <BadgeCheck size={13} className="text-[#1a1a1a]" strokeWidth={2.6} />
                         ) : isCurrent ? (
-                          <span className="text-[0.58rem] font-bold text-white">02</span>
+                          <span className="text-[0.58rem] font-bold text-[#1a1a1a]">02</span>
                         ) : (
-                          <span className="text-[0.58rem] font-bold text-gray-400">0{i + 1}</span>
+                          <span className="text-[0.58rem] font-bold text-[#1a1a1a]/50">0{i + 1}</span>
                         )}
                         {isCurrent && (
                           <span className="absolute inset-0 rounded-full bg-[#1e9df1] opacity-40 animate-ping" />
@@ -2303,7 +2303,7 @@ function HomePageContent() {
             {/* Voir la démo — outline */}
             <Link
               href="/feed"
-              className="group relative bg-neutral-900/80 hover:bg-neutral-800 rounded-2xl p-4 border border-neutral-800 hover:border-[#1e9df1]/40 transition-all flex items-center gap-3 backdrop-blur-sm"
+              className="group relative bg-[#f5f5f5]/80 hover:bg-[#eeeeee] rounded-2xl p-4 border border-[#1a1a1a]/10 hover:border-[#1e9df1]/40 transition-all flex items-center gap-3 backdrop-blur-sm"
             >
               <div className="w-11 h-11 rounded-xl bg-[#1e9df1]/15 text-[#1e9df1] flex items-center justify-center shrink-0 ring-1 ring-[#1e9df1]/30">
                 <Eye size={18} />
@@ -2312,14 +2312,14 @@ function HomePageContent() {
                 <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1e9df1] font-bold">
                   {lang === "en" ? "Discover" : lang === "th" ? "ค้นพบ" : "Découvrir"}
                 </p>
-                <h3 className="text-[0.95rem] font-bold text-white tracking-tight mt-0.5 leading-tight">
+                <h3 className="text-[0.95rem] font-bold text-[#1a1a1a] tracking-tight mt-0.5 leading-tight">
                   {lang === "en"
                     ? "See the demo"
                     : lang === "th"
                       ? "ดูตัวอย่าง"
                       : "Voir la démo"}
                 </h3>
-                <p className="text-[0.68rem] text-gray-400 mt-0.5 leading-tight">
+                <p className="text-[0.68rem] text-[#1a1a1a]/50 mt-0.5 leading-tight">
                   {lang === "en"
                     ? "Interactive mockup · 30+ pages"
                     : lang === "th"
@@ -2329,7 +2329,7 @@ function HomePageContent() {
               </div>
               <ArrowRight
                 size={16}
-                className="text-gray-500 group-hover:text-[#1e9df1] group-hover:translate-x-1 transition-all shrink-0"
+                className="text-[#1a1a1a]/40 group-hover:text-[#1e9df1] group-hover:translate-x-1 transition-all shrink-0"
               />
             </Link>
 
@@ -2339,24 +2339,24 @@ function HomePageContent() {
               className="group relative bg-gradient-to-br from-[#1e9df1]/20 to-[#1e9df1]/5 hover:from-[#1e9df1]/25 hover:to-[#1e9df1]/10 rounded-2xl p-4 border border-[#1e9df1]/40 hover:border-[#1e9df1]/70 transition-all flex items-center gap-3 shadow-lg shadow-[#1e9df1]/10 overflow-hidden"
             >
               {/* Badge "Recommandé" en haut-droite */}
-              <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-[0.18em] uppercase font-bold bg-[#1e9df1] text-white px-1.5 py-0.5 rounded-md">
+              <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-[0.18em] uppercase font-bold bg-[#1e9df1] text-[#1a1a1a] px-1.5 py-0.5 rounded-md">
                 {lang === "en" ? "Recommended" : lang === "th" ? "แนะนำ" : "Recommandé"}
               </span>
-              <div className="w-11 h-11 rounded-xl bg-[#1e9df1] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#1e9df1]/40">
+              <div className="w-11 h-11 rounded-xl bg-[#1e9df1] text-[#1a1a1a] flex items-center justify-center shrink-0 shadow-md shadow-[#1e9df1]/40">
                 <Sparkles size={18} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1e9df1] font-bold">
                   {lang === "en" ? "Contribute" : lang === "th" ? "มีส่วนร่วม" : "Contribuer"}
                 </p>
-                <h3 className="text-[0.95rem] font-bold text-white tracking-tight mt-0.5 leading-tight">
+                <h3 className="text-[0.95rem] font-bold text-[#1a1a1a] tracking-tight mt-0.5 leading-tight">
                   {lang === "en"
                     ? "Take the survey"
                     : lang === "th"
                       ? "ตอบแบบสอบถาม"
                       : "Répondre au questionnaire"}
                 </h3>
-                <p className="text-[0.68rem] text-gray-400 mt-0.5 leading-tight">
+                <p className="text-[0.68rem] text-[#1a1a1a]/50 mt-0.5 leading-tight">
                   {lang === "en"
                     ? "2 min · free · no commitment"
                     : lang === "th"
@@ -2375,7 +2375,7 @@ function HomePageContent() {
                 (RGPD, données chiffrées, aucune revente, anonymat). ── */}
           <motion.div
             {...fadeUp}
-            className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[0.6rem] text-gray-500 font-medium"
+            className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[0.6rem] text-[#1a1a1a]/40 font-medium"
           >
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck size={10} className="text-emerald-500/80" />
@@ -2409,7 +2409,7 @@ function HomePageContent() {
           la façon de contribuer. Accordéon `<details>` numéroté. */}
       <section
         id="faq"
-        className="bg-black border-t border-neutral-900 py-20 px-6"
+        className="bg-white border-t border-neutral-900 py-20 px-6"
       >
         <div className="max-w-4xl mx-auto">
           {/* Heading */}
@@ -2441,7 +2441,7 @@ function HomePageContent() {
                 </>
               )}
             </h2>
-            <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light max-w-xl mx-auto">
+            <p className="text-[#1a1a1a]/50 text-sm sm:text-base leading-relaxed font-light max-w-xl mx-auto">
               {lang === "en"
                 ? "The questions we hear most often about E-Dome — the project, the model, the data, the launch."
                 : lang === "th"
@@ -2565,13 +2565,13 @@ function HomePageContent() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.45, delay: i * 0.04 }}
-                  className="group bg-neutral-900 rounded-xl border border-neutral-800 hover:border-[#1e9df1]/30 transition-colors overflow-hidden"
+                  className="group bg-[#f5f5f5] rounded-xl border border-[#1a1a1a]/10 hover:border-[#1e9df1]/30 transition-colors overflow-hidden"
                 >
                   <summary className="flex items-center gap-4 cursor-pointer list-none px-5 py-4 select-none">
-                    <span className="font-mono text-[0.62rem] tracking-[0.22em] text-gray-500 shrink-0 w-6">
+                    <span className="font-mono text-[0.62rem] tracking-[0.22em] text-[#1a1a1a]/40 shrink-0 w-6">
                       0{i + 1}
                     </span>
-                    <span className="text-[0.95rem] sm:text-base font-semibold text-white flex-1 leading-snug">
+                    <span className="text-[0.95rem] sm:text-base font-semibold text-[#1a1a1a] flex-1 leading-snug">
                       {f.q}
                     </span>
                     <ChevronDown
@@ -2580,7 +2580,7 @@ function HomePageContent() {
                     />
                   </summary>
                   <div className="px-5 pb-5">
-                    <p className="text-gray-400 text-sm leading-relaxed font-light pl-10">
+                    <p className="text-[#1a1a1a]/50 text-sm leading-relaxed font-light pl-10">
                       {f.a}
                     </p>
                   </div>
@@ -2591,7 +2591,7 @@ function HomePageContent() {
 
           {/* Petit CTA en bas — pour les questions hors-FAQ */}
           <motion.div {...fadeUp} className="text-center mt-10">
-            <p className="text-gray-500 text-sm font-light">
+            <p className="text-[#1a1a1a]/40 text-sm font-light">
               {lang === "en" ? (
                 <>
                   Another question?{" "}
@@ -2629,7 +2629,7 @@ function HomePageContent() {
       </section>
 
       {/* ═══════════════════════ FOOTER ═══════════════════════ */}
-      <footer className="bg-gray-900 text-white pt-20 pb-10 px-6">
+      <footer className="bg-gray-900 text-[#1a1a1a] pt-20 pb-10 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             {/* Brand */}
@@ -2637,13 +2637,13 @@ function HomePageContent() {
               <h3 className="text-2xl font-semibold mb-3">
                 E-<span className="text-[#1e9df1]">Dome</span>
               </h3>
-              <p className="text-gray-400 text-sm font-light leading-relaxed">
+              <p className="text-[#1a1a1a]/50 text-sm font-light leading-relaxed">
                 {t("footer.desc")}
               </p>
               <div className="mt-6">
                 <Link
                   href="/acces"
-                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-white rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
+                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-[#1a1a1a] rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
                 >
                   {t("footer.access")} <ArrowRight size={14} />
                 </Link>
@@ -2665,7 +2665,7 @@ function HomePageContent() {
                   "footer.link_messages",
                 ].map((key) => (
                   <li key={key}>
-                    <span className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors cursor-pointer">
+                    <span className="text-[#1a1a1a]/50 text-sm hover:text-[#1e9df1] transition-colors cursor-pointer">
                       {t(key)}
                     </span>
                   </li>
@@ -2688,7 +2688,7 @@ function HomePageContent() {
                   "footer.link_investisseurs",
                 ].map((key) => (
                   <li key={key}>
-                    <span className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors cursor-pointer">
+                    <span className="text-[#1a1a1a]/50 text-sm hover:text-[#1e9df1] transition-colors cursor-pointer">
                       {t(key)}
                     </span>
                   </li>
@@ -2713,7 +2713,7 @@ function HomePageContent() {
                   <li key={link.key}>
                     <a
                       href={link.href}
-                      className="text-gray-400 text-sm hover:text-[#1e9df1] transition-colors"
+                      className="text-[#1a1a1a]/50 text-sm hover:text-[#1e9df1] transition-colors"
                     >
                       {t(link.key)}
                     </a>
@@ -2725,7 +2725,7 @@ function HomePageContent() {
               <div className="mt-6 space-y-2">
                 <a
                   href="mailto:contact@edome.world"
-                  className="flex items-center gap-2 text-gray-400 text-sm hover:text-[#1e9df1] transition-colors"
+                  className="flex items-center gap-2 text-[#1a1a1a]/50 text-sm hover:text-[#1e9df1] transition-colors"
                 >
                   <Mail size={14} /> contact@edome.world
                 </a>
@@ -2733,7 +2733,7 @@ function HomePageContent() {
                   href="https://wa.me/41786091880"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 text-sm hover:text-green-500 transition-colors"
+                  className="flex items-center gap-2 text-[#1a1a1a]/50 text-sm hover:text-green-500 transition-colors"
                 >
                   <Phone size={14} /> WhatsApp
                 </a>
@@ -2743,7 +2743,7 @@ function HomePageContent() {
 
           {/* Copyright */}
           <div className="border-t border-gray-800 pt-8">
-            <p className="text-gray-400 text-xs text-center font-light">
+            <p className="text-[#1a1a1a]/50 text-xs text-center font-light">
               {t("footer.copyright")}
             </p>
           </div>
