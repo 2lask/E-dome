@@ -27,7 +27,8 @@ export function FooterSection() {
 
   return (
     <footer className="bg-[#f5f5f5] pt-16 pb-8 px-6 relative overflow-hidden">
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="grid-12 grid grid-cols-12 gap-8 relative z-10">
+        <div className="col-span-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-16">
 
           {/* ── Logo + description + contact ── */}
@@ -36,10 +37,10 @@ export function FooterSection() {
               <Globe size={22} className="text-[#1262b3]" />
               <span className="text-[#1a1a1a] font-bold text-lg">E-Dome</span>
             </div>
-            <p className="text-[#6b7280] text-sm leading-relaxed mb-5">
+            <p className="text-[#6b7280] text-sm leading-relaxed mb-6">
               {t("footer.desc")}
             </p>
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2">
               <a
                 href="mailto:contact@edome.world"
                 className="inline-flex items-center gap-2 text-[#6b7280] text-xs hover:text-[#1262b3] transition-colors"
@@ -73,12 +74,12 @@ export function FooterSection() {
             <p className="text-[#1262b3] text-xs tracking-widest uppercase mb-4 font-medium">
               {t("footer.demo_label")}
             </p>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2">
               {demoLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-1 inline-block"
+                    className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-2 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -92,12 +93,12 @@ export function FooterSection() {
             <p className="text-[#1262b3] text-xs tracking-widest uppercase mb-4 font-medium">
               {t("footer.platform_label")}
             </p>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2">
               {platformLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-1 inline-block"
+                    className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-2 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -111,34 +112,34 @@ export function FooterSection() {
             <p className="text-[#1262b3] text-xs tracking-widest uppercase mb-4 font-medium">
               {t("footer.about_label")}
             </p>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2">
               <li>
-                <a href="#vision" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-1 inline-block">
+                <a href="#vision" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-2 inline-block">
                   {t("footer.link_vision")}
                 </a>
               </li>
               <li>
-                <a href="#fonctionnalites" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-1 inline-block">
+                <a href="#fonctionnalites" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-2 inline-block">
                   {t("footer.link_features")}
                 </a>
               </li>
               <li>
-                <a href="#fondateurs" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-1 inline-block">
+                <a href="#fondateurs" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-2 inline-block">
                   {t("footer.link_founders")}
                 </a>
               </li>
               <li>
-                <a href="#roadmap" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-1 inline-block">
+                <a href="#roadmap" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-2 inline-block">
                   {t("footer.link_roadmap")}
                 </a>
               </li>
               <li>
-                <Link href="/conditions" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-1 inline-block">
+                <Link href="/conditions" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-2 inline-block">
                   {t("footer.link_conditions")}
                 </Link>
               </li>
               <li>
-                <Link href="/confidentialite" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-1 inline-block">
+                <Link href="/confidentialite" className="text-[#6b7280] text-sm hover:text-[#1262b3] transition-colors py-2 inline-block">
                   {t("footer.link_privacy")}
                 </Link>
               </li>
@@ -153,12 +154,12 @@ export function FooterSection() {
           </p>
           <Link
             href="#inscriptions"
-            className="rounded-full px-5 py-2.5 text-[#6b7280] text-xs hover:text-[#1262b3] hover:bg-gray-800 transition-all border border-gray-700"
+            className="rounded-full px-6 py-2 text-[#6b7280] text-xs hover:text-[#1262b3] hover:bg-gray-800 transition-all border border-gray-700"
           >
             {t("footer.access")}
           </Link>
         </div>
-      </div>
+        </div>      </div>
     </footer>
   );
 }

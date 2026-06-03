@@ -80,7 +80,7 @@ export function MockFeedAnimation() {
       {/* Status bar */}
       <div className="flex items-center justify-between px-4 py-2 text-[#6b7280] text-[10px]">
         <span>9:41</span>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <div className="w-4 h-2 border border-white/30 rounded-sm relative">
             <div className="absolute inset-[1px] right-[2px] bg-emerald-400 rounded-[1px]" />
           </div>
@@ -90,7 +90,7 @@ export function MockFeedAnimation() {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2">
         <span className="text-[#1a1a1a] font-bold text-sm">E-<span className="text-[#1262b3]">Dome</span></span>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="relative">
             <Bell size={16} className="text-[#4b5563]" />
             {showNotif && (
@@ -101,9 +101,9 @@ export function MockFeedAnimation() {
       </div>
 
       {/* Stories bar */}
-      <div className="flex gap-3 px-4 py-3 overflow-hidden">
+      <div className="flex gap-4 px-4 py-4 overflow-hidden">
         {stories.map((story, i) => (
-          <div key={story.name} className="flex flex-col items-center gap-1 shrink-0">
+          <div key={story.name} className="flex flex-col items-center gap-2 shrink-0">
             <div
               className={`w-12 h-12 rounded-full flex items-center justify-center text-[10px] font-bold text-[#1a1a1a] transition-all duration-500 ${
                 activeStory === i ? "scale-110 ring-2 ring-[#1262b3]" : ""
@@ -140,14 +140,14 @@ export function MockFeedAnimation() {
             }}
           >
             {/* Post header */}
-            <div className="flex items-center gap-2.5 px-4 py-2.5">
+            <div className="flex items-center gap-2 px-4 py-2">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1262b3] to-[#1262b3] flex items-center justify-center text-[9px] font-bold text-black">
                 {post.initials}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-[#1a1a1a] text-xs font-medium">{post.author}</span>
-                  <span className={`text-[8px] px-1.5 py-0.5 rounded-full ${post.roleColor}`}>{post.role}</span>
+                  <span className={`text-[8px] px-2 py-0 rounded-full ${post.roleColor}`}>{post.role}</span>
                 </div>
                 <span className="text-[#9ca3af] text-[9px]">{post.time}</span>
               </div>
@@ -158,7 +158,7 @@ export function MockFeedAnimation() {
             <p className="text-[#374151] text-[10px] leading-relaxed px-4 mb-2">{post.text}</p>
 
             {/* Hashtags */}
-            <div className="flex gap-1.5 px-4 mb-2">
+            <div className="flex gap-2 px-4 mb-2">
               {post.hashtags.map((tag) => (
                 <span key={tag} className="text-[#1262b3]/60 text-[9px]">{tag}</span>
               ))}
@@ -171,8 +171,8 @@ export function MockFeedAnimation() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-5 px-4 py-2">
-              <button className="flex items-center gap-1">
+            <div className="flex items-center gap-6 px-4 py-2">
+              <button className="flex items-center gap-2">
                 <Heart
                   size={14}
                   className={`transition-all duration-300 ${
@@ -183,7 +183,7 @@ export function MockFeedAnimation() {
                   {post.likes + (likedPosts.includes(i) ? 1 : 0)}
                 </span>
               </button>
-              <button className="flex items-center gap-1">
+              <button className="flex items-center gap-2">
                 <MessageCircle size={14} className="text-[#6b7280]" />
                 <span className="text-[#6b7280] text-[10px]">{post.comments}</span>
               </button>
@@ -198,10 +198,10 @@ export function MockFeedAnimation() {
       </div>
 
       {/* Bottom nav */}
-      <div className="flex items-center justify-around py-2.5 border-t border-white/5 bg-white">
+      <div className="flex items-center justify-around py-2 border-t border-white/5 bg-white">
         <Home size={16} className="text-[#1262b3]" />
         <Search size={16} className="text-[#9ca3af]" />
-        <div className="w-8 h-8 rounded-full bg-[#1262b3] flex items-center justify-center -mt-3 shadow-lg shadow-[#1262b3]/20">
+        <div className="w-8 h-8 rounded-full bg-[#1262b3] flex items-center justify-center -mt-4 shadow-lg shadow-[#1262b3]/20">
           <Plus size={16} className="text-black" />
         </div>
         <MessageCircle size={16} className="text-[#9ca3af]" />
@@ -211,7 +211,7 @@ export function MockFeedAnimation() {
       {/* Notification toast */}
       {showNotif && (
         <div
-          className="absolute top-12 left-3 right-3 rounded-xl p-3 flex items-center gap-3 animate-slide-up"
+          className="absolute top-12 left-3 right-3 rounded-xl p-4 flex items-center gap-4 animate-slide-up"
           style={{ background: "rgba(30, 157, 242, 0.15)", backdropFilter: "blur(12px)", border: "1px solid rgba(30, 157, 242,0.3)" }}
         >
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-[9px] font-bold text-[#1a1a1a] shrink-0">AF</div>

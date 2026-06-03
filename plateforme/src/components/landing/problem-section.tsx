@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
@@ -42,8 +42,8 @@ export function ProblemSection() {
 
   return (
     <section ref={ref} className="relative bg-white py-24 md:py-40 px-6 overflow-hidden">
-      <div className="relative max-w-[600px] mx-auto">
-
+      <div className="grid-12 grid grid-cols-12 gap-8 relative">
+        <div className="col-span-12 md:col-span-8 md:col-start-3">
         {/* Header */}
         <motion.p {...fadeUp} transition={{ duration: 0.6 }}
           className="text-[#1262b3] text-xs font-bold tracking-widest uppercase mb-6">
@@ -71,8 +71,8 @@ export function ProblemSection() {
               <span className="text-[#1262b3] text-[clamp(2.2rem,5vw,4rem)] font-bold leading-none tabular-nums">
                 <CountUpStat target={s.num} suffix={s.suffix} inView={inView} />
               </span>
-              <div className="pt-1">
-                <p className="text-[#1a1a1a] text-sm font-bold uppercase tracking-widest mb-1">
+              <div className="pt-2">
+                <p className="text-[#1a1a1a] text-sm font-bold uppercase tracking-widest mb-2">
                   {t(s.labelKey)}
                 </p>
                 <p className="text-[#6b7280] text-sm leading-relaxed">
@@ -89,7 +89,7 @@ export function ProblemSection() {
           className="mt-12 text-[#1262b3] text-sm font-bold tracking-widest uppercase">
           {t("problem.pill")} {t("problem.pill_bold")}
         </motion.p>
-      </div>
+        </div>      </div>
     </section>
   );
 }

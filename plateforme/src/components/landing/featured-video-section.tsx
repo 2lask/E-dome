@@ -75,7 +75,7 @@ export function FeaturedVideoSection() {
             <motion.span
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2.5 bg-[#1262b3] text-white text-sm font-bold px-7 py-3.5 rounded-xl hover:bg-[#1262b3] transition-colors cursor-pointer shadow-md shadow-[#1262b3]/20"
+              className="inline-flex items-center gap-2 bg-[#1262b3] text-white text-sm font-bold px-8 py-4 rounded-xl hover:bg-[#1262b3] transition-colors cursor-pointer shadow-md shadow-[#1262b3]/20"
             >
               {t("featured.cta")}
               <ArrowRight size={16} />

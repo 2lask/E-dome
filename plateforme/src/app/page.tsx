@@ -117,7 +117,8 @@ function SectionHeading({
   description?: string;
 }) {
   return (
-    <div className="text-center max-w-[600px] mx-auto mb-12">
+    <div className="grid-12 mb-12">
+      <div className="col-span-12 md:col-span-8 md:col-start-3 text-center">
       {label && (
         <motion.div {...fadeUp} className="text-[#1262b3] text-xs tracking-widest uppercase font-bold mb-4">
           {label}
@@ -136,6 +137,7 @@ function SectionHeading({
           {description}
         </motion.div>
       )}
+      </div>
     </div>
   );
 }
@@ -194,7 +196,7 @@ function HeroBenefitsAccordion({
 
   return (
     <div className="max-w-md">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-4 mb-6">
         <span className="block w-8 h-px bg-[#1262b3]" />
         <p className="text-[#1a1a1a] text-xs tracking-widest uppercase font-bold">
           {eyebrow}
@@ -202,7 +204,7 @@ function HeroBenefitsAccordion({
       </div>
 
       {/* Badge premium en tête */}
-      <div className="mb-7">
+      <div className="mb-8">
         <FounderBadge brand="E-DOME" title={badgeTitle} />
       </div>
 
@@ -221,8 +223,8 @@ function HeroBenefitsAccordion({
                 onClick={() => toggle(i)}
                 onMouseEnter={() => setOpen([i])}
                 onFocus={() => setOpen([i])}
-                aria-expanded={isOpen}
-                className="w-full flex items-center gap-3 py-3 text-left group"
+                aria-expanded={isOpen ? "true" : "false"}
+                className="w-full flex items-center gap-4 py-4 text-left group"
               >
                 <span
                   className={`flex items-center justify-center w-7 h-7 rounded-full border transition-colors duration-300 ${
@@ -258,7 +260,7 @@ function HeroBenefitsAccordion({
                     transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                     className="overflow-hidden"
                   >
-                    <p className="text-[#6b7280] text-xs leading-relaxed font-medium pl-10 pr-2 pb-3">
+                    <p className="text-[#6b7280] text-xs leading-relaxed font-medium pl-10 pr-2 pb-4">
                       {b.desc}
                     </p>
                   </motion.div>
@@ -558,7 +560,7 @@ function MoteurEconomiqueSlide({
         {/* Heading compact — pas de label "kicker" cette fois (la BG anime
             déjà l'idée du moteur économique). Titre direct, taille raisonnée
             pour ne pas pousser le contenu hors slide. */}
-        <div className="text-center max-w-[600px] mx-auto mb-7">
+        <div className="text-center max-w-[600px] mx-auto mb-8">
           <motion.h2
             {...fadeUp}
             className="text-[clamp(2.2rem,5vw,4rem)] leading-[1.05] mb-4"
@@ -578,12 +580,12 @@ function MoteurEconomiqueSlide({
         {/* 4 chips */}
         <motion.div
           {...fadeUp}
-          className="flex flex-wrap justify-center gap-2 sm:gap-2.5 mb-8 px-4"
+          className="flex flex-wrap justify-center gap-2 sm:gap-2 mb-8 px-4"
         >
           {chips.map((c, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f5f5f5]/80 border border-[#e5e7eb] backdrop-blur-sm"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#f5f5f5]/80 border border-[#e5e7eb] backdrop-blur-sm"
             >
               <span
                 className="w-5 h-5 rounded-full flex items-center justify-center"
@@ -607,14 +609,14 @@ function MoteurEconomiqueSlide({
               que les hôtes peuvent ajouter à leurs annonces, (3) programme
               d'affiliation paramétrable. */}
         <motion.div {...fadeUp} className="max-w-[600px] mx-auto px-4 mb-6">
-          <p className="text-center text-[0.6rem] tracking-widest uppercase text-[#6b7280] font-bold mb-3">
+          <p className="text-center text-[0.6rem] tracking-widest uppercase text-[#6b7280] font-bold mb-4">
             {lang === "en"
               ? "What E-Dome brings"
               : lang === "th"
                 ? "สิ่งที่ E-Dome มอบให้"
                 : "Ce que E-Dome apporte"}
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             {(lang === "en"
               ? [
                   {
@@ -693,7 +695,7 @@ function MoteurEconomiqueSlide({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex flex-col gap-2 p-3.5 rounded-xl bg-[#f5f5f5]/70 backdrop-blur-sm border border-[#e5e7eb] hover:border-[#d1d5db] transition-colors"
+                className="flex flex-col gap-2 p-4 rounded-xl bg-[#f5f5f5]/70 backdrop-blur-sm border border-[#e5e7eb] hover:border-[#d1d5db] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <span
@@ -728,10 +730,10 @@ function MoteurEconomiqueSlide({
               sur la part d'E-Dome, JAMAIS en sus. Pas d'animation : ce
               bloc doit être constamment visible dès l'arrivée sur la
               section, sans effet d'apparition. ── */}
-        <div className="mx-4 sm:mx-auto max-w-[600px] rounded-2xl bg-gradient-to-br from-[#1262b3]/[0.08] via-[#1262b3]/[0.04] to-transparent border border-[#1262b3]/30 backdrop-blur-sm overflow-hidden mb-5">
+        <div className="mx-4 sm:mx-auto max-w-[600px] rounded-2xl bg-gradient-to-br from-[#1262b3]/[0.08] via-[#1262b3]/[0.04] to-transparent border border-[#1262b3]/30 backdrop-blur-sm overflow-hidden mb-6">
           <div className="flex flex-col sm:flex-row items-stretch">
             {/* Côté gauche : pictogramme + libellé fort */}
-            <div className="flex items-center gap-3 px-4 py-3 sm:pr-3 sm:border-r sm:border-[#1262b3]/20">
+            <div className="flex items-center gap-4 px-4 py-4 sm:pr-4 sm:border-r sm:border-[#1262b3]/20">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-[#1262b3]/15 text-[#1262b3] border border-[#1262b3]/30">
                 <ShieldCheck size={18} />
               </div>
@@ -743,7 +745,7 @@ function MoteurEconomiqueSlide({
                       ? "สำคัญ"
                       : "À savoir"}
                 </p>
-                <p className="text-sm sm:text-base font-bold text-[#1a1a1a] tracking-tight mt-0.5">
+                <p className="text-sm sm:text-base font-bold text-[#1a1a1a] tracking-tight mt-0">
                   {lang === "en"
                     ? "Zero extra cost for the host or client."
                     : lang === "th"
@@ -754,7 +756,7 @@ function MoteurEconomiqueSlide({
             </div>
 
             {/* Côté droit : phrase d'explication centrée */}
-            <div className="flex-1 px-4 py-3 flex items-center">
+            <div className="flex-1 px-4 py-4 flex items-center">
               <p className="text-[0.78rem] sm:text-sm text-[#374151] font-medium leading-snug">
                 {lang === "en" ? (
                   <>
@@ -939,7 +941,7 @@ function HomePageContent() {
 
       {/* ═══════════════════════ NAVBAR ═══════════════════════ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-[#e5e7eb]">
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+        <div className="grid-12 py-4 flex items-center justify-between">
           <a href="#" className="font-bold text-xl tracking-tight">
             E-<span className="text-[#1262b3]">Dome</span>
           </a>
@@ -961,13 +963,14 @@ function HomePageContent() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-0.5 rounded-lg border border-[#e5e7eb] overflow-hidden">
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-0 rounded-lg border border-[#e5e7eb] overflow-hidden">
               {(["fr", "en", "th"] as const).map((l) => (
                 <button
+                  type="button"
                   key={l}
                   onClick={() => setLang(l)}
-                  className={`text-xs font-medium px-2.5 py-1.5 transition-colors uppercase ${
+                  className={`text-xs font-medium px-2 py-2 transition-colors uppercase ${
                     lang === l
                       ? "bg-[#1262b3] text-white"
                       : "text-[#6b7280] hover:text-[#1a1a1a] hover:bg-[#f9fafb]"
@@ -979,14 +982,14 @@ function HomePageContent() {
             </div>
             <Link
               href="#inscriptions"
-              className="hidden md:inline-flex bg-[#1262b3] text-white rounded-none px-5 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
+              className="hidden md:inline-flex bg-[#1262b3] text-white rounded-none px-6 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
             >
               {t("hero.cta")}
             </Link>
             {/* Mobile hamburger */}
             <button
               type="button"
-              className="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5"
+              className="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-2"
               aria-label="Menu"
               onClick={() => setMobileNavOpen((v) => !v)}
             >
@@ -1005,7 +1008,7 @@ function HomePageContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="md:hidden bg-white border-t border-[#e5e7eb] px-6 py-5 flex flex-col gap-4"
+              className="md:hidden bg-white border-t border-[#e5e7eb] px-6 py-6 flex flex-col gap-4"
             >
               {[
                 { href: "#vision", label: t("nav.vision") },
@@ -1023,13 +1026,13 @@ function HomePageContent() {
                 </a>
               ))}
               <div className="pt-2 border-t border-[#e5e7eb] flex items-center justify-between">
-                <div className="flex items-center gap-0.5 rounded-lg border border-[#e5e7eb] overflow-hidden">
+                <div className="flex items-center gap-0 rounded-lg border border-[#e5e7eb] overflow-hidden">
                   {(["fr", "en", "th"] as const).map((l) => (
                     <button
                       type="button"
                       key={l}
                       onClick={() => setLang(l)}
-                      className={`text-xs font-medium px-2.5 py-1.5 transition-colors uppercase ${
+                      className={`text-xs font-medium px-2 py-2 transition-colors uppercase ${
                         lang === l ? "bg-[#1262b3] text-white" : "text-[#6b7280]"
                       }`}
                     >
@@ -1040,7 +1043,7 @@ function HomePageContent() {
                 <Link
                   href="#inscriptions"
                   onClick={() => setMobileNavOpen(false)}
-                  className="bg-[#1262b3] text-white px-5 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
+                  className="bg-[#1262b3] text-white px-6 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
                 >
                   {t("hero.cta")}
                 </Link>
@@ -1058,11 +1061,11 @@ function HomePageContent() {
             (piloté par useSlideProgress du ScrollStage parent). */}
         <HeroArchTower />
 
-        <div className="min-h-screen flex items-center px-6 sm:px-12 md:px-20 lg:px-32 pt-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-center">
+        <div className="min-h-screen flex items-center pt-24 pb-16">
+          <div className="grid-12 grid grid-cols-12 gap-8 w-full items-center">
             {/* Colonne texte (gauche) */}
-            <motion.div {...fadeUp} className="lg:col-span-7 max-w-[600px]">
-              <div className="flex items-center gap-3 mb-6">
+            <motion.div {...fadeUp} className="col-span-12 lg:col-span-7">
+              <div className="flex items-center gap-4 mb-6">
                 <span className="block w-8 h-px bg-[#1262b3]" />
                 <p className="text-[#1262b3] text-xs tracking-widest uppercase font-bold">
                   {t("hero.label")}
@@ -1105,13 +1108,13 @@ function HomePageContent() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link
                   href="#inscriptions"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1262b3] text-white text-sm font-bold hover:bg-[#0f52a0] transition-all"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-[#1262b3] text-white text-sm font-bold hover:bg-[#0f52a0] transition-all"
                 >
                   {t("hero.cta")} <ArrowRight size={16} />
                 </Link>
                 <Link
                   href="#vision"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 border border-[#d1d5db] text-[#374151] text-sm font-medium hover:bg-[#f5f5f5] hover:border-neutral-600 transition-all"
+                  className="inline-flex items-center gap-2 px-8 py-4 border border-[#d1d5db] text-[#374151] text-sm font-medium hover:bg-[#f5f5f5] hover:border-neutral-600 transition-all"
                 >
                   {t("hero.learn")}
                 </Link>
@@ -1119,7 +1122,7 @@ function HomePageContent() {
             </motion.div>
 
             {/* Colonne droite : badge fondateur + 6 avantages (accordéon cliquable) */}
-            <motion.div {...fadeUp} className="hidden lg:block lg:col-span-5 lg:-ml-16">
+            <motion.div {...fadeUp} className="hidden lg:block col-span-5">
               <HeroBenefitsAccordion
                 lang={lang}
                 badgeTitle={
@@ -1147,8 +1150,9 @@ function HomePageContent() {
         <div className="hidden lg:block absolute left-[-3%] top-0 bottom-0 w-[18%] z-0 pointer-events-none">
           <ArchTallFacade className="w-full h-full" />
         </div>
-        <div className="min-h-screen flex items-center px-6 py-10 relative z-10">
-        <div className="max-w-[600px] mx-auto w-full">
+        <div className="min-h-screen flex items-center py-16 relative z-10">
+        <div className="grid-12 grid grid-cols-12 w-full">
+        <div className="col-span-12 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4">
           {(() => {
             type Pb = { title: string; body: string; resolution: string };
             type Data = {
@@ -1285,7 +1289,7 @@ function HomePageContent() {
               <>
                 {/* HEADER — eyebrow + titre punchy + intro globale courte */}
                 <motion.div {...fadeUp} className="mb-8 max-w-[600px]">
-                  <p className="text-[#1262b3] text-xs tracking-widest uppercase font-bold mb-3">
+                  <p className="text-[#1262b3] text-xs tracking-widest uppercase font-bold mb-4">
                     {t("problem.label")}
                   </p>
                   <h2
@@ -1325,7 +1329,7 @@ function HomePageContent() {
                 {/* 4 CONSTATS en encadrés avec graphique linéaire négatif
                     rouge en arrière-plan, continu visuellement de gauche à
                     droite (chaque carte = 1 segment, Y aux bords alignés). */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4">
                   {data.constats.map((c, i) => (
                     <motion.div
                       key={i}
@@ -1333,7 +1337,7 @@ function HomePageContent() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-40px" }}
                       transition={{ duration: 0.5, delay: i * 0.07 }}
-                      className="relative bg-[#f5f5f5]/60 backdrop-blur-sm rounded-2xl border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors p-5 sm:p-5 flex flex-col overflow-hidden"
+                      className="relative bg-[#f5f5f5]/60 backdrop-blur-sm rounded-2xl border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors p-6 sm:p-6 flex flex-col overflow-hidden"
                     >
                       {/* Graphique linéaire négatif en arrière-plan */}
                       <svg
@@ -1390,19 +1394,19 @@ function HomePageContent() {
                       </svg>
 
                       {/* Contenu au-dessus du graphique */}
-                      <span className="relative font-mono text-xs text-[#6b7280] tracking-widest uppercase font-bold mb-3">
+                      <span className="relative font-mono text-xs text-[#6b7280] tracking-widest uppercase font-bold mb-4">
                         0{i + 1}
                       </span>
                       <h3
-                        className="relative text-base sm:text-base font-bold text-[#1a1a1a] leading-tight mb-2.5"
+                        className="relative text-base sm:text-base font-bold text-[#1a1a1a] leading-tight mb-2"
                       >
                         {c.title}
                       </h3>
-                      <p className="relative text-[#6b7280] text-[0.78rem] sm:text-[0.82rem] leading-relaxed font-medium flex-1 mb-3">
+                      <p className="relative text-[#6b7280] text-[0.78rem] sm:text-[0.82rem] leading-relaxed font-medium flex-1 mb-4">
                         {c.body}
                       </p>
                       {/* Résolution E-Dome — petit, bleu, en pied de carte */}
-                      <div className="relative pt-3 border-t border-[#e5e7eb]/80">
+                      <div className="relative pt-4 border-t border-[#e5e7eb]/80">
                         <p className="text-xs sm:text-xs text-blue-300/80 leading-snug font-medium">
                           <span className="text-[#1262b3] font-bold">
                             E-Dome →
@@ -1417,13 +1421,14 @@ function HomePageContent() {
                 {/* CLOSING — phrase italique serif, sans animation,
                     constamment visible dès le rendu. */}
                 <p
-                  className="text-center text-base md:text-xl mt-7 text-[#374151] italic font-medium"
+                  className="text-center text-base md:text-xl mt-8 text-[#374151] italic font-medium"
                 >
                   «&nbsp;{data.closing}&nbsp;»
                 </p>
               </>
             );
           })()}
+        </div>
         </div>
         </div>
       </section>
@@ -1486,7 +1491,7 @@ function HomePageContent() {
                   ];
           return (
             <>
-              <span className="block mb-3 leading-relaxed">
+              <span className="block mb-4 leading-relaxed">
                 {lang === "en" ? (
                   <>
                     Publish a property, accept the booking, train your clients,
@@ -1769,7 +1774,7 @@ function HomePageContent() {
           const Pill = ({ role }: { role: Role }) => {
             const label = lang === "en" ? role.en : lang === "th" ? role.th : role.fr;
             return (
-              <div className="group flex items-center gap-2.5 px-4 py-2.5 mx-2 rounded-full bg-[#f5f5f5] border border-[#e5e7eb] hover:border-[#1262b3]/40 transition-colors duration-300 whitespace-nowrap">
+              <div className="group flex items-center gap-2 px-4 py-2 mx-2 rounded-full bg-[#f5f5f5] border border-[#e5e7eb] hover:border-[#1262b3]/40 transition-colors duration-300 whitespace-nowrap">
                 <span
                   className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
                   style={{
@@ -1788,7 +1793,7 @@ function HomePageContent() {
           };
           return (
             <div className="w-screen flex flex-col items-center">
-              <div className="space-y-3 w-full">
+              <div className="space-y-4 w-full">
                 {rows.map((row, rIdx) => (
                   <Marquee
                     key={rIdx}
@@ -1796,7 +1801,7 @@ function HomePageContent() {
                     duration={rowConfigs[rIdx].duration}
                     pauseOnHover
                     fadeAmount={6}
-                    className="py-1"
+                    className="py-2"
                   >
                     {row.map((role, i) => (
                       <Pill key={`${rIdx}-${i}`} role={role} />
@@ -1875,14 +1880,14 @@ function HomePageContent() {
             que les blocs aient plus de marge à se "décaler" vers les bords.
             Espacements verticaux resserrés afin que le bloc Jean-Pierre
             ne soit plus rogné par le bas du slide. */}
-        <div className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 h-full flex flex-col justify-start pt-20 pb-4">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-4 h-full flex flex-col justify-start pt-20 pb-4">
           {/* ── Heading ── */}
-          <motion.div {...fadeUp} className="text-center max-w-[600px] mx-auto mb-7">
+          <motion.div {...fadeUp} className="text-center max-w-[600px] mx-auto mb-8">
             <p className="text-[#1262b3] text-xs tracking-widest uppercase font-bold mb-2">
               {lang === "th" ? "ทีมงาน" : lang === "en" ? "The team" : "L'équipe"}
             </p>
             <h2
-              className="text-2xl sm:text-3xl md:text-4xl leading-[1.05] mb-3"
+              className="text-2xl sm:text-3xl md:text-4xl leading-[1.05] mb-4"
             >
               {lang === "th" ? (
                 <>ทำความ<br /><span className="text-[#1262b3]">รู้จักกัน</span></>
@@ -1920,11 +1925,11 @@ function HomePageContent() {
               <h3 className="text-base font-bold text-[#1a1a1a] tracking-tight">
                 Léonard Ansermet
               </h3>
-              <p className="text-[#1262b3] text-xs sm:text-[0.66rem] font-bold uppercase tracking-widest mt-0.5">
+              <p className="text-[#1262b3] text-xs sm:text-[0.66rem] font-bold uppercase tracking-widest mt-0">
                 {t("founders.label_leo")}
               </p>
               <p
-                className="text-[#6b7280] text-xs sm:text-sm leading-snug font-medium italic mt-1.5 pl-0"
+                className="text-[#6b7280] text-xs sm:text-sm leading-snug font-medium italic mt-2 pl-0"
               >
                 {lang === "en"
                   ? "You don't change a sector by adding another tool — you change it by building the place where everything finally connects."
@@ -1947,7 +1952,7 @@ function HomePageContent() {
               "
             </span>
             <p
-              className="text-sm sm:text-base text-[#1a1a1a] italic leading-snug px-6 pt-1"
+              className="text-sm sm:text-base text-[#1a1a1a] italic leading-snug px-6 pt-2"
             >
               {t("founders.quote")}
             </p>
@@ -1968,11 +1973,11 @@ function HomePageContent() {
               <h3 className="text-base font-bold text-[#1a1a1a] tracking-tight">
                 Jean-Pierre Medard Garza
               </h3>
-              <p className="text-[#1262b3] text-xs sm:text-[0.66rem] font-bold uppercase tracking-widest mt-0.5">
+              <p className="text-[#1262b3] text-xs sm:text-[0.66rem] font-bold uppercase tracking-widest mt-0">
                 {t("founders.label_jp")}
               </p>
               {/* Crédential : CFC employé de commerce + maturité professionnelle */}
-              <p className="text-[#6b7280] text-xs sm:text-[0.66rem] tracking-widest mt-1">
+              <p className="text-[#6b7280] text-xs sm:text-[0.66rem] tracking-widest mt-2">
                 {lang === "en"
                   ? "Federal commerce diploma · Professional baccalaureate"
                   : lang === "th"
@@ -1980,7 +1985,7 @@ function HomePageContent() {
                     : "CFC employé de commerce · Maturité professionnelle"}
               </p>
               <p
-                className="text-[#6b7280] text-xs sm:text-sm leading-snug font-medium italic mt-1.5 border-r-2 border-[#1262b3]/30 pr-2.5"
+                className="text-[#6b7280] text-xs sm:text-sm leading-snug font-medium italic mt-2 border-r-2 border-[#1262b3]/30 pr-2"
               >
                 {lang === "en"
                   ? "Structures the model, partnerships and execution. Convinced that a good idea is never enough — it takes rigorous foundations to make it grow."
@@ -2007,7 +2012,7 @@ function HomePageContent() {
               avec margin -80px ne se déclenchait pas tant que le bas du
               slide n'était pas suffisamment dans le viewport). */}
           <div
-            className="flex flex-col sm:flex-row items-center justify-center sm:justify-end gap-3 sm:gap-5 pt-3 border-t border-neutral-900"
+            className="flex flex-col sm:flex-row items-center justify-center sm:justify-end gap-4 sm:gap-6 pt-4 border-t border-neutral-900"
           >
             <p className="text-[0.6rem] tracking-widest uppercase text-[#6b7280] font-bold">
               {lang === "en"
@@ -2023,13 +2028,13 @@ function HomePageContent() {
               <span className="text-xs text-[#374151] font-bold">Léonard</span>
               <a
                 href="tel:+66910687928"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold tabular-nums"
+                className="inline-flex items-center gap-2 px-2 py-0 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold tabular-nums"
               >
                 <Phone size={10} /> +66 91 068 7928
               </a>
               <a
                 href="mailto:leonard@edome.world"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
+                className="inline-flex items-center gap-2 px-2 py-0 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
               >
                 <Mail size={10} /> Email
               </a>
@@ -2044,13 +2049,13 @@ function HomePageContent() {
                 href="https://wa.me/41798267542"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
+                className="inline-flex items-center gap-2 px-2 py-0 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
               >
                 <MessageCircle size={10} /> {t("founders.whatsapp")}
               </a>
               <a
                 href="mailto:jeanpierre@edome.world"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
+                className="inline-flex items-center gap-2 px-2 py-0 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
               >
                 <Mail size={10} /> Email
               </a>
@@ -2105,11 +2110,11 @@ function HomePageContent() {
           <ArchCantilever className="w-full h-full" />
         </div>
 
-        <div className="relative z-10 max-w-[600px] mx-auto h-full flex flex-col justify-start pt-12 pb-3">
+        <div className="relative z-10 max-w-[600px] mx-auto h-full flex flex-col justify-start pt-12 pb-4">
           {/* ── Header : eyebrow + titre + sous-titre italique +
                   paragraphe développé + meta-row de stats ── */}
-          <motion.div {...fadeUp} className="text-center mb-5 max-w-[600px] mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/30 mb-3.5">
+          <motion.div {...fadeUp} className="text-center mb-6 max-w-[600px] mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/30 mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-[#1262b3] animate-pulse" />
               <span className="text-[#1262b3] text-xs tracking-widest uppercase font-bold">
                 {lang === "en"
@@ -2120,7 +2125,7 @@ function HomePageContent() {
               </span>
             </div>
             <h2
-              className="text-[clamp(2.2rem,5vw,4rem)] leading-[1.05] mb-3"
+              className="text-[clamp(2.2rem,5vw,4rem)] leading-[1.05] mb-4"
             >
               {lang === "en" ? (
                 <>
@@ -2145,7 +2150,7 @@ function HomePageContent() {
             {/* Sous-titre serif italique — passerelle entre le titre et le
                 paragraphe. Cadence émotionnelle. */}
             <p
-              className="text-[#1262b3]/85 text-sm sm:text-base italic mb-3"
+              className="text-[#1262b3]/85 text-sm sm:text-base italic mb-4"
             >
               {lang === "en"
                 ? "Your voice is the raw material of this project."
@@ -2163,23 +2168,23 @@ function HomePageContent() {
             </p>
             {/* Meta-row : stats inline qui rassurent (durée · format ·
                 anonymat · engagement). */}
-            <div className="mt-3.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-[#6b7280] font-medium">
-              <span className="inline-flex items-center gap-1.5">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-[#6b7280] font-medium">
+              <span className="inline-flex items-center gap-2">
                 <Clock size={11} className="text-[#1262b3]" />
                 {lang === "en" ? "≈ 2 min" : lang === "th" ? "≈ 2 นาที" : "≈ 2 min"}
               </span>
               <span className="text-neutral-700">·</span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-2">
                 <ClipboardList size={11} className="text-[#1262b3]" />
                 {lang === "en" ? "12 questions" : lang === "th" ? "12 คำถาม" : "12 questions"}
               </span>
               <span className="text-neutral-700">·</span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-2">
                 <Lock size={11} className="text-[#1262b3]" />
                 {lang === "en" ? "100% anonymous" : lang === "th" ? "100% นิรนาม" : "100 % anonyme"}
               </span>
               <span className="text-neutral-700">·</span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-2">
                 <BadgeCheck size={11} className="text-[#1262b3]" />
                 {lang === "en" ? "no commitment" : lang === "th" ? "ไม่ผูกพัน" : "sans engagement"}
               </span>
@@ -2190,7 +2195,7 @@ function HomePageContent() {
               Validation (emerald) · Orientation (blue) · Partenaires
               (amber). Explique pour chaque axe ce que la voix de
               l'utilisateur fait avancer dans le projet. */}
-          <motion.div {...fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-w-[600px] mx-auto mb-5">
+          <motion.div {...fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-[600px] mx-auto mb-6">
             {[
               {
                 icon: <ClipboardCheck size={16} />,
@@ -2267,7 +2272,7 @@ function HomePageContent() {
               return (
                 <div
                   key={i}
-                  className={`relative rounded-xl border p-3.5 bg-[#f5f5f5]/60 backdrop-blur-sm transition-colors ${tone.border}`}
+                  className={`relative rounded-xl border p-4 bg-[#f5f5f5]/60 backdrop-blur-sm transition-colors ${tone.border}`}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <div className={`w-7 h-7 rounded-md flex items-center justify-center ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}>
@@ -2277,7 +2282,7 @@ function HomePageContent() {
                       {card.eyebrow}
                     </span>
                   </div>
-                  <h3 className="text-[0.82rem] font-bold text-[#1a1a1a] leading-tight mb-1">
+                  <h3 className="text-[0.82rem] font-bold text-[#1a1a1a] leading-tight mb-2">
                     {card.title}
                   </h3>
                   <p className="text-[0.68rem] text-[#6b7280] leading-snug">
@@ -2292,7 +2297,7 @@ function HomePageContent() {
                 de 4 cartes. Une ligne de connexion gradient relie les
                 noeuds (Fait → Maintenant → 2× À venir). Plus dense
                 visuellement, plus narratif (on lit la progression). ── */}
-          <motion.div {...fadeUp} className="mb-5 max-w-[600px] mx-auto w-full">
+          <motion.div {...fadeUp} className="mb-6 max-w-[600px] mx-auto w-full">
             <div className="relative">
               {/* Ligne de connexion entre les noeuds — gradient
                   emerald → bleu → neutral. Calée à la hauteur des dots. */}
@@ -2318,7 +2323,7 @@ function HomePageContent() {
                       : "text-[#6b7280]";
                   const titleCls = isDone || isCurrent ? "text-[#1a1a1a]" : "text-[#6b7280]";
                   return (
-                    <div key={i} className="relative flex flex-col items-center text-center px-1">
+                    <div key={i} className="relative flex flex-col items-center text-center px-2">
                       <div className={`relative z-10 w-7 h-7 rounded-full ring-4 ring-white flex items-center justify-center ${dotCls}`}>
                         {isDone ? (
                           <BadgeCheck size={13} className="text-[#1a1a1a]" strokeWidth={2.6} />
@@ -2331,10 +2336,10 @@ function HomePageContent() {
                           <span className="absolute inset-0 rounded-full bg-[#1262b3] opacity-40 animate-ping" />
                         )}
                       </div>
-                      <p className={`mt-1.5 text-[0.55rem] tracking-widest uppercase font-bold ${labelCls}`}>
+                      <p className={`mt-2 text-[0.55rem] tracking-widest uppercase font-bold ${labelCls}`}>
                         {labelText}
                       </p>
-                      <h3 className={`mt-0.5 text-xs font-bold leading-tight ${titleCls}`}>
+                      <h3 className={`mt-0 text-xs font-bold leading-tight ${titleCls}`}>
                         {t(phase.titleKey)}
                       </h3>
                     </div>
@@ -2349,12 +2354,12 @@ function HomePageContent() {
               Card 2 (filled)  : répondre au questionnaire /acces — conversion */}
           <motion.div
             {...fadeUp}
-            className="grid sm:grid-cols-2 gap-3 max-w-[600px] mx-auto mb-3"
+            className="grid sm:grid-cols-2 gap-4 max-w-[600px] mx-auto mb-4"
           >
             {/* Voir la démo — outline */}
             <Link
               href="/feed"
-              className="group relative bg-[#f5f5f5]/80 hover:bg-[#eeeeee] rounded-2xl p-4 border border-[#e5e7eb] hover:border-[#1262b3]/40 transition-all flex items-center gap-3 backdrop-blur-sm"
+              className="group relative bg-[#f5f5f5]/80 hover:bg-[#eeeeee] rounded-2xl p-4 border border-[#e5e7eb] hover:border-[#1262b3]/40 transition-all flex items-center gap-4 backdrop-blur-sm"
             >
               <div className="w-11 h-11 rounded-xl bg-[#1262b3]/15 text-[#1262b3] flex items-center justify-center shrink-0 ring-1 ring-[#1262b3]/30">
                 <Eye size={18} />
@@ -2363,14 +2368,14 @@ function HomePageContent() {
                 <p className="text-[0.6rem] tracking-widest uppercase text-[#1262b3] font-bold">
                   {lang === "en" ? "Discover" : lang === "th" ? "ค้นพบ" : "Découvrir"}
                 </p>
-                <h3 className="text-sm font-bold text-[#1a1a1a] tracking-tight mt-0.5 leading-tight">
+                <h3 className="text-sm font-bold text-[#1a1a1a] tracking-tight mt-0 leading-tight">
                   {lang === "en"
                     ? "See the demo"
                     : lang === "th"
                       ? "ดูตัวอย่าง"
                       : "Voir la démo"}
                 </h3>
-                <p className="text-[0.68rem] text-[#6b7280] mt-0.5 leading-tight">
+                <p className="text-[0.68rem] text-[#6b7280] mt-0 leading-tight">
                   {lang === "en"
                     ? "Interactive mockup · 30+ pages"
                     : lang === "th"
@@ -2387,10 +2392,10 @@ function HomePageContent() {
             {/* Répondre au questionnaire — primary, badge "Recommandé" */}
             <Link
               href="/acces"
-              className="group relative bg-gradient-to-br from-[#1262b3]/20 to-[#1262b3]/5 hover:from-[#1262b3]/25 hover:to-[#1262b3]/10 rounded-2xl p-4 border border-[#1262b3]/40 hover:border-[#1262b3]/70 transition-all flex items-center gap-3 shadow-lg shadow-[#1262b3]/10 overflow-hidden"
+              className="group relative bg-gradient-to-br from-[#1262b3]/20 to-[#1262b3]/5 hover:from-[#1262b3]/25 hover:to-[#1262b3]/10 rounded-2xl p-4 border border-[#1262b3]/40 hover:border-[#1262b3]/70 transition-all flex items-center gap-4 shadow-lg shadow-[#1262b3]/10 overflow-hidden"
             >
               {/* Badge "Recommandé" en haut-droite */}
-              <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-widest uppercase font-bold bg-[#1262b3] text-white px-1.5 py-0.5 rounded-md">
+              <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-widest uppercase font-bold bg-[#1262b3] text-white px-2 py-0 rounded-md">
                 {lang === "en" ? "Recommended" : lang === "th" ? "แนะนำ" : "Recommandé"}
               </span>
               <div className="w-11 h-11 rounded-xl bg-[#1262b3] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#1262b3]/40">
@@ -2400,14 +2405,14 @@ function HomePageContent() {
                 <p className="text-[0.6rem] tracking-widest uppercase text-[#1262b3] font-bold">
                   {lang === "en" ? "Contribute" : lang === "th" ? "มีส่วนร่วม" : "Contribuer"}
                 </p>
-                <h3 className="text-sm font-bold text-[#1a1a1a] tracking-tight mt-0.5 leading-tight">
+                <h3 className="text-sm font-bold text-[#1a1a1a] tracking-tight mt-0 leading-tight">
                   {lang === "en"
                     ? "Take the survey"
                     : lang === "th"
                       ? "ตอบแบบสอบถาม"
                       : "Répondre au questionnaire"}
                 </h3>
-                <p className="text-[0.68rem] text-[#6b7280] mt-0.5 leading-tight">
+                <p className="text-[0.68rem] text-[#6b7280] mt-0 leading-tight">
                   {lang === "en"
                     ? "2 min · free · no commitment"
                     : lang === "th"
@@ -2428,22 +2433,22 @@ function HomePageContent() {
             {...fadeUp}
             className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[0.6rem] text-[#6b7280] font-medium"
           >
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-2">
               <ShieldCheck size={10} className="text-[#1262b3]/80" />
               {lang === "en" ? "GDPR-compliant" : lang === "th" ? "เป็นไปตาม GDPR" : "Conforme RGPD"}
             </span>
             <span className="text-neutral-800">·</span>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-2">
               <Lock size={10} className="text-[#1262b3]/80" />
               {lang === "en" ? "Encrypted data" : lang === "th" ? "ข้อมูลถูกเข้ารหัส" : "Données chiffrées"}
             </span>
             <span className="text-neutral-800">·</span>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-2">
               <Eye size={10} className="text-[#1262b3]/80" />
               {lang === "en" ? "No reselling" : lang === "th" ? "ไม่ขายต่อ" : "Aucune revente"}
             </span>
             <span className="text-neutral-800">·</span>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-2">
               <UserCheck size={10} className="text-[#1262b3]/80" />
               {lang === "en" ? "Anonymous answers" : lang === "th" ? "คำตอบนิรนาม" : "Réponses anonymes"}
             </span>
@@ -2465,7 +2470,7 @@ function HomePageContent() {
         <div className="max-w-[600px] mx-auto">
           {/* Heading */}
           <motion.div {...fadeUp} className="text-center mb-10">
-            <p className="text-[#1262b3] text-xs tracking-widest uppercase font-bold mb-3">
+            <p className="text-[#1262b3] text-xs tracking-widest uppercase font-bold mb-4">
               FAQ
             </p>
             <h2
@@ -2501,7 +2506,7 @@ function HomePageContent() {
           </motion.div>
 
           {/* FAQ accordion */}
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {(() => {
               const faqs =
                 lang === "en"
@@ -2617,7 +2622,7 @@ function HomePageContent() {
                   transition={{ duration: 0.45, delay: i * 0.04 }}
                   className="group bg-[#f5f5f5] rounded-xl border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors overflow-hidden"
                 >
-                  <summary className="flex items-center gap-4 cursor-pointer list-none px-5 py-4 select-none">
+                  <summary className="flex items-center gap-4 cursor-pointer list-none px-6 py-4 select-none">
                     <span className="font-mono text-xs tracking-widest text-[#6b7280] shrink-0 w-6">
                       0{i + 1}
                     </span>
@@ -2629,7 +2634,7 @@ function HomePageContent() {
                       className="text-[#1262b3] group-open:rotate-180 transition-transform shrink-0"
                     />
                   </summary>
-                  <div className="px-5 pb-5">
+                  <div className="px-6 pb-6">
                     <p className="text-[#6b7280] text-sm leading-relaxed font-medium pl-10">
                       {f.a}
                     </p>
@@ -2684,7 +2689,7 @@ function HomePageContent() {
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             {/* Brand */}
             <div className="md:col-span-1">
-              <h3 className="text-2xl font-bold mb-3">
+              <h3 className="text-2xl font-bold mb-4">
                 E-<span className="text-[#1262b3]">Dome</span>
               </h3>
               <p className="text-[#6b7280] text-sm font-medium leading-relaxed">
@@ -2693,7 +2698,7 @@ function HomePageContent() {
               <div className="mt-6">
                 <Link
                   href="/acces"
-                  className="inline-flex items-center gap-2 bg-[#1262b3] text-white rounded-lg px-5 py-2.5 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
+                  className="inline-flex items-center gap-2 bg-[#1262b3] text-white rounded-lg px-6 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
                 >
                   {t("footer.access")} <ArrowRight size={14} />
                 </Link>
@@ -2705,7 +2710,7 @@ function HomePageContent() {
               <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest mb-4">
                 {t("footer.demo_label")}
               </h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2">
                 {[
                   "footer.link_feed",
                   "footer.link_marketplace",
@@ -2728,7 +2733,7 @@ function HomePageContent() {
               <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest mb-4">
                 {t("footer.platform_label")}
               </h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2">
                 {[
                   "footer.link_apporteurs",
                   "footer.link_reservations",
@@ -2751,7 +2756,7 @@ function HomePageContent() {
               <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest mb-4">
                 {t("footer.about_label")}
               </h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2">
                 {[
                   { key: "footer.link_vision", href: "#vision" },
                   { key: "footer.link_features", href: "#fonctionnalites" },

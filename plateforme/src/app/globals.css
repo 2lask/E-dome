@@ -175,6 +175,28 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ─── 12-column grid container ──────────────────────────────
+   Standard landing layout grid. Children use col-span-N.
+   Column gap and side padding are strict 8px multiples.      */
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 32px;
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+@media (max-width: 768px) {
+  .grid-12 {
+    padding-left: 16px;
+    padding-right: 16px;
+    column-gap: 16px;
+  }
+}
+
 body {
   background: var(--bg);
   color: var(--text);

@@ -98,7 +98,8 @@ export function ServicesSection() {
         <polygon points="50,20 80,35 80,65 50,80 20,65 20,35" stroke="#1262b3" strokeWidth="1" fill="none" />
       </svg>
 
-      <div className="max-w-6xl mx-auto relative">
+      <div className="grid-12 grid grid-cols-12 gap-8 relative">
+        <div className="col-span-12">
         {/* Header */}
         <div className="mb-14 md:mb-20">
           <motion.div
@@ -161,7 +162,7 @@ export function ServicesSection() {
 
                 {/* Card content */}
                 <div className="p-6">
-                  <div className="flex items-center gap-2.5 mb-3">
+                  <div className="flex items-center gap-2 mb-4">
                     <div className="rounded-full p-2 bg-[#1262b3]/10">
                       <Icon size={14} className="text-[#1262b3]" />
                     </div>
@@ -180,7 +181,7 @@ export function ServicesSection() {
             );
           })}
         </div>
-      </div>
+        </div>      </div>
     </section>
   );
 }

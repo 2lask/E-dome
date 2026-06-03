@@ -91,8 +91,8 @@ export function RoadmapSection() {
 
   return (
     <section className="bg-[#FAFAF8] py-20 md:py-32 px-6 overflow-hidden relative">
-      <div className="max-w-6xl mx-auto relative">
-
+      <div className="grid-12 grid grid-cols-12 gap-8 relative">
+        <div className="col-span-12">
         {/* ── Header ── */}
         <div className="mb-14 md:mb-20">
           <motion.div
@@ -101,7 +101,7 @@ export function RoadmapSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-[#1262b3] text-sm tracking-widest uppercase mb-5 font-medium">
+            <p className="text-[#1262b3] text-sm tracking-widest uppercase mb-6 font-medium">
               {t("roadmap.label")}
             </p>
           </motion.div>
@@ -123,7 +123,7 @@ export function RoadmapSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <p className="text-[#4b5563] text-base max-w-[600px] leading-relaxed mb-3">
+            <p className="text-[#4b5563] text-base max-w-[600px] leading-relaxed mb-4">
               {t("roadmap.desc")}
             </p>
             <p className="text-[#6b7280] text-sm max-w-[600px] leading-relaxed">
@@ -146,14 +146,14 @@ export function RoadmapSection() {
                 transition={{ duration: 0.7, delay: i * 0.1 }}
                 className={`rounded-2xl p-6 md:p-8 ${config.border} bg-white shadow-sm relative overflow-hidden`}
               >
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
                     <div className={`rounded-full p-2 ${config.bg}`}>
                       <Icon size={16} className={config.color} />
                     </div>
                     <p className="text-[#1a1a1a] text-sm font-medium">{phase.phase}</p>
                   </div>
-                  <span className={`text-xs px-3 py-1 rounded-full ${config.bg} ${config.color} font-medium`}>
+                  <span className={`text-xs px-4 py-2 rounded-full ${config.bg} ${config.color} font-medium`}>
                     {config.label}
                   </span>
                 </div>
@@ -164,8 +164,8 @@ export function RoadmapSection() {
                 </h3>
                 <ul className="space-y-2">
                   {phase.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5">
-                      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
+                    <li key={item} className="flex items-start gap-2">
+                      <span className={`mt-2 w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
                       <span className="text-[#6b7280] text-sm">{item}</span>
                     </li>
                   ))}
@@ -187,7 +187,7 @@ export function RoadmapSection() {
           <div className="p-6 md:p-12">
             {/* Header */}
             <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-[#f3f4f6] border border-[#e5e7eb] mb-5">
+              <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-[#f3f4f6] border border-[#e5e7eb] mb-6">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-[#1262b3] text-xs font-medium">
                   {t("roadmap.inscriptions_label")}
@@ -222,9 +222,9 @@ export function RoadmapSection() {
                 return (
                   <div
                     key={item.title}
-                    className="rounded-2xl p-5 bg-[#FAFAF8] border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all"
+                    className="rounded-2xl p-6 bg-[#FAFAF8] border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-3 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm">
                       <ItemIcon size={20} className={item.iconColor} />
                     </div>
                     <h4 className="text-[#1a1a1a] text-sm font-bold mb-2">{item.title}</h4>
@@ -264,7 +264,7 @@ export function RoadmapSection() {
           <line x1="50" y1="5" x2="50" y2="95" stroke="currentColor" strokeWidth="0.5" />
           <line x1="5" y1="50" x2="95" y2="50" stroke="currentColor" strokeWidth="0.5" />
         </svg>
-      </div>
+        </div>      </div>
     </section>
   );
 }

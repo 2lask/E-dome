@@ -34,13 +34,13 @@ export function FoundersSection() {
             <h3 className="text-[#1a1a1a] text-2xl md:text-3xl font-bold mb-4 tracking-tight">
               Leonard Ansermet
             </h3>
-            <p className="text-gray-700 text-base leading-relaxed mb-3 max-w-md mx-auto">
+            <p className="text-gray-700 text-base leading-relaxed mb-4 max-w-md mx-auto">
               {t("founders.leo_p1")}
             </p>
-            <p className="text-[#6b7280] text-sm leading-relaxed mb-5 max-w-md mx-auto">
+            <p className="text-[#6b7280] text-sm leading-relaxed mb-6 max-w-md mx-auto">
               {t("founders.leo_p2")}
             </p>
-            <div className="flex items-center gap-3 justify-center">
+            <div className="flex items-center gap-4 justify-center">
               <a
                 href="https://wa.me/66910687928"
                 target="_blank"
@@ -81,13 +81,13 @@ export function FoundersSection() {
             <h3 className="text-[#1a1a1a] text-2xl md:text-3xl font-bold mb-4 tracking-tight">
               Jean-Pierre Medard Garza
             </h3>
-            <p className="text-gray-700 text-base leading-relaxed mb-3 max-w-md mx-auto">
+            <p className="text-gray-700 text-base leading-relaxed mb-4 max-w-md mx-auto">
               {t("founders.jp_p1")}
             </p>
-            <p className="text-[#6b7280] text-sm leading-relaxed mb-5 max-w-md mx-auto">
+            <p className="text-[#6b7280] text-sm leading-relaxed mb-6 max-w-md mx-auto">
               {t("founders.jp_p2")}
             </p>
-            <div className="flex items-center gap-3 justify-center">
+            <div className="flex items-center gap-4 justify-center">
               <a
                 href="https://wa.me/41762832444"
                 target="_blank"
@@ -134,12 +134,12 @@ export function FoundersSection() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {/* Conviction */}
-            <div className="rounded-2xl p-7 md:p-9 bg-[#FAFAF8] border border-gray-200">
+            <div className="rounded-2xl p-8 md:p-8 bg-[#FAFAF8] border border-gray-200">
               <p className="text-[#1262b3] text-xs tracking-widest uppercase mb-4 font-medium">
                 {t("founders.conviction_label")}
               </p>
               <p
-                className="text-[#1a1a1a] text-xl md:text-2xl leading-[1.3] mb-5 tracking-tight"
+                className="text-[#1a1a1a] text-xl md:text-2xl leading-[1.3] mb-6 tracking-tight"
               >
                 {t("founders.conviction_title")}
               </p>
@@ -149,12 +149,12 @@ export function FoundersSection() {
             </div>
 
             {/* Engagement */}
-            <div className="rounded-2xl p-7 md:p-9 bg-[#FAFAF8] border border-gray-200">
+            <div className="rounded-2xl p-8 md:p-8 bg-[#FAFAF8] border border-gray-200">
               <p className="text-[#6b7280] text-xs tracking-widest uppercase mb-4 font-medium">
                 {t("founders.engagement_label")}
               </p>
               <p
-                className="text-[#1a1a1a] text-xl md:text-2xl leading-[1.3] mb-5 tracking-tight"
+                className="text-[#1a1a1a] text-xl md:text-2xl leading-[1.3] mb-6 tracking-tight"
               >
                 {t("founders.engagement_title")}
               </p>

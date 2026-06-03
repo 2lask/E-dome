@@ -46,7 +46,8 @@ export function AboutSection() {
         <polyline points="60,80 60,50 80,50" />
       </svg>
 
-      <div className="relative max-w-6xl mx-auto">
+      <div className="grid-12 grid grid-cols-12 gap-8 relative">
+        <div className="col-span-12">
         {/* Label */}
         <motion.p
           {...fadeUp}
@@ -94,7 +95,7 @@ export function AboutSection() {
             {t("about.roles_label")}
           </p>
 
-          <div className="flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap gap-2">
             {roles.map((role) => (
               <span
                 key={role.key}
@@ -108,7 +109,7 @@ export function AboutSection() {
             </span>
           </div>
         </motion.div>
-      </div>
+        </div>      </div>
     </section>
   );
 }
