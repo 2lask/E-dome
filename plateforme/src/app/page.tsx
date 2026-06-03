@@ -1144,13 +1144,13 @@ function HomePageContent() {
           print-style (numéro mono / phrase unique). Pas de cartes,
           pas d'icônes : que de la typographie et des règles
           horizontales. */}
-      <section id="probleme" className="scroll-slide bg-white relative overflow-hidden">
+      <section id="probleme" className="scroll-slide bg-white relative">
         {/* Façade haute brutaliste (Le Corbusier-esque) en bleu, ancrée à
             gauche, avec parallaxe scroll vertical. */}
-        <div className="hidden lg:block absolute left-[-3%] top-0 bottom-0 w-[18%] z-0 pointer-events-none">
+        <div className="hidden lg:block absolute left-[-3%] top-0 bottom-0 w-[18%] z-0 pointer-events-none overflow-hidden">
           <ArchTallFacade className="w-full h-full" />
         </div>
-        <div className="min-h-screen flex items-center py-24 relative z-10">
+        <div className="py-24 relative z-10">
         <div className="grid-12 grid grid-cols-12 w-full">
         <div className="col-span-12 md:col-span-10 md:col-start-2 lg:col-span-8 lg:col-start-3">
           {(() => {
