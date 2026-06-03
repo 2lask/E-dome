@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -113,7 +113,7 @@ export function FounderForm() {
   ];
 
   const FieldErr = ({ name }: { name: string }) => errors[name] ? (
-    <p className="text-[#EF4444] text-[10px] mt-1 flex items-center gap-1" role="alert"><AlertCircle className="w-3 h-3" />{errors[name]}</p>
+    <p className="text-[#EF4444] text-xs mt-1 flex items-center gap-1" role="alert"><AlertCircle className="w-3 h-3" />{errors[name]}</p>
   ) : null;
 
   if (status === "sent") {
@@ -251,7 +251,7 @@ export function FounderForm() {
                   <textarea id="projet" value={form.projet} onChange={(e) => set("projet", e.target.value)} rows={3}
                     placeholder="Nombre de biens, plateformes utilis&eacute;es, objectifs..."
                     className="flex w-full rounded-xl border border-white/[0.1] bg-white/[0.05] px-4 py-3 text-sm text-white placeholder:text-white/20 transition-all focus:outline-none focus:border-[#8B5CF6]/50 resize-none" />
-                  <span className="absolute bottom-2 right-3 text-[9px] text-white/15">{form.projet.length}/500</span>
+                  <span className="absolute bottom-2 right-3 text-xs text-white/15">{form.projet.length}/500</span>
                 </div>
               </div>
 

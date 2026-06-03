@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Home, Smartphone, Link2, Settings, BookOpen, TrendingDown, Lock, Megaphone, Handshake, User, Building2, HardHat, GraduationCap, BarChart3, Award, Rocket, Users, Percent, MessageSquare, ArrowRight, Camera, Key, Briefcase, PenTool, Scale, ExternalLink, Calendar } from "lucide-react";
 import { TextReveal, GradientText } from "@/components/ui/text-reveal";
@@ -34,7 +34,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   return (
     <div className="border-b border-white/[0.06]">
       <button onClick={() => setOpen(!open)} aria-expanded={open} className="w-full flex justify-between items-center py-6 text-left group">
-        <span className="text-lg font-semibold pr-4 group-hover:text-[#C4956A] transition-colors">{q}</span>
+        <span className="text-base font-semibold pr-4 group-hover:text-[#C4956A] transition-colors">{q}</span>
         <span className={`w-10 h-10 rounded-full bg-[#C4956A]/10 flex items-center justify-center shrink-0 transition-transform duration-300 ${open ? "rotate-45" : ""}`}>
           <span className="text-[#C4956A] text-xl">+</span>
         </span>
@@ -109,7 +109,7 @@ export default function Page() {
       {/* NAV */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#080808]/80 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="max-w-[1400px] mx-auto px-[4vw] h-[72px] flex items-center justify-between">
-          <a href="#" className="text-2xl font-bold tracking-tight">E-<span className="text-[#C4956A]">Dome</span></a>
+          <a href="#" className="text-xl font-bold tracking-tight">E-<span className="text-[#C4956A]">Dome</span></a>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#probleme" className="text-sm text-white/40 hover:text-white transition-colors">Constat</a>
             <a href="#solution" className="text-sm text-white/40 hover:text-white transition-colors">Solution</a>
@@ -137,22 +137,22 @@ export default function Page() {
                 <span className="text-sm text-[#C4956A] font-medium">Plateforme Immobili&egrave;re Nouvelle G&eacute;n&eacute;ration</span>
               </div>
             </ScrollReveal>
-            <h1 className="text-[clamp(2.5rem,6vw,5.5rem)] font-extrabold leading-[1.08] tracking-[-0.04em]">
+            <h1 className="text-[clamp(2.2rem,5vw,4rem)] font-extrabold leading-[1.08] tracking-[-0.04em]">
               <TextReveal>Projet E-Dome</TextReveal>
             </h1>
-            <div className="mt-3 text-[clamp(1.3rem,3vw,2.2rem)] font-semibold leading-[1.2] tracking-[-0.01em] text-white/70">
+            <div className="mt-3 text-xl font-semibold leading-[1.2] tracking-[-0.01em] text-white/70">
               <TextReveal delay={0.2}>Unifions l&apos;&eacute;cosyst&egrave;me immobilier mondial</TextReveal>
             </div>
-            <div className="mt-6 text-[clamp(1.2rem,2.5vw,1.8rem)] font-medium leading-[1.3]">
+            <div className="mt-6 text-xl font-medium leading-[1.3]">
               <LayoutTextFlip
                 text="Une plateforme pour "
                 words={["les agences", "les h\u00f4tes", "les promoteurs", "les apporteurs", "les investisseurs", "les architectes", "les notaires", "les photographes", "chaque acteur"]}
                 interval={2000}
-                className="text-[clamp(1.2rem,2.5vw,1.8rem)] font-medium leading-[1.3]"
+                className="text-xl font-medium leading-[1.3]"
               />
             </div>
             <ScrollReveal delay={0.4}>
-              <p className="text-white/40 text-base md:text-lg mt-8 max-w-xl mx-auto leading-relaxed">Marketplace, r&eacute;seau social, apporteurs d&apos;affaires, formations et services &mdash; tout ce dont les professionnels de l&apos;immobilier ont besoin, r&eacute;uni pour la premi&egrave;re fois.</p>
+              <p className="text-white/40 text-base md:text-base mt-8 max-w-xl mx-auto leading-relaxed">Marketplace, r&eacute;seau social, apporteurs d&apos;affaires, formations et services &mdash; tout ce dont les professionnels de l&apos;immobilier ont besoin, r&eacute;uni pour la premi&egrave;re fois.</p>
             </ScrollReveal>
             <ScrollReveal delay={0.6}>
               <div className="mt-10">
@@ -193,7 +193,7 @@ export default function Page() {
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em] max-w-2xl">
                 Le march&eacute; immobilier est <GradientText>fragment&eacute;.</GradientText>
               </h2>
-              <p className="text-white/40 mt-4 text-lg max-w-xl">Les acteurs du secteur jonglent entre des outils d&eacute;connect&eacute;s, des commissions &eacute;lev&eacute;es et une visibilit&eacute; d&eacute;pendante de la publicit&eacute;.</p>
+              <p className="text-white/40 mt-4 text-base max-w-xl">Les acteurs du secteur jonglent entre des outils d&eacute;connect&eacute;s, des commissions &eacute;lev&eacute;es et une visibilit&eacute; d&eacute;pendante de la publicit&eacute;.</p>
             </ScrollReveal>
             <StaggerContainer className="grid md:grid-cols-2 gap-5 mt-14" stagger={0.12}>
               {problems.map((p) => (
@@ -238,7 +238,7 @@ export default function Page() {
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">
                 Cinq piliers. <GradientText>Un seul &eacute;cosyst&egrave;me.</GradientText>
               </h2>
-              <p className="text-white/40 mt-4 text-lg max-w-2xl mx-auto">E-Dome r&eacute;unit pour la premi&egrave;re fois marketplace, r&eacute;seau social, syst&egrave;me d&apos;apporteurs, services et formations dans une seule plateforme.</p>
+              <p className="text-white/40 mt-4 text-base max-w-2xl mx-auto">E-Dome r&eacute;unit pour la premi&egrave;re fois marketplace, r&eacute;seau social, syst&egrave;me d&apos;apporteurs, services et formations dans une seule plateforme.</p>
             </ScrollReveal>
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-16 items-start">
               <div className="space-y-2">
@@ -246,12 +246,12 @@ export default function Page() {
                   <ScrollReveal key={p.title} delay={i * 0.08}>
                     <div className="flex items-center gap-8 md:gap-12 py-10 border-b border-white/[0.06] group hover:bg-white/[0.01] transition-colors rounded-lg px-4 -mx-4 relative">
                       <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ backgroundColor: p.color }} />
-                      <span className="text-[clamp(3rem,7vw,7rem)] font-extrabold tracking-[-0.05em] hidden md:block min-w-[130px] text-right transition-colors duration-500" style={{ color: `${p.color}08` }}>{p.num}</span>
+                      <span className="text-[clamp(2.2rem,5vw,4rem)] font-extrabold tracking-[-0.05em] hidden md:block min-w-[130px] text-right transition-colors duration-500" style={{ color: `${p.color}08` }}>{p.num}</span>
                       <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:shadow-lg" style={{ backgroundColor: `${p.color}12` }}>
                         <p.icon className="w-7 h-7" style={{ color: p.color }} />
                       </div>
                       <div>
-                        <h3 className="text-xl md:text-2xl font-semibold mb-2">{p.title}</h3>
+                        <h3 className="text-xl md:text-xl font-semibold mb-2">{p.title}</h3>
                         <p className="text-white/40 max-w-lg leading-relaxed">{p.desc}</p>
                         <div className="w-12 h-[2px] rounded-full mt-3 opacity-50" style={{ backgroundColor: p.color }} />
                       </div>
@@ -292,7 +292,7 @@ export default function Page() {
               <div className="text-center mb-4">
                 <ScrollReveal>
                   <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Un compte. <GradientText>Tous les r&ocirc;les.</GradientText></h2>
-                  <p className="text-white/40 mt-4 text-lg max-w-2xl mx-auto">Quel que soit votre m&eacute;tier dans l&apos;immobilier, E-Dome s&apos;adapte. Un seul profil, plusieurs r&ocirc;les activables selon votre activit&eacute;.</p>
+                  <p className="text-white/40 mt-4 text-base max-w-2xl mx-auto">Quel que soit votre m&eacute;tier dans l&apos;immobilier, E-Dome s&apos;adapte. Un seul profil, plusieurs r&ocirc;les activables selon votre activit&eacute;.</p>
                 </ScrollReveal>
                 <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-12" stagger={0.06}>
                   {roles.map((r) => (
@@ -303,7 +303,7 @@ export default function Page() {
                 </StaggerContainer>
                 <ScrollReveal delay={0.4}>
                   <div className="mt-12 text-center max-w-2xl mx-auto rounded-2xl bg-white/[0.03] border border-[#C4956A]/20 p-8">
-                    <p className="text-lg font-semibold text-white">Un profil, des r&ocirc;les illimit&eacute;s.</p>
+                    <p className="text-base font-semibold text-white">Un profil, des r&ocirc;les illimit&eacute;s.</p>
                     <p className="text-white/50 mt-3 leading-relaxed">Chaque profil est enti&egrave;rement configurable. Si votre m&eacute;tier a un lien avec l&apos;immobilier, <span className="text-[#C4956A] font-medium">vous avez votre place sur E-Dome.</span></p>
                   </div>
                 </ScrollReveal>
@@ -347,7 +347,7 @@ export default function Page() {
                 <span className="text-sm text-[#3B82F6] font-medium">Marketplace</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Achetez. Vendez. Louez. <GradientText>Investissez.</GradientText></h2>
-              <p className="text-white/40 mt-4 text-lg max-w-xl leading-relaxed">Location courte dur&eacute;e, longue dur&eacute;e et vente r&eacute;unies dans un seul parcours fluide. Des frais nettement inf&eacute;rieurs aux plateformes traditionnelles.</p>
+              <p className="text-white/40 mt-4 text-base max-w-xl leading-relaxed">Location courte dur&eacute;e, longue dur&eacute;e et vente r&eacute;unies dans un seul parcours fluide. Des frais nettement inf&eacute;rieurs aux plateformes traditionnelles.</p>
               <StaggerContainer className="grid grid-cols-2 gap-4 mt-10" stagger={0.08}>
                 {[
                   { icon: Home, title: "Location courte dur\u00e9e", desc: "G\u00e9rez vos biens saisonniers avec un calendrier int\u00e9gr\u00e9 et des r\u00e9servations directes.", color: "#3B82F6" },
@@ -410,7 +410,7 @@ export default function Page() {
                 <span className="text-sm text-[#8B5CF6] font-medium">R&eacute;seau social immobilier</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Cr&eacute;ez du contenu. <GradientText>B&acirc;tissez votre audience.</GradientText></h2>
-              <p className="text-white/40 mt-4 text-lg max-w-xl leading-relaxed">E-Dome int&egrave;gre un v&eacute;ritable r&eacute;seau social pens&eacute; pour l&apos;immobilier. Pas de redirection, pas de site externe &mdash; tout reste sur la plateforme.</p>
+              <p className="text-white/40 mt-4 text-base max-w-xl leading-relaxed">E-Dome int&egrave;gre un v&eacute;ritable r&eacute;seau social pens&eacute; pour l&apos;immobilier. Pas de redirection, pas de site externe &mdash; tout reste sur la plateforme.</p>
               <StaggerContainer className="grid grid-cols-2 gap-4 mt-10" stagger={0.08}>
                 {[
                   { icon: Smartphone, title: "Posts & reels", desc: "Publiez photos, vid\u00e9os courtes et visites virtuelles de vos biens.", color: "#8B5CF6" },
@@ -453,7 +453,7 @@ export default function Page() {
                 <span className="text-sm text-[#F59E0B] font-medium">Apporteurs d&apos;affaires</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Recommandez. <GradientText>Gagnez.</GradientText></h2>
-              <p className="text-white/40 mt-6 text-lg leading-relaxed max-w-xl">Partagez un lien tra&ccedil;able unique. Chaque transaction g&eacute;n&eacute;r&eacute;e vous rapporte une commission pr&eacute;lev&eacute;e sur les revenus de la plateforme &mdash; aucun co&ucirc;t suppl&eacute;mentaire pour l&apos;h&ocirc;te ni pour le client.</p>
+              <p className="text-white/40 mt-6 text-base leading-relaxed max-w-xl">Partagez un lien tra&ccedil;able unique. Chaque transaction g&eacute;n&eacute;r&eacute;e vous rapporte une commission pr&eacute;lev&eacute;e sur les revenus de la plateforme &mdash; aucun co&ucirc;t suppl&eacute;mentaire pour l&apos;h&ocirc;te ni pour le client.</p>
               <div className="mt-10 space-y-4">
                 {[
                   { step: "1", title: "Activez votre lien", desc: "Depuis votre tableau de bord E-Dome" },
@@ -490,7 +490,7 @@ export default function Page() {
                 <span className="text-sm text-[#10B981] font-medium">&Eacute;cosyst&egrave;me professionnel</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Tout au m&ecirc;me endroit. <GradientText>Rien &agrave; chercher ailleurs.</GradientText></h2>
-              <p className="text-white/40 mt-4 text-lg max-w-2xl mx-auto">E-Dome centralise les outils, les donn&eacute;es et les connexions dont chaque professionnel de l&apos;immobilier a besoin au quotidien.</p>
+              <p className="text-white/40 mt-4 text-base max-w-2xl mx-auto">E-Dome centralise les outils, les donn&eacute;es et les connexions dont chaque professionnel de l&apos;immobilier a besoin au quotidien.</p>
             </ScrollReveal>
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" stagger={0.08}>
               {[
@@ -565,7 +565,7 @@ export default function Page() {
                 <span className="text-sm text-[#EC4899] font-medium">Formations &amp; &eacute;v&eacute;nements</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Apprenez. Formez. <GradientText>Certifiez.</GradientText></h2>
-              <p className="text-white/40 mt-4 text-lg max-w-xl leading-relaxed">Acc&eacute;dez &agrave; un catalogue de formations cr&eacute;&eacute;es par des experts du secteur ou cr&eacute;ez et vendez les v&ocirc;tres directement sur votre profil.</p>
+              <p className="text-white/40 mt-4 text-base max-w-xl leading-relaxed">Acc&eacute;dez &agrave; un catalogue de formations cr&eacute;&eacute;es par des experts du secteur ou cr&eacute;ez et vendez les v&ocirc;tres directement sur votre profil.</p>
               <StaggerContainer className="grid grid-cols-2 gap-4 mt-10" stagger={0.08}>
                 {[
                   { icon: BookOpen, title: "Cours en ligne", desc: "Modules vid\u00e9o, quiz et certifications pour monter en comp\u00e9tence \u00e0 votre rythme.", color: "#EC4899" },
@@ -618,7 +618,7 @@ export default function Page() {
           <div className="max-w-[1200px] mx-auto relative z-10">
             <ScrollReveal className="text-center mb-16">
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Avant et apr&egrave;s <GradientText>E-Dome.</GradientText></h2>
-              <p className="text-white/40 mt-4 text-lg">Ce qui change concr&egrave;tement pour les professionnels de l&apos;immobilier.</p>
+              <p className="text-white/40 mt-4 text-base">Ce qui change concr&egrave;tement pour les professionnels de l&apos;immobilier.</p>
             </ScrollReveal>
             <ComparisonCards />
           </div>
@@ -665,7 +665,7 @@ export default function Page() {
                 <span className="text-sm text-[#8B5CF6] font-medium">Programme Membres Fondateurs</span>
               </div>
               <h2 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.1] tracking-[-0.04em]">Fa&ccedil;onnez E-Dome <GradientText>avec nous.</GradientText></h2>
-              <p className="text-white/40 mt-4 text-lg max-w-2xl mx-auto">Les premiers membres fondateurs construisent la plateforme de l&apos;int&eacute;rieur. Places limit&eacute;es, s&eacute;lection sur dossier. Aucun engagement, aucun paiement requis.</p>
+              <p className="text-white/40 mt-4 text-base max-w-2xl mx-auto">Les premiers membres fondateurs construisent la plateforme de l&apos;int&eacute;rieur. Places limit&eacute;es, s&eacute;lection sur dossier. Aucun engagement, aucun paiement requis.</p>
             </ScrollReveal>
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-14 max-w-[900px] mx-auto" stagger={0.08}>
               {founders.map((f) => (
@@ -695,7 +695,7 @@ export default function Page() {
                   <div key={s.step} className="flex items-center gap-2 sm:gap-0">
                     <div className="flex flex-col items-center text-center px-3">
                       <div className="w-9 h-9 rounded-full bg-[#8B5CF6]/15 border border-[#8B5CF6]/30 flex items-center justify-center text-[#8B5CF6] font-bold text-sm mb-2">{s.step}</div>
-                      <p className="text-[11px] text-white/50 max-w-[120px]">{s.text}</p>
+                      <p className="text-xs text-white/50 max-w-[120px]">{s.text}</p>
                     </div>
                     {i < 3 && <div className="hidden sm:block w-10 h-px bg-white/[0.1] mt-[-14px]" />}
                   </div>

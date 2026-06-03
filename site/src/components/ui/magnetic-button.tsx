@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
@@ -45,7 +45,7 @@ export function MagneticButton({
           href={href}
           className={cn(
             "inline-flex items-center gap-2 px-8 py-4 rounded-full",
-            "bg-[#C4956A] text-[#080808] font-bold text-lg",
+            "bg-[#C4956A] text-[#080808] font-bold text-base",
             "transition-shadow duration-300",
             "hover:shadow-[0_0_50px_rgba(196,149,106,0.5)]",
             "active:scale-95",

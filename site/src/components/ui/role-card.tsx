@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type React from "react";
 import { useRef, useState } from "react";
@@ -152,7 +152,7 @@ export function RoleCard({ icon: Icon, name, color, desc }: RoleCardProps) {
               transition={{ duration: 0.2 }}
             >
               <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: color }} />
-              <span className="text-[9px] font-medium uppercase tracking-wider" style={{ color }}>{isExpanded ? "Actif" : "Rôle"}</span>
+              <span className="text-xs font-medium uppercase tracking-wider" style={{ color }}>{isExpanded ? "Actif" : "Rôle"}</span>
             </motion.div>
           </div>
 
@@ -174,10 +174,10 @@ export function RoleCard({ icon: Icon, name, color, desc }: RoleCardProps) {
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
-                <p className="text-[12px] text-white/50 leading-relaxed">{desc}</p>
+                <p className="text-xs text-white/50 leading-relaxed">{desc}</p>
                 <motion.a
                   href="#rejoindre"
-                  className="mt-4 flex items-center gap-2 text-[11px] font-semibold hover:gap-3 transition-all"
+                  className="mt-4 flex items-center gap-2 text-xs font-semibold hover:gap-3 transition-all"
                   style={{ color }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -194,7 +194,7 @@ export function RoleCard({ icon: Icon, name, color, desc }: RoleCardProps) {
           <AnimatePresence>
             {!isExpanded && (
               <motion.p
-                className="text-[11px] text-white/30 mt-3 line-clamp-1"
+                className="text-xs text-white/30 mt-3 line-clamp-1"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
