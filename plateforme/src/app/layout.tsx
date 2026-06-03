@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { PWARegister } from "@/components/pwa-register";
-import { LoadingScreen } from "@/components/landing/loading-screen";
 
 const inter = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -42,7 +41,6 @@ export default function RootLayout({
       <body
         className={`${inter.variable} bg-[var(--background)] antialiased`}
       >
-        <LoadingScreen />
         {children}
         <PWARegister />
       </body>
