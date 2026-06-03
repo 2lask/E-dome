@@ -164,7 +164,7 @@ export function ProblemSection() {
           <motion.p
             {...fadeUp}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-[#1a1a1a]/40 text-base md:text-lg max-w-3xl leading-relaxed"
+            className="text-[#1a1a1a]/40 text-base md:text-lg max-w-[600px] leading-relaxed"
           >
             {t("problem.desc")}
           </motion.p>

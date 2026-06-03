@@ -91,7 +91,7 @@ export function AboutSection() {
           {...fadeUp}
           transition={{ duration: 0.6, delay: 0.35 }}
         >
-          <p className="text-[#1a1a1a]/50 text-sm leading-relaxed mb-6 max-w-2xl">
+          <p className="text-[#1a1a1a]/50 text-sm leading-relaxed mb-6 max-w-[600px]">
             {t("about.roles_label")}
           </p>
 

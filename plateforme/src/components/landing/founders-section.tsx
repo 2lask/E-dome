@@ -118,7 +118,7 @@ export function FoundersSection() {
         >
           <div className="w-16 h-1 bg-[#1e9df1] mx-auto mb-8 rounded-full" />
           <p
-            className="text-xl sm:text-2xl md:text-4xl lg:text-5xl text-gray-900 leading-[1.3] tracking-tight italic max-w-4xl mx-auto"
+            className="text-xl sm:text-2xl md:text-4xl lg:text-5xl text-gray-900 leading-[1.3] tracking-tight italic max-w-[600px] mx-auto"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             {t("founders.quote")}

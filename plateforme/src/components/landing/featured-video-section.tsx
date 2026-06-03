@@ -26,7 +26,7 @@ export function FeaturedVideoSection() {
         <line x1="110" y1="110" x2="90" y2="90" stroke="#1e9df1" strokeWidth="1" />
       </svg>
 
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-[600px] mx-auto">
         {/* Video container */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -54,7 +54,7 @@ export function FeaturedVideoSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-10 md:mt-14 max-w-2xl mx-auto text-center"
+          className="mt-10 md:mt-14 max-w-[600px] mx-auto text-center"
         >
           <p
             className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium"

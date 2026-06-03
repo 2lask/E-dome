@@ -117,7 +117,7 @@ function SectionHeading({
   description?: string;
 }) {
   return (
-    <div className="text-center max-w-3xl mx-auto mb-12">
+    <div className="text-center max-w-[600px] mx-auto mb-12">
       {label && (
         <motion.div {...fadeUp} className="text-[#1e9df1] text-xs tracking-widest uppercase font-bold mb-4">
           {label}
@@ -559,7 +559,7 @@ function MoteurEconomiqueSlide({
         {/* Heading compact — pas de label "kicker" cette fois (la BG anime
             déjà l'idée du moteur économique). Titre direct, taille raisonnée
             pour ne pas pousser le contenu hors slide. */}
-        <div className="text-center max-w-3xl mx-auto mb-7">
+        <div className="text-center max-w-[600px] mx-auto mb-7">
           <motion.h2
             {...fadeUp}
             className="text-3xl sm:text-4xl md:text-5xl leading-[1.05] mb-4"
@@ -608,7 +608,7 @@ function MoteurEconomiqueSlide({
               (1) commission plateforme contenue, (2) données financières
               que les hôtes peuvent ajouter à leurs annonces, (3) programme
               d'affiliation paramétrable. */}
-        <motion.div {...fadeUp} className="max-w-5xl mx-auto px-4 mb-6">
+        <motion.div {...fadeUp} className="max-w-[600px] mx-auto px-4 mb-6">
           <p className="text-center text-[0.6rem] tracking-widest uppercase text-[#1a1a1a]/40 font-bold mb-3">
             {lang === "en"
               ? "What E-Dome brings"
@@ -730,7 +730,7 @@ function MoteurEconomiqueSlide({
               sur la part d'E-Dome, JAMAIS en sus. Pas d'animation : ce
               bloc doit être constamment visible dès l'arrivée sur la
               section, sans effet d'apparition. ── */}
-        <div className="mx-4 sm:mx-auto max-w-4xl rounded-2xl bg-gradient-to-br from-emerald-500/[0.08] via-emerald-500/[0.04] to-transparent border border-emerald-500/30 backdrop-blur-sm overflow-hidden mb-5">
+        <div className="mx-4 sm:mx-auto max-w-[600px] rounded-2xl bg-gradient-to-br from-emerald-500/[0.08] via-emerald-500/[0.04] to-transparent border border-emerald-500/30 backdrop-blur-sm overflow-hidden mb-5">
           <div className="flex flex-col sm:flex-row items-stretch">
             {/* Côté gauche : pictogramme + libellé fort */}
             <div className="flex items-center gap-3 px-4 py-3 sm:pr-3 sm:border-r sm:border-emerald-500/20">
@@ -999,7 +999,7 @@ function HomePageContent() {
         <div className="min-h-screen flex items-center px-6 sm:px-12 md:px-20 lg:px-32 pt-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-center">
             {/* Colonne texte (gauche) */}
-            <motion.div {...fadeUp} className="lg:col-span-7 max-w-2xl">
+            <motion.div {...fadeUp} className="lg:col-span-7 max-w-[600px]">
               <div className="flex items-center gap-3 mb-6">
                 <span className="block w-8 h-px bg-[#1e9df1]" />
                 <p className="text-[#1e9df1] text-xs tracking-widest uppercase font-bold">
@@ -1087,7 +1087,7 @@ function HomePageContent() {
           <ArchTallFacade className="w-full h-full" />
         </div>
         <div className="min-h-screen flex items-center px-6 py-10 relative z-10">
-        <div className="max-w-5xl mx-auto w-full">
+        <div className="max-w-[600px] mx-auto w-full">
           {(() => {
             type Pb = { title: string; body: string; resolution: string };
             type Data = {
@@ -1223,7 +1223,7 @@ function HomePageContent() {
             return (
               <>
                 {/* HEADER — eyebrow + titre punchy + intro globale courte */}
-                <motion.div {...fadeUp} className="mb-8 max-w-3xl">
+                <motion.div {...fadeUp} className="mb-8 max-w-[600px]">
                   <p className="text-[#1e9df1] text-[0.62rem] tracking-widest uppercase font-bold mb-3">
                     {t("problem.label")}
                   </p>
@@ -1746,7 +1746,7 @@ function HomePageContent() {
                   </Marquee>
                 ))}
               </div>
-              <p className="max-w-2xl mx-auto px-6 mt-10 text-center text-[#1a1a1a]/70 text-sm md:text-base leading-relaxed font-medium">
+              <p className="max-w-[600px] mx-auto px-6 mt-10 text-center text-[#1a1a1a]/70 text-sm md:text-base leading-relaxed font-medium">
                 {lang === "en" ? (
                   <>
                     <span className="text-[#1a1a1a] font-bold">36+ professions</span>{" "}
@@ -1819,7 +1819,7 @@ function HomePageContent() {
             ne soit plus rogné par le bas du slide. */}
         <div className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 h-full flex flex-col justify-start pt-20 pb-4">
           {/* ── Heading ── */}
-          <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto mb-7">
+          <motion.div {...fadeUp} className="text-center max-w-[600px] mx-auto mb-7">
             <p className="text-[#1e9df1] text-xs tracking-widest uppercase font-bold mb-2">
               {lang === "th" ? "ทีมงาน" : lang === "en" ? "The team" : "L'équipe"}
             </p>
@@ -1882,7 +1882,7 @@ function HomePageContent() {
           {/* ── Citation centrée (entre les deux fondateurs) ── */}
           <motion.blockquote
             {...fadeUp}
-            className="relative max-w-2xl mx-auto text-center mb-6 px-4"
+            className="relative max-w-[600px] mx-auto text-center mb-6 px-4"
           >
             <span
               className="absolute -top-2 left-1/2 -translate-x-1/2 text-[#1e9df1]/25 text-4xl leading-none select-none"
@@ -2052,10 +2052,10 @@ function HomePageContent() {
           <ArchCantilever className="w-full h-full" />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto h-full flex flex-col justify-start pt-12 pb-3">
+        <div className="relative z-10 max-w-[600px] mx-auto h-full flex flex-col justify-start pt-12 pb-3">
           {/* ── Header : eyebrow + titre + sous-titre italique +
                   paragraphe développé + meta-row de stats ── */}
-          <motion.div {...fadeUp} className="text-center mb-5 max-w-2xl mx-auto">
+          <motion.div {...fadeUp} className="text-center mb-5 max-w-[600px] mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/30 mb-3.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#1e9df1] animate-pulse" />
               <span className="text-[#1e9df1] text-[0.62rem] tracking-widest uppercase font-bold">
@@ -2139,7 +2139,7 @@ function HomePageContent() {
               Validation (emerald) · Orientation (blue) · Partenaires
               (amber). Explique pour chaque axe ce que la voix de
               l'utilisateur fait avancer dans le projet. */}
-          <motion.div {...fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-w-4xl mx-auto mb-5">
+          <motion.div {...fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-w-[600px] mx-auto mb-5">
             {[
               {
                 icon: <ClipboardCheck size={16} />,
@@ -2241,7 +2241,7 @@ function HomePageContent() {
                 de 4 cartes. Une ligne de connexion gradient relie les
                 noeuds (Fait → Maintenant → 2× À venir). Plus dense
                 visuellement, plus narratif (on lit la progression). ── */}
-          <motion.div {...fadeUp} className="mb-5 max-w-3xl mx-auto w-full">
+          <motion.div {...fadeUp} className="mb-5 max-w-[600px] mx-auto w-full">
             <div className="relative">
               {/* Ligne de connexion entre les noeuds — gradient
                   emerald → bleu → neutral. Calée à la hauteur des dots. */}
@@ -2298,7 +2298,7 @@ function HomePageContent() {
               Card 2 (filled)  : répondre au questionnaire /acces — conversion */}
           <motion.div
             {...fadeUp}
-            className="grid sm:grid-cols-2 gap-3 max-w-3xl mx-auto mb-3"
+            className="grid sm:grid-cols-2 gap-3 max-w-[600px] mx-auto mb-3"
           >
             {/* Voir la démo — outline */}
             <Link
@@ -2411,7 +2411,7 @@ function HomePageContent() {
         id="faq"
         className="bg-white border-t border-neutral-900 py-20 px-6"
       >
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[600px] mx-auto">
           {/* Heading */}
           <motion.div {...fadeUp} className="text-center mb-10">
             <p className="text-[#1e9df1] text-xs tracking-widest uppercase font-bold mb-3">

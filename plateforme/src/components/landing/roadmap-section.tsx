@@ -124,10 +124,10 @@ export function RoadmapSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <p className="text-[#1a1a1a]/60 text-base md:text-lg max-w-3xl leading-relaxed mb-3">
+            <p className="text-[#1a1a1a]/60 text-base md:text-lg max-w-[600px] leading-relaxed mb-3">
               {t("roadmap.desc")}
             </p>
-            <p className="text-[#1a1a1a]/50 text-sm md:text-base max-w-3xl leading-relaxed">
+            <p className="text-[#1a1a1a]/50 text-sm md:text-base max-w-[600px] leading-relaxed">
               {t("roadmap.desc2")}
             </p>
           </motion.div>
@@ -203,7 +203,7 @@ export function RoadmapSection() {
                 <br />
                 <span className="text-[#1e9df1]">{t("roadmap.cta_title2")}</span>
               </h3>
-              <p className="text-[#1a1a1a]/40 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-2">
+              <p className="text-[#1a1a1a]/40 text-sm md:text-base leading-relaxed max-w-[600px] mx-auto mb-2">
                 {t("roadmap.cta_subtitle")}
               </p>
               <p className="text-[#1a1a1a]/50 text-xs max-w-xl mx-auto">
