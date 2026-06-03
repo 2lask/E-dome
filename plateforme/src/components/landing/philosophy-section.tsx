@@ -75,7 +75,7 @@ export function PhilosophySection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-[#1e9df1] text-xs tracking-[0.2em] uppercase mb-4 font-medium">
+            <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium">
               {t("philosophy.label")}
             </p>
           </motion.div>
@@ -161,7 +161,7 @@ export function PhilosophySection() {
             {/* Desktop overlay cards */}
             <div className="absolute top-0 left-0 p-8 lg:p-10 hidden md:block">
               <div className="rounded-2xl px-7 py-5 bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg">
-                <p className="text-[#1e9df1] text-xs tracking-[0.2em] uppercase mb-2 font-medium">
+                <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-2 font-medium">
                   {t("philosophy.video_label")}
                 </p>
                 <h3
@@ -208,7 +208,7 @@ export function PhilosophySection() {
                 </p>
                 <a
                   href="#inscriptions"
-                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-[#1a1a1a] text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#1e9df1] transition-colors ml-auto shadow-md shadow-[#1e9df1]/20"
+                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-[#1a1a1a] text-sm font-bold px-5 py-3 rounded-xl hover:bg-[#1e9df1] transition-colors ml-auto shadow-md shadow-[#1e9df1]/20"
                 >
                   {t("philosophy.video_cta")}
                 </a>
@@ -218,7 +218,7 @@ export function PhilosophySection() {
 
           {/* Mobile - text below video */}
           <div className="md:hidden bg-white p-6">
-            <p className="text-[#1e9df1] text-[10px] tracking-[0.2em] uppercase mb-2 font-medium">
+            <p className="text-[#1e9df1] text-[10px] tracking-widest uppercase mb-2 font-medium">
               {t("philosophy.video_label")}
             </p>
             <h3
@@ -233,7 +233,7 @@ export function PhilosophySection() {
             </p>
             <a
               href="#inscriptions"
-              className="inline-flex items-center gap-2 bg-[#1e9df1] text-[#1a1a1a] text-sm font-semibold px-5 py-3 rounded-xl hover:bg-[#1e9df1] transition-colors shadow-md shadow-[#1e9df1]/20"
+              className="inline-flex items-center gap-2 bg-[#1e9df1] text-[#1a1a1a] text-sm font-bold px-5 py-3 rounded-xl hover:bg-[#1e9df1] transition-colors shadow-md shadow-[#1e9df1]/20"
             >
               {t("philosophy.video_cta")}
             </a>

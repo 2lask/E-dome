@@ -196,7 +196,7 @@ export function RoadmapSection() {
                 </span>
               </div>
               <h3
-                className="text-gray-900 text-2xl md:text-3xl font-semibold mb-4 tracking-tight"
+                className="text-gray-900 text-2xl md:text-3xl font-bold mb-4 tracking-tight"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {t("roadmap.cta_title1")}
@@ -230,7 +230,7 @@ export function RoadmapSection() {
                     <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-3 shadow-sm">
                       <ItemIcon size={20} className={item.iconColor} />
                     </div>
-                    <h4 className="text-gray-900 text-sm font-semibold mb-2">{item.title}</h4>
+                    <h4 className="text-gray-900 text-sm font-bold mb-2">{item.title}</h4>
                     <p className="text-[#1a1a1a]/40 text-xs leading-relaxed">{item.desc}</p>
                   </div>
                 );
@@ -241,7 +241,7 @@ export function RoadmapSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/acces"
-                className="w-full sm:w-auto bg-[#1e9df1] rounded-lg px-8 py-4 text-[#1a1a1a] text-sm font-semibold hover:bg-[#1e9df1] transition-colors flex items-center justify-center gap-2 shadow-md"
+                className="w-full sm:w-auto bg-[#1e9df1] rounded-lg px-8 py-4 text-[#1a1a1a] text-sm font-bold hover:bg-[#1e9df1] transition-colors flex items-center justify-center gap-2 shadow-md"
               >
                 {t("roadmap.cta1")} <ArrowRight size={16} />
               </Link>

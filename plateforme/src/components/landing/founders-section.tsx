@@ -31,7 +31,7 @@ export function FoundersSection() {
             <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-2 font-medium">
               {t("founders.label_leo")}
             </p>
-            <h3 className="text-gray-900 text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
+            <h3 className="text-gray-900 text-2xl md:text-3xl font-bold mb-4 tracking-tight">
               Leonard Ansermet
             </h3>
             <p className="text-gray-700 text-base leading-relaxed mb-3 max-w-md mx-auto">
@@ -78,7 +78,7 @@ export function FoundersSection() {
             <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-2 font-medium">
               {t("founders.label_jp")}
             </p>
-            <h3 className="text-gray-900 text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
+            <h3 className="text-gray-900 text-2xl md:text-3xl font-bold mb-4 tracking-tight">
               Jean-Pierre Medard Garza
             </h3>
             <p className="text-gray-700 text-base leading-relaxed mb-3 max-w-md mx-auto">

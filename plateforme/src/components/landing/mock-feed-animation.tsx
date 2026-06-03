@@ -89,7 +89,7 @@ export function MockFeedAnimation() {
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2">
-        <span className="text-[#1a1a1a] font-semibold text-sm">E-<span className="text-[#1e9df1]">Dome</span></span>
+        <span className="text-[#1a1a1a] font-bold text-sm">E-<span className="text-[#1e9df1]">Dome</span></span>
         <div className="flex items-center gap-3">
           <div className="relative">
             <Bell size={16} className="text-[#1a1a1a]/60" />

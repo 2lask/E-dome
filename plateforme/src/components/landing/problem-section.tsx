@@ -187,7 +187,7 @@ export function ProblemSection() {
                     <Icon size={18} className={stat.iconColor} />
                   </div>
                   <div>
-                    <p className="text-gray-900 text-3xl md:text-4xl font-semibold tracking-tight leading-none">
+                    <p className="text-gray-900 text-3xl md:text-4xl font-bold tracking-tight leading-none">
                       <CountUpStat target={stat.numValue} suffix={stat.numSuffix} inView={inView} />
                     </p>
                     <p className="text-[#1a1a1a]/50 text-sm mt-1">{t(stat.unitKey)}</p>

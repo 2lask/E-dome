@@ -57,7 +57,7 @@ export function FeaturedVideoSection() {
           className="mt-10 md:mt-14 max-w-2xl mx-auto text-center"
         >
           <p
-            className="text-[#1e9df1] text-xs tracking-[0.2em] uppercase mb-4 font-medium"
+            className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium"
             style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
           >
             {t("featured.label")}
@@ -75,7 +75,7 @@ export function FeaturedVideoSection() {
             <motion.span
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2.5 bg-[#1e9df1] text-[#1a1a1a] text-sm font-semibold px-7 py-3.5 rounded-xl hover:bg-[#1e9df1] transition-colors cursor-pointer shadow-md shadow-[#1e9df1]/20"
+              className="inline-flex items-center gap-2.5 bg-[#1e9df1] text-[#1a1a1a] text-sm font-bold px-7 py-3.5 rounded-xl hover:bg-[#1e9df1] transition-colors cursor-pointer shadow-md shadow-[#1e9df1]/20"
             >
               {t("featured.cta")}
               <ArrowRight size={16} />

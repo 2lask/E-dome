@@ -107,7 +107,7 @@ export function ServicesSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-[#1e9df1] text-xs tracking-[0.2em] uppercase mb-4 font-medium">
+            <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium">
               {t("services.label")}
             </p>
           </motion.div>

@@ -34,7 +34,7 @@ export function FooterSection() {
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
               <Globe size={22} className="text-[#1e9df1]" />
-              <span className="text-[#1a1a1a] font-semibold text-lg">E-Dome</span>
+              <span className="text-[#1a1a1a] font-bold text-lg">E-Dome</span>
             </div>
             <p className="text-[#1a1a1a]/50 text-sm leading-relaxed mb-5">
               {t("footer.desc")}

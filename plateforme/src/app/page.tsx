@@ -119,7 +119,7 @@ function SectionHeading({
   return (
     <div className="text-center max-w-3xl mx-auto mb-12">
       {label && (
-        <motion.div {...fadeUp} className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-4">
+        <motion.div {...fadeUp} className="text-[#1e9df1] text-xs tracking-widest uppercase font-bold mb-4">
           {label}
         </motion.div>
       )}
@@ -133,7 +133,7 @@ function SectionHeading({
         <span className="text-[#1e9df1]">{title2}</span>
       </motion.h2>
       {description && (
-        <motion.div {...fadeUp} className="text-[#1a1a1a]/50 text-base sm:text-lg leading-relaxed font-light">
+        <motion.div {...fadeUp} className="text-[#1a1a1a]/50 text-base sm:text-lg leading-relaxed font-medium">
           {description}
         </motion.div>
       )}
@@ -197,7 +197,7 @@ function HeroBenefitsAccordion({
     <div className="border-l border-[#1a1a1a]/10 pl-8 max-w-md">
       <div className="flex items-center gap-3 mb-6">
         <span className="block w-8 h-px bg-white" />
-        <p className="text-[#1a1a1a] text-[0.65rem] tracking-[0.3em] uppercase font-semibold">
+        <p className="text-[#1a1a1a] text-[0.65rem] tracking-widest uppercase font-bold">
           {eyebrow}
         </p>
       </div>
@@ -239,7 +239,7 @@ function HeroBenefitsAccordion({
                     isOpen ? "w-5 bg-[#1e9df1]" : "w-3 bg-[#e0e0e0] group-hover:w-5 group-hover:bg-[#1e9df1]"
                   }`}
                 />
-                <span className="text-[#1a1a1a] text-[0.72rem] font-medium uppercase tracking-[0.15em] flex-1">
+                <span className="text-[#1a1a1a] text-[0.72rem] font-medium uppercase tracking-widest flex-1">
                   {b.title}
                 </span>
                 <ChevronDown
@@ -259,7 +259,7 @@ function HeroBenefitsAccordion({
                     transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                     className="overflow-hidden"
                   >
-                    <p className="text-[#1a1a1a]/50 text-[0.7rem] leading-relaxed font-light pl-10 pr-2 pb-3">
+                    <p className="text-[#1a1a1a]/50 text-[0.7rem] leading-relaxed font-medium pl-10 pr-2 pb-3">
                       {b.desc}
                     </p>
                   </motion.div>
@@ -360,7 +360,7 @@ function MoteurEconomiqueSlide({
     lang === "en" ? (
       <>
         E-Dome rebuilds the financial mechanics of real estate around{" "}
-        <span className="text-[#1a1a1a] font-semibold">
+        <span className="text-[#1a1a1a] font-bold">
           a single principle: value stays where it's created
         </span>
         . No opaque margins, no fees stacked on top of the price, no invisible
@@ -370,7 +370,7 @@ function MoteurEconomiqueSlide({
     ) : lang === "th" ? (
       <>
         E-Dome สร้างกลไกการเงินของอสังหาฯ ขึ้นใหม่บน{" "}
-        <span className="text-[#1a1a1a] font-semibold">
+        <span className="text-[#1a1a1a] font-bold">
           หลักการเดียว: คุณค่าอยู่กับคนที่สร้างมัน
         </span>
         . ไม่มีกำไรซ่อน ไม่มีค่าใช้จ่ายเพิ่มในราคา ไม่มีรายได้ที่มองไม่เห็น ทุกอย่างถูกติดตาม
@@ -379,7 +379,7 @@ function MoteurEconomiqueSlide({
     ) : (
       <>
         E-Dome rebâtit la mécanique financière de l'immobilier autour d'{" "}
-        <span className="text-[#1a1a1a] font-semibold">
+        <span className="text-[#1a1a1a] font-bold">
           un seul principe : la valeur reste là où elle se crée
         </span>
         . Pas de marges opaques, pas de frais ajoutés au prix, pas de revenus
@@ -571,7 +571,7 @@ function MoteurEconomiqueSlide({
           </motion.h2>
           <motion.p
             {...fadeUp}
-            className="text-[#1a1a1a]/70 text-sm sm:text-base leading-relaxed font-light"
+            className="text-[#1a1a1a]/70 text-sm sm:text-base leading-relaxed font-medium"
           >
             {lead}
           </motion.p>
@@ -597,7 +597,7 @@ function MoteurEconomiqueSlide({
               >
                 {c.icon}
               </span>
-              <span className="text-[0.72rem] sm:text-xs font-semibold text-[#1a1a1a] tracking-tight whitespace-nowrap">
+              <span className="text-[0.72rem] sm:text-xs font-bold text-[#1a1a1a] tracking-tight whitespace-nowrap">
                 {c.label}
               </span>
             </div>
@@ -609,7 +609,7 @@ function MoteurEconomiqueSlide({
               que les hôtes peuvent ajouter à leurs annonces, (3) programme
               d'affiliation paramétrable. */}
         <motion.div {...fadeUp} className="max-w-5xl mx-auto px-4 mb-6">
-          <p className="text-center text-[0.6rem] tracking-[0.22em] uppercase text-[#1a1a1a]/40 font-bold mb-3">
+          <p className="text-center text-[0.6rem] tracking-widest uppercase text-[#1a1a1a]/40 font-bold mb-3">
             {lang === "en"
               ? "What E-Dome brings"
               : lang === "th"
@@ -709,7 +709,7 @@ function MoteurEconomiqueSlide({
                     {card.icon}
                   </span>
                   <span
-                    className="text-[0.55rem] tracking-[0.2em] uppercase font-bold"
+                    className="text-[0.55rem] tracking-widest uppercase font-bold"
                     style={{ color: card.color }}
                   >
                     {card.eyebrow}
@@ -718,7 +718,7 @@ function MoteurEconomiqueSlide({
                 <h4 className="text-[0.85rem] sm:text-[0.9rem] font-bold text-[#1a1a1a] tracking-tight leading-tight">
                   {card.title}
                 </h4>
-                <p className="text-[0.7rem] sm:text-[0.74rem] text-[#1a1a1a]/50 leading-snug font-light">
+                <p className="text-[0.7rem] sm:text-[0.74rem] text-[#1a1a1a]/50 leading-snug font-medium">
                   {card.body}
                 </p>
               </motion.div>
@@ -738,7 +738,7 @@ function MoteurEconomiqueSlide({
                 <ShieldCheck size={18} />
               </div>
               <div className="leading-tight">
-                <p className="text-[0.6rem] tracking-[0.2em] uppercase text-[#1e9df1] font-bold">
+                <p className="text-[0.6rem] tracking-widest uppercase text-[#1e9df1] font-bold">
                   {lang === "en"
                     ? "Important"
                     : lang === "th"
@@ -757,33 +757,33 @@ function MoteurEconomiqueSlide({
 
             {/* Côté droit : phrase d'explication centrée */}
             <div className="flex-1 px-4 py-3 flex items-center">
-              <p className="text-[0.78rem] sm:text-sm text-[#1a1a1a]/70 font-light leading-snug">
+              <p className="text-[0.78rem] sm:text-sm text-[#1a1a1a]/70 font-medium leading-snug">
                 {lang === "en" ? (
                   <>
                     The referrer's commission is{" "}
-                    <span className="text-[#1a1a1a] font-semibold">
+                    <span className="text-[#1a1a1a] font-bold">
                       taken from E-Dome's own share
                     </span>{" "}
                     of the transaction —{" "}
-                    <span className="text-[#1a1a1a] font-semibold">never added on top</span>{" "}
+                    <span className="text-[#1a1a1a] font-bold">never added on top</span>{" "}
                     of the price. Bringing a contact never makes the deal more
                     expensive.
                   </>
                 ) : lang === "th" ? (
                   <>
                     ค่าคอมมิชชันของผู้แนะนำ{" "}
-                    <span className="text-[#1a1a1a] font-semibold">หักจากส่วนของ E-Dome</span>{" "}
+                    <span className="text-[#1a1a1a] font-bold">หักจากส่วนของ E-Dome</span>{" "}
                     เท่านั้น —{" "}
-                    <span className="text-[#1a1a1a] font-semibold">ไม่เพิ่มเข้าราคา</span>{" "}
+                    <span className="text-[#1a1a1a] font-bold">ไม่เพิ่มเข้าราคา</span>{" "}
                     การพาผู้ติดต่อมาจึงไม่ทำให้ดีลแพงขึ้น
                   </>
                 ) : (
                   <>
                     La commission de l'apporteur est{" "}
-                    <span className="text-[#1a1a1a] font-semibold">
+                    <span className="text-[#1a1a1a] font-bold">
                       prélevée sur la part d'E-Dome
                     </span>{" "}
-                    — <span className="text-[#1a1a1a] font-semibold">jamais ajoutée</span> au
+                    — <span className="text-[#1a1a1a] font-bold">jamais ajoutée</span> au
                     prix. Amener un contact n'a jamais rendu une transaction plus chère.
                   </>
                 )}
@@ -794,22 +794,22 @@ function MoteurEconomiqueSlide({
 
         {/* Trust closing line */}
         <motion.div {...fadeUp} className="text-center px-4">
-          <p className="text-[#1a1a1a]/50 text-[0.78rem] sm:text-sm leading-relaxed font-light">
+          <p className="text-[#1a1a1a]/50 text-[0.78rem] sm:text-sm leading-relaxed font-medium">
             {lang === "en" ? (
               <>
                 100% traceable. 100% automatic.{" "}
-                <span className="text-[#1a1a1a] font-semibold">No hidden cost</span> for the
+                <span className="text-[#1a1a1a] font-bold">No hidden cost</span> for the
                 host or the client.
               </>
             ) : lang === "th" ? (
               <>
                 ตรวจสอบได้ 100% อัตโนมัติ 100%{" "}
-                <span className="text-[#1a1a1a] font-semibold">ไม่มีค่าใช้จ่ายแอบแฝง</span>
+                <span className="text-[#1a1a1a] font-bold">ไม่มีค่าใช้จ่ายแอบแฝง</span>
               </>
             ) : (
               <>
                 100 % traçable. 100 % automatique.{" "}
-                <span className="text-[#1a1a1a] font-semibold">Aucun coût caché</span> pour
+                <span className="text-[#1a1a1a] font-bold">Aucun coût caché</span> pour
                 l'hôte ou le client.
               </>
             )}
@@ -941,7 +941,7 @@ function HomePageContent() {
       {/* ═══════════════════════ NAVBAR ═══════════════════════ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-[#1a1a1a]/10">
         <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-          <a href="#" className="font-semibold text-2xl tracking-tight">
+          <a href="#" className="font-bold text-2xl tracking-tight">
             E-<span className="text-[#1e9df1]">Dome</span>
           </a>
 
@@ -980,7 +980,7 @@ function HomePageContent() {
             </div>
             <Link
               href="#inscriptions"
-              className="hidden sm:inline-flex bg-[#1e9df1] text-[#1a1a1a] rounded-none px-5 py-2 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
+              className="hidden sm:inline-flex bg-[#1e9df1] text-[#1a1a1a] rounded-none px-5 py-2 text-sm font-bold hover:bg-[#1a8fd9] transition-colors"
             >
               {t("hero.cta")}
             </Link>
@@ -1002,23 +1002,23 @@ function HomePageContent() {
             <motion.div {...fadeUp} className="lg:col-span-7 max-w-2xl">
               <div className="flex items-center gap-3 mb-6">
                 <span className="block w-8 h-px bg-[#1e9df1]" />
-                <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold">
+                <p className="text-[#1e9df1] text-xs tracking-widest uppercase font-bold">
                   {t("hero.label")}
                 </p>
               </div>
               <h1
-                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-tight text-[#1a1a1a] leading-[1.02] mb-8"
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-medium tracking-tight text-[#1a1a1a] leading-[1.02] mb-8"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {t("hero.title1")}
                 <br />
                 <span className="text-[#1e9df1] italic">{t("hero.title2")}</span>
               </h1>
-              <p className="text-base sm:text-lg text-[#1a1a1a]/50 leading-relaxed font-light mb-10 max-w-xl">
+              <p className="text-base sm:text-lg text-[#1a1a1a]/50 leading-relaxed font-medium mb-10 max-w-xl">
                 {lang === "en" ? (
                   <>
                     Support the project by expressing your interest.{" "}
-                    <span className="text-[#1a1a1a] font-semibold">
+                    <span className="text-[#1a1a1a] font-bold">
                       A simple questionnaire, free and with no commitment
                     </span>
                     , that proves real market demand and helps us build the platform that suits you.
@@ -1026,7 +1026,7 @@ function HomePageContent() {
                 ) : lang === "th" ? (
                   <>
                     สนับสนุนโครงการโดยการแสดงความสนใจของคุณ{" "}
-                    <span className="text-[#1a1a1a] font-semibold">
+                    <span className="text-[#1a1a1a] font-bold">
                       แบบสอบถามง่ายๆ ฟรีและไม่มีข้อผูกมัด
                     </span>{" "}
                     ที่พิสูจน์ความต้องการที่แท้จริงของตลาด และช่วยเราสร้างแพลตฟอร์มที่เหมาะกับคุณ
@@ -1034,7 +1034,7 @@ function HomePageContent() {
                 ) : (
                   <>
                     Soutenez le projet en manifestant votre intérêt.{" "}
-                    <span className="text-[#1a1a1a] font-semibold">
+                    <span className="text-[#1a1a1a] font-bold">
                       Un simple questionnaire, gratuit et sans engagement
                     </span>
                     , qui prouve une vraie demande sur le marché et nous aide à construire la plateforme qui vous correspond.
@@ -1044,7 +1044,7 @@ function HomePageContent() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link
                   href="#inscriptions"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1e9df1] text-[#1a1a1a] text-sm font-semibold hover:bg-[#1a8fd9] transition-all"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1e9df1] text-[#1a1a1a] text-sm font-bold hover:bg-[#1a8fd9] transition-all"
                 >
                   {t("hero.cta")} <ArrowRight size={16} />
                 </Link>
@@ -1224,7 +1224,7 @@ function HomePageContent() {
               <>
                 {/* HEADER — eyebrow + titre punchy + intro globale courte */}
                 <motion.div {...fadeUp} className="mb-8 max-w-3xl">
-                  <p className="text-[#1e9df1] text-[0.62rem] tracking-[0.35em] uppercase font-semibold mb-3">
+                  <p className="text-[#1e9df1] text-[0.62rem] tracking-widest uppercase font-bold mb-3">
                     {t("problem.label")}
                   </p>
                   <h2
@@ -1257,7 +1257,7 @@ function HomePageContent() {
                       </>
                     )}
                   </h2>
-                  <p className="text-[#1a1a1a]/70 text-sm md:text-base leading-relaxed font-light">
+                  <p className="text-[#1a1a1a]/70 text-sm md:text-base leading-relaxed font-medium">
                     {data.intro}
                   </p>
                 </motion.div>
@@ -1330,16 +1330,16 @@ function HomePageContent() {
                       </svg>
 
                       {/* Contenu au-dessus du graphique */}
-                      <span className="relative font-mono text-[0.62rem] text-red-400/70 tracking-[0.22em] uppercase font-semibold mb-3">
+                      <span className="relative font-mono text-[0.62rem] text-red-400/70 tracking-widest uppercase font-bold mb-3">
                         0{i + 1}
                       </span>
                       <h3
-                        className="relative text-[1rem] sm:text-[1.05rem] font-semibold text-[#1a1a1a] leading-tight mb-2.5"
+                        className="relative text-[1rem] sm:text-[1.05rem] font-bold text-[#1a1a1a] leading-tight mb-2.5"
                         style={{ fontFamily: "'Instrument Serif', serif" }}
                       >
                         {c.title}
                       </h3>
-                      <p className="relative text-[#1a1a1a]/50 text-[0.78rem] sm:text-[0.82rem] leading-relaxed font-light flex-1 mb-3">
+                      <p className="relative text-[#1a1a1a]/50 text-[0.78rem] sm:text-[0.82rem] leading-relaxed font-medium flex-1 mb-3">
                         {c.body}
                       </p>
                       {/* Résolution E-Dome — petit, bleu, en pied de carte */}
@@ -1358,7 +1358,7 @@ function HomePageContent() {
                 {/* CLOSING — phrase italique serif, sans animation,
                     constamment visible dès le rendu. */}
                 <p
-                  className="text-center text-base sm:text-lg md:text-xl mt-7 text-[#1a1a1a]/70 italic font-light"
+                  className="text-center text-base sm:text-lg md:text-xl mt-7 text-[#1a1a1a]/70 italic font-medium"
                   style={{ fontFamily: "'Instrument Serif', serif" }}
                 >
                   «&nbsp;{data.closing}&nbsp;»
@@ -1434,7 +1434,7 @@ function HomePageContent() {
                     Publish a property, accept the booking, train your clients,
                     stream a live, refer a contact for a commission and find
                     your photographer — every action lives in the same app.{" "}
-                    <span className="text-[#1a1a1a] font-semibold">
+                    <span className="text-[#1a1a1a] font-bold">
                       One signal, one inbox, one ledger.
                     </span>
                   </>
@@ -1442,7 +1442,7 @@ function HomePageContent() {
                   <>
                     ลงประกาศ รับการจอง อบรมลูกค้า ไลฟ์สด แนะนำคนรับค่าคอม
                     และหาช่างภาพ — ทุกการกระทำอยู่ในแอปเดียวกัน{" "}
-                    <span className="text-[#1a1a1a] font-semibold">
+                    <span className="text-[#1a1a1a] font-bold">
                       สัญญาณเดียว กล่องเดียว บัญชีเดียว
                     </span>
                   </>
@@ -1452,7 +1452,7 @@ function HomePageContent() {
                     clients, diffuser un live, recommander un contact contre
                     commission, trouver le bon photographe — chaque action vit
                     dans la même app.{" "}
-                    <span className="text-[#1a1a1a] font-semibold">
+                    <span className="text-[#1a1a1a] font-bold">
                       Un seul signal, une seule boîte, un seul compteur.
                     </span>
                   </>
@@ -1475,7 +1475,7 @@ function HomePageContent() {
                       {f.icon}
                     </span>
                     <span className="text-blue-100/85">
-                      <span className="text-[#1a1a1a] font-semibold">{f.label}</span>
+                      <span className="text-[#1a1a1a] font-bold">{f.label}</span>
                       <span className="text-blue-100/60"> · {f.desc}</span>
                     </span>
                   </span>
@@ -1746,22 +1746,22 @@ function HomePageContent() {
                   </Marquee>
                 ))}
               </div>
-              <p className="max-w-2xl mx-auto px-6 mt-10 text-center text-[#1a1a1a]/70 text-sm md:text-base leading-relaxed font-light">
+              <p className="max-w-2xl mx-auto px-6 mt-10 text-center text-[#1a1a1a]/70 text-sm md:text-base leading-relaxed font-medium">
                 {lang === "en" ? (
                   <>
-                    <span className="text-[#1a1a1a] font-semibold">36+ professions</span>{" "}
+                    <span className="text-[#1a1a1a] font-bold">36+ professions</span>{" "}
                     already have a profile, a dashboard and a role in E-Dome.{" "}
                     <span className="text-[#1a1a1a]/40">Yours is probably one of them.</span>
                   </>
                 ) : lang === "th" ? (
                   <>
-                    <span className="text-[#1a1a1a] font-semibold">36+ อาชีพ</span>{" "}
+                    <span className="text-[#1a1a1a] font-bold">36+ อาชีพ</span>{" "}
                     มีโปรไฟล์ แดชบอร์ด และบทบาทใน E-Dome แล้ว{" "}
                     <span className="text-[#1a1a1a]/40">ของคุณอาจเป็นหนึ่งในนั้น</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-[#1a1a1a] font-semibold">36+ métiers</span>{" "}
+                    <span className="text-[#1a1a1a] font-bold">36+ métiers</span>{" "}
                     ont déjà un profil, un tableau de bord et un rôle dans E-Dome.{" "}
                     <span className="text-[#1a1a1a]/40">Le tien en fait sûrement partie.</span>
                   </>
@@ -1820,7 +1820,7 @@ function HomePageContent() {
         <div className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 h-full flex flex-col justify-start pt-20 pb-4">
           {/* ── Heading ── */}
           <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto mb-7">
-            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-2">
+            <p className="text-[#1e9df1] text-xs tracking-widest uppercase font-bold mb-2">
               {lang === "th" ? "ทีมงาน" : lang === "en" ? "The team" : "L'équipe"}
             </p>
             <h2
@@ -1835,7 +1835,7 @@ function HomePageContent() {
                 <>Faites<br /><span className="text-[#1e9df1]">connaissance.</span></>
               )}
             </h2>
-            <p className="text-[#1a1a1a]/70 text-[0.78rem] sm:text-sm leading-relaxed font-light">
+            <p className="text-[#1a1a1a]/70 text-[0.78rem] sm:text-sm leading-relaxed font-medium">
               {lang === "en"
                 ? "Two profiles, one conviction: real estate doesn't change with one more app. It changes when its actors are finally connected."
                 : lang === "th"
@@ -1863,11 +1863,11 @@ function HomePageContent() {
               <h3 className="text-base sm:text-lg font-bold text-[#1a1a1a] tracking-tight">
                 Léonard Ansermet
               </h3>
-              <p className="text-[#1e9df1] text-[0.62rem] sm:text-[0.66rem] font-semibold uppercase tracking-[0.18em] mt-0.5">
+              <p className="text-[#1e9df1] text-[0.62rem] sm:text-[0.66rem] font-bold uppercase tracking-widest mt-0.5">
                 {t("founders.label_leo")}
               </p>
               <p
-                className="text-[#1a1a1a]/50 text-[0.74rem] sm:text-[0.8rem] leading-snug font-light italic mt-1.5 border-l-2 border-[#1e9df1]/30 pl-2.5"
+                className="text-[#1a1a1a]/50 text-[0.74rem] sm:text-[0.8rem] leading-snug font-medium italic mt-1.5 border-l-2 border-[#1e9df1]/30 pl-2.5"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {lang === "en"
@@ -1897,7 +1897,7 @@ function HomePageContent() {
             >
               {t("founders.quote")}
             </p>
-            <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1a1a1a]/40 font-bold mt-2">
+            <p className="text-[0.6rem] tracking-widest uppercase text-[#1a1a1a]/40 font-bold mt-2">
               — Léonard Ansermet &amp; Jean-Pierre Medard Garza
             </p>
           </motion.blockquote>
@@ -1914,11 +1914,11 @@ function HomePageContent() {
               <h3 className="text-base sm:text-lg font-bold text-[#1a1a1a] tracking-tight">
                 Jean-Pierre Medard Garza
               </h3>
-              <p className="text-[#1e9df1] text-[0.62rem] sm:text-[0.66rem] font-semibold uppercase tracking-[0.18em] mt-0.5">
+              <p className="text-[#1e9df1] text-[0.62rem] sm:text-[0.66rem] font-bold uppercase tracking-widest mt-0.5">
                 {t("founders.label_jp")}
               </p>
               {/* Crédential : CFC employé de commerce + maturité professionnelle */}
-              <p className="text-[#1a1a1a]/40 text-[0.62rem] sm:text-[0.66rem] tracking-wide mt-1">
+              <p className="text-[#1a1a1a]/40 text-[0.62rem] sm:text-[0.66rem] tracking-widest mt-1">
                 {lang === "en"
                   ? "Federal commerce diploma · Professional baccalaureate"
                   : lang === "th"
@@ -1926,7 +1926,7 @@ function HomePageContent() {
                     : "CFC employé de commerce · Maturité professionnelle"}
               </p>
               <p
-                className="text-[#1a1a1a]/50 text-[0.74rem] sm:text-[0.8rem] leading-snug font-light italic mt-1.5 border-r-2 border-[#1e9df1]/30 pr-2.5"
+                className="text-[#1a1a1a]/50 text-[0.74rem] sm:text-[0.8rem] leading-snug font-medium italic mt-1.5 border-r-2 border-[#1e9df1]/30 pr-2.5"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
                 {lang === "en"
@@ -1956,7 +1956,7 @@ function HomePageContent() {
           <div
             className="flex flex-col sm:flex-row items-center justify-center sm:justify-end gap-3 sm:gap-5 pt-3 border-t border-neutral-900"
           >
-            <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1a1a1a]/40 font-bold">
+            <p className="text-[0.6rem] tracking-widest uppercase text-[#1a1a1a]/40 font-bold">
               {lang === "en"
                 ? "Direct contact"
                 : lang === "th"
@@ -1967,16 +1967,16 @@ function HomePageContent() {
             {/* Léonard pills — numéro thaï (+66) affiché brut, lien tel:
                 pour appel direct depuis mobile/desktop. */}
             <div className="flex items-center gap-2">
-              <span className="text-[0.7rem] text-[#1a1a1a]/70 font-semibold">Léonard</span>
+              <span className="text-[0.7rem] text-[#1a1a1a]/70 font-bold">Léonard</span>
               <a
                 href="tel:+66910687928"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[#1e9df1] hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-semibold tabular-nums"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[#1e9df1] hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-bold tabular-nums"
               >
                 <Phone size={10} /> +66 91 068 7928
               </a>
               <a
                 href="mailto:leonard@edome.world"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/25 text-[#1e9df1] hover:bg-[#1e9df1]/20 transition-colors text-[0.65rem] font-semibold"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/25 text-[#1e9df1] hover:bg-[#1e9df1]/20 transition-colors text-[0.65rem] font-bold"
               >
                 <Mail size={10} /> Email
               </a>
@@ -1986,18 +1986,18 @@ function HomePageContent() {
 
             {/* Jean-Pierre pills — WhatsApp conservé (numéro CH). */}
             <div className="flex items-center gap-2">
-              <span className="text-[0.7rem] text-[#1a1a1a]/70 font-semibold">Jean-Pierre</span>
+              <span className="text-[0.7rem] text-[#1a1a1a]/70 font-bold">Jean-Pierre</span>
               <a
                 href="https://wa.me/41798267542"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[#1e9df1] hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-semibold"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[#1e9df1] hover:bg-emerald-500/20 transition-colors text-[0.65rem] font-bold"
               >
                 <MessageCircle size={10} /> {t("founders.whatsapp")}
               </a>
               <a
                 href="mailto:jeanpierre@edome.world"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/25 text-[#1e9df1] hover:bg-[#1e9df1]/20 transition-colors text-[0.65rem] font-semibold"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/25 text-[#1e9df1] hover:bg-[#1e9df1]/20 transition-colors text-[0.65rem] font-bold"
               >
                 <Mail size={10} /> Email
               </a>
@@ -2058,7 +2058,7 @@ function HomePageContent() {
           <motion.div {...fadeUp} className="text-center mb-5 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e9df1]/10 border border-[#1e9df1]/30 mb-3.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#1e9df1] animate-pulse" />
-              <span className="text-[#1e9df1] text-[0.62rem] tracking-[0.25em] uppercase font-semibold">
+              <span className="text-[#1e9df1] text-[0.62rem] tracking-widest uppercase font-bold">
                 {lang === "en"
                   ? "Phase 2 — validating the need"
                   : lang === "th"
@@ -2103,7 +2103,7 @@ function HomePageContent() {
                   : "Votre voix est la matière première du projet."}
             </p>
             {/* Paragraphe développé — explique le pourquoi avant le quoi. */}
-            <p className="text-[#1a1a1a]/70 text-[0.82rem] sm:text-sm leading-relaxed font-light">
+            <p className="text-[#1a1a1a]/70 text-[0.82rem] sm:text-sm leading-relaxed font-medium">
               {lang === "en"
                 ? "Before raising funds, before assembling a team, before writing a single production line — we want to be sure we're solving a problem that real people live every day. Each answer becomes concrete proof: a quote we can hand to investors, a priority that shapes the next sprint, a frustration we promise to take seriously. Two minutes of your time, weighed like gold on our side."
                 : lang === "th"
@@ -2222,7 +2222,7 @@ function HomePageContent() {
                     <div className={`w-7 h-7 rounded-md flex items-center justify-center ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}>
                       {card.icon}
                     </div>
-                    <span className={`text-[0.55rem] tracking-[0.22em] uppercase font-bold ${tone.text}`}>
+                    <span className={`text-[0.55rem] tracking-widest uppercase font-bold ${tone.text}`}>
                       {card.eyebrow}
                     </span>
                   </div>
@@ -2280,10 +2280,10 @@ function HomePageContent() {
                           <span className="absolute inset-0 rounded-full bg-[#1e9df1] opacity-40 animate-ping" />
                         )}
                       </div>
-                      <p className={`mt-1.5 text-[0.55rem] tracking-[0.22em] uppercase font-bold ${labelCls}`}>
+                      <p className={`mt-1.5 text-[0.55rem] tracking-widest uppercase font-bold ${labelCls}`}>
                         {labelText}
                       </p>
-                      <h3 className={`mt-0.5 text-[0.7rem] font-semibold leading-tight ${titleCls}`}>
+                      <h3 className={`mt-0.5 text-[0.7rem] font-bold leading-tight ${titleCls}`}>
                         {t(phase.titleKey)}
                       </h3>
                     </div>
@@ -2309,7 +2309,7 @@ function HomePageContent() {
                 <Eye size={18} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1e9df1] font-bold">
+                <p className="text-[0.6rem] tracking-widest uppercase text-[#1e9df1] font-bold">
                   {lang === "en" ? "Discover" : lang === "th" ? "ค้นพบ" : "Découvrir"}
                 </p>
                 <h3 className="text-[0.95rem] font-bold text-[#1a1a1a] tracking-tight mt-0.5 leading-tight">
@@ -2339,14 +2339,14 @@ function HomePageContent() {
               className="group relative bg-gradient-to-br from-[#1e9df1]/20 to-[#1e9df1]/5 hover:from-[#1e9df1]/25 hover:to-[#1e9df1]/10 rounded-2xl p-4 border border-[#1e9df1]/40 hover:border-[#1e9df1]/70 transition-all flex items-center gap-3 shadow-lg shadow-[#1e9df1]/10 overflow-hidden"
             >
               {/* Badge "Recommandé" en haut-droite */}
-              <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-[0.18em] uppercase font-bold bg-[#1e9df1] text-[#1a1a1a] px-1.5 py-0.5 rounded-md">
+              <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-widest uppercase font-bold bg-[#1e9df1] text-[#1a1a1a] px-1.5 py-0.5 rounded-md">
                 {lang === "en" ? "Recommended" : lang === "th" ? "แนะนำ" : "Recommandé"}
               </span>
               <div className="w-11 h-11 rounded-xl bg-[#1e9df1] text-[#1a1a1a] flex items-center justify-center shrink-0 shadow-md shadow-[#1e9df1]/40">
                 <Sparkles size={18} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[0.6rem] tracking-[0.22em] uppercase text-[#1e9df1] font-bold">
+                <p className="text-[0.6rem] tracking-widest uppercase text-[#1e9df1] font-bold">
                   {lang === "en" ? "Contribute" : lang === "th" ? "มีส่วนร่วม" : "Contribuer"}
                 </p>
                 <h3 className="text-[0.95rem] font-bold text-[#1a1a1a] tracking-tight mt-0.5 leading-tight">
@@ -2414,7 +2414,7 @@ function HomePageContent() {
         <div className="max-w-4xl mx-auto">
           {/* Heading */}
           <motion.div {...fadeUp} className="text-center mb-10">
-            <p className="text-[#1e9df1] text-xs tracking-[0.3em] uppercase font-semibold mb-3">
+            <p className="text-[#1e9df1] text-xs tracking-widest uppercase font-bold mb-3">
               FAQ
             </p>
             <h2
@@ -2441,7 +2441,7 @@ function HomePageContent() {
                 </>
               )}
             </h2>
-            <p className="text-[#1a1a1a]/50 text-sm sm:text-base leading-relaxed font-light max-w-xl mx-auto">
+            <p className="text-[#1a1a1a]/50 text-sm sm:text-base leading-relaxed font-medium max-w-xl mx-auto">
               {lang === "en"
                 ? "The questions we hear most often about E-Dome — the project, the model, the data, the launch."
                 : lang === "th"
@@ -2568,10 +2568,10 @@ function HomePageContent() {
                   className="group bg-[#f5f5f5] rounded-xl border border-[#1a1a1a]/10 hover:border-[#1e9df1]/30 transition-colors overflow-hidden"
                 >
                   <summary className="flex items-center gap-4 cursor-pointer list-none px-5 py-4 select-none">
-                    <span className="font-mono text-[0.62rem] tracking-[0.22em] text-[#1a1a1a]/40 shrink-0 w-6">
+                    <span className="font-mono text-[0.62rem] tracking-widest text-[#1a1a1a]/40 shrink-0 w-6">
                       0{i + 1}
                     </span>
-                    <span className="text-[0.95rem] sm:text-base font-semibold text-[#1a1a1a] flex-1 leading-snug">
+                    <span className="text-[0.95rem] sm:text-base font-bold text-[#1a1a1a] flex-1 leading-snug">
                       {f.q}
                     </span>
                     <ChevronDown
@@ -2580,7 +2580,7 @@ function HomePageContent() {
                     />
                   </summary>
                   <div className="px-5 pb-5">
-                    <p className="text-[#1a1a1a]/50 text-sm leading-relaxed font-light pl-10">
+                    <p className="text-[#1a1a1a]/50 text-sm leading-relaxed font-medium pl-10">
                       {f.a}
                     </p>
                   </div>
@@ -2591,7 +2591,7 @@ function HomePageContent() {
 
           {/* Petit CTA en bas — pour les questions hors-FAQ */}
           <motion.div {...fadeUp} className="text-center mt-10">
-            <p className="text-[#1a1a1a]/40 text-sm font-light">
+            <p className="text-[#1a1a1a]/40 text-sm font-medium">
               {lang === "en" ? (
                 <>
                   Another question?{" "}
@@ -2634,16 +2634,16 @@ function HomePageContent() {
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             {/* Brand */}
             <div className="md:col-span-1">
-              <h3 className="text-2xl font-semibold mb-3">
+              <h3 className="text-2xl font-bold mb-3">
                 E-<span className="text-[#1e9df1]">Dome</span>
               </h3>
-              <p className="text-[#1a1a1a]/50 text-sm font-light leading-relaxed">
+              <p className="text-[#1a1a1a]/50 text-sm font-medium leading-relaxed">
                 {t("footer.desc")}
               </p>
               <div className="mt-6">
                 <Link
                   href="/acces"
-                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-[#1a1a1a] rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-[#1a8fd9] transition-colors"
+                  className="inline-flex items-center gap-2 bg-[#1e9df1] text-[#1a1a1a] rounded-lg px-5 py-2.5 text-sm font-bold hover:bg-[#1a8fd9] transition-colors"
                 >
                   {t("footer.access")} <ArrowRight size={14} />
                 </Link>
@@ -2652,7 +2652,7 @@ function HomePageContent() {
 
             {/* Demo links */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
+              <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest mb-4">
                 {t("footer.demo_label")}
               </h4>
               <ul className="space-y-2.5">
@@ -2675,7 +2675,7 @@ function HomePageContent() {
 
             {/* Platform links */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
+              <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest mb-4">
                 {t("footer.platform_label")}
               </h4>
               <ul className="space-y-2.5">
@@ -2698,7 +2698,7 @@ function HomePageContent() {
 
             {/* About links */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
+              <h4 className="text-sm font-bold text-gray-700 uppercase tracking-widest mb-4">
                 {t("footer.about_label")}
               </h4>
               <ul className="space-y-2.5">
@@ -2743,7 +2743,7 @@ function HomePageContent() {
 
           {/* Copyright */}
           <div className="border-t border-gray-800 pt-8">
-            <p className="text-[#1a1a1a]/50 text-xs text-center font-light">
+            <p className="text-[#1a1a1a]/50 text-xs text-center font-medium">
               {t("footer.copyright")}
             </p>
           </div>
