@@ -56,6 +56,9 @@ Thumbs.db
 # Lottie, audits, prompts. Plusieurs centaines de Mo, à ne PAS pousser.
 informations/
 
+# Projet externe cloné dans le dossier (dépôt git séparé), à ne pas suivre
+deer-flow/
+
 # Dependencies
 node_modules/
 
