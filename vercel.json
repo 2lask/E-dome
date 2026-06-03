@@ -1,9 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "installCommand": "cd plateforme && npm install",
-  "buildCommand": "cd plateforme && npm run build",
-  "outputDirectory": "plateforme/.next",
   "git": {
     "deploymentEnabled": {
       "main": true,

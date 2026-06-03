@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://2lask.github.io/E-dome/sitemap.xml
