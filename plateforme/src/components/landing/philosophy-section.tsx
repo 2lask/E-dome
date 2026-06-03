@@ -39,7 +39,7 @@ export function PhilosophySection() {
   ];
 
   return (
-    <section className="bg-[#FAFAF8] py-24 md:py-36 px-6 overflow-hidden relative">
+    <section className="bg-[#FAFAF8] py-24 md:py-36 px-20 overflow-hidden relative">
       {/* Architectural SVG decorations */}
       <svg
         className="absolute top-20 right-16 opacity-[0.04] pointer-events-none hidden lg:block"
@@ -118,9 +118,9 @@ export function PhilosophySection() {
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
               >
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 p-6 md:p-8">
+                <div className="bg-white chamfer border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 p-6 md:p-8">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className={`rounded-full p-2 ${pillar.iconBg}`}>
+                    <div className={`chamfer-lg p-2 ${pillar.iconBg}`}>
                       <Icon size={18} className={pillar.iconColor} />
                     </div>
                     <h3
@@ -145,7 +145,7 @@ export function PhilosophySection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="rounded-3xl overflow-hidden shadow-2xl relative"
+          className="chamfer-lg overflow-hidden shadow-2xl relative"
         >
           <div className="aspect-[4/5] md:aspect-video relative">
             <video
@@ -161,7 +161,7 @@ export function PhilosophySection() {
 
             {/* Desktop overlay cards */}
             <div className="absolute top-0 left-0 p-8 lg:p-10 hidden md:block">
-              <div className="rounded-2xl px-8 py-6 bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg">
+              <div className="chamfer px-8 py-6 bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg">
                 <p className="text-[#1262b3] text-xs tracking-widest uppercase mb-2 font-medium">
                   {t("philosophy.video_label")}
                 </p>
@@ -184,7 +184,7 @@ export function PhilosophySection() {
                   ].map((tag) => (
                     <span
                       key={tag.label}
-                      className={`text-[10px] px-4 py-2 rounded-full font-medium border ${
+                      className={`text-[10px] px-4 py-2 chamfer-lg font-medium border ${
                         tag.gold
                           ? "text-[#1262b3] border-[#1262b3]/30 bg-[#1262b3]/10"
                           : "text-[#4b5563] border-gray-200 bg-white/60"
@@ -199,7 +199,7 @@ export function PhilosophySection() {
 
             {/* Desktop overlay - bottom right */}
             <div className="absolute bottom-0 right-0 p-8 lg:p-10 hidden md:block">
-              <div className="rounded-2xl px-8 py-6 max-w-md text-right bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg">
+              <div className="chamfer px-8 py-6 max-w-md text-right bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg">
                 <div className="w-8 h-0.5 bg-[#1262b3] mb-4 ml-auto" />
                 <p className="text-[#1a1a1a] text-base leading-relaxed mb-4">
                   {t("philosophy.video_desktop_p1")}
@@ -209,7 +209,7 @@ export function PhilosophySection() {
                 </p>
                 <a
                   href="#inscriptions"
-                  className="inline-flex items-center gap-2 bg-[#1262b3] text-white text-sm font-bold px-6 py-4 rounded-xl hover:bg-[#1262b3] transition-colors ml-auto shadow-md shadow-[#1262b3]/20"
+                  className="inline-flex items-center gap-2 bg-[#1262b3] text-white text-sm font-bold px-6 py-4 chamfer-sm hover:bg-[#1262b3] transition-colors ml-auto shadow-md shadow-[#1262b3]/20"
                 >
                   {t("philosophy.video_cta")}
                 </a>
@@ -234,7 +234,7 @@ export function PhilosophySection() {
             </p>
             <a
               href="#inscriptions"
-              className="inline-flex items-center gap-2 bg-[#1262b3] text-white text-sm font-bold px-6 py-4 rounded-xl hover:bg-[#1262b3] transition-colors shadow-md shadow-[#1262b3]/20"
+              className="inline-flex items-center gap-2 bg-[#1262b3] text-white text-sm font-bold px-6 py-4 chamfer-sm hover:bg-[#1262b3] transition-colors shadow-md shadow-[#1262b3]/20"
             >
               {t("philosophy.video_cta")}
             </a>

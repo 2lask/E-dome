@@ -227,7 +227,7 @@ function HeroBenefitsAccordion({
                 className="w-full flex items-center gap-4 py-4 text-left group"
               >
                 <span
-                  className={`flex items-center justify-center w-7 h-7 rounded-full border transition-colors duration-300 ${
+                  className={`flex items-center justify-center w-7 h-7 chamfer-lg border transition-colors duration-300 ${
                     isOpen
                       ? "border-[#1262b3] bg-[#1262b3] text-black"
                       : "border-[#1262b3]/40 bg-[#1262b3]/5 text-[#1262b3] group-hover:bg-[#1262b3] group-hover:text-black"
@@ -278,7 +278,7 @@ function DotDivider() {
   return (
     <div className="flex items-center gap-4 max-w-xs mx-auto py-14">
       <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#1262b3]/15" />
-      <div className="w-1.5 h-1.5 rounded-full bg-[#1262b3]/40" />
+      <div className="w-1.5 h-1.5 chamfer-lg bg-[#1262b3]/40" />
       <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#1262b3]/15" />
     </div>
   );
@@ -556,7 +556,7 @@ function MoteurEconomiqueSlide({
           haut du titre quand le slide était centré ; on ancre désormais
           depuis le haut avec un padding qui dégage la navbar (≈48 px) plus
           un peu d'air. */}
-      <div className="relative z-10 max-w-6xl mx-auto px-2 h-full flex flex-col justify-start pt-24 pb-6">
+      <div className="relative z-10 max-w-6xl mx-auto px-20 h-full flex flex-col justify-start pt-24 pb-6">
         {/* Heading compact — pas de label "kicker" cette fois (la BG anime
             déjà l'idée du moteur économique). Titre direct, taille raisonnée
             pour ne pas pousser le contenu hors slide. */}
@@ -585,10 +585,10 @@ function MoteurEconomiqueSlide({
           {chips.map((c, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#f5f5f5]/80 border border-[#e5e7eb] backdrop-blur-sm"
+              className="flex items-center gap-2 px-4 py-2 chamfer-lg bg-[#f5f5f5]/80 border border-[#e5e7eb] backdrop-blur-sm"
             >
               <span
-                className="w-5 h-5 rounded-full flex items-center justify-center"
+                className="w-5 h-5 chamfer-lg flex items-center justify-center"
                 style={{
                   background: `${c.color}1f`,
                   color: c.color,
@@ -695,11 +695,11 @@ function MoteurEconomiqueSlide({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex flex-col gap-2 p-4 rounded-xl bg-[#f5f5f5]/70 backdrop-blur-sm border border-[#e5e7eb] hover:border-[#d1d5db] transition-colors"
+                className="flex flex-col gap-2 p-4 chamfer-sm bg-[#f5f5f5]/70 backdrop-blur-sm border border-[#e5e7eb] hover:border-[#d1d5db] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <span
-                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                    className="w-7 h-7 chamfer-sm flex items-center justify-center shrink-0"
                     style={{
                       background: `${card.color}1f`,
                       color: card.color,
@@ -730,11 +730,11 @@ function MoteurEconomiqueSlide({
               sur la part d'E-Dome, JAMAIS en sus. Pas d'animation : ce
               bloc doit être constamment visible dès l'arrivée sur la
               section, sans effet d'apparition. ── */}
-        <div className="mx-4 sm:mx-auto max-w-[600px] rounded-2xl bg-gradient-to-br from-[#1262b3]/[0.08] via-[#1262b3]/[0.04] to-transparent border border-[#1262b3]/30 backdrop-blur-sm overflow-hidden mb-6">
+        <div className="mx-4 sm:mx-auto max-w-[600px] chamfer bg-gradient-to-br from-[#1262b3]/[0.08] via-[#1262b3]/[0.04] to-transparent border border-[#1262b3]/30 backdrop-blur-sm overflow-hidden mb-6">
           <div className="flex flex-col sm:flex-row items-stretch">
             {/* Côté gauche : pictogramme + libellé fort */}
             <div className="flex items-center gap-4 px-4 py-4 sm:pr-4 sm:border-r sm:border-[#1262b3]/20">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-[#1262b3]/15 text-[#1262b3] border border-[#1262b3]/30">
+              <div className="w-10 h-10 chamfer-sm flex items-center justify-center shrink-0 bg-[#1262b3]/15 text-[#1262b3] border border-[#1262b3]/30">
                 <ShieldCheck size={18} />
               </div>
               <div className="leading-tight">
@@ -937,7 +937,7 @@ function HomePageContent() {
   ];
 
   return (
-    <div className="bg-white text-[#1a1a1a] antialiased">
+    <div className="landing-root bg-white text-[#1a1a1a] antialiased">
 
       {/* ═══════════════════════ NAVBAR ═══════════════════════ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-[#e5e7eb]">
@@ -964,7 +964,7 @@ function HomePageContent() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-0 rounded-lg border border-[#e5e7eb] overflow-hidden">
+            <div className="hidden md:flex items-center gap-0 chamfer-sm border border-[#e5e7eb] overflow-hidden">
               {(["fr", "en", "th"] as const).map((l) => (
                 <button
                   type="button"
@@ -1026,7 +1026,7 @@ function HomePageContent() {
                 </a>
               ))}
               <div className="pt-2 border-t border-[#e5e7eb] flex items-center justify-between">
-                <div className="flex items-center gap-0 rounded-lg border border-[#e5e7eb] overflow-hidden">
+                <div className="flex items-center gap-0 chamfer-sm border border-[#e5e7eb] overflow-hidden">
                   {(["fr", "en", "th"] as const).map((l) => (
                     <button
                       type="button"
@@ -1337,7 +1337,7 @@ function HomePageContent() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-40px" }}
                       transition={{ duration: 0.5, delay: i * 0.07 }}
-                      className="relative bg-[#f5f5f5]/60 backdrop-blur-sm rounded-2xl border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors p-6 sm:p-6 flex flex-col overflow-hidden"
+                      className="relative bg-[#f5f5f5]/60 backdrop-blur-sm chamfer border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors p-6 sm:p-6 flex flex-col overflow-hidden"
                     >
                       {/* Graphique linéaire négatif en arrière-plan */}
                       <svg
@@ -1528,7 +1528,7 @@ function HomePageContent() {
                 {features.map((f) => (
                   <span key={f.label} className="flex items-center gap-2">
                     <span
-                      className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
+                      className="w-5 h-5 chamfer-sm flex items-center justify-center shrink-0"
                       style={{
                         background: `${f.color}22`,
                         color: f.color,
@@ -1774,9 +1774,9 @@ function HomePageContent() {
           const Pill = ({ role }: { role: Role }) => {
             const label = lang === "en" ? role.en : lang === "th" ? role.th : role.fr;
             return (
-              <div className="group flex items-center gap-2 px-4 py-2 mx-2 rounded-full bg-[#f5f5f5] border border-[#e5e7eb] hover:border-[#1262b3]/40 transition-colors duration-300 whitespace-nowrap">
+              <div className="group flex items-center gap-2 px-4 py-2 mx-2 chamfer-lg bg-[#f5f5f5] border border-[#e5e7eb] hover:border-[#1262b3]/40 transition-colors duration-300 whitespace-nowrap">
                 <span
-                  className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                  className="w-7 h-7 chamfer-lg flex items-center justify-center shrink-0"
                   style={{
                     background: `${role.color}1f`,
                     color: role.color,
@@ -1914,7 +1914,7 @@ function HomePageContent() {
             transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
             className="flex items-center gap-4 max-w-sm mr-auto mb-6"
           >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shrink-0 ring-2 ring-[#1262b3]/30 shadow-lg shadow-[#1262b3]/10">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 chamfer-lg overflow-hidden shrink-0 ring-2 ring-[#1262b3]/30 shadow-lg shadow-[#1262b3]/10">
               <img
                 src="/images/founders/leonard.jpg"
                 alt="Léonard Ansermet"
@@ -1994,7 +1994,7 @@ function HomePageContent() {
                     : "Structure le modèle, les partenariats et l'exécution. Convaincu qu'une bonne idée ne suffit pas — il faut une fondation rigoureuse pour la faire grandir."}
               </p>
             </div>
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shrink-0 ring-2 ring-[#1262b3]/30 shadow-lg shadow-[#1262b3]/10">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 chamfer-lg overflow-hidden shrink-0 ring-2 ring-[#1262b3]/30 shadow-lg shadow-[#1262b3]/10">
               <img
                 src="/images/founders/jeanpierre.jpg"
                 alt="Jean-Pierre Medard Garza"
@@ -2028,13 +2028,13 @@ function HomePageContent() {
               <span className="text-xs text-[#374151] font-bold">Léonard</span>
               <a
                 href="tel:+66910687928"
-                className="inline-flex items-center gap-2 px-2 py-0 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold tabular-nums"
+                className="inline-flex items-center gap-2 px-2 py-0 chamfer-lg bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold tabular-nums"
               >
                 <Phone size={10} /> +66 91 068 7928
               </a>
               <a
                 href="mailto:leonard@edome.world"
-                className="inline-flex items-center gap-2 px-2 py-0 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
+                className="inline-flex items-center gap-2 px-2 py-0 chamfer-lg bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
               >
                 <Mail size={10} /> Email
               </a>
@@ -2049,13 +2049,13 @@ function HomePageContent() {
                 href="https://wa.me/41798267542"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-2 py-0 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
+                className="inline-flex items-center gap-2 px-2 py-0 chamfer-lg bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
               >
                 <MessageCircle size={10} /> {t("founders.whatsapp")}
               </a>
               <a
                 href="mailto:jeanpierre@edome.world"
-                className="inline-flex items-center gap-2 px-2 py-0 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
+                className="inline-flex items-center gap-2 px-2 py-0 chamfer-lg bg-[#1262b3]/10 border border-[#1262b3]/25 text-[#1262b3] hover:bg-[#1262b3]/20 transition-colors text-xs font-bold"
               >
                 <Mail size={10} /> Email
               </a>
@@ -2078,7 +2078,7 @@ function HomePageContent() {
               à la place de l'ancienne grille de 4 cartes
             · Double CTA (démo + questionnaire) avec badges enrichis
             · Trust strip footer (RGPD, chiffré, anonyme, pas d'engagement) */}
-      <section id="inscriptions" className="scroll-slide py-12 px-6 bg-white relative overflow-hidden">
+      <section id="inscriptions" className="scroll-slide py-12 px-20 bg-white relative overflow-hidden">
         {/* Radial glow centré en haut (bleu) — donne un point focal et
             adoucit le noir pur. */}
         <div
@@ -2114,8 +2114,8 @@ function HomePageContent() {
           {/* ── Header : eyebrow + titre + sous-titre italique +
                   paragraphe développé + meta-row de stats ── */}
           <motion.div {...fadeUp} className="text-center mb-6 max-w-[600px] mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1262b3]/10 border border-[#1262b3]/30 mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#1262b3] animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 chamfer-lg bg-[#1262b3]/10 border border-[#1262b3]/30 mb-4">
+              <span className="w-1.5 h-1.5 chamfer-lg bg-[#1262b3] animate-pulse" />
               <span className="text-[#1262b3] text-xs tracking-widest uppercase font-bold">
                 {lang === "en"
                   ? "Phase 2 — validating the need"
@@ -2272,10 +2272,10 @@ function HomePageContent() {
               return (
                 <div
                   key={i}
-                  className={`relative rounded-xl border p-4 bg-[#f5f5f5]/60 backdrop-blur-sm transition-colors ${tone.border}`}
+                  className={`relative chamfer-sm border p-4 bg-[#f5f5f5]/60 backdrop-blur-sm transition-colors ${tone.border}`}
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <div className={`w-7 h-7 rounded-md flex items-center justify-center ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}>
+                    <div className={`w-7 h-7 chamfer-sm flex items-center justify-center ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}>
                       {card.icon}
                     </div>
                     <span className={`text-[0.55rem] tracking-widest uppercase font-bold ${tone.text}`}>
@@ -2324,7 +2324,7 @@ function HomePageContent() {
                   const titleCls = isDone || isCurrent ? "text-[#1a1a1a]" : "text-[#6b7280]";
                   return (
                     <div key={i} className="relative flex flex-col items-center text-center px-2">
-                      <div className={`relative z-10 w-7 h-7 rounded-full ring-4 ring-white flex items-center justify-center ${dotCls}`}>
+                      <div className={`relative z-10 w-7 h-7 chamfer-lg ring-4 ring-white flex items-center justify-center ${dotCls}`}>
                         {isDone ? (
                           <BadgeCheck size={13} className="text-[#1a1a1a]" strokeWidth={2.6} />
                         ) : isCurrent ? (
@@ -2333,7 +2333,7 @@ function HomePageContent() {
                           <span className="text-[0.58rem] font-bold text-[#6b7280]">0{i + 1}</span>
                         )}
                         {isCurrent && (
-                          <span className="absolute inset-0 rounded-full bg-[#1262b3] opacity-40 animate-ping" />
+                          <span className="absolute inset-0 chamfer-lg bg-[#1262b3] opacity-40 animate-ping" />
                         )}
                       </div>
                       <p className={`mt-2 text-[0.55rem] tracking-widest uppercase font-bold ${labelCls}`}>
@@ -2359,9 +2359,9 @@ function HomePageContent() {
             {/* Voir la démo — outline */}
             <Link
               href="/feed"
-              className="group relative bg-[#f5f5f5]/80 hover:bg-[#eeeeee] rounded-2xl p-4 border border-[#e5e7eb] hover:border-[#1262b3]/40 transition-all flex items-center gap-4 backdrop-blur-sm"
+              className="group relative bg-[#f5f5f5]/80 hover:bg-[#eeeeee] chamfer p-4 border border-[#e5e7eb] hover:border-[#1262b3]/40 transition-all flex items-center gap-4 backdrop-blur-sm"
             >
-              <div className="w-11 h-11 rounded-xl bg-[#1262b3]/15 text-[#1262b3] flex items-center justify-center shrink-0 ring-1 ring-[#1262b3]/30">
+              <div className="w-11 h-11 chamfer-sm bg-[#1262b3]/15 text-[#1262b3] flex items-center justify-center shrink-0 ring-1 ring-[#1262b3]/30">
                 <Eye size={18} />
               </div>
               <div className="flex-1 min-w-0">
@@ -2392,13 +2392,13 @@ function HomePageContent() {
             {/* Répondre au questionnaire — primary, badge "Recommandé" */}
             <Link
               href="/acces"
-              className="group relative bg-gradient-to-br from-[#1262b3]/20 to-[#1262b3]/5 hover:from-[#1262b3]/25 hover:to-[#1262b3]/10 rounded-2xl p-4 border border-[#1262b3]/40 hover:border-[#1262b3]/70 transition-all flex items-center gap-4 shadow-lg shadow-[#1262b3]/10 overflow-hidden"
+              className="group relative bg-gradient-to-br from-[#1262b3]/20 to-[#1262b3]/5 hover:from-[#1262b3]/25 hover:to-[#1262b3]/10 chamfer p-4 border border-[#1262b3]/40 hover:border-[#1262b3]/70 transition-all flex items-center gap-4 shadow-lg shadow-[#1262b3]/10 overflow-hidden"
             >
               {/* Badge "Recommandé" en haut-droite */}
-              <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-widest uppercase font-bold bg-[#1262b3] text-white px-2 py-0 rounded-md">
+              <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-widest uppercase font-bold bg-[#1262b3] text-white px-2 py-0 chamfer-sm">
                 {lang === "en" ? "Recommended" : lang === "th" ? "แนะนำ" : "Recommandé"}
               </span>
-              <div className="w-11 h-11 rounded-xl bg-[#1262b3] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#1262b3]/40">
+              <div className="w-11 h-11 chamfer-sm bg-[#1262b3] text-white flex items-center justify-center shrink-0 shadow-md shadow-[#1262b3]/40">
                 <Sparkles size={18} />
               </div>
               <div className="flex-1 min-w-0">
@@ -2465,7 +2465,7 @@ function HomePageContent() {
           la façon de contribuer. Accordéon `<details>` numéroté. */}
       <section
         id="faq"
-        className="bg-white border-t border-neutral-900 py-20 px-6"
+        className="bg-white border-t border-neutral-900 py-20 px-20"
       >
         <div className="max-w-[600px] mx-auto">
           {/* Heading */}
@@ -2620,7 +2620,7 @@ function HomePageContent() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.45, delay: i * 0.04 }}
-                  className="group bg-[#f5f5f5] rounded-xl border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors overflow-hidden"
+                  className="group bg-[#f5f5f5] chamfer-sm border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors overflow-hidden"
                 >
                   <summary className="flex items-center gap-4 cursor-pointer list-none px-6 py-4 select-none">
                     <span className="font-mono text-xs tracking-widest text-[#6b7280] shrink-0 w-6">
@@ -2684,7 +2684,7 @@ function HomePageContent() {
       </section>
 
       {/* ═══════════════════════ FOOTER ═══════════════════════ */}
-      <footer className="bg-[#f5f5f5] text-[#1a1a1a] pt-20 pb-10 px-6">
+      <footer className="bg-[#f5f5f5] text-[#1a1a1a] pt-20 pb-10 px-20">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             {/* Brand */}
@@ -2698,7 +2698,7 @@ function HomePageContent() {
               <div className="mt-6">
                 <Link
                   href="/acces"
-                  className="inline-flex items-center gap-2 bg-[#1262b3] text-white rounded-lg px-6 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
+                  className="inline-flex items-center gap-2 bg-[#1262b3] text-white chamfer-sm px-6 py-2 text-sm font-bold hover:bg-[#0f52a0] transition-colors"
                 >
                   {t("footer.access")} <ArrowRight size={14} />
                 </Link>

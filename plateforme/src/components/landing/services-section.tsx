@@ -72,7 +72,7 @@ export function ServicesSection() {
   ];
 
   return (
-    <section className="bg-white py-24 md:py-36 px-6 overflow-hidden relative">
+    <section className="bg-white py-24 md:py-36 px-20 overflow-hidden relative">
       {/* Architectural SVG decorations */}
       <svg
         className="absolute top-16 left-8 opacity-[0.04] pointer-events-none hidden lg:block"
@@ -139,7 +139,7 @@ export function ServicesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group"
+                className="bg-white chamfer border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group"
               >
                 {/* Video thumbnail */}
                 <div className="aspect-video overflow-hidden relative">
@@ -163,7 +163,7 @@ export function ServicesSection() {
                 {/* Card content */}
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="rounded-full p-2 bg-[#1262b3]/10">
+                    <div className="chamfer-lg p-2 bg-[#1262b3]/10">
                       <Icon size={14} className="text-[#1262b3]" />
                     </div>
                     <p className="uppercase tracking-widest text-[#1262b3] text-[10px] font-medium">

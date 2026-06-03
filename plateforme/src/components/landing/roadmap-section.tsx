@@ -90,7 +90,7 @@ export function RoadmapSection() {
   };
 
   return (
-    <section className="bg-[#FAFAF8] py-20 md:py-32 px-6 overflow-hidden relative">
+    <section className="bg-[#FAFAF8] py-20 md:py-32 px-20 overflow-hidden relative">
       <div className="grid-12 grid grid-cols-12 gap-8 relative">
         <div className="col-span-12">
         {/* ── Header ── */}
@@ -144,16 +144,16 @@ export function RoadmapSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.7, delay: i * 0.1 }}
-                className={`rounded-2xl p-6 md:p-8 ${config.border} bg-white shadow-sm relative overflow-hidden`}
+                className={`chamfer p-6 md:p-8 ${config.border} bg-white shadow-sm relative overflow-hidden`}
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-4">
-                    <div className={`rounded-full p-2 ${config.bg}`}>
+                    <div className={`chamfer-lg p-2 ${config.bg}`}>
                       <Icon size={16} className={config.color} />
                     </div>
                     <p className="text-[#1a1a1a] text-sm font-medium">{phase.phase}</p>
                   </div>
-                  <span className={`text-xs px-4 py-2 rounded-full ${config.bg} ${config.color} font-medium`}>
+                  <span className={`text-xs px-4 py-2 chamfer-lg ${config.bg} ${config.color} font-medium`}>
                     {config.label}
                   </span>
                 </div>
@@ -165,7 +165,7 @@ export function RoadmapSection() {
                 <ul className="space-y-2">
                   {phase.items.map((item) => (
                     <li key={item} className="flex items-start gap-2">
-                      <span className={`mt-2 w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
+                      <span className={`mt-2 w-1.5 h-1.5 chamfer-lg shrink-0 ${config.dot}`} />
                       <span className="text-[#6b7280] text-sm">{item}</span>
                     </li>
                   ))}
@@ -182,13 +182,13 @@ export function RoadmapSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="rounded-3xl border-2 border-[#1262b3]/20 overflow-hidden relative bg-white shadow-lg"
+          className="chamfer-lg border-2 border-[#1262b3]/20 overflow-hidden relative bg-white shadow-lg"
         >
           <div className="p-6 md:p-12">
             {/* Header */}
             <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-[#f3f4f6] border border-[#e5e7eb] mb-6">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="inline-flex items-center gap-2 chamfer-lg px-4 py-2 bg-[#f3f4f6] border border-[#e5e7eb] mb-6">
+                <div className="w-2 h-2 chamfer-lg bg-emerald-400 animate-pulse" />
                 <span className="text-[#1262b3] text-xs font-medium">
                   {t("roadmap.inscriptions_label")}
                 </span>
@@ -222,9 +222,9 @@ export function RoadmapSection() {
                 return (
                   <div
                     key={item.title}
-                    className="rounded-2xl p-6 bg-[#FAFAF8] border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all"
+                    className="chamfer p-6 bg-[#FAFAF8] border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm">
+                    <div className="w-10 h-10 chamfer-sm bg-white flex items-center justify-center mb-4 shadow-sm">
                       <ItemIcon size={20} className={item.iconColor} />
                     </div>
                     <h4 className="text-[#1a1a1a] text-sm font-bold mb-2">{item.title}</h4>
@@ -238,13 +238,13 @@ export function RoadmapSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/acces"
-                className="w-full sm:w-auto bg-[#1262b3] rounded-lg px-8 py-4 text-[#1a1a1a] text-sm font-bold hover:bg-[#1262b3] transition-colors flex items-center justify-center gap-2 shadow-md"
+                className="w-full sm:w-auto bg-[#1262b3] chamfer-sm px-8 py-4 text-[#1a1a1a] text-sm font-bold hover:bg-[#1262b3] transition-colors flex items-center justify-center gap-2 shadow-md"
               >
                 {t("roadmap.cta1")} <ArrowRight size={16} />
               </Link>
               <Link
                 href="/acces"
-                className="w-full sm:w-auto rounded-lg px-8 py-4 text-[#4b5563] text-sm font-medium hover:bg-[#f3f4f6] transition-colors border border-gray-200 flex items-center justify-center"
+                className="w-full sm:w-auto chamfer-sm px-8 py-4 text-[#4b5563] text-sm font-medium hover:bg-[#f3f4f6] transition-colors border border-gray-200 flex items-center justify-center"
               >
                 {t("roadmap.cta2")}
               </Link>

@@ -9,7 +9,7 @@ export function FeaturedVideoSection() {
   const { t } = useLandingLang();
 
   return (
-    <section className="bg-[#FAFAF8] py-20 md:py-32 px-6 overflow-hidden relative">
+    <section className="bg-[#FAFAF8] py-20 md:py-32 px-20 overflow-hidden relative">
       {/* Architectural SVG decoration */}
       <svg
         className="absolute top-12 right-12 opacity-[0.04] pointer-events-none hidden md:block"
@@ -33,7 +33,7 @@ export function FeaturedVideoSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="rounded-3xl overflow-hidden shadow-2xl"
+          className="chamfer-lg overflow-hidden shadow-2xl"
         >
           <div className="aspect-video relative">
             <video
@@ -75,7 +75,7 @@ export function FeaturedVideoSection() {
             <motion.span
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 bg-[#1262b3] text-white text-sm font-bold px-8 py-4 rounded-xl hover:bg-[#1262b3] transition-colors cursor-pointer shadow-md shadow-[#1262b3]/20"
+              className="inline-flex items-center gap-2 bg-[#1262b3] text-white text-sm font-bold px-8 py-4 chamfer-sm hover:bg-[#1262b3] transition-colors cursor-pointer shadow-md shadow-[#1262b3]/20"
             >
               {t("featured.cta")}
               <ArrowRight size={16} />

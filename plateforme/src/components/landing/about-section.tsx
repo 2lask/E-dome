@@ -28,7 +28,7 @@ export function AboutSection() {
   const { t } = useLandingLang();
 
   return (
-    <section className="relative bg-[#FAFAF8] py-24 md:py-40 px-6 overflow-hidden">
+    <section className="relative bg-[#FAFAF8] py-24 md:py-40 px-20 overflow-hidden">
       {/* Decorative architectural SVG - minimal house outline */}
       <svg
         className="absolute left-0 top-1/2 -translate-y-1/2 w-[280px] md:w-[420px] opacity-[0.05] pointer-events-none"
@@ -99,12 +99,12 @@ export function AboutSection() {
             {roles.map((role) => (
               <span
                 key={role.key}
-                className={`text-xs font-medium px-4 py-2 rounded-full border ${role.bg} ${role.text} ${role.border} transition-shadow hover:shadow-sm cursor-default`}
+                className={`text-xs font-medium px-4 py-2 chamfer-lg border ${role.bg} ${role.text} ${role.border} transition-shadow hover:shadow-sm cursor-default`}
               >
                 {t(role.key)}
               </span>
             ))}
-            <span className="text-xs font-medium px-4 py-2 rounded-full border border-gray-200 text-[#6b7280] bg-gray-50">
+            <span className="text-xs font-medium px-4 py-2 chamfer-lg border border-gray-200 text-[#6b7280] bg-gray-50">
               {t("about.more")}
             </span>
           </div>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 @import "tailwindcss";
 
 /* ─── Theme ─────────────────────────────────────────────── */
@@ -175,6 +175,16 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ─── Chamfer system — 45° cut corners ──────────────────────
+   Replaces all border-radius with clip-path polygon cuts.
+   Sizes follow the 8px spacing grid.                         */
+.landing-root * { border-radius: 0 !important; }
+
+.chamfer-xs { clip-path: polygon(4px 0%,calc(100% - 4px) 0%,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0% calc(100% - 4px),0% 4px); }
+.chamfer-sm { clip-path: polygon(8px 0%,calc(100% - 8px) 0%,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0% calc(100% - 8px),0% 8px); }
+.chamfer    { clip-path: polygon(12px 0%,calc(100% - 12px) 0%,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0% calc(100% - 12px),0% 12px); }
+.chamfer-lg { clip-path: polygon(16px 0%,calc(100% - 16px) 0%,100% 16px,100% calc(100% - 16px),calc(100% - 16px) 100%,16px 100%,0% calc(100% - 16px),0% 16px); }
+
 /* ─── 12-column grid container ──────────────────────────────
    Standard landing layout grid. Children use col-span-N.
    Column gap and side padding are strict 8px multiples.      */
@@ -186,13 +196,19 @@ html {
   max-width: 1440px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 32px;
-  padding-right: 32px;
+  padding-left: 80px;
+  padding-right: 80px;
+}
+@media (max-width: 1024px) {
+  .grid-12 {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
 }
 @media (max-width: 768px) {
   .grid-12 {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 24px;
+    padding-right: 24px;
     column-gap: 16px;
   }
 }
@@ -500,7 +516,7 @@ body {
   width: 100%;
   max-width: 400px;
   aspect-ratio: 1.586 / 1;
-  border-radius: 16px;
+  clip-path: polygon(16px 0%,calc(100% - 16px) 0%,100% 16px,100% calc(100% - 16px),calc(100% - 16px) 100%,16px 100%,0% calc(100% - 16px),0% 16px);
   background:
     linear-gradient(135deg, #1c1c1c 0%, #0a0a0a 60%, #1a1a1a 100%);
   box-shadow:
@@ -519,7 +535,7 @@ body {
 .holo-frame {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  clip-path: polygon(16px 0%,calc(100% - 16px) 0%,100% 16px,100% calc(100% - 16px),calc(100% - 16px) 100%,16px 100%,0% calc(100% - 16px),0% 16px);
   padding: 1px;
   background: linear-gradient(
     135deg,
@@ -538,7 +554,7 @@ body {
 .holo-grain {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  clip-path: polygon(16px 0%,calc(100% - 16px) 0%,100% 16px,100% calc(100% - 16px),calc(100% - 16px) 100%,16px 100%,0% calc(100% - 16px),0% 16px);
   background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 3px 3px;
   opacity: 0.6;
@@ -550,7 +566,7 @@ body {
 .holo-shine {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  clip-path: polygon(16px 0%,calc(100% - 16px) 0%,100% 16px,100% calc(100% - 16px),calc(100% - 16px) 100%,16px 100%,0% calc(100% - 16px),0% 16px);
   background:
     radial-gradient(
       circle at var(--x) var(--y),

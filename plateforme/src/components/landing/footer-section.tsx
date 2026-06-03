@@ -154,7 +154,7 @@ export function FooterSection() {
           </p>
           <Link
             href="#inscriptions"
-            className="rounded-full px-6 py-2 text-[#6b7280] text-xs hover:text-[#1262b3] hover:bg-gray-800 transition-all border border-gray-700"
+            className="chamfer-lg px-6 py-2 text-[#6b7280] text-xs hover:text-[#1262b3] hover:bg-gray-800 transition-all border border-gray-700"
           >
             {t("footer.access")}
           </Link>

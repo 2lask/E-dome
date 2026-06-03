@@ -41,7 +41,7 @@ export function ProblemSection() {
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <section ref={ref} className="relative bg-white py-24 md:py-40 px-6 overflow-hidden">
+    <section ref={ref} className="relative bg-white py-24 md:py-40 px-20 overflow-hidden">
       <div className="grid-12 grid grid-cols-12 gap-8 relative">
         <div className="col-span-12 md:col-span-8 md:col-start-3">
         {/* Header */}
