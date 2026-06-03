@@ -1152,7 +1152,7 @@ function HomePageContent() {
         </div>
         <div className="min-h-screen flex items-center py-16 relative z-10">
         <div className="grid-12 grid grid-cols-12 w-full">
-        <div className="col-span-12 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4">
+        <div className="col-span-12 md:col-span-10 md:col-start-2 lg:col-span-8 lg:col-start-3">
           {(() => {
             type Pb = { title: string; body: string; resolution: string };
             type Data = {
@@ -1267,24 +1267,6 @@ function HomePageContent() {
                     closing: "Un écosystème qui ignore qu'il en est un.",
                   };
 
-            /* Graphique linéaire négatif rouge en arrière-plan, fragmenté
-               à travers les 4 encadrés mais visuellement continu : chaque
-               carte rend son propre segment de la courbe descendante, et
-               les Y aux frontières gauche/droite des cartes correspondent
-               aux Y des cartes voisines. Avec viewBox 0..100 / 0..100 et
-               preserveAspectRatio="none", la courbe s'étire pour remplir
-               la carte sans déborder. */
-            const chartSegments = [
-              // Carte 01 — Y 18 → 32 (légère chute initiale)
-              "0,18 12,15 28,22 45,17 62,28 78,24 100,32",
-              // Carte 02 — Y 32 → 52 (chute plus marquée)
-              "0,32 14,30 30,38 48,40 65,46 82,50 100,52",
-              // Carte 03 — Y 52 → 70 (creux en milieu)
-              "0,52 18,56 35,60 52,68 70,64 88,72 100,70",
-              // Carte 04 — Y 70 → 92 (effondrement final)
-              "0,70 16,73 32,78 50,82 68,86 86,89 100,92",
-            ];
-
             return (
               <>
                 {/* HEADER — eyebrow + titre punchy + intro globale courte */}
@@ -1326,96 +1308,34 @@ function HomePageContent() {
                   </p>
                 </motion.div>
 
-                {/* 4 CONSTATS en encadrés avec graphique linéaire négatif
-                    rouge en arrière-plan, continu visuellement de gauche à
-                    droite (chaque carte = 1 segment, Y aux bords alignés). */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4">
+                {/* 4 CONSTATS — editorial numbered list */}
+                <div className="space-y-0">
                   {data.constats.map((c, i) => (
                     <motion.div
                       key={i}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 16 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-40px" }}
-                      transition={{ duration: 0.5, delay: i * 0.07 }}
-                      className="relative bg-[#f5f5f5]/60 backdrop-blur-sm chamfer border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors p-6 sm:p-6 flex flex-col overflow-hidden"
+                      transition={{ duration: 0.5, delay: i * 0.08 }}
+                      className="grid grid-cols-[2.5rem_1fr] gap-8 py-8 border-t border-[#e5e7eb] items-start"
                     >
-                      {/* Graphique linéaire négatif en arrière-plan */}
-                      <svg
-                        aria-hidden
-                        className="absolute inset-0 w-full h-full pointer-events-none"
-                        viewBox="0 0 100 100"
-                        preserveAspectRatio="none"
-                      >
-                        <defs>
-                          <linearGradient
-                            id={`chart-fill-${i}`}
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                          >
-                            <stop offset="0%" stopColor="#1262b3" stopOpacity="0.06" />
-                            <stop offset="100%" stopColor="#1262b3" stopOpacity="0" />
-                          </linearGradient>
-                        </defs>
-                        {/* Aire sous la courbe (très subtile) */}
-                        <motion.polygon
-                          points={`${chartSegments[i]} 100,100 0,100`}
-                          fill={`url(#chart-fill-${i})`}
-                          initial={{ opacity: 0 }}
-                          whileInView={{ opacity: 1 }}
-                          viewport={{ once: true, margin: "-40px" }}
-                          transition={{ duration: 1, delay: 0.3 + i * 0.1 }}
-                        />
-                        {/* Courbe linéaire */}
-                        <motion.polyline
-                          points={chartSegments[i]}
-                          fill="none"
-                          stroke="rgba(239, 68, 68, 0.42)"
-                          strokeWidth="0.7"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          vectorEffect="non-scaling-stroke"
-                          initial={{ pathLength: 0, opacity: 0 }}
-                          whileInView={{ pathLength: 1, opacity: 1 }}
-                          viewport={{ once: true, margin: "-40px" }}
-                          transition={{
-                            pathLength: {
-                              duration: 1.2,
-                              delay: i * 0.18,
-                              ease: [0.25, 0.1, 0.25, 1],
-                            },
-                            opacity: {
-                              duration: 0.4,
-                              delay: i * 0.18,
-                            },
-                          }}
-                        />
-                      </svg>
-
-                      {/* Contenu au-dessus du graphique */}
-                      <span className="relative font-mono text-xs text-[#6b7280] tracking-widest uppercase font-bold mb-4">
+                      <span className="text-[#1262b3] text-xl font-bold tabular-nums leading-none pt-1">
                         0{i + 1}
                       </span>
-                      <h3
-                        className="relative text-base sm:text-base font-bold text-[#1a1a1a] leading-tight mb-2"
-                      >
-                        {c.title}
-                      </h3>
-                      <p className="relative text-[#6b7280] text-[0.78rem] sm:text-[0.82rem] leading-relaxed font-medium flex-1 mb-4">
-                        {c.body}
-                      </p>
-                      {/* Résolution E-Dome — petit, bleu, en pied de carte */}
-                      <div className="relative pt-4 border-t border-[#e5e7eb]/80">
-                        <p className="text-xs sm:text-xs text-blue-300/80 leading-snug font-medium">
-                          <span className="text-[#1262b3] font-bold">
-                            E-Dome →
-                          </span>{" "}
-                          {c.resolution}
+                      <div>
+                        <h3 className="text-base font-bold text-[#1a1a1a] leading-snug mb-2">
+                          {c.title}
+                        </h3>
+                        <p className="text-[#6b7280] text-sm leading-relaxed mb-4">
+                          {c.body}
+                        </p>
+                        <p className="text-xs text-[#1262b3] font-bold leading-snug">
+                          E-Dome → <span className="font-medium text-[#4b5563]">{c.resolution}</span>
                         </p>
                       </div>
                     </motion.div>
                   ))}
+                  <div className="border-t border-[#e5e7eb]" />
                 </div>
 
                 {/* CLOSING — phrase italique serif, sans animation,
