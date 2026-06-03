@@ -446,7 +446,7 @@ function MoteurEconomiqueSlide({
           ];
 
   return (
-    <section className="relative scroll-slide bg-white overflow-hidden">
+    <section className="relative scroll-slide bg-white">
       {/* ── BG : graphique linéaire qui se trace de bas-gauche en haut-droite,
               piloté par le progress du slide (la courbe naît au scroll). ── */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -730,7 +730,7 @@ function MoteurEconomiqueSlide({
               sur la part d'E-Dome, JAMAIS en sus. Pas d'animation : ce
               bloc doit être constamment visible dès l'arrivée sur la
               section, sans effet d'apparition. ── */}
-        <div className="mx-4 sm:mx-auto max-w-[600px] chamfer bg-gradient-to-br from-[#1262b3]/[0.08] via-[#1262b3]/[0.04] to-transparent border border-[#1262b3]/30 backdrop-blur-sm overflow-hidden mb-6">
+        <div className="mx-4 sm:mx-auto max-w-[600px] chamfer bg-gradient-to-br from-[#1262b3]/[0.08] via-[#1262b3]/[0.04] to-transparent border border-[#1262b3]/30 backdrop-blur-sm mb-6">
           <div className="flex flex-col sm:flex-row items-stretch">
             {/* Côté gauche : pictogramme + libellé fort */}
             <div className="flex items-center gap-4 px-4 py-4 sm:pr-4 sm:border-r sm:border-[#1262b3]/20">
@@ -964,7 +964,7 @@ function HomePageContent() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-0 chamfer-sm border border-[#e5e7eb] overflow-hidden">
+            <div className="hidden md:flex items-center gap-0 chamfer-sm border border-[#e5e7eb]">
               {(["fr", "en", "th"] as const).map((l) => (
                 <button
                   type="button"
@@ -1026,7 +1026,7 @@ function HomePageContent() {
                 </a>
               ))}
               <div className="pt-2 border-t border-[#e5e7eb] flex items-center justify-between">
-                <div className="flex items-center gap-0 chamfer-sm border border-[#e5e7eb] overflow-hidden">
+                <div className="flex items-center gap-0 chamfer-sm border border-[#e5e7eb]">
                   {(["fr", "en", "th"] as const).map((l) => (
                     <button
                       type="button"
@@ -1055,7 +1055,7 @@ function HomePageContent() {
 
       <ScrollStage>
       {/* ═══════════════════════ HERO (left-aligned, brutaliste) ═══════════════════════ */}
-      <section className="scroll-slide bg-white relative overflow-hidden">
+      <section className="scroll-slide bg-white relative">
         {/* Esquisse gratte-ciel — remplit toute la zone latérale droite et
             se dessine puis disparaît trait par trait au scroll de la slide
             (piloté par useSlideProgress du ScrollStage parent). */}
@@ -1147,7 +1147,7 @@ function HomePageContent() {
       <section id="probleme" className="scroll-slide bg-white relative">
         {/* Façade haute brutaliste (Le Corbusier-esque) en bleu, ancrée à
             gauche, avec parallaxe scroll vertical. */}
-        <div className="hidden lg:block absolute left-[-3%] top-0 bottom-0 w-[18%] z-0 pointer-events-none overflow-hidden">
+        <div className="hidden lg:block absolute left-[-3%] top-0 bottom-0 w-[18%] z-0 pointer-events-none">
           <ArchTallFacade className="w-full h-full" />
         </div>
         <div className="py-24 relative z-10">
@@ -1784,7 +1784,7 @@ function HomePageContent() {
           Mise en page asymétrique demandée : Léonard ancré à gauche en
           haut, la citation des fondateurs au centre en-dessous de son
           bloc, Jean-Pierre ancré à droite en bas. Photos rondes. */}
-      <section id="fondateurs" className="scroll-slide bg-white overflow-hidden relative">
+      <section id="fondateurs" className="scroll-slide bg-white relative">
         {/* Volume géométrique anguleux (Zaha Hadid-esque) coin haut-droit,
             blanc, rotation très lente continue. */}
         <div className="hidden lg:block absolute right-[-3%] top-[4%] w-[28%] z-0 pointer-events-none">
@@ -1834,7 +1834,7 @@ function HomePageContent() {
             transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
             className="flex items-center gap-4 max-w-sm mr-auto mb-6"
           >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 chamfer-lg overflow-hidden shrink-0 ring-2 ring-[#1262b3]/30 shadow-lg shadow-[#1262b3]/10">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 chamfer-lg shrink-0 ring-2 ring-[#1262b3]/30 shadow-lg shadow-[#1262b3]/10">
               <img
                 src="/images/founders/leonard.jpg"
                 alt="Léonard Ansermet"
@@ -1914,7 +1914,7 @@ function HomePageContent() {
                     : "Structure le modèle, les partenariats et l'exécution. Convaincu qu'une bonne idée ne suffit pas — il faut une fondation rigoureuse pour la faire grandir."}
               </p>
             </div>
-            <div className="w-20 h-20 sm:w-24 sm:h-24 chamfer-lg overflow-hidden shrink-0 ring-2 ring-[#1262b3]/30 shadow-lg shadow-[#1262b3]/10">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 chamfer-lg shrink-0 ring-2 ring-[#1262b3]/30 shadow-lg shadow-[#1262b3]/10">
               <img
                 src="/images/founders/jeanpierre.jpg"
                 alt="Jean-Pierre Medard Garza"
@@ -1998,7 +1998,7 @@ function HomePageContent() {
               à la place de l'ancienne grille de 4 cartes
             · Double CTA (démo + questionnaire) avec badges enrichis
             · Trust strip footer (RGPD, chiffré, anonyme, pas d'engagement) */}
-      <section id="inscriptions" className="scroll-slide py-24 px-20 bg-white relative overflow-hidden">
+      <section id="inscriptions" className="scroll-slide py-24 px-20 bg-white relative">
         {/* Radial glow centré en haut (bleu) — donne un point focal et
             adoucit le noir pur. */}
         <div
@@ -2312,7 +2312,7 @@ function HomePageContent() {
             {/* Répondre au questionnaire — primary, badge "Recommandé" */}
             <Link
               href="/acces"
-              className="group relative bg-gradient-to-br from-[#1262b3]/20 to-[#1262b3]/5 hover:from-[#1262b3]/25 hover:to-[#1262b3]/10 chamfer p-4 border border-[#1262b3]/40 hover:border-[#1262b3]/70 transition-all flex items-center gap-4 shadow-lg shadow-[#1262b3]/10 overflow-hidden"
+              className="group relative bg-gradient-to-br from-[#1262b3]/20 to-[#1262b3]/5 hover:from-[#1262b3]/25 hover:to-[#1262b3]/10 chamfer p-4 border border-[#1262b3]/40 hover:border-[#1262b3]/70 transition-all flex items-center gap-4 shadow-lg shadow-[#1262b3]/10"
             >
               {/* Badge "Recommandé" en haut-droite */}
               <span className="absolute top-1.5 right-1.5 text-[0.5rem] tracking-widest uppercase font-bold bg-[#1262b3] text-white px-2 py-0 chamfer-sm">
@@ -2540,7 +2540,7 @@ function HomePageContent() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.45, delay: i * 0.04 }}
-                  className="group bg-[#f5f5f5] chamfer-sm border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors overflow-hidden"
+                  className="group bg-[#f5f5f5] chamfer-sm border border-[#e5e7eb] hover:border-[#1262b3]/30 transition-colors"
                 >
                   <summary className="flex items-center gap-4 cursor-pointer list-none px-6 py-4 select-none">
                     <span className="font-mono text-xs tracking-widest text-[#6b7280] shrink-0 w-6">
