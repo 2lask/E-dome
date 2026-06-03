@@ -454,7 +454,7 @@ function MoteurEconomiqueSlide({
         {[20, 40, 60, 80].map((y) => (
           <div
             key={`h-${y}`}
-            className="absolute inset-x-0 h-px bg-white/[0.035]"
+            className="absolute inset-x-0 h-px bg-[#1a1a1a]/[0.04]"
             style={{ top: `${y}%` }}
           />
         ))}
@@ -462,7 +462,7 @@ function MoteurEconomiqueSlide({
         {[15, 30, 45, 60, 75, 90].map((x) => (
           <div
             key={`v-${x}`}
-            className="absolute top-0 bottom-0 w-px bg-white/[0.025]"
+            className="absolute top-0 bottom-0 w-px bg-[#1a1a1a]/[0.03]"
             style={{ left: `${x}%` }}
           />
         ))}
@@ -525,7 +525,7 @@ function MoteurEconomiqueSlide({
           {/* Courbe secondaire pointillée (tendance support) */}
           <motion.path
             d="M 0 760 L 200 740 L 400 700 L 600 620 L 800 540 L 1000 460 L 1200 360"
-            stroke="rgba(255,255,255,0.16)"
+            stroke="rgba(26,26,26,0.08)"
             strokeWidth={1}
             strokeDasharray="3 5"
             fill="none"
@@ -541,12 +541,12 @@ function MoteurEconomiqueSlide({
           <RevenueDot x={1000} y={175} color="#1262b3" delay={1.3} activated={activated} />
         </svg>
 
-        {/* Voile radial central pour garder le texte lisible */}
+        {/* Voile radial central — subtle white fade for readability */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 75%)",
+              "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 75%)",
           }}
         />
       </div>
@@ -585,7 +585,7 @@ function MoteurEconomiqueSlide({
           {chips.map((c, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 px-4 py-2 chamfer-lg bg-[#f5f5f5]/80 border border-[#e5e7eb] backdrop-blur-sm"
+              className="flex items-center gap-2 px-4 py-2 chamfer-lg bg-white border border-[#e5e7eb]"
             >
               <span
                 className="w-5 h-5 chamfer-lg flex items-center justify-center"
@@ -597,7 +597,7 @@ function MoteurEconomiqueSlide({
               >
                 {c.icon}
               </span>
-              <span className="text-[0.72rem] sm:text-xs font-bold text-[#1a1a1a] tracking-tight whitespace-nowrap">
+              <span className="text-xs font-bold text-[#1a1a1a] tracking-tight whitespace-nowrap">
                 {c.label}
               </span>
             </div>
@@ -609,7 +609,7 @@ function MoteurEconomiqueSlide({
               que les hôtes peuvent ajouter à leurs annonces, (3) programme
               d'affiliation paramétrable. */}
         <motion.div {...fadeUp} className="max-w-[600px] mx-auto px-4 mb-6">
-          <p className="text-center text-[0.6rem] tracking-widest uppercase text-[#6b7280] font-bold mb-4">
+          <p className="text-center text-xs tracking-widest uppercase text-[#6b7280] font-bold mb-4">
             {lang === "en"
               ? "What E-Dome brings"
               : lang === "th"
@@ -695,7 +695,7 @@ function MoteurEconomiqueSlide({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex flex-col gap-2 p-4 chamfer-sm bg-[#f5f5f5]/70 backdrop-blur-sm border border-[#e5e7eb] hover:border-[#d1d5db] transition-colors"
+                className="flex flex-col gap-2 p-4 chamfer-sm bg-white border border-[#e5e7eb] hover:border-[#d1d5db] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <span
