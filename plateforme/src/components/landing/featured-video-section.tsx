@@ -18,12 +18,12 @@ export function FeaturedVideoSection() {
         viewBox="0 0 120 120"
         fill="none"
       >
-        <rect x="10" y="10" width="100" height="100" stroke="#1e9df1" strokeWidth="1" />
-        <rect x="30" y="30" width="60" height="60" stroke="#1e9df1" strokeWidth="1" />
-        <line x1="10" y1="10" x2="30" y2="30" stroke="#1e9df1" strokeWidth="1" />
-        <line x1="110" y1="10" x2="90" y2="30" stroke="#1e9df1" strokeWidth="1" />
-        <line x1="10" y1="110" x2="30" y2="90" stroke="#1e9df1" strokeWidth="1" />
-        <line x1="110" y1="110" x2="90" y2="90" stroke="#1e9df1" strokeWidth="1" />
+        <rect x="10" y="10" width="100" height="100" stroke="#1262b3" strokeWidth="1" />
+        <rect x="30" y="30" width="60" height="60" stroke="#1262b3" strokeWidth="1" />
+        <line x1="10" y1="10" x2="30" y2="30" stroke="#1262b3" strokeWidth="1" />
+        <line x1="110" y1="10" x2="90" y2="30" stroke="#1262b3" strokeWidth="1" />
+        <line x1="10" y1="110" x2="30" y2="90" stroke="#1262b3" strokeWidth="1" />
+        <line x1="110" y1="110" x2="90" y2="90" stroke="#1262b3" strokeWidth="1" />
       </svg>
 
       <div className="max-w-[600px] mx-auto">
@@ -57,17 +57,17 @@ export function FeaturedVideoSection() {
           className="mt-10 md:mt-14 max-w-[600px] mx-auto text-center"
         >
           <p
-            className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium"
+            className="text-[#1262b3] text-xs tracking-widest uppercase mb-4 font-medium"
             style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
           >
             {t("featured.label")}
           </p>
 
-          <p className="text-[#1a1a1a]/60 text-sm md:text-base leading-relaxed mb-4">
+          <p className="text-[#4b5563] text-sm leading-relaxed mb-4">
             {t("featured.desc")}
           </p>
 
-          <p className="text-[#1a1a1a]/50 text-xs leading-relaxed mb-8">
+          <p className="text-[#6b7280] text-xs leading-relaxed mb-8">
             {t("featured.disclaimer")}
           </p>
 
@@ -75,7 +75,7 @@ export function FeaturedVideoSection() {
             <motion.span
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2.5 bg-[#1e9df1] text-[#1a1a1a] text-sm font-bold px-7 py-3.5 rounded-xl hover:bg-[#1e9df1] transition-colors cursor-pointer shadow-md shadow-[#1e9df1]/20"
+              className="inline-flex items-center gap-2.5 bg-[#1262b3] text-white text-sm font-bold px-7 py-3.5 rounded-xl hover:bg-[#1262b3] transition-colors cursor-pointer shadow-md shadow-[#1262b3]/20"
             >
               {t("featured.cta")}
               <ArrowRight size={16} />

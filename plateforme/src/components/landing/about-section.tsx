@@ -10,12 +10,12 @@ const fadeUp = {
 };
 
 const roles = [
-  { key: "about.role_hote", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
-  { key: "about.role_agence", bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
+  { key: "about.role_hote", bg: "bg-[#f3f4f6]", text: "text-[#1262b3]", border: "border-[#e5e7eb]" },
+  { key: "about.role_agence", bg: "bg-[#f3f4f6]", text: "text-[#1262b3]", border: "border-[#e5e7eb]" },
   { key: "about.role_agent", bg: "bg-cyan-50", text: "text-cyan-700", border: "border-cyan-200" },
-  { key: "about.role_investisseur", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
-  { key: "about.role_formateur", bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200" },
-  { key: "about.role_apporteur", bg: "bg-[#1e9df1]/10", text: "text-[#1e9df1]", border: "border-[#1e9df1]/20" },
+  { key: "about.role_investisseur", bg: "bg-[#f3f4f6]", text: "text-emerald-700", border: "border-[#e5e7eb]" },
+  { key: "about.role_formateur", bg: "bg-[#f3f4f6]", text: "text-purple-700", border: "border-purple-200" },
+  { key: "about.role_apporteur", bg: "bg-[#1262b3]/10", text: "text-[#1262b3]", border: "border-[#1262b3]/20" },
   { key: "about.role_photographe", bg: "bg-pink-50", text: "text-pink-700", border: "border-pink-200" },
   { key: "about.role_courtier", bg: "bg-teal-50", text: "text-teal-700", border: "border-teal-200" },
   { key: "about.role_notaire", bg: "bg-indigo-50", text: "text-indigo-700", border: "border-indigo-200" },
@@ -51,7 +51,7 @@ export function AboutSection() {
         <motion.p
           {...fadeUp}
           transition={{ duration: 0.6 }}
-          className="text-[#1e9df1] text-xs md:text-sm font-medium tracking-widest uppercase mb-8"
+          className="text-[#1262b3] text-xs md:text-sm font-medium tracking-widest uppercase mb-8"
         >
           {t("about.label")}
         </motion.p>
@@ -60,11 +60,10 @@ export function AboutSection() {
         <motion.h2
           {...fadeUp}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-3xl md:text-5xl lg:text-6xl text-gray-900 leading-[1.1] tracking-tight mb-14 md:mb-20"
-          style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}
+          className="text-[clamp(2.2rem,5vw,4rem)] text-[#1a1a1a] leading-[1.1] tracking-tight mb-14 md:mb-20"
         >
           {t("about.title1")}{" "}
-          <span className="italic text-[#1e9df1]">{t("about.title2")}</span>
+          <span className="italic text-[#1262b3]">{t("about.title2")}</span>
         </motion.h2>
 
         {/* Two-column paragraphs */}
@@ -72,7 +71,7 @@ export function AboutSection() {
           <motion.p
             {...fadeUp}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-[#1a1a1a]/60 text-base md:text-lg leading-relaxed"
+            className="text-[#4b5563] text-base leading-relaxed"
           >
             {t("about.p1")}
           </motion.p>
@@ -80,7 +79,7 @@ export function AboutSection() {
           <motion.p
             {...fadeUp}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-[#1a1a1a]/60 text-base md:text-lg leading-relaxed"
+            className="text-[#4b5563] text-base leading-relaxed"
           >
             {t("about.p2")}
           </motion.p>
@@ -91,7 +90,7 @@ export function AboutSection() {
           {...fadeUp}
           transition={{ duration: 0.6, delay: 0.35 }}
         >
-          <p className="text-[#1a1a1a]/50 text-sm leading-relaxed mb-6 max-w-[600px]">
+          <p className="text-[#6b7280] text-sm leading-relaxed mb-6 max-w-[600px]">
             {t("about.roles_label")}
           </p>
 
@@ -104,7 +103,7 @@ export function AboutSection() {
                 {t(role.key)}
               </span>
             ))}
-            <span className="text-xs font-medium px-4 py-2 rounded-full border border-gray-200 text-[#1a1a1a]/50 bg-gray-50">
+            <span className="text-xs font-medium px-4 py-2 rounded-full border border-gray-200 text-[#6b7280] bg-gray-50">
               {t("about.more")}
             </span>
           </div>

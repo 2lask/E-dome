@@ -35,7 +35,7 @@ export function LoadingScreen() {
   const W_LO = "rgba(255,255,255,0.32)";   // axes, lignes de construction
   const W_FN = "rgba(255,255,255,0.10)";   // grille
   const W_BAND = "rgba(255,255,255,0.18)"; // bandes de coffrage béton
-  const O = "#1e9df1";                      // touches orange
+  const O = "#1262b3";                      // touches orange
 
   // Helper inline
   const at = (delay: number, dur = 0.7): React.CSSProperties => ({

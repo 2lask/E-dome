@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { motion } from "framer-motion";
 
 const enterDraw = (delay = 0, duration = 1.8) => ({
@@ -1311,7 +1311,7 @@ export function ArchFactoryFragment({ className }: { className?: string }) {
  * fenêtres en plein cintre, gallery de cloches, gros cadran d'horloge avec
  * AIGUILLES QUI TOURNENT EN CONTINU, toit pyramidal + girouette qui oscille,
  * lanternes qui pulsent. ~140 paths.
- * Couleur : BLEU (#1e9df1 family).
+ * Couleur : BLEU (#1262b3 family).
  * ===================================================================== */
 export function ArchClockTower({ className }: { className?: string }) {
   const M = "rgba(30,157,241,0.55)";   // main

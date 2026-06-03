@@ -65,24 +65,24 @@ export function RoadmapSection() {
   const statusConfig = {
     done: {
       icon: Check,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
-      border: "border-2 border-emerald-300",
-      dot: "bg-emerald-500",
+      color: "text-[#1262b3]",
+      bg: "bg-[#f3f4f6]",
+      border: "border-2 border-[#1262b3]",
+      dot: "bg-[#1262b3]",
       label: t("roadmap.status_done"),
     },
     current: {
       icon: Loader2,
-      color: "text-[#1e9df1]",
-      bg: "bg-[#1e9df1]/10",
-      border: "border-2 border-[#1e9df1]/40",
-      dot: "bg-[#1e9df1]",
+      color: "text-[#1262b3]",
+      bg: "bg-[#1262b3]/10",
+      border: "border-2 border-[#1262b3]/40",
+      dot: "bg-[#1262b3]",
       label: t("roadmap.status_current"),
     },
     upcoming: {
       icon: Clock,
-      color: "text-[#1a1a1a]/50",
-      bg: "bg-gray-100",
+      color: "text-[#6b7280]",
+      bg: "bg-[#f3f4f6]",
       border: "border border-gray-200",
       dot: "bg-gray-300",
       label: t("roadmap.status_upcoming"),
@@ -101,7 +101,7 @@ export function RoadmapSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-[#1e9df1] text-sm tracking-widest uppercase mb-5 font-medium">
+            <p className="text-[#1262b3] text-sm tracking-widest uppercase mb-5 font-medium">
               {t("roadmap.label")}
             </p>
           </motion.div>
@@ -112,8 +112,7 @@ export function RoadmapSection() {
             transition={{ duration: 0.7, delay: 0.1 }}
           >
             <h2
-              className="text-4xl md:text-6xl text-gray-900 tracking-tight mb-8"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
+              className="text-4xl md:text-6xl text-[#1a1a1a] tracking-tight mb-8"
             >
               {t("roadmap.title1")} {t("roadmap.title2")}
             </h2>
@@ -124,10 +123,10 @@ export function RoadmapSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <p className="text-[#1a1a1a]/60 text-base md:text-lg max-w-[600px] leading-relaxed mb-3">
+            <p className="text-[#4b5563] text-base max-w-[600px] leading-relaxed mb-3">
               {t("roadmap.desc")}
             </p>
-            <p className="text-[#1a1a1a]/50 text-sm md:text-base max-w-[600px] leading-relaxed">
+            <p className="text-[#6b7280] text-sm max-w-[600px] leading-relaxed">
               {t("roadmap.desc2")}
             </p>
           </motion.div>
@@ -152,15 +151,14 @@ export function RoadmapSection() {
                     <div className={`rounded-full p-2 ${config.bg}`}>
                       <Icon size={16} className={config.color} />
                     </div>
-                    <p className="text-gray-900 text-sm font-medium">{phase.phase}</p>
+                    <p className="text-[#1a1a1a] text-sm font-medium">{phase.phase}</p>
                   </div>
                   <span className={`text-xs px-3 py-1 rounded-full ${config.bg} ${config.color} font-medium`}>
                     {config.label}
                   </span>
                 </div>
                 <h3
-                  className="text-gray-900 text-xl mb-4 tracking-tight"
-                  style={{ fontFamily: "'Instrument Serif', serif" }}
+                  className="text-[#1a1a1a] text-xl mb-4 tracking-tight"
                 >
                   {phase.title}
                 </h3>
@@ -168,7 +166,7 @@ export function RoadmapSection() {
                   {phase.items.map((item) => (
                     <li key={item} className="flex items-start gap-2.5">
                       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
-                      <span className="text-[#1a1a1a]/40 text-sm">{item}</span>
+                      <span className="text-[#6b7280] text-sm">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -184,29 +182,28 @@ export function RoadmapSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="rounded-3xl border-2 border-[#1e9df1]/20 overflow-hidden relative bg-white shadow-lg"
+          className="rounded-3xl border-2 border-[#1262b3]/20 overflow-hidden relative bg-white shadow-lg"
         >
           <div className="p-6 md:p-12">
             {/* Header */}
             <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-emerald-50 border border-emerald-200 mb-5">
+              <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-[#f3f4f6] border border-[#e5e7eb] mb-5">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-emerald-600 text-xs font-medium">
+                <span className="text-[#1262b3] text-xs font-medium">
                   {t("roadmap.inscriptions_label")}
                 </span>
               </div>
               <h3
-                className="text-gray-900 text-2xl md:text-3xl font-bold mb-4 tracking-tight"
-                style={{ fontFamily: "'Instrument Serif', serif" }}
+                className="text-[#1a1a1a] text-2xl md:text-3xl font-bold mb-4 tracking-tight"
               >
                 {t("roadmap.cta_title1")}
                 <br />
-                <span className="text-[#1e9df1]">{t("roadmap.cta_title2")}</span>
+                <span className="text-[#1262b3]">{t("roadmap.cta_title2")}</span>
               </h3>
-              <p className="text-[#1a1a1a]/40 text-sm md:text-base leading-relaxed max-w-[600px] mx-auto mb-2">
+              <p className="text-[#6b7280] text-sm leading-relaxed max-w-[600px] mx-auto mb-2">
                 {t("roadmap.cta_subtitle")}
               </p>
-              <p className="text-[#1a1a1a]/50 text-xs max-w-xl mx-auto">
+              <p className="text-[#6b7280] text-xs max-w-xl mx-auto">
                 {t("roadmap.cta_disclaimer")}
               </p>
             </div>
@@ -214,10 +211,10 @@ export function RoadmapSection() {
             {/* Benefit cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
               {[
-                { icon: Award, iconColor: "text-[#1e9df1]", title: t("roadmap.benefit1_title"), desc: t("roadmap.benefit1_desc") },
-                { icon: KeyRound, iconColor: "text-emerald-500", title: t("roadmap.benefit2_title"), desc: t("roadmap.benefit2_desc") },
-                { icon: Star, iconColor: "text-amber-500", title: t("roadmap.benefit3_title"), desc: t("roadmap.benefit3_desc") },
-                { icon: Mic, iconColor: "text-purple-500", title: t("roadmap.benefit4_title"), desc: t("roadmap.benefit4_desc") },
+                { icon: Award, iconColor: "text-[#1262b3]", title: t("roadmap.benefit1_title"), desc: t("roadmap.benefit1_desc") },
+                { icon: KeyRound, iconColor: "text-[#1262b3]", title: t("roadmap.benefit2_title"), desc: t("roadmap.benefit2_desc") },
+                { icon: Star, iconColor: "text-[#1262b3]", title: t("roadmap.benefit3_title"), desc: t("roadmap.benefit3_desc") },
+                { icon: Mic, iconColor: "text-[#1262b3]", title: t("roadmap.benefit4_title"), desc: t("roadmap.benefit4_desc") },
                 { icon: Handshake, iconColor: "text-cyan-500", title: t("roadmap.benefit5_title"), desc: t("roadmap.benefit5_desc") },
                 { icon: Gift, iconColor: "text-rose-500", title: t("roadmap.benefit6_title"), desc: t("roadmap.benefit6_desc") },
               ].map((item) => {
@@ -230,8 +227,8 @@ export function RoadmapSection() {
                     <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-3 shadow-sm">
                       <ItemIcon size={20} className={item.iconColor} />
                     </div>
-                    <h4 className="text-gray-900 text-sm font-bold mb-2">{item.title}</h4>
-                    <p className="text-[#1a1a1a]/40 text-xs leading-relaxed">{item.desc}</p>
+                    <h4 className="text-[#1a1a1a] text-sm font-bold mb-2">{item.title}</h4>
+                    <p className="text-[#6b7280] text-xs leading-relaxed">{item.desc}</p>
                   </div>
                 );
               })}
@@ -241,13 +238,13 @@ export function RoadmapSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/acces"
-                className="w-full sm:w-auto bg-[#1e9df1] rounded-lg px-8 py-4 text-[#1a1a1a] text-sm font-bold hover:bg-[#1e9df1] transition-colors flex items-center justify-center gap-2 shadow-md"
+                className="w-full sm:w-auto bg-[#1262b3] rounded-lg px-8 py-4 text-[#1a1a1a] text-sm font-bold hover:bg-[#1262b3] transition-colors flex items-center justify-center gap-2 shadow-md"
               >
                 {t("roadmap.cta1")} <ArrowRight size={16} />
               </Link>
               <Link
                 href="/acces"
-                className="w-full sm:w-auto rounded-lg px-8 py-4 text-[#1a1a1a]/60 text-sm font-medium hover:bg-gray-100 transition-colors border border-gray-200 flex items-center justify-center"
+                className="w-full sm:w-auto rounded-lg px-8 py-4 text-[#4b5563] text-sm font-medium hover:bg-[#f3f4f6] transition-colors border border-gray-200 flex items-center justify-center"
               >
                 {t("roadmap.cta2")}
               </Link>
@@ -257,7 +254,7 @@ export function RoadmapSection() {
 
         {/* ── Architectural SVG decoration ── */}
         <svg
-          className="absolute -top-4 left-0 w-28 h-28 text-[#1a1a1a]/70 opacity-30"
+          className="absolute -top-4 left-0 w-28 h-28 text-[#374151] opacity-30"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

@@ -81,11 +81,11 @@ export function ServicesSection() {
         viewBox="0 0 80 160"
         fill="none"
       >
-        <circle cx="40" cy="40" r="30" stroke="#1e9df1" strokeWidth="1" />
-        <circle cx="40" cy="40" r="15" stroke="#1e9df1" strokeWidth="1" />
-        <line x1="40" y1="70" x2="40" y2="160" stroke="#1e9df1" strokeWidth="1" />
-        <line x1="10" y1="40" x2="0" y2="40" stroke="#1e9df1" strokeWidth="1" />
-        <line x1="70" y1="40" x2="80" y2="40" stroke="#1e9df1" strokeWidth="1" />
+        <circle cx="40" cy="40" r="30" stroke="#1262b3" strokeWidth="1" />
+        <circle cx="40" cy="40" r="15" stroke="#1262b3" strokeWidth="1" />
+        <line x1="40" y1="70" x2="40" y2="160" stroke="#1262b3" strokeWidth="1" />
+        <line x1="10" y1="40" x2="0" y2="40" stroke="#1262b3" strokeWidth="1" />
+        <line x1="70" y1="40" x2="80" y2="40" stroke="#1262b3" strokeWidth="1" />
       </svg>
       <svg
         className="absolute bottom-20 right-10 opacity-[0.04] pointer-events-none hidden lg:block"
@@ -94,8 +94,8 @@ export function ServicesSection() {
         viewBox="0 0 100 100"
         fill="none"
       >
-        <polygon points="50,5 95,30 95,70 50,95 5,70 5,30" stroke="#1e9df1" strokeWidth="1" fill="none" />
-        <polygon points="50,20 80,35 80,65 50,80 20,65 20,35" stroke="#1e9df1" strokeWidth="1" fill="none" />
+        <polygon points="50,5 95,30 95,70 50,95 5,70 5,30" stroke="#1262b3" strokeWidth="1" fill="none" />
+        <polygon points="50,20 80,35 80,65 50,80 20,65 20,35" stroke="#1262b3" strokeWidth="1" fill="none" />
       </svg>
 
       <div className="max-w-6xl mx-auto relative">
@@ -107,7 +107,7 @@ export function ServicesSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-[#1e9df1] text-xs tracking-widest uppercase mb-4 font-medium">
+            <p className="text-[#1262b3] text-xs tracking-widest uppercase mb-4 font-medium">
               {t("services.label")}
             </p>
           </motion.div>
@@ -118,11 +118,11 @@ export function ServicesSection() {
             transition={{ duration: 0.7, delay: 0.1 }}
           >
             <h2
-              className="text-3xl md:text-5xl lg:text-6xl text-gray-900 tracking-tight"
+              className="text-3xl md:text-5xl lg:text-6xl text-[#1a1a1a] tracking-tight"
               style={{ fontFamily: "var(--font-instrument-serif, serif)" }}
             >
               {t("services.title1")}{" "}
-              <span className="text-[#1e9df1]">{t("services.title2")}</span>
+              <span className="text-[#1262b3]">{t("services.title2")}</span>
             </h2>
           </motion.div>
         </div>
@@ -162,17 +162,17 @@ export function ServicesSection() {
                 {/* Card content */}
                 <div className="p-6">
                   <div className="flex items-center gap-2.5 mb-3">
-                    <div className="rounded-full p-2 bg-[#1e9df1]/10">
-                      <Icon size={14} className="text-[#1e9df1]" />
+                    <div className="rounded-full p-2 bg-[#1262b3]/10">
+                      <Icon size={14} className="text-[#1262b3]" />
                     </div>
-                    <p className="uppercase tracking-widest text-[#1e9df1] text-[10px] font-medium">
+                    <p className="uppercase tracking-widest text-[#1262b3] text-[10px] font-medium">
                       {feature.tag}
                     </p>
                   </div>
-                  <h3 className="text-gray-900 text-lg font-medium tracking-tight mb-2">
+                  <h3 className="text-[#1a1a1a] text-lg font-medium tracking-tight mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-[#1a1a1a]/40 text-sm leading-relaxed">
+                  <p className="text-[#6b7280] text-sm leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
