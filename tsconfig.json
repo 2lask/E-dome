@@ -36,6 +36,13 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "deer-flow",
+    "plateforme",
+    "mobile",
+    "showcase",
+    "informations",
+    "site",
+    "_next"
   ]
 }
