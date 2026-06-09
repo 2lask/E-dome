@@ -1,3 +1,5 @@
+"use client";
+
 import { TrendingUp, Wallet, Clock, Trophy, Copy } from "lucide-react";
 import {
   Card,
