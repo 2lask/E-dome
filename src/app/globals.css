@@ -622,11 +622,19 @@ body {
   background: rgba(30, 157, 242, 0.3);
 }
 
-/* ─── Scrollbar ──────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.24); }
+/* ─── Scrollbar ──────────────────────────────────────────
+   Sur DESKTOP uniquement : scrollbar fine custom (6px) — utile pour
+   savoir où on est dans une longue liste. Sur mobile (touch devices)
+   et en mode PWA standalone, les scrollbars sont masquées par les
+   blocs @media plus haut ; donc on guard ce styling derrière
+   `@media (hover: hover) and (pointer: fine)` pour ne pas que ces
+   règles ré-apparaissent sur mobile via la cascade. */
+@media (hover: hover) and (pointer: fine) {
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.24); }
+}
 
 /* ─── Mobile ─────────────────────────────────────────── */
 @media (max-width: 767px) {
