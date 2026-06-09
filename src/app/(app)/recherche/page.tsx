@@ -1,9 +1,15 @@
 "use client";
 
-import React, { Suspense, useState, useMemo, useCallback } from "react";
+import React, { Suspense, useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search as SearchIcon, SearchX } from "lucide-react";
+import { Search as SearchIcon, SearchX, X, Clock } from "lucide-react";
 import { useApp } from "@/lib/context";
+
+/* Cle localStorage partagee avec le header (composants/layout/header.tsx)
+   pour que recherches recentes soient unifiees entre la barre du header
+   et celle de /recherche. */
+const RECENT_SEARCHES_KEY = "edome_recent_searches";
+const MAX_RECENT_SEARCHES = 8;
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -107,7 +113,111 @@ function SearchResults() {
   const query = searchParams.get("q") || "";
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("tous");
 
+  /* Recherches recentes — partage la cle localStorage avec le header
+     pour une experience unifiee : ce qu'on tape dans la barre du header
+     apparait dans 'Recherches recentes' ici, et vice versa. */
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState(query);
+  const [autoOpen, setAutoOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setInputValue(query);
+  }, [query]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+      if (stored) setRecentSearches(JSON.parse(stored));
+    } catch {
+      /* JSON corrompu → ignore */
+    }
+  }, [query]);
+
+  /* Ajoute une entree aux recherches recentes (deduplique + cap a MAX). */
+  const pushRecent = useCallback((term: string) => {
+    const clean = term.trim();
+    if (!clean) return;
+    setRecentSearches((prev) => {
+      const next = [clean, ...prev.filter((s) => s.toLowerCase() !== clean.toLowerCase())].slice(0, MAX_RECENT_SEARCHES);
+      try {
+        localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
+      } catch {
+        /* quota plein → silencieux */
+      }
+      return next;
+    });
+  }, []);
+
+  const removeRecent = useCallback((term: string) => {
+    setRecentSearches((prev) => {
+      const next = prev.filter((s) => s !== term);
+      try {
+        localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }, []);
+
+  const clearAllRecent = useCallback(() => {
+    setRecentSearches([]);
+    try {
+      localStorage.removeItem(RECENT_SEARCHES_KEY);
+    } catch {}
+  }, []);
+
+  const submitSearch = useCallback(
+    (term: string) => {
+      const clean = term.trim();
+      if (!clean) return;
+      pushRecent(clean);
+      router.push(`/recherche?q=${encodeURIComponent(clean)}`);
+      setAutoOpen(false);
+      inputRef.current?.blur();
+    },
+    [pushRecent, router]
+  );
+
+  /* Suggestions d'autocomplete : top 3 biens / 2 formations / 2 profils /
+     2 services matchant le prefixe en cours, regroupes par categorie.
+     Visible quand l'input est focus + a >= 2 caracteres. */
+  const autocompleteResults = useMemo(() => {
+    const q = inputValue.trim().toLowerCase();
+    if (q.length < 2) return null;
+    return {
+      biens: ALL_RESULTS.biens
+        .filter((b) => b.titre.toLowerCase().includes(q) || b.ville.toLowerCase().includes(q))
+        .slice(0, 3),
+      formations: ALL_RESULTS.formations
+        .filter((f) => f.titre.toLowerCase().includes(q))
+        .slice(0, 2),
+      utilisateurs: ALL_RESULTS.utilisateurs
+        .filter((u) => u.nom.toLowerCase().includes(q))
+        .slice(0, 2),
+      services: ALL_RESULTS.services
+        .filter((s) => s.titre.toLowerCase().includes(q))
+        .slice(0, 2),
+    };
+  }, [inputValue]);
+
+  const showAutocomplete =
+    autoOpen &&
+    autocompleteResults &&
+    (autocompleteResults.biens.length +
+      autocompleteResults.formations.length +
+      autocompleteResults.utilisateurs.length +
+      autocompleteResults.services.length) > 0;
+
   const results = useMemo(() => (query.trim() ? filterResults(query) : null), [query]);
+
+  /* Quand /recherche est ouvert avec une query non vide, on enregistre
+     automatiquement dans les recents (cas : arrive depuis un lien
+     external comme #hashtag du feed). */
+  useEffect(() => {
+    if (query.trim()) pushRecent(query);
+    // pushRecent stable via useCallback
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   const counts = useMemo(() => {
     if (!results) return { biens: 0, profils: 0, formations: 0, evenements: 0, services: 0, tous: 0 };
@@ -130,18 +240,181 @@ function SearchResults() {
     [router]
   );
 
-  // Empty state with popular searches
+  /* Barre de recherche inline + dropdown autocomplete. Affichee aussi
+     bien dans l'etat vide (pas de query) qu'avec resultats. */
+  const searchBar = (
+    <div className="relative max-w-2xl mx-auto" data-search-input>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submitSearch(inputValue);
+        }}
+      >
+        <div className="relative">
+          <SearchIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onFocus={() => setAutoOpen(true)}
+            onBlur={() => setTimeout(() => setAutoOpen(false), 150)}
+            placeholder="Rechercher un bien, une formation, un profil..."
+            className="w-full pl-12 pr-10 py-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors"
+          />
+          {inputValue && (
+            <button
+              type="button"
+              onClick={() => {
+                setInputValue("");
+                inputRef.current?.focus();
+              }}
+              aria-label="Effacer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-full text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+      </form>
+
+      {/* Dropdown autocomplete */}
+      {showAutocomplete && (
+        <div
+          className="absolute left-0 right-0 top-full mt-2 rounded-xl border shadow-lg overflow-hidden z-30 animate-fade-in"
+          style={{
+            background: "var(--card)",
+            borderColor: "var(--card-border)",
+            boxShadow: "var(--shadow-card)",
+          }}
+        >
+          <div className="max-h-[60vh] overflow-y-auto">
+            {autocompleteResults!.biens.length > 0 && (
+              <div className="py-1">
+                <p className="px-3 py-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">Biens</p>
+                {autocompleteResults!.biens.map((b) => (
+                  <button
+                    key={b.id}
+                    type="button"
+                    onMouseDown={() => submitSearch(b.titre)}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--hover-bg)] transition-colors flex items-center justify-between"
+                  >
+                    <span className="truncate">{b.titre}</span>
+                    <span className="text-xs text-[var(--text-muted)] shrink-0 ml-2">{b.ville}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {autocompleteResults!.formations.length > 0 && (
+              <div className="py-1 border-t" style={{ borderColor: "var(--card-border)" }}>
+                <p className="px-3 py-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">Formations</p>
+                {autocompleteResults!.formations.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onMouseDown={() => submitSearch(f.titre)}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--hover-bg)] transition-colors"
+                  >
+                    {f.titre}
+                    <span className="text-xs text-[var(--text-muted)] ml-2">— {f.instructeur}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {autocompleteResults!.utilisateurs.length > 0 && (
+              <div className="py-1 border-t" style={{ borderColor: "var(--card-border)" }}>
+                <p className="px-3 py-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">Profils</p>
+                {autocompleteResults!.utilisateurs.map((u) => (
+                  <button
+                    key={u.id}
+                    type="button"
+                    onMouseDown={() => router.push(`/profil/${u.id}`)}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--hover-bg)] transition-colors"
+                  >
+                    {u.nom}
+                    <span className="text-xs text-[var(--text-muted)] ml-2">— {u.role}, {u.ville}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {autocompleteResults!.services.length > 0 && (
+              <div className="py-1 border-t" style={{ borderColor: "var(--card-border)" }}>
+                <p className="px-3 py-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">Services</p>
+                {autocompleteResults!.services.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onMouseDown={() => submitSearch(s.titre)}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--hover-bg)] transition-colors"
+                  >
+                    {s.titre}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // Empty state with popular + recent searches
   if (!query.trim()) {
     return (
-      <div className="text-center py-16 space-y-6">
-        <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
-          <SearchIcon size={32} strokeWidth={1.6} />
+      <div className="space-y-8">
+        {searchBar}
+        <div className="text-center py-8 space-y-4">
+          <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
+            <SearchIcon size={32} strokeWidth={1.6} />
+          </div>
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">Rechercher sur E-Dome</h2>
+          <p className="text-[var(--text-secondary)] max-w-md mx-auto">
+            Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou événements.
+          </p>
         </div>
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">Rechercher sur E-Dome</h2>
-        <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-          Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou événements.
-        </p>
-        <div className="max-w-lg mx-auto">
+
+        {/* Recherches recentes (localStorage) */}
+        {recentSearches.length > 0 && (
+          <div className="max-w-lg mx-auto">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-[var(--text-muted)] inline-flex items-center gap-1.5">
+                <Clock size={13} />
+                Recherches récentes
+              </h3>
+              <button
+                onClick={clearAllRecent}
+                className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
+              >
+                Tout effacer
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {recentSearches.map((term) => (
+                <span
+                  key={term}
+                  className="inline-flex items-center gap-1 rounded-full bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition-colors"
+                >
+                  <button
+                    onClick={() => submitSearch(term)}
+                    className="px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-[#1e9df1]"
+                  >
+                    {term}
+                  </button>
+                  <button
+                    onClick={() => removeRecent(term)}
+                    aria-label={`Retirer ${term} des recherches récentes`}
+                    className="pr-2 pl-0.5 text-[var(--text-muted)] hover:text-[var(--foreground)]"
+                  >
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recherches populaires (statique) */}
+        <div className="max-w-lg mx-auto text-center">
           <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-3">Recherches populaires</h3>
           <div className="flex flex-wrap justify-center gap-2">
             {POPULAR_SEARCHES.map((term) => (
@@ -163,7 +436,8 @@ function SearchResults() {
   if (counts.tous === 0) {
     return (
       <div className="space-y-8">
-        <div className="text-center py-16 space-y-4">
+        {searchBar}
+        <div className="text-center py-8 space-y-4">
           <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
             <SearchX size={32} strokeWidth={1.6} />
           </div>
@@ -198,6 +472,7 @@ function SearchResults() {
 
   return (
     <div className="space-y-6">
+      {searchBar}
       <p className="text-[var(--text-secondary)]">
         {counts.tous} résultat{counts.tous > 1 ? "s" : ""} pour &laquo;<span className="text-[var(--foreground)] font-medium">{query}</span>&raquo;
       </p>
