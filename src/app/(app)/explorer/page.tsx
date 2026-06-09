@@ -737,115 +737,54 @@ export default function ExplorerPage() {
           </p>
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleProperties.map((prop, idx) => (
-            <div
-              key={prop.id}
-              className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden card-hover animate-fade-in"
-              style={{ animationDelay: `${idx * 80}ms` }}
-            >
-              {/* Image */}
-              <div className="relative aspect-[4/3]">
-                <Link href={`/explorer/${prop.id}`}>
-                  <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover" />
-                </Link>
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex gap-2">
-                  {prop.featured && (
-                    <span className="px-2.5 py-1 rounded-lg text-amber-300 text-xs font-medium flex items-center gap-1 bg-amber-400/15 ring-1 ring-amber-400/30 backdrop-blur-sm">
-                      <Rocket className="w-3 h-3" /> Mis en avant
-                    </span>
-                  )}
-                  <span className="px-2.5 py-1 rounded-lg bg-black/60 text-white text-xs font-medium backdrop-blur-sm">
-                    {prop.transactionType === "vente" ? "Vente" : prop.transactionType === "location-ct" ? "Location CT" : "Location LT"}
-                  </span>
-                </div>
-                {/* Heart */}
-                <button
-                  onClick={() => toggleFavorite(prop.id)}
-                  className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors"
-                >
-                  <Heart className={`w-5 h-5 ${isFavorite(prop.id) ? "fill-red-400 text-red-400" : ""}`} />
-                </button>
-                {/* Rendement badge — palette sémantique */}
-                {prop.analytics && prop.analytics.rendementBrut > 0 && prop.transactionType === "vente" && (() => {
-                  const r = prop.analytics.rendementBrut;
-                  const tone = r > 7
-                    ? "bg-amber-400/15 text-amber-300 ring-amber-400/30"
-                    : r >= 5
-                      ? "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30"
-                      : r >= 3
-                        ? "bg-[#1e9df1]/15 text-[#1e9df1] ring-[#1e9df1]/30"
-                        : "bg-zinc-700/40 text-zinc-300 ring-zinc-600/40";
-                  return (
-                    <span
-                      className={`absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex items-center gap-1 ring-1 tabular-nums ${tone}`}
-                      title="Donnée communiquée par le vendeur. À vérifier — E-Dome ne garantit pas ce chiffre."
-                    >
-                      <TrendingUp className="w-3 h-3" /> {r.toFixed(1)}%
-                    </span>
-                  );
-                })()}
-              </div>
-
-              {/* Info */}
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-lg font-bold text-[#1e9df1]">
-                    {formatPrice(prop.price, prop.currency)}
-                    {prop.transactionType === "location-ct" && (
-                      <span className="text-sm font-normal text-[var(--text-muted)]">/nuit</span>
-                    )}
-                    {prop.transactionType === "location-lt" && (
-                      <span className="text-sm font-normal text-[var(--text-muted)]">/mois</span>
-                    )}
-                  </p>
-                  <div className="flex items-center gap-1 text-[var(--text-muted)]">
-                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    <span className="text-sm">{prop.rating}</span>
-                  </div>
-                </div>
-                <Link href={`/explorer/${prop.id}`}>
-                  <h3 className="font-semibold text-[var(--foreground)] mb-1 hover:text-[#1e9df1] transition-colors">
-                    {prop.title}
-                  </h3>
-                </Link>
-                <p className="text-sm text-[var(--text-muted)] flex items-center gap-1 mb-3">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {prop.location.city}, {prop.location.country}
-                </p>
-                {/* Stats */}
-                <div className="flex items-center gap-4 text-xs text-[var(--text-secondary)]">
-                  {prop.bedrooms > 0 && (
-                    <span className="flex items-center gap-1">
-                      <Bed className="w-3.5 h-3.5" /> {prop.bedrooms}
-                    </span>
-                  )}
-                  {prop.bathrooms > 0 && (
-                    <span className="flex items-center gap-1">
-                      <Bath className="w-3.5 h-3.5" /> {prop.bathrooms}
-                    </span>
-                  )}
-                  <span className="flex items-center gap-1">
-                    <Maximize className="w-3.5 h-3.5" /> {prop.area}m²
-                  </span>
-                </div>
-                {/* Analytics line for vente */}
-                {prop.transactionType === "vente" && prop.analytics && (
-                  <div
-                    className="mt-3 pt-3 border-t border-[var(--card-border)] flex items-center gap-2"
-                    title="Données communiquées par le vendeur. E-Dome ne garantit pas ces chiffres."
-                  >
-                    <TrendingUp className="w-3.5 h-3.5 text-green-400" />
-                    <span className="text-xs text-green-400">
-                      {prop.analytics.rendementBrut.toFixed(1)}% brut · +{prop.analytics.potentielPlusValue}% potentiel
-                    </span>
-                    <span className="text-[10px] text-[var(--text-muted)] ml-auto">déclaré vendeur</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+        /* Grille principale : refondue au pattern Airbnb (cards epurees
+           avec carousel photos integre, coeur favori, badge bottom-left
+           rendement pour valeurs E-Dome). */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-8">
+          {visibleProperties.map((prop) => {
+            const priceLabel =
+              prop.transactionType === "location-ct"
+                ? `${formatPrice(prop.price, prop.currency)} / nuit`
+                : prop.transactionType === "location-lt"
+                ? `${formatPrice(prop.price, prop.currency)} / mois`
+                : `${formatPrice(prop.price, prop.currency)} au total`;
+            const typeLabel = prop.type.charAt(0).toUpperCase() + prop.type.slice(1);
+            const subtitle = [
+              prop.bedrooms > 0 ? `${prop.bedrooms} ch.` : null,
+              `${prop.area} m²`,
+            ]
+              .filter(Boolean)
+              .join(" · ");
+            const rendement = prop.analytics?.rendementBrut;
+            const bottomBadge =
+              prop.transactionType === "vente" && rendement && rendement > 0
+                ? {
+                    label: `${rendement.toFixed(1)}% brut`,
+                    tone:
+                      rendement > 7
+                        ? ("warning" as const)
+                        : rendement >= 5
+                        ? ("success" as const)
+                        : ("info" as const),
+                  }
+                : undefined;
+            return (
+              <AirbnbPropertyCard
+                key={prop.id}
+                href={`/explorer/${prop.id}`}
+                images={prop.images}
+                type={typeLabel}
+                location={prop.location.city}
+                subtitle={subtitle}
+                priceLabel={priceLabel}
+                rating={prop.rating}
+                highlighted={prop.featured}
+                bottomBadge={bottomBadge}
+                favorited={isFavorite(prop.id)}
+                onToggleFavorite={() => toggleFavorite(prop.id)}
+              />
+            );
+          })}
         </div>
       ) : (
         /* List view */

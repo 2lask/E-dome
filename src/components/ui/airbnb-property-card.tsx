@@ -39,6 +39,9 @@ export interface AirbnbPropertyCardProps {
   highlighted?: boolean;
   /** Texte du badge (par défaut "Coup de cœur"). */
   highlightLabel?: string;
+  /** Badge optionnel en bas-gauche de la photo (ex: rendement %).
+      Sert pour la valeur ajoutee E-Dome (rendement brut bien immo). */
+  bottomBadge?: { label: string; tone?: "success" | "warning" | "info" };
   /** Si le bien est favori (cœur rempli). */
   favorited?: boolean;
   /** Toggle favori. */
@@ -56,6 +59,7 @@ export function AirbnbPropertyCard({
   rating,
   highlighted = false,
   highlightLabel = "Coup de cœur",
+  bottomBadge,
   favorited = false,
   onToggleFavorite,
   className,
@@ -135,6 +139,25 @@ export function AirbnbPropertyCard({
             }}
           >
             {highlightLabel}
+          </div>
+        )}
+
+        {/* Badge bas-gauche optionnel (rendement E-Dome) */}
+        {bottomBadge && (
+          <div
+            className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-semibold pointer-events-none"
+            style={{
+              background:
+                bottomBadge.tone === "warning"
+                  ? "color-mix(in srgb, var(--warning) 92%, transparent)"
+                  : bottomBadge.tone === "info"
+                  ? "color-mix(in srgb, var(--accent) 92%, transparent)"
+                  : "color-mix(in srgb, var(--success) 92%, transparent)",
+              color: "#fff",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
+            }}
+          >
+            {bottomBadge.label}
           </div>
         )}
 
