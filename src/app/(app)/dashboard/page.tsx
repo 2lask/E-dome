@@ -1,6 +1,14 @@
 "use client";
 
-import { Download, DollarSign, CalendarCheck, Users, Eye, Activity, Timer, MousePointerClick } from "lucide-react";
+import Link from "next/link";
+import {
+  Download,
+  Plus,
+  Eye,
+  Activity,
+  Timer,
+  MousePointerClick,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -10,28 +18,25 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MetricsOverview } from "@/components/dashboard/metrics-overview";
+import { SalesAreaChart } from "@/components/dashboard/sales-area-chart";
+import { TopProperties } from "@/components/dashboard/top-properties";
+import { BookingsList } from "@/components/dashboard/bookings-list";
 import { KpiCardIcon } from "@/components/dashboard/kpi-card-icon";
-import { RecentBookings } from "@/components/dashboard/recent-bookings";
-import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { AnalyticsAreaChart } from "@/components/dashboard/analytics-area-chart";
 import { SimpleBarList } from "@/components/dashboard/simple-bar-list";
-import {
-  dashboard,
-  properties as dashboardProperties,
-  referralChannels,
-} from "@/lib/dashboard-data";
-import { formatNumber, formatPercent } from "@/lib/format";
+import { dashboard, referralChannels } from "@/lib/dashboard-data";
+import { formatNumber } from "@/lib/format";
 
-/* Refonte dashboard inspiree de satnaing/shadcn-admin :
-   - 2 onglets internes Overview / Analytics (Tabs)
-   - KPI cards avec icone discrete a droite (h-4 w-4 muted)
-   - BarChart fill-primary radius [4,4,0,0] sur Overview
-   - AreaChart 2-series sur Analytics
-   - Recent Bookings (avatar + nom + bien/dates + montant)
-   - SimpleBarList pour Top biens / Top apporteurs */
+/* Refonte dashboard premium, inspiree de shadcn-dashboard-landing-template
+   (dashboard-2). Structure :
+   - Header riche : H1 + description + QuickActions a droite
+   - MetricsOverview : 4 KPI cards avec gradient subtil + Badge trend
+   - Tabs Vue d'ensemble / Analytics
+   - Overview : SalesAreaChart (12 mois vs target) + grid 2-cols
+     (BookingsList + TopProperties) + Objectifs
+   - Analytics : AreaChart hebdo + 4 mini KPI + 2 SimpleBarList */
 
-// Donnees Analytics (semaine, traffic-like) — pas de hardcoding cote
-// composants, on prepare ici pour pouvoir later brancher sur du vrai.
 const ANALYTICS_WEEK = [
   { label: "Lun", series1: 142, series2: 98 },
   { label: "Mar", series1: 178, series2: 112 },
@@ -43,36 +48,38 @@ const ANALYTICS_WEEK = [
 ];
 
 export default function DashboardOverviewPage() {
-  const { kpis, monthlyRevenue, objectives } = dashboard;
+  const { objectives } = dashboard;
 
-  // Pour Overview chart : Recharts attend label + value, on mappe.
-  const overviewData = monthlyRevenue.map((m) => ({
-    label: m.label,
-    value: m.value,
-  }));
-
-  // Top biens par revenus du mois (descendant).
-  const topProperties = [...dashboardProperties]
-    .sort((a, b) => b.monthRevenue - a.monthRevenue)
-    .map((p) => ({ name: p.name, value: p.monthRevenue }));
-
-  // Top canaux apporteurs par conversions.
   const topChannels = [...referralChannels]
     .sort((a, b) => b.conversions - a.conversions)
     .map((c) => ({ name: c.label, value: c.conversions }));
 
   return (
-    <div className="space-y-4">
-      {/* En-tete page */}
-      <div className="mb-2 flex items-center justify-between space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
+    <div className="space-y-6">
+      {/* En-tete riche : H1 + description + QuickActions */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
+          <p className="text-sm text-muted-foreground">
+            Surveillance de votre activité et indicateurs clés en temps réel
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm">
             <Download className="mr-2 h-4 w-4" />
             Exporter
           </Button>
+          <Button size="sm" asChild>
+            <Link href="/publier">
+              <Plus className="mr-2 h-4 w-4" />
+              Nouveau bien
+            </Link>
+          </Button>
         </div>
       </div>
+
+      {/* 4 KPI cards premium */}
+      <MetricsOverview />
 
       <Tabs defaultValue="overview" className="space-y-4">
         <div className="w-full overflow-x-auto pb-2">
@@ -82,68 +89,24 @@ export default function DashboardOverviewPage() {
           </TabsList>
         </div>
 
-        {/* ─── ONGLET VUE D'ENSEMBLE ──────────────────────── */}
-        <TabsContent value="overview" className="space-y-4">
-          {/* 4 KPI cards */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <KpiCardIcon
-              title="Revenus"
-              value={`${formatNumber(kpis.revenue)} CHF`}
-              delta={`${kpis.revenueDelta} vs mois dernier`}
-              icon={DollarSign}
-            />
-            <KpiCardIcon
-              title="Réservations"
-              value={formatNumber(kpis.reservations)}
-              delta={`${kpis.reservationsDelta} vs mois dernier`}
-              icon={CalendarCheck}
-            />
-            <KpiCardIcon
-              title="Commissions"
-              value={`${formatNumber(kpis.commissions)} CHF`}
-              delta={`${kpis.commissionsDelta} vs mois dernier`}
-              icon={Users}
-            />
-            <KpiCardIcon
-              title="Taux d'occupation"
-              value={formatPercent(kpis.occupancy)}
-              delta={`${kpis.occupancyDelta} vs mois dernier`}
-              icon={Activity}
-            />
-          </div>
+        {/* ─── VUE D'ENSEMBLE ─────────────────────────────── */}
+        <TabsContent value="overview" className="space-y-6">
+          {/* SalesAreaChart pleine largeur */}
+          <SalesAreaChart />
 
-          {/* Chart + Recent Bookings */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-            <Card className="col-span-1 lg:col-span-4">
-              <CardHeader>
-                <CardTitle>Revenus mensuels</CardTitle>
-                <CardDescription>
-                  12 derniers mois · CHF — barres en accent
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="ps-2">
-                <OverviewChart data={overviewData} />
-              </CardContent>
-            </Card>
-            <Card className="col-span-1 lg:col-span-3">
-              <CardHeader>
-                <CardTitle>Réservations récentes</CardTitle>
-                <CardDescription>
-                  {kpis.reservations} réservations ce mois
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RecentBookings limit={5} />
-              </CardContent>
-            </Card>
+          {/* Grid 2-cols : BookingsList + TopProperties */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <BookingsList limit={5} />
+            <TopProperties />
           </div>
 
           {/* Objectifs du mois */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Objectifs du mois</CardTitle>
+            <CardHeader>
+              <CardTitle>Objectifs du mois</CardTitle>
+              <CardDescription>Progression vers vos cibles</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3.5">
+            <CardContent className="space-y-4">
               <ProgressRow
                 label="Revenus"
                 current={objectives.revenue.current}
@@ -166,14 +129,13 @@ export default function DashboardOverviewPage() {
           </Card>
         </TabsContent>
 
-        {/* ─── ONGLET ANALYTICS ──────────────────────────── */}
-        <TabsContent value="analytics" className="space-y-4">
-          {/* Chart Traffic */}
+        {/* ─── ANALYTICS ──────────────────────────────────── */}
+        <TabsContent value="analytics" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Trafic hebdomadaire</CardTitle>
               <CardDescription>
-                Vues uniques (accent) vs visiteurs (muted) sur 7 jours
+                Vues uniques vs visiteurs sur 7 derniers jours
               </CardDescription>
             </CardHeader>
             <CardContent className="px-6">
@@ -181,61 +143,63 @@ export default function DashboardOverviewPage() {
             </CardContent>
           </Card>
 
-          {/* 4 mini KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCardIcon
               title="Vues totales"
               value="1 566"
-              delta="+12.4% vs semaine derniere"
+              delta="+12.4% vs semaine dernière"
               icon={MousePointerClick}
             />
             <KpiCardIcon
               title="Visiteurs uniques"
               value="1 048"
-              delta="+5.8% vs semaine derniere"
+              delta="+5.8% vs semaine dernière"
               icon={Eye}
             />
             <KpiCardIcon
               title="Taux de conversion"
               value="4.2%"
-              delta="-0.3% vs semaine derniere"
+              delta="-0.3% vs semaine dernière"
               icon={Activity}
               deltaTone="down"
             />
             <KpiCardIcon
               title="Durée moyenne"
               value="3m 24s"
-              delta="+18s vs semaine derniere"
+              delta="+18s vs semaine dernière"
               icon={Timer}
             />
           </div>
 
-          {/* Top biens + Top canaux */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-            <Card className="col-span-1 lg:col-span-4">
-              <CardHeader>
-                <CardTitle>Top biens</CardTitle>
-                <CardDescription>Revenus du mois par bien</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <SimpleBarList
-                  items={topProperties}
-                  valueFormatter={(n) => `${formatNumber(n)} CHF`}
-                  barClass="bg-primary"
-                />
-              </CardContent>
-            </Card>
-            <Card className="col-span-1 lg:col-span-3">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <Card>
               <CardHeader>
                 <CardTitle>Canaux apporteurs</CardTitle>
-                <CardDescription>
-                  Conversions par canal ce mois
-                </CardDescription>
+                <CardDescription>Conversions par canal ce mois</CardDescription>
               </CardHeader>
               <CardContent>
                 <SimpleBarList
                   items={topChannels}
                   valueFormatter={(n) => `${n} conv.`}
+                  barClass="bg-primary"
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Sources de trafic</CardTitle>
+                <CardDescription>D&apos;où viennent vos visiteurs</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SimpleBarList
+                  items={[
+                    { name: "Direct", value: 612 },
+                    { name: "Recherche organique", value: 348 },
+                    { name: "Réseaux sociaux", value: 218 },
+                    { name: "Liens d'apporteurs", value: 138 },
+                    { name: "Newsletter", value: 67 },
+                  ]}
+                  valueFormatter={(n) => `${formatNumber(n)} visites`}
                   barClass="bg-muted-foreground"
                 />
               </CardContent>
@@ -247,8 +211,8 @@ export default function DashboardOverviewPage() {
   );
 }
 
-/* Ligne de progression vers un objectif. Monochrome (bar foreground)
-   pour rester coherent avec le theme brutalist. */
+/* Ligne de progression vers un objectif. Monochrome (bar primary)
+   pour rester coherent avec les autres composants premium. */
 function ProgressRow({
   label,
   current,
@@ -264,7 +228,7 @@ function ProgressRow({
   const reached = pct >= 100;
   return (
     <div>
-      <div className="mb-1.5 flex items-baseline justify-between text-xs">
+      <div className="mb-1.5 flex items-baseline justify-between text-sm">
         <span className="text-muted-foreground">{label}</span>
         <span className="tabular-nums">{display}</span>
       </div>
@@ -273,7 +237,7 @@ function ProgressRow({
           className={
             reached
               ? "h-full rounded-full bg-emerald-500"
-              : "h-full rounded-full bg-foreground"
+              : "h-full rounded-full bg-primary"
           }
           style={{ width: `${pct}%` }}
         />

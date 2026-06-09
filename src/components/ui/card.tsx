@@ -6,16 +6,33 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)}
+      data-slot="card"
+      className={cn(
+        "rounded-lg border bg-card text-card-foreground shadow-sm",
+        className,
+      )}
       {...props}
     />
   ),
 );
 Card.displayName = "Card";
 
+/* CardHeader : grid 2-col implicite quand il y a un CardAction.
+   Pattern dashboard-2 : titre + description a gauche, action (Badge,
+   Button) en haut-droite. */
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
+    <div
+      ref={ref}
+      data-slot="card-header"
+      className={cn(
+        "grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 p-6",
+        "has-[[data-slot=card-action]]:grid-cols-[1fr_auto]",
+        "[.border-b]:pb-6",
+        className,
+      )}
+      {...props}
+    />
   ),
 );
 CardHeader.displayName = "CardHeader";
@@ -24,7 +41,8 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
+      data-slot="card-title"
+      className={cn("leading-none font-semibold", className)}
       {...props}
     />
   ),
@@ -35,22 +53,57 @@ const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
+  <p
+    ref={ref}
+    data-slot="card-description"
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
 ));
 CardDescription.displayName = "CardDescription";
 
+/* CardAction : se positionne en haut-droite via grid-column-2 row-span-2
+   dans le CardHeader (cf grid template ci-dessus). */
+const CardAction = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
+CardAction.displayName = "CardAction";
+
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+    <div ref={ref} data-slot="card-content" className={cn("p-6 pt-0", className)} {...props} />
   ),
 );
 CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex items-center p-6 pt-0", className)} {...props} />
+    <div
+      ref={ref}
+      data-slot="card-footer"
+      className={cn("flex items-center p-6 pt-0", "[.border-t]:pt-6", className)}
+      {...props}
+    />
   ),
 );
 CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
+};
