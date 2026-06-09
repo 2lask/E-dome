@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -10,11 +11,9 @@ interface EmptyStateProps {
   icon?: LucideIcon;
   title: string;
   description?: string;
-  action?: {
-    label: string;
-    onClick?: () => void;
-    href?: string;
-  };
+  action?:
+    | { label: string; onClick: () => void; href?: undefined }
+    | { label: string; href: string; onClick?: undefined };
   className?: string;
 }
 
@@ -43,16 +42,15 @@ export function EmptyState({
           <p className="text-xs text-muted-foreground">{description}</p>
         )}
       </div>
-      {action && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={action.onClick}
-          {...(action.href ? { asChild: true } : {})}
-        >
-          {action.href ? <a href={action.href}>{action.label}</a> : action.label}
+      {action && action.href !== undefined ? (
+        <Button variant="outline" size="sm" asChild>
+          <Link href={action.href}>{action.label}</Link>
         </Button>
-      )}
+      ) : action ? (
+        <Button variant="outline" size="sm" onClick={action.onClick}>
+          {action.label}
+        </Button>
+      ) : null}
     </div>
   );
 }
