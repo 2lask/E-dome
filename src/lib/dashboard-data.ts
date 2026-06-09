@@ -47,9 +47,41 @@ export interface Reservation {
   propertyId: string;
   guest: string;
   dateLabel: string;
+  /** Date d'arrivee ISO YYYY-MM-DD (pour le calendrier). */
+  startDate: string;
+  /** Date de depart ISO YYYY-MM-DD (exclusive). */
+  endDate: string;
   nights: number;
   amount: number;
   status: ReservationStatus;
+}
+
+/* Avis recus sur biens / formations / evenements. */
+export type ReviewSource = "bien" | "formation" | "evenement";
+export interface Review {
+  id: string;
+  source: ReviewSource;
+  sourceId: string;
+  sourceName: string;
+  guest: string;
+  rating: number; // 0..5
+  title: string;
+  body: string;
+  postedAt: string; // ISO date
+  response?: string;
+  channel: "edome" | "airbnb" | "booking";
+}
+
+/* Conversations guest. */
+export interface MessageThread {
+  id: string;
+  contactName: string;
+  contactInitials: string;
+  context: string; // "Chalet Alpin · 10-17 juil"
+  lastMessage: string;
+  lastAt: string; // "Il y a 5 min"
+  unread: number;
+  channel: "edome" | "airbnb" | "whatsapp" | "sms";
 }
 
 /* Formations vendues — chaque vente compte dans le CA mensuel. */
@@ -214,14 +246,36 @@ export const transactions: Transaction[] = [
 ];
 
 export const dashboardReservations: Reservation[] = [
-  { id: "dr1", propertyId: "chalet-alpin", guest: "Sophie Bernard", dateLabel: "10–17 juil · 7 nuits", nights: 7, amount: 2450, status: "confirmed" },
-  { id: "dr2", propertyId: "appart-vue-lac", guest: "Jean Dupont", dateLabel: "15–20 avr · 5 nuits", nights: 5, amount: 900, status: "pending" },
-  { id: "dr3", propertyId: "studio-lausanne", guest: "Marie Leroy", dateLabel: "1–5 mars · 4 nuits", nights: 4, amount: 356, status: "completed" },
-  { id: "dr4", propertyId: "appart-vue-lac", guest: "Sophie Bernard", dateLabel: "10–14 fév · 4 nuits", nights: 4, amount: 720, status: "cancelled" },
-  { id: "dr5", propertyId: "chalet-alpin", guest: "Thomas Roux", dateLabel: "20–25 mai · 5 nuits", nights: 5, amount: 1750, status: "confirmed" },
-  { id: "dr6", propertyId: "studio-lausanne", guest: "Amina Khan", dateLabel: "8–12 jan · 4 nuits", nights: 4, amount: 712, status: "completed" },
-  { id: "dr7", propertyId: "chalet-alpin", guest: "Laura Meier", dateLabel: "2–8 août · 6 nuits", nights: 6, amount: 2100, status: "pending" },
-  { id: "dr8", propertyId: "appart-vue-lac", guest: "Nadia Schmid", dateLabel: "3–9 sep · 6 nuits", nights: 6, amount: 1080, status: "confirmed" },
+  { id: "dr1", propertyId: "chalet-alpin", guest: "Sophie Bernard", dateLabel: "10–17 juin · 7 nuits", startDate: "2026-06-10", endDate: "2026-06-17", nights: 7, amount: 2450, status: "confirmed" },
+  { id: "dr2", propertyId: "appart-vue-lac", guest: "Jean Dupont", dateLabel: "15–20 juin · 5 nuits", startDate: "2026-06-15", endDate: "2026-06-20", nights: 5, amount: 900, status: "pending" },
+  { id: "dr3", propertyId: "studio-lausanne", guest: "Marie Leroy", dateLabel: "1–5 juin · 4 nuits", startDate: "2026-06-01", endDate: "2026-06-05", nights: 4, amount: 356, status: "completed" },
+  { id: "dr4", propertyId: "appart-vue-lac", guest: "Sophie Bernard", dateLabel: "10–14 fév · 4 nuits", startDate: "2026-02-10", endDate: "2026-02-14", nights: 4, amount: 720, status: "cancelled" },
+  { id: "dr5", propertyId: "chalet-alpin", guest: "Thomas Roux", dateLabel: "20–25 juin · 5 nuits", startDate: "2026-06-20", endDate: "2026-06-25", nights: 5, amount: 1750, status: "confirmed" },
+  { id: "dr6", propertyId: "studio-lausanne", guest: "Amina Khan", dateLabel: "8–12 juin · 4 nuits", startDate: "2026-06-08", endDate: "2026-06-12", nights: 4, amount: 712, status: "completed" },
+  { id: "dr7", propertyId: "chalet-alpin", guest: "Laura Meier", dateLabel: "2–8 juillet · 6 nuits", startDate: "2026-07-02", endDate: "2026-07-08", nights: 6, amount: 2100, status: "pending" },
+  { id: "dr8", propertyId: "appart-vue-lac", guest: "Nadia Schmid", dateLabel: "3–9 juillet · 6 nuits", startDate: "2026-07-03", endDate: "2026-07-09", nights: 6, amount: 1080, status: "confirmed" },
+  { id: "dr9", propertyId: "studio-lausanne", guest: "Pierre Aubry", dateLabel: "22–28 juin · 6 nuits", startDate: "2026-06-22", endDate: "2026-06-28", nights: 6, amount: 1068, status: "confirmed" },
+];
+
+/* Avis multi-sources — 7 avis recents (biens + formations + events). */
+export const reviews: Review[] = [
+  { id: "rv1", source: "bien", sourceId: "chalet-alpin", sourceName: "Chalet Alpin Premium", guest: "Sophie Bernard", rating: 5, title: "Vue à couper le souffle", body: "Séjour parfait. Chalet impeccable, accueil chaleureux. Les enfants ont adoré la cheminée. Code accès reçu en avance.", postedAt: "2026-06-04", channel: "edome", response: "Merci Sophie ! On vous attend pour la saison de ski avec plaisir." },
+  { id: "rv2", source: "bien", sourceId: "appart-vue-lac", sourceName: "Appartement Vue Lac", guest: "Jean Dupont", rating: 3, title: "Bien mais bruyant le matin", body: "Bel appartement avec vue, mais le marché en bas du bâtiment est très bruyant dès 6h le samedi.", postedAt: "2026-06-02", channel: "airbnb" },
+  { id: "rv3", source: "formation", sourceId: "form-lcd", sourceName: "Maîtriser la location courte durée", guest: "Cédric Lopez", rating: 5, title: "Pile ce que je cherchais", body: "Modules très clairs, exemples concrets, j'ai augmenté mon taux d'occupation de 22% en 2 mois.", postedAt: "2026-05-30", channel: "edome", response: "Merci pour le retour Cédric, content que ça t'aide concrètement !" },
+  { id: "rv4", source: "bien", sourceId: "studio-lausanne", sourceName: "Studio Lausanne", guest: "Marie Leroy", rating: 4, title: "Petit mais bien situé", body: "Studio propre, proche gare. Manque juste un peu de rangement.", postedAt: "2026-06-05", channel: "edome" },
+  { id: "rv5", source: "formation", sourceId: "form-fisc", sourceName: "Fiscalité du loueur en meublé", guest: "Anne Schmid", rating: 5, title: "Indispensable", body: "J'ai économisé 4'200 CHF d'impôts cette année grâce aux astuces du module 3.", postedAt: "2026-05-28", channel: "edome" },
+  { id: "rv6", source: "evenement", sourceId: "ev-2", sourceName: "Visite groupée Chalet Verbier", guest: "Thomas Roux", rating: 5, title: "Très instructif", body: "L'agent connaissait parfaitement le bien, prix, marché. Recommande !", postedAt: "2026-05-25", channel: "edome" },
+  { id: "rv7", source: "bien", sourceId: "appart-vue-lac", sourceName: "Appartement Vue Lac", guest: "Amina Khan", rating: 2, title: "Wi-Fi instable", body: "Très belle vue mais wi-fi qui coupe régulièrement, problématique en télétravail.", postedAt: "2026-06-08", channel: "booking" },
+];
+
+/* Threads messagerie guest — etat actuel boite reception. */
+export const messageThreads: MessageThread[] = [
+  { id: "mt1", contactName: "Sophie Bernard", contactInitials: "SB", context: "Chalet Alpin · 10-17 juin", lastMessage: "Bonjour, à quelle heure peut-on arriver ?", lastAt: "Il y a 8 min", unread: 2, channel: "edome" },
+  { id: "mt2", contactName: "Jean Dupont", contactInitials: "JD", context: "Appartement Vue Lac · 15-20 juin", lastMessage: "Parfait, merci pour la confirmation !", lastAt: "Il y a 1 h", unread: 0, channel: "airbnb" },
+  { id: "mt3", contactName: "Laura Meier", contactInitials: "LM", context: "Chalet Alpin · 2-8 juillet", lastMessage: "Le chalet est-il accessible avec une berline ?", lastAt: "Il y a 3 h", unread: 1, channel: "edome" },
+  { id: "mt4", contactName: "Cédric Lopez", contactInitials: "CL", context: "Formation LCD · Module 4", lastMessage: "Vidéo 3 ne se charge pas chez moi", lastAt: "Hier", unread: 1, channel: "edome" },
+  { id: "mt5", contactName: "Pierre Aubry", contactInitials: "PA", context: "Studio Lausanne · 22-28 juin", lastMessage: "Voici mon numéro Twint pour la caution", lastAt: "Hier", unread: 0, channel: "whatsapp" },
+  { id: "mt6", contactName: "Nadia Schmid", contactInitials: "NS", context: "Appartement Vue Lac · 3-9 juillet", lastMessage: "Confirmation du parking ?", lastAt: "Avant-hier", unread: 0, channel: "edome" },
 ];
 
 /* Apporteurs (referrals). */
@@ -319,6 +373,28 @@ export const kpis = {
   forecast30d,
 };
 
+/* Aggreges avis. */
+const ratingByProperty = (id: string) => {
+  const arr = reviews.filter((r) => r.source === "bien" && r.sourceId === id);
+  return arr.length === 0
+    ? 0
+    : arr.reduce((s, r) => s + r.rating, 0) / arr.length;
+};
+
+export const reviewsSummary = {
+  total: reviews.length,
+  avg: reviews.reduce((s, r) => s + r.rating, 0) / Math.max(1, reviews.length),
+  pendingResponse: reviews.filter((r) => !r.response).length,
+  low: reviews.filter((r) => r.rating <= 3).length,
+  byPropertyAvg: ratingByProperty,
+};
+
+export const messagesSummary = {
+  total: messageThreads.length,
+  unread: messageThreads.reduce((s, t) => s + t.unread, 0),
+  threadsWithUnread: messageThreads.filter((t) => t.unread > 0).length,
+};
+
 export const dashboard = {
   user: dashboardUser,
   properties,
@@ -331,6 +407,10 @@ export const dashboard = {
   revenueBySource,
   transactions,
   reservations: dashboardReservations,
+  reviews,
+  reviewsSummary,
+  messageThreads,
+  messagesSummary,
   objectives,
   kpis,
 };

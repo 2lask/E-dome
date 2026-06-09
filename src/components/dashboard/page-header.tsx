@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
+import { PageHeader } from "@/components/ui/page-header";
 
-/* Header standardise pour toutes les pages dashboard.
-   - H1 + sous-titre + slot actions a droite, espacement identique
-   - Aligne les 5 variantes ad-hoc qui existaient (space-y-1 vs mt-1,
-     wrappers vides, weights divergents). */
+/* DashboardPageHeader = alias historique vers PageHeader variant
+   default. Garde l'API pour ne pas casser les 5 pages dashboard. */
 
 interface DashboardPageHeaderProps {
   title: string;
@@ -11,24 +10,6 @@ interface DashboardPageHeaderProps {
   actions?: ReactNode;
 }
 
-export function DashboardPageHeader({
-  title,
-  description,
-  actions,
-}: DashboardPageHeaderProps) {
-  return (
-    <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <div className="space-y-1 min-w-0">
-        <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">
-          {title}
-        </h1>
-        {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
-        )}
-      </div>
-      {actions && (
-        <div className="flex shrink-0 items-center gap-2">{actions}</div>
-      )}
-    </header>
-  );
+export function DashboardPageHeader(props: DashboardPageHeaderProps) {
+  return <PageHeader {...props} variant="default" />;
 }

@@ -1,9 +1,9 @@
 "use client";
 
-/* Coquille partagee par TOUTES les pages du dashboard.
-   Une seule navigation, une seule identite utilisateur -> fini les
-   deux layouts et les initiales qui changeaient (LM/LD) d'une page
-   a l'autre. */
+/* DashboardShell v2 : sidebar groupee (Pilotage / Activite / Catalogue
+   / Croissance) + badges de notification (messages unread, avis a
+   repondre, reservations pending). Header sticky avec recherche
+   globale. Largeur etendue. */
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,23 +13,78 @@ import {
   CalendarDays,
   Building2,
   Handshake,
+  MessageSquare,
+  Star,
+  Calendar,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { dashboardUser } from "@/lib/dashboard-data";
+import {
+  dashboardUser,
+  messagesSummary,
+  reviewsSummary,
+  dashboardReservations,
+} from "@/lib/dashboard-data";
 
 interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
+  badge?: string | number;
 }
 
-const NAV: NavItem[] = [
-  { href: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
-  { href: "/dashboard/revenus", label: "Revenus", icon: TrendingUp },
-  { href: "/dashboard/reservations", label: "Réservations", icon: CalendarDays },
-  { href: "/dashboard/annonces", label: "Annonces", icon: Building2 },
-  { href: "/dashboard/apporteurs", label: "Apporteurs", icon: Handshake },
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+const pendingReservations = dashboardReservations.filter(
+  (r) => r.status === "pending",
+).length;
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Pilotage",
+    items: [
+      { href: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
+      { href: "/dashboard/calendrier", label: "Calendrier", icon: Calendar },
+      { href: "/dashboard/revenus", label: "Revenus", icon: TrendingUp },
+    ],
+  },
+  {
+    label: "Activité",
+    items: [
+      {
+        href: "/dashboard/messages",
+        label: "Messages",
+        icon: MessageSquare,
+        badge: messagesSummary.unread > 0 ? messagesSummary.unread : undefined,
+      },
+      {
+        href: "/dashboard/reservations",
+        label: "Réservations",
+        icon: CalendarDays,
+        badge: pendingReservations > 0 ? pendingReservations : undefined,
+      },
+      {
+        href: "/dashboard/avis",
+        label: "Avis",
+        icon: Star,
+        badge:
+          reviewsSummary.pendingResponse > 0
+            ? reviewsSummary.pendingResponse
+            : undefined,
+      },
+    ],
+  },
+  {
+    label: "Catalogue & croissance",
+    items: [
+      { href: "/dashboard/annonces", label: "Annonces", icon: Building2 },
+      { href: "/dashboard/apporteurs", label: "Apporteurs", icon: Handshake },
+    ],
+  },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -51,7 +106,7 @@ function NavLink({
       href={item.href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex items-center gap-2.5 rounded-md text-sm transition-colors",
+        "flex items-center gap-2.5 rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         horizontal ? "shrink-0 px-3 py-2" : "px-3 py-2",
         active
           ? "bg-muted font-medium text-foreground"
@@ -59,13 +114,30 @@ function NavLink({
       )}
     >
       <Icon className="h-4 w-4 shrink-0" />
-      <span className="whitespace-nowrap">{item.label}</span>
+      <span className="whitespace-nowrap flex-1">{item.label}</span>
+      {item.badge !== undefined && (
+        <span
+          className={cn(
+            "ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-medium tabular-nums",
+            active
+              ? "bg-primary text-primary-foreground"
+              : "chip-warning-soft",
+          )}
+        >
+          {item.badge}
+        </span>
+      )}
     </Link>
   );
 }
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const allItems = NAV_GROUPS.flatMap((g) => g.items);
+  const totalNotifs =
+    messagesSummary.unread +
+    reviewsSummary.pendingResponse +
+    pendingReservations;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -77,6 +149,20 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </Link>
 
           <div className="flex items-center gap-2.5">
+            {/* Notification bell */}
+            <Link
+              href="/dashboard/messages"
+              aria-label="Notifications"
+              className="relative inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <Bell className="h-4 w-4" />
+              {totalNotifs > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-medium text-primary-foreground tabular-nums">
+                  {totalNotifs > 9 ? "9+" : totalNotifs}
+                </span>
+              )}
+            </Link>
+
             <div className="hidden text-right leading-tight sm:block">
               <p className="text-[13px] font-medium">{dashboardUser.name}</p>
               <p className="text-[11px] text-muted-foreground">
@@ -89,9 +175,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Navigation mobile : barre horizontale scrollable */}
+        {/* Nav mobile : barre horizontale scrollable (flatten groups) */}
         <nav className="flex gap-1 overflow-x-auto border-t px-2 py-1.5 md:hidden">
-          {NAV.map((item) => (
+          {allItems.map((item) => (
             <NavLink
               key={item.href}
               item={item}
@@ -103,15 +189,24 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       </header>
 
       <div className="mx-auto flex max-w-[1680px] gap-4 px-4 py-6 md:px-6 lg:gap-6 xl:px-10">
-        {/* Navigation desktop : sidebar */}
+        {/* Sidebar desktop groupee */}
         <aside className="hidden w-52 shrink-0 md:block lg:w-56">
-          <nav className="sticky top-20 flex flex-col gap-1">
-            {NAV.map((item) => (
-              <NavLink
-                key={item.href}
-                item={item}
-                active={isActive(pathname, item.href)}
-              />
+          <nav className="sticky top-20 flex flex-col gap-4">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.label}>
+                <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  {group.label}
+                </p>
+                <div className="flex flex-col gap-0.5">
+                  {group.items.map((item) => (
+                    <NavLink
+                      key={item.href}
+                      item={item}
+                      active={isActive(pathname, item.href)}
+                    />
+                  ))}
+                </div>
+              </div>
             ))}
           </nav>
         </aside>

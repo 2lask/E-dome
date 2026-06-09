@@ -23,7 +23,7 @@ import {
 } from "@/components/dashboard/kpi-card-premium";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
-import { cn } from "@/lib/utils";
+import { FilterChip } from "@/components/ui/filter-chip";
 import { formatNumber } from "@/lib/format";
 import {
   dashboardReservations as seed,
@@ -131,44 +131,35 @@ export default function ReservationsPage() {
         <CardHeader className="gap-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <CardTitle>Liste des réservations</CardTitle>
-            <div className="relative">
-              <SearchIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Guest, bien, ville..."
-                className="w-64 pl-8"
-              />
-            </div>
+            <Input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Guest, bien, ville..."
+              className="w-64"
+              leadingIcon={SearchIcon}
+            />
           </div>
           <div className="flex flex-wrap gap-1.5">
             {FILTERS.map((f) => (
-              <button
+              <FilterChip
                 key={f.value}
-                type="button"
+                active={filter === f.value}
                 onClick={() => setFilter(f.value)}
-                aria-pressed={filter === f.value}
-                className={cn(
-                  "rounded-md px-3 py-1.5 text-xs transition-colors",
-                  filter === f.value
-                    ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground hover:text-foreground",
-                )}
+                count={
+                  f.value === "all"
+                    ? undefined
+                    : f.value === "confirmed"
+                    ? counts.confirmed
+                    : f.value === "pending"
+                    ? counts.pending
+                    : f.value === "cancelled"
+                    ? counts.cancelled
+                    : items.filter((r) => r.status === f.value).length
+                }
               >
                 {f.label}
-                {f.value !== "all" && (
-                  <span className="ml-1.5 tabular-nums opacity-70">
-                    {f.value === "confirmed"
-                      ? counts.confirmed
-                      : f.value === "pending"
-                      ? counts.pending
-                      : f.value === "cancelled"
-                      ? counts.cancelled
-                      : items.filter((r) => r.status === f.value).length}
-                  </span>
-                )}
-              </button>
+              </FilterChip>
             ))}
           </div>
         </CardHeader>

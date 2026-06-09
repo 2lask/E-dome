@@ -32,6 +32,7 @@ import {
 } from "@/components/dashboard/kpi-card-premium";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
+import { FilterChip } from "@/components/ui/filter-chip";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
 
@@ -196,37 +197,26 @@ export default function MesAnnoncesPage() {
               <CardTitle>Catalogue ({filtered.length})</CardTitle>
               <CardDescription>Filtrer par type ou rechercher</CardDescription>
             </div>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher un titre..."
-                className="w-64 pl-8"
-              />
-            </div>
+            <Input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher un titre..."
+              className="w-64"
+              leadingIcon={Search}
+            />
           </div>
 
           <div className="flex flex-wrap gap-1.5">
             {FILTERS.map((f) => (
-              <button
+              <FilterChip
                 key={f.value}
-                type="button"
+                active={filter === f.value}
                 onClick={() => setFilter(f.value)}
-                aria-pressed={filter === f.value}
-                className={cn(
-                  "rounded-md px-3 py-1.5 text-xs transition-colors",
-                  filter === f.value
-                    ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground hover:text-foreground",
-                )}
+                count={counts[f.value]}
               >
                 {f.label}
-                <span className="ml-1.5 tabular-nums opacity-70">
-                  {counts[f.value]}
-                </span>
-              </button>
+              </FilterChip>
             ))}
           </div>
         </CardHeader>
