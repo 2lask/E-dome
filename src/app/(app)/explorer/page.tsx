@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
+import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
 
 // ─── Mock properties ──────────────────────────────────────────────────────
@@ -153,6 +155,23 @@ export default function ExplorerPage() {
   const [visibleCount, setVisibleCount] = useState(6);
   const [loadingMore, setLoadingMore] = useState(false);
 
+  /* Coups de coeur de la semaine — top 8 biens : featured d'abord puis
+     les mieux notes. Carousel horizontal Airbnb-style en haut de page. */
+  const featuredProperties = useMemo(() => {
+    return [...MOCK_PROPERTIES]
+      .sort((a, b) => {
+        const af = a.featured ? 1 : 0;
+        const bf = b.featured ? 1 : 0;
+        if (af !== bf) return bf - af;
+        return (b.rating ?? 0) - (a.rating ?? 0);
+      })
+      .slice(0, 8);
+  }, []);
+
+  /* Bottom-sheet mobile pour les filtres : empeche le scroll de la
+     page derriere quand ouvert sur mobile. */
+  useLockBodyScroll(showFilters);
+
   // Reset visible count when filters change
   useEffect(() => {
     setVisibleCount(6);
@@ -290,18 +309,92 @@ export default function ExplorerPage() {
     <div className="max-w-7xl mx-auto">
       <h1 className="text-2xl page-heading text-[var(--foreground)] mb-6">Explorer</h1>
 
-      {/* Recently viewed */}
+      {/* Coups de coeur de la semaine — carousel horizontal Airbnb-style.
+          Top 8 biens (featured + best-rated), cartes plus grandes que
+          'Recently viewed' (cover 16:10 + 3 lignes de metadonnees). */}
+      {featuredProperties.length > 0 && (
+        <div className="mb-8">
+          <HorizontalScroller
+            title="Coups de cœur de la semaine"
+            cta={{ label: "Voir tout", href: "/explorer" }}
+            cardWidth="260px"
+            gap="14px"
+          >
+            {featuredProperties.map((prop) => (
+              <Link
+                key={prop.id}
+                href={`/explorer/${prop.id}`}
+                className="block rounded-2xl overflow-hidden border border-[var(--card-border)] bg-[var(--card)] hover:border-[#1e9df1]/30 transition-colors h-full"
+              >
+                <div className="relative">
+                  <img
+                    src={prop.images[0]}
+                    alt=""
+                    className="w-full h-40 object-cover"
+                  />
+                  {prop.featured && (
+                    <span
+                      className="absolute top-3 left-3 px-2 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider"
+                      style={{
+                        background: "var(--background)",
+                        color: "var(--foreground)",
+                      }}
+                    >
+                      Coup de cœur
+                    </span>
+                  )}
+                  {prop.rating && prop.rating >= 4.7 && (
+                    <span
+                      className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold"
+                      style={{
+                        background: "var(--background)",
+                        color: "var(--foreground)",
+                      }}
+                    >
+                      <Star size={11} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
+                      {prop.rating.toFixed(1)}
+                    </span>
+                  )}
+                </div>
+                <div className="p-3">
+                  <p className="text-sm font-medium text-[var(--foreground)] truncate">
+                    {prop.title}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5 flex items-center gap-1">
+                    <MapPin size={11} />
+                    {prop.location.city}, {prop.location.country}
+                  </p>
+                  <p className="text-sm font-semibold text-[#1e9df1] mt-1.5 tabular-nums">
+                    {formatPrice(prop.price, prop.currency)}
+                    {prop.transactionType === "location-ct" && (
+                      <span className="text-[var(--text-muted)] font-normal text-xs">/nuit</span>
+                    )}
+                    {prop.transactionType === "location-lt" && (
+                      <span className="text-[var(--text-muted)] font-normal text-xs">/mois</span>
+                    )}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </HorizontalScroller>
+        </div>
+      )}
+
+      {/* Recently viewed — migre vers HorizontalScroller (chevrons desktop +
+          scroll snap mobile + ResizeObserver pour activer/desactiver les
+          fleches automatiquement). */}
       {recentlyViewed.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-sm font-semibold text-[var(--text-secondary)] mb-3">
-            Consultés récemment
-          </h2>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+          <HorizontalScroller
+            title="Consultés récemment"
+            cardWidth="192px"
+            gap="12px"
+          >
             {recentlyViewed.map((prop) => (
               <Link
                 key={prop.id}
                 href={`/explorer/${prop.id}`}
-                className="shrink-0 w-48 rounded-xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors"
+                className="block rounded-xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors h-full"
               >
                 <img src={prop.images[0]} alt="" className="w-full h-24 object-cover" />
                 <div className="p-2.5">
@@ -314,7 +407,7 @@ export default function ExplorerPage() {
                 </div>
               </Link>
             ))}
-          </div>
+          </HorizontalScroller>
         </div>
       )}
 
@@ -418,58 +511,190 @@ export default function ExplorerPage() {
         </div>
       )}
 
-      {/* Filters panel */}
+      {/* Filters — panel inline desktop, bottom-sheet mobile (Airbnb-style).
+          Mobile: voile sombre + drawer monte du bas, scrollable, sticky CTA
+          'Reinitialiser' / 'Voir resultats' en bas pour les actions cle. */}
       {showFilters && (
-        <div className="mb-6 p-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] animate-fade-in">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Type de bien</label>
-              <select value={filterType} onChange={(e) => setFilterType(e.target.value as PropertyType | "")} className={selectClass + " w-full"}>
-                {PROPERTY_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Pays</label>
-              <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className={selectClass + " w-full"}>
-                <option value="">Tous les pays</option>
-                {COUNTRIES.filter(Boolean).map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix min</label>
-              <input
-                type="number"
-                value={filterPriceMin}
-                onChange={(e) => setFilterPriceMin(e.target.value)}
-                placeholder="0"
-                className={selectClass + " w-full"}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix max</label>
-              <input
-                type="number"
-                value={filterPriceMax}
-                onChange={(e) => setFilterPriceMax(e.target.value)}
-                placeholder="Illimité"
-                className={selectClass + " w-full"}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Chambres min</label>
-              <select value={filterBedrooms} onChange={(e) => setFilterBedrooms(e.target.value)} className={selectClass + " w-full"}>
-                <option value="">Toutes</option>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <option key={n} value={n}>{n}+</option>
-                ))}
-              </select>
+        <>
+          {/* Desktop : panel inline qui s'integre dans le flux de la page. */}
+          <div className="hidden md:block mb-6 p-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] animate-fade-in">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Type de bien</label>
+                <select value={filterType} onChange={(e) => setFilterType(e.target.value as PropertyType | "")} className={selectClass + " w-full"}>
+                  {PROPERTY_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Pays</label>
+                <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className={selectClass + " w-full"}>
+                  <option value="">Tous les pays</option>
+                  {COUNTRIES.filter(Boolean).map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix min</label>
+                <input
+                  type="number"
+                  value={filterPriceMin}
+                  onChange={(e) => setFilterPriceMin(e.target.value)}
+                  placeholder="0"
+                  className={selectClass + " w-full"}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix max</label>
+                <input
+                  type="number"
+                  value={filterPriceMax}
+                  onChange={(e) => setFilterPriceMax(e.target.value)}
+                  placeholder="Illimité"
+                  className={selectClass + " w-full"}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Chambres min</label>
+                <select value={filterBedrooms} onChange={(e) => setFilterBedrooms(e.target.value)} className={selectClass + " w-full"}>
+                  <option value="">Toutes</option>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <option key={n} value={n}>{n}+</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
-        </div>
+
+          {/* Mobile : bottom-sheet fullscreen avec voile + drag handle. */}
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filtres"
+            className="md:hidden fixed inset-0 z-[70] flex items-end animate-fade-in"
+            style={{ background: "rgba(0,0,0,0.6)" }}
+            onClick={() => setShowFilters(false)}
+          >
+            <div
+              className="w-full max-h-[85vh] rounded-t-2xl flex flex-col animate-slide-in-bottom"
+              style={{
+                background: "var(--card)",
+                border: "1px solid var(--card-border)",
+                borderBottom: "none",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Drag handle Airbnb-style */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-10 h-1.5 rounded-full" style={{ background: "var(--card-border)" }} />
+              </div>
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3 border-b shrink-0"
+                style={{ borderColor: "var(--card-border)" }}>
+                <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
+                  Filtres
+                </h2>
+                <button
+                  onClick={() => setShowFilters(false)}
+                  aria-label="Fermer"
+                  className="flex items-center justify-center w-11 h-11 rounded-lg"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              {/* Body scrollable */}
+              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+                <div>
+                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Type de bien</label>
+                  <select value={filterType} onChange={(e) => setFilterType(e.target.value as PropertyType | "")} className={selectClass + " w-full"}>
+                    {PROPERTY_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>{t.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Pays</label>
+                  <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className={selectClass + " w-full"}>
+                    <option value="">Tous les pays</option>
+                    {COUNTRIES.filter(Boolean).map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix min</label>
+                    <input
+                      type="number"
+                      value={filterPriceMin}
+                      onChange={(e) => setFilterPriceMin(e.target.value)}
+                      placeholder="0"
+                      className={selectClass + " w-full"}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix max</label>
+                    <input
+                      type="number"
+                      value={filterPriceMax}
+                      onChange={(e) => setFilterPriceMax(e.target.value)}
+                      placeholder="Illimité"
+                      className={selectClass + " w-full"}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Chambres min</label>
+                  <select value={filterBedrooms} onChange={(e) => setFilterBedrooms(e.target.value)} className={selectClass + " w-full"}>
+                    <option value="">Toutes</option>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <option key={n} value={n}>{n}+</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              {/* Footer sticky CTA */}
+              <div
+                className="flex gap-3 px-4 py-3 border-t shrink-0"
+                style={{
+                  borderColor: "var(--card-border)",
+                  paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)",
+                }}
+              >
+                <button
+                  onClick={() => {
+                    setFilterType("");
+                    setFilterCountry("");
+                    setFilterPriceMin("");
+                    setFilterPriceMax("");
+                    setFilterBedrooms("");
+                  }}
+                  className="flex-1 py-3 rounded-xl text-sm font-medium border transition-colors"
+                  style={{
+                    borderColor: "var(--card-border)",
+                    color: "var(--foreground)",
+                    background: "var(--card)",
+                  }}
+                >
+                  Réinitialiser
+                </button>
+                <button
+                  onClick={() => setShowFilters(false)}
+                  className="flex-1 py-3 rounded-xl text-sm font-semibold"
+                  style={{
+                    background: "var(--primary)",
+                    color: "var(--primary-foreground)",
+                  }}
+                >
+                  Voir {filtered.length} bien{filtered.length > 1 ? "s" : ""}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Transaction tabs */}
