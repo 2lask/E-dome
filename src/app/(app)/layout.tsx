@@ -82,7 +82,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <AppProvider>
       <LanguageProvider>
         <ToastProvider>
-          <div className="app-shell flex min-h-screen" style={{ background: "var(--background)", color: "var(--foreground)" }}>
+          {/* min-h-screen sur app-shell : ASSURE que le wrapper occupe au
+              moins le viewport, mais peut grandir au-dela quand le contenu
+              deborde. Le scroll est gere par le window (body) — pas par
+              un container interne avec overflow-y:auto. */}
+          <div className="app-shell flex" style={{ background: "var(--background)", color: "var(--foreground)", minHeight: "100vh" }}>
               {/* Sidebar - desktop */}
               <div className="hidden md:block">
                 <Sidebar

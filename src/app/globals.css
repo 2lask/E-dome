@@ -447,9 +447,17 @@ body {
   color: var(--foreground);
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
-  /* Prévient le scroll horizontal accidentel sur mobile (un seul élément qui
-     déborde de quelques pixels suffit à casser l'expérience tactile). */
-  overflow-x: hidden;
+}
+
+/* overflow-x:hidden uniquement sur mobile. Sur desktop, combine avec
+   min-height:100vh il pouvait transformer .app-shell en container de
+   scroll, ce qui bloquait le scroll naturel du body. Mobile en a besoin
+   pour eviter qu'un element qui deborde de quelques pixels casse le
+   touch (le swipe lateral accidentel). */
+@media (max-width: 767px) {
+  .app-shell {
+    overflow-x: hidden;
+  }
 }
 
 /* Sur mobile, on relâche le margin-left de la sidebar et on garantit
