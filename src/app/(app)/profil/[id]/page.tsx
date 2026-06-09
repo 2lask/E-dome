@@ -3,6 +3,7 @@
 import React, { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { ProfileVitrine, type ProfileUser, type ProfileData } from "@/components/profile/profile-vitrine";
+import { BackButton } from "@/components/ui/back-button";
 
 /* /profil/[id] — profil d'un autre utilisateur. Consomme <ProfileVitrine>
    avec isOwn=false. Une mockUsers map donne quelques profils variés
@@ -220,13 +221,22 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
   const data = dataForUser(user);
 
   return (
-    <ProfileVitrine
-      user={user}
-      data={data}
-      isOwn={false}
-      isFollowing={isFollowing}
-      onToggleFollow={() => setIsFollowing((v) => !v)}
-      onMessage={() => router.push(`/messages?to=${user.id}`)}
-    />
+    <>
+      {/* Back button mobile : profile d'un autre utilisateur — on est arrivé
+          depuis un lien ailleurs (feed/recherche/messages), donc retour
+          contextuel plutot que /feed hardcode. Cache desktop : la sidebar
+          gauche suffit a la navigation. */}
+      <div className="md:hidden mb-2 -mt-2">
+        <BackButton fallbackHref="/feed" />
+      </div>
+      <ProfileVitrine
+        user={user}
+        data={data}
+        isOwn={false}
+        isFollowing={isFollowing}
+        onToggleFollow={() => setIsFollowing((v) => !v)}
+        onMessage={() => router.push(`/messages?to=${user.id}`)}
+      />
+    </>
   );
 }

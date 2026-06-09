@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Award,
@@ -15,10 +15,19 @@ import {
   Newspaper,
   Mail,
   Share2,
+  MoreHorizontal,
+  Settings,
+  HelpCircle,
+  LogOut,
+  Flag,
+  UserMinus,
+  Copy as CopyIcon,
+  X,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { formatCount } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
+import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
 
 /* ─────────────────────────────────────────────────────────────
    ProfileVitrine — composant partagé entre /profil (mon profil)
@@ -133,8 +142,48 @@ export function ProfileVitrine({
   const { formatPrice } = useApp();
   const { addToast } = useToast();
   const [tab, setTab] = useState<TabKey>("publications");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [followersModal, setFollowersModal] = useState<null | "followers" | "following">(null);
+  const moreRef = useRef<HTMLDivElement>(null);
+
+  /* Ferme le menu 3-points au clic en dehors. */
+  useEffect(() => {
+    if (!moreOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [moreOpen]);
+
+  /* Ferme la modal followers/suivis avec Échap. */
+  useEffect(() => {
+    if (!followersModal) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setFollowersModal(null);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [followersModal]);
+
+  useLockBodyScroll(!!followersModal);
 
   const totalAvis = data.ratingBreakdown.reduce((s, r) => s + r.count, 0);
+
+  /* Copie l'URL du profil dans le presse-papier (utilise par "Copier le
+     lien" du menu 3-dots). Toast feedback obligatoire — sinon l'utilisateur
+     ne sait pas si l'action a marche. */
+  const handleCopyLink = React.useCallback(async () => {
+    if (typeof window === "undefined") return;
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      addToast("Lien du profil copié", "success");
+    } catch {
+      addToast("Impossible de copier le lien", "error");
+    }
+  }, [addToast]);
 
   /* Partage profil : tente l'API Web Share native (mobile, OS share sheet),
      sinon fallback copie de l'URL au presse-papier + toast info. */
@@ -216,8 +265,12 @@ export function ProfileVitrine({
             </div>
           </div>
 
-          {/* Actions self vs other — pleine largeur sur mobile */}
-          <div className="flex gap-2 flex-wrap w-full md:w-auto">
+          {/* Actions self vs other — pleine largeur sur mobile.
+              Le bouton 3-dots (...) en bout de ligne donne acces a
+              Parametres / Aide / Quitter (isOwn) ou Signaler / Copier /
+              Bloquer (autre user). Fixe le finding nav critique #1 :
+              les Parametres etaient planques derriere 3 clics. */}
+          <div ref={moreRef} className="flex gap-2 flex-wrap w-full md:w-auto relative">
             {isOwn ? (
               <button
                 onClick={onEdit}
@@ -275,6 +328,139 @@ export function ProfileVitrine({
                 </button>
               </>
             )}
+
+            {/* 3-dots menu : Settings/Aide/Quitter (isOwn) ou
+                Signaler/Bloquer/Copier le lien (autre user). */}
+            <button
+              onClick={() => setMoreOpen((v) => !v)}
+              aria-label="Plus d'options"
+              aria-haspopup="menu"
+              aria-expanded={moreOpen}
+              className="flex items-center justify-center min-w-[44px] min-h-[44px] p-2 text-sm rounded-xl transition-colors"
+              style={{
+                border: "1px solid var(--card-border)",
+                color: "var(--foreground)",
+                background: moreOpen ? "var(--hover-bg)" : "var(--card)",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+              onMouseLeave={(e) => {
+                if (!moreOpen) e.currentTarget.style.background = "var(--card)";
+              }}
+            >
+              <MoreHorizontal size={15} />
+            </button>
+
+            {moreOpen && (
+              <div
+                role="menu"
+                className="absolute right-0 top-full mt-2 w-56 rounded-xl border shadow-lg py-1.5 z-20 animate-fade-in"
+                style={{
+                  background: "var(--card)",
+                  borderColor: "var(--card-border)",
+                  boxShadow: "var(--shadow-card)",
+                }}
+              >
+                {isOwn ? (
+                  <>
+                    <Link
+                      href="/parametres"
+                      onClick={() => setMoreOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                      style={{ color: "var(--foreground)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <Settings size={16} style={{ color: "var(--text-muted)" }} />
+                      Paramètres
+                    </Link>
+                    <Link
+                      href="/aide"
+                      onClick={() => setMoreOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                      style={{ color: "var(--foreground)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <HelpCircle size={16} style={{ color: "var(--text-muted)" }} />
+                      Aide
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleCopyLink();
+                        setMoreOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                      style={{ color: "var(--foreground)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <CopyIcon size={16} style={{ color: "var(--text-muted)" }} />
+                      Copier le lien
+                    </button>
+                    <div className="my-1 h-px" style={{ background: "var(--card-border)" }} />
+                    <Link
+                      href="/"
+                      onClick={() => setMoreOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                      style={{ color: "var(--destructive)" }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.background =
+                          "color-mix(in srgb, var(--destructive) 14%, transparent)")
+                      }
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <LogOut size={16} />
+                      Quitter la maquette
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        handleCopyLink();
+                        setMoreOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                      style={{ color: "var(--foreground)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <CopyIcon size={16} style={{ color: "var(--text-muted)" }} />
+                      Copier le lien
+                    </button>
+                    <button
+                      onClick={() => {
+                        addToast("Signalement envoyé (maquette)", "info");
+                        setMoreOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                      style={{ color: "var(--foreground)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <Flag size={16} style={{ color: "var(--text-muted)" }} />
+                      Signaler
+                    </button>
+                    <button
+                      onClick={() => {
+                        addToast(`${user.firstName} a été bloqué (maquette)`, "info");
+                        setMoreOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                      style={{ color: "var(--destructive)" }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.background =
+                          "color-mix(in srgb, var(--destructive) 14%, transparent)")
+                      }
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <UserMinus size={16} />
+                      Bloquer
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -283,18 +469,26 @@ export function ProfileVitrine({
         </p>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-4">
-          <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          <button
+            onClick={() => setFollowersModal("followers")}
+            className="text-sm hover:opacity-70 transition-opacity"
+            style={{ color: "var(--text-secondary)" }}
+          >
             <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
               {formatCount(user.stats.followers)}
             </span>{" "}
             abonnés
-          </div>
-          <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          </button>
+          <button
+            onClick={() => setFollowersModal("following")}
+            className="text-sm hover:opacity-70 transition-opacity"
+            style={{ color: "var(--text-secondary)" }}
+          >
             <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
               {formatCount(user.stats.following)}
             </span>{" "}
             suivis
-          </div>
+          </button>
           <div className="text-sm flex items-center gap-1.5" style={{ color: "var(--text-secondary)" }}>
             <Star size={14} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
             <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
@@ -597,6 +791,150 @@ export function ProfileVitrine({
             </div>
           )
         )}
+      </div>
+
+      {/* Modal Abonnés / Suivis (style Instagram).
+          Mock data : un noyau de 6 utilisateurs fictifs pour démo.
+          Sur mobile : bottom-sheet pleine largeur ; desktop : centré max-w-md. */}
+      {followersModal && (
+        <FollowListModal
+          mode={followersModal}
+          ownerFirstName={user.firstName}
+          totalCount={
+            followersModal === "followers"
+              ? user.stats.followers
+              : user.stats.following
+          }
+          onClose={() => setFollowersModal(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── Modal Abonnés / Suivis ───────────────────────────────────────
+
+interface FollowMock {
+  id: string;
+  name: string;
+  handle: string;
+  avatar: string;
+  bio: string;
+}
+
+const FOLLOW_MOCKS: FollowMock[] = [
+  { id: "u1", name: "Sophie Martin",   handle: "sophie",   avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop", bio: "Hôte · Lausanne" },
+  { id: "u2", name: "Marc Dubois",     handle: "marc",     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop", bio: "Investisseur · Genève" },
+  { id: "u3", name: "Amina Belkacem",  handle: "amina",    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop", bio: "Formatrice · Marrakech" },
+  { id: "u4", name: "Yasmin Al Falasi",handle: "yasmin",   avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=80&h=80&fit=crop", bio: "Apporteuse · Dubaï" },
+  { id: "u5", name: "Thomas Weber",    handle: "thomas",   avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop", bio: "Promoteur · Zurich" },
+  { id: "u6", name: "Claire Bernard",  handle: "claire",   avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop", bio: "Home staging · Lausanne" },
+];
+
+function FollowListModal({
+  mode,
+  ownerFirstName,
+  totalCount,
+  onClose,
+}: {
+  mode: "followers" | "following";
+  ownerFirstName: string;
+  totalCount: number;
+  onClose: () => void;
+}) {
+  const [followState, setFollowState] = useState<Record<string, boolean>>(
+    () => Object.fromEntries(FOLLOW_MOCKS.map((u) => [u.id, mode === "following"]))
+  );
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={mode === "followers" ? "Abonnés" : "Suivis"}
+      className="fixed inset-0 z-[80] flex items-end md:items-center justify-center"
+      style={{ background: "rgba(0,0,0,0.6)" }}
+      onClick={onClose}
+    >
+      <div
+        className="w-full md:max-w-md md:rounded-2xl rounded-t-2xl overflow-hidden flex flex-col animate-slide-in-bottom md:animate-scale-in"
+        style={{
+          background: "var(--card)",
+          border: "1px solid var(--card-border)",
+          maxHeight: "min(85vh, 600px)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header sticky */}
+        <div className="flex items-center justify-between px-4 py-3 border-b shrink-0"
+          style={{ borderColor: "var(--card-border)" }}>
+          <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
+            {mode === "followers"
+              ? `Abonnés de ${ownerFirstName}`
+              : `Profils suivis par ${ownerFirstName}`}
+            <span className="ml-2 text-sm font-normal" style={{ color: "var(--text-muted)" }}>
+              {formatCount(totalCount)}
+            </span>
+          </h2>
+          <button
+            onClick={onClose}
+            aria-label="Fermer"
+            className="flex items-center justify-center w-11 h-11 rounded-lg transition-colors"
+            style={{ color: "var(--text-muted)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Liste scrollable */}
+        <div className="overflow-y-auto px-2 py-1">
+          {FOLLOW_MOCKS.map((u) => (
+            <div
+              key={u.id}
+              className="flex items-center gap-3 p-2 rounded-lg transition-colors"
+            >
+              <Link
+                href={`/profil/${u.id}`}
+                onClick={onClose}
+                className="flex items-center gap-3 flex-1 min-w-0"
+              >
+                <img src={u.avatar} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>
+                    {u.name}
+                  </p>
+                  <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
+                    @{u.handle} · {u.bio}
+                  </p>
+                </div>
+              </Link>
+              <button
+                onClick={() =>
+                  setFollowState((prev) => ({ ...prev, [u.id]: !prev[u.id] }))
+                }
+                className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors shrink-0"
+                style={
+                  followState[u.id]
+                    ? {
+                        border: "1px solid var(--card-border)",
+                        color: "var(--foreground)",
+                        background: "var(--card)",
+                      }
+                    : {
+                        background: "var(--primary)",
+                        color: "var(--primary-foreground)",
+                      }
+                }
+              >
+                {followState[u.id] ? "Suivi" : "Suivre"}
+              </button>
+            </div>
+          ))}
+          <p className="text-center text-xs py-4" style={{ color: "var(--text-muted)" }}>
+            Données fictives pour la maquette
+          </p>
+        </div>
       </div>
     </div>
   );
