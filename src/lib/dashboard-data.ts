@@ -21,6 +21,10 @@ export interface Property {
   monthRevenue: number;
   views: number;
   occupancy: number; // 0..1
+  /** Note moyenne 0..5. */
+  rating: number;
+  /** Croissance des revenus mois-sur-mois, ex "+18%". */
+  monthGrowth: string;
 }
 
 export interface Transaction {
@@ -53,9 +57,9 @@ export const dashboardUser = {
 
 /* Les 3 memes biens partout dans l'espace dashboard. */
 export const properties: Property[] = [
-  { id: "chalet-alpin", name: "Chalet Alpin Premium", initials: "CA", city: "Verbier", weeklyPrice: 2450, monthRevenue: 11200, views: 2840, occupancy: 0.92 },
-  { id: "appart-vue-lac", name: "Appartement Vue Lac", initials: "AV", city: "Montreux", weeklyPrice: 1800, monthRevenue: 8400, views: 1240, occupancy: 0.78 },
-  { id: "studio-lausanne", name: "Studio Lausanne", initials: "SL", city: "Lausanne", weeklyPrice: 890, monthRevenue: 5250, views: 980, occupancy: 0.74 },
+  { id: "chalet-alpin", name: "Chalet Alpin Premium", initials: "CA", city: "Verbier", weeklyPrice: 2450, monthRevenue: 11200, views: 2840, occupancy: 0.92, rating: 4.9, monthGrowth: "+18%" },
+  { id: "appart-vue-lac", name: "Appartement Vue Lac", initials: "AV", city: "Montreux", weeklyPrice: 1800, monthRevenue: 8400, views: 1240, occupancy: 0.78, rating: 4.6, monthGrowth: "+12%" },
+  { id: "studio-lausanne", name: "Studio Lausanne", initials: "SL", city: "Lausanne", weeklyPrice: 890, monthRevenue: 5250, views: 980, occupancy: 0.74, rating: 4.4, monthGrowth: "+8%" },
 ];
 
 export function getProperty(id: string): Property | undefined {

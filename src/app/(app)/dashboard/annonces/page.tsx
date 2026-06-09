@@ -14,9 +14,7 @@ import {
   MoreHorizontal,
   Plus,
   Search,
-  Megaphone,
-  FileText,
-  CalendarCheck,
+  PackageSearch,
 } from "lucide-react";
 import {
   Card,
@@ -26,17 +24,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { KpiCardIcon } from "@/components/dashboard/kpi-card-icon";
+import { Input } from "@/components/ui/input";
+import { EmptyState } from "@/components/ui/empty-state";
+import {
+  KpiCardPremium,
+  KpiGrid,
+} from "@/components/dashboard/kpi-card-premium";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
-
-/* Refonte Annonces : aligne sur le pattern shadcn-admin + brutaliste.
-   Vue agregee de tout ce que l'utilisateur publie : biens, produits
-   boutique, formations, lives, evenements, services.
-   - 4 KPI cards en haut
-   - Recherche + filtres pills
-   - Grille de cards mono-style (cover + meta + actions discrete) */
 
 type ListingType =
   | "bien"
@@ -139,17 +135,19 @@ export default function MesAnnoncesPage() {
     .length;
   const draftCount = MOCK_LISTINGS.filter((l) => l.status === "brouillon")
     .length;
+  const expiredCount = MOCK_LISTINGS.filter((l) => l.status === "expire")
+    .length;
 
   return (
-    <div className="space-y-4">
-      <div className="mb-2 flex items-center justify-between space-y-2">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Mes annonces</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Tout ce que vous publiez : biens, produits, formations, lives, événements, services
           </p>
         </div>
-        <Button variant="default" size="sm" asChild>
+        <Button size="sm" asChild>
           <Link href="/publier">
             <Plus className="mr-2 h-4 w-4" />
             Nouvelle annonce
@@ -157,55 +155,56 @@ export default function MesAnnoncesPage() {
         </Button>
       </div>
 
-      {/* 4 KPI cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCardIcon
-          title="Total annonces"
+      <KpiGrid>
+        <KpiCardPremium
+          label="Total annonces"
           value={String(MOCK_LISTINGS.length)}
-          delta={`${publishedCount} publiées, ${draftCount} brouillons`}
-          icon={Megaphone}
-          deltaTone="neutral"
+          delta={`${publishedCount} publiées`}
+          trend="up"
+          footer="Catalogue actif"
+          subfooter={`${draftCount} brouillons, ${expiredCount} expirées`}
         />
-        <KpiCardIcon
-          title="Vues totales"
+        <KpiCardPremium
+          label="Vues totales"
           value={formatNumber(totalViews)}
-          delta="Cumul depuis la publication"
-          icon={Eye}
-          deltaTone="up"
+          delta="+12.4%"
+          trend="up"
+          footer="Cumul depuis publication"
+          subfooter="Toutes annonces confondues"
         />
-        <KpiCardIcon
-          title="Brouillons"
+        <KpiCardPremium
+          label="Brouillons"
           value={String(draftCount)}
           delta={draftCount > 0 ? "À finaliser" : "Aucun"}
-          icon={FileText}
-          deltaTone={draftCount > 0 ? "neutral" : "up"}
+          trend={draftCount > 0 ? "neutral" : "up"}
+          footer={draftCount > 0 ? "En attente de publication" : "Tout est en ligne"}
+          subfooter="Non visibles publiquement"
         />
-        <KpiCardIcon
-          title="Programmées"
-          value={String(MOCK_LISTINGS.filter((l) => l.status === "brouillon").length)}
-          delta="Lives & événements à venir"
-          icon={CalendarCheck}
-          deltaTone="neutral"
+        <KpiCardPremium
+          label="Performance"
+          value={`${Math.round(totalViews / Math.max(1, MOCK_LISTINGS.length))}`}
+          delta="vues / annonce"
+          trend="up"
+          footer="Moyenne par annonce"
+          subfooter="Comparable au benchmark E-Dome"
         />
-      </div>
+      </KpiGrid>
 
       <Card>
         <CardHeader className="gap-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <CardTitle className="text-sm font-medium">
-                Catalogue ({filtered.length})
-              </CardTitle>
+              <CardTitle>Catalogue ({filtered.length})</CardTitle>
               <CardDescription>Filtrer par type ou rechercher</CardDescription>
             </div>
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
+              <Input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Rechercher un titre..."
-                className="h-9 w-64 rounded-md border bg-background pl-8 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-64 pl-8"
               />
             </div>
           </div>
@@ -235,11 +234,16 @@ export default function MesAnnoncesPage() {
 
         <CardContent>
           {filtered.length === 0 ? (
-            <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-              {search
-                ? `Aucune annonce pour "${search}".`
-                : "Aucune annonce dans cette catégorie."}
-            </div>
+            <EmptyState
+              icon={PackageSearch}
+              title={search ? `Aucune annonce pour "${search}"` : "Aucune annonce"}
+              description={
+                search
+                  ? "Modifiez votre recherche ou changez de filtre."
+                  : "Cette catégorie est vide pour le moment."
+              }
+              action={{ label: "Publier une annonce", href: "/publier" }}
+            />
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((l) => {
@@ -249,7 +253,6 @@ export default function MesAnnoncesPage() {
                     key={l.id}
                     className="group flex flex-col overflow-hidden rounded-lg border bg-card transition-colors hover:border-foreground"
                   >
-                    {/* Cover image */}
                     <div className="relative aspect-[16/9] bg-muted">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -268,7 +271,6 @@ export default function MesAnnoncesPage() {
                       </div>
                     </div>
 
-                    {/* Body */}
                     <div className="flex flex-1 flex-col gap-2 p-3">
                       <h3 className="line-clamp-1 text-sm font-medium">
                         {l.title}

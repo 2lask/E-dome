@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, Wallet, Clock, Trophy, Copy } from "lucide-react";
+import { Copy } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -9,9 +9,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/avatar";
-import { KpiCardIcon } from "@/components/dashboard/kpi-card-icon";
+import {
+  KpiCardPremium,
+  KpiGrid,
+} from "@/components/dashboard/kpi-card-premium";
 import { SimpleBarList } from "@/components/dashboard/simple-bar-list";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
 import {
@@ -19,12 +24,6 @@ import {
   leaderboard,
   apporteurSummary,
 } from "@/lib/dashboard-data";
-
-/* Refonte Apporteurs : pattern shadcn-admin + brutalist.
-   - 4 KPI cards (Commissions mois / Deja verse / En attente /
-     Conversions totales)
-   - 2 cols : SimpleBarList canaux + Leaderboard
-   - Lien d'affiliation copiable */
 
 const REFERRAL_LINK = "https://e-dome.ch/r/LEO2026";
 
@@ -41,62 +40,61 @@ export default function ApporteursPage() {
     .map((c) => ({ name: c.label, value: c.conversions }));
 
   return (
-    <div className="space-y-4">
-      <div className="mb-2 flex items-center justify-between space-y-2">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Apporteurs</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Vos commissions de recommandation · suivi des canaux et classement
           </p>
         </div>
       </div>
 
-      {/* 4 KPI cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCardIcon
-          title="Commissions du mois"
+      <KpiGrid>
+        <KpiCardPremium
+          label="Commissions du mois"
           value={`${formatNumber(apporteurSummary.earnedThisMonth)} CHF`}
-          delta="+26% vs mois dernier"
-          icon={TrendingUp}
+          delta="+26%"
+          trend="up"
+          footer="En forte hausse"
+          subfooter="Versées + en attente ce mois"
         />
-        <KpiCardIcon
-          title="Déjà versé"
+        <KpiCardPremium
+          label="Déjà versé"
           value={`${formatNumber(apporteurSummary.alreadyPaid)} CHF`}
-          delta="Virements honorés"
-          icon={Wallet}
-          deltaTone="up"
+          delta={`${Math.round((apporteurSummary.alreadyPaid / apporteurSummary.earnedThisMonth) * 100)}%`}
+          trend="up"
+          footer="Virements honorés"
+          subfooter="Sous 7 jours après conversion"
         />
-        <KpiCardIcon
-          title="En attente"
+        <KpiCardPremium
+          label="En attente"
           value={`${formatNumber(apporteurSummary.pending)} CHF`}
-          delta="Versement sous 7 jours"
-          icon={Clock}
-          deltaTone="neutral"
+          delta="Sous 7j"
+          trend="neutral"
+          footer="Prochains virements"
+          subfooter="Versements automatiques"
         />
-        <KpiCardIcon
-          title="Taux de conversion"
+        <KpiCardPremium
+          label="Taux de conversion"
           value={`${conversionRate.toFixed(1)}%`}
-          delta={`${totalConversions} / ${totalClicks} clics`}
-          icon={Trophy}
-          deltaTone="neutral"
+          delta={`${totalConversions}/${totalClicks}`}
+          trend="neutral"
+          footer="Conversions sur clics"
+          subfooter="Tous canaux confondus"
         />
-      </div>
+      </KpiGrid>
 
-      {/* Lien d'affiliation copiable */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium">Votre lien</CardTitle>
+          <CardTitle>Votre lien de recommandation</CardTitle>
           <CardDescription>
             Partagez ce lien pour générer des commissions
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2">
-            <input
-              readOnly
-              value={REFERRAL_LINK}
-              className="flex-1 rounded-md border bg-background px-3 py-2 text-sm font-mono outline-none"
-            />
+            <Input readOnly value={REFERRAL_LINK} className="flex-1 font-mono" />
             <Button
               variant="outline"
               size="sm"
@@ -110,13 +108,12 @@ export default function ApporteursPage() {
         </CardContent>
       </Card>
 
-      {/* Canaux + Leaderboard */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-7">
         <Card className="col-span-1 lg:col-span-4">
           <CardHeader>
             <CardTitle>Canaux de recommandation</CardTitle>
             <CardDescription>
-              Performance par type de cible · {totalConversions} conversions
+              Performance par type · {totalConversions} conversions
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -142,12 +139,7 @@ export default function ApporteursPage() {
                       </span>
                     </div>
                   </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-foreground"
-                      style={{ width: `${Math.min(100, pct)}%` }}
-                    />
-                  </div>
+                  <Progress value={pct} className="h-1.5" />
                 </div>
               );
             })}
@@ -168,7 +160,6 @@ export default function ApporteursPage() {
               valueFormatter={(n) => `${formatNumber(n)} CHF`}
               barClass="bg-primary"
             />
-            {/* Tableau des rangs en dessous, plus compact */}
             <div className="mt-4 space-y-1.5 border-t pt-3">
               {leaderboard.map((entry) => (
                 <div
@@ -192,7 +183,6 @@ export default function ApporteursPage() {
         </Card>
       </div>
 
-      {/* By channel SimpleBarList comparatif */}
       <Card>
         <CardHeader>
           <CardTitle>Conversions par canal</CardTitle>

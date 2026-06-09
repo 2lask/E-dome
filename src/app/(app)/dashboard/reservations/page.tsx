@@ -4,10 +4,8 @@ import { useState, useMemo } from "react";
 import {
   Check,
   X,
-  CalendarCheck,
-  CalendarClock,
-  CalendarX,
   Search as SearchIcon,
+  CalendarSearch,
 } from "lucide-react";
 import {
   Card,
@@ -16,8 +14,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/avatar";
-import { KpiCardIcon } from "@/components/dashboard/kpi-card-icon";
+import { EmptyState } from "@/components/ui/empty-state";
+import {
+  KpiCardPremium,
+  KpiGrid,
+} from "@/components/dashboard/kpi-card-premium";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
@@ -28,9 +31,7 @@ import {
   type ReservationStatus,
 } from "@/lib/dashboard-data";
 
-/* Refonte Reservations : KpiCardIcon (Total / Confirmees / Pending /
-   Annulees) + recherche + filtres + liste avec Avatar guest. Style
-   shadcn-admin + brutaliste. */
+/* /dashboard/reservations : style premium coherent. */
 
 type Filter = "all" | ReservationStatus;
 
@@ -79,65 +80,71 @@ export default function ReservationsPage() {
     .filter((r) => r.status === "confirmed" || r.status === "completed")
     .reduce((s, r) => s + r.amount, 0);
 
+  const confirmedPct = Math.round(
+    (counts.confirmed / Math.max(1, counts.total)) * 100,
+  );
+
   return (
-    <div className="space-y-4">
-      <div className="mb-2 flex items-center justify-between space-y-2">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Réservations</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Suivi et gestion de toutes vos réservations
           </p>
         </div>
       </div>
 
-      {/* 4 KPI cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCardIcon
-          title="Total"
+      <KpiGrid>
+        <KpiCardPremium
+          label="Total"
           value={String(counts.total)}
-          delta={`${formatNumber(totalRevenue)} CHF generes`}
-          icon={CalendarCheck}
-          deltaTone="neutral"
+          delta={`${formatNumber(totalRevenue)} CHF`}
+          trend="neutral"
+          footer="Revenus générés"
+          subfooter="Confirmées + terminées"
         />
-        <KpiCardIcon
-          title="Confirmées"
+        <KpiCardPremium
+          label="Confirmées"
           value={String(counts.confirmed)}
-          delta={`${Math.round((counts.confirmed / Math.max(1, counts.total)) * 100)}% du total`}
-          icon={Check}
-          deltaTone="up"
+          delta={`${confirmedPct}%`}
+          trend="up"
+          footer="Taux de confirmation"
+          subfooter="Du total des réservations"
         />
-        <KpiCardIcon
-          title="En attente"
+        <KpiCardPremium
+          label="En attente"
           value={String(counts.pending)}
-          delta={counts.pending > 0 ? "Action requise" : "Aucune"}
-          icon={CalendarClock}
-          deltaTone={counts.pending > 0 ? "neutral" : "up"}
+          delta={counts.pending > 0 ? "Action requise" : "À jour"}
+          trend={counts.pending > 0 ? "neutral" : "up"}
+          footer={counts.pending > 0 ? "À traiter rapidement" : "Aucune action"}
+          subfooter="Demandes non confirmées"
         />
-        <KpiCardIcon
-          title="Annulées"
+        <KpiCardPremium
+          label="Annulées"
           value={String(counts.cancelled)}
-          delta={`${Math.round((counts.cancelled / Math.max(1, counts.total)) * 100)}% du total`}
-          icon={CalendarX}
-          deltaTone="down"
+          delta={`${Math.round((counts.cancelled / Math.max(1, counts.total)) * 100)}%`}
+          trend="down"
+          footer="Taux d'annulation"
+          subfooter="À surveiller si > 10%"
         />
-      </div>
+      </KpiGrid>
 
       <Card>
         <CardHeader className="gap-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle className="text-sm font-medium">Liste des réservations</CardTitle>
+            <CardTitle>Liste des réservations</CardTitle>
             <div className="relative">
               <SearchIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
+              <Input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher guest, bien, ville..."
-                className="h-9 w-64 rounded-md border bg-background pl-8 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                placeholder="Guest, bien, ville..."
+                className="w-64 pl-8"
               />
             </div>
           </div>
-          {/* Filtres pills */}
           <div className="flex flex-wrap gap-1.5">
             {FILTERS.map((f) => (
               <button
@@ -169,65 +176,68 @@ export default function ReservationsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-2.5">
-            {visible.map((r) => {
-              const p = getProperty(r.propertyId);
-              return (
-                <div
-                  key={r.id}
-                  className="flex items-center gap-3 rounded-lg border bg-card p-3 sm:p-4"
-                >
-                  <Avatar name={r.guest} size="md" />
-
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{r.guest}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {p?.name} · {r.dateLabel}
-                    </p>
-                  </div>
-
-                  {r.status === "pending" && (
-                    <div className="hidden gap-1.5 sm:flex">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8"
-                        onClick={() => setStatus(r.id, "confirmed")}
-                      >
-                        <Check className="mr-1 h-3.5 w-3.5" />
-                        Confirmer
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 text-muted-foreground"
-                        aria-label="Refuser la réservation"
-                        onClick={() => setStatus(r.id, "cancelled")}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
+          {visible.length === 0 ? (
+            <EmptyState
+              icon={CalendarSearch}
+              title={search ? `Aucune réservation pour "${search}"` : "Aucune réservation"}
+              description={
+                search
+                  ? "Modifiez votre recherche ou changez de filtre."
+                  : "Cette catégorie est vide pour le moment."
+              }
+            />
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              {visible.map((r) => {
+                const p = getProperty(r.propertyId);
+                return (
+                  <div
+                    key={r.id}
+                    className="flex items-center gap-3 rounded-lg border bg-card p-3 sm:p-4"
+                  >
+                    <Avatar name={r.guest} size="md" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{r.guest}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {p?.name} · {r.dateLabel}
+                      </p>
                     </div>
-                  )}
-
-                  <div className="shrink-0 text-right">
-                    <p className="text-sm font-medium tabular-nums">
-                      {formatNumber(r.amount)}{" "}
-                      <span className="text-xs font-normal text-muted-foreground">CHF</span>
-                    </p>
-                    <StatusBadge status={r.status} />
+                    {r.status === "pending" && (
+                      <div className="hidden gap-1.5 sm:flex">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8"
+                          onClick={() => setStatus(r.id, "confirmed")}
+                        >
+                          <Check className="mr-1 h-3.5 w-3.5" />
+                          Confirmer
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 text-muted-foreground"
+                          aria-label="Refuser la réservation"
+                          onClick={() => setStatus(r.id, "cancelled")}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    )}
+                    <div className="shrink-0 text-right">
+                      <p className="text-sm font-medium tabular-nums">
+                        {formatNumber(r.amount)}{" "}
+                        <span className="text-xs font-normal text-muted-foreground">
+                          CHF
+                        </span>
+                      </p>
+                      <StatusBadge status={r.status} />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-
-            {visible.length === 0 && (
-              <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-                {search
-                  ? `Aucune réservation pour "${search}".`
-                  : "Aucune réservation dans cette catégorie."}
-              </div>
-            )}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

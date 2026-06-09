@@ -14,24 +14,8 @@ import { properties as dashboardProperties } from "@/lib/dashboard-data";
 import { formatNumber } from "@/lib/format";
 
 /* TopProperties : adapte de TopProducts (dashboard-2) au domaine
-   immobilier. Liste rankee de biens avec :
-   - Rang (#1, #2, ...) dans un cercle bg-primary/10 text-primary
-   - Nom + Badge ville
-   - Star + note (4.8) + nombre de vues
-   - Revenus du mois (gros) + Badge growth vert
-   - Taux d'occupation avec Progress bar */
-
-const RATINGS: Record<string, number> = {
-  "chalet-alpin": 4.9,
-  "appart-vue-lac": 4.6,
-  "studio-lausanne": 4.4,
-};
-
-const GROWTH: Record<string, string> = {
-  "chalet-alpin": "+18%",
-  "appart-vue-lac": "+12%",
-  "studio-lausanne": "+8%",
-};
+   immobilier. Liste rankee de biens. Toutes les donnees (rating,
+   growth) sont sur le type Property — plus rien de hardcode ici. */
 
 export function TopProperties() {
   const ranked = [...dashboardProperties].sort(
@@ -53,63 +37,56 @@ export function TopProperties() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-3">
-        {ranked.map((p, index) => {
-          const rating = RATINGS[p.id] ?? 4.5;
-          const growth = GROWTH[p.id] ?? "+5%";
-          return (
-            <div
-              key={p.id}
-              className="flex items-center gap-3 rounded-lg border p-3"
-            >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                #{index + 1}
-              </div>
-              <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-medium">{p.name}</p>
-                    <Badge variant="outline" className="text-[10px] font-normal">
-                      {p.city}
-                    </Badge>
-                  </div>
-                  <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-current text-amber-400" />
-                      <span className="tabular-nums">{rating.toFixed(1)}</span>
-                    </span>
-                    <span>•</span>
-                    <span className="tabular-nums">
-                      {formatNumber(p.views)} vues
-                    </span>
-                  </div>
+        {ranked.map((p, index) => (
+          <div
+            key={p.id}
+            className="flex items-center gap-3 rounded-lg border p-3"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+              #{index + 1}
+            </div>
+            <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="truncate text-sm font-medium">{p.name}</p>
+                  <Badge variant="outline" className="text-[10px] font-normal">
+                    {p.city}
+                  </Badge>
                 </div>
-                <div className="space-y-1 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <span className="text-sm font-medium tabular-nums">
-                      {formatNumber(p.monthRevenue)} CHF
-                    </span>
-                    <Badge
-                      variant="outline"
-                      className="gap-1 border-emerald-500/30 text-emerald-600 dark:text-emerald-500"
-                    >
-                      <TrendingUp className="h-3 w-3" />
-                      {growth}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-end gap-2">
-                    <span className="text-xs text-muted-foreground tabular-nums">
-                      {Math.round(p.occupancy * 100)}% occup.
-                    </span>
-                    <Progress
-                      value={p.occupancy * 100}
-                      className="h-1 w-14"
-                    />
-                  </div>
+                <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <Star className="h-3 w-3 fill-current text-amber-400" />
+                    <span className="tabular-nums">{p.rating.toFixed(1)}</span>
+                  </span>
+                  <span>•</span>
+                  <span className="tabular-nums">
+                    {formatNumber(p.views)} vues
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-1 text-right">
+                <div className="flex items-center justify-end gap-2">
+                  <span className="text-sm font-medium tabular-nums">
+                    {formatNumber(p.monthRevenue)} CHF
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="gap-1 border-emerald-500/30 text-emerald-600 dark:text-emerald-500"
+                  >
+                    <TrendingUp className="h-3 w-3" />
+                    {p.monthGrowth}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-end gap-2">
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {Math.round(p.occupancy * 100)}% occup.
+                  </span>
+                  <Progress value={p.occupancy * 100} className="h-1 w-14" />
                 </div>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

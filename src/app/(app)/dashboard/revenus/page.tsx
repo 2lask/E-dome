@@ -1,4 +1,4 @@
-import { Download, DollarSign, TrendingUp, Wallet, Building2 } from "lucide-react";
+import { Download } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -7,25 +7,32 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { KpiCardIcon } from "@/components/dashboard/kpi-card-icon";
+import {
+  KpiCardPremium,
+  KpiGrid,
+} from "@/components/dashboard/kpi-card-premium";
 import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { SimpleBarList } from "@/components/dashboard/simple-bar-list";
 import { dashboard } from "@/lib/dashboard-data";
 import { formatNumber } from "@/lib/format";
 
-/* Refonte de la page Revenus : aligne sur le pattern shadcn-admin
-   adopte sur /dashboard. KpiCardIcon (4 metriques) + OverviewChart
-   sur 12 mois + 2 SimpleBarList (Par bien / Par type). */
+/* /dashboard/revenus : style premium coherent avec /dashboard.
+   KpiGrid + 4 KpiCardPremium + OverviewChart + 2 SimpleBarList. */
 
 export default function RevenusPage() {
   const { properties, revenueByType, kpis, monthlyRevenue } = dashboard;
 
-  // Aggregations derivees pour les KPI cards.
-  const totalLocations = revenueByType.find((t) => t.label === "Locations")?.value ?? 0;
-  const totalCommissions = revenueByType.find((t) => t.label.startsWith("Commissions"))?.value ?? 0;
-  const totalBoutique = revenueByType.find((t) => t.label === "Boutique")?.value ?? 0;
+  const totalLocations =
+    revenueByType.find((t) => t.label === "Locations")?.value ?? 0;
+  const totalCommissions =
+    revenueByType.find((t) => t.label.startsWith("Commissions"))?.value ?? 0;
+  const totalBoutique =
+    revenueByType.find((t) => t.label === "Boutique")?.value ?? 0;
 
-  const overviewData = monthlyRevenue.map((m) => ({ label: m.label, value: m.value }));
+  const overviewData = monthlyRevenue.map((m) => ({
+    label: m.label,
+    value: m.value,
+  }));
 
   const byProperty = [...properties]
     .sort((a, b) => b.monthRevenue - a.monthRevenue)
@@ -35,12 +42,14 @@ export default function RevenusPage() {
     .sort((a, b) => b.value - a.value)
     .map((t) => ({ name: t.label, value: t.value }));
 
+  const pct = (v: number) => Math.round((v / kpis.revenue) * 100);
+
   return (
-    <div className="space-y-4">
-      <div className="mb-2 flex items-center justify-between space-y-2">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Revenus</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Détail des 12 derniers mois · CHF
           </p>
         </div>
@@ -50,43 +59,46 @@ export default function RevenusPage() {
         </Button>
       </div>
 
-      {/* 4 KPI cards : Total / Locations / Commissions / Boutique */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCardIcon
-          title="Total revenus"
+      <KpiGrid>
+        <KpiCardPremium
+          label="Total revenus"
           value={`${formatNumber(kpis.revenue)} CHF`}
-          delta={`${kpis.revenueDelta} vs mois dernier`}
-          icon={DollarSign}
+          delta={kpis.revenueDelta}
+          trend="up"
+          footer="Cumul du mois en cours"
+          subfooter="Toutes sources confondues"
         />
-        <KpiCardIcon
-          title="Locations"
+        <KpiCardPremium
+          label="Locations"
           value={`${formatNumber(totalLocations)} CHF`}
-          delta={`${Math.round((totalLocations / kpis.revenue) * 100)}% du total`}
-          icon={Building2}
-          deltaTone="neutral"
+          delta={`${pct(totalLocations)}%`}
+          trend="neutral"
+          footer="Part dans le total"
+          subfooter="Réservations courte + longue durée"
         />
-        <KpiCardIcon
-          title="Commissions apporteur"
+        <KpiCardPremium
+          label="Commissions apporteur"
           value={`${formatNumber(totalCommissions)} CHF`}
-          delta={`${Math.round((totalCommissions / kpis.revenue) * 100)}% du total`}
-          icon={TrendingUp}
-          deltaTone="neutral"
+          delta={`${pct(totalCommissions)}%`}
+          trend="neutral"
+          footer="Part dans le total"
+          subfooter="Conversions générées ce mois"
         />
-        <KpiCardIcon
-          title="Boutique"
+        <KpiCardPremium
+          label="Boutique"
           value={`${formatNumber(totalBoutique)} CHF`}
-          delta={`${Math.round((totalBoutique / kpis.revenue) * 100)}% du total`}
-          icon={Wallet}
-          deltaTone="neutral"
+          delta={`${pct(totalBoutique)}%`}
+          trend="neutral"
+          footer="Part dans le total"
+          subfooter="Ventes de produits annexes"
         />
-      </div>
+      </KpiGrid>
 
-      {/* Chart 12 mois */}
       <Card>
         <CardHeader>
           <CardTitle>Évolution mensuelle</CardTitle>
           <CardDescription>
-            Revenus totaux sur 12 mois · barre courante accentuée
+            Revenus totaux sur 12 mois · mois courant accentué
           </CardDescription>
         </CardHeader>
         <CardContent className="ps-2">
@@ -94,12 +106,13 @@ export default function RevenusPage() {
         </CardContent>
       </Card>
 
-      {/* 2 SimpleBarLists : Par bien / Par type */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Par bien</CardTitle>
-            <CardDescription>Contribution de chaque bien ce mois</CardDescription>
+            <CardDescription>
+              Contribution de chaque bien ce mois
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <SimpleBarList

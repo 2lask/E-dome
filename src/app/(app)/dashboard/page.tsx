@@ -1,14 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Download,
-  Plus,
-  Eye,
-  Activity,
-  Timer,
-  MousePointerClick,
-} from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -22,7 +15,10 @@ import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { SalesAreaChart } from "@/components/dashboard/sales-area-chart";
 import { TopProperties } from "@/components/dashboard/top-properties";
 import { BookingsList } from "@/components/dashboard/bookings-list";
-import { KpiCardIcon } from "@/components/dashboard/kpi-card-icon";
+import {
+  KpiCardPremium,
+  KpiGrid,
+} from "@/components/dashboard/kpi-card-premium";
 import { AnalyticsAreaChart } from "@/components/dashboard/analytics-area-chart";
 import { SimpleBarList } from "@/components/dashboard/simple-bar-list";
 import { dashboard, referralChannels } from "@/lib/dashboard-data";
@@ -143,33 +139,40 @@ export default function DashboardOverviewPage() {
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <KpiCardIcon
-              title="Vues totales"
+          <KpiGrid>
+            <KpiCardPremium
+              label="Vues totales"
               value="1 566"
-              delta="+12.4% vs semaine dernière"
-              icon={MousePointerClick}
+              delta="+12.4%"
+              trend="up"
+              footer="Trafic en hausse"
+              subfooter="Vs semaine dernière"
             />
-            <KpiCardIcon
-              title="Visiteurs uniques"
+            <KpiCardPremium
+              label="Visiteurs uniques"
               value="1 048"
-              delta="+5.8% vs semaine dernière"
-              icon={Eye}
+              delta="+5.8%"
+              trend="up"
+              footer="Audience qualifiée"
+              subfooter="Vs semaine dernière"
             />
-            <KpiCardIcon
-              title="Taux de conversion"
+            <KpiCardPremium
+              label="Taux de conversion"
               value="4.2%"
-              delta="-0.3% vs semaine dernière"
-              icon={Activity}
-              deltaTone="down"
+              delta="-0.3%"
+              trend="down"
+              footer="Légère baisse"
+              subfooter="À surveiller cette semaine"
             />
-            <KpiCardIcon
-              title="Durée moyenne"
+            <KpiCardPremium
+              label="Durée moyenne"
               value="3m 24s"
-              delta="+18s vs semaine dernière"
-              icon={Timer}
+              delta="+18s"
+              trend="up"
+              footer="Engagement accru"
+              subfooter="Vs semaine dernière"
             />
-          </div>
+          </KpiGrid>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <Card>
