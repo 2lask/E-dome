@@ -42,8 +42,13 @@ const DASHBOARD_PATHS = new Set([
   "/favoris",
 ]);
 
+/* Largeur de la sidebar collapsed (icones uniquement). Elle se deroule
+   en overlay au survol — le contenu ne se redecale pas, on offset
+   simplement de cette largeur fixe. Doit rester sync avec COLLAPSED_WIDTH
+   dans sidebar.tsx. */
+const SIDEBAR_COLLAPSED_WIDTH = 56;
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -87,15 +92,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               deborde. Le scroll est gere par le window (body) — pas par
               un container interne avec overflow-y:auto. */}
           <div className="app-shell flex" style={{ background: "var(--background)", color: "var(--foreground)", minHeight: "100vh" }}>
-              {/* Sidebar - desktop */}
+              {/* Sidebar desktop : hover-to-expand. Largeur reelle 56px
+                  toujours dans le flow, mais s'agrandit en overlay (z-40) au
+                  survol — le contenu ne se redecale pas. */}
               <div className="hidden md:block">
-                <Sidebar
-                  collapsed={sidebarCollapsed}
-                  onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                />
+                <Sidebar />
               </div>
 
-              {/* Mobile sidebar overlay : fade-in du voile, slide-in de la sidebar */}
+              {/* Mobile sidebar overlay : fade-in du voile, slide-in de la sidebar.
+                  forceExpanded pour que la sidebar soit a 280px immediatement. */}
               {mobileMenuOpen && (
                 <div className="fixed inset-0 z-50 md:hidden">
                   <div
@@ -109,19 +114,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     aria-modal="true"
                     aria-label="Menu de navigation"
                   >
-                    <Sidebar
-                      collapsed={false}
-                      onToggle={() => setMobileMenuOpen(false)}
-                    />
+                    <Sidebar forceExpanded />
                   </div>
                 </div>
               )}
 
               {/* Main content */}
               <div
-                className="flex-1 flex flex-col min-h-screen transition-all duration-300 app-content"
+                className="flex-1 flex flex-col min-h-screen app-content"
                 style={{
-                  marginLeft: sidebarCollapsed ? "72px" : "240px",
+                  marginLeft: `${SIDEBAR_COLLAPSED_WIDTH}px`,
                 }}
               >
                 {/* Demo banner */}

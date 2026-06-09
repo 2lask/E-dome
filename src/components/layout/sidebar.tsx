@@ -3,6 +3,7 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   Home,
   Search,
@@ -13,8 +14,7 @@ import {
   Bell,
   LogOut,
   User as UserIcon,
-  ChevronLeft,
-  ChevronRight,
+  ChevronDown,
   Building2,
   ShoppingBag,
   GraduationCap,
@@ -22,6 +22,11 @@ import {
   CalendarDays,
   Briefcase,
   LayoutGrid,
+  FileText,
+  BarChart3,
+  Users,
+  CalendarCheck,
+  Heart,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -29,26 +34,45 @@ import { conversations } from "@/lib/mock-data";
 import { QuickLauncher } from "./quick-launcher";
 
 /* ─────────────────────────────────────────────────────────────
-   Sidebar refonte épurée — 6 entrées visibles.
-   - Accueil, Explorer, Messages, Dashboard, +Créer (popover),
-     Avatar (popover Profil/Paramètres/Notifications/Quitter).
-   - Toutes les routes existantes restent accessibles. Les anciennes
-     entrées /formations, /services, /boutique, /live, /evenements
-     seront atteintes via le hub Explorer (Étape 3) ; /statistiques,
-     /reservations, /apporteurs, /favoris via les onglets Dashboard
-     (Étape 3). En attendant, leurs URLs directes fonctionnent.
+   Sidebar — refonte hover-to-expand + submenus.
+
+   - Largeur 56px par defaut (collapsed). Au survol souris,
+     elle se deroule a 280px en overlay au-dessus du contenu
+     (le contenu ne se decale pas — pattern Linear/Notion).
+   - Sous-menus collapsibles sur Explorer (Biens/Boutique/
+     Formations/Services/Live/Evenements) et Dashboard (Vue
+     ensemble/Annonces/Statistiques/Reservations/Apporteurs/
+     Favoris) — auto-ouverts quand on est sur une page enfant.
+   - Bas de sidebar : "Compte" sobre (Settings icon, pas de
+     photo ni de nom) qui ouvre le menu Profil/Notifications/
+     Parametres/Quitter.
+   - Mobile : la sidebar n'est pas affichee (md:hidden dans le
+     layout). Pour le drawer mobile, on passe forceExpanded.
    ───────────────────────────────────────────────────────────── */
+
+const COLLAPSED_WIDTH = 56;
+const EXPANDED_WIDTH = 280;
+
+interface SubItem {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+}
 
 interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
   badge?: number;
+  /** Routes qui rendent ce parent actif. */
+  matchPrefixes?: string[];
+  /** Sous-menu optionnel. */
+  subItems?: SubItem[];
 }
 
 interface SidebarProps {
-  collapsed: boolean;
-  onToggle: () => void;
+  /** Force le mode etendu (utilise pour le drawer mobile). */
+  forceExpanded?: boolean;
 }
 
 const CREATE_ITEMS: { label: string; href: string; icon: LucideIcon; desc: string }[] = [
@@ -60,9 +84,29 @@ const CREATE_ITEMS: { label: string; href: string; icon: LucideIcon; desc: strin
   { label: "Proposer un service", href: "/services", icon: Briefcase, desc: "Prestataire / artisan" },
 ];
 
-export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+const EXPLORER_SUB: SubItem[] = [
+  { label: "Biens", href: "/explorer", icon: Building2 },
+  { label: "Boutique", href: "/boutique", icon: ShoppingBag },
+  { label: "Formations", href: "/formations", icon: GraduationCap },
+  { label: "Services", href: "/services", icon: Briefcase },
+  { label: "Live", href: "/live", icon: Video },
+  { label: "Événements", href: "/evenements", icon: CalendarDays },
+];
+
+const DASHBOARD_SUB: SubItem[] = [
+  { label: "Vue d'ensemble", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Annonces", href: "/dashboard/annonces", icon: FileText },
+  { label: "Statistiques", href: "/statistiques", icon: BarChart3 },
+  { label: "Réservations", href: "/reservations", icon: CalendarCheck },
+  { label: "Apporteurs", href: "/apporteurs", icon: Users },
+  { label: "Favoris", href: "/favoris", icon: Heart },
+];
+
+export function Sidebar({ forceExpanded = false }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isHovered, setIsHovered] = useState(false);
+  const isExpanded = forceExpanded || isHovered;
 
   const unreadMessages = useMemo(
     () => conversations.reduce((sum, c) => sum + c.unreadCount, 0),
@@ -71,24 +115,55 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   const navItems: NavItem[] = useMemo(
     () => [
-      { label: "Accueil", href: "/feed", icon: Home },
-      { label: "Explorer", href: "/explorer", icon: Search },
-      { label: "Messages", href: "/messages", icon: MessageCircle, badge: unreadMessages > 0 ? unreadMessages : undefined },
-      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Accueil", href: "/feed", icon: Home, matchPrefixes: ["/feed", "/"] },
+      {
+        label: "Explorer",
+        href: "/explorer",
+        icon: Search,
+        matchPrefixes: ["/explorer", "/boutique", "/formations", "/services", "/live", "/evenements"],
+        subItems: EXPLORER_SUB,
+      },
+      {
+        label: "Messages",
+        href: "/messages",
+        icon: MessageCircle,
+        badge: unreadMessages > 0 ? unreadMessages : undefined,
+        matchPrefixes: ["/messages"],
+      },
+      {
+        label: "Dashboard",
+        href: "/dashboard",
+        icon: LayoutDashboard,
+        matchPrefixes: ["/dashboard", "/statistiques", "/reservations", "/apporteurs", "/favoris"],
+        subItems: DASHBOARD_SUB,
+      },
     ],
     [unreadMessages]
   );
 
-  const isActive = (href: string) => {
-    if (href === "/feed") return pathname === "/feed" || pathname === "/";
+  const isItemActive = (item: NavItem) => {
+    if (!item.matchPrefixes) return pathname.startsWith(item.href);
+    return item.matchPrefixes.some((p) => (p === "/" ? pathname === "/" : pathname.startsWith(p)));
+  };
+  const isSubItemActive = (href: string) => {
+    if (href === "/dashboard") return pathname === "/dashboard";
+    if (href === "/explorer") return pathname === "/explorer";
     return pathname.startsWith(href);
   };
 
+  // Submenu : auto-ouvert quand l'item parent est actif.
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  useEffect(() => {
+    const active = navItems.find((it) => it.subItems && isItemActive(it));
+    if (active) setOpenSubmenu(active.href);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   const [createOpen, setCreateOpen] = useState(false);
-  const [avatarOpen, setAvatarOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [launcherOpen, setLauncherOpen] = useState(false);
 
-  // Raccourci global Cmd+K / Ctrl+K pour ouvrir le launcher
+  // Cmd+K / Ctrl+K : ouvre le QuickLauncher.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
@@ -99,82 +174,82 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
   const createRef = useRef<HTMLDivElement>(null);
-  const avatarRef = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!createOpen && !avatarOpen) return;
+    if (!createOpen && !accountOpen) return;
     const onDown = (e: MouseEvent) => {
       if (createOpen && createRef.current && !createRef.current.contains(e.target as Node)) {
         setCreateOpen(false);
       }
-      if (avatarOpen && avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
-        setAvatarOpen(false);
+      if (accountOpen && accountRef.current && !accountRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
       }
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
-  }, [createOpen, avatarOpen]);
+  }, [createOpen, accountOpen]);
 
   useEffect(() => {
     setCreateOpen(false);
-    setAvatarOpen(false);
+    setAccountOpen(false);
   }, [pathname]);
 
   return (
-    <aside
-      className="fixed left-0 top-0 h-screen flex flex-col z-40 transition-all duration-300 overflow-hidden"
+    <motion.aside
+      initial={false}
+      animate={{ width: isExpanded ? EXPANDED_WIDTH : COLLAPSED_WIDTH }}
+      transition={{ type: "tween", ease: "easeOut", duration: 0.18 }}
+      onMouseEnter={() => !forceExpanded && setIsHovered(true)}
+      onMouseLeave={() => !forceExpanded && setIsHovered(false)}
+      className="fixed left-0 top-0 h-screen flex flex-col z-40 overflow-hidden"
       style={{
-        width: collapsed ? 72 : 240,
         background: "var(--card)",
         borderRight: "1px solid var(--card-border)",
       }}
     >
-      {/* Brand + toggle */}
-      <div className="flex items-center justify-between px-4 h-16 shrink-0">
-        {!collapsed && (
-          <Link href="/feed" className="text-xl font-semibold tracking-tight">
-            <span style={{ color: "var(--primary)" }}>E-</span>
-            <span style={{ color: "var(--foreground)" }}>Dome</span>
-          </Link>
+      {/* Brand : "E" seul en collapsed (logo), "E-Dome" en deroule.
+          Le tiret apparait/disparait avec "Dome" pour eviter l'orphelin "E-". */}
+      <Link
+        href="/feed"
+        className={cn(
+          "flex items-center h-14 shrink-0 text-base font-semibold tracking-tight whitespace-nowrap",
+          isExpanded ? "px-4" : "justify-center"
         )}
-        <button
-          onClick={onToggle}
-          aria-label={collapsed ? "Agrandir la barre latérale" : "Réduire la barre latérale"}
-          aria-expanded={!collapsed}
-          className="flex items-center justify-center w-11 h-11 rounded-lg transition-colors cursor-pointer"
-          style={{ color: "var(--text-muted)" }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-        >
-          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-        </button>
-      </div>
+        title="Accueil"
+      >
+        <span style={{ color: "var(--primary)" }}>E</span>
+        {isExpanded && (
+          <motion.span
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.16, delay: 0.04 }}
+            style={{ color: "var(--foreground)" }}
+          >
+            -Dome
+          </motion.span>
+        )}
+      </Link>
 
-      {/* Bouton "Tout" — lanceur d'accès rapide à toutes les fonctionnalités.
-          Ne surcharge pas la sidebar (qui reste à 6 entrées) — ouvre un
-          panneau plein écran avec recherche + grille de catégories. */}
-      <div className="px-3 pt-1 pb-1">
+      {/* Tout (Cmd+K) */}
+      <div className="px-2 pb-1">
         <button
           onClick={() => setLauncherOpen(true)}
           className={cn(
-            "w-full flex items-center gap-3 rounded-xl transition-colors cursor-pointer",
-            collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
+            "w-full flex items-center gap-3 rounded-lg transition-colors cursor-pointer h-9 whitespace-nowrap",
+            isExpanded ? "px-3" : "px-0 justify-center"
           )}
-          style={{
-            background: "var(--hover-bg)",
-            color: "var(--foreground)",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--card-border)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-          title={collapsed ? "Tout (⌘K)" : "Toutes les fonctionnalités"}
+          style={{ background: "var(--hover-bg)", color: "var(--foreground)" }}
+          title={!isExpanded ? "Tout (⌘K)" : undefined}
         >
-          <LayoutGrid size={18} />
-          {!collapsed && (
+          <LayoutGrid size={16} className="shrink-0" />
+          {isExpanded && (
             <>
-              <span className="font-medium text-sm">Tout</span>
-              <span
-                className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md font-medium tabular-nums"
+              <span className="text-sm font-medium flex-1 text-left">Tout</span>
+              <kbd
+                className="text-[10px] px-1.5 py-0.5 rounded font-medium tabular-nums shrink-0"
                 style={{
                   background: "var(--card)",
                   color: "var(--text-muted)",
@@ -182,7 +257,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 }}
               >
                 ⌘K
-              </span>
+              </kbd>
             </>
           )}
         </button>
@@ -190,22 +265,19 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       <QuickLauncher open={launcherOpen} onClose={() => setLauncherOpen(false)} />
 
-      {/* Bouton + Créer */}
-      <div className="px-3 pt-1 pb-2 relative" ref={createRef}>
+      {/* Créer */}
+      <div className="px-2 pb-2 relative" ref={createRef}>
         <button
           onClick={() => setCreateOpen((v) => !v)}
           className={cn(
-            "w-full flex items-center gap-3 rounded-xl transition-all duration-200 cursor-pointer",
-            collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
+            "w-full flex items-center gap-3 rounded-lg h-9 cursor-pointer whitespace-nowrap",
+            isExpanded ? "px-3" : "px-0 justify-center"
           )}
-          style={{
-            background: "var(--primary)",
-            color: "var(--primary-foreground)",
-          }}
-          title={collapsed ? "Créer" : undefined}
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+          title={!isExpanded ? "Créer" : undefined}
         >
-          <Plus size={18} strokeWidth={2.4} />
-          {!collapsed && <span className="font-medium text-sm">Créer</span>}
+          <Plus size={16} strokeWidth={2.4} className="shrink-0" />
+          {isExpanded && <span className="text-sm font-medium">Créer</span>}
         </button>
 
         {createOpen && (
@@ -213,9 +285,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             className="absolute z-50 rounded-xl py-1.5 animate-fade-in"
             style={{
               top: "100%",
-              left: collapsed ? 64 : 12,
-              right: collapsed ? "auto" : 12,
-              width: collapsed ? 280 : "auto",
+              left: isExpanded ? 8 : COLLAPSED_WIDTH,
+              right: isExpanded ? 8 : "auto",
+              width: isExpanded ? "auto" : 280,
               background: "var(--card)",
               border: "1px solid var(--card-border)",
               boxShadow: "var(--shadow-card)",
@@ -236,10 +308,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                 >
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
                     style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}
                   >
-                    <Icon size={16} />
+                    <Icon size={14} />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium leading-tight">{item.label}</span>
@@ -254,77 +326,137 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         )}
       </div>
 
-      {/* Nav principale */}
-      <nav className="flex-1 overflow-y-auto px-3 py-1 space-y-0.5 no-scrollbar">
+      {/* Nav principale + sous-menus */}
+      <nav className="flex-1 overflow-y-auto px-2 py-1 space-y-0.5 no-scrollbar">
         {navItems.map((item) => {
-          const active = isActive(item.href);
+          const active = isItemActive(item);
           const Icon = item.icon;
+          const hasSub = !!item.subItems && isExpanded;
+          const subOpen = openSubmenu === item.href;
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              title={collapsed ? item.label : undefined}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
-                active && "font-medium"
-              )}
-              style={{
-                background: active ? "rgba(30,157,241,0.10)" : "transparent",
-                color: active ? "var(--primary)" : "var(--text-secondary)",
-              }}
-              onMouseEnter={(e) => {
-                if (!active) e.currentTarget.style.background = "var(--hover-bg)";
-              }}
-              onMouseLeave={(e) => {
-                if (!active) e.currentTarget.style.background = "transparent";
-              }}
-            >
-              <div className="relative">
-                <Icon size={20} />
-                {item.badge && item.badge > 0 && (
-                  <span
-                    className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
-                    style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+            <div key={item.href}>
+              <div className="flex items-center">
+                <Link
+                  href={item.href}
+                  title={!isExpanded ? item.label : undefined}
+                  className={cn(
+                    "flex-1 flex items-center gap-3 h-9 rounded-lg transition-colors relative whitespace-nowrap",
+                    isExpanded ? "px-3" : "justify-center px-0",
+                    active && "font-medium"
+                  )}
+                  style={{
+                    background: active ? "rgba(30,157,241,0.10)" : "transparent",
+                    color: active ? "var(--primary)" : "var(--text-secondary)",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) e.currentTarget.style.background = "var(--hover-bg)";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) e.currentTarget.style.background = "transparent";
+                  }}
+                >
+                  <div className="relative shrink-0">
+                    <Icon size={18} />
+                    {item.badge && item.badge > 0 && (
+                      <span
+                        className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
+                        style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </div>
+                  {isExpanded && <span className="truncate text-sm">{item.label}</span>}
+                </Link>
+                {hasSub && (
+                  <button
+                    onClick={() => setOpenSubmenu(subOpen ? null : item.href)}
+                    aria-label={subOpen ? "Replier" : "Déplier"}
+                    aria-expanded={subOpen}
+                    className="p-1.5 mr-0.5 rounded transition-colors shrink-0"
+                    style={{ color: "var(--text-muted)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                   >
-                    {item.badge}
-                  </span>
+                    <ChevronDown
+                      size={14}
+                      className={cn("transition-transform duration-150", subOpen && "rotate-180")}
+                    />
+                  </button>
                 )}
               </div>
-              {!collapsed && <span className="truncate">{item.label}</span>}
-            </Link>
+
+              {/* Sous-menu */}
+              {hasSub && subOpen && (
+                <ul
+                  className="ml-5 mt-0.5 mb-1 pl-3 space-y-0.5"
+                  style={{ borderLeft: "1px solid var(--card-border)" }}
+                >
+                  {item.subItems!.map((sub) => {
+                    const SubIcon = sub.icon;
+                    const subActive = isSubItemActive(sub.href);
+                    return (
+                      <li key={sub.href}>
+                        <Link
+                          href={sub.href}
+                          className="flex items-center gap-2 px-2 h-8 rounded-md text-xs transition-colors whitespace-nowrap"
+                          style={{
+                            background: subActive ? "rgba(30,157,241,0.10)" : "transparent",
+                            color: subActive ? "var(--primary)" : "var(--text-muted)",
+                            fontWeight: subActive ? 600 : 500,
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!subActive) e.currentTarget.style.background = "var(--hover-bg)";
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!subActive) e.currentTarget.style.background = "transparent";
+                          }}
+                        >
+                          <SubIcon size={14} className="shrink-0" />
+                          <span className="truncate">{sub.label}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           );
         })}
       </nav>
 
-      {/* Menu compte — trigger discret, sans photo de profil ni nom.
-          La popover (Profil / Notifications / Parametres / Quitter) reste
-          accessible mais le visuel ne s'impose plus en bas de sidebar. */}
-      <div className="px-3 py-3 relative" style={{ borderTop: "1px solid var(--divider)" }} ref={avatarRef}>
+      {/* Compte (Settings) */}
+      <div
+        className="px-2 py-2 relative shrink-0"
+        style={{ borderTop: "1px solid var(--divider)" }}
+        ref={accountRef}
+      >
         <button
-          onClick={() => setAvatarOpen((v) => !v)}
+          onClick={() => setAccountOpen((v) => !v)}
           className={cn(
-            "w-full flex items-center gap-3 rounded-xl transition-all duration-200 cursor-pointer",
-            collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
+            "w-full flex items-center gap-3 rounded-lg h-9 transition-colors cursor-pointer whitespace-nowrap",
+            isExpanded ? "px-3" : "px-0 justify-center"
           )}
           style={{ color: "var(--text-secondary)" }}
           onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
           onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          title={collapsed ? "Compte" : undefined}
+          title={!isExpanded ? "Compte" : undefined}
           aria-label="Ouvrir le menu compte"
-          aria-expanded={avatarOpen}
+          aria-expanded={accountOpen}
         >
-          <Settings size={18} />
-          {!collapsed && <span className="text-sm font-medium">Compte</span>}
+          <Settings size={18} className="shrink-0" />
+          {isExpanded && <span className="text-sm font-medium">Compte</span>}
         </button>
 
-        {avatarOpen && (
+        {accountOpen && (
           <div
             className="absolute z-50 rounded-xl py-1.5 animate-fade-in"
             style={{
               bottom: "calc(100% + 4px)",
-              left: collapsed ? 64 : 12,
-              right: collapsed ? "auto" : 12,
-              width: collapsed ? 220 : "auto",
+              left: isExpanded ? 8 : COLLAPSED_WIDTH,
+              right: isExpanded ? 8 : "auto",
+              width: isExpanded ? "auto" : 220,
               background: "var(--card)",
               border: "1px solid var(--card-border)",
               boxShadow: "var(--shadow-card)",
@@ -344,9 +476,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   style={{ color: "var(--foreground)" }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                  onClick={() => setAvatarOpen(false)}
+                  onClick={() => setAccountOpen(false)}
                 >
-                  <Icon size={16} style={{ color: "var(--text-muted)" }} />
+                  <Icon size={14} style={{ color: "var(--text-muted)" }} />
                   <span>{it.label}</span>
                 </Link>
               );
@@ -356,16 +488,18 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               href="/"
               className="flex items-center gap-3 px-3 py-2 text-sm transition-colors"
               style={{ color: "var(--destructive)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "color-mix(in srgb, var(--destructive) 14%, transparent)")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "color-mix(in srgb, var(--destructive) 14%, transparent)")
+              }
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-              onClick={() => setAvatarOpen(false)}
+              onClick={() => setAccountOpen(false)}
             >
-              <LogOut size={16} />
+              <LogOut size={14} />
               <span>Quitter la maquette</span>
             </Link>
           </div>
         )}
       </div>
-    </aside>
+    </motion.aside>
   );
 }
