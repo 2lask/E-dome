@@ -272,7 +272,10 @@ export default function ExplorerPage() {
           <div style="padding:8px">
             <p style="font-weight:600;margin:0">${prop.title}</p>
             <p style="color:#1e9df1;font-weight:700;margin:4px 0">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix ? ` <span style="font-weight:400;color:#888;font-size:11px">${suffix}</span>` : ""}</p>
-            <p style="color:#888;font-size:12px;margin:0">${prop.location.city}${prop.rating ? ` · ★ ${prop.rating}` : ""}</p>
+            <p style="color:#888;font-size:12px;margin:0;display:flex;align-items:center;gap:4px">
+              <span>${prop.location.city}</span>
+              ${prop.rating ? `<span>·</span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>${prop.rating}</span>` : ""}
+            </p>
             <a href="/explorer/${prop.id}" style="display:block;margin-top:8px;color:#1e9df1;font-size:12px;font-weight:600;text-decoration:none">Voir le bien →</a>
           </div>
         </div>`

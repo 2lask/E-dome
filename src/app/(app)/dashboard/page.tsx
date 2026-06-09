@@ -2,6 +2,14 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import {
+  Home,
+  GraduationCap,
+  Handshake,
+  TrendingUp,
+  Building2,
+  type LucideIcon,
+} from "lucide-react";
 import { useApp } from "@/lib/context";
 import type { Transaction, MonthlyRevenue } from "@/lib/types";
 import { HeroRevenueCard, SecondaryKPICard } from "@/components/dashboard/kpi-cards";
@@ -18,21 +26,15 @@ const PERIODS = [
 
 type DashboardTab = "hote" | "formateur" | "apporteur" | "investisseur" | "agence";
 
-const dashboardTabs: { key: DashboardTab; label: string; icon: string }[] = [
-  { key: "hote", label: "Hôte", icon: "\uD83C\uDFE1" },
-  { key: "formateur", label: "Formateur", icon: "\uD83D\uDCDA" },
-  { key: "apporteur", label: "Apporteur", icon: "\uD83E\uDD1D" },
-  { key: "investisseur", label: "Investisseur", icon: "\uD83D\uDCC8" },
-  { key: "agence", label: "Agence", icon: "\uD83C\uDFE2" },
+const dashboardTabs: { key: DashboardTab; label: string; icon: LucideIcon }[] = [
+  { key: "hote", label: "Hôte", icon: Home },
+  { key: "formateur", label: "Formateur", icon: GraduationCap },
+  { key: "apporteur", label: "Apporteur", icon: Handshake },
+  { key: "investisseur", label: "Investisseur", icon: TrendingUp },
+  { key: "agence", label: "Agence", icon: Building2 },
 ];
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
-
-const currentUser = {
-  firstName: "Léo",
-  lastName: "Martin",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-};
 
 const kpiData = [
   {
@@ -117,14 +119,6 @@ const mockAppointments = [
   { id: "ap1", title: "Visite - Appartement Lausanne", date: "2026-04-03", time: "10:00" },
   { id: "ap2", title: "Signature - Villa Montreux", date: "2026-04-05", time: "14:30" },
   { id: "ap3", title: "Appel - Investisseur Dubaï", date: "2026-04-07", time: "09:00" },
-];
-
-const shortcuts = [
-  { label: "Publier", href: "/publier", icon: "\uD83C\uDFE0" },
-  { label: "Créer formation", href: "/formations/creer", icon: "\uD83D\uDCDA" },
-  { label: "Créer événement", href: "/evenements/creer", icon: "\uD83D\uDCC5" },
-  { label: "Proposer service", href: "/services/proposer", icon: "\uD83D\uDECE\uFE0F" },
-  { label: "Statistiques", href: "/statistiques", icon: "\uD83D\uDCCA" },
 ];
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -237,20 +231,15 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6 animate-fade-in">
-      {/* Welcome banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6">
-        <div className="flex items-center gap-4">
-          <img
-            src={currentUser.avatar}
-            alt=""
-            className="w-14 h-14 rounded-full object-cover border-2 border-[#1e9df1]"
-          />
-          <div>
-            <h1 className="text-xl page-heading text-[var(--foreground)]">
-              Bonjour, {currentUser.firstName}
-            </h1>
-            <p className="text-sm text-[var(--text-muted)] capitalize">{getDateStr()}</p>
-          </div>
+      {/* En-tete : titre de page + date du jour. L'avatar et le nom etaient
+          inutiles (l'utilisateur sait deja qui il est) — la page commence
+          directement par son titre, comme un dashboard Linear/Notion. */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--foreground)]">
+            Tableau de bord
+          </h1>
+          <p className="text-sm text-[var(--text-muted)] capitalize mt-2">{getDateStr()}</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -270,20 +259,23 @@ export default function DashboardPage() {
 
       {/* Role Tabs */}
       <div className="flex gap-1 overflow-x-auto pb-1 -mb-2">
-        {dashboardTabs.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setDashboardTab(t.key)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-xl whitespace-nowrap transition-colors ${
-              dashboardTab === t.key
-                ? "bg-[#1e9df1] text-white"
-                : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-muted)] hover:text-[var(--foreground)] hover:border-[#1e9df1]/30"
-            }`}
-          >
-            <span>{t.icon}</span>
-            <span>{t.label}</span>
-          </button>
-        ))}
+        {dashboardTabs.map((t) => {
+          const Icon = t.icon;
+          return (
+            <button
+              key={t.key}
+              onClick={() => setDashboardTab(t.key)}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl whitespace-nowrap transition-colors ${
+                dashboardTab === t.key
+                  ? "bg-[#1e9df1] text-white"
+                  : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-muted)] hover:text-[var(--foreground)] hover:border-[#1e9df1]/30"
+              }`}
+            >
+              <Icon size={16} />
+              <span>{t.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* ─── Hôte Tab ─── */}
@@ -365,14 +357,23 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="w-full h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
+                    {/* Barre monochrome : foreground tant que l'objectif n'est
+                        pas atteint, success (vert) une fois a 100%. Coherent
+                        avec la regle "color only vert/rouge" des KPIs. */}
+                    <div className="w-full h-1.5 bg-[var(--input-bg)] rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-[#1e9df1] transition-all duration-500"
-                        style={{ width: `${pct}%` }}
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${pct}%`,
+                          background: pct >= 100 ? "var(--success)" : "var(--foreground)",
+                        }}
                       />
                     </div>
-                    <div className="text-xs text-[var(--text-muted)]">
-                      {goal.current} / {goal.target} ({pct.toFixed(0)}%)
+                    <div className="flex items-baseline justify-between text-xs">
+                      <span className="text-[var(--foreground)] tabular-nums font-medium">
+                        {goal.current} <span className="text-[var(--text-muted)] font-normal">/ {goal.target}</span>
+                      </span>
+                      <span className="text-[var(--text-muted)] tabular-nums">{pct.toFixed(0)}%</span>
                     </div>
                   </>
                 )}
@@ -558,24 +559,25 @@ export default function DashboardPage() {
             { name: "Appart. Vue Lac", occupation: 72, vues: 156, revenus: 2800 },
             { name: "Studio Centre-Ville", occupation: 65, vues: 98, revenus: 1450 },
           ].map((prop) => (
-            <div key={prop.name} className="border border-[var(--card-border)] rounded-xl p-4 space-y-3">
+            <div key={prop.name} className="border border-[var(--card-border)] rounded-xl p-5 space-y-4">
               <h3 className="text-sm font-semibold text-[var(--foreground)]">{prop.name}</h3>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-[var(--text-muted)]">Taux d&apos;occupation</span>
-                  <span className="text-[var(--foreground)] font-medium">{prop.occupation}%</span>
+                  <span className="text-[var(--foreground)] font-medium tabular-nums">{prop.occupation}%</span>
                 </div>
-                <div className="w-full h-2 bg-[var(--input-bg)] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full bg-[#1e9df1] transition-all duration-500" style={{ width: `${prop.occupation}%` }} />
+                {/* Barre monochrome — coherent avec Goals et KPIs. */}
+                <div className="w-full h-1.5 bg-[var(--input-bg)] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full bg-[var(--foreground)] transition-all duration-500" style={{ width: `${prop.occupation}%` }} />
                 </div>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-[var(--text-muted)]">Vues cette semaine</span>
-                <span className="text-[var(--foreground)] font-medium">{prop.vues}</span>
+                <span className="text-[var(--foreground)] font-medium tabular-nums">{prop.vues}</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between text-xs pt-2 border-t border-[var(--card-border)]">
                 <span className="text-[var(--text-muted)]">Revenus du mois</span>
-                <span className="text-[#1e9df1] font-medium">{formatPrice(prop.revenus)}</span>
+                <span className="text-[var(--foreground)] font-semibold tabular-nums">{formatPrice(prop.revenus)}</span>
               </div>
             </div>
           ))}
@@ -614,22 +616,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Shortcuts */}
-      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5">
-        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Raccourcis</h2>
-        <div className="flex flex-wrap gap-3">
-          {shortcuts.map((s) => (
-            <Link
-              key={s.href}
-              href={s.href}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--card-border)] hover:border-[#1e9df1]/50 text-sm text-[var(--foreground)] transition-colors"
-            >
-              <span className="w-6 h-6 rounded bg-[#1e9df1]/10 flex items-center justify-center text-xs text-[#1e9df1] font-bold">{s.icon}</span>
-              <span>{s.label}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
+      {/* Section "Raccourcis" supprimee : redondante. Publier / Creer formation
+          / Creer evenement / Proposer service sont deja dans le bouton +Creer
+          de la sidebar, et Statistiques est dans les onglets Dashboard en haut. */}
       </>
       )}
 

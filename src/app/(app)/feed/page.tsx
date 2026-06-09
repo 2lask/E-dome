@@ -546,7 +546,7 @@ type CustomCTA = { href: string; title: string; subtitle: string; icon: "users" 
 const CUSTOM_CTA: Record<string, CustomCTA> = {
   p6: { href: "/apporteurs", title: "Rejoindre le réseau d'apporteurs", subtitle: "Accès aux deals off-market", icon: "users" },
   p11: { href: "/recherche?q=marrakech", title: "Explorer Marrakech", subtitle: "Biens disponibles dans la médina", icon: "search" },
-  p23: { href: "/profil/u1", title: "Voir le profil de Sophie", subtitle: "Hôte Lausanne · 4.8 ★ · 89 avis", icon: "user" },
+  p23: { href: "/profil/u1", title: "Voir le profil de Sophie", subtitle: "Hôte Lausanne · 4.8/5 · 89 avis", icon: "user" },
   p25: { href: "/recherche?q=marrakech", title: "Découvrir le Maroc", subtitle: "Riads & investissements patrimoine", icon: "search" },
 };
 

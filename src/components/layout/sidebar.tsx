@@ -296,34 +296,25 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         })}
       </nav>
 
-      {/* Avatar + menu compte */}
+      {/* Menu compte — trigger discret, sans photo de profil ni nom.
+          La popover (Profil / Notifications / Parametres / Quitter) reste
+          accessible mais le visuel ne s'impose plus en bas de sidebar. */}
       <div className="px-3 py-3 relative" style={{ borderTop: "1px solid var(--divider)" }} ref={avatarRef}>
         <button
           onClick={() => setAvatarOpen((v) => !v)}
           className={cn(
             "w-full flex items-center gap-3 rounded-xl transition-all duration-200 cursor-pointer",
-            collapsed ? "justify-center px-2 py-2" : "px-2 py-2"
+            collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
           )}
+          style={{ color: "var(--text-secondary)" }}
           onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
           onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          title={collapsed ? "Léo Martin" : undefined}
+          title={collapsed ? "Compte" : undefined}
+          aria-label="Ouvrir le menu compte"
+          aria-expanded={avatarOpen}
         >
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
-            style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-          >
-            LM
-          </div>
-          {!collapsed && (
-            <div className="flex-1 min-w-0 text-left">
-              <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>
-                Léo Martin
-              </p>
-              <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>
-                Membre Fondateur
-              </p>
-            </div>
-          )}
+          <Settings size={18} />
+          {!collapsed && <span className="text-sm font-medium">Compte</span>}
         </button>
 
         {avatarOpen && (
