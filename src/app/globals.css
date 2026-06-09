@@ -219,6 +219,24 @@ body {
   /* Tabular numerals : aligne les chiffres dans les KPI/tables/prix.
      Évite le jitter visuel quand un montant change. */
   font-feature-settings: "tnum";
+  /* Defense : assure que le body peut toujours scroller verticalement
+     sur desktop. Si un JS pose body.style.position = fixed (lock),
+     l'inline style l'emporte ; sinon le scroll natif fonctionne. */
+  overflow-y: auto;
+  min-height: 100vh;
+}
+
+/* Defense secondaire : si position:fixed est applique au body (lock
+   modal mal nettoye), on annule sur desktop. Le lock est utile uniquement
+   pour mobile (bottom-sheet) — sur desktop les modals sont centres et
+   n'ont pas besoin de bloquer le scroll body. */
+@media (hover: hover) and (pointer: fine) {
+  body[style*="position: fixed"],
+  body[style*="position:fixed"] {
+    position: static !important;
+    top: auto !important;
+    overflow-y: auto !important;
+  }
 }
 
 /* ─── PWA app-feel : strip browser-isms sur le sous-arbre (app)/ ────────
