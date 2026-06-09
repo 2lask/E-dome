@@ -10,9 +10,8 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ExplorerTabs } from "@/components/layout/explorer-tabs";
-import { DashboardTabs } from "@/components/layout/dashboard-tabs";
 
-/* Routes des hubs Explorer / Dashboard — liste blanche explicite.
+/* Routes des hubs Explorer — liste blanche explicite.
    Les onglets de hub sont rendus uniquement sur ces pathnames exacts.
    Toute sous-route détail (/explorer/[id], /boutique/[id], /formations/[id],
    etc.) ne matche pas et n'affiche donc pas les onglets — c'est du bruit
@@ -20,8 +19,7 @@ import { DashboardTabs } from "@/components/layout/dashboard-tabs";
 
    Sous-routes "compagnes" listées car légitimes :
    - /boutique/vendre, /formations/creer, /evenements/creer : formulaires
-     de création qui restent dans le pôle.
-   - /dashboard/annonces : sous-onglet du hub Dashboard. */
+     de création qui restent dans le pôle. */
 const EXPLORER_PATHS = new Set([
   "/explorer",
   "/boutique",
@@ -32,14 +30,6 @@ const EXPLORER_PATHS = new Set([
   "/live",
   "/evenements",
   "/evenements/creer",
-]);
-const DASHBOARD_PATHS = new Set([
-  "/dashboard",
-  "/dashboard/annonces",
-  "/statistiques",
-  "/reservations",
-  "/apporteurs",
-  "/favoris",
 ]);
 
 /* Largeur de la sidebar collapsed (icones uniquement). Elle se deroule
@@ -53,22 +43,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const showExplorerTabs = EXPLORER_PATHS.has(pathname);
-  const showDashboardTabs = DASHBOARD_PATHS.has(pathname);
+
+  /* Toutes les routes /dashboard/* sont enveloppees par leur propre
+     DashboardShell (header EDOME + nav 5 onglets). On masque ici la
+     sidebar globale + le Header global + MobileNav pour eviter d'avoir
+     une triple navigation sur ces pages. La banniere demo reste
+     toujours visible (info essentielle). */
+  const isDashboardRoute = pathname.startsWith("/dashboard");
 
   /* Ferme automatiquement la sidebar overlay mobile dès qu'on
-     change de route. Avant ce useEffect, le drawer restait visible
-     ~500 ms après le click sur un lien (sensation de lag sur
-     connexion lente). Maintenant : transition propre. */
+     change de route. */
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
   /* Defense scroll : force-reset les styles inline du body au montage
      ET a chaque changement de route. Si un useLockBodyScroll precedent
-     a laisse body.style.position = "fixed" (cas signale en prod avec un
-     ancien build cache par SW), on s'assure que la page reste scrollable.
-     N'affecte pas les modals actifs car le hook reapplique l'etat juste
-     apres si une instance live est encore montee. */
+     a laisse body.style.position = "fixed", on s'assure que la page
+     reste scrollable. */
   useEffect(() => {
     if (typeof document === "undefined") return;
     const body = document.body;
@@ -87,70 +79,89 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <AppProvider>
       <LanguageProvider>
         <ToastProvider>
-          {/* min-h-screen sur app-shell : ASSURE que le wrapper occupe au
-              moins le viewport, mais peut grandir au-dela quand le contenu
-              deborde. Le scroll est gere par le window (body) — pas par
-              un container interne avec overflow-y:auto. */}
-          <div className="app-shell flex" style={{ background: "var(--background)", color: "var(--foreground)", minHeight: "100vh" }}>
-              {/* Sidebar desktop : hover-to-expand. Largeur reelle 56px
-                  toujours dans le flow, mais s'agrandit en overlay (z-40) au
-                  survol — le contenu ne se redecale pas. */}
-              <div className="hidden md:block">
-                <Sidebar />
+          <div
+            className="app-shell flex"
+            style={{
+              background: "var(--background)",
+              color: "var(--foreground)",
+              minHeight: "100vh",
+            }}
+          >
+            {/* Sidebar globale + drawer mobile : masques sur /dashboard/*
+                car le DashboardShell prend le relais avec sa propre nav. */}
+            {!isDashboardRoute && (
+              <>
+                <div className="hidden md:block">
+                  <Sidebar />
+                </div>
+
+                {mobileMenuOpen && (
+                  <div className="fixed inset-0 z-50 md:hidden">
+                    <div
+                      className="absolute inset-0 bg-black/60 animate-fade-in"
+                      onClick={() => setMobileMenuOpen(false)}
+                    />
+                    <div
+                      className="relative z-10 h-full animate-slide-in-left"
+                      style={{ width: "min(280px, 88vw)" }}
+                      role="dialog"
+                      aria-modal="true"
+                      aria-label="Menu de navigation"
+                    >
+                      <Sidebar forceExpanded />
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Main content */}
+            <div
+              className="flex-1 flex flex-col min-h-screen app-content"
+              style={{
+                marginLeft: isDashboardRoute ? 0 : `${SIDEBAR_COLLAPSED_WIDTH}px`,
+              }}
+            >
+              {/* Banniere demo : toujours visible, meme sur le dashboard. */}
+              <div className="w-full px-4 py-1.5 bg-[#1e9df1]/10 border-b border-[#1e9df1]/20 text-center text-xs text-[#1e9df1] flex items-center justify-center gap-1.5">
+                <Wrench size={12} strokeWidth={2} />
+                <span>
+                  Maquette de démonstration — Toutes les données sont fictives ·{" "}
+                  <a
+                    href="/"
+                    className="underline hover:opacity-80"
+                    title="Retour à la page d'accueil de la maquette E-Dome"
+                  >
+                    En savoir plus
+                  </a>
+                </span>
               </div>
 
-              {/* Mobile sidebar overlay : fade-in du voile, slide-in de la sidebar.
-                  forceExpanded pour que la sidebar soit a 280px immediatement. */}
-              {mobileMenuOpen && (
-                <div className="fixed inset-0 z-50 md:hidden">
-                  <div
-                    className="absolute inset-0 bg-black/60 animate-fade-in"
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                  <div
-                    className="relative z-10 h-full animate-slide-in-left"
-                    style={{ width: "min(280px, 88vw)" }}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="Menu de navigation"
-                  >
-                    <Sidebar forceExpanded />
-                  </div>
-                </div>
+              {/* Header global : masque sur /dashboard/* (DashboardShell a
+                  son propre header EDOME). */}
+              {!isDashboardRoute && (
+                <Header onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} />
               )}
 
-              {/* Main content */}
-              <div
-                className="flex-1 flex flex-col min-h-screen app-content"
-                style={{
-                  marginLeft: `${SIDEBAR_COLLAPSED_WIDTH}px`,
-                }}
+              <main
+                /* key={pathname} : remount le main à chaque change de route
+                   → relance l'animation app-page-enter. */
+                key={pathname}
+                className={
+                  isDashboardRoute
+                    ? "flex-1 app-page-enter"
+                    : "flex-1 px-4 py-6 md:px-6 pb-20 md:pb-6 app-page-enter"
+                }
               >
-                {/* Demo banner */}
-                <div className="w-full px-4 py-1.5 bg-[#1e9df1]/10 border-b border-[#1e9df1]/20 text-center text-xs text-[#1e9df1] flex items-center justify-center gap-1.5">
-                  <Wrench size={12} strokeWidth={2} />
-                  <span>Maquette de démonstration — Toutes les données sont fictives · <a href="/" className="underline hover:opacity-80" title="Retour à la page d'accueil de la maquette E-Dome">En savoir plus</a></span>
-                </div>
-                <Header
-                  onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
-                />
-                <main
-                  /* key={pathname} : remount le main à chaque change
-                     de route → relance l'animation app-page-enter
-                     (fade + slide-up 6 px) pour un feel "transition
-                     d'app" plutôt que page web instantanée. */
-                  key={pathname}
-                  className="flex-1 px-4 py-6 md:px-6 pb-20 md:pb-6 app-page-enter"
-                >
-                  {showExplorerTabs && <ExplorerTabs />}
-                  {showDashboardTabs && <DashboardTabs />}
-                  {children}
-                </main>
-              </div>
+                {showExplorerTabs && <ExplorerTabs />}
+                {children}
+              </main>
+            </div>
 
-          {/* Mobile bottom nav */}
-          <MobileNav />
-        </div>
+            {/* MobileNav (barre bas mobile) : masque sur /dashboard/* car
+                DashboardShell a sa propre nav horizontale en haut sur mobile. */}
+            {!isDashboardRoute && <MobileNav />}
+          </div>
         </ToastProvider>
       </LanguageProvider>
     </AppProvider>
