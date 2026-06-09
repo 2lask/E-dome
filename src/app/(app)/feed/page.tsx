@@ -9,6 +9,7 @@ import {
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
   Users, Building2, GraduationCap,
   Image as ImageIcon, BarChart3, Film, Paperclip, TrendingUp, TrendingDown, ArrowRight,
+  Plus,
 } from "lucide-react";
 import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
@@ -577,23 +578,82 @@ const CURRENT_USER = U_SOPHIE;
 const formatEventDate = (iso: string) =>
   new Date(iso).toLocaleDateString("fr-CH", { day: "numeric", month: "short", year: "numeric" });
 
-// Render @mentions et #hashtags.
+/* Parse @mentions et #hashtags en liens cliquables.
+   Avant : les @mentions étaient des <span> non cliquables (cul-de-sac
+   UX — clicable visuellement, sans action). Maintenant : les deux
+   pointent vers /recherche?q=<token>. stopPropagation pour ne pas
+   déclencher l'expand du texte ou la fermeture des menus du PostCard.
+   Regex \p{L}\p{N}_ : lettres unicode + chiffres + underscore — supporte
+   les accents (@léo) sans casser sur la ponctuation. */
 function renderContent(content: string) {
-  return content.split(/([@#]\S+)/g).map((part, i) => {
-    if (part.startsWith("@")) {
+  return content.split(/([@#][\p{L}\p{N}_]+)/gu).map((part, i) => {
+    if (part.startsWith("@") || part.startsWith("#")) {
       return (
-        <span key={i} className="text-[#1e9df1] cursor-pointer hover:underline">{part}</span>
-      );
-    }
-    if (part.startsWith("#")) {
-      return (
-        <Link key={i} href={`/recherche?q=${encodeURIComponent(part)}`} className="text-[#1e9df1] hover:underline">
+        <Link
+          key={i}
+          href={`/recherche?q=${encodeURIComponent(part)}`}
+          onClick={(e) => e.stopPropagation()}
+          className="text-[#1e9df1] hover:underline"
+        >
           {part}
         </Link>
       );
     }
     return <React.Fragment key={i}>{part}</React.Fragment>;
   });
+}
+
+// ─── DoubleTapLike : overlay coeur Instagram-style ────────────────────────
+/* Détecte un double-tap sur le bloc media et trigger un like + animation
+   coeur centré. Convention Instagram :
+   - Si déjà liké, on N'unlike PAS (double-tap n'est jamais un toggle), on
+     se contente de rejouer l'animation.
+   - Seuil : 2 taps < 300 ms d'intervalle.
+   - Sur desktop on n'écoute que onClick (touch fait clic aussi), donc le
+     handler marche pour souris + touch.
+   - Animation : coeur scale 0.4 -> 1.15 -> 1 -> fade-out, 700ms. */
+function DoubleTapLike({
+  alreadyLiked,
+  onLike,
+  children,
+}: {
+  alreadyLiked: boolean;
+  onLike: () => void;
+  children: React.ReactNode;
+}) {
+  const lastTapRef = useRef(0);
+  const [burst, setBurst] = useState(0); // incrémenté pour re-trigger l'anim
+
+  const handleClick = (e: React.MouseEvent) => {
+    const now = Date.now();
+    const dt = now - lastTapRef.current;
+    if (dt > 0 && dt < 300) {
+      e.stopPropagation();
+      if (!alreadyLiked) onLike();
+      setBurst((b) => b + 1);
+      lastTapRef.current = 0; // reset pour éviter triple-tap chained
+    } else {
+      lastTapRef.current = now;
+    }
+  };
+
+  return (
+    <div className="relative" onClick={handleClick}>
+      {children}
+      {burst > 0 && (
+        <div
+          key={burst}
+          aria-hidden
+          className="absolute top-1/2 left-1/2 pointer-events-none animate-double-tap-heart z-10"
+        >
+          <Heart
+            className="w-24 h-24 drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+            style={{ color: "var(--danger)", fill: "var(--danger)" }}
+          />
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ─── Media (VideoPlayer / ImageView) ───────────────────────────────────────
@@ -1351,11 +1411,13 @@ function PostCard({
           longueur (1/2/3/4+). Posts texte seul : aucun bloc media. */}
       {post.media.length > 0 && (
         <div className="px-4">
-          {isVideo ? (
-            <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
-          ) : (
-            <MediaGallery media={post.media} />
-          )}
+          <DoubleTapLike alreadyLiked={liked} onLike={onToggleLike}>
+            {isVideo ? (
+              <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
+            ) : (
+              <MediaGallery media={post.media} />
+            )}
+          </DoubleTapLike>
         </div>
       )}
 
@@ -2353,6 +2415,29 @@ export default function FeedPage() {
           </div>
         </div>
       )}
+
+      {/* ─── FAB compose mobile ───────────────────────────────────────────
+          Bouton flottant en bas-droit (au-dessus de la mobile-nav et de
+          la safe-area) qui scrolle vers le composer en haut du feed puis
+          le focus, à la Instagram (icône + au-dessus de la nav).
+          Caché desktop : le composer est déjà visible en permanence. */}
+      <button
+        type="button"
+        onClick={() => {
+          composerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          setTimeout(() => composerRef.current?.focus(), 350);
+        }}
+        aria-label="Rédiger une publication"
+        className="md:hidden fixed right-4 z-40 w-14 h-14 rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+        style={{
+          bottom: "calc(80px + env(safe-area-inset-bottom) + 0.5rem)",
+          background: "var(--primary)",
+          color: "var(--primary-foreground, #fff)",
+          boxShadow: "0 10px 24px -6px color-mix(in srgb, var(--primary) 60%, transparent)",
+        }}
+      >
+        <Plus size={26} strokeWidth={2.5} />
+      </button>
 
       {/* ─── Picker d'attachement (Bien / Formation / Événement / Analyse) ─── */}
       {attachPicker && (
