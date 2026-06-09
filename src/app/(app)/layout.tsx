@@ -58,6 +58,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
   }, [pathname]);
 
+  /* Defense scroll : force-reset les styles inline du body au montage
+     ET a chaque changement de route. Si un useLockBodyScroll precedent
+     a laisse body.style.position = "fixed" (cas signale en prod avec un
+     ancien build cache par SW), on s'assure que la page reste scrollable.
+     N'affecte pas les modals actifs car le hook reapplique l'etat juste
+     apres si une instance live est encore montee. */
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const body = document.body;
+    const html = document.documentElement;
+    body.style.position = "";
+    body.style.top = "";
+    body.style.left = "";
+    body.style.right = "";
+    body.style.width = "";
+    body.style.overflowY = "";
+    delete html.dataset.lockedScrollY;
+    delete html.dataset.lockCount;
+  }, [pathname]);
+
   return (
     <AppProvider>
       <LanguageProvider>

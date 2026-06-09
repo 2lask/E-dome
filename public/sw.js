@@ -1,4 +1,4 @@
-const CACHE_NAME = "edome-v7";
+const CACHE_NAME = "edome-v8";
 const OFFLINE_URL = "/offline.html";
 
 const PRECACHE_URLS = [
