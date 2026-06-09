@@ -3,6 +3,7 @@
 import { use } from "react";
 import Link from "next/link";
 import { Film } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 
 /* ─── Replay Data ───────────────────────────────────────────────────────── */
 
@@ -42,12 +43,7 @@ export default function ReplayPage({ params }: { params: Promise<{ id: string }>
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 animate-fade-in">
       {/* Back link */}
-      <Link
-        href="/live"
-        className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--foreground)] transition"
-      >
-        &larr; Retour aux lives
-      </Link>
+      <BackButton fallbackHref="/live" label="Retour aux lives" />
 
       {/* YouTube Embed */}
       <div className="rounded-xl overflow-hidden bg-gray-900">

@@ -2,7 +2,16 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { BellOff } from "lucide-react";
+import {
+  BellOff,
+  MessageCircle,
+  Calendar,
+  Heart,
+  UserPlus,
+  Bell as BellIcon,
+  CircleDollarSign,
+  type LucideIcon,
+} from "lucide-react";
 import type { Notification } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
@@ -84,13 +93,13 @@ export default function NotificationsPage() {
     [markAsRead, router]
   );
 
-  const typeIcons: Record<Notification["type"], string> = {
-    message: "\u{1F4AC}",
-    reservation: "\u{1F4C5}",
-    review: "\u{2764}\u{FE0F}",
-    follow: "\u{1F464}",
-    system: "\u{1F514}",
-    payment: "\u{1F4B0}",
+  const typeIcons: Record<Notification["type"], LucideIcon> = {
+    message: MessageCircle,
+    reservation: Calendar,
+    review: Heart,
+    follow: UserPlus,
+    system: BellIcon,
+    payment: CircleDollarSign,
   };
 
   return (
@@ -175,7 +184,9 @@ export default function NotificationsPage() {
             <div key={date}>
               <h3 className="text-xs font-medium text-[var(--text-muted)] mb-3">{date}</h3>
               <div className="space-y-2">
-                {items.map((notif) => (
+                {items.map((notif) => {
+                  const TypeIcon = typeIcons[notif.type];
+                  return (
                   <button
                     key={notif.id}
                     onClick={() => handleClick(notif)}
@@ -185,7 +196,17 @@ export default function NotificationsPage() {
                         : "bg-[#1e9df1]/5 border border-[#1e9df1]/10 hover:bg-[#1e9df1]/10"
                     }`}
                   >
-                    <span className="text-lg flex-shrink-0 mt-0.5">{typeIcons[notif.type]}</span>
+                    <span
+                      className="flex-shrink-0 mt-0.5 w-8 h-8 rounded-full flex items-center justify-center"
+                      style={{
+                        background: notif.read
+                          ? "var(--hover-bg)"
+                          : "color-mix(in srgb, var(--accent) 18%, transparent)",
+                        color: notif.read ? "var(--text-secondary)" : "var(--accent)",
+                      }}
+                    >
+                      <TypeIcon size={16} />
+                    </span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <span className={`text-sm font-medium ${notif.read ? "text-[var(--foreground)]" : "text-[var(--foreground)]"}`}>
@@ -201,7 +222,8 @@ export default function NotificationsPage() {
                       </span>
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}

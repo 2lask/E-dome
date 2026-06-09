@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { AppProvider } from "@/lib/context";
 import { LanguageProvider } from "@/lib/i18n";
@@ -49,6 +49,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const showExplorerTabs = EXPLORER_PATHS.has(pathname);
   const showDashboardTabs = DASHBOARD_PATHS.has(pathname);
+
+  /* Ferme automatiquement la sidebar overlay mobile dès qu'on
+     change de route. Avant ce useEffect, le drawer restait visible
+     ~500 ms après le click sur un lien (sensation de lag sur
+     connexion lente). Maintenant : transition propre. */
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   return (
     <AppProvider>

@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { BlurImage } from "@/components/ui/blur-image";
+import { BackButton } from "@/components/ui/back-button";
 
 /* /boutique/[id] — Fiche produit refondue au standard marketplace (eBay).
 
@@ -438,8 +439,13 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     <div className="min-h-screen text-[var(--foreground)]">
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6 animate-fade-in">
 
+        {/* Back button mobile (le breadcrumb desktop reste plus bas) */}
+        <div className="md:hidden -mt-2">
+          <BackButton fallbackHref="/boutique" />
+        </div>
+
         {/* Breadcrumb */}
-        <nav aria-label="Fil d'Ariane" className="flex items-center gap-1.5 text-xs" style={{ color: "var(--text-muted)" }}>
+        <nav aria-label="Fil d'Ariane" className="hidden md:flex items-center gap-1.5 text-xs" style={{ color: "var(--text-muted)" }}>
           <Link href="/boutique" className="hover:underline" style={{ color: "var(--text-secondary)" }}>
             Boutique
           </Link>

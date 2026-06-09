@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Calendar, Check } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { BackButton } from "@/components/ui/back-button";
 
 /* ─── Mock Data (same as evenements list) ──────────────────────────────── */
 
@@ -67,11 +68,8 @@ export default function EvenementDetailPage() {
       <div className="relative h-72 sm:h-96">
         <img src={event.thumbnail} alt={event.titre} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-        <div className="absolute top-4 left-4">
-          <button onClick={() => router.push("/evenements")} className="flex items-center gap-2 px-4 py-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white rounded-xl text-sm transition-colors">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            Retour
-          </button>
+        <div className="absolute top-4 left-4 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+          <BackButton fallbackHref="/evenements" variant="circle" />
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
           <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${TYPE_COLORS[event.type] || "bg-gray-500/20 text-gray-400"}`}>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -8,6 +9,7 @@ import {
   ChevronDown,
   X,
   Globe,
+  ArrowRight,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useLanguage, type Language } from "@/lib/i18n";
@@ -369,6 +371,18 @@ export function Header({ onMenuToggle }: HeaderProps) {
               <div className="px-3 py-8 text-center" style={{ color: "var(--text-muted)" }}>
                 <p className="text-sm">Aucune nouvelle notification</p>
               </div>
+              <div style={{ borderTop: "1px solid var(--card-border)", margin: "4px 0" }} />
+              <Link
+                href="/notifications"
+                onClick={() => setShowNotifications(false)}
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-medium"
+                style={{ color: "var(--accent)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              >
+                Voir toutes les notifications
+                <ArrowRight size={14} />
+              </Link>
             </div>
           )}
         </div>

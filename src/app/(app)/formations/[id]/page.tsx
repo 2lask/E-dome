@@ -4,6 +4,7 @@ import React, { useState, use, useMemo } from "react";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { Calendar as BookingCallout } from "@/components/ui/calendar";
+import { BackButton } from "@/components/ui/back-button";
 import { useApp } from "@/lib/context";
 import {
   getFormationById,
@@ -160,6 +161,11 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
       <div className="relative">
         <img src={formation.thumbnail} alt={formation.title} className="w-full h-72 md:h-96 object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        {/* Back button : overlay sur l'image hero, variante "circle" pour
+            rester lisible quelle que soit la photo de la formation. */}
+        <div className="absolute top-4 left-4 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+          <BackButton fallbackHref="/formations" variant="circle" />
+        </div>
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 max-w-7xl mx-auto">
           <span className="inline-block px-3 py-1 bg-[#1e9df1] text-white text-xs font-medium rounded-full mb-3">{formation.category}</span>
           <h1 className="text-2xl md:text-4xl page-heading text-white mb-2">{formation.title}</h1>

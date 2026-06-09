@@ -9,6 +9,12 @@ import {
   Plus,
   MessageCircle,
   User,
+  HomeIcon,
+  Store,
+  GraduationCap,
+  Radio,
+  CalendarPlus,
+  Wrench,
   type LucideIcon,
 } from "lucide-react";
 import { LottiePlayer } from "@/components/ui/lottie-player";
@@ -31,13 +37,13 @@ const navItems: MobileNavItem[] = [
   { href: "/profil", icon: User, label: "Profil" },
 ];
 
-const publishMenuItems = [
-  { emoji: "\u{1F3E0}", label: "Publier un bien", href: "/publier" },
-  { emoji: "\u{1F6CD}\u{FE0F}", label: "Vendre un produit", href: "/boutique/vendre" },
-  { emoji: "\u{1F4DA}", label: "Créer une formation", href: "/formations/creer" },
-  { emoji: "\u{1F4E1}", label: "Programmer un live", href: "/live" },
-  { emoji: "\u{1F4C5}", label: "Créer un événement", href: "/evenements/creer" },
-  { emoji: "\u{1F4BC}", label: "Proposer un service", href: "/services" },
+const publishMenuItems: { icon: LucideIcon; label: string; href: string }[] = [
+  { icon: HomeIcon, label: "Publier un bien", href: "/publier" },
+  { icon: Store, label: "Vendre un produit", href: "/boutique/vendre" },
+  { icon: GraduationCap, label: "Créer une formation", href: "/formations/creer" },
+  { icon: Radio, label: "Programmer un live", href: "/live" },
+  { icon: CalendarPlus, label: "Créer un événement", href: "/evenements/creer" },
+  { icon: Wrench, label: "Proposer un service", href: "/services" },
 ];
 
 export function MobileNav() {
@@ -93,22 +99,25 @@ export function MobileNav() {
                     borderColor: "var(--card-border)",
                   }}
                 >
-                  {publishMenuItems.map((mi) => (
-                    <button
-                      key={mi.href}
-                      onClick={() => {
-                        setMenuOpen(false);
-                        router.push(mi.href);
-                      }}
-                      className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 transition-colors"
-                      style={{ color: "var(--foreground)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                    >
-                      <span className="text-base">{mi.emoji}</span>
-                      <span>{mi.label}</span>
-                    </button>
-                  ))}
+                  {publishMenuItems.map((mi) => {
+                    const ItemIcon = mi.icon;
+                    return (
+                      <button
+                        key={mi.href}
+                        onClick={() => {
+                          setMenuOpen(false);
+                          router.push(mi.href);
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 transition-colors"
+                        style={{ color: "var(--foreground)" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                      >
+                        <ItemIcon size={18} className="text-[var(--accent)]" />
+                        <span>{mi.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
 
