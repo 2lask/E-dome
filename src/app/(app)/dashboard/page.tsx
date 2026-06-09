@@ -4,7 +4,8 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useApp } from "@/lib/context";
 import type { Transaction, MonthlyRevenue } from "@/lib/types";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { HeroRevenueCard, SecondaryKPICard } from "@/components/dashboard/kpi-cards";
+import { MonochromeRevenueChart } from "@/components/dashboard/revenue-chart";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -288,33 +289,43 @@ export default function DashboardPage() {
       {/* ─── Hôte Tab ─── */}
       {dashboardTab === "hote" && (
       <>
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpiData.map((kpi) => {
-          const change = kpi.prev > 0 ? ((kpi.value - kpi.prev) / kpi.prev) * 100 : 0;
-          const isUp = change >= 0;
-          return (
-            <div
-              key={kpi.label}
-              className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-5"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-[var(--text-muted)]">{kpi.label}</span>
-                <Sparkline data={kpi.sparkline} />
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="text-2xl font-bold text-[var(--foreground)] tabular-nums">
-                  {kpi.isCurrency ? formatPrice(kpi.value) : kpi.value}
-                  {kpi.suffix || ""}
-                </div>
-              </div>
-              <div className={`text-xs mt-1 ${isUp ? "text-emerald-400" : "text-red-400"}`}>
-                {isUp ? "+" : ""}
-                {change.toFixed(1)}% vs période précédente
-              </div>
-            </div>
-          );
-        })}
+      {/* KPI Cards — refonte monochrome :
+          Le bloc Revenus devient le hero (chiffre 38px/500, devise +
+          variation a cote en plus petit). Les 3 autres metriques
+          (Reservations / Apports / Conversion) deviennent secondaires
+          plus discretes (label 13px gris, valeur 24px). */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Hero Revenus — span 2 colonnes desktop pour donner du poids */}
+        <div className="lg:col-span-2">
+          <HeroRevenueCard
+            current={kpiData[0].value}
+            previous={kpiData[0].prev}
+            label={kpiData[0].label}
+          />
+        </div>
+
+        {/* 3 KPIs secondaires en colonne sur le cote sur desktop, ligne
+            unique mobile via grid-cols-1 du parent + cette grille interne. */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4">
+          <SecondaryKPICard
+            label={kpiData[1].label}
+            value={kpiData[1].value}
+            previous={kpiData[1].prev}
+            format="number"
+          />
+          <SecondaryKPICard
+            label={kpiData[2].label}
+            value={kpiData[2].value}
+            previous={kpiData[2].prev}
+            format="currency"
+          />
+          <SecondaryKPICard
+            label={kpiData[3].label}
+            value={kpiData[3].value}
+            previous={kpiData[3].prev}
+            format="percent"
+          />
+        </div>
       </div>
 
       {/* Goals */}
@@ -393,38 +404,10 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={revenusData}>
-              <defs>
-                {/* Revenus = accent bleu E-Dome (cohérence brand) */}
-                <linearGradient id="colorRevenus" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#1e9df1" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#1e9df1" stopOpacity={0} />
-                </linearGradient>
-                {/* Commissions = émeraude (gain positif, sémantique success) */}
-                <linearGradient id="colorCommissions" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#34d399" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              {/* Grid très atténuée — esprit Linear/Vercel */}
-              <CartesianGrid strokeDasharray="2 6" stroke="rgba(255,255,255,0.06)" vertical={false} />
-              <XAxis dataKey="month" stroke="rgba(255,255,255,0.25)" fontSize={11} tickLine={false} axisLine={false} />
-              <YAxis stroke="rgba(255,255,255,0.25)" fontSize={11} tickLine={false} axisLine={false} width={40} />
-              <Tooltip
-                contentStyle={{
-                  background: "rgba(10,10,10,0.92)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: 12,
-                  backdropFilter: "blur(8px)",
-                  fontSize: 12,
-                }}
-                cursor={{ stroke: "rgba(30,157,241,0.3)", strokeWidth: 1 }}
-              />
-              <Area type="monotone" dataKey="revenus" name="Revenus" stroke="#1e9df1" fill="url(#colorRevenus)" strokeWidth={1.8} dot={false} activeDot={{ r: 4, fill: "#1e9df1", stroke: "#0a0a0a", strokeWidth: 2 }} />
-              <Area type="monotone" dataKey="commissions" name="Rémunération" stroke="#34d399" fill="url(#colorCommissions)" strokeWidth={1.8} dot={false} activeDot={{ r: 4, fill: "#34d399", stroke: "#0a0a0a", strokeWidth: 2 }} />
-            </AreaChart>
-          </ResponsiveContainer>
+          {/* Graphe monochrome : barres grises sauf mois courant accentue
+              en foreground. Plus de degrades, plus de 2eme serie commissions
+              (les commissions sont visibles ailleurs). */}
+          <MonochromeRevenueChart data={revenusData.map(d => ({ month: d.month, revenus: d.revenus }))} height={300} />
         </div>
 
         {/* Transactions */}
