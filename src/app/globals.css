@@ -279,22 +279,46 @@ body {
               transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Quand la PWA est lancée depuis l'écran d'accueil (mode standalone),
-   on pousse encore le strip browser : scrollbars masquées partout dans
-   le sous-arbre app, pas de focus outline (iOS n'a pas ça nativement). */
-@media (display-mode: standalone), (display-mode: fullscreen) {
+/* Scrollbars masquées sur mobile (touch devices) ET en PWA standalone :
+   un user mobile ne s'attend pas à voir une scrollbar de browser, ça
+   rappelle qu'on est dans un site et pas dans une app. On vise large
+   (html + body + tous les descendants .app-shell) car le scroll principal
+   se fait au niveau body, pas dans un container interne. Sur desktop on
+   garde les scrollbars natives (utiles pour la nav web normale). */
+@media (hover: none) and (pointer: coarse) {
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  .app-shell::-webkit-scrollbar,
   .app-shell *::-webkit-scrollbar {
     display: none;
+    width: 0;
+    height: 0;
   }
+  html,
+  body,
+  .app-shell,
   .app-shell * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
+/* Mode standalone (PWA ajoutée à l'écran d'accueil) : on enlève aussi
+   l'outline de focus (iOS n'a pas ça nativement) et on expose une
+   variable utilisable par les composants pour masquer des CTA web. */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .app-shell *::-webkit-scrollbar,
+  .app-shell::-webkit-scrollbar {
+    display: none;
+  }
+  .app-shell *,
+  .app-shell {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
   .app-shell *:focus {
     outline: none;
   }
-  /* Indicateur "PWA standalone" — utile pour appliquer des styles
-     conditionnels ailleurs (ex. masquer un CTA d'installation). */
   .app-shell {
     --is-standalone: 1;
   }
