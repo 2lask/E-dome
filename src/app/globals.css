@@ -221,6 +221,115 @@ body {
   font-feature-settings: "tnum";
 }
 
+/* ─── PWA app-feel : strip browser-isms sur le sous-arbre (app)/ ────────
+   Applique UNIQUEMENT sur .app-shell pour laisser la landing/admin se
+   comporter comme du web normal. L'idée : quand on installe la PWA sur
+   iPhone (Partager > Sur l'écran d'accueil), on doit oublier qu'on est
+   dans un browser.
+
+   - tap highlight (flash bleu Webkit) → transparent
+   - long-press image saver iOS → désactivé
+   - sélection de texte UI → désactivée (réactivée sur les zones
+     `.selectable` et inputs/textareas pour rester usable)
+   - double-tap zoom iOS → annulé via touch-action
+   - rubber-band scroll body → contenu (le bounce reste OK sur les
+     containers internes qui peuvent scroll)
+   - scroll smooth natif iOS sur les containers
+   - active states : opacity-70 instantané sur boutons/liens =
+     feedback tactile "natif" sans framework
+   ─────────────────────────────────────────────────────────────────── */
+.app-shell {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior-y: contain;
+}
+
+/* Les vraies zones de texte sont sélectionnables (post content, message,
+   biographie, etc.). On laisse le user pouvoir copier ce contenu — c'est
+   ce que font les apps natives aussi. */
+.app-shell input,
+.app-shell textarea,
+.app-shell [contenteditable="true"],
+.app-shell .selectable,
+.app-shell .selectable * {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* Active state tactile : tous les boutons/liens flashent en opacity-70
+   au touch. C'est le "tap feedback" iOS, sans transition pour rester
+   immédiat (les transitions sont OK au release). */
+.app-shell button:active,
+.app-shell a:active,
+.app-shell [role="button"]:active,
+.app-shell [role="tab"]:active,
+.app-shell [role="link"]:active {
+  opacity: 0.6;
+  transition: opacity 0s;
+}
+.app-shell button,
+.app-shell a,
+.app-shell [role="button"],
+.app-shell [role="tab"] {
+  transition: opacity 180ms ease-out, background-color 160ms ease-out,
+              transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Quand la PWA est lancée depuis l'écran d'accueil (mode standalone),
+   on pousse encore le strip browser : scrollbars masquées partout dans
+   le sous-arbre app, pas de focus outline (iOS n'a pas ça nativement). */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .app-shell *::-webkit-scrollbar {
+    display: none;
+  }
+  .app-shell * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .app-shell *:focus {
+    outline: none;
+  }
+  /* Indicateur "PWA standalone" — utile pour appliquer des styles
+     conditionnels ailleurs (ex. masquer un CTA d'installation). */
+  .app-shell {
+    --is-standalone: 1;
+  }
+}
+
+/* Page transitions : fade-in léger sur le contenu main quand la route
+   change. Le wrapper main reçoit la classe `.app-page-enter` au mount
+   (via key={pathname}). Ne fait rien si reduced-motion est demandé. */
+.app-page-enter {
+  animation: app-page-enter 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes app-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-page-enter {
+    animation: none !important;
+  }
+}
+
+/* Pas de loupe iOS sur les images (le long-press par défaut affiche
+   "Enregistrer l'image" / "Copier" — pas natif d'une app sociale). */
+.app-shell img,
+.app-shell video {
+  -webkit-touch-callout: none;
+  pointer-events: auto;
+}
+
 /* ─── Sémantique design system ─────────────────────────
    Palette étendue au-delà de l'accent bleu unique.
    Chaque rôle sémantique a son token, utilisable via

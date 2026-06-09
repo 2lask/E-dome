@@ -100,7 +100,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <Header
                   onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
                 />
-                <main className="flex-1 px-4 py-6 md:px-6 pb-20 md:pb-6">
+                <main
+                  /* key={pathname} : remount le main à chaque change
+                     de route → relance l'animation app-page-enter
+                     (fade + slide-up 6 px) pour un feel "transition
+                     d'app" plutôt que page web instantanée. */
+                  key={pathname}
+                  className="flex-1 px-4 py-6 md:px-6 pb-20 md:pb-6 app-page-enter"
+                >
                   {showExplorerTabs && <ExplorerTabs />}
                   {showDashboardTabs && <DashboardTabs />}
                   {children}
