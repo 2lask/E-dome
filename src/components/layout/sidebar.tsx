@@ -8,11 +8,13 @@ import {
   Home,
   Search,
   MessageCircle,
-  LayoutDashboard,
-  Settings,
   Bell,
-  LogOut,
+  LayoutDashboard,
+  Heart,
   User as UserIcon,
+  Settings,
+  HelpCircle,
+  LogOut,
   ChevronDown,
   Building2,
   ShoppingBag,
@@ -20,11 +22,6 @@ import {
   Video,
   CalendarDays,
   Briefcase,
-  FileText,
-  BarChart3,
-  Users,
-  CalendarCheck,
-  Heart,
   Plus,
   type LucideIcon,
 } from "lucide-react";
@@ -32,16 +29,25 @@ import { cn } from "@/lib/utils";
 import { conversations } from "@/lib/mock-data";
 
 /* ─────────────────────────────────────────────────────────────
-   Sidebar — toutes les fonctionnalites sont triees en groupes
-   visibles dans la barre de gauche. Hover-to-expand (56px ->
-   280px) + sous-menus depliables sur Explorer et Dashboard.
+   Sidebar globale (hors /dashboard/*).
+   Refonte : 3 groupes thematiques + popover compte en bas.
 
-   GROUPES (de haut en bas) :
-   1. NAVIGUER     : Accueil / Explorer (▼) / Messages / Dashboard (▼)
-   2. CRÉER        : 6 actions de creation (publier bien, vendre
-                     produit, creer formation, programmer live,
-                     creer evenement, proposer service)
-   3. (bas)        : Compte (popover Profil/Notifs/Reglages/Quitter)
+   GROUPES :
+   1. NAVIGUER       : Accueil / Explorer (▼ marketplace) /
+                       Messages [badge] / Notifications [badge]
+   2. CRÉER          : 6 actions de creation (flat, badge ⊕)
+   3. MON ESPACE     : Dashboard / Favoris / Profil
+   4. (bas, popover) : Compte → Parametres / Aide / Quitter
+
+   Comportement :
+   - Hover-to-expand 56px -> 280px (s'etend en overlay, le contenu
+     ne se redecale pas)
+   - Submenu Explorer auto-ouvert quand on est sur une route
+     marketplace (/explorer, /boutique, /formations, etc.)
+   - Badges :
+     * Messages : nombre de conversations non-lues
+     * Notifications : pastille rouge (3 nouveaux par defaut)
+     * Items Creer : petit + bleu en surimpression
    ───────────────────────────────────────────────────────────── */
 
 const COLLAPSED_WIDTH = 56;
@@ -76,15 +82,6 @@ const EXPLORER_SUB: SubItem[] = [
   { label: "Événements", href: "/evenements", icon: CalendarDays },
 ];
 
-const DASHBOARD_SUB: SubItem[] = [
-  { label: "Vue d'ensemble", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Annonces", href: "/dashboard/annonces", icon: FileText },
-  { label: "Statistiques", href: "/statistiques", icon: BarChart3 },
-  { label: "Réservations", href: "/reservations", icon: CalendarCheck },
-  { label: "Apporteurs", href: "/apporteurs", icon: Users },
-  { label: "Favoris", href: "/favoris", icon: Heart },
-];
-
 const CREATE_ITEMS: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Publier un bien", href: "/publier", icon: Building2 },
   { label: "Vendre un produit", href: "/boutique/vendre", icon: ShoppingBag },
@@ -92,6 +89,12 @@ const CREATE_ITEMS: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Programmer un live", href: "/live", icon: Video },
   { label: "Créer un événement", href: "/evenements/creer", icon: CalendarDays },
   { label: "Proposer un service", href: "/services", icon: Briefcase },
+];
+
+const ESPACE_ITEMS: { label: string; href: string; icon: LucideIcon }[] = [
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Favoris", href: "/favoris", icon: Heart },
+  { label: "Profil", href: "/profil", icon: UserIcon },
 ];
 
 export function Sidebar({ forceExpanded = false }: SidebarProps) {
@@ -103,6 +106,10 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
     () => conversations.reduce((sum, c) => sum + c.unreadCount, 0),
     []
   );
+
+  // Hardcode 3 notifications non lues pour la demo (cle de notifications a
+  // venir depuis mock-data si on en a besoin plus fin un jour).
+  const unreadNotifications = 3;
 
   const navItems: NavItem[] = useMemo(
     () => [
@@ -122,26 +129,25 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         matchPrefixes: ["/messages"],
       },
       {
-        label: "Dashboard",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-        matchPrefixes: ["/dashboard", "/statistiques", "/reservations", "/apporteurs", "/favoris"],
-        subItems: DASHBOARD_SUB,
+        label: "Notifications",
+        href: "/notifications",
+        icon: Bell,
+        badge: unreadNotifications > 0 ? unreadNotifications : undefined,
+        matchPrefixes: ["/notifications"],
       },
     ],
     [unreadMessages]
   );
 
-  const isItemActive = (item: NavItem) => {
+  const isItemActive = (item: { href: string; matchPrefixes?: string[] }) => {
     if (!item.matchPrefixes) return pathname.startsWith(item.href);
     return item.matchPrefixes.some((p) => (p === "/" ? pathname === "/" : pathname.startsWith(p)));
   };
+  const isExactActive = (href: string) => pathname === href;
   const isSubItemActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard";
     if (href === "/explorer") return pathname === "/explorer";
     return pathname.startsWith(href);
   };
-  const isCreateItemActive = (href: string) => pathname === href;
 
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   useEffect(() => {
@@ -181,7 +187,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         borderRight: "1px solid var(--card-border)",
       }}
     >
-      {/* Brand : "E" seul en collapsed, "E-Dome" en deroule */}
+      {/* Brand */}
       <Link
         href="/feed"
         className={cn(
@@ -267,7 +273,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
                   )}
                 </div>
 
-                {/* Sous-menu */}
+                {/* Sous-menu (Marketplace pour Explorer) */}
                 {hasSub && subOpen && (
                   <ul
                     className="ml-5 mt-0.5 mb-1 pl-3 space-y-0.5"
@@ -314,7 +320,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         <div className="space-y-0.5">
           {CREATE_ITEMS.map((item) => {
             const Icon = item.icon;
-            const active = isCreateItemActive(item.href);
+            const active = isExactActive(item.href);
             return (
               <Link
                 key={item.href}
@@ -338,7 +344,6 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
               >
                 <div className="relative shrink-0">
                   <Icon size={18} />
-                  {/* Petit "+" en surimpression pour signaler "creer" */}
                   <span
                     className="absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center"
                     style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
@@ -352,9 +357,49 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
             );
           })}
         </div>
+
+        {/* Separator entre groupes */}
+        <div className="my-3 h-px" style={{ background: "var(--card-border)" }} />
+
+        {/* ─── GROUPE 3 : MON ESPACE ────────────────────────── */}
+        <SectionHeader label="Mon espace" expanded={isExpanded} />
+        <div className="space-y-0.5">
+          {ESPACE_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const active =
+              item.href === "/dashboard"
+                ? pathname.startsWith("/dashboard")
+                : isExactActive(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                title={!isExpanded ? item.label : undefined}
+                className={cn(
+                  "flex items-center gap-3 h-9 rounded-lg transition-colors whitespace-nowrap",
+                  isExpanded ? "px-3" : "justify-center px-0",
+                  active && "font-medium"
+                )}
+                style={{
+                  background: active ? "rgba(30,157,241,0.10)" : "transparent",
+                  color: active ? "var(--primary)" : "var(--text-secondary)",
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) e.currentTarget.style.background = "var(--hover-bg)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) e.currentTarget.style.background = "transparent";
+                }}
+              >
+                <Icon size={18} className="shrink-0" />
+                {isExpanded && <span className="truncate text-sm">{item.label}</span>}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
-      {/* ─── Bas : Compte ───────────────────────────────────── */}
+      {/* ─── Bas : Compte (popover Reglages) ────────────────── */}
       <div
         className="px-2 py-2 relative shrink-0"
         style={{ borderTop: "1px solid var(--divider)" }}
@@ -369,12 +414,12 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
           style={{ color: "var(--text-secondary)" }}
           onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
           onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          title={!isExpanded ? "Compte" : undefined}
+          title={!isExpanded ? "Réglages" : undefined}
           aria-label="Ouvrir le menu compte"
           aria-expanded={accountOpen}
         >
           <Settings size={18} className="shrink-0" />
-          {isExpanded && <span className="text-sm font-medium">Compte</span>}
+          {isExpanded && <span className="text-sm font-medium">Réglages</span>}
         </button>
 
         {accountOpen && (
@@ -391,9 +436,8 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
             }}
           >
             {[
-              { label: "Profil", href: "/profil", icon: UserIcon },
-              { label: "Notifications", href: "/notifications", icon: Bell },
               { label: "Paramètres", href: "/parametres", icon: Settings },
+              { label: "Aide", href: "/aide", icon: HelpCircle },
             ].map((it) => {
               const Icon = it.icon;
               return (
@@ -432,9 +476,9 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
   );
 }
 
-/* En-tete de section : "NAVIGUER", "CRÉER" en uppercase muted
-   quand la sidebar est etendue. Disparait quand collapsed (laisse
-   juste le separator visuel). */
+/* En-tete de section : "NAVIGUER", "CRÉER", "MON ESPACE" en
+   uppercase muted quand la sidebar est etendue. Disparait quand
+   collapsed (le separator visuel suffit). */
 function SectionHeader({ label, expanded }: { label: string; expanded: boolean }) {
   if (!expanded) return null;
   return (
