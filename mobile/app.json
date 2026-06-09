@@ -5,28 +5,27 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#000000",
+    "icon": "./assets/icon.png",
     "primaryColor": "#1e9df1",
     "newArchEnabled": true,
     "splash": {
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "world.edome.demo",
-      "infoPlist": {
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": false
-        }
-      }
+      "bundleIdentifier": "world.edome.demo"
     },
     "android": {
       "package": "world.edome.demo",
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       }
     },
-    "plugins": []
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
   }
 }
