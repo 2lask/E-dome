@@ -1,6 +1,27 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+/* ─── useIsMobile ─────────────────────────────────────────────────────────
+   Detecte si le viewport est <= 767px (breakpoint md de Tailwind par
+   defaut). Reactive : se met a jour sur resize/orientation change.
+
+   Sert notamment a gater useLockBodyScroll pour qu'il ne s'applique
+   PAS sur desktop quand le modal correspondant n'existe que mobile
+   (ex: bottom-sheet filtres /explorer).
+   ─────────────────────────────────────────────────────────────────── */
+export function useIsMobile(breakpoint = 767) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    setIsMobile(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [breakpoint]);
+  return isMobile;
+}
 
 /* ─── useLockBodyScroll ───────────────────────────────────────────────────
    Empêche le scroll de la page derrière un modal/drawer ouvert sur mobile.

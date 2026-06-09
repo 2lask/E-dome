@@ -26,7 +26,6 @@ import {
 import { useApp } from "@/lib/context";
 import { formatCount } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
-import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
 
 /* ─────────────────────────────────────────────────────────────
    ProfileVitrine — composant partagé entre /profil (mon profil)

@@ -14,7 +14,7 @@ import { useApp } from "@/lib/context";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 import { AirbnbPropertyCard } from "@/components/ui/airbnb-property-card";
-import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
+import { useLockBodyScroll, useIsMobile } from "@/lib/hooks/use-lock-body-scroll";
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
 
 // ─── Mock properties ──────────────────────────────────────────────────────
@@ -170,8 +170,11 @@ export default function ExplorerPage() {
   }, []);
 
   /* Bottom-sheet mobile pour les filtres : empeche le scroll de la
-     page derriere quand ouvert sur mobile. */
-  useLockBodyScroll(showFilters);
+     page derriere quand ouvert sur mobile UNIQUEMENT. Sur desktop
+     les filtres sont un panel inline (pas un modal) donc verrouiller
+     le body bloque le scroll de la page entiere = bug majeur. */
+  const isMobile = useIsMobile();
+  useLockBodyScroll(showFilters && isMobile);
 
   // Reset visible count when filters change
   useEffect(() => {
