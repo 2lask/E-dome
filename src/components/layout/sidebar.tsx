@@ -364,8 +364,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             <Link
               href="/"
               className="flex items-center gap-3 px-3 py-2 text-sm transition-colors"
-              style={{ color: "#dc2626" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(220,38,38,0.06)")}
+              style={{ color: "var(--destructive)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "color-mix(in srgb, var(--destructive) 14%, transparent)")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
               onClick={() => setAvatarOpen(false)}
             >

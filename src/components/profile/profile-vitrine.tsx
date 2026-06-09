@@ -271,7 +271,7 @@ export function ProfileVitrine({
             suivis
           </div>
           <div className="text-sm flex items-center gap-1.5" style={{ color: "var(--text-secondary)" }}>
-            <Star size={14} style={{ color: "#fbbf24", fill: "#fbbf24" }} />
+            <Star size={14} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
             <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
               {user.stats.rating}
             </span>
@@ -279,7 +279,7 @@ export function ProfileVitrine({
           </div>
           <span
             className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-full md:ml-auto"
-            style={{ background: "rgba(16,185,129,0.10)", color: "#059669" }}
+            style={{ background: "color-mix(in srgb, var(--success) 10%, transparent)", color: "var(--success)" }}
           >
             <BadgeCheck size={12} />
             Identité vérifiée
@@ -419,7 +419,7 @@ export function ProfileVitrine({
                       <div className="flex items-center gap-3 mt-2 text-xs" style={{ color: "var(--text-muted)" }}>
                         <span className="tabular-nums">{f.students} étudiants</span>
                         <span className="inline-flex items-center gap-1">
-                          <Star size={11} style={{ color: "#fbbf24", fill: "#fbbf24" }} />
+                          <Star size={11} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
                           <span className="tabular-nums">{f.rating}</span>
                         </span>
                       </div>
@@ -553,8 +553,8 @@ export function ProfileVitrine({
                             key={i}
                             size={12}
                             style={{
-                              color: i < r.rating ? "#fbbf24" : "var(--card-border)",
-                              fill: i < r.rating ? "#fbbf24" : "transparent",
+                              color: i < r.rating ? "var(--rating)" : "var(--card-border)",
+                              fill: i < r.rating ? "var(--rating)" : "transparent",
                             }}
                           />
                         ))}

@@ -117,8 +117,8 @@ function Stars({ rating, size = 13 }: { rating: number; size?: number }) {
           key={s}
           size={size}
           style={{
-            color: s <= Math.round(rating) ? "#fbbf24" : "var(--card-border)",
-            fill: s <= Math.round(rating) ? "#fbbf24" : "transparent",
+            color: s <= Math.round(rating) ? "var(--rating)" : "var(--card-border)",
+            fill: s <= Math.round(rating) ? "var(--rating)" : "transparent",
           }}
         />
       ))}
@@ -503,7 +503,7 @@ export default function BoutiquePage() {
                         )}
                         {discount > 0 && (
                           <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded text-[10px] font-bold text-white"
-                            style={{ background: "#dc2626" }}>
+                            style={{ background: "var(--destructive)" }}>
                             -{discount}%
                           </span>
                         )}
@@ -543,7 +543,7 @@ export default function BoutiquePage() {
                         </div>
 
                         {/* Livraison */}
-                        <div className="flex items-center gap-1 text-[11px]" style={{ color: p.shipping === 0 ? "#059669" : "var(--text-muted)" }}>
+                        <div className="flex items-center gap-1 text-[11px]" style={{ color: p.shipping === 0 ? "var(--success)" : "var(--text-muted)" }}>
                           <Truck size={11} />
                           {p.shipping === 0 ? "Livraison gratuite" : `+${formatPrice(p.shipping)} livraison`}
                           <span style={{ color: "var(--text-muted)" }}>· {p.shippingDays}</span>
@@ -553,7 +553,7 @@ export default function BoutiquePage() {
                         <Link href="#" className="flex items-center gap-1 text-[11px] truncate hover:underline" style={{ color: "var(--text-secondary)" }}>
                           <span className="truncate">{p.vendor}</span>
                           <span style={{ color: "var(--text-muted)" }}>·</span>
-                          <Star size={10} style={{ color: "#fbbf24", fill: "#fbbf24" }} />
+                          <Star size={10} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
                           <span className="tabular-nums">{p.vendorRating.toFixed(1)}</span>
                           <span style={{ color: "var(--text-muted)" }} className="tabular-nums">({p.vendorReviews})</span>
                         </Link>
@@ -570,7 +570,7 @@ export default function BoutiquePage() {
                             <button
                               onClick={() => setCartOpen(true)}
                               className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-                              style={{ background: "rgba(16,185,129,0.12)", color: "#059669" }}
+                              style={{ background: "color-mix(in srgb, var(--success) 12%, transparent)", color: "var(--success)" }}
                             >
                               <Check size={12} strokeWidth={2.5} /> Au panier
                             </button>
@@ -608,7 +608,7 @@ export default function BoutiquePage() {
             role="status"
             aria-live="polite"
             className="fixed bottom-[calc(80px+env(safe-area-inset-bottom)+1rem)] md:bottom-6 right-4 md:right-6 left-4 md:left-auto z-50 px-4 py-2.5 rounded-xl text-sm font-medium animate-fade-in text-center md:text-left"
-            style={{ background: "#059669", color: "#fff", boxShadow: "0 4px 14px rgba(5,150,105,0.25)" }}>
+            style={{ background: "var(--success)", color: "#fff", boxShadow: "0 4px 14px color-mix(in srgb, var(--success) 25%, transparent)" }}>
             Produit ajouté au panier
           </div>
         )}

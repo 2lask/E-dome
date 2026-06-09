@@ -121,7 +121,7 @@ export default function LivePage() {
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
       {/* Toast */}
       {toastVisible && (
-        <div className="fixed top-6 right-6 z-[60] flex items-center gap-1.5 px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
+        <div className="fixed top-6 right-6 z-[60] flex items-center gap-1.5 px-5 py-3 rounded-xl toast-success text-sm font-medium shadow-lg animate-fade-in">
           <Check size={14} strokeWidth={2.5} /> Live programmé ! (démonstration)
         </div>
       )}

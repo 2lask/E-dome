@@ -65,10 +65,12 @@ export function Avatar({
         <span
           className={cn(
             s.indicator,
-            "absolute bottom-0 right-0 rounded-full",
-            online ? "bg-green-500" : "bg-gray-500"
+            "absolute bottom-0 right-0 rounded-full"
           )}
-          style={{ borderColor: "var(--card)" }}
+          style={{
+            borderColor: "var(--card)",
+            background: online ? "var(--success)" : "var(--muted-foreground)",
+          }}
         />
       )}
     </div>

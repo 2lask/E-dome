@@ -373,8 +373,50 @@ body {
   --success: #10b981;       /* emerald-500 */
   --success-soft: #34d399;  /* emerald-400 — pour deltas + sparklines */
   --danger: #f43f5e;        /* rose-500 */
+  --warning: #fbbf24;       /* amber-400 — alias rating, pour niveaux intermédiaires */
   --tag: #a78bfa;           /* violet-400 */
 }
+
+/* ─── Utility classes sémantiques (centralisent les patterns ad-hoc
+   bg-green-600 / bg-green-500/20 etc. dispersés dans les pages).
+   Permettent de garder un seul point de vérité couleur pour :
+   - toasts de confirmation (toast-success)
+   - badges niveau formation (badge-level-*)
+   - chips statut (chip-success-soft / chip-warning-soft / chip-danger-soft)
+   ─────────────────────────────────────────────────── */
+.toast-success {
+  background: var(--success);
+  color: #fff;
+}
+.chip-success-soft {
+  background: color-mix(in srgb, var(--success) 18%, transparent);
+  color: var(--success-soft);
+}
+.chip-warning-soft {
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
+  color: var(--warning);
+}
+.chip-danger-soft {
+  background: color-mix(in srgb, var(--danger) 18%, transparent);
+  color: var(--danger);
+}
+.badge-level-beginner {
+  background: color-mix(in srgb, var(--success) 18%, transparent);
+  color: var(--success-soft);
+}
+.badge-level-intermediate {
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
+  color: var(--warning);
+}
+.badge-level-advanced {
+  background: color-mix(in srgb, var(--danger) 18%, transparent);
+  color: var(--danger);
+}
+.text-rating    { color: var(--rating); }
+.fill-rating    { fill: var(--rating); }
+.text-success   { color: var(--success); }
+.text-success-soft { color: var(--success-soft); }
+.text-danger    { color: var(--danger); }
 
 /* ─── Wrapper .app-shell : maquette en MODE SOMBRE ──────
    Override de fond appliqué sur le sous-arbre (app)/ via le

@@ -76,7 +76,7 @@ const FILTERS: { value: ListingType | "all"; label: string }[] = [
 ];
 
 const STATUS_STYLE: Record<Listing["status"], { label: string; bg: string; color: string }> = {
-  publie: { label: "Publiée", bg: "rgba(16,185,129,0.10)", color: "#059669" },
+  publie: { label: "Publiée", bg: "color-mix(in srgb, var(--success) 10%, transparent)", color: "var(--success)" },
   brouillon: { label: "Brouillon", bg: "rgba(115,115,115,0.10)", color: "#525252" },
   expire: { label: "Expirée", bg: "rgba(244,63,94,0.10)", color: "#e11d48" },
 };

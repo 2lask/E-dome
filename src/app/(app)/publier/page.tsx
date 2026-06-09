@@ -714,7 +714,7 @@ export default function PublierPage() {
           <div
             role="status"
             aria-live="polite"
-            className="fixed bottom-[calc(80px+env(safe-area-inset-bottom)+1rem)] md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-green-600 text-white rounded-xl shadow-lg text-sm font-medium animate-fade-in"
+            className="fixed bottom-[calc(80px+env(safe-area-inset-bottom)+1rem)] md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 toast-success rounded-xl shadow-lg text-sm font-medium animate-fade-in"
           >
             {toastMsg}
           </div>

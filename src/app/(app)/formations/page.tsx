@@ -28,7 +28,7 @@ const FORMATIONS = [
 ];
 
 const LEVEL_LABELS: Record<string, string> = { debutant: "Débutant", intermediaire: "Intermédiaire", avance: "Avancé" };
-const LEVEL_COLORS: Record<string, string> = { debutant: "bg-green-500/20 text-green-400", intermediaire: "bg-yellow-500/20 text-yellow-400", avance: "bg-red-500/20 text-red-400" };
+const LEVEL_COLORS: Record<string, string> = { debutant: "badge-level-beginner", intermediaire: "badge-level-intermediate", avance: "badge-level-advanced" };
 
 /* ─── Stars ──────────────────────────────────────────────────────────────── */
 

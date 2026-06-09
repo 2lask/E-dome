@@ -185,7 +185,7 @@ export function CameraPreview({ open, onClose }: CameraPreviewProps) {
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
                 style={{
                   background: videoOn ? "var(--hover-bg)" : "rgba(239,68,68,0.10)",
-                  color: videoOn ? "var(--foreground)" : "#dc2626",
+                  color: videoOn ? "var(--foreground)" : "var(--destructive)",
                 }}
               >
                 {videoOn ? <Video size={16} /> : <VideoOff size={16} />}
@@ -196,7 +196,7 @@ export function CameraPreview({ open, onClose }: CameraPreviewProps) {
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
                 style={{
                   background: micOn ? "var(--hover-bg)" : "rgba(239,68,68,0.10)",
-                  color: micOn ? "var(--foreground)" : "#dc2626",
+                  color: micOn ? "var(--foreground)" : "var(--destructive)",
                 }}
               >
                 {micOn ? <Mic size={16} /> : <MicOff size={16} />}
@@ -205,7 +205,7 @@ export function CameraPreview({ open, onClose }: CameraPreviewProps) {
               <button
                 onClick={handleClose}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors text-white"
-                style={{ background: "#dc2626" }}
+                style={{ background: "var(--destructive)" }}
               >
                 Arrêter l&apos;aperçu
               </button>

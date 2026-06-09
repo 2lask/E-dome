@@ -1864,7 +1864,7 @@ export default function FeedPage() {
     <div className="max-w-6xl mx-auto">
       {/* Toast */}
       {feedToast && (
-        <div className="fixed top-6 right-6 z-[100] inline-flex items-center gap-1.5 px-5 py-3 rounded-xl bg-green-600 text-white text-sm font-medium shadow-lg animate-fade-in">
+        <div className="fixed top-6 right-6 z-[100] inline-flex items-center gap-1.5 px-5 py-3 rounded-xl toast-success text-sm font-medium shadow-lg animate-fade-in">
           <Check size={14} strokeWidth={2.5} /> {feedToast}
         </div>
       )}

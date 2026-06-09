@@ -349,8 +349,8 @@ function Stars({ rating, size = 14 }: { rating: number; size?: number }) {
           key={s}
           size={size}
           style={{
-            color: s <= Math.round(rating) ? "#fbbf24" : "var(--card-border)",
-            fill: s <= Math.round(rating) ? "#fbbf24" : "transparent",
+            color: s <= Math.round(rating) ? "var(--rating)" : "var(--card-border)",
+            fill: s <= Math.round(rating) ? "var(--rating)" : "transparent",
           }}
         />
       ))}
@@ -471,7 +471,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <BlurImage src={product.gallery[selectedImg]} alt={product.title} eager />
               {discount > 0 && (
                 <span className="absolute top-3 right-3 px-2 py-1 rounded-md text-[11px] font-bold text-white"
-                  style={{ background: "var(--danger, #dc2626)" }}>
+                  style={{ background: "var(--destructive)" }}>
                   -{discount}%
                 </span>
               )}
@@ -546,8 +546,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 </span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium"
                   style={{
-                    background: product.condition === "Neuf" ? "rgba(16,185,129,0.10)" : "rgba(115,115,115,0.10)",
-                    color: product.condition === "Neuf" ? "#059669" : "var(--text-secondary)",
+                    background: product.condition === "Neuf" ? "color-mix(in srgb, var(--success) 10%, transparent)" : "rgba(115,115,115,0.10)",
+                    color: product.condition === "Neuf" ? "var(--success)" : "var(--text-secondary)",
                   }}>
                   État : {product.condition}
                 </span>
@@ -581,13 +581,13 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     <span className="text-sm line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
                       {formatPrice(product.oldPrice)}
                     </span>
-                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: "#dc2626", color: "#fff" }}>
+                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: "var(--destructive)", color: "#fff" }}>
                       Vous économisez {formatPrice(product.oldPrice - product.price)}
                     </span>
                   </>
                 )}
               </div>
-              <p className="text-xs" style={{ color: product.shipping === 0 ? "#059669" : "var(--text-muted)" }}>
+              <p className="text-xs" style={{ color: product.shipping === 0 ? "var(--success)" : "var(--text-muted)" }}>
                 {product.shipping === 0
                   ? `Livraison GRATUITE en ${product.shippingDays}`
                   : `+ ${formatPrice(product.shipping)} de livraison · ${product.shippingDays}`}
@@ -596,7 +596,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
             {/* Stock + qté + CTA */}
             <div className="space-y-3">
-              <p className="text-sm" style={{ color: product.stock > 0 ? "#059669" : "#dc2626" }}>
+              <p className="text-sm" style={{ color: product.stock > 0 ? "var(--success)" : "var(--destructive)" }}>
                 {product.stock > 0 ? (
                   <span className="inline-flex items-center gap-1.5">
                     <CheckCircle2 size={14} />
@@ -625,7 +625,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <div className="space-y-2">
                 {added ? (
                   <div className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-medium animate-fade-in"
-                    style={{ background: "rgba(16,185,129,0.12)", color: "#059669" }}>
+                    style={{ background: "color-mix(in srgb, var(--success) 12%, transparent)", color: "var(--success)" }}>
                     <CheckCircle2 size={16} strokeWidth={2.5} /> Ajouté au panier
                   </div>
                 ) : (
@@ -741,7 +741,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-                    <Star size={11} style={{ color: "#fbbf24", fill: "#fbbf24" }} />
+                    <Star size={11} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
                     <span className="tabular-nums">{product.vendorRating.toFixed(1)}</span>
                     <span>· {product.vendorReviews} avis</span>
                     <span>·</span>
@@ -774,7 +774,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     <MessageCircle size={9} /> Réponse
                   </p>
                   <p className="text-sm font-semibold tabular-nums mt-0.5"
-                    style={{ color: product.vendorResponseRate >= 90 ? "#059669" : "var(--foreground)" }}>
+                    style={{ color: product.vendorResponseRate >= 90 ? "var(--success)" : "var(--foreground)" }}>
                     {product.vendorResponseRate} %
                   </p>
                 </div>
@@ -892,7 +892,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 return (
                   <li key={r.stars} className="flex items-center gap-2 text-xs">
                     <span className="tabular-nums w-3" style={{ color: "var(--text-secondary)" }}>{r.stars}</span>
-                    <Star size={10} style={{ color: "#fbbf24", fill: "#fbbf24" }} />
+                    <Star size={10} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
                     <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "var(--hover-bg)" }}>
                       <div className="h-full rounded-full transition-all" style={{ background: "var(--primary)", width: `${pct}%` }} />
                     </div>
@@ -912,7 +912,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     <span className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{r.author}</span>
                     {r.verified && (
                       <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium"
-                        style={{ background: "rgba(16,185,129,0.10)", color: "#059669" }}>
+                        style={{ background: "color-mix(in srgb, var(--success) 10%, transparent)", color: "var(--success)" }}>
                         <CheckCircle2 size={9} /> Achat vérifié
                       </span>
                     )}
@@ -1019,7 +1019,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                       <p className="text-sm font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
                         {formatPrice(p.price)}
                       </p>
-                      <p className="text-[11px]" style={{ color: p.shipping === 0 ? "#059669" : "var(--text-muted)" }}>
+                      <p className="text-[11px]" style={{ color: p.shipping === 0 ? "var(--success)" : "var(--text-muted)" }}>
                         {p.shipping === 0 ? "Livraison gratuite" : `+${formatPrice(p.shipping)} livraison`}
                       </p>
                     </div>
