@@ -28,6 +28,11 @@ import { useApp } from "@/lib/context";
 import { formatCount } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
 import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
+import {
+  HighlightsBar,
+  StoryViewer,
+  type Highlight,
+} from "@/components/social/stories";
 
 /* ─────────────────────────────────────────────────────────────
    ProfileVitrine — composant partagé entre /profil (mon profil)
@@ -169,6 +174,72 @@ export function ProfileVitrine({
   }, [followersModal]);
 
   useLockBodyScroll(!!followersModal);
+
+  /* Highlights ("Moments clés") — dérivés des données réelles du profil :
+     - 1er highlight depuis le 1er bien (cover) avec 2 photos
+     - 2e depuis la 1ère formation (cover) avec 1 photo
+     - 3e depuis le 1er service (cover)
+     - 4e depuis la 1ère publication
+     Permet d'avoir une démo crédible sans data supplémentaire. */
+  const highlights = React.useMemo<Highlight[]>(() => {
+    const out: Highlight[] = [];
+    if (data.biens[0]) {
+      out.push({
+        id: "h-bien",
+        title: "Mes biens",
+        coverUrl: data.biens[0].cover,
+        stories: data.biens.slice(0, 3).map((b) => ({
+          id: `h-bien-${b.id}`,
+          imageUrl: b.cover,
+          caption: b.title,
+          cta: { label: "Voir le bien", href: `/explorer/${b.id}` },
+        })),
+      });
+    }
+    if (data.formations[0]) {
+      out.push({
+        id: "h-formation",
+        title: "Formations",
+        coverUrl: data.formations[0].cover,
+        stories: data.formations.slice(0, 3).map((f) => ({
+          id: `h-formation-${f.id}`,
+          imageUrl: f.cover,
+          caption: f.title,
+          cta: { label: "Découvrir", href: `/formations/${f.id}` },
+        })),
+      });
+    }
+    if (data.services[0]) {
+      out.push({
+        id: "h-service",
+        title: "Services",
+        coverUrl: data.services[0].cover,
+        stories: data.services.slice(0, 3).map((s) => ({
+          id: `h-service-${s.id}`,
+          imageUrl: s.cover,
+          caption: s.title,
+          cta: { label: "Voir le service", href: `/services` },
+        })),
+      });
+    }
+    if (data.publications[0]) {
+      out.push({
+        id: "h-publications",
+        title: "Publications",
+        coverUrl: data.publications[0].src,
+        stories: data.publications.slice(0, 4).map((p) => ({
+          id: `h-pub-${p.id}`,
+          imageUrl: p.src,
+          caption: p.caption,
+        })),
+      });
+    }
+    return out;
+  }, [data.biens, data.formations, data.services, data.publications]);
+
+  const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
+  const activeHighlight =
+    highlightIndex !== null ? highlights[highlightIndex] : null;
 
   const totalAvis = data.ratingBreakdown.reduce((s, r) => s + r.count, 0);
 
@@ -506,6 +577,20 @@ export function ProfileVitrine({
         </div>
       </div>
 
+      {/* Highlights / Moments clés — entre les stats et les onglets.
+          Section discrete (sous-header) avec cercles + labels en
+          dessous, à la Instagram. Click → ouvre le StoryViewer. */}
+      {highlights.length > 0 && (
+        <div className="px-4 md:px-6 mt-6">
+          <HighlightsBar
+            highlights={highlights}
+            isOwn={isOwn}
+            onOpen={(i) => setHighlightIndex(i)}
+            onCreateHighlight={() => addToast("Création de moment clé bientôt", "info")}
+          />
+        </div>
+      )}
+
       {/* Onglets */}
       <nav
         className="sticky top-16 z-20 mt-8 -mx-4 md:-mx-6 mb-6"
@@ -806,6 +891,16 @@ export function ProfileVitrine({
               : user.stats.following
           }
           onClose={() => setFollowersModal(null)}
+        />
+      )}
+
+      {/* StoryViewer pour les highlights — auto-advance 5s, swipe-down
+          pour fermer, click L/R pour naviguer entre stories du moment. */}
+      {activeHighlight && (
+        <StoryViewer
+          stories={activeHighlight.stories}
+          author={{ id: user.id, name: `${user.firstName} ${user.lastName}`, avatar: user.avatar }}
+          onClose={() => setHighlightIndex(null)}
         />
       )}
     </div>
