@@ -3,9 +3,10 @@
 import React, { useState, useMemo } from "react";
 import {
   Search as SearchIcon, Hotel, Car, Camera, Palette, Ruler, HardHat,
-  Scale, Briefcase, Hammer, Package, Check, type LucideIcon,
+  Scale, Briefcase, Hammer, Package, Check, Star, type LucideIcon,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -121,6 +122,52 @@ export default function ServicesPage() {
             Proposer un service
           </a>
         </div>
+
+        {/* ── Services populaires (carousel hero) ─────────────────────────
+            Top 6 par rating * log(reviews) — pondere la note par la
+            popularite pour eviter qu'un seul avis 5 etoiles devance
+            un service avec 120 avis a 4.7. */}
+        {(() => {
+          const popular = [...SERVICES]
+            .sort(
+              (a, b) =>
+                b.rating * Math.log10(b.reviews + 1) -
+                a.rating * Math.log10(a.reviews + 1)
+            )
+            .slice(0, 6);
+          return (
+            <HorizontalScroller
+              title="Services populaires"
+              cardWidth="220px"
+            >
+              {popular.map((s) => {
+                const CatIcon = CATEGORIES.find((c) => c.label === s.category)?.Icon;
+                return (
+                  <div
+                    key={s.id}
+                    className="rounded-2xl overflow-hidden border border-[var(--card-border)] bg-[var(--card)] hover:border-[#1e9df1]/40 transition-colors h-full"
+                  >
+                    <div className={`h-24 bg-gradient-to-br ${GRADIENTS[s.gradient]} flex items-center justify-center`}>
+                      {CatIcon ? <CatIcon size={32} className="text-white/90" strokeWidth={1.5} /> : null}
+                    </div>
+                    <div className="p-3 space-y-1.5">
+                      <span className="inline-block px-2 py-0.5 bg-[#1e9df1]/20 text-[#1e9df1] rounded-full text-[10px] font-medium">{s.category}</span>
+                      <h3 className="text-sm font-semibold line-clamp-2 min-h-[2.5rem]">{s.title}</h3>
+                      <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+                          <Star size={12} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
+                          <span className="font-medium text-[var(--foreground)]">{s.rating.toFixed(1)}</span>
+                          <span className="text-[var(--text-muted)]">({s.reviews})</span>
+                        </div>
+                        <span className="font-bold text-[#1e9df1] text-sm">{formatPrice(s.price)}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </HorizontalScroller>
+          );
+        })()}
 
         {/* Search */}
         <div className="relative">

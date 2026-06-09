@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -81,31 +82,35 @@ export default function FormationsPage() {
           )}
         </div>
 
-        {/* ── Mes formations en cours ────────────────────────────────────────── */}
+        {/* ── Mes formations en cours ──────────────────────────────────────────
+            Migre vers <HorizontalScroller> : sur mobile les cards faisaient
+            chacune toute la largeur (grid-cols-1) ce qui creait beaucoup de
+            scroll vertical. Maintenant carousel horizontal, cards 280px,
+            on en voit 2 d'un coup sur desktop, scroll horizontal mobile. */}
         {enrolledFormations.length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold mb-4">Mes formations en cours</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {enrolledFormations.map((f) => (
-                <Link key={f.id} href={`/formations/${f.id}`} className="flex gap-4 p-4 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#1e9df1]/40 transition-colors group">
-                  <img src={f.thumbnail} alt={f.title} className="w-28 h-20 rounded-xl object-cover flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-[var(--foreground)] truncate group-hover:text-[#1e9df1] transition-colors">{f.title}</h3>
-                    <p className="text-sm text-[var(--text-muted)] mt-0.5">{f.instructor.name}</p>
-                    <div className="mt-2">
-                      <div className="flex items-center justify-between text-xs text-[var(--text-secondary)] mb-1">
-                        <span>Progression</span>
-                        <span>{f.progress}%</span>
-                      </div>
-                      <div className="w-full h-2 bg-[var(--background)] rounded-full overflow-hidden">
-                        <div className="h-full bg-[#1e9df1] rounded-full transition-all" style={{ width: `${f.progress}%` }} />
-                      </div>
+          <HorizontalScroller
+            title="Mes formations en cours"
+            cardWidth="300px"
+          >
+            {enrolledFormations.map((f) => (
+              <Link key={f.id} href={`/formations/${f.id}`} className="flex gap-3 p-3 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#1e9df1]/40 transition-colors group h-full">
+                <img src={f.thumbnail} alt={f.title} className="w-20 h-20 rounded-xl object-cover flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-[var(--foreground)] truncate group-hover:text-[#1e9df1] transition-colors text-sm">{f.title}</h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">{f.instructor.name}</p>
+                  <div className="mt-2">
+                    <div className="flex items-center justify-between text-[10px] text-[var(--text-secondary)] mb-1">
+                      <span>Progression</span>
+                      <span className="tabular-nums">{f.progress}%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-[var(--background)] rounded-full overflow-hidden">
+                      <div className="h-full bg-[#1e9df1] rounded-full transition-all" style={{ width: `${f.progress}%` }} />
                     </div>
                   </div>
-                </Link>
-              ))}
-            </div>
-          </section>
+                </div>
+              </Link>
+            ))}
+          </HorizontalScroller>
         )}
 
         {/* ── Featured banner ────────────────────────────────────────────────── */}
@@ -191,12 +196,16 @@ export default function FormationsPage() {
           )}
         </section>
 
-        {/* ── Formateurs populaires ──────────────────────────────────────────── */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Formateurs populaires</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {/* ── Formateurs populaires ────────────────────────────────────────────
+            Migre vers <HorizontalScroller>. Avant : grid 2/3/4 col qui
+            mangeait beaucoup de hauteur mobile. Maintenant cards 160px
+            qui scrollent horizontal, on respire. */}
+        <HorizontalScroller
+          title="Formateurs populaires"
+          cardWidth="180px"
+        >
             {INSTRUCTORS.map((inst) => (
-              <Link key={inst.id} href={`/profil/${inst.id}`} className="flex flex-col items-center p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#1e9df1]/40 transition-colors group">
+              <Link key={inst.id} href={`/profil/${inst.id}`} className="flex flex-col items-center p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#1e9df1]/40 transition-colors group h-full">
                 <img src={inst.avatar} alt={inst.name} className="w-16 h-16 rounded-full object-cover mb-3" />
                 <h3 className="font-medium text-[var(--foreground)] group-hover:text-[#1e9df1] transition-colors text-center line-clamp-1">{inst.name}</h3>
                 <span className="text-sm text-[var(--text-muted)] line-clamp-1 text-center">{inst.specialty}</span>
@@ -208,8 +217,7 @@ export default function FormationsPage() {
                 </div>
               </Link>
             ))}
-          </div>
-        </section>
+        </HorizontalScroller>
       </div>
     </div>
   );
