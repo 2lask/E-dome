@@ -8,12 +8,16 @@ import {
   Edit3, Trash2, Flag, EyeOff, Copy,
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
   Users, Building2, GraduationCap,
-  Image as ImageIcon, Smile, BarChart3,
+  Image as ImageIcon, BarChart3, Film, Paperclip, TrendingUp, TrendingDown, ArrowRight,
 } from "lucide-react";
 import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
-import { timeAgo, formatCount } from "@/lib/utils";
-import type { User, SocialPost, Comment, Property } from "@/lib/types";
+import { timeAgo, formatCount, formatDate } from "@/lib/utils";
+import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/lib/mock-data";
+import type {
+  User, SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData,
+  PostAttachment,
+} from "@/lib/types";
 
 // ─── Users ─────────────────────────────────────────────────────────────────
 
@@ -856,26 +860,373 @@ function PostCaption({ content }: { content: string }) {
   );
 }
 
-// ─── Composer ──────────────────────────────────────────────────────────────
+// ─── Composer : helpers, data, sous-composants ────────────────────────────
 
 interface ComposerActionProps {
   icon: React.ComponentType<{ size?: number; className?: string }>;
   label: string;
   onClick: () => void;
+  badge?: boolean;
 }
 
-/* Petit bouton-icône du composer (Image, Emoji, Sondage…) — mêmes
-   dimensions et même feedback hover que les actions Twitter/X. */
-function ComposerAction({ icon: Icon, label, onClick }: ComposerActionProps) {
+/* Bouton-icône du composer (Photo/Vidéo, Bien, Formation, Événement, Analyse).
+   `badge` ajoute un point bleu pour marquer une action "premium" attachable. */
+function ComposerAction({ icon: Icon, label, onClick, badge }: ComposerActionProps) {
   return (
     <button
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="w-9 h-9 flex items-center justify-center rounded-full text-[#1e9df1] hover:bg-[#1e9df1]/10 transition-colors"
+      className="relative w-10 h-10 flex items-center justify-center rounded-full text-[#1e9df1] hover:bg-[#1e9df1]/10 transition-colors"
     >
       <Icon size={18} />
+      {badge && (
+        <span aria-hidden className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#1e9df1]" />
+      )}
     </button>
+  );
+}
+
+/* ─── Événements disponibles pour attachement ───────────────────────────
+   Liste curatée des prochains événements/webinaires E-Dome — sous-ensemble
+   suffisant pour le picker. Reflète la copie de la page /evenements. */
+interface ComposerEvent {
+  id: string;
+  titre: string;
+  date: string;
+  lieu: string;
+  thumbnail: string;
+  eventType: string;
+  spotsRemaining?: number;
+  prix?: number;
+}
+
+const EVENTS_AVAILABLE: ComposerEvent[] = [
+  {
+    id: "e1",
+    titre: "Salon de l'immobilier Suisse 2026",
+    date: "2026-05-15",
+    lieu: "Palexpo, Genève",
+    thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop",
+    eventType: "Conférence",
+    spotsRemaining: 127,
+    prix: 45,
+  },
+  {
+    id: "e2",
+    titre: "Webinaire : Optimiser son rendement locatif",
+    date: "2026-04-20",
+    lieu: "En ligne",
+    thumbnail: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=300&fit=crop",
+    eventType: "Webinaire",
+    spotsRemaining: 84,
+    prix: 0,
+  },
+  {
+    id: "e3",
+    titre: "Atelier : Home staging pratique",
+    date: "2026-04-10",
+    lieu: "Lausanne, Centre Flon",
+    thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
+    eventType: "Atelier",
+    spotsRemaining: 8,
+    prix: 89,
+  },
+  {
+    id: "e4",
+    titre: "Networking investisseurs romands",
+    date: "2026-04-05",
+    lieu: "Hôtel Royal, Montreux",
+    thumbnail: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=300&fit=crop",
+    eventType: "Networking",
+    spotsRemaining: 22,
+    prix: 35,
+  },
+];
+
+/* ─── Calcul de la card analytics ───────────────────────────────────────
+   Génère un dataset déterministe (seedé sur l'id du bien) pour les
+   métriques qui n'ont pas de série temporelle dans le mock. Évite tout
+   `Math.random()` — sinon mismatch d'hydratation SSR/client. */
+function computeAnalyticsCard(property: Property, metric: AnalyticsMetric): AnalyticsCardData {
+  const seed =
+    property.id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) + property.id.length;
+  const seededRand = (i: number) => {
+    const v = Math.abs(Math.sin(seed + i * 137)) * 10000;
+    return v - Math.floor(v);
+  };
+
+  if (metric === "views7d") {
+    const spark = Array.from({ length: 7 }, (_, i) => Math.round(80 + seededRand(i) * 240));
+    const total = spark.reduce((a, b) => a + b, 0);
+    const prevTotal = Math.round(total * (0.65 + seededRand(99) * 0.4));
+    const delta = +(((total - prevTotal) / prevTotal) * 100).toFixed(1);
+    return {
+      propertyId: property.id,
+      propertyTitle: property.title,
+      metric,
+      label: "Vues 7 derniers jours",
+      headline: total.toLocaleString("fr-CH"),
+      delta,
+      sparkData: spark,
+    };
+  }
+
+  if (metric === "rendementNet") {
+    const val = property.analytics?.rendementNet ?? 3.2;
+    return {
+      propertyId: property.id,
+      propertyTitle: property.title,
+      metric,
+      label: "Rendement net annuel",
+      headline: `${val.toFixed(1)}%`,
+    };
+  }
+
+  // occupation30d
+  const base = property.analytics?.tauxOccupation ?? 75;
+  const spark = Array.from({ length: 30 }, (_, i) =>
+    Math.round(Math.min(100, Math.max(40, base + (seededRand(i) - 0.5) * 22))),
+  );
+  const first = spark[0] ?? base;
+  const last = spark[spark.length - 1] ?? base;
+  const delta = +(last - first).toFixed(1);
+  return {
+    propertyId: property.id,
+    propertyTitle: property.title,
+    metric,
+    label: "Taux d'occupation 30j",
+    headline: `${last}%`,
+    delta,
+    sparkData: spark,
+  };
+}
+
+/* ─── Sparkline SVG inline ──────────────────────────────────────────────
+   Pas de lib : 30 datapoints max, un seul polyline + gradient subtil sous
+   la courbe. Largeur fluide (100%), hauteur fixe. */
+interface SparklineProps {
+  data: number[];
+  width?: number;
+  height?: number;
+  color?: string;
+}
+
+function Sparkline({ data, width = 96, height = 28, color = "#1e9df1" }: SparklineProps) {
+  if (!data.length) return null;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const stepX = data.length > 1 ? width / (data.length - 1) : 0;
+  const points = data
+    .map((v, i) => `${(i * stepX).toFixed(1)},${(height - ((v - min) / range) * height).toFixed(1)}`)
+    .join(" ");
+  const areaPoints = `0,${height} ${points} ${width},${height}`;
+  const gradId = `spark-grad-${color.replace("#", "")}`;
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      width={width}
+      height={height}
+      preserveAspectRatio="none"
+      aria-hidden
+      style={{ display: "block" }}
+    >
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polygon points={areaPoints} fill={`url(#${gradId})`} />
+      <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// ─── Cartes attachables (preview composer + render dans PostCard) ──────
+
+/* Carte Bien — image + titre + ville + m² + prix (formaté CHF). Clic →
+   /explorer/[id]. Utilisable dans le composer (avec X de retrait) et
+   dans le post publié. */
+function PropertyAttachCard({ property, onRemove }: { property: Property; onRemove?: () => void }) {
+  const { formatPrice } = useApp();
+  const transactionSuffix =
+    property.transactionType === "location-ct"
+      ? "/nuit"
+      : property.transactionType === "location-lt"
+        ? "/mois"
+        : "";
+  return (
+    <div className="relative rounded-2xl border border-[var(--card-border)] overflow-hidden bg-[var(--card)] group">
+      <Link href={`/explorer/${property.id}`} className="flex">
+        <img src={property.images[0]} alt="" className="w-28 h-28 object-cover shrink-0" />
+        <div className="flex-1 p-3 min-w-0">
+          <p className="text-xs text-[#1e9df1] font-medium">Bien immobilier</p>
+          <p className="text-sm font-semibold text-[var(--foreground)] mt-0.5 line-clamp-2">
+            {property.title}
+          </p>
+          <p className="text-xs text-[var(--text-muted)] mt-1 inline-flex items-center gap-1">
+            <MapPin size={11} /> {property.location.city}
+            {property.area ? ` · ${property.area} m²` : ""}
+          </p>
+          <p className="text-sm font-bold text-[#1e9df1] mt-1.5">
+            {formatPrice(property.price, property.currency)}
+            {transactionSuffix && (
+              <span className="text-xs text-[var(--text-muted)] font-normal">{transactionSuffix}</span>
+            )}
+          </p>
+        </div>
+      </Link>
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          aria-label="Retirer le bien attaché"
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center transition-colors"
+        >
+          <X size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+interface FormationLike {
+  id: string;
+  title: string;
+  instructor: string;
+  price: number;
+  students: number;
+  thumbnail: string;
+}
+
+function FormationAttachCard({ formation, onRemove }: { formation: FormationLike; onRemove?: () => void }) {
+  const { formatPrice } = useApp();
+  return (
+    <div className="relative rounded-2xl border border-[var(--card-border)] overflow-hidden bg-[var(--card)]">
+      <Link href={`/formations/${formation.id}`} className="flex">
+        <img src={formation.thumbnail} alt="" className="w-28 h-28 object-cover shrink-0" />
+        <div className="flex-1 p-3 min-w-0">
+          <p className="text-xs text-orange-400 font-medium inline-flex items-center gap-1">
+            <GraduationCap size={11} /> Formation
+          </p>
+          <p className="text-sm font-semibold text-[var(--foreground)] mt-0.5 line-clamp-2">
+            {formation.title}
+          </p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">
+            Par {formation.instructor} · {formatCount(formation.students)} élèves
+          </p>
+          <p className="text-sm font-bold text-[#1e9df1] mt-1.5">{formatPrice(formation.price)}</p>
+        </div>
+      </Link>
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          aria-label="Retirer la formation attachée"
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center transition-colors"
+        >
+          <X size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function EventAttachCard({ event, onRemove }: { event: ComposerEvent; onRemove?: () => void }) {
+  const { formatPrice } = useApp();
+  return (
+    <div className="relative rounded-2xl border border-[var(--card-border)] overflow-hidden bg-[var(--card)]">
+      <Link href={`/evenements/${event.id}`} className="flex">
+        <img src={event.thumbnail} alt="" className="w-28 h-28 object-cover shrink-0" />
+        <div className="flex-1 p-3 min-w-0">
+          <p className="text-xs text-purple-400 font-medium inline-flex items-center gap-1">
+            <Calendar size={11} /> {event.eventType}
+          </p>
+          <p className="text-sm font-semibold text-[var(--foreground)] mt-0.5 line-clamp-2">
+            {event.titre}
+          </p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">
+            {formatDate(event.date)} · {event.lieu}
+          </p>
+          <p className="text-sm font-bold text-[#1e9df1] mt-1.5">
+            {event.prix && event.prix > 0 ? formatPrice(event.prix) : "Gratuit"}
+            {typeof event.spotsRemaining === "number" && (
+              <span className="text-xs text-[var(--text-muted)] font-normal">
+                {" "}· {event.spotsRemaining} places restantes
+              </span>
+            )}
+          </p>
+        </div>
+      </Link>
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          aria-label="Retirer l'événement attaché"
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center transition-colors"
+        >
+          <X size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function AnalyticsAttachCard({ data, onRemove }: { data: AnalyticsCardData; onRemove?: () => void }) {
+  const positive = (data.delta ?? 0) >= 0;
+  return (
+    <div className="relative rounded-2xl border border-[var(--card-border)] overflow-hidden bg-[var(--card)]">
+      <Link href={`/explorer/${data.propertyId}`} className="block p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-emerald-400 font-medium inline-flex items-center gap-1">
+              <BarChart3 size={11} /> Analyse de bien
+            </p>
+            <p className="text-xs text-[var(--text-muted)] mt-1 truncate">
+              {data.propertyTitle}
+            </p>
+            <p className="text-xs text-[var(--text-secondary)] mt-2">{data.label}</p>
+            <div className="flex items-end gap-2 mt-1">
+              <p className="text-3xl font-bold text-[var(--foreground)] tabular-nums leading-none">
+                {data.headline}
+              </p>
+              {typeof data.delta === "number" && (
+                <span
+                  className={`inline-flex items-center gap-0.5 text-xs font-semibold ${
+                    positive ? "text-emerald-400" : "text-red-400"
+                  } pb-0.5`}
+                >
+                  {positive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                  {positive ? "+" : ""}
+                  {data.delta}%
+                </span>
+              )}
+            </div>
+          </div>
+          {data.sparkData && data.sparkData.length > 1 && (
+            <div className="shrink-0">
+              <Sparkline
+                data={data.sparkData}
+                color={positive ? "#10b981" : "#ef4444"}
+                width={104}
+                height={48}
+              />
+            </div>
+          )}
+        </div>
+        <p className="text-[11px] text-[var(--text-muted)] mt-3 inline-flex items-center gap-1">
+          Voir le bien <ArrowRight size={11} />
+        </p>
+      </Link>
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          aria-label="Retirer l'analyse attachée"
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center transition-colors"
+        >
+          <X size={14} />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -912,7 +1263,13 @@ function PostCard({
   const cta = CUSTOM_CTA[post.id];
   const event = EVENTS_BY_POST[post.id];
   const isOwn = post.author.id === CURRENT_USER_ID;
-  const isVideo = post.media[0]?.endsWith(".mp4");
+  /* Détection vidéo : on consulte mediaTypes (renseigné par le composer
+     d'upload) sinon on tombe sur l'heuristique d'extension pour les
+     mocks (.mp4). Les blob: URLs du composer ne portent pas d'extension. */
+  const isVideo =
+    post.mediaTypes?.[0] === "video" ||
+    post.media[0]?.endsWith(".mp4") ||
+    post.media[0]?.endsWith(".webm");
   const handle = post.author.firstName.toLowerCase();
 
   return (
@@ -1061,7 +1418,7 @@ function PostCard({
         </Link>
       )}
 
-      {/* Event CTA */}
+      {/* Event CTA (ancien format via EVENTS_BY_POST map) */}
       {event && (
         <Link
           href={`/evenements/${event.id}`}
@@ -1084,6 +1441,19 @@ function PostCard({
           </div>
           <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
         </Link>
+      )}
+
+      {/* Nouveau format : post.attachment (event ou analytics) — utilisé
+          par les publications créées depuis le composer du feed. */}
+      {post.attachment?.type === "event" && (
+        <div className="mx-4 mt-3" onClick={(e) => e.stopPropagation()}>
+          <EventAttachCard event={post.attachment.event} />
+        </div>
+      )}
+      {post.attachment?.type === "analytics" && (
+        <div className="mx-4 mt-3" onClick={(e) => e.stopPropagation()}>
+          <AnalyticsAttachCard data={post.attachment.data} />
+        </div>
       )}
 
       {/* Custom CTA */}
@@ -1245,11 +1615,28 @@ function PostCard({
 export default function FeedPage() {
   const { isFollowing, toggleFollow } = useApp();
   const [posts, setPosts] = useState<SocialPost[]>(VIDEO_POSTS);
-  /* Composer "publier rapidement" en tête du feed — texte court (≤280),
-     atterrit en haut de la timeline. Pour les annonces avec galerie/visite,
-     on reste sur /publier. */
+  /* ─── Composer rapide en tête du feed ─────────────────────────────────
+     Texte court (≤280) + jusqu'à 4 médias (image/vidéo) + 1 attachement
+     parmi : Bien, Formation, Événement, Analyse de bien. Picker tabbed
+     pour l'attachement (ouvre un drawer modal plein écran sur mobile). */
   const [composerText, setComposerText] = useState("");
+  const [composerMedia, setComposerMedia] = useState<{ url: string; type: "image" | "video" }[]>([]);
+  type ComposerAttachmentState =
+    | { kind: "property"; property: Property }
+    | { kind: "formation"; formation: FormationLike }
+    | { kind: "event"; event: ComposerEvent }
+    | { kind: "analytics"; data: AnalyticsCardData }
+    | null;
+  const [composerAttachment, setComposerAttachment] = useState<ComposerAttachmentState>(null);
+  const [attachPicker, setAttachPicker] = useState<
+    null | "property" | "formation" | "event" | "analytics"
+  >(null);
+  /* Pour l'onglet "Analyse", il faut d'abord choisir un bien, puis la
+     métrique. On garde le bien sélectionné en attente. */
+  const [analyticsPickerProperty, setAnalyticsPickerProperty] = useState<Property | null>(null);
   const composerRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const MAX_COMPOSER_MEDIA = 4;
   const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis">("pour-vous");
 
   // Persiste l'état mute entre les posts (le user ne doit pas le réajuster à chaque card).
@@ -1351,25 +1738,101 @@ export default function FeedPage() {
     setMoreMenuPost(null);
   };
 
-  /* Publication directe depuis le composer en tête de feed. Crée un post
-     texte (sans média) en tant que current user et le pousse en tête. */
+  /* ─── Composer : handlers ─────────────────────────────────────────── */
+
+  const handleAddMedia = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    const remaining = MAX_COMPOSER_MEDIA - composerMedia.length;
+    const toAdd = files.slice(0, remaining).map((f) => ({
+      url: URL.createObjectURL(f),
+      type: (f.type.startsWith("video") ? "video" : "image") as "image" | "video",
+    }));
+    setComposerMedia((prev) => [...prev, ...toAdd]);
+    e.target.value = "";
+    if (files.length > remaining) {
+      setFeedToast(`Maximum ${MAX_COMPOSER_MEDIA} fichiers`);
+      setTimeout(() => setFeedToast(null), 1800);
+    }
+  };
+
+  const removeMedia = (idx: number) => {
+    setComposerMedia((prev) => {
+      const removed = prev[idx];
+      if (removed?.url) URL.revokeObjectURL(removed.url);
+      return prev.filter((_, i) => i !== idx);
+    });
+  };
+
+  const openAttachPicker = (kind: "property" | "formation" | "event" | "analytics") => {
+    setAttachPicker(kind);
+    setAnalyticsPickerProperty(null);
+  };
+  const closeAttachPicker = () => {
+    setAttachPicker(null);
+    setAnalyticsPickerProperty(null);
+  };
+
+  const attachProperty = (p: Property) => {
+    setComposerAttachment({ kind: "property", property: p });
+    closeAttachPicker();
+  };
+  const attachFormation = (f: FormationLike) => {
+    setComposerAttachment({ kind: "formation", formation: f });
+    closeAttachPicker();
+  };
+  const attachEvent = (e: ComposerEvent) => {
+    setComposerAttachment({ kind: "event", event: e });
+    closeAttachPicker();
+  };
+  const attachAnalytics = (p: Property, metric: AnalyticsMetric) => {
+    setComposerAttachment({
+      kind: "analytics",
+      data: computeAnalyticsCard(p, metric),
+    });
+    closeAttachPicker();
+  };
+
+  const composerHasContent =
+    composerText.trim().length > 0 ||
+    composerMedia.length > 0 ||
+    composerAttachment !== null;
+
+  /* Publication depuis le composer : texte + médias uploadés + 1 pièce
+     jointe (bien/formation/événement/analyse). On bascule sur l'onglet
+     "Pour vous" pour qu'on voie sa propre publication (on ne se suit pas
+     soi-même côté mock). */
   const publishFromComposer = () => {
-    const text = composerText.trim();
-    if (!text) return;
+    if (!composerHasContent) return;
+
     const newPost: SocialPost = {
       id: `p-${Date.now()}`,
       author: CURRENT_USER,
-      content: text,
-      media: [],
+      content: composerText.trim(),
+      media: composerMedia.map((m) => m.url),
+      mediaTypes: composerMedia.map((m) => m.type),
       type: "post",
       likes: 0,
       comments: [],
       createdAt: new Date().toISOString(),
     };
+
+    if (composerAttachment?.kind === "property") {
+      newPost.property = composerAttachment.property;
+    } else if (composerAttachment?.kind === "formation") {
+      newPost.formation = composerAttachment.formation;
+    } else if (composerAttachment?.kind === "event") {
+      const a: PostAttachment = { type: "event", event: composerAttachment.event };
+      newPost.attachment = a;
+    } else if (composerAttachment?.kind === "analytics") {
+      const a: PostAttachment = { type: "analytics", data: composerAttachment.data };
+      newPost.attachment = a;
+    }
+
     setPosts((prev) => [newPost, ...prev]);
     setComposerText("");
-    /* Bascule sur "Pour vous" pour qu'on voie sa propre publication même
-       si on était sur l'onglet "Suivis" (on ne se suit pas soi-même). */
+    setComposerMedia([]);
+    setComposerAttachment(null);
     setActiveTab("pour-vous");
     setFeedToast("Publié");
     setTimeout(() => setFeedToast(null), 1800);
@@ -1428,9 +1891,11 @@ export default function FeedPage() {
             </div>
           </div>
 
-          {/* Composer rapide en tête du feed (style X/Twitter) : permet
-              de publier un texte court sans passer par /publier. Les
-              annonces de biens avec galerie/visite restent sur /publier. */}
+          {/* Composer rapide en tête du feed — style X/Twitter mais
+              adapté E-Dome : pas de GIF / emoji / sondage (jamais utilisés
+              dans le projet), à la place upload média (image+vidéo, jusqu'à
+              4 via picker iOS natif) + 4 attachements pertinents : Bien
+              immobilier, Formation, Événement, Analyse de bien. */}
           <div className="mt-2 max-w-[600px] mx-auto">
             <div className="px-3 py-3 border-b border-[var(--card-border)]">
               <div className="flex gap-3">
@@ -1445,13 +1910,13 @@ export default function FeedPage() {
                     value={composerText}
                     onChange={(e) => {
                       setComposerText(e.target.value);
-                      // auto-grow simple : reset puis adapte à scrollHeight
+                      // auto-grow : reset puis adapte à scrollHeight
                       const el = e.currentTarget;
                       el.style.height = "auto";
                       el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
                     }}
                     onKeyDown={(e) => {
-                      // Cmd/Ctrl + Enter → publier (shortcut Twitter)
+                      // Cmd/Ctrl + Enter → publier (raccourci Twitter)
                       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
                         e.preventDefault();
                         publishFromComposer();
@@ -1463,33 +1928,129 @@ export default function FeedPage() {
                     aria-label="Rédiger une publication"
                     className="w-full bg-transparent text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none text-base leading-snug py-1.5"
                   />
-                  <div className="mt-2 flex items-center justify-between gap-2">
+
+                  {/* Aperçu médias uploadés (image + vidéo). Grid 2 cols
+                      sur mobile, jusqu'à 4 items, suppression individuelle. */}
+                  {composerMedia.length > 0 && (
+                    <div
+                      className={`mt-2 grid gap-1.5 rounded-2xl overflow-hidden ${
+                        composerMedia.length === 1
+                          ? "grid-cols-1"
+                          : "grid-cols-2"
+                      }`}
+                    >
+                      {composerMedia.map((m, i) => (
+                        <div
+                          key={i}
+                          className="relative aspect-video bg-black rounded-xl overflow-hidden group"
+                        >
+                          {m.type === "video" ? (
+                            <video
+                              src={m.url}
+                              className="w-full h-full object-cover"
+                              muted
+                              loop
+                              playsInline
+                              autoPlay
+                            />
+                          ) : (
+                            <img
+                              src={m.url}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                          {m.type === "video" && (
+                            <span className="absolute bottom-2 left-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/70 text-white text-[10px] font-medium">
+                              <Film size={10} /> Vidéo
+                            </span>
+                          )}
+                          <button
+                            onClick={() => removeMedia(i)}
+                            aria-label="Retirer ce média"
+                            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center transition-colors"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Aperçu pièce jointe (bien/formation/événement/analyse) */}
+                  {composerAttachment && (
+                    <div className="mt-2">
+                      {composerAttachment.kind === "property" && (
+                        <PropertyAttachCard
+                          property={composerAttachment.property}
+                          onRemove={() => setComposerAttachment(null)}
+                        />
+                      )}
+                      {composerAttachment.kind === "formation" && (
+                        <FormationAttachCard
+                          formation={composerAttachment.formation}
+                          onRemove={() => setComposerAttachment(null)}
+                        />
+                      )}
+                      {composerAttachment.kind === "event" && (
+                        <EventAttachCard
+                          event={composerAttachment.event}
+                          onRemove={() => setComposerAttachment(null)}
+                        />
+                      )}
+                      {composerAttachment.kind === "analytics" && (
+                        <AnalyticsAttachCard
+                          data={composerAttachment.data}
+                          onRemove={() => setComposerAttachment(null)}
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  {/* Input file caché — accept image+video, multiple, pas de
+                      `capture` pour laisser iOS proposer le choix entre
+                      Bibliothèque / Photo / Vidéo via le bottom sheet
+                      natif (UX iOS standard). */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,video/*"
+                    multiple
+                    onChange={handleAddMedia}
+                    className="hidden"
+                    aria-hidden
+                  />
+
+                  <div className="mt-3 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-0.5">
                       <ComposerAction
                         icon={ImageIcon}
-                        label="Ajouter une image"
-                        onClick={() => showToast("Ajout d'image (démo)")}
+                        label="Ajouter une photo ou vidéo"
+                        onClick={() => fileInputRef.current?.click()}
                       />
-                      {/* GIF : pas d'icône Lucide dédiée → badge texte
-                          comme sur X/Twitter pour rester reconnaissable. */}
-                      <button
-                        onClick={() => showToast("Bibliothèque GIF (démo)")}
-                        aria-label="Ajouter un GIF"
-                        className="w-9 h-9 flex items-center justify-center rounded-full text-[#1e9df1] hover:bg-[#1e9df1]/10 transition-colors"
-                      >
-                        <span className="text-[10px] font-bold tracking-wider border border-current rounded px-1 py-px leading-none">
-                          GIF
-                        </span>
-                      </button>
                       <ComposerAction
-                        icon={Smile}
-                        label="Ajouter un emoji"
-                        onClick={() => showToast("Sélecteur d'emoji (démo)")}
+                        icon={Building2}
+                        label="Attacher un bien immobilier"
+                        onClick={() => openAttachPicker("property")}
+                        badge={composerAttachment?.kind === "property"}
+                      />
+                      <ComposerAction
+                        icon={GraduationCap}
+                        label="Attacher une formation"
+                        onClick={() => openAttachPicker("formation")}
+                        badge={composerAttachment?.kind === "formation"}
+                      />
+                      <ComposerAction
+                        icon={Calendar}
+                        label="Attacher un événement"
+                        onClick={() => openAttachPicker("event")}
+                        badge={composerAttachment?.kind === "event"}
                       />
                       <ComposerAction
                         icon={BarChart3}
-                        label="Créer un sondage"
-                        onClick={() => showToast("Sondage (démo)")}
+                        label="Attacher une analyse de bien"
+                        onClick={() => openAttachPicker("analytics")}
+                        badge={composerAttachment?.kind === "analytics"}
                       />
                     </div>
                     <div className="flex items-center gap-3">
@@ -1507,7 +2068,7 @@ export default function FeedPage() {
                       )}
                       <button
                         onClick={publishFromComposer}
-                        disabled={!composerText.trim()}
+                        disabled={!composerHasContent}
                         className="px-5 h-9 rounded-full bg-[#1e9df1] hover:bg-[#1583c9] text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         Publier
@@ -1792,6 +2353,292 @@ export default function FeedPage() {
           </div>
         </div>
       )}
+
+      {/* ─── Picker d'attachement (Bien / Formation / Événement / Analyse) ─── */}
+      {attachPicker && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Choisir une pièce jointe"
+          className="fixed inset-0 z-[80] bg-black/70 flex items-end md:items-center justify-center animate-fade-in"
+          onClick={closeAttachPicker}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full md:max-w-lg bg-[var(--card)] border border-[var(--card-border)] rounded-t-2xl md:rounded-2xl max-h-[85vh] flex flex-col animate-slide-in-bottom md:animate-scale-in"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--card-border)] shrink-0">
+              <h3 className="text-sm font-semibold text-[var(--foreground)]">
+                {attachPicker === "property" && "Attacher un bien"}
+                {attachPicker === "formation" && "Attacher une formation"}
+                {attachPicker === "event" && "Attacher un événement"}
+                {attachPicker === "analytics" &&
+                  (analyticsPickerProperty ? "Choisir l'indicateur" : "Analyser un bien")}
+              </h3>
+              <button
+                onClick={closeAttachPicker}
+                aria-label="Fermer"
+                className="w-9 h-9 flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Body — scrollable */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {attachPicker === "property" && (
+                <PropertyPickerList properties={ALL_PROPERTIES} onSelect={attachProperty} />
+              )}
+              {attachPicker === "formation" && (
+                <FormationPickerList onSelect={attachFormation} />
+              )}
+              {attachPicker === "event" && (
+                <EventPickerList events={EVENTS_AVAILABLE} onSelect={attachEvent} />
+              )}
+              {attachPicker === "analytics" && !analyticsPickerProperty && (
+                <PropertyPickerList
+                  properties={ALL_PROPERTIES.filter((p) => p.analytics)}
+                  onSelect={(p) => setAnalyticsPickerProperty(p)}
+                  ctaLabel="Choisir"
+                />
+              )}
+              {attachPicker === "analytics" && analyticsPickerProperty && (
+                <AnalyticsMetricPicker
+                  property={analyticsPickerProperty}
+                  onBack={() => setAnalyticsPickerProperty(null)}
+                  onSelect={(m) => attachAnalytics(analyticsPickerProperty, m)}
+                />
+              )}
+            </div>
+
+            {/* Pied avec safe-area iOS pour le drawer mobile */}
+            <div
+              className="border-t border-[var(--card-border)] shrink-0"
+              style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+            />
+          </div>
+        </div>
+      )}
     </div>
+  );
+}
+
+/* ─── Listes du picker d'attachement ──────────────────────────────────── */
+
+function PropertyPickerList({
+  properties,
+  onSelect,
+  ctaLabel = "Attacher",
+}: {
+  properties: Property[];
+  onSelect: (p: Property) => void;
+  ctaLabel?: string;
+}) {
+  const { formatPrice } = useApp();
+  const [q, setQ] = useState("");
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    if (!needle) return properties;
+    return properties.filter(
+      (p) =>
+        p.title.toLowerCase().includes(needle) ||
+        p.location.city.toLowerCase().includes(needle),
+    );
+  }, [properties, q]);
+
+  return (
+    <>
+      <div className="relative mb-2">
+        <Search
+          size={14}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+        />
+        <input
+          type="text"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Rechercher un bien…"
+          className="w-full pl-9 pr-3 h-10 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]/40"
+        />
+      </div>
+      {filtered.length === 0 ? (
+        <p className="text-center text-sm text-[var(--text-muted)] py-8">Aucun bien.</p>
+      ) : (
+        filtered.map((p) => (
+          <button
+            key={p.id}
+            onClick={() => onSelect(p)}
+            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[var(--hover-bg)] text-left transition-colors"
+          >
+            <img src={p.images[0]} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-[var(--foreground)] truncate">{p.title}</p>
+              <p className="text-xs text-[var(--text-muted)] inline-flex items-center gap-1">
+                <MapPin size={11} /> {p.location.city} · {formatPrice(p.price, p.currency)}
+              </p>
+            </div>
+            <span className="text-xs font-medium text-[#1e9df1] shrink-0">{ctaLabel}</span>
+          </button>
+        ))
+      )}
+    </>
+  );
+}
+
+function FormationPickerList({ onSelect }: { onSelect: (f: FormationLike) => void }) {
+  const { formatPrice } = useApp();
+  const [q, setQ] = useState("");
+  const formations = useMemo<FormationLike[]>(
+    () =>
+      ALL_FORMATIONS.map((f) => ({
+        id: f.id,
+        title: f.title,
+        instructor: `${f.instructor.firstName} ${f.instructor.lastName}`,
+        price: f.price,
+        students: f.studentCount ?? 0,
+        thumbnail: f.thumbnail,
+      })),
+    [],
+  );
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    if (!needle) return formations;
+    return formations.filter(
+      (f) =>
+        f.title.toLowerCase().includes(needle) ||
+        f.instructor.toLowerCase().includes(needle),
+    );
+  }, [formations, q]);
+
+  return (
+    <>
+      <div className="relative mb-2">
+        <Search
+          size={14}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+        />
+        <input
+          type="text"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Rechercher une formation…"
+          className="w-full pl-9 pr-3 h-10 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]/40"
+        />
+      </div>
+      {filtered.length === 0 ? (
+        <p className="text-center text-sm text-[var(--text-muted)] py-8">Aucune formation.</p>
+      ) : (
+        filtered.map((f) => (
+          <button
+            key={f.id}
+            onClick={() => onSelect(f)}
+            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[var(--hover-bg)] text-left transition-colors"
+          >
+            <img src={f.thumbnail} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-[var(--foreground)] truncate">{f.title}</p>
+              <p className="text-xs text-[var(--text-muted)] truncate">
+                {f.instructor} · {formatPrice(f.price)}
+              </p>
+            </div>
+            <span className="text-xs font-medium text-[#1e9df1] shrink-0">Attacher</span>
+          </button>
+        ))
+      )}
+    </>
+  );
+}
+
+function EventPickerList({
+  events,
+  onSelect,
+}: {
+  events: ComposerEvent[];
+  onSelect: (e: ComposerEvent) => void;
+}) {
+  const { formatPrice } = useApp();
+  return (
+    <>
+      {events.map((e) => (
+        <button
+          key={e.id}
+          onClick={() => onSelect(e)}
+          className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[var(--hover-bg)] text-left transition-colors"
+        >
+          <img src={e.thumbnail} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-[var(--foreground)] truncate">{e.titre}</p>
+            <p className="text-xs text-[var(--text-muted)] truncate">
+              {formatDate(e.date)} · {e.lieu} ·{" "}
+              {e.prix && e.prix > 0 ? formatPrice(e.prix) : "Gratuit"}
+            </p>
+          </div>
+          <span className="text-xs font-medium text-[#1e9df1] shrink-0">Attacher</span>
+        </button>
+      ))}
+    </>
+  );
+}
+
+function AnalyticsMetricPicker({
+  property,
+  onBack,
+  onSelect,
+}: {
+  property: Property;
+  onBack: () => void;
+  onSelect: (m: AnalyticsMetric) => void;
+}) {
+  const metrics: { key: AnalyticsMetric; title: string; desc: string }[] = [
+    {
+      key: "views7d",
+      title: "Vues 7 derniers jours",
+      desc: "Sparkline + delta vs semaine précédente",
+    },
+    {
+      key: "rendementNet",
+      title: "Rendement net annuel",
+      desc: `${property.analytics?.rendementNet?.toFixed(1) ?? "—"}% sur ce bien`,
+    },
+    {
+      key: "occupation30d",
+      title: "Taux d'occupation 30j",
+      desc: "Sparkline + delta sur le mois",
+    },
+  ];
+  return (
+    <>
+      <button
+        onClick={onBack}
+        className="inline-flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] mb-2"
+      >
+        ← Changer de bien
+      </button>
+      <div className="flex items-center gap-2 p-2 mb-2 rounded-xl bg-[var(--hover-bg)]">
+        <img
+          src={property.images[0]}
+          alt=""
+          className="w-10 h-10 rounded-lg object-cover shrink-0"
+        />
+        <p className="text-xs font-medium text-[var(--foreground)] truncate">{property.title}</p>
+      </div>
+      {metrics.map((m) => (
+        <button
+          key={m.key}
+          onClick={() => onSelect(m.key)}
+          className="w-full flex items-center gap-3 p-3 rounded-xl border border-[var(--card-border)] hover:border-[#1e9df1]/40 hover:bg-[var(--hover-bg)] text-left transition-colors mb-2"
+        >
+          <div className="w-10 h-10 rounded-xl bg-[#1e9df1]/15 text-[#1e9df1] flex items-center justify-center shrink-0">
+            <BarChart3 size={18} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[var(--foreground)]">{m.title}</p>
+            <p className="text-xs text-[var(--text-muted)]">{m.desc}</p>
+          </div>
+          <ArrowRight size={14} className="text-[var(--text-muted)] shrink-0" />
+        </button>
+      ))}
+    </>
   );
 }

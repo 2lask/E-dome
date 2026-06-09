@@ -146,11 +146,48 @@ export interface Comment {
   likes: number;
 }
 
+/* ─── Pièces jointes éditoriales de post ───────────────────────────────
+   Au-delà de `media[]` (photos/vidéos) et de `property` / `formation`
+   déjà présents, un post peut embarquer un événement à promouvoir ou
+   une "carte analytique" d'un bien (vues 7j, rendement net, occupation
+   30j…). On précalcule la viz au moment de l'attache : sparkline et
+   delta restent stables même si la source bouge plus tard. */
+export type AnalyticsMetric = "views7d" | "rendementNet" | "occupation30d";
+
+export interface AnalyticsCardData {
+  propertyId: string;
+  propertyTitle: string;
+  metric: AnalyticsMetric;
+  label: string;
+  headline: string;
+  delta?: number;
+  sparkData?: number[];
+}
+
+export type PostAttachment =
+  | {
+      type: "event";
+      event: {
+        id: string;
+        titre: string;
+        date: string;
+        lieu: string;
+        thumbnail: string;
+        eventType: string;
+        spotsRemaining?: number;
+        prix?: number;
+      };
+    }
+  | { type: "analytics"; data: AnalyticsCardData };
+
 export interface SocialPost {
   id: string;
   author: User;
   content: string;
   media: string[];
+  /* "image" / "video" par index pour les médias uploadés via le composer
+     (déduit du MIME). Si absent on tombe sur l'heuristique d'extension. */
+  mediaTypes?: ("image" | "video")[];
   type: "post" | "reel" | "story";
   likes: number;
   comments: Comment[];
@@ -158,6 +195,7 @@ export interface SocialPost {
   location?: string;
   property?: Property;
   formation?: { id: string; title: string; instructor: string; price: number; students: number; thumbnail: string };
+  attachment?: PostAttachment;
 }
 
 // ─── Messaging ───────────────────────────────────────────────────────────────
