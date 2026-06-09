@@ -10,12 +10,12 @@ import {
   X,
   Globe,
   ArrowRight,
+  Menu,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useLanguage, type Language } from "@/lib/i18n";
 import { roleLabels, roleBadgeColors } from "@/lib/types";
 import type { Currency, Role } from "@/lib/types";
-import { LottiePlayer } from "@/components/ui/lottie-player";
 
 const CURRENCIES: { code: Currency; label: string }[] = [
   { code: "CHF", label: "CHF - Franc suisse" },
@@ -125,14 +125,19 @@ export function Header({ onMenuToggle }: HeaderProps) {
         borderBottom: "1px solid var(--card-border)",
       }}
     >
-      {/* Mobile menu button */}
+      {/* Mobile menu button — avant: LottiePlayer chargeait un asset
+          externe qui rendait l'icone quasi invisible (gris sur dark).
+          Maintenant: lucide Menu, couleur foreground bien contrastee +
+          background hover pour discoverabilite. */}
       <button
         onClick={onMenuToggle}
         aria-label="Ouvrir le menu"
-        className="md:hidden flex items-center justify-center w-11 h-11 -ml-2 rounded-lg cursor-pointer active:opacity-60 transition-opacity"
-        style={{ color: "var(--text-secondary)" }}
+        className="md:hidden flex items-center justify-center w-11 h-11 -ml-2 rounded-lg cursor-pointer active:opacity-60 transition-colors"
+        style={{ color: "var(--foreground)" }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
       >
-        <LottiePlayer src="/lottie/lottieflow-menu-nav-03-000000-easey.json" width={24} height={24} />
+        <Menu size={24} strokeWidth={2.2} />
       </button>
 
       {/* Search */}

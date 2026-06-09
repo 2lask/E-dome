@@ -9,7 +9,6 @@ import {
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
   Users, Building2, GraduationCap,
   Image as ImageIcon, BarChart3, Film, Paperclip, TrendingUp, TrendingDown, ArrowRight,
-  Plus,
 } from "lucide-react";
 import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
@@ -19,7 +18,6 @@ import type {
   User, SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData,
   PostAttachment,
 } from "@/lib/types";
-import { StoriesBar, StoryViewer, type StoryRing } from "@/components/social/stories";
 
 // ─── Users ─────────────────────────────────────────────────────────────────
 
@@ -78,66 +76,6 @@ const U_YASMIN: User = {
   stats: { followers: 6800, following: 180, properties: 0, reviews: 145, rating: 4.9, transactions: 92, revenue: 4_800_000 },
   bio: "Apporteuse d'affaires — off-market Dubaï & Émirats.",
 };
-
-// ─── Stories du feed (mock) ────────────────────────────────────────────────
-/* 6 rings simulés, chacun avec 1-3 stories. Les images Unsplash reflètent
-   le metier du proprio (riad pour Amira, chalet pour Thomas, etc.).
-   Les CTA pointent vers des routes existantes /explorer/ et /formations/. */
-const FEED_STORY_RINGS: StoryRing[] = [
-  {
-    authorId: U_SOPHIE.id,
-    authorName: U_SOPHIE.firstName,
-    authorAvatar: U_SOPHIE.avatar,
-    stories: [
-      { id: "s1-1", imageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=720", caption: "Visite express — appart vue lac, Lausanne" },
-      { id: "s1-2", imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=720", caption: "Nouvelle déco salon, prêt pour les visites" },
-    ],
-  },
-  {
-    authorId: U_AMIRA.id,
-    authorName: U_AMIRA.firstName,
-    authorAvatar: U_AMIRA.avatar,
-    stories: [
-      { id: "s2-1", imageUrl: "https://images.unsplash.com/photo-1539020140153-e479b8c5b1d3?w=720", caption: "Riad d'exception — médina" },
-      { id: "s2-2", imageUrl: "https://images.unsplash.com/photo-1610530460358-dc1cab7a05e3?w=720", caption: "Patio central, hammam privé", cta: { label: "Voir le bien", href: "/explorer" } },
-    ],
-  },
-  {
-    authorId: U_THOMAS.id,
-    authorName: U_THOMAS.firstName,
-    authorAvatar: U_THOMAS.avatar,
-    stories: [
-      { id: "s3-1", imageUrl: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=720", caption: "Projet Zurich Nord — chantier J+45" },
-    ],
-  },
-  {
-    authorId: U_YASMIN.id,
-    authorName: U_YASMIN.firstName,
-    authorAvatar: U_YASMIN.avatar,
-    stories: [
-      { id: "s4-1", imageUrl: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=720", caption: "Dubai Marina — penthouse off-market" },
-      { id: "s4-2", imageUrl: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=720" },
-      { id: "s4-3", imageUrl: "https://images.unsplash.com/photo-1570645476671-d4ce67fbd0d6?w=720", caption: "Survol drone du quartier" },
-    ],
-  },
-  {
-    authorId: U_AMINA.id,
-    authorName: U_AMINA.firstName,
-    authorAvatar: U_AMINA.avatar,
-    stories: [
-      { id: "s5-1", imageUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=720", caption: "Nouveau module : pricing dynamique", cta: { label: "Voir la formation", href: "/formations" } },
-    ],
-  },
-  {
-    authorId: U_MARC.id,
-    authorName: U_MARC.firstName,
-    authorAvatar: U_MARC.avatar,
-    stories: [
-      { id: "s6-1", imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=720", caption: "Penthouse rive droite, Genève" },
-      { id: "s6-2", imageUrl: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=720", caption: "Vue Mont-Blanc 360°" },
-    ],
-  },
-];
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -662,59 +600,6 @@ function renderContent(content: string) {
     }
     return <React.Fragment key={i}>{part}</React.Fragment>;
   });
-}
-
-// ─── DoubleTapLike : overlay coeur Instagram-style ────────────────────────
-/* Détecte un double-tap sur le bloc media et trigger un like + animation
-   coeur centré. Convention Instagram :
-   - Si déjà liké, on N'unlike PAS (double-tap n'est jamais un toggle), on
-     se contente de rejouer l'animation.
-   - Seuil : 2 taps < 300 ms d'intervalle.
-   - Sur desktop on n'écoute que onClick (touch fait clic aussi), donc le
-     handler marche pour souris + touch.
-   - Animation : coeur scale 0.4 -> 1.15 -> 1 -> fade-out, 700ms. */
-function DoubleTapLike({
-  alreadyLiked,
-  onLike,
-  children,
-}: {
-  alreadyLiked: boolean;
-  onLike: () => void;
-  children: React.ReactNode;
-}) {
-  const lastTapRef = useRef(0);
-  const [burst, setBurst] = useState(0); // incrémenté pour re-trigger l'anim
-
-  const handleClick = (e: React.MouseEvent) => {
-    const now = Date.now();
-    const dt = now - lastTapRef.current;
-    if (dt > 0 && dt < 300) {
-      e.stopPropagation();
-      if (!alreadyLiked) onLike();
-      setBurst((b) => b + 1);
-      lastTapRef.current = 0; // reset pour éviter triple-tap chained
-    } else {
-      lastTapRef.current = now;
-    }
-  };
-
-  return (
-    <div className="relative" onClick={handleClick}>
-      {children}
-      {burst > 0 && (
-        <div
-          key={burst}
-          aria-hidden
-          className="absolute top-1/2 left-1/2 pointer-events-none animate-double-tap-heart z-10"
-        >
-          <Heart
-            className="w-24 h-24 drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-            style={{ color: "var(--danger)", fill: "var(--danger)" }}
-          />
-        </div>
-      )}
-    </div>
-  );
 }
 
 // ─── Media (VideoPlayer / ImageView) ───────────────────────────────────────
@@ -1472,13 +1357,11 @@ function PostCard({
           longueur (1/2/3/4+). Posts texte seul : aucun bloc media. */}
       {post.media.length > 0 && (
         <div className="px-4">
-          <DoubleTapLike alreadyLiked={liked} onLike={onToggleLike}>
-            {isVideo ? (
-              <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
-            ) : (
-              <MediaGallery media={post.media} />
-            )}
-          </DoubleTapLike>
+          {isVideo ? (
+            <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
+          ) : (
+            <MediaGallery media={post.media} />
+          )}
         </div>
       )}
 
@@ -1777,18 +1660,6 @@ export default function FeedPage() {
   const [commentInput, setCommentInput] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
-  /* Stories — état viewer + tracking "vues". Quand on ouvre un ring,
-     on l'ajoute à seenRings → l'anneau coloré passe en gris à la fermeture. */
-  const [seenRings, setSeenRings] = useState<Set<string>>(new Set());
-  const [storyViewerIndex, setStoryViewerIndex] = useState<number | null>(null);
-  const storyRings: StoryRing[] = useMemo(
-    () =>
-      FEED_STORY_RINGS.map((r) => ({ ...r, seen: seenRings.has(r.authorId) })),
-    [seenRings]
-  );
-  const activeRing =
-    storyViewerIndex !== null ? storyRings[storyViewerIndex] : null;
-
   const filteredPosts = useMemo(() => {
     // Tri par date desc pour que les nouveaux formats varies (texte seul,
     // galeries photo) se melangent naturellement avec les videos selon
@@ -2024,28 +1895,6 @@ export default function FeedPage() {
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Stories en haut du feed (Instagram-style).
-              Anneau coloré dégradé = stories non-vues, gris = vues.
-              Premier item "Votre story" = CTA création (mock toast). */}
-          <div className="max-w-[600px] mx-auto">
-            <StoriesBar
-              selfAvatar={CURRENT_USER.avatar}
-              rings={storyRings}
-              onOpen={(i) => {
-                setStoryViewerIndex(i);
-                setSeenRings((prev) => {
-                  const next = new Set(prev);
-                  next.add(storyRings[i].authorId);
-                  return next;
-                });
-              }}
-              onCreateStory={() => {
-                setFeedToast("Création de stories bientôt disponible");
-                setTimeout(() => setFeedToast(null), 1800);
-              }}
-            />
           </div>
 
           {/* Composer rapide en tête du feed — style X/Twitter mais
@@ -2510,42 +2359,6 @@ export default function FeedPage() {
           </div>
         </div>
       )}
-
-      {/* ─── Story viewer (modal fullscreen) ───────────────────────── */}
-      {activeRing && (
-        <StoryViewer
-          stories={activeRing.stories}
-          author={{
-            id: activeRing.authorId,
-            name: activeRing.authorName,
-            avatar: activeRing.authorAvatar,
-          }}
-          onClose={() => setStoryViewerIndex(null)}
-        />
-      )}
-
-      {/* ─── FAB compose mobile ───────────────────────────────────────────
-          Bouton flottant en bas-droit (au-dessus de la mobile-nav et de
-          la safe-area) qui scrolle vers le composer en haut du feed puis
-          le focus, à la Instagram (icône + au-dessus de la nav).
-          Caché desktop : le composer est déjà visible en permanence. */}
-      <button
-        type="button"
-        onClick={() => {
-          composerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-          setTimeout(() => composerRef.current?.focus(), 350);
-        }}
-        aria-label="Rédiger une publication"
-        className="md:hidden fixed right-4 z-40 w-14 h-14 rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
-        style={{
-          bottom: "calc(80px + env(safe-area-inset-bottom) + 0.5rem)",
-          background: "var(--primary)",
-          color: "var(--primary-foreground, #fff)",
-          boxShadow: "0 10px 24px -6px color-mix(in srgb, var(--primary) 60%, transparent)",
-        }}
-      >
-        <Plus size={26} strokeWidth={2.5} />
-      </button>
 
       {/* ─── Picker d'attachement (Bien / Formation / Événement / Analyse) ─── */}
       {attachPicker && (

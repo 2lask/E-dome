@@ -22,17 +22,11 @@ import {
   Flag,
   UserMinus,
   Copy as CopyIcon,
-  X,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { formatCount } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
 import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
-import {
-  HighlightsBar,
-  StoryViewer,
-  type Highlight,
-} from "@/components/social/stories";
 
 /* ─────────────────────────────────────────────────────────────
    ProfileVitrine — composant partagé entre /profil (mon profil)
@@ -148,7 +142,6 @@ export function ProfileVitrine({
   const { addToast } = useToast();
   const [tab, setTab] = useState<TabKey>("publications");
   const [moreOpen, setMoreOpen] = useState(false);
-  const [followersModal, setFollowersModal] = useState<null | "followers" | "following">(null);
   const moreRef = useRef<HTMLDivElement>(null);
 
   /* Ferme le menu 3-points au clic en dehors. */
@@ -162,84 +155,6 @@ export function ProfileVitrine({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [moreOpen]);
-
-  /* Ferme la modal followers/suivis avec Échap. */
-  useEffect(() => {
-    if (!followersModal) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setFollowersModal(null);
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [followersModal]);
-
-  useLockBodyScroll(!!followersModal);
-
-  /* Highlights ("Moments clés") — dérivés des données réelles du profil :
-     - 1er highlight depuis le 1er bien (cover) avec 2 photos
-     - 2e depuis la 1ère formation (cover) avec 1 photo
-     - 3e depuis le 1er service (cover)
-     - 4e depuis la 1ère publication
-     Permet d'avoir une démo crédible sans data supplémentaire. */
-  const highlights = React.useMemo<Highlight[]>(() => {
-    const out: Highlight[] = [];
-    if (data.biens[0]) {
-      out.push({
-        id: "h-bien",
-        title: "Mes biens",
-        coverUrl: data.biens[0].cover,
-        stories: data.biens.slice(0, 3).map((b) => ({
-          id: `h-bien-${b.id}`,
-          imageUrl: b.cover,
-          caption: b.title,
-          cta: { label: "Voir le bien", href: `/explorer/${b.id}` },
-        })),
-      });
-    }
-    if (data.formations[0]) {
-      out.push({
-        id: "h-formation",
-        title: "Formations",
-        coverUrl: data.formations[0].cover,
-        stories: data.formations.slice(0, 3).map((f) => ({
-          id: `h-formation-${f.id}`,
-          imageUrl: f.cover,
-          caption: f.title,
-          cta: { label: "Découvrir", href: `/formations/${f.id}` },
-        })),
-      });
-    }
-    if (data.services[0]) {
-      out.push({
-        id: "h-service",
-        title: "Services",
-        coverUrl: data.services[0].cover,
-        stories: data.services.slice(0, 3).map((s) => ({
-          id: `h-service-${s.id}`,
-          imageUrl: s.cover,
-          caption: s.title,
-          cta: { label: "Voir le service", href: `/services` },
-        })),
-      });
-    }
-    if (data.publications[0]) {
-      out.push({
-        id: "h-publications",
-        title: "Publications",
-        coverUrl: data.publications[0].src,
-        stories: data.publications.slice(0, 4).map((p) => ({
-          id: `h-pub-${p.id}`,
-          imageUrl: p.src,
-          caption: p.caption,
-        })),
-      });
-    }
-    return out;
-  }, [data.biens, data.formations, data.services, data.publications]);
-
-  const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
-  const activeHighlight =
-    highlightIndex !== null ? highlights[highlightIndex] : null;
 
   const totalAvis = data.ratingBreakdown.reduce((s, r) => s + r.count, 0);
 
@@ -540,26 +455,18 @@ export function ProfileVitrine({
         </p>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-4">
-          <button
-            onClick={() => setFollowersModal("followers")}
-            className="text-sm hover:opacity-70 transition-opacity"
-            style={{ color: "var(--text-secondary)" }}
-          >
+          <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
             <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
               {formatCount(user.stats.followers)}
             </span>{" "}
             abonnés
-          </button>
-          <button
-            onClick={() => setFollowersModal("following")}
-            className="text-sm hover:opacity-70 transition-opacity"
-            style={{ color: "var(--text-secondary)" }}
-          >
+          </div>
+          <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
             <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
               {formatCount(user.stats.following)}
             </span>{" "}
             suivis
-          </button>
+          </div>
           <div className="text-sm flex items-center gap-1.5" style={{ color: "var(--text-secondary)" }}>
             <Star size={14} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
             <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
@@ -576,20 +483,6 @@ export function ProfileVitrine({
           </span>
         </div>
       </div>
-
-      {/* Highlights / Moments clés — entre les stats et les onglets.
-          Section discrete (sous-header) avec cercles + labels en
-          dessous, à la Instagram. Click → ouvre le StoryViewer. */}
-      {highlights.length > 0 && (
-        <div className="px-4 md:px-6 mt-6">
-          <HighlightsBar
-            highlights={highlights}
-            isOwn={isOwn}
-            onOpen={(i) => setHighlightIndex(i)}
-            onCreateHighlight={() => addToast("Création de moment clé bientôt", "info")}
-          />
-        </div>
-      )}
 
       {/* Onglets */}
       <nav
@@ -878,159 +771,6 @@ export function ProfileVitrine({
         )}
       </div>
 
-      {/* Modal Abonnés / Suivis (style Instagram).
-          Mock data : un noyau de 6 utilisateurs fictifs pour démo.
-          Sur mobile : bottom-sheet pleine largeur ; desktop : centré max-w-md. */}
-      {followersModal && (
-        <FollowListModal
-          mode={followersModal}
-          ownerFirstName={user.firstName}
-          totalCount={
-            followersModal === "followers"
-              ? user.stats.followers
-              : user.stats.following
-          }
-          onClose={() => setFollowersModal(null)}
-        />
-      )}
-
-      {/* StoryViewer pour les highlights — auto-advance 5s, swipe-down
-          pour fermer, click L/R pour naviguer entre stories du moment. */}
-      {activeHighlight && (
-        <StoryViewer
-          stories={activeHighlight.stories}
-          author={{ id: user.id, name: `${user.firstName} ${user.lastName}`, avatar: user.avatar }}
-          onClose={() => setHighlightIndex(null)}
-        />
-      )}
-    </div>
-  );
-}
-
-// ─── Modal Abonnés / Suivis ───────────────────────────────────────
-
-interface FollowMock {
-  id: string;
-  name: string;
-  handle: string;
-  avatar: string;
-  bio: string;
-}
-
-const FOLLOW_MOCKS: FollowMock[] = [
-  { id: "u1", name: "Sophie Martin",   handle: "sophie",   avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop", bio: "Hôte · Lausanne" },
-  { id: "u2", name: "Marc Dubois",     handle: "marc",     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop", bio: "Investisseur · Genève" },
-  { id: "u3", name: "Amina Belkacem",  handle: "amina",    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop", bio: "Formatrice · Marrakech" },
-  { id: "u4", name: "Yasmin Al Falasi",handle: "yasmin",   avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=80&h=80&fit=crop", bio: "Apporteuse · Dubaï" },
-  { id: "u5", name: "Thomas Weber",    handle: "thomas",   avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop", bio: "Promoteur · Zurich" },
-  { id: "u6", name: "Claire Bernard",  handle: "claire",   avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop", bio: "Home staging · Lausanne" },
-];
-
-function FollowListModal({
-  mode,
-  ownerFirstName,
-  totalCount,
-  onClose,
-}: {
-  mode: "followers" | "following";
-  ownerFirstName: string;
-  totalCount: number;
-  onClose: () => void;
-}) {
-  const [followState, setFollowState] = useState<Record<string, boolean>>(
-    () => Object.fromEntries(FOLLOW_MOCKS.map((u) => [u.id, mode === "following"]))
-  );
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={mode === "followers" ? "Abonnés" : "Suivis"}
-      className="fixed inset-0 z-[80] flex items-end md:items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.6)" }}
-      onClick={onClose}
-    >
-      <div
-        className="w-full md:max-w-md md:rounded-2xl rounded-t-2xl overflow-hidden flex flex-col animate-slide-in-bottom md:animate-scale-in"
-        style={{
-          background: "var(--card)",
-          border: "1px solid var(--card-border)",
-          maxHeight: "min(85vh, 600px)",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header sticky */}
-        <div className="flex items-center justify-between px-4 py-3 border-b shrink-0"
-          style={{ borderColor: "var(--card-border)" }}>
-          <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
-            {mode === "followers"
-              ? `Abonnés de ${ownerFirstName}`
-              : `Profils suivis par ${ownerFirstName}`}
-            <span className="ml-2 text-sm font-normal" style={{ color: "var(--text-muted)" }}>
-              {formatCount(totalCount)}
-            </span>
-          </h2>
-          <button
-            onClick={onClose}
-            aria-label="Fermer"
-            className="flex items-center justify-center w-11 h-11 rounded-lg transition-colors"
-            style={{ color: "var(--text-muted)" }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Liste scrollable */}
-        <div className="overflow-y-auto px-2 py-1">
-          {FOLLOW_MOCKS.map((u) => (
-            <div
-              key={u.id}
-              className="flex items-center gap-3 p-2 rounded-lg transition-colors"
-            >
-              <Link
-                href={`/profil/${u.id}`}
-                onClick={onClose}
-                className="flex items-center gap-3 flex-1 min-w-0"
-              >
-                <img src={u.avatar} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>
-                    {u.name}
-                  </p>
-                  <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
-                    @{u.handle} · {u.bio}
-                  </p>
-                </div>
-              </Link>
-              <button
-                onClick={() =>
-                  setFollowState((prev) => ({ ...prev, [u.id]: !prev[u.id] }))
-                }
-                className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors shrink-0"
-                style={
-                  followState[u.id]
-                    ? {
-                        border: "1px solid var(--card-border)",
-                        color: "var(--foreground)",
-                        background: "var(--card)",
-                      }
-                    : {
-                        background: "var(--primary)",
-                        color: "var(--primary-foreground)",
-                      }
-                }
-              >
-                {followState[u.id] ? "Suivi" : "Suivre"}
-              </button>
-            </div>
-          ))}
-          <p className="text-center text-xs py-4" style={{ color: "var(--text-muted)" }}>
-            Données fictives pour la maquette
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
