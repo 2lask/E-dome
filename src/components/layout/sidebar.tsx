@@ -11,6 +11,7 @@ import {
   Bell,
   LayoutDashboard,
   Heart,
+  Handshake,
   User as UserIcon,
   Settings,
   HelpCircle,
@@ -30,28 +31,28 @@ import { conversations } from "@/lib/mock-data";
 
 /* ─────────────────────────────────────────────────────────────
    Sidebar globale (hors /dashboard/*).
-   Refonte : 3 groupes thematiques + popover compte en bas.
+   v4 : Creer = submenu (groupe ensemble) ; click parent = toggle
+   submenu sur toute la ligne (pas que la fleche) ; largeur reduite
+   240 ; ajout d'Apporteurs dans MON ESPACE.
 
    GROUPES :
-   1. NAVIGUER       : Accueil / Explorer (▼ marketplace) /
-                       Messages [badge] / Notifications [badge]
-   2. CRÉER          : 6 actions de creation (flat, badge ⊕)
-   3. MON ESPACE     : Dashboard / Favoris / Profil
-   4. (bas, popover) : Compte → Parametres / Aide / Quitter
+   1. NAVIGUER       : Accueil / Explorer ▼ / Messages [n] /
+                       Notifications [n]
+   2. CRÉER          : Creer ▼ (submenu de 6 actions)
+   3. MON ESPACE     : Dashboard / Apporteurs / Favoris / Profil
+   4. (bas, popover) : Reglages → Parametres / Aide / Quitter
 
    Comportement :
-   - Hover-to-expand 56px -> 280px (s'etend en overlay, le contenu
-     ne se redecale pas)
-   - Submenu Explorer auto-ouvert quand on est sur une route
-     marketplace (/explorer, /boutique, /formations, etc.)
-   - Badges :
-     * Messages : nombre de conversations non-lues
-     * Notifications : pastille rouge (3 nouveaux par defaut)
-     * Items Creer : petit + bleu en surimpression
+   - Hover-to-expand 56px -> 240px (overlay, le contenu ne se redecale pas)
+   - Click sur la ligne parent (Explorer, Creer) = toggle submenu
+     sur TOUTE la ligne, y compris l'icone et le label
+   - Submenu auto-ouvert quand on est sur une route enfant
+   - Items sans submenu (Accueil/Messages/Notifications/Dashboard/...) =
+     Link standard (navigation directe)
    ───────────────────────────────────────────────────────────── */
 
 const COLLAPSED_WIDTH = 56;
-const EXPANDED_WIDTH = 280;
+const EXPANDED_WIDTH = 240;
 
 interface SubItem {
   label: string;
@@ -61,11 +62,13 @@ interface SubItem {
 
 interface NavItem {
   label: string;
-  href: string;
+  href?: string; // facultatif : Creer n'a pas de page index, juste un submenu
   icon: LucideIcon;
   badge?: number;
   matchPrefixes?: string[];
   subItems?: SubItem[];
+  /** Icone primary-colored pour signaler une action (cas Creer). */
+  accent?: boolean;
 }
 
 interface SidebarProps {
@@ -82,7 +85,7 @@ const EXPLORER_SUB: SubItem[] = [
   { label: "Événements", href: "/evenements", icon: CalendarDays },
 ];
 
-const CREATE_ITEMS: { label: string; href: string; icon: LucideIcon }[] = [
+const CREATE_SUB: SubItem[] = [
   { label: "Publier un bien", href: "/publier", icon: Building2 },
   { label: "Vendre un produit", href: "/boutique/vendre", icon: ShoppingBag },
   { label: "Créer une formation", href: "/formations/creer", icon: GraduationCap },
@@ -93,6 +96,7 @@ const CREATE_ITEMS: { label: string; href: string; icon: LucideIcon }[] = [
 
 const ESPACE_ITEMS: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Apporteurs", href: "/apporteurs", icon: Handshake },
   { label: "Favoris", href: "/favoris", icon: Heart },
   { label: "Profil", href: "/profil", icon: UserIcon },
 ];
@@ -106,9 +110,6 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
     () => conversations.reduce((sum, c) => sum + c.unreadCount, 0),
     []
   );
-
-  // Hardcode 3 notifications non lues pour la demo (cle de notifications a
-  // venir depuis mock-data si on en a besoin plus fin un jour).
   const unreadNotifications = 3;
 
   const navItems: NavItem[] = useMemo(
@@ -139,9 +140,24 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
     [unreadMessages]
   );
 
-  const isItemActive = (item: { href: string; matchPrefixes?: string[] }) => {
-    if (!item.matchPrefixes) return pathname.startsWith(item.href);
-    return item.matchPrefixes.some((p) => (p === "/" ? pathname === "/" : pathname.startsWith(p)));
+  /* Le groupe CRÉER n'est qu'un seul item parent collapsible. Il n'a
+     pas de page index propre — uniquement un submenu de 6 actions. */
+  const createItem: NavItem = {
+    label: "Créer",
+    icon: Plus,
+    subItems: CREATE_SUB,
+    accent: true,
+    matchPrefixes: ["/publier", "/boutique/vendre", "/formations/creer", "/evenements/creer"],
+  };
+
+  const isItemActive = (item: { href?: string; matchPrefixes?: string[] }) => {
+    if (item.matchPrefixes) {
+      return item.matchPrefixes.some((p) =>
+        p === "/" ? pathname === "/" : pathname.startsWith(p),
+      );
+    }
+    if (item.href) return pathname.startsWith(item.href);
+    return false;
   };
   const isExactActive = (href: string) => pathname === href;
   const isSubItemActive = (href: string) => {
@@ -151,8 +167,9 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
 
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   useEffect(() => {
-    const active = navItems.find((it) => it.subItems && isItemActive(it));
-    if (active) setOpenSubmenu(active.href);
+    // Auto-ouverture du submenu Explorer ou Creer selon la route active.
+    if (isItemActive(navItems[1])) setOpenSubmenu("explorer");
+    else if (isItemActive(createItem)) setOpenSubmenu("create");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
@@ -174,6 +191,139 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
     setAccountOpen(false);
   }, [pathname]);
 
+  /* Rend un item parent avec submenu : toute la ligne est UN bouton
+     (icone + label + chevron) qui toggle le submenu. */
+  const renderParentWithSubmenu = (
+    item: NavItem,
+    submenuKey: string,
+    submenu: SubItem[],
+  ) => {
+    const active = isItemActive(item);
+    const subOpen = openSubmenu === submenuKey;
+    const Icon = item.icon;
+    return (
+      <div key={submenuKey}>
+        <button
+          onClick={() => setOpenSubmenu(subOpen ? null : submenuKey)}
+          aria-expanded={subOpen}
+          title={!isExpanded ? item.label : undefined}
+          className={cn(
+            "w-full flex items-center gap-3 h-9 rounded-lg transition-colors whitespace-nowrap cursor-pointer",
+            isExpanded ? "px-3" : "justify-center px-0",
+            active && "font-medium",
+          )}
+          style={{
+            background: active ? "rgba(30,157,241,0.10)" : "transparent",
+            color: active ? "var(--primary)" : "var(--text-secondary)",
+          }}
+          onMouseEnter={(e) => {
+            if (!active) e.currentTarget.style.background = "var(--hover-bg)";
+          }}
+          onMouseLeave={(e) => {
+            if (!active) e.currentTarget.style.background = "transparent";
+          }}
+        >
+          <Icon
+            size={18}
+            className="shrink-0"
+            style={item.accent && !active ? { color: "var(--primary)" } : undefined}
+          />
+          {isExpanded && (
+            <>
+              <span className="truncate text-sm flex-1 text-left">{item.label}</span>
+              <ChevronDown
+                size={14}
+                className={cn(
+                  "shrink-0 transition-transform duration-150",
+                  subOpen && "rotate-180",
+                )}
+                style={{ color: "var(--text-muted)" }}
+              />
+            </>
+          )}
+        </button>
+
+        {/* Submenu inline (uniquement quand etendue) */}
+        {isExpanded && subOpen && (
+          <ul
+            className="ml-5 mt-0.5 mb-1 pl-3 space-y-0.5"
+            style={{ borderLeft: "1px solid var(--card-border)" }}
+          >
+            {submenu.map((sub) => {
+              const SubIcon = sub.icon;
+              const subActive = isSubItemActive(sub.href);
+              return (
+                <li key={sub.href}>
+                  <Link
+                    href={sub.href}
+                    className="flex items-center gap-2 px-2 h-8 rounded-md text-xs transition-colors whitespace-nowrap"
+                    style={{
+                      background: subActive ? "rgba(30,157,241,0.10)" : "transparent",
+                      color: subActive ? "var(--primary)" : "var(--text-muted)",
+                      fontWeight: subActive ? 600 : 500,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!subActive) e.currentTarget.style.background = "var(--hover-bg)";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!subActive) e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    <SubIcon size={14} className="shrink-0" />
+                    <span className="truncate">{sub.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    );
+  };
+
+  /* Rend un item simple (Link, pas de submenu). */
+  const renderSimpleLink = (
+    item: { label: string; href: string; icon: LucideIcon; badge?: number },
+    active: boolean,
+  ) => {
+    const Icon = item.icon;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        title={!isExpanded ? item.label : undefined}
+        className={cn(
+          "flex items-center gap-3 h-9 rounded-lg transition-colors relative whitespace-nowrap",
+          isExpanded ? "px-3" : "justify-center px-0",
+          active && "font-medium",
+        )}
+        style={{
+          background: active ? "rgba(30,157,241,0.10)" : "transparent",
+          color: active ? "var(--primary)" : "var(--text-secondary)",
+        }}
+        onMouseEnter={(e) => {
+          if (!active) e.currentTarget.style.background = "var(--hover-bg)";
+        }}
+        onMouseLeave={(e) => {
+          if (!active) e.currentTarget.style.background = "transparent";
+        }}
+      >
+        <div className="relative shrink-0">
+          <Icon size={18} />
+          {item.badge && item.badge > 0 && (
+            <span
+              className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
+              style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+            >
+              {item.badge}
+            </span>
+          )}
+        </div>
+        {isExpanded && <span className="truncate text-sm">{item.label}</span>}
+      </Link>
+    );
+  };
+
   return (
     <motion.aside
       initial={false}
@@ -192,7 +342,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         href="/feed"
         className={cn(
           "flex items-center h-14 shrink-0 text-base font-semibold tracking-tight whitespace-nowrap",
-          isExpanded ? "px-4" : "justify-center"
+          isExpanded ? "px-4" : "justify-center",
         )}
         title="Accueil"
       >
@@ -209,197 +359,48 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         )}
       </Link>
 
-      {/* Nav scrollable */}
       <nav className="flex-1 overflow-y-auto px-2 py-2 no-scrollbar">
         {/* ─── GROUPE 1 : NAVIGUER ───────────────────────────── */}
         <SectionHeader label="Naviguer" expanded={isExpanded} />
         <div className="space-y-0.5">
           {navItems.map((item) => {
             const active = isItemActive(item);
-            const Icon = item.icon;
-            const hasSub = !!item.subItems && isExpanded;
-            const subOpen = openSubmenu === item.href;
-
-            return (
-              <div key={item.href}>
-                <div className="flex items-center">
-                  <Link
-                    href={item.href}
-                    title={!isExpanded ? item.label : undefined}
-                    className={cn(
-                      "flex-1 flex items-center gap-3 h-9 rounded-lg transition-colors relative whitespace-nowrap",
-                      isExpanded ? "px-3" : "justify-center px-0",
-                      active && "font-medium"
-                    )}
-                    style={{
-                      background: active ? "rgba(30,157,241,0.10)" : "transparent",
-                      color: active ? "var(--primary)" : "var(--text-secondary)",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!active) e.currentTarget.style.background = "var(--hover-bg)";
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!active) e.currentTarget.style.background = "transparent";
-                    }}
-                  >
-                    <div className="relative shrink-0">
-                      <Icon size={18} />
-                      {item.badge && item.badge > 0 && (
-                        <span
-                          className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
-                          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                    {isExpanded && <span className="truncate text-sm">{item.label}</span>}
-                  </Link>
-                  {hasSub && (
-                    <button
-                      onClick={() => setOpenSubmenu(subOpen ? null : item.href)}
-                      aria-label={subOpen ? "Replier" : "Déplier"}
-                      aria-expanded={subOpen}
-                      className="p-1.5 mr-0.5 rounded transition-colors shrink-0"
-                      style={{ color: "var(--text-muted)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                    >
-                      <ChevronDown
-                        size={14}
-                        className={cn("transition-transform duration-150", subOpen && "rotate-180")}
-                      />
-                    </button>
-                  )}
-                </div>
-
-                {/* Sous-menu (Marketplace pour Explorer) */}
-                {hasSub && subOpen && (
-                  <ul
-                    className="ml-5 mt-0.5 mb-1 pl-3 space-y-0.5"
-                    style={{ borderLeft: "1px solid var(--card-border)" }}
-                  >
-                    {item.subItems!.map((sub) => {
-                      const SubIcon = sub.icon;
-                      const subActive = isSubItemActive(sub.href);
-                      return (
-                        <li key={sub.href}>
-                          <Link
-                            href={sub.href}
-                            className="flex items-center gap-2 px-2 h-8 rounded-md text-xs transition-colors whitespace-nowrap"
-                            style={{
-                              background: subActive ? "rgba(30,157,241,0.10)" : "transparent",
-                              color: subActive ? "var(--primary)" : "var(--text-muted)",
-                              fontWeight: subActive ? 600 : 500,
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!subActive) e.currentTarget.style.background = "var(--hover-bg)";
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!subActive) e.currentTarget.style.background = "transparent";
-                            }}
-                          >
-                            <SubIcon size={14} className="shrink-0" />
-                            <span className="truncate">{sub.label}</span>
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </div>
+            if (item.subItems) {
+              return renderParentWithSubmenu(item, "explorer", item.subItems);
+            }
+            return renderSimpleLink(
+              { label: item.label, href: item.href!, icon: item.icon, badge: item.badge },
+              active,
             );
           })}
         </div>
 
-        {/* Separator entre groupes */}
+        {/* Separator */}
         <div className="my-3 h-px" style={{ background: "var(--card-border)" }} />
 
         {/* ─── GROUPE 2 : CRÉER ─────────────────────────────── */}
         <SectionHeader label="Créer" expanded={isExpanded} />
         <div className="space-y-0.5">
-          {CREATE_ITEMS.map((item) => {
-            const Icon = item.icon;
-            const active = isExactActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                title={!isExpanded ? item.label : undefined}
-                className={cn(
-                  "flex items-center gap-3 h-9 rounded-lg transition-colors whitespace-nowrap",
-                  isExpanded ? "px-3" : "justify-center px-0",
-                  active && "font-medium"
-                )}
-                style={{
-                  background: active ? "rgba(30,157,241,0.10)" : "transparent",
-                  color: active ? "var(--primary)" : "var(--text-secondary)",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) e.currentTarget.style.background = "var(--hover-bg)";
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) e.currentTarget.style.background = "transparent";
-                }}
-              >
-                <div className="relative shrink-0">
-                  <Icon size={18} />
-                  <span
-                    className="absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center"
-                    style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-                    aria-hidden
-                  >
-                    <Plus size={8} strokeWidth={3} />
-                  </span>
-                </div>
-                {isExpanded && <span className="truncate text-sm">{item.label}</span>}
-              </Link>
-            );
-          })}
+          {renderParentWithSubmenu(createItem, "create", CREATE_SUB)}
         </div>
 
-        {/* Separator entre groupes */}
+        {/* Separator */}
         <div className="my-3 h-px" style={{ background: "var(--card-border)" }} />
 
         {/* ─── GROUPE 3 : MON ESPACE ────────────────────────── */}
         <SectionHeader label="Mon espace" expanded={isExpanded} />
         <div className="space-y-0.5">
           {ESPACE_ITEMS.map((item) => {
-            const Icon = item.icon;
             const active =
               item.href === "/dashboard"
                 ? pathname.startsWith("/dashboard")
                 : isExactActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                title={!isExpanded ? item.label : undefined}
-                className={cn(
-                  "flex items-center gap-3 h-9 rounded-lg transition-colors whitespace-nowrap",
-                  isExpanded ? "px-3" : "justify-center px-0",
-                  active && "font-medium"
-                )}
-                style={{
-                  background: active ? "rgba(30,157,241,0.10)" : "transparent",
-                  color: active ? "var(--primary)" : "var(--text-secondary)",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) e.currentTarget.style.background = "var(--hover-bg)";
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) e.currentTarget.style.background = "transparent";
-                }}
-              >
-                <Icon size={18} className="shrink-0" />
-                {isExpanded && <span className="truncate text-sm">{item.label}</span>}
-              </Link>
-            );
+            return renderSimpleLink(item, active);
           })}
         </div>
       </nav>
 
-      {/* ─── Bas : Compte (popover Reglages) ────────────────── */}
+      {/* ─── Bas : Reglages ────────────────────────────────── */}
       <div
         className="px-2 py-2 relative shrink-0"
         style={{ borderTop: "1px solid var(--divider)" }}
@@ -409,7 +410,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
           onClick={() => setAccountOpen((v) => !v)}
           className={cn(
             "w-full flex items-center gap-3 rounded-lg h-9 transition-colors cursor-pointer whitespace-nowrap",
-            isExpanded ? "px-3" : "px-0 justify-center"
+            isExpanded ? "px-3" : "px-0 justify-center",
           )}
           style={{ color: "var(--text-secondary)" }}
           onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
@@ -476,9 +477,6 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
   );
 }
 
-/* En-tete de section : "NAVIGUER", "CRÉER", "MON ESPACE" en
-   uppercase muted quand la sidebar est etendue. Disparait quand
-   collapsed (le separator visuel suffit). */
 function SectionHeader({ label, expanded }: { label: string; expanded: boolean }) {
   if (!expanded) return null;
   return (
