@@ -197,6 +197,15 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* Tokens semantiques (success/warning/danger/rating) exposes a
+     Tailwind pour pouvoir ecrire bg-success, border-success/30,
+     text-warning, etc. */
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-rating: var(--rating);
+
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);

@@ -31,6 +31,7 @@ import {
   KpiGrid,
 } from "@/components/dashboard/kpi-card-premium";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
 
@@ -140,20 +141,18 @@ export default function MesAnnoncesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Mes annonces</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Tout ce que vous publiez : biens, produits, formations, lives, événements, services
-          </p>
-        </div>
-        <Button size="sm" asChild>
-          <Link href="/publier">
-            <Plus className="mr-2 h-4 w-4" />
-            Nouvelle annonce
-          </Link>
-        </Button>
-      </div>
+      <DashboardPageHeader
+        title="Mes annonces"
+        description="Tout ce que vous publiez : biens, produits, formations, lives, événements, services"
+        actions={
+          <Button size="sm" asChild>
+            <Link href="/publier">
+              <Plus className="mr-2 h-4 w-4" />
+              Nouvelle annonce
+            </Link>
+          </Button>
+        }
+      />
 
       <KpiGrid>
         <KpiCardPremium

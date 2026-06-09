@@ -7,116 +7,141 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import {
   KpiCardPremium,
   KpiGrid,
 } from "@/components/dashboard/kpi-card-premium";
+import { RevenueBreakdown } from "@/components/dashboard/revenue-breakdown";
 import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { SimpleBarList } from "@/components/dashboard/simple-bar-list";
-import { dashboard } from "@/lib/dashboard-data";
+import {
+  dashboard,
+  formations,
+  upcomingEvents,
+} from "@/lib/dashboard-data";
 import { formatNumber } from "@/lib/format";
 
-/* /dashboard/revenus : style premium coherent avec /dashboard.
-   KpiGrid + 4 KpiCardPremium + OverviewChart + 2 SimpleBarList. */
+/* /dashboard/revenus : detail des 7 sources de revenus.
+   Avant : 3 KPI (Locations / Commissions / Boutique) ignoraient
+   4 sources sur 7. Refonte avec breakdown complet + top actifs
+   cross-categorie (biens ET formations ET evenements). */
 
 export default function RevenusPage() {
-  const { properties, revenueByType, kpis, monthlyRevenue } = dashboard;
+  const { revenueBySource, properties, monthlyRevenue, kpis } = dashboard;
 
-  const totalLocations =
-    revenueByType.find((t) => t.label === "Locations")?.value ?? 0;
-  const totalCommissions =
-    revenueByType.find((t) => t.label.startsWith("Commissions"))?.value ?? 0;
-  const totalBoutique =
-    revenueByType.find((t) => t.label === "Boutique")?.value ?? 0;
+  const totalRevenue = revenueBySource.reduce((s, i) => s + i.value, 0);
+  const totalBiens =
+    revenueBySource.find((s) => s.key === "biens")?.value ?? 0;
+  const totalFormations =
+    revenueBySource.find((s) => s.key === "formations")?.value ?? 0;
+  const totalEvents =
+    revenueBySource.find((s) => s.key === "evenements")?.value ?? 0;
 
   const overviewData = monthlyRevenue.map((m) => ({
     label: m.label,
     value: m.value,
   }));
 
-  const byProperty = [...properties]
-    .sort((a, b) => b.monthRevenue - a.monthRevenue)
-    .map((p) => ({ name: p.name, value: p.monthRevenue }));
-
-  const byType = [...revenueByType]
+  /* Top actifs cross-categorie : biens (monthRevenue), formations
+     (monthRevenue), evenements (forecast). Trie par CA et limite a 8. */
+  const topActifs = [
+    ...properties.map((p) => ({
+      name: `${p.name} (bien)`,
+      value: p.monthRevenue,
+    })),
+    ...formations.map((f) => ({
+      name: `${f.title} (formation)`,
+      value: f.monthRevenue,
+    })),
+    ...upcomingEvents
+      .filter((e) => e.forecast > 0)
+      .map((e) => ({ name: `${e.title} (${e.kind})`, value: e.forecast })),
+  ]
     .sort((a, b) => b.value - a.value)
-    .map((t) => ({ name: t.label, value: t.value }));
+    .slice(0, 8);
 
-  const pct = (v: number) => Math.round((v / kpis.revenue) * 100);
+  const pct = (v: number) =>
+    totalRevenue > 0 ? Math.round((v / totalRevenue) * 100) : 0;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Revenus</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Détail des 12 derniers mois · CHF
-          </p>
-        </div>
-        <Button variant="outline" size="sm">
-          <Download className="mr-2 h-4 w-4" />
-          Exporter
-        </Button>
-      </div>
+      <DashboardPageHeader
+        title="Revenus"
+        description="Détail des 7 sources de revenus et de leur évolution"
+        actions={
+          <Button variant="outline" size="sm">
+            <Download className="mr-2 h-4 w-4" />
+            Exporter
+          </Button>
+        }
+      />
 
       <KpiGrid>
         <KpiCardPremium
           label="Total revenus"
-          value={`${formatNumber(kpis.revenue)} CHF`}
+          value={`${formatNumber(totalRevenue)} CHF`}
           delta={kpis.revenueDelta}
           trend="up"
           footer="Cumul du mois en cours"
           subfooter="Toutes sources confondues"
         />
         <KpiCardPremium
-          label="Locations"
-          value={`${formatNumber(totalLocations)} CHF`}
-          delta={`${pct(totalLocations)}%`}
-          trend="neutral"
-          footer="Part dans le total"
-          subfooter="Réservations courte + longue durée"
+          label="Biens (locations)"
+          value={`${formatNumber(totalBiens)} CHF`}
+          delta={`${pct(totalBiens)}%`}
+          trend="up"
+          footer="Réservations courte durée"
+          subfooter="Part dans le total"
         />
         <KpiCardPremium
-          label="Commissions apporteur"
-          value={`${formatNumber(totalCommissions)} CHF`}
-          delta={`${pct(totalCommissions)}%`}
-          trend="neutral"
-          footer="Part dans le total"
-          subfooter="Conversions générées ce mois"
+          label="Formations"
+          value={`${formatNumber(totalFormations)} CHF`}
+          delta={`${pct(totalFormations)}%`}
+          trend="up"
+          footer="Ventes e-learning"
+          subfooter="Part dans le total"
         />
         <KpiCardPremium
-          label="Boutique"
-          value={`${formatNumber(totalBoutique)} CHF`}
-          delta={`${pct(totalBoutique)}%`}
-          trend="neutral"
-          footer="Part dans le total"
-          subfooter="Ventes de produits annexes"
+          label="Événements & services"
+          value={`${formatNumber(totalEvents)} CHF`}
+          delta={`${pct(totalEvents)}%`}
+          trend="up"
+          footer="Lives, ateliers, visites"
+          subfooter="Part dans le total"
         />
       </KpiGrid>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Évolution mensuelle</CardTitle>
-          <CardDescription>
-            Revenus totaux sur 12 mois · mois courant accentué
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="ps-2">
-          <OverviewChart data={overviewData} height={300} />
-        </CardContent>
-      </Card>
+      {/* Chart évolution + Mix breakdown côte à côte */}
+      <div className="grid gap-6 lg:grid-cols-12">
+        <Card className="lg:col-span-8">
+          <CardHeader>
+            <CardTitle>Évolution mensuelle</CardTitle>
+            <CardDescription>
+              Revenus totaux sur 12 mois · mois courant accentué
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-2 pb-6">
+            <OverviewChart data={overviewData} height={300} />
+          </CardContent>
+        </Card>
+        <div className="lg:col-span-4">
+          <RevenueBreakdown />
+        </div>
+      </div>
 
+      {/* Top actifs cross-cat + détail par source */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Par bien</CardTitle>
+            <CardTitle>Top actifs (toutes catégories)</CardTitle>
             <CardDescription>
-              Contribution de chaque bien ce mois
+              Biens, formations et événements les plus rentables ce mois
             </CardDescription>
           </CardHeader>
           <CardContent>
             <SimpleBarList
-              items={byProperty}
+              items={topActifs}
               valueFormatter={(n) => `${formatNumber(n)} CHF`}
               barClass="bg-primary"
             />
@@ -124,12 +149,16 @@ export default function RevenusPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Par catégorie</CardTitle>
-            <CardDescription>Répartition par source de revenu</CardDescription>
+            <CardTitle>Détail par source</CardTitle>
+            <CardDescription>
+              Répartition des 7 sources de revenus
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <SimpleBarList
-              items={byType}
+              items={[...revenueBySource]
+                .sort((a, b) => b.value - a.value)
+                .map((s) => ({ name: s.label, value: s.value }))}
               valueFormatter={(n) => `${formatNumber(n)} CHF`}
               barClass="bg-muted-foreground"
             />

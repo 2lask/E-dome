@@ -17,6 +17,7 @@ import {
 } from "@/components/dashboard/kpi-card-premium";
 import { SimpleBarList } from "@/components/dashboard/simple-bar-list";
 import { Progress } from "@/components/ui/progress";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
 import {
@@ -41,14 +42,10 @@ export default function ApporteursPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Apporteurs</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Vos commissions de recommandation · suivi des canaux et classement
-          </p>
-        </div>
-      </div>
+      <DashboardPageHeader
+        title="Apporteurs"
+        description="Vos commissions de recommandation · suivi des canaux et classement"
+      />
 
       <KpiGrid>
         <KpiCardPremium

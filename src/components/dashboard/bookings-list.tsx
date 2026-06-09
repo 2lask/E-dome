@@ -51,7 +51,7 @@ export function BookingsList({ limit = 5 }: { limit?: number }) {
           return (
             <div
               key={r.id}
-              className="flex items-center gap-3 rounded-lg border p-3"
+              className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/40"
             >
               <Avatar name={r.guest} size="sm" />
               <div className="flex flex-1 flex-wrap items-center justify-between gap-3">

@@ -1,13 +1,14 @@
 import { cn } from "@/lib/utils";
 
-/* Libelles + couleurs centralises -> accents corrects et coherents
-   partout (fini "Termine"/"Confirmee" sans accent sur certaines pages). */
+/* Libelles + couleurs centralises. Utilise les tokens semantiques
+   du theme (chip-*-soft) plutot que des hex emerald/amber harcodes
+   -> coherent en clair et sombre, et un seul endroit a changer. */
 const STATUS: Record<string, { label: string; className: string }> = {
-  confirmed: { label: "Confirmée", className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" },
-  pending: { label: "En attente", className: "bg-amber-500/10 text-amber-700 dark:text-amber-400" },
+  confirmed: { label: "Confirmée", className: "chip-success-soft" },
+  pending: { label: "En attente", className: "chip-warning-soft" },
   completed: { label: "Terminée", className: "bg-muted text-muted-foreground" },
-  cancelled: { label: "Annulée", className: "bg-destructive/10 text-destructive" },
-  published: { label: "Publiée", className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" },
+  cancelled: { label: "Annulée", className: "chip-danger-soft" },
+  published: { label: "Publiée", className: "chip-success-soft" },
   draft: { label: "Brouillon", className: "bg-muted text-muted-foreground" },
 };
 

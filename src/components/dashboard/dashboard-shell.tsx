@@ -70,7 +70,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 md:px-6">
+        <div className="mx-auto flex h-14 max-w-[1680px] items-center justify-between gap-3 px-4 md:px-6 xl:px-10">
           <Link href="/dashboard" className="flex items-center gap-2.5">
             <span className="text-[15px] font-medium tracking-[0.18em]">EDOME</span>
             <span className="font-mono text-xs text-muted-foreground">/ dashboard</span>
@@ -102,9 +102,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </nav>
       </header>
 
-      <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6 md:px-6">
+      <div className="mx-auto flex max-w-[1680px] gap-4 px-4 py-6 md:px-6 lg:gap-6 xl:px-10">
         {/* Navigation desktop : sidebar */}
-        <aside className="hidden w-56 shrink-0 md:block">
+        <aside className="hidden w-52 shrink-0 md:block lg:w-56">
           <nav className="sticky top-20 flex flex-col gap-1">
             {NAV.map((item) => (
               <NavLink

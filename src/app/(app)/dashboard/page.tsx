@@ -11,10 +11,16 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
+import { MetricsSecondary } from "@/components/dashboard/metrics-secondary";
 import { SalesAreaChart } from "@/components/dashboard/sales-area-chart";
+import { RevenueBreakdown } from "@/components/dashboard/revenue-breakdown";
 import { TopProperties } from "@/components/dashboard/top-properties";
+import { TopFormations } from "@/components/dashboard/top-formations";
 import { BookingsList } from "@/components/dashboard/bookings-list";
+import { UpcomingEvents } from "@/components/dashboard/upcoming-events";
+import { BoutiqueAlerts } from "@/components/dashboard/boutique-alerts";
 import {
   KpiCardPremium,
   KpiGrid,
@@ -24,14 +30,17 @@ import { SimpleBarList } from "@/components/dashboard/simple-bar-list";
 import { dashboard, referralChannels } from "@/lib/dashboard-data";
 import { formatNumber } from "@/lib/format";
 
-/* Refonte dashboard premium, inspiree de shadcn-dashboard-landing-template
-   (dashboard-2). Structure :
-   - Header riche : H1 + description + QuickActions a droite
-   - MetricsOverview : 4 KPI cards avec gradient subtil + Badge trend
-   - Tabs Vue d'ensemble / Analytics
-   - Overview : SalesAreaChart (12 mois vs target) + grid 2-cols
-     (BookingsList + TopProperties) + Objectifs
-   - Analytics : AreaChart hebdo + 4 mini KPI + 2 SimpleBarList */
+/* Vue d'ensemble dashboard — refonte MULTI-SOURCE.
+   Structure pensee pour densifier l'ecran (max-w-[1680px]) :
+   - 4 KPI premium (CA total, annonces actives, note pond., previs 30j)
+   - 4 mini KPI (reservations, commissions, occupation, lives a venir)
+   - Tab Overview : grid 12-col
+     · row 1 : SalesAreaChart col-8 + RevenueBreakdown col-4
+     · row 2 : TopProperties col-6 + TopFormations col-6
+     · row 3 : UpcomingEvents col-6 + BoutiqueAlerts col-6
+     · row 4 : BookingsList col-8 + Objectifs col-4
+   - Tab Analytics : trafic + canaux + sources
+   Couverture multi-source : 7/7 (avant : 2/7). */
 
 const ANALYTICS_WEEK = [
   { label: "Lun", series1: 142, series2: 98 },
@@ -52,77 +61,101 @@ export default function DashboardOverviewPage() {
 
   return (
     <div className="space-y-6">
-      {/* En-tete riche : H1 + description + QuickActions */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
-          <p className="text-sm text-muted-foreground">
-            Surveillance de votre activité et indicateurs clés en temps réel
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-            Exporter
-          </Button>
-          <Button size="sm" asChild>
-            <Link href="/publier">
-              <Plus className="mr-2 h-4 w-4" />
-              Nouveau bien
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <DashboardPageHeader
+        title="Tableau de bord"
+        description="Vue d'ensemble multi-revenus : biens, formations, boutique, événements, services & apporteurs"
+        actions={
+          <>
+            <Button variant="outline" size="sm">
+              <Download className="mr-2 h-4 w-4" />
+              Exporter
+            </Button>
+            <Button size="sm" asChild>
+              <Link href="/publier">
+                <Plus className="mr-2 h-4 w-4" />
+                Nouvelle annonce
+              </Link>
+            </Button>
+          </>
+        }
+      />
 
-      {/* 4 KPI cards premium */}
+      {/* 4 KPI cards premium multi-source */}
       <MetricsOverview />
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <div className="w-full overflow-x-auto pb-2">
-          <TabsList>
-            <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          </TabsList>
-        </div>
+      {/* 4 mini KPI secondaires actionnables */}
+      <MetricsSecondary />
+
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
 
         {/* ─── VUE D'ENSEMBLE ─────────────────────────────── */}
         <TabsContent value="overview" className="space-y-6">
-          {/* SalesAreaChart pleine largeur */}
-          <SalesAreaChart />
-
-          {/* Grid 2-cols : BookingsList + TopProperties */}
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <BookingsList limit={5} />
-            <TopProperties />
+          {/* Row 1 : Chart 12 mois + Mix multi-source */}
+          <div className="grid gap-6 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <SalesAreaChart />
+            </div>
+            <div className="lg:col-span-4">
+              <RevenueBreakdown />
+            </div>
           </div>
 
-          {/* Objectifs du mois */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Objectifs du mois</CardTitle>
-              <CardDescription>Progression vers vos cibles</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ProgressRow
-                label="Revenus"
-                current={objectives.revenue.current}
-                target={objectives.revenue.target}
-                display={`${formatNumber(objectives.revenue.current)} / ${formatNumber(objectives.revenue.target)} CHF`}
-              />
-              <ProgressRow
-                label="Réservations"
-                current={objectives.reservations.current}
-                target={objectives.reservations.target}
-                display={`${objectives.reservations.current} / ${objectives.reservations.target}`}
-              />
-              <ProgressRow
-                label="Note moyenne"
-                current={objectives.rating.current}
-                target={objectives.rating.target}
-                display={`${objectives.rating.current} / ${objectives.rating.target}`}
-              />
-            </CardContent>
-          </Card>
+          {/* Row 2 : Top biens + Top formations */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <TopProperties />
+            <TopFormations />
+          </div>
+
+          {/* Row 3 : Prochainement + Alertes boutique */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <UpcomingEvents />
+            <BoutiqueAlerts />
+          </div>
+
+          {/* Row 4 : Réservations récentes + Objectifs */}
+          <div className="grid gap-6 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <BookingsList limit={5} />
+            </div>
+            <div className="lg:col-span-4">
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>Objectifs du mois</CardTitle>
+                  <CardDescription>Progression vers vos cibles</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ProgressRow
+                    label="Revenus"
+                    current={objectives.revenue.current}
+                    target={objectives.revenue.target}
+                    display={`${formatNumber(objectives.revenue.current)} / ${formatNumber(objectives.revenue.target)} CHF`}
+                  />
+                  <ProgressRow
+                    label="Réservations"
+                    current={objectives.reservations.current}
+                    target={objectives.reservations.target}
+                    display={`${objectives.reservations.current} / ${objectives.reservations.target}`}
+                  />
+                  <ProgressRow
+                    label="Note moyenne"
+                    current={objectives.rating.current}
+                    target={objectives.rating.target}
+                    display={`${objectives.rating.current} / ${objectives.rating.target}`}
+                  />
+                  <ProgressRow
+                    label="Diversification"
+                    current={objectives.diversification.current}
+                    target={objectives.diversification.target}
+                    display={`${objectives.diversification.current} / ${objectives.diversification.target} sources`}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
 
         {/* ─── ANALYTICS ──────────────────────────────────── */}
@@ -214,8 +247,8 @@ export default function DashboardOverviewPage() {
   );
 }
 
-/* Ligne de progression vers un objectif. Monochrome (bar primary)
-   pour rester coherent avec les autres composants premium. */
+/* Ligne de progression vers un objectif. Brutalist : pas de
+   rounded-full sur la barre — rectangle strict comme tout le reste. */
 function ProgressRow({
   label,
   current,
@@ -238,9 +271,7 @@ function ProgressRow({
       <div className="h-1.5 overflow-hidden rounded-full bg-muted">
         <div
           className={
-            reached
-              ? "h-full rounded-full bg-emerald-500"
-              : "h-full rounded-full bg-primary"
+            reached ? "h-full bg-success rounded-full" : "h-full bg-primary rounded-full"
           }
           style={{ width: `${pct}%` }}
         />

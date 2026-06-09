@@ -22,6 +22,7 @@ import {
   KpiGrid,
 } from "@/components/dashboard/kpi-card-premium";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
 import {
@@ -86,14 +87,10 @@ export default function ReservationsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Réservations</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Suivi et gestion de toutes vos réservations
-          </p>
-        </div>
-      </div>
+      <DashboardPageHeader
+        title="Réservations"
+        description="Suivi et gestion de toutes vos réservations"
+      />
 
       <KpiGrid>
         <KpiCardPremium
