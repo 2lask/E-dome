@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { PWARegister } from "@/components/pwa-register";
 
-const inter = Plus_Jakarta_Sans({
+/* Inter charge via next/font (preload + auto-self-host). Le CSS importe
+   aussi Inter via Google Fonts en fallback. */
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",

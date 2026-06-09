@@ -1,239 +1,250 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
-/* ─── Theme ─────────────────────────────────────────────── */
-/* Le thème E-Dome (gold/black) a été remplacé par le thème shadcn/X-style
-   ci-dessous. Les anciens noms de tokens (--gold, --bg, --text, …) sont
-   conservés en alias vers les nouveaux pour ne rien casser dans le code
-   existant qui les référencerait encore. */
-:root {
-  /* Aliases rétro-compat — pointent désormais vers les tokens shadcn */
-  --gold: var(--primary);
-  --gold-hover: #1a8fd9;
-  --bg: var(--background);
-  --bg-alt: var(--card);
-  --text: var(--foreground);
-  --text-secondary: var(--muted-foreground);
-  --text-muted: var(--muted-foreground);
-  --text-primary: var(--foreground);
-  --bg-primary: var(--background);
-  --bg-secondary: var(--card);
+@custom-variant dark (&:is(.dark *));
 
-  /* Tokens shadcn/Tailwind v4 — palette principale (light mode, fallback). */
-  --card: #f7f8f8;
-  --ring: #1da1f2;
-  --input: #f7f9fa;
-  --muted: #E5E5E6;
-  --accent: #E3ECF6;
-  --border: #e1eaef;
-  --radius: 1.3rem;
-  --chart-1: #1e9df1;
-  --chart-2: #00b87a;
-  --chart-3: #f7b928;
-  --chart-4: #17bf63;
-  --chart-5: #e0245e;
-  --popover: #ffffff;
-  --primary: #1e9df1;
-  --sidebar: #f7f8f8;
-  --font-mono: Menlo, monospace;
-  --font-sans: Open Sans, sans-serif;
-  --secondary: #0f1419;
-  --background: #ffffff;
-  --font-serif: Georgia, serif;
-  --foreground: #0f1419;
-  --destructive: #f4212e;
+/* ─── Theme brutaliste ────────────────────────────────────────
+   Refonte complete : palette oklch, accent orange, bordures fortes
+   (noir/blanc pur), radius 0, aucune ombre. Fonts Inter / Source
+   Serif 4 / JetBrains Mono. La maquette demo reste forcee en mode
+   sombre via <html className="dark"> dans le RootLayout. */
+:root {
+  --background: oklch(0.9383 0.0042 236.4993);
+  --foreground: oklch(0 0 0);
+  --card: oklch(0.9383 0.0042 236.4993);
+  --card-foreground: oklch(0 0 0);
+  --popover: oklch(0.9383 0.0042 236.4993);
+  --popover-foreground: oklch(0 0 0);
+  --primary: oklch(0.6602 0.2294 35.4025);
+  --primary-foreground: oklch(1.0000 0 0);
+  --secondary: oklch(0.9383 0.0042 236.4993);
+  --secondary-foreground: oklch(0 0 0);
+  --muted: oklch(0.9383 0.0042 236.4993);
+  --muted-foreground: oklch(0.3867 0 0);
+  --accent: oklch(0.9383 0.0042 236.4993);
+  --accent-foreground: oklch(0 0 0);
+  --destructive: oklch(0.6280 0.2577 29.2339);
+  --destructive-foreground: oklch(1.0000 0 0);
+  --border: oklch(0 0 0);
+  --input: oklch(0.9383 0.0042 236.4993);
+  --ring: oklch(0.6602 0.2294 35.4025);
+  --chart-1: oklch(0.7156 0.0605 248.6845);
+  --chart-2: oklch(0.7875 0.0917 35.9616);
+  --chart-3: oklch(0.5778 0.0759 254.1573);
+  --chart-4: oklch(0.5016 0.0849 259.4902);
+  --chart-5: oklch(0.4241 0.0952 264.0306);
+  --sidebar: oklch(0.9383 0.0042 236.4993);
+  --sidebar-foreground: oklch(0 0 0);
+  --sidebar-primary: oklch(0.6602 0.2294 35.4025);
+  --sidebar-primary-foreground: oklch(1.0000 0 0);
+  --sidebar-accent: oklch(0.9383 0.0042 236.4993);
+  --sidebar-accent-foreground: oklch(0 0 0);
+  --sidebar-border: oklch(0 0 0);
+  --sidebar-ring: oklch(0.6602 0.2294 35.4025);
+  --font-sans: Inter, sans-serif;
+  --font-serif: Source Serif 4, serif;
+  --font-mono: JetBrains Mono, monospace;
+  --radius: 0px;
+  --shadow-x: 0px;
+  --shadow-y: 0px;
   --shadow-blur: 0px;
-  --shadow-color: rgba(29,161,242,0.15);
-  --sidebar-ring: #1da1f2;
   --shadow-spread: 0px;
   --shadow-opacity: 0;
-  --sidebar-accent: #E3ECF6;
-  --sidebar-border: #e1e8ed;
-  --card-foreground: #0f1419;
-  --shadow-offset-x: 0px;
-  --shadow-offset-y: 2px;
-  --sidebar-primary: #1e9df1;
-  --muted-foreground: #0f1419;
-  --accent-foreground: #1e9df1;
-  --popover-foreground: #0f1419;
-  --primary-foreground: #ffffff;
-  --sidebar-foreground: #0f1419;
-  --secondary-foreground: #ffffff;
-  --destructive-foreground: #ffffff;
-  --sidebar-accent-foreground: #1e9df1;
-  --sidebar-primary-foreground: #ffffff;
+  --shadow-color: transparent;
+  --shadow-2xs: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
+  --shadow-xs: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
+  --shadow-sm: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
+  --shadow: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
+  --shadow-md: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 2px 4px -1px hsl(0 0% 0% / 0.00);
+  --shadow-lg: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 4px 6px -1px hsl(0 0% 0% / 0.00);
+  --shadow-xl: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 8px 10px -1px hsl(0 0% 0% / 0.00);
+  --shadow-2xl: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  /* ─── Aliases LEGACY (compat) ────────────────────────────
+     Tokens utilises par les composants existants — mappes sur le
+     nouveau theme pour ne pas tout casser. */
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-muted: var(--muted-foreground);
+  --text: var(--foreground);
+  --bg: var(--background);
+  --bg-alt: var(--card);
+  --bg-primary: var(--background);
+  --bg-secondary: var(--card);
+  --card-border: var(--border);
+  --hover-bg: rgba(0, 0, 0, 0.06);
+  --divider: var(--border);
+  --input-bg: var(--input);
+  --input-border: var(--border);
+  --gold: var(--primary);
+  --gold-hover: var(--primary);
+  --accent-hover: var(--primary);
+  --shadow-card: none;
+  --shadow-soft: none;
+
+  /* Couleurs semantiques : pas dans le theme brutalist mais utilisees
+     par badges/statuts dans tous le code (deltas KPI, status pending,
+     ratings etoiles, level formation, etc.). On garde l'emerald/amber
+     classiques pour la lisibilite. */
+  --rating: #fbbf24;
+  --warning: #fbbf24;
+  --success: #10b981;
+  --success-soft: #34d399;
+  --danger: var(--destructive);
+  --tag: #a78bfa;
 }
 
-/* Dark mode — c'est ce que voit l'utilisateur (forcé via <html className="dark">). */
 .dark {
-  --card: #17181c;
-  --ring: #1da1f2;
-  --input: #22303c;
-  --muted: #181818;
-  --accent: #061622;
-  --border: #242628;
-  --chart-1: #1e9df1;
-  --chart-2: #00b87a;
-  --chart-3: #f7b928;
-  --chart-4: #17bf63;
-  --chart-5: #e0245e;
-  --popover: #000000;
-  --primary: #1c9cf0;
-  --sidebar: #17181c;
-  --secondary: #f0f3f4;
-  --background: #000000;
-  --foreground: #e7e9ea;
-  --destructive: #f4212e;
-  --shadow-color: rgba(29,161,242,0.25);
-  --sidebar-ring: #1da1f2;
-  --sidebar-accent: #061622;
-  --sidebar-border: #38444d;
-  --card-foreground: #d9d9d9;
-  --sidebar-primary: #1da1f2;
-  --muted-foreground: #72767a;
-  --accent-foreground: #1c9cf0;
-  --popover-foreground: #e7e9ea;
-  --primary-foreground: #ffffff;
-  --sidebar-foreground: #d9d9d9;
-  --secondary-foreground: #0f1419;
-  --destructive-foreground: #ffffff;
-  --sidebar-accent-foreground: #1c9cf0;
-  --sidebar-primary-foreground: #ffffff;
+  --background: oklch(0.2598 0.0306 262.6666);
+  --foreground: oklch(1.0000 0 0);
+  --card: oklch(0.2598 0.0306 262.6666);
+  --card-foreground: oklch(1.0000 0 0);
+  --popover: oklch(0.2598 0.0306 262.6666);
+  --popover-foreground: oklch(1.0000 0 0);
+  --primary: oklch(0.6824 0.2108 37.6975);
+  --primary-foreground: oklch(1.0000 0 0);
+  --secondary: oklch(0.2598 0.0306 262.6666);
+  --secondary-foreground: oklch(1.0000 0 0);
+  --muted: oklch(0.2598 0.0306 262.6666);
+  --muted-foreground: oklch(0.8452 0 0);
+  --accent: oklch(0.2598 0.0306 262.6666);
+  --accent-foreground: oklch(1.0000 0 0);
+  --destructive: oklch(0.6636 0.2231 25.7269);
+  --destructive-foreground: oklch(1.0000 0 0);
+  --border: oklch(1.0000 0 0);
+  --input: oklch(0.2598 0.0306 262.6666);
+  --ring: oklch(0.6824 0.2108 37.6975);
+  --chart-1: oklch(0.7156 0.0605 248.6845);
+  --chart-2: oklch(0.7693 0.0876 34.1875);
+  --chart-3: oklch(0.5778 0.0759 254.1573);
+  --chart-4: oklch(0.5016 0.0849 259.4902);
+  --chart-5: oklch(0.4241 0.0952 264.0306);
+  --sidebar: oklch(0.2598 0.0306 262.6666);
+  --sidebar-foreground: oklch(1.0000 0 0);
+  --sidebar-primary: oklch(0.6824 0.2108 37.6975);
+  --sidebar-primary-foreground: oklch(1.0000 0 0);
+  --sidebar-accent: oklch(0.2598 0.0306 262.6666);
+  --sidebar-accent-foreground: oklch(1.0000 0 0);
+  --sidebar-border: oklch(1.0000 0 0);
+  --sidebar-ring: oklch(0.6824 0.2108 37.6975);
+  --font-sans: Inter, sans-serif;
+  --font-serif: Source Serif 4, serif;
+  --font-mono: JetBrains Mono, monospace;
+  --radius: 0px;
+  --shadow-x: 0px;
+  --shadow-y: 0px;
+  --shadow-blur: 0px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0;
+  --shadow-color: transparent;
+  --shadow-2xs: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
+  --shadow-xs: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
+  --shadow-sm: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
+  --shadow: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
+  --shadow-md: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 2px 4px -1px hsl(0 0% 0% / 0.00);
+  --shadow-lg: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 4px 6px -1px hsl(0 0% 0% / 0.00);
+  --shadow-xl: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 8px 10px -1px hsl(0 0% 0% / 0.00);
+  --shadow-2xl: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
 
-  /* Tokens custom utilisés par les composants (étendent shadcn de base).
-     Auparavant définis uniquement dans .app-light — il faut donc leurs
-     équivalents sombres ici pour que tout reste lisible quand on
-     applique le dark mode globalement à la maquette. */
-  --card-border: #242628;
-  --text-primary: #e7e9ea;
-  --text-secondary: #a8b3bc;
-  --text-muted: #72767a;
+  /* Aliases legacy dark mode */
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-muted: var(--muted-foreground);
+  --card-border: var(--border);
   --hover-bg: rgba(255, 255, 255, 0.06);
-  --divider: #242628;
-  --input-bg: #16181c;
-  --input-border: #2f3336;
-
-  /* Ombres très douces sur fond noir : volontairement quasi invisibles,
-     l'élévation se lit surtout via les bordures fines. */
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.55);
-
-  /* Accent hover dérivé du brand bleu : un cran plus clair, lisible
-     contre noir. Sert aux boutons primaires en hover/focus. */
-  --accent-hover: #3bafff;
-  --gold-hover: #3bafff;
+  --divider: var(--border);
+  --input-bg: var(--input);
+  --input-border: var(--border);
+  --accent-hover: var(--primary);
+  --gold-hover: var(--primary);
+  --shadow-card: none;
+  --shadow-soft: none;
 }
 
-/* Mappage Tailwind v4 : ces alias rendent disponibles les utilitaires
-   bg-background, text-foreground, text-muted-foreground, bg-card, etc. */
 @theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
   --color-card: var(--card);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
-  --color-radius: var(--radius);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --color-popover: var(--popover);
-  --color-primary: var(--primary);
   --color-sidebar: var(--sidebar);
-  --color-font-mono: var(--font-mono);
-  --color-font-sans: var(--font-sans);
-  --color-secondary: var(--secondary);
-  --color-background: var(--background);
-  --color-font-serif: var(--font-serif);
-  --color-foreground: var(--foreground);
-  --color-destructive: var(--destructive);
-  --color-shadow-blur: var(--shadow-blur);
-  --color-shadow-color: var(--shadow-color);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-shadow-spread: var(--shadow-spread);
-  --color-shadow-opacity: var(--shadow-opacity);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-card-foreground: var(--card-foreground);
-  --color-shadow-offset-x: var(--shadow-offset-x);
-  --color-shadow-offset-y: var(--shadow-offset-y);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary-foreground: var(--primary-foreground);
   --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-/* ─── Rounded corner system — consistent border-radius ──────
-   Uniform radius scale applied to every shape and component.
-   Sizes follow the 8px spacing grid.                         */
-.chamfer-xs { border-radius: 4px; }
-.chamfer-sm { border-radius: 8px; }
-.chamfer    { border-radius: 12px; }
-.chamfer-lg { border-radius: 16px; }
-
-/* ─── 12-column grid container ──────────────────────────────
-   Standard landing layout grid. Children use col-span-N.
-   Column gap and side padding are strict 8px multiples.      */
-.grid-12 {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: 32px;
-  width: 100%;
-  max-width: 1440px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 80px;
-  padding-right: 80px;
-}
-@media (max-width: 1024px) {
-  .grid-12 {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
-}
-@media (max-width: 768px) {
-  .grid-12 {
-    padding-left: 24px;
-    padding-right: 24px;
-    column-gap: 16px;
-  }
-}
-
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  /* Tabular numerals : aligne les chiffres dans les KPI/tables/prix.
-     Évite le jitter visuel quand un montant change. */
+  /* Tabular numerals : aligne les chiffres dans les KPI/tables/prix. */
   font-feature-settings: "tnum";
   /* Defense : assure que le body peut toujours scroller verticalement
-     sur desktop. Si un JS pose body.style.position = fixed (lock),
-     l'inline style l'emporte ; sinon le scroll natif fonctionne. */
+     sur desktop. */
   overflow-y: auto;
   min-height: 100vh;
 }
 
 /* Defense secondaire : si position:fixed est applique au body (lock
-   modal mal nettoye), on annule sur desktop. Le lock est utile uniquement
-   pour mobile (bottom-sheet) — sur desktop les modals sont centres et
-   n'ont pas besoin de bloquer le scroll body. */
+   modal mal nettoye), on annule sur desktop. */
 @media (hover: hover) and (pointer: fine) {
-  /* Kill-switch : sur desktop, html et body DOIVENT pouvoir scroller.
-     !important pour gagner contre toute regle en cache ou injectee
-     inline par du JS qui aurait mal nettoye un lock-scroll. */
   html,
   body {
     overflow-y: auto !important;
@@ -249,8 +260,6 @@ body {
     right: auto !important;
     width: auto !important;
   }
-  /* .app-shell ne doit JAMAIS etre un scroll container sur desktop.
-     Le scroll vit sur le body uniquement. */
   .app-shell {
     overflow: visible !important;
     height: auto !important;
@@ -258,23 +267,7 @@ body {
   }
 }
 
-/* ─── PWA app-feel : strip browser-isms sur le sous-arbre (app)/ ────────
-   Applique UNIQUEMENT sur .app-shell pour laisser la landing/admin se
-   comporter comme du web normal. L'idée : quand on installe la PWA sur
-   iPhone (Partager > Sur l'écran d'accueil), on doit oublier qu'on est
-   dans un browser.
-
-   - tap highlight (flash bleu Webkit) → transparent
-   - long-press image saver iOS → désactivé
-   - sélection de texte UI → désactivée (réactivée sur les zones
-     `.selectable` et inputs/textareas pour rester usable)
-   - double-tap zoom iOS → annulé via touch-action
-   - rubber-band scroll body → contenu (le bounce reste OK sur les
-     containers internes qui peuvent scroll)
-   - scroll smooth natif iOS sur les containers
-   - active states : opacity-70 instantané sur boutons/liens =
-     feedback tactile "natif" sans framework
-   ─────────────────────────────────────────────────────────────────── */
+/* ─── PWA app-feel : strip browser-isms sur le sous-arbre (app)/ ─── */
 .app-shell {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -284,9 +277,6 @@ body {
   overscroll-behavior-y: contain;
 }
 
-/* Les vraies zones de texte sont sélectionnables (post content, message,
-   biographie, etc.). On laisse le user pouvoir copier ce contenu — c'est
-   ce que font les apps natives aussi. */
 .app-shell input,
 .app-shell textarea,
 .app-shell [contenteditable="true"],
@@ -297,9 +287,6 @@ body {
   -webkit-touch-callout: default;
 }
 
-/* Active state tactile : tous les boutons/liens flashent en opacity-70
-   au touch. C'est le "tap feedback" iOS, sans transition pour rester
-   immédiat (les transitions sont OK au release). */
 .app-shell button:active,
 .app-shell a:active,
 .app-shell [role="button"]:active,
@@ -316,12 +303,7 @@ body {
               transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Scrollbars masquées sur mobile (touch devices) ET en PWA standalone :
-   un user mobile ne s'attend pas à voir une scrollbar de browser, ça
-   rappelle qu'on est dans un site et pas dans une app. On vise large
-   (html + body + tous les descendants .app-shell) car le scroll principal
-   se fait au niveau body, pas dans un container interne. Sur desktop on
-   garde les scrollbars natives (utiles pour la nav web normale). */
+/* Scrollbars masquees sur mobile (touch devices) ET en PWA standalone. */
 @media (hover: none) and (pointer: coarse) {
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
@@ -340,9 +322,6 @@ body {
   }
 }
 
-/* Mode standalone (PWA ajoutée à l'écran d'accueil) : on enlève aussi
-   l'outline de focus (iOS n'a pas ça nativement) et on expose une
-   variable utilisable par les composants pour masquer des CTA web. */
 @media (display-mode: standalone), (display-mode: fullscreen) {
   .app-shell *::-webkit-scrollbar,
   .app-shell::-webkit-scrollbar {
@@ -361,9 +340,7 @@ body {
   }
 }
 
-/* Page transitions : fade-in léger sur le contenu main quand la route
-   change. Le wrapper main reçoit la classe `.app-page-enter` au mount
-   (via key={pathname}). Ne fait rien si reduced-motion est demandé. */
+/* Page transitions */
 .app-page-enter {
   animation: app-page-enter 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -383,44 +360,13 @@ body {
   }
 }
 
-/* Pas de loupe iOS sur les images (le long-press par défaut affiche
-   "Enregistrer l'image" / "Copier" — pas natif d'une app sociale). */
 .app-shell img,
 .app-shell video {
   -webkit-touch-callout: none;
   pointer-events: auto;
 }
 
-/* ─── Sémantique design system ─────────────────────────
-   Palette étendue au-delà de l'accent bleu unique.
-   Chaque rôle sémantique a son token, utilisable via
-   les classes Tailwind text-amber-400 etc. (déjà dispo).
-   Ces variables servent de référence pour les charts
-   et les composants partagés.
-   - accent  : CTA, liens, états actifs              (bleu)
-   - rating  : étoiles, "premium", featured           (ambre)
-   - success : confirmation, online, gain positif     (émeraude)
-   - danger  : like, suppression, alerte critique     (rose)
-   - tag     : catégorie formation / type contenu     (violet)
-   ─────────────────────────────────────────────────── */
-:root {
-  --accent: #1e9df1;
-  --accent-hover: #1583c9;
-  --rating: #fbbf24;        /* amber-400 */
-  --success: #10b981;       /* emerald-500 */
-  --success-soft: #34d399;  /* emerald-400 — pour deltas + sparklines */
-  --danger: #f43f5e;        /* rose-500 */
-  --warning: #fbbf24;       /* amber-400 — alias rating, pour niveaux intermédiaires */
-  --tag: #a78bfa;           /* violet-400 */
-}
-
-/* ─── Utility classes sémantiques (centralisent les patterns ad-hoc
-   bg-green-600 / bg-green-500/20 etc. dispersés dans les pages).
-   Permettent de garder un seul point de vérité couleur pour :
-   - toasts de confirmation (toast-success)
-   - badges niveau formation (badge-level-*)
-   - chips statut (chip-success-soft / chip-warning-soft / chip-danger-soft)
-   ─────────────────────────────────────────────────── */
+/* ─── Utility classes semantiques (toasts, chips, badges level) ─── */
 .toast-success {
   background: var(--success);
   color: #fff;
@@ -455,161 +401,116 @@ body {
 .text-success-soft { color: var(--success-soft); }
 .text-danger    { color: var(--danger); }
 
-/* ─── Wrapper .app-shell : maquette en MODE SOMBRE ──────
-   Override de fond appliqué sur le sous-arbre (app)/ via le
-   layout. La maquette est intégralement en dark mode (palette
-   X/Twitter : noir profond, accent bleu #1e9df1, bordures gris
-   foncé). On enforce ici la typo Inter pour rester cohérent
-   avec l'esprit Twitter / Linear / Notion. */
+/* ─── Wrapper .app-shell : maquette en MODE SOMBRE ─── */
 .app-shell {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
 }
 
-/* overflow-x:hidden uniquement sur mobile. Sur desktop, combine avec
-   min-height:100vh il pouvait transformer .app-shell en container de
-   scroll, ce qui bloquait le scroll naturel du body. Mobile en a besoin
-   pour eviter qu'un element qui deborde de quelques pixels casse le
-   touch (le swipe lateral accidentel). */
+/* overflow-x:hidden uniquement sur mobile. */
 @media (max-width: 767px) {
   .app-shell {
     overflow-x: hidden;
   }
 }
 
-/* Sur mobile, on relâche le margin-left de la sidebar et on garantit
-   l'espace nécessaire pour la bottom-nav + le home indicator iOS. */
 @media (max-width: 767px) {
   .app-shell .app-content {
     margin-left: 0 !important;
     width: 100% !important;
   }
   .app-shell main {
-    /* 64px nav + 16px buffer + safe area iOS */
     padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
   }
 }
 .app-shell,
 .app-shell * {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 .app-shell .page-heading,
 .app-shell .page-heading * {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Source Serif 4', Georgia, serif;
 }
 .app-shell .font-mono,
 .app-shell code,
 .app-shell pre {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
-/* ─── (Ancien) Mode CLAIR app — conservé inactif ────────
-   Le wrapper .app-light n'est plus appliqué nulle part. On
-   garde la définition CSS au cas où on voudrait re-tester un
-   passage en clair sur un sous-arbre précis. La maquette par
-   défaut est dark.
-   ─────────────────────────────────────────────────── */
+/* ─── (Ancien) Mode CLAIR app — conserve inactif ─── */
 .app-light {
-  /* Surfaces */
-  --background: #fafafa;
-  --card: #ffffff;
-  --card-border: #e6e8eb;
-  --card-foreground: #0a0a0a;
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-
-  /* Texte */
-  --foreground: #0a0a0a;
-  --text-primary: #0a0a0a;
-  --text-secondary: #525252;
-  --text-muted: #737373;
-
-  /* Accent unique */
-  --primary: #1e9df1;
-  --primary-foreground: #ffffff;
-  --accent: #1e9df1;
-  --accent-foreground: #1e9df1;
-  --accent-hover: #1583c9;
-  --ring: #1e9df1;
-
-  /* Inputs / interactifs */
-  --input: #ffffff;
-  --input-bg: #ffffff;
-  --input-border: #e6e8eb;
-  --hover-bg: #f3f4f6;
-  --divider: #e6e8eb;
-  --border: #e6e8eb;
-  --muted: #f3f4f6;
-  --muted-foreground: #737373;
-
-  /* Sidebar tokens (réutilisés par le composant Sidebar) */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0a0a0a;
-  --sidebar-border: #e6e8eb;
-  --sidebar-accent: #f3f4f6;
-  --sidebar-accent-foreground: #0a0a0a;
-  --sidebar-primary: #1e9df1;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #1e9df1;
-
-  /* Alias rétro-compat (gold/bg/text) — vers les nouveaux */
-  --gold: #1e9df1;
-  --gold-hover: #1583c9;
-  --bg: #fafafa;
-  --bg-alt: #ffffff;
-  --bg-primary: #fafafa;
-  --bg-secondary: #ffffff;
-  --text: #0a0a0a;
-
-  /* Tokens d'espacement / élévation propres au mode clair.
-     Ombre très douce, à utiliser via var(--shadow-soft) sur
-     les cartes qui en bénéficient. Sinon, bordure seule. */
-  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.02);
-  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04);
-
-  /* Force la couleur de texte par défaut (utile car le body
-     hérite encore du .dark au root pour la landing). */
+  --background: oklch(0.9383 0.0042 236.4993);
+  --foreground: oklch(0 0 0);
+  --card: oklch(0.9383 0.0042 236.4993);
+  --card-border: oklch(0 0 0);
+  --card-foreground: oklch(0 0 0);
+  --popover: oklch(0.9383 0.0042 236.4993);
+  --popover-foreground: oklch(0 0 0);
+  --foreground: oklch(0 0 0);
+  --text-primary: oklch(0 0 0);
+  --text-secondary: oklch(0.3867 0 0);
+  --text-muted: oklch(0.3867 0 0);
+  --primary: oklch(0.6602 0.2294 35.4025);
+  --primary-foreground: oklch(1.0000 0 0);
+  --accent: oklch(0.6602 0.2294 35.4025);
+  --accent-foreground: oklch(0 0 0);
+  --accent-hover: oklch(0.6602 0.2294 35.4025);
+  --ring: oklch(0.6602 0.2294 35.4025);
+  --input: oklch(0.9383 0.0042 236.4993);
+  --input-bg: oklch(0.9383 0.0042 236.4993);
+  --input-border: oklch(0 0 0);
+  --hover-bg: rgba(0, 0, 0, 0.06);
+  --divider: oklch(0 0 0);
+  --border: oklch(0 0 0);
+  --muted: oklch(0.9383 0.0042 236.4993);
+  --muted-foreground: oklch(0.3867 0 0);
+  --sidebar: oklch(0.9383 0.0042 236.4993);
+  --sidebar-foreground: oklch(0 0 0);
+  --sidebar-border: oklch(0 0 0);
+  --sidebar-accent: oklch(0.9383 0.0042 236.4993);
+  --sidebar-accent-foreground: oklch(0 0 0);
+  --sidebar-primary: oklch(0.6602 0.2294 35.4025);
+  --sidebar-primary-foreground: oklch(1.0000 0 0);
+  --sidebar-ring: oklch(0.6602 0.2294 35.4025);
+  --gold: oklch(0.6602 0.2294 35.4025);
+  --gold-hover: oklch(0.6602 0.2294 35.4025);
+  --bg: oklch(0.9383 0.0042 236.4993);
+  --bg-alt: oklch(0.9383 0.0042 236.4993);
+  --bg-primary: oklch(0.9383 0.0042 236.4993);
+  --bg-secondary: oklch(0.9383 0.0042 236.4993);
+  --text: oklch(0 0 0);
+  --shadow-soft: none;
+  --shadow-card: none;
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Inter doit l'emporter sur le Poppins forcé par body{}.
-   On ne touche pas aux éléments qui ont leur propre identité
-   typographique (titres serif éditoriaux .page-heading,
-   monospace, brand .holo-*) — sinon, Inter partout. */
 .app-light,
 .app-light * {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 .app-light .page-heading,
 .app-light .page-heading * {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Source Serif 4', Georgia, serif;
 }
 .app-light .font-mono,
 .app-light code,
 .app-light pre {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
-/* Sur les sous-arbres app-light, override les tokens spécifiques
-   qui étaient en dur dans des composants existants (anciens) */
 .app-light ::selection {
-  background: rgba(30, 157, 241, 0.18);
+  background: color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
-/* Scrollbar mode clair : très discrète */
 .app-light ::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.12);
 }
 
-/* ─── Animations & transitions globales ───────────────
-   Sobre mais présentes : drawers slide-in, modals scale-in,
-   skeletons, like bounce, blur-up image. Toutes les durées
-   restent courtes (180-260ms) pour ne pas alourdir le scroll. */
-
+/* ─── Animations & transitions globales ─── */
 @keyframes slide-in-right {
   from { transform: translateX(100%); opacity: 0; }
   to   { transform: translateX(0); opacity: 1; }
@@ -647,9 +548,6 @@ body {
 .animate-fade-in { animation: fade-in 180ms ease-out; }
 .animate-pop { animation: pop 320ms cubic-bezier(0.16, 1, 0.3, 1); }
 
-/* Skeleton shimmer pour les images en cours de chargement.
-   Réglé pour fond sombre : barres claires translucides qui se
-   lisent contre le noir/gris du card. */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -661,8 +559,6 @@ body {
   animation: shimmer 1.4s linear infinite;
 }
 
-/* Blur-up : image floue au chargement, devient nette à .loaded.
-   Combiné avec onLoad qui ajoute la classe .loaded. */
 .blur-up {
   filter: blur(8px);
   transition: filter 320ms ease-out;
@@ -686,49 +582,37 @@ body {
   }
 }
 
-/* ─── Utilitaire : H1 / titre de page éditorial ───────
-   Toutes les pages de la démo doivent utiliser
-   `.page-heading` sur leur H1 pour avoir l'identité
-   serif italique d'E-Dome (cohérent avec le landing).
-   Override le font-bold de Tailwind via la weight 400. */
+/* ─── Utilitaire : H1 / titre de page editorial ─── */
 .page-heading {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-weight: 400;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-weight: 500;
   letter-spacing: -0.015em;
   line-height: 1.05;
 }
 
-/* Variante avec un mot italique accentué (ex. "Bon retour parmi nous.") */
 .page-heading em {
   font-style: italic;
-  color: var(--accent);
-  font-weight: 400;
+  color: var(--primary);
+  font-weight: 500;
 }
 
 ::selection {
-  background: rgba(30, 157, 242, 0.3);
+  background: color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
-/* ─── Scrollbar ──────────────────────────────────────────
-   Sur DESKTOP uniquement : scrollbar fine custom (6px) — utile pour
-   savoir où on est dans une longue liste. Sur mobile (touch devices)
-   et en mode PWA standalone, les scrollbars sont masquées par les
-   blocs @media plus haut ; donc on guard ce styling derrière
-   `@media (hover: hover) and (pointer: fine)` pour ne pas que ces
-   règles ré-apparaissent sur mobile via la cascade. */
+/* ─── Scrollbar desktop fine custom ─── */
 @media (hover: hover) and (pointer: fine) {
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 0; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.24); }
 }
 
-/* ─── Mobile ─────────────────────────────────────────── */
+/* ─── Mobile ─── */
 @media (max-width: 767px) {
   .app-content { margin-left: 0 !important; width: 100% !important; }
 }
 
-/* ─── Reduced motion ─────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -736,19 +620,53 @@ body {
   }
 }
 
-/* ─── Holographic Card (membre fondateur) ───────────── */
+/* ─── 12-column grid container ─── */
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 32px;
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 80px;
+  padding-right: 80px;
+}
+@media (max-width: 1024px) {
+  .grid-12 {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+@media (max-width: 768px) {
+  .grid-12 {
+    padding-left: 24px;
+    padding-right: 24px;
+    column-gap: 16px;
+  }
+}
+
+/* ─── Chamfer utility (conserve mais radius 0 dans le theme brutalist
+   les rend equivalents a des coins carres ; les composants peuvent
+   forcer un radius via inline si besoin pour casser le pattern). ─── */
+.chamfer-xs { border-radius: 0; }
+.chamfer-sm { border-radius: 0; }
+.chamfer    { border-radius: 0; }
+.chamfer-lg { border-radius: 0; }
+
+/* ─── Holographic Card (membre fondateur) ─── */
 .holographic-card {
   position: relative;
   width: 100%;
   max-width: 400px;
   aspect-ratio: 1.586 / 1;
-  border-radius: 16px;
+  border-radius: 0;
   background:
     linear-gradient(135deg, #1c1c1c 0%, #0a0a0a 60%, #1a1a1a 100%);
   box-shadow:
     0 30px 60px -20px rgba(0, 0, 0, 0.85),
-    0 16px 30px -10px rgba(30, 157, 242, 0.18),
-    inset 0 1px 0 rgba(30, 157, 242, 0.18);
+    0 16px 30px -10px rgba(255, 165, 0, 0.18),
+    inset 0 1px 0 rgba(255, 165, 0, 0.18);
   transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   cursor: pointer;
@@ -757,18 +675,17 @@ body {
   --y: 50%;
 }
 
-/* Bordure gold conique fine */
 .holo-frame {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(30, 157, 242, 0.7) 0%,
-    rgba(30, 157, 242, 0.05) 35%,
-    rgba(30, 157, 242, 0.05) 65%,
-    rgba(30, 157, 242, 0.55) 100%
+    rgba(255, 165, 0, 0.7) 0%,
+    rgba(255, 165, 0, 0.05) 35%,
+    rgba(255, 165, 0, 0.05) 65%,
+    rgba(255, 165, 0, 0.55) 100%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -776,11 +693,10 @@ body {
   pointer-events: none;
 }
 
-/* Grain noise très subtil */
 .holo-grain {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: 0;
   background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 3px 3px;
   opacity: 0.6;
@@ -788,16 +704,15 @@ body {
   mix-blend-mode: overlay;
 }
 
-/* Reflet holographique radial qui suit le curseur */
 .holo-shine {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: 0;
   background:
     radial-gradient(
       circle at var(--x) var(--y),
       rgba(255, 235, 200, 0.22) 0%,
-      rgba(30, 157, 242, 0.18) 18%,
+      rgba(255, 165, 0, 0.18) 18%,
       transparent 45%
     ),
     radial-gradient(
@@ -826,7 +741,7 @@ body {
   justify-content: space-between;
 }
 .holo-brand {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 1.6rem;
   letter-spacing: 0.02em;
   color: #ffffff;
@@ -834,9 +749,9 @@ body {
 }
 .holo-seal {
   font-size: 1.1rem;
-  color: #1e9df1;
+  color: var(--primary);
   letter-spacing: 0.1em;
-  filter: drop-shadow(0 0 8px rgba(30, 157, 242, 0.5));
+  filter: drop-shadow(0 0 8px rgba(255, 165, 0, 0.5));
 }
 
 .holo-middle {
@@ -846,16 +761,16 @@ body {
   gap: 4px;
 }
 .holo-label {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.32em;
-  color: #1e9df1;
+  color: var(--primary);
   font-weight: 600;
   margin: 0;
 }
 .holo-number {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: clamp(1.5rem, 2.6vw, 2rem);
   letter-spacing: 0.04em;
   color: #ffffff;
@@ -869,15 +784,15 @@ body {
   justify-content: space-between;
 }
 .holo-tier {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.28em;
-  color: #1e9df1;
+  color: var(--primary);
   font-weight: 600;
 }
 .holo-exp {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.28em;
@@ -885,7 +800,7 @@ body {
   font-weight: 500;
 }
 
-/* ─── Loading screen (intro) ─────────────────────────── */
+/* ─── Loading screen (intro) ─── */
 .loading-root {
   position: fixed;
   inset: 0;
@@ -902,7 +817,6 @@ body {
   will-change: opacity, transform, filter;
 }
 .loading-root.loading-exit {
-  /* Fondu doux : tout le panneau se dissout comme un défocus caméra */
   opacity: 0;
   transform: scale(1.04);
   filter: blur(14px);
@@ -934,7 +848,7 @@ body {
   padding: 0 1.5rem;
 }
 .loading-text {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-weight: 300;
   color: #ffffff;
   font-size: clamp(1.75rem, 3.5vw, 2.75rem);
@@ -942,7 +856,7 @@ body {
   letter-spacing: 0.5em;
   text-align: center;
   margin: 0;
-  padding-left: 0.5em; /* compense le tracking pour centrage optique */
+  padding-left: 0.5em;
 }
 .loading-line {
   display: inline-block;
@@ -955,7 +869,6 @@ body {
   animation: loading-letter-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
 }
-/* Wrapper : villa brutaliste (carré) + texte EDOME en-dessous, en colonne */
 .loading-frame-wrap {
   position: relative;
   width: clamp(360px, 75vw, 680px);
@@ -974,7 +887,6 @@ body {
   overflow: visible;
 }
 
-/* Toutes les lignes du blueprint utilisent pathLength=1 + dashoffset */
 .bp-line {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
@@ -987,14 +899,13 @@ body {
 .bp-frame { animation-duration: 1.7s; animation-delay: 0.55s; }
 .bp-axis  { animation-duration: 1.0s; animation-delay: 0.4s; }
 
-/* Label mono fade-in */
 .bp-label {
   opacity: 0;
   animation-name: bp-fade;
   animation-duration: 0.5s;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 @keyframes loading-zoom-out {
