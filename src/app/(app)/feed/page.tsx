@@ -8,6 +8,7 @@ import {
   Edit3, Trash2, Flag, EyeOff, Copy,
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
   Users, Building2, GraduationCap,
+  Image as ImageIcon, Smile, BarChart3,
 } from "lucide-react";
 import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
@@ -855,6 +856,29 @@ function PostCaption({ content }: { content: string }) {
   );
 }
 
+// ─── Composer ──────────────────────────────────────────────────────────────
+
+interface ComposerActionProps {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  label: string;
+  onClick: () => void;
+}
+
+/* Petit bouton-icône du composer (Image, Emoji, Sondage…) — mêmes
+   dimensions et même feedback hover que les actions Twitter/X. */
+function ComposerAction({ icon: Icon, label, onClick }: ComposerActionProps) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="w-9 h-9 flex items-center justify-center rounded-full text-[#1e9df1] hover:bg-[#1e9df1]/10 transition-colors"
+    >
+      <Icon size={18} />
+    </button>
+  );
+}
+
 // ─── PostCard ──────────────────────────────────────────────────────────────
 
 type PostCardProps = {
@@ -1221,6 +1245,11 @@ function PostCard({
 export default function FeedPage() {
   const { isFollowing, toggleFollow } = useApp();
   const [posts, setPosts] = useState<SocialPost[]>(VIDEO_POSTS);
+  /* Composer "publier rapidement" en tête du feed — texte court (≤280),
+     atterrit en haut de la timeline. Pour les annonces avec galerie/visite,
+     on reste sur /publier. */
+  const [composerText, setComposerText] = useState("");
+  const composerRef = useRef<HTMLTextAreaElement>(null);
   const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis">("pour-vous");
 
   // Persiste l'état mute entre les posts (le user ne doit pas le réajuster à chaque card).
@@ -1322,6 +1351,30 @@ export default function FeedPage() {
     setMoreMenuPost(null);
   };
 
+  /* Publication directe depuis le composer en tête de feed. Crée un post
+     texte (sans média) en tant que current user et le pousse en tête. */
+  const publishFromComposer = () => {
+    const text = composerText.trim();
+    if (!text) return;
+    const newPost: SocialPost = {
+      id: `p-${Date.now()}`,
+      author: CURRENT_USER,
+      content: text,
+      media: [],
+      type: "post",
+      likes: 0,
+      comments: [],
+      createdAt: new Date().toISOString(),
+    };
+    setPosts((prev) => [newPost, ...prev]);
+    setComposerText("");
+    /* Bascule sur "Pour vous" pour qu'on voie sa propre publication même
+       si on était sur l'onglet "Suivis" (on ne se suit pas soi-même). */
+    setActiveTab("pour-vous");
+    setFeedToast("Publié");
+    setTimeout(() => setFeedToast(null), 1800);
+  };
+
   const saveEdit = (postId: string) => {
     setPosts((prev) =>
       prev.map((p) => (p.id === postId ? { ...p, content: editContent } : p))
@@ -1375,8 +1428,97 @@ export default function FeedPage() {
             </div>
           </div>
 
-          {/* Timeline Twitter-like : posts contigus, séparés par filet fin */}
+          {/* Composer rapide en tête du feed (style X/Twitter) : permet
+              de publier un texte court sans passer par /publier. Les
+              annonces de biens avec galerie/visite restent sur /publier. */}
           <div className="mt-2 max-w-[600px] mx-auto">
+            <div className="px-3 py-3 border-b border-[var(--card-border)]">
+              <div className="flex gap-3">
+                <img
+                  src={CURRENT_USER.avatar}
+                  alt=""
+                  className="w-10 h-10 rounded-full object-cover shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <textarea
+                    ref={composerRef}
+                    value={composerText}
+                    onChange={(e) => {
+                      setComposerText(e.target.value);
+                      // auto-grow simple : reset puis adapte à scrollHeight
+                      const el = e.currentTarget;
+                      el.style.height = "auto";
+                      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+                    }}
+                    onKeyDown={(e) => {
+                      // Cmd/Ctrl + Enter → publier (shortcut Twitter)
+                      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+                        e.preventDefault();
+                        publishFromComposer();
+                      }
+                    }}
+                    placeholder={`Quoi de neuf, ${CURRENT_USER.firstName} ?`}
+                    maxLength={280}
+                    rows={1}
+                    aria-label="Rédiger une publication"
+                    className="w-full bg-transparent text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none text-base leading-snug py-1.5"
+                  />
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-0.5">
+                      <ComposerAction
+                        icon={ImageIcon}
+                        label="Ajouter une image"
+                        onClick={() => showToast("Ajout d'image (démo)")}
+                      />
+                      {/* GIF : pas d'icône Lucide dédiée → badge texte
+                          comme sur X/Twitter pour rester reconnaissable. */}
+                      <button
+                        onClick={() => showToast("Bibliothèque GIF (démo)")}
+                        aria-label="Ajouter un GIF"
+                        className="w-9 h-9 flex items-center justify-center rounded-full text-[#1e9df1] hover:bg-[#1e9df1]/10 transition-colors"
+                      >
+                        <span className="text-[10px] font-bold tracking-wider border border-current rounded px-1 py-px leading-none">
+                          GIF
+                        </span>
+                      </button>
+                      <ComposerAction
+                        icon={Smile}
+                        label="Ajouter un emoji"
+                        onClick={() => showToast("Sélecteur d'emoji (démo)")}
+                      />
+                      <ComposerAction
+                        icon={BarChart3}
+                        label="Créer un sondage"
+                        onClick={() => showToast("Sondage (démo)")}
+                      />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {composerText.length > 0 && (
+                        <span
+                          aria-hidden
+                          className={`text-xs tabular-nums ${
+                            composerText.length > 260
+                              ? "text-amber-400"
+                              : "text-[var(--text-muted)]"
+                          }`}
+                        >
+                          {280 - composerText.length}
+                        </span>
+                      )}
+                      <button
+                        onClick={publishFromComposer}
+                        disabled={!composerText.trim()}
+                        className="px-5 h-9 rounded-full bg-[#1e9df1] hover:bg-[#1583c9] text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        Publier
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          {/* Timeline Twitter-like : posts contigus, séparés par filet fin */}
             {filteredPosts.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-16 px-6">
                 <Users className="w-12 h-12 text-[var(--text-muted)] mb-3" />
