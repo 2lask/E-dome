@@ -18,6 +18,7 @@ import type {
   User, SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData,
   PostAttachment,
 } from "@/lib/types";
+import { DiscoverHub } from "@/components/layout/discover-hub";
 
 // ─── Users ─────────────────────────────────────────────────────────────────
 
@@ -1878,6 +1879,14 @@ export default function FeedPage() {
       <div className="flex gap-6">
         {/* Colonne centrale — timeline */}
         <div className="flex-1 min-w-0">
+          {/* DiscoverHub : barre horizontale Airbnb-style avec icones des
+              autres sections (Biens, Formations, Apporteurs, etc.) pour
+              que les nouveaux venus sachent ce qu'il y a sur la plateforme
+              sans avoir a ouvrir le hamburger. */}
+          <div className="max-w-[600px] mx-auto">
+            <DiscoverHub />
+          </div>
+
           {/* Tabs sticky (suivent le scroll de la page) */}
           <div className="sticky top-16 z-20 -mx-4 px-4 py-3 bg-[var(--background)]/85 backdrop-blur-md border-b border-[var(--card-border)] md:-mx-0 md:px-0 md:rounded-xl md:border-0 md:bg-transparent md:backdrop-blur-0">
             <div className="max-w-[600px] mx-auto flex gap-1 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
