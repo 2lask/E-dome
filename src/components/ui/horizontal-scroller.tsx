@@ -6,48 +6,38 @@ import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /* ─── <HorizontalScroller /> ──────────────────────────────────────────────
-   Carousel horizontal scrollable, fondation des sections type Airbnb
-   ("Coups de cœur", "Récemment consultés", "Top apporteurs", etc.).
+   Carousel horizontal Airbnb-style (cf. capture utilisateur).
 
-   Comportements clés :
-   - Desktop : chevrons L/R en absolute, apparaissent au hover sur
-     `group-hover`, disparaissent si on est en début/fin de scroll.
-     Aussi visibles au focus-clavier (focus-visible) pour a11y.
-   - Mobile : scrollbar masquée, scroll-snap mandatory, pas de chevrons
-     (gesture native). La track déborde de -mx-4 px-4 pour bleed off-screen
-     façon Stories Instagram.
-   - Title + CTA "Voir tout" optionnels en header.
-   - `cardWidth` figé pour produire des cartes uniformes, `gap` configurable.
+   Pattern Airbnb reproduit ici :
+   1. Titre gros (text-xl/2xl bold) + flèche → cliquable à côté pour
+      "Voir tout" (pas de texte "Voir tout", juste l'icône arrow).
+   2. Subtitle optionnel en dessous, gris descriptif.
+   3. Chevrons L/R PERMANENTS en haut-droite (pas opacity:0/hover), avec
+      `disabled` quand on est en début/fin (gris clair).
+   4. Track scrollable avec gap généreux entre cards, scroll snap mobile.
 
-   Usage canonique :
-     <HorizontalScroller
-       title="Biens en vedette"
-       cta={{ label: "Voir tout", href: "/explorer" }}
-       cardWidth="240px"
-     >
-       {biens.map((b) => <PropertyCard key={b.id} property={b} />)}
-     </HorizontalScroller>
+   Sur mobile : titre reste à gauche, chevrons cachés (gesture native),
+   bleed `-mx-4 px-4` pour laisser les cards déborder off-screen.
    ─────────────────────────────────────────────────────────────────── */
 
 export interface HorizontalScrollerProps {
   children: React.ReactNode;
-  /** Titre de section affiché au-dessus du carousel. */
+  /** Titre de section (généralement bold, peut contenir un · séparateur). */
   title?: React.ReactNode;
-  /** Lien CTA "Voir tout" optionnel en haut à droite. */
-  cta?: { label: string; href: string };
-  /** Largeur figée des cartes (CSS length). 240px par défaut. */
+  /** Subtitle gris descriptif sous le titre. */
+  subtitle?: React.ReactNode;
+  /** Href du "Voir tout" : si défini, affiche la flèche → cliquable. */
+  ctaHref?: string;
+  /** Largeur figée des cartes (CSS length). */
   cardWidth?: string;
-  /** Gap entre cartes. 16px par défaut. */
+  /** Gap entre cartes. */
   gap?: string;
-  /** Affiche les chevrons desktop (true par défaut). */
+  /** Affiche les chevrons desktop. */
   showArrows?: boolean;
   /** Alignement scroll-snap par enfant. */
   snap?: "start" | "center" | "end" | "none";
-  /** Classe du wrapper externe (section). */
   className?: string;
-  /** Classe additionnelle sur la track scrollable. */
   trackClassName?: string;
-  /** aria-label explicite (sinon dérivé du title). */
   ariaLabel?: string;
   /** Désactive le bleed mobile -mx-4/px-4 (utile dans un modal). */
   noBleed?: boolean;
@@ -56,7 +46,8 @@ export interface HorizontalScrollerProps {
 export function HorizontalScroller({
   children,
   title,
-  cta,
+  subtitle,
+  ctaHref,
   cardWidth = "240px",
   gap = "16px",
   showArrows = true,
@@ -103,101 +94,94 @@ export function HorizontalScroller({
 
   return (
     <section
-      className={cn("relative group", className)}
+      className={cn("relative", className)}
       aria-label={
         ariaLabel ?? (typeof title === "string" ? title : undefined)
       }
     >
-      {(title || cta) && (
-        <div className="flex items-end justify-between mb-3 px-1">
-          {title ? (
-            <h2 className="text-base md:text-lg font-semibold text-[var(--foreground)]">
-              {title}
-            </h2>
-          ) : (
-            <span />
-          )}
-          {cta && (
-            <Link
-              href={cta.href}
-              className="inline-flex items-center gap-1 text-xs md:text-sm text-[var(--accent)] hover:underline whitespace-nowrap"
-            >
-              {cta.label}
-              <ArrowRight size={14} />
-            </Link>
+      {(title || subtitle || (showArrows && ctaHref)) && (
+        <div className="flex items-start justify-between gap-4 mb-4 px-1">
+          <div className="min-w-0 flex-1">
+            {title && (
+              <h2 className="text-xl md:text-2xl font-bold text-[var(--foreground)] inline-flex items-center gap-2">
+                {title}
+                {ctaHref && (
+                  <Link
+                    href={ctaHref}
+                    aria-label="Voir tout"
+                    className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--card)] border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
+                  >
+                    <ArrowRight size={13} />
+                  </Link>
+                )}
+              </h2>
+            )}
+            {subtitle && (
+              <p className="text-sm text-[var(--text-secondary)] mt-1">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          {/* Chevrons desktop permanents en haut-droite (Airbnb pattern).
+              Disabled (gris) quand on est en debut/fin du scroll. */}
+          {showArrows && (
+            <div className="hidden md:flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                aria-label="Précédent"
+                onClick={() => scrollByPage(-1)}
+                disabled={!canPrev}
+                className={cn(
+                  "flex items-center justify-center w-8 h-8 rounded-full transition-colors",
+                  "bg-transparent border border-[var(--card-border)]",
+                  "text-[var(--foreground)] hover:bg-[var(--hover-bg)]",
+                  "disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                )}
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                type="button"
+                aria-label="Suivant"
+                onClick={() => scrollByPage(1)}
+                disabled={!canNext}
+                className={cn(
+                  "flex items-center justify-center w-8 h-8 rounded-full transition-colors",
+                  "bg-transparent border border-[var(--card-border)]",
+                  "text-[var(--foreground)] hover:bg-[var(--hover-bg)]",
+                  "disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                )}
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           )}
         </div>
       )}
 
-      <div className="relative">
-        {/* Track scrollable */}
-        <div
-          ref={trackRef}
-          onScroll={updateScrollState}
-          className={cn(
-            "no-scrollbar overflow-x-auto scroll-smooth",
-            snap !== "none" && "snap-x snap-mandatory",
-            !noBleed && "-mx-4 px-4 md:mx-0 md:px-0",
-            trackClassName
-          )}
-        >
-          <div className="flex" style={{ gap }}>
-            {React.Children.map(children, (child, i) => (
-              <div
-                key={i}
-                className={cn("shrink-0", snapClass)}
-                style={{ width: cardWidth }}
-              >
-                {child}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Chevrons desktop : apparaissent au group-hover ou focus-visible.
-           Cachés si on est à l'extrémité. */}
-        {showArrows && (
-          <>
-            <button
-              type="button"
-              aria-label="Précédent"
-              onClick={() => scrollByPage(-1)}
-              disabled={!canPrev}
-              className={cn(
-                "hidden md:flex items-center justify-center",
-                "absolute -left-3 top-1/2 -translate-y-1/2 z-10",
-                "w-9 h-9 rounded-full",
-                "bg-[var(--card)] border border-[var(--card-border)]",
-                "shadow-md text-[var(--foreground)]",
-                "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
-                "transition-opacity",
-                "hover:bg-[var(--hover-bg)]",
-                "disabled:opacity-0 disabled:pointer-events-none"
-              )}
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              type="button"
-              aria-label="Suivant"
-              onClick={() => scrollByPage(1)}
-              disabled={!canNext}
-              className={cn(
-                "hidden md:flex items-center justify-center",
-                "absolute -right-3 top-1/2 -translate-y-1/2 z-10",
-                "w-9 h-9 rounded-full",
-                "bg-[var(--card)] border border-[var(--card-border)]",
-                "shadow-md text-[var(--foreground)]",
-                "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
-                "transition-opacity",
-                "hover:bg-[var(--hover-bg)]",
-                "disabled:opacity-0 disabled:pointer-events-none"
-              )}
-            >
-              <ChevronRight size={18} />
-            </button>
-          </>
+      {/* Track scrollable */}
+      <div
+        ref={trackRef}
+        onScroll={updateScrollState}
+        className={cn(
+          "no-scrollbar overflow-x-auto scroll-smooth",
+          snap !== "none" && "snap-x snap-mandatory",
+          !noBleed && "-mx-4 px-4 md:mx-0 md:px-0",
+          trackClassName
         )}
+      >
+        <div className="flex" style={{ gap }}>
+          {React.Children.map(children, (child, i) => (
+            <div
+              key={i}
+              className={cn("shrink-0", snapClass)}
+              style={{ width: cardWidth }}
+            >
+              {child}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

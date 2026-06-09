@@ -13,6 +13,7 @@ import {
 import { useApp } from "@/lib/context";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
+import { AirbnbPropertyCard } from "@/components/ui/airbnb-property-card";
 import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
 
@@ -313,69 +314,40 @@ export default function ExplorerPage() {
           Top 8 biens (featured + best-rated), cartes plus grandes que
           'Recently viewed' (cover 16:10 + 3 lignes de metadonnees). */}
       {featuredProperties.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-12">
           <HorizontalScroller
-            title="Coups de cœur de la semaine"
-            cta={{ label: "Voir tout", href: "/explorer" }}
+            title={
+              <>
+                Logements populaires <span className="text-[var(--text-muted)] font-normal">· Suisse romande</span>
+              </>
+            }
+            ctaHref="/explorer"
             cardWidth="260px"
-            gap="14px"
+            gap="16px"
           >
-            {featuredProperties.map((prop) => (
-              <Link
-                key={prop.id}
-                href={`/explorer/${prop.id}`}
-                className="block rounded-2xl overflow-hidden border border-[var(--card-border)] bg-[var(--card)] hover:border-[#1e9df1]/30 transition-colors h-full"
-              >
-                <div className="relative">
-                  <img
-                    src={prop.images[0]}
-                    alt=""
-                    className="w-full h-40 object-cover"
-                  />
-                  {prop.featured && (
-                    <span
-                      className="absolute top-3 left-3 px-2 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider"
-                      style={{
-                        background: "var(--background)",
-                        color: "var(--foreground)",
-                      }}
-                    >
-                      Coup de cœur
-                    </span>
-                  )}
-                  {prop.rating && prop.rating >= 4.7 && (
-                    <span
-                      className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold"
-                      style={{
-                        background: "var(--background)",
-                        color: "var(--foreground)",
-                      }}
-                    >
-                      <Star size={11} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
-                      {prop.rating.toFixed(1)}
-                    </span>
-                  )}
-                </div>
-                <div className="p-3">
-                  <p className="text-sm font-medium text-[var(--foreground)] truncate">
-                    {prop.title}
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)] mt-0.5 flex items-center gap-1">
-                    <MapPin size={11} />
-                    {prop.location.city}, {prop.location.country}
-                  </p>
-                  <p className="text-sm font-semibold text-[#1e9df1] mt-1.5 tabular-nums">
-                    {formatPrice(prop.price, prop.currency)}
-                    {prop.transactionType === "location-ct" && (
-                      <span className="text-[var(--text-muted)] font-normal text-xs">/nuit</span>
-                    )}
-                    {prop.transactionType === "location-lt" && (
-                      <span className="text-[var(--text-muted)] font-normal text-xs">/mois</span>
-                    )}
-                  </p>
-                </div>
-              </Link>
-            ))}
+            {featuredProperties.map((prop) => {
+              const priceLabel =
+                prop.transactionType === "location-ct"
+                  ? `${formatPrice(prop.price, prop.currency)} / nuit`
+                  : prop.transactionType === "location-lt"
+                  ? `${formatPrice(prop.price, prop.currency)} / mois`
+                  : `${formatPrice(prop.price, prop.currency)} au total`;
+              const typeLabel = prop.type.charAt(0).toUpperCase() + prop.type.slice(1);
+              return (
+                <AirbnbPropertyCard
+                  key={prop.id}
+                  href={`/explorer/${prop.id}`}
+                  images={prop.images}
+                  type={typeLabel}
+                  location={prop.location.city}
+                  priceLabel={priceLabel}
+                  rating={prop.rating}
+                  highlighted={prop.featured}
+                  favorited={isFavorite(prop.id)}
+                  onToggleFavorite={() => toggleFavorite(prop.id)}
+                />
+              );
+            })}
           </HorizontalScroller>
         </div>
       )}

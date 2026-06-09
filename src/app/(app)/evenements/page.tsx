@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Check, Clock, MapPin } from "lucide-react";
+import { Check } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -135,56 +134,6 @@ export default function EvenementsPage() {
             </div>
           </div>
         )}
-
-        {/* ── Carousel "Événements à la une" ───────────────────────────────
-            Horizontal scroller entre le featured banner et les tabs.
-            Top 4 events 'À venir' (les autres sont vus via la grille).
-            Cards 240px avec image 4:3 + date badge + type + prix. */}
-        {viewMode === "list" && (() => {
-          const upcoming = EVENTS.filter((e) => getTab(e.date) === "À venir").slice(0, 5);
-          if (upcoming.length === 0) return null;
-          return (
-            <HorizontalScroller
-              title="Événements à la une"
-              cta={{ label: "Voir tout", href: "/evenements" }}
-              cardWidth="240px"
-            >
-              {upcoming.map((ev) => {
-                const db = formatDateBadge(ev.date);
-                return (
-                  <a
-                    key={ev.id}
-                    href={`/evenements/${ev.id}`}
-                    className="block rounded-2xl overflow-hidden border border-[var(--card-border)] bg-[var(--card)] hover:border-[#1e9df1]/40 transition-colors h-full"
-                  >
-                    <div className="relative">
-                      <img src={ev.thumbnail} alt={ev.titre} className="w-full h-32 object-cover" />
-                      <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-lg px-2 py-1 text-center">
-                        <div className="text-base font-bold text-white leading-tight tabular-nums">{db.day}</div>
-                        <div className="text-[9px] font-medium text-white/80 uppercase">{db.month}</div>
-                      </div>
-                      <span className={`absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[10px] font-medium ${TYPE_COLORS[ev.type] || "bg-gray-500/20 text-gray-400"}`}>{ev.type}</span>
-                    </div>
-                    <div className="p-3">
-                      <p className="text-sm font-semibold line-clamp-2 mb-2">{ev.titre}</p>
-                      <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] mb-0.5">
-                        <Clock size={11} />
-                        {ev.heure} · {ev.duree}
-                      </div>
-                      <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] truncate">
-                        <MapPin size={11} />
-                        <span className="truncate">{ev.lieu}</span>
-                      </div>
-                      <p className="text-sm font-bold text-[#1e9df1] mt-2">
-                        {ev.prix > 0 ? formatPrice(ev.prix) : "Gratuit"}
-                      </p>
-                    </div>
-                  </a>
-                );
-              })}
-            </HorizontalScroller>
-          );
-        })()}
 
         {/* ── Tabs ─────────────────────────────────────────────────────── */}
         {viewMode === "list" && (
