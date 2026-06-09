@@ -167,14 +167,14 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
           <BackButton fallbackHref="/formations" variant="circle" />
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 max-w-7xl mx-auto">
-          <span className="inline-block px-3 py-1 bg-[#1e9df1] text-white text-xs font-medium rounded-full mb-3">{formation.category}</span>
+          <span className="inline-block px-3 py-1 bg-[var(--primary)] text-white text-xs font-medium rounded-full mb-3">{formation.category}</span>
           <h1 className="text-2xl md:text-4xl page-heading text-white mb-2">{formation.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-white/80 text-sm">
             <span>{LEVEL_LABELS[formation.level]}</span>
             <span>{formation.duration}</span>
             <span>{formation.studentCount} étudiants</span>
             <Stars rating={formation.rating} />
-            <span className="text-[#1e9df1] font-bold text-lg">{formatPrice(formation.price)}</span>
+            <span className="text-[var(--primary)] font-bold text-lg">{formatPrice(formation.price)}</span>
           </div>
         </div>
         {/* Play button */}
@@ -202,13 +202,13 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
               <div className="p-4 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl">
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="text-[var(--text-secondary)]">Progression</span>
-                  <span className="font-medium text-[#1e9df1]">{progressPercent}%</span>
+                  <span className="font-medium text-[var(--primary)]">{progressPercent}%</span>
                 </div>
                 <div className="w-full h-3 bg-[var(--background)] rounded-full overflow-hidden">
-                  <div className="h-full bg-[#1e9df1] rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }} />
+                  <div className="h-full bg-[var(--primary)] rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }} />
                 </div>
                 {allDone && (
-                  <button onClick={() => setShowCertificate(true)} className="mt-3 px-4 py-2 bg-[#1e9df1] text-white rounded-lg text-sm font-medium hover:bg-[#1583c9] transition-colors">
+                  <button onClick={() => setShowCertificate(true)} className="mt-3 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--primary)] transition-colors">
                     Obtenir mon certificat
                   </button>
                 )}
@@ -223,7 +223,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                   <div key={mod.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden">
                     <button onClick={() => toggleModule(mod.id)} className="w-full flex items-center justify-between p-4 hover:bg-[var(--hover-bg)] transition-colors">
                       <div className="flex items-center gap-3 text-left">
-                        <span className="w-8 h-8 flex items-center justify-center bg-[#1e9df1]/20 text-[#1e9df1] rounded-lg text-sm font-bold">{mi + 1}</span>
+                        <span className="w-8 h-8 flex items-center justify-center bg-[var(--primary)]/20 text-[var(--primary)] rounded-lg text-sm font-bold">{mi + 1}</span>
                         <div>
                           <h3 className="font-medium">{mod.title}</h3>
                           <span className="text-xs text-[var(--text-muted)]">{mod.lessons.length} leçons</span>
@@ -236,9 +236,9 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                     {openModules.has(mod.id) && (
                       <div className="border-t border-[var(--card-border)]">
                         {mod.lessons.map((lesson) => (
-                          <div key={lesson.id} className={`flex items-center gap-3 px-4 py-3 hover:bg-[var(--hover-bg)] transition-colors ${playingLesson === lesson.id ? "bg-[#1e9df1]/10" : ""}`}>
+                          <div key={lesson.id} className={`flex items-center gap-3 px-4 py-3 hover:bg-[var(--hover-bg)] transition-colors ${playingLesson === lesson.id ? "bg-[var(--primary)]/10" : ""}`}>
                             {enrollState === "enrolled" ? (
-                              <button onClick={() => toggleLesson(lesson.id)} className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors flex-shrink-0 ${completedLessons.has(lesson.id) ? "bg-[#1e9df1] border-[#1e9df1]" : "border-[var(--text-muted)]"}`}>
+                              <button onClick={() => toggleLesson(lesson.id)} className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors flex-shrink-0 ${completedLessons.has(lesson.id) ? "bg-[var(--primary)] border-[var(--primary)]" : "border-[var(--text-muted)]"}`}>
                                 {completedLessons.has(lesson.id) && (
                                   <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                                 )}
@@ -303,14 +303,14 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
           <div className="space-y-6">
             {/* Enroll Card */}
             <div className="sticky top-4 p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl space-y-4">
-              <div className="text-3xl font-bold text-[#1e9df1]">{formatPrice(formation.price)}</div>
+              <div className="text-3xl font-bold text-[var(--primary)]">{formatPrice(formation.price)}</div>
               {enrollState === "idle" && (
-                <button onClick={handleEnroll} className="w-full py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
+                <button onClick={handleEnroll} className="w-full py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">
                   S&apos;inscrire à la formation
                 </button>
               )}
               {enrollState === "loading" && (
-                <button disabled className="w-full py-3 bg-[#1e9df1]/60 text-white rounded-xl font-medium flex items-center justify-center gap-2">
+                <button disabled className="w-full py-3 bg-[var(--primary)]/60 text-white rounded-xl font-medium flex items-center justify-center gap-2">
                   <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
                   Inscription en cours...
                 </button>
@@ -327,23 +327,23 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                 <div className="flex justify-between"><span>Leçons</span><span className="font-medium text-[var(--foreground)]">{totalLessons}</span></div>
                 <div className="flex justify-between"><span>Niveau</span><span className="font-medium text-[var(--foreground)]">{LEVEL_LABELS[formation.level]}</span></div>
                 <div className="flex justify-between"><span>Étudiants</span><span className="font-medium text-[var(--foreground)]">{formation.studentCount}</span></div>
-                <div className="flex justify-between"><span>Note</span><span className="font-medium text-[#1e9df1]">{formation.rating}/5</span></div>
+                <div className="flex justify-between"><span>Note</span><span className="font-medium text-[var(--primary)]">{formation.rating}/5</span></div>
               </div>
             </div>
 
             {/* Instructor Card */}
-            <Link href={`/profil/${instructor.id}`} className="block p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[#1e9df1]/40 transition-colors group">
+            <Link href={`/profil/${instructor.id}`} className="block p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl hover:border-[var(--primary)]/40 transition-colors group">
               <div className="flex items-center gap-3 mb-3">
                 <img src={instructor.avatar} alt={`${instructor.firstName} ${instructor.lastName}`} className="w-14 h-14 rounded-full object-cover" />
                 <div>
-                  <h3 className="font-semibold group-hover:text-[#1e9df1] transition-colors">{instructor.firstName} {instructor.lastName}</h3>
+                  <h3 className="font-semibold group-hover:text-[var(--primary)] transition-colors">{instructor.firstName} {instructor.lastName}</h3>
                   <span className="text-sm text-[var(--text-muted)]">Formateur</span>
                 </div>
               </div>
               <p className="text-sm text-[var(--text-secondary)] mb-3">{instructor.bio}</p>
               <div className="flex gap-4 text-xs text-[var(--text-muted)]">
                 <span>{instructor.stats.followers} abonnés</span>
-                <span className="inline-flex items-center gap-0.5 text-[#1e9df1]">
+                <span className="inline-flex items-center gap-0.5 text-[var(--primary)]">
                   <Star size={11} fill="currentColor" /> {instructor.stats.rating}
                 </span>
               </div>
@@ -354,13 +354,13 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
               <h3 className="font-semibold mb-3">Formations similaires</h3>
               <div className="space-y-3">
                 {similarFormations.map((s) => (
-                  <Link key={s.id} href={`/formations/${s.id}`} className="flex gap-3 p-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl hover:border-[#1e9df1]/40 transition-colors group">
+                  <Link key={s.id} href={`/formations/${s.id}`} className="flex gap-3 p-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl hover:border-[var(--primary)]/40 transition-colors group">
                     <img src={s.thumbnail} alt={s.title} className="w-20 h-14 rounded-lg object-cover flex-shrink-0" />
                     <div className="min-w-0">
-                      <h4 className="text-sm font-medium truncate group-hover:text-[#1e9df1] transition-colors">{s.title}</h4>
+                      <h4 className="text-sm font-medium truncate group-hover:text-[var(--primary)] transition-colors">{s.title}</h4>
                       <p className="text-xs text-[var(--text-muted)]">{s.instructor.firstName} {s.instructor.lastName}</p>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-sm font-bold text-[#1e9df1]">{formatPrice(s.price)}</span>
+                        <span className="text-sm font-bold text-[var(--primary)]">{formatPrice(s.price)}</span>
                         <span className="inline-flex items-center gap-0.5 text-xs text-[var(--text-muted)]">
                           <Star size={10} fill="currentColor" className="text-amber-400" /> {s.rating}
                         </span>
@@ -392,16 +392,16 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
       {showCertificate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-8 max-w-lg w-full animate-scale-in text-center">
-            <div className="w-20 h-20 bg-[#1e9df1]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-10 h-10 text-[#1e9df1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-20 h-20 bg-[var(--primary)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-[var(--primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
             <h2 className="text-2xl font-bold mb-2">Félicitations !</h2>
             <p className="text-[var(--text-secondary)] mb-4">Vous avez complété la formation <strong>&quot;{formation.title}&quot;</strong>. Votre certificat est prêt.</p>
-            <div className="p-6 border-2 border-dashed border-[#1e9df1]/40 rounded-xl mb-6">
+            <div className="p-6 border-2 border-dashed border-[var(--primary)]/40 rounded-xl mb-6">
               <p className="text-xs text-[var(--text-muted)] mb-1">CERTIFICAT DE COMPLÉTION</p>
-              <p className="text-lg font-bold text-[#1e9df1]">{formation.title}</p>
+              <p className="text-lg font-bold text-[var(--primary)]">{formation.title}</p>
               <p className="text-sm text-[var(--text-secondary)] mt-2">Délivré le {new Date().toLocaleDateString("fr-CH")}</p>
               <p className="text-sm text-[var(--text-secondary)]">Formateur : {instructor.firstName} {instructor.lastName}</p>
             </div>
@@ -409,7 +409,7 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
               <button onClick={() => setShowCertificate(false)} className="flex-1 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
                 Fermer
               </button>
-              <button className="flex-1 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
+              <button className="flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">
                 Télécharger PDF
               </button>
             </div>

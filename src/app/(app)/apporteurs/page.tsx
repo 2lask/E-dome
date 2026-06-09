@@ -149,24 +149,24 @@ export default function ApporteursPage() {
           utilisateur n'active le programme sans avoir vu ces 2 conditions. */}
       <section className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-5 space-y-3">
         <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
-          <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-[#1e9df1]/15 text-[#1e9df1] font-bold">Cadrage V1.0</span>
+          <span className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-[var(--primary)]/15 text-[var(--primary)] font-bold">Cadrage V1.0</span>
           Conditions du programme apporteur
         </div>
         <ul className="text-sm text-[var(--text-secondary)] space-y-2 list-none">
           <li className="flex gap-2">
-            <span className="text-[#1e9df1] mt-0.5">·</span>
+            <span className="text-[var(--primary)] mt-0.5">·</span>
             <span><strong className="text-[var(--foreground)]">Activation après KYC.</strong> Vous activez vous-même la fonction apporteur après vérification d&apos;identité — c&apos;est la première opt-in.</span>
           </li>
           <li className="flex gap-2">
-            <span className="text-[#1e9df1] mt-0.5">·</span>
+            <span className="text-[var(--primary)] mt-0.5">·</span>
             <span><strong className="text-[var(--foreground)]">Double opt-in.</strong> Le vendeur, l&apos;organisateur ou le prestataire peut désactiver le programme sur chaque annonce ou contenu — c&apos;est la seconde opt-in. Les deux parties gardent le contrôle.</span>
           </li>
           <li className="flex gap-2">
-            <span className="text-[#1e9df1] mt-0.5">·</span>
+            <span className="text-[var(--primary)] mt-0.5">·</span>
             <span><strong className="text-[var(--foreground)]">Part prélevée sur E-Dome.</strong> Votre rémunération est toujours prélevée sur les revenus de plateforme d&apos;E-Dome (10 à 30 % de la part E-Dome, ou un bounty fixe). Elle n&apos;est jamais ajoutée au prix payé par le client.</span>
           </li>
           <li className="flex gap-2">
-            <span className="text-[#1e9df1] mt-0.5">·</span>
+            <span className="text-[var(--primary)] mt-0.5">·</span>
             <span><strong className="text-[var(--foreground)]">Pas de courtage.</strong> Vous ne négociez aucun prix, ne signez aucun mandat, ne représentez aucune partie. Vous faites du referral marketing digital — vous n&apos;êtes ni agent immobilier ni courtier.</span>
           </li>
         </ul>
@@ -180,7 +180,7 @@ export default function ApporteursPage() {
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${link.color}`}>{link.label}</span>
             </div>
             <p className="text-sm text-[var(--text-secondary)]">{link.description}</p>
-            <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#1e9df1]/20 text-[#1e9df1]">
+            <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[var(--primary)]/20 text-[var(--primary)]">
               Rémunération : {link.commission}
             </span>
             <div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)]">
@@ -189,7 +189,7 @@ export default function ApporteursPage() {
             <div className="flex gap-2 items-center">
               <button
                 onClick={() => handleCopy(link.url, idx)}
-                className="flex-1 px-3 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
+                className="flex-1 px-3 py-2 rounded-lg bg-[var(--primary)] text-white text-sm font-medium hover:opacity-90 transition"
               >
                 {copiedIdx === idx ? "\u2713 Copié" : "Copier"}
               </button>
@@ -231,13 +231,13 @@ export default function ApporteursPage() {
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Types d&apos;apport</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {APPORT_TYPES.map((type, idx) => (
-            <div key={idx} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition space-y-2">
+            <div key={idx} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition space-y-2">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{type.icon}</span>
                 <h3 className="font-medium text-[var(--foreground)]">{type.title}</h3>
               </div>
               <p className="text-sm text-[var(--text-secondary)]">{type.desc}</p>
-              <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#1e9df1]/20 text-[#1e9df1]">
+              <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[var(--primary)]/20 text-[var(--primary)]">
                 Rémunération : {type.commission}
               </span>
             </div>
@@ -257,7 +257,7 @@ export default function ApporteursPage() {
             <React.Fragment key={idx}>
               {idx > 0 && <div className="hidden md:block text-[var(--text-muted)] text-2xl">→</div>}
               <div className="flex-1 w-full p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] text-center space-y-2">
-                <div className="w-10 h-10 mx-auto rounded-full bg-[#1e9df1] text-white flex items-center justify-center font-bold">
+                <div className="w-10 h-10 mx-auto rounded-full bg-[var(--primary)] text-white flex items-center justify-center font-bold">
                   {s.step}
                 </div>
                 <h3 className="font-medium text-[var(--foreground)]">{s.title}</h3>
@@ -324,7 +324,7 @@ export default function ApporteursPage() {
             </div>
             <div className="flex justify-between border-t border-[var(--card-border)] pt-3">
               <span className="text-[var(--text-secondary)]">En attente</span>
-              <span className="text-[#1e9df1] font-bold">{formatPrice(enAttente)}</span>
+              <span className="text-[var(--primary)] font-bold">{formatPrice(enAttente)}</span>
             </div>
           </div>
         </div>
@@ -366,12 +366,12 @@ export default function ApporteursPage() {
           </div>
           {/* 1st */}
           <div className="text-center space-y-2">
-            <div className="w-20 h-20 mx-auto rounded-full bg-[#1e9df1]/20 text-[#1e9df1] flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto rounded-full bg-[var(--primary)]/20 text-[var(--primary)] flex items-center justify-center">
               <Trophy size={36} strokeWidth={2} />
             </div>
-            <p className="text-sm font-bold text-[#1e9df1]">{LEADERBOARD[0].nom}</p>
+            <p className="text-sm font-bold text-[var(--primary)]">{LEADERBOARD[0].nom}</p>
             <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[0].commissions)}</p>
-            <div className="w-20 h-32 bg-[#1e9df1]/10 rounded-t-lg mx-auto" />
+            <div className="w-20 h-32 bg-[var(--primary)]/10 rounded-t-lg mx-auto" />
           </div>
           {/* 3rd */}
           <div className="text-center space-y-2">
@@ -400,12 +400,12 @@ export default function ApporteursPage() {
                 <tr
                   key={l.rank}
                   className={`border-b border-[var(--card-border)] last:border-0 transition ${
-                    l.isYou ? "bg-[#1e9df1]/5" : "hover:bg-[var(--hover-bg)]"
+                    l.isYou ? "bg-[var(--primary)]/5" : "hover:bg-[var(--hover-bg)]"
                   }`}
                 >
                   <td className="p-4 text-[var(--foreground)] font-bold">{l.rank}</td>
                   <td className="p-4 text-[var(--foreground)] font-medium">
-                    {l.nom} {l.isYou && <span className="text-xs text-[#1e9df1]">(vous)</span>}
+                    {l.nom} {l.isYou && <span className="text-xs text-[var(--primary)]">(vous)</span>}
                   </td>
                   <td className="p-4 text-right text-[var(--text-secondary)]">{l.apports}</td>
                   <td className="p-4 text-right text-[var(--foreground)] font-medium">{formatPrice(l.commissions)}</td>

@@ -213,7 +213,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
             active && "font-medium",
           )}
           style={{
-            background: active ? "rgba(30,157,241,0.10)" : "transparent",
+            background: active ? "rgba(245, 113, 50,0.10)" : "transparent",
             color: active ? "var(--primary)" : "var(--text-secondary)",
           }}
           onMouseEnter={(e) => {
@@ -258,7 +258,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
                     href={sub.href}
                     className="flex items-center gap-2 px-2 h-8 rounded-md text-xs transition-colors whitespace-nowrap"
                     style={{
-                      background: subActive ? "rgba(30,157,241,0.10)" : "transparent",
+                      background: subActive ? "rgba(245, 113, 50,0.10)" : "transparent",
                       color: subActive ? "var(--primary)" : "var(--text-muted)",
                       fontWeight: subActive ? 600 : 500,
                     }}
@@ -298,7 +298,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
           active && "font-medium",
         )}
         style={{
-          background: active ? "rgba(30,157,241,0.10)" : "transparent",
+          background: active ? "rgba(245, 113, 50,0.10)" : "transparent",
           color: active ? "var(--primary)" : "var(--text-secondary)",
         }}
         onMouseEnter={(e) => {

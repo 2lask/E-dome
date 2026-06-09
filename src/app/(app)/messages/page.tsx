@@ -417,7 +417,7 @@ function MessagesPageInner() {
             </div>
             <button
               onClick={() => setShowNewConv(true)}
-              className="w-8 h-8 rounded-full bg-[#1e9df1] text-white flex items-center justify-center hover:bg-[#1583c9] transition-colors"
+              className="w-8 h-8 rounded-full bg-[var(--primary)] text-white flex items-center justify-center hover:bg-[var(--primary)] transition-colors"
               title="Nouvelle conversation"
             >
               <LottiePlayer src="/lottie/lottieflow-chat-17-1-000000-easey.json" width={24} height={24} />
@@ -480,7 +480,7 @@ function MessagesPageInner() {
                 <div className="flex items-center justify-between mt-0.5">
                   <span className="text-xs text-[var(--text-muted)] truncate">{conv.lastMessage}</span>
                   {conv.unreadCount > 0 && (
-                    <span className="ml-2 w-5 h-5 rounded-full bg-[#1e9df1] text-white text-[10px] flex items-center justify-center flex-shrink-0">
+                    <span className="ml-2 w-5 h-5 rounded-full bg-[var(--primary)] text-white text-[10px] flex items-center justify-center flex-shrink-0">
                       {conv.unreadCount}
                     </span>
                   )}
@@ -531,7 +531,7 @@ function MessagesPageInner() {
                 onClick={startConference}
                 aria-label="Démarrer une réunion privée"
                 title="Démarrer une réunion privée"
-                className="flex items-center gap-1.5 px-3 h-11 rounded-lg bg-[#1e9df1]/10 hover:bg-[#1e9df1]/15 text-[#1e9df1] text-xs font-medium transition-colors"
+                className="flex items-center gap-1.5 px-3 h-11 rounded-lg bg-[var(--primary)]/10 hover:bg-[var(--primary)]/15 text-[var(--primary)] text-xs font-medium transition-colors"
               >
                 <Video size={16} />
                 <span className="hidden sm:inline">Réunion</span>
@@ -558,7 +558,7 @@ function MessagesPageInner() {
                               isDeleted
                                 ? "bg-[var(--card)] text-[var(--text-muted)] italic"
                                 : isMine
-                                ? "bg-[#1e9df1]/20 text-[var(--foreground)] rounded-br-md"
+                                ? "bg-[var(--primary)]/20 text-[var(--foreground)] rounded-br-md"
                                 : "bg-[var(--card)] text-[var(--foreground)] rounded-bl-md"
                             }`}
                             onClick={() => {
@@ -572,7 +572,7 @@ function MessagesPageInner() {
                                 <div>{msg.content}</div>
                                 <div
                                   className={`text-[10px] mt-1 flex items-center gap-1 ${
-                                    isMine ? "text-[#1e9df1]/60 justify-end" : "text-[var(--text-muted)]"
+                                    isMine ? "text-[var(--primary)]/60 justify-end" : "text-[var(--text-muted)]"
                                   }`}
                                 >
                                   {formatTime(msg.timestamp)}
@@ -625,7 +625,7 @@ function MessagesPageInner() {
                     <button
                       key={item}
                       onClick={() => setShowAttach(false)}
-                      className="px-3 py-1.5 text-xs rounded-lg bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/50"
+                      className="px-3 py-1.5 text-xs rounded-lg bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--primary)]/50"
                     >
                       {item}
                     </button>
@@ -652,7 +652,7 @@ function MessagesPageInner() {
                 <button
                   onClick={sendMessage}
                   disabled={!message.trim()}
-                  className="p-2.5 rounded-xl bg-[#1e9df1] text-white hover:bg-[#1583c9] disabled:opacity-40 transition-colors"
+                  className="p-2.5 rounded-xl bg-[var(--primary)] text-white hover:bg-[var(--primary)] disabled:opacity-40 transition-colors"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="22" y1="2" x2="11" y2="13" />
@@ -911,7 +911,7 @@ function MessagesPageInner() {
                           <p className="text-[11px] text-white/50">
                             <span
                               className={`font-medium ${
-                                m.isSelf ? "text-[#1e9df1]" : "text-white/80"
+                                m.isSelf ? "text-[var(--primary)]" : "text-white/80"
                               }`}
                             >
                               {m.author}
@@ -939,7 +939,7 @@ function MessagesPageInner() {
                       <button
                         onClick={sendConfChat}
                         aria-label="Envoyer le message"
-                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#1e9df1] hover:bg-[#1583c9] text-white transition-colors"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[var(--primary)] hover:bg-[var(--primary)] text-white transition-colors"
                       >
                         <SendIcon size={14} />
                       </button>
@@ -1141,7 +1141,7 @@ function ConferenceAction({
   badge,
   onClick,
 }: ConferenceActionProps) {
-  const activeBg = activeAmber ? "bg-amber-500/90" : "bg-[#1e9df1]";
+  const activeBg = activeAmber ? "bg-amber-500/90" : "bg-[var(--primary)]";
   return (
     <button
       onClick={onClick}

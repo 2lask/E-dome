@@ -260,7 +260,7 @@ function SearchResults() {
             onFocus={() => setAutoOpen(true)}
             onBlur={() => setTimeout(() => setAutoOpen(false), 150)}
             placeholder="Rechercher un bien, une formation, un profil..."
-            className="w-full pl-12 pr-10 py-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors"
+            className="w-full pl-12 pr-10 py-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors"
           />
           {inputValue && (
             <button
@@ -392,11 +392,11 @@ function SearchResults() {
               {recentSearches.map((term) => (
                 <span
                   key={term}
-                  className="inline-flex items-center gap-1 rounded-full bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition-colors"
+                  className="inline-flex items-center gap-1 rounded-full bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition-colors"
                 >
                   <button
                     onClick={() => submitSearch(term)}
-                    className="px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-[#1e9df1]"
+                    className="px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)]"
                   >
                     {term}
                   </button>
@@ -421,7 +421,7 @@ function SearchResults() {
               <button
                 key={term}
                 onClick={() => handlePopularSearch(term)}
-                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[#1e9df1]/40 hover:text-[#1e9df1] transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[var(--primary)]/40 hover:text-[var(--primary)] transition-colors cursor-pointer"
               >
                 {term}
               </button>
@@ -453,7 +453,7 @@ function SearchResults() {
               <button
                 key={term}
                 onClick={() => handlePopularSearch(term)}
-                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[#1e9df1]/40 hover:text-[#1e9df1] transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[var(--primary)]/40 hover:text-[var(--primary)] transition-colors cursor-pointer"
               >
                 {term}
               </button>
@@ -487,7 +487,7 @@ function SearchResults() {
               onClick={() => setActiveCategory(tab.key)}
               className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                 activeCategory === tab.key
-                  ? "bg-[#1e9df1] text-white"
+                  ? "bg-[var(--primary)] text-white"
                   : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
               }`}
             >
@@ -510,12 +510,12 @@ function SearchResults() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {results!.biens.map((b) => (
-              <div key={b.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition cursor-pointer"
+              <div key={b.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition cursor-pointer"
                 onClick={() => router.push(`/explorer/${b.id}`)}>
                 <h3 className="font-medium text-[var(--foreground)]">{b.titre}</h3>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-sm text-[var(--text-secondary)]">{b.type} — {b.ville}, {b.pays}</span>
-                  <span className="text-sm font-bold text-[#1e9df1]">{formatPrice(b.prix)}</span>
+                  <span className="text-sm font-bold text-[var(--primary)]">{formatPrice(b.prix)}</span>
                 </div>
               </div>
             ))}
@@ -531,11 +531,11 @@ function SearchResults() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {results!.formations.map((f) => (
-              <div key={f.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition cursor-pointer"
+              <div key={f.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition cursor-pointer"
                 onClick={() => router.push(`/formations/${f.id}`)}>
                 <h3 className="font-medium text-[var(--foreground)]">{f.titre}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">{f.instructeur} — {f.niveau}</p>
-                <p className="text-sm font-bold text-[#1e9df1] mt-1">{formatPrice(f.prix)}</p>
+                <p className="text-sm font-bold text-[var(--primary)] mt-1">{formatPrice(f.prix)}</p>
               </div>
             ))}
           </div>
@@ -553,7 +553,7 @@ function SearchResults() {
               <div key={u.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] flex items-center justify-between hover:bg-[var(--hover-bg)] transition cursor-pointer"
                 onClick={() => router.push(`/profil/${u.id}`)}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#1e9df1]/20 flex items-center justify-center text-[#1e9df1] font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-[var(--primary)]/20 flex items-center justify-center text-[var(--primary)] font-bold text-sm">
                     {u.nom.split(" ").map((n) => n[0]).join("")}
                   </div>
                   <div>
@@ -584,7 +584,7 @@ function SearchResults() {
           </h2>
           <div className="space-y-2">
             {results!.evenements.map((e) => (
-              <div key={e.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition cursor-pointer"
+              <div key={e.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition cursor-pointer"
                 onClick={() => router.push(`/evenements/${e.id}`)}>
                 <h3 className="font-medium text-[var(--foreground)]">{e.titre}</h3>
                 <div className="flex items-center gap-4 mt-1 text-sm text-[var(--text-secondary)]">
@@ -608,11 +608,11 @@ function SearchResults() {
               <div
                 key={s.id}
                 onClick={() => router.push("/services")}
-                className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition cursor-pointer"
+                className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition cursor-pointer"
               >
                 <h3 className="font-medium text-[var(--foreground)]">{s.titre}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">{s.description}</p>
-                <p className="text-sm font-bold text-[#1e9df1] mt-2">Dès {formatPrice(s.prix)}</p>
+                <p className="text-sm font-bold text-[var(--primary)] mt-2">Dès {formatPrice(s.prix)}</p>
               </div>
             ))}
           </div>

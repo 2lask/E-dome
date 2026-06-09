@@ -264,19 +264,19 @@ export default function ExplorerPage() {
 
       const el = document.createElement("div");
       el.className = "map-marker";
-      el.innerHTML = `<span style="background:#1e9df1;color:white;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2)">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix}</span>`;
+      el.innerHTML = `<span style="background:var(--primary);color:white;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2)">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix}</span>`;
 
       const popup = new maplibregl.Popup({ offset: 25, closeButton: false }).setHTML(
         `<div style="font-family:system-ui;min-width:200px">
           <img src="${prop.images[0]}" style="width:100%;height:120px;object-fit:cover;border-radius:8px 8px 0 0" />
           <div style="padding:8px">
             <p style="font-weight:600;margin:0">${prop.title}</p>
-            <p style="color:#1e9df1;font-weight:700;margin:4px 0">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix ? ` <span style="font-weight:400;color:#888;font-size:11px">${suffix}</span>` : ""}</p>
+            <p style="color:var(--primary);font-weight:700;margin:4px 0">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix ? ` <span style="font-weight:400;color:#888;font-size:11px">${suffix}</span>` : ""}</p>
             <p style="color:#888;font-size:12px;margin:0;display:flex;align-items:center;gap:4px">
               <span>${prop.location.city}</span>
               ${prop.rating ? `<span>·</span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>${prop.rating}</span>` : ""}
             </p>
-            <a href="/explorer/${prop.id}" style="display:block;margin-top:8px;color:#1e9df1;font-size:12px;font-weight:600;text-decoration:none">Voir le bien →</a>
+            <a href="/explorer/${prop.id}" style="display:block;margin-top:8px;color:var(--primary);font-size:12px;font-weight:600;text-decoration:none">Voir le bien →</a>
           </div>
         </div>`
       );
@@ -310,7 +310,7 @@ export default function ExplorerPage() {
     }, 600);
   };
 
-  const selectClass = "px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[#1e9df1] appearance-none cursor-pointer";
+  const selectClass = "px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)] appearance-none cursor-pointer";
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -372,12 +372,12 @@ export default function ExplorerPage() {
               <Link
                 key={prop.id}
                 href={`/explorer/${prop.id}`}
-                className="block rounded-xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden hover:border-[#1e9df1]/30 transition-colors h-full"
+                className="block rounded-xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden hover:border-[var(--primary)]/30 transition-colors h-full"
               >
                 <img src={prop.images[0]} alt="" className="w-full h-24 object-cover" />
                 <div className="p-2.5">
                   <p className="text-xs font-medium text-[var(--foreground)] truncate">{prop.title}</p>
-                  <p className="text-xs text-[#1e9df1] font-semibold mt-0.5">
+                  <p className="text-xs text-[var(--primary)] font-semibold mt-0.5">
                     {formatPrice(prop.price, prop.currency)}
                     {prop.transactionType === "location-ct" && <span className="text-[var(--text-muted)]">/nuit</span>}
                     {prop.transactionType === "location-lt" && <span className="text-[var(--text-muted)]">/mois</span>}
@@ -415,7 +415,7 @@ export default function ExplorerPage() {
                 onClick={() => setFilterType(item.type as PropertyType | "")}
                 className={`flex flex-col items-center justify-center gap-1.5 shrink-0 min-w-[78px] px-3 py-2.5 rounded-xl transition-colors ${
                   active
-                    ? "text-[#1e9df1] bg-[#1e9df1]/10 ring-1 ring-[#1e9df1]/25"
+                    ? "text-[var(--primary)] bg-[var(--primary)]/10 ring-1 ring-[var(--primary)]/25"
                     : "text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)]"
                 }`}
               >
@@ -436,15 +436,15 @@ export default function ExplorerPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher par ville, type, titre..."
-            className="w-full pl-12 pr-12 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1] transition-colors"
+            className="w-full pl-12 pr-12 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors"
           />
           <button
             onClick={saveSearch}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[#1e9df1] transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
             title="Sauvegarder la recherche"
           >
             {savedSearches.includes(search) ? (
-              <BookmarkCheck className="w-5 h-5 text-[#1e9df1]" />
+              <BookmarkCheck className="w-5 h-5 text-[var(--primary)]" />
             ) : (
               <Bookmark className="w-5 h-5" />
             )}
@@ -454,7 +454,7 @@ export default function ExplorerPage() {
           onClick={() => setShowFilters(!showFilters)}
           className={`px-4 py-3 rounded-xl border transition-colors flex items-center gap-2 ${
             showFilters
-              ? "border-[#1e9df1] bg-[#1e9df1]/10 text-[#1e9df1]"
+              ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
               : "border-[var(--card-border)] bg-[var(--card)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]"
           }`}
         >
@@ -683,7 +683,7 @@ export default function ExplorerPage() {
             onClick={() => setFilterTransaction(tab.value)}
             className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
               filterTransaction === tab.value
-                ? "bg-[#1e9df1] text-white"
+                ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
             }`}
           >
@@ -717,7 +717,7 @@ export default function ExplorerPage() {
               onClick={() => setViewMode("grid")}
               aria-label="Vue en grille"
               aria-pressed={viewMode === "grid"}
-              className={`flex items-center justify-center w-11 h-11 transition-colors ${viewMode === "grid" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
+              className={`flex items-center justify-center w-11 h-11 transition-colors ${viewMode === "grid" ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
             >
               <Grid3X3 className="w-4 h-4" />
             </button>
@@ -725,7 +725,7 @@ export default function ExplorerPage() {
               onClick={() => setViewMode("list")}
               aria-label="Vue en liste"
               aria-pressed={viewMode === "list"}
-              className={`flex items-center justify-center w-11 h-11 transition-colors ${viewMode === "list" ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
+              className={`flex items-center justify-center w-11 h-11 transition-colors ${viewMode === "list" ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
             >
               <List className="w-4 h-4" />
             </button>
@@ -806,7 +806,7 @@ export default function ExplorerPage() {
                   <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover" />
                 </Link>
                 {prop.featured && (
-                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "#1e9df1" }}>
+                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "var(--primary)" }}>
                     <Rocket className="w-3 h-3" /> Mis en avant
                   </span>
                 )}
@@ -824,7 +824,7 @@ export default function ExplorerPage() {
                     : r >= 5
                       ? "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30"
                       : r >= 3
-                        ? "bg-[#1e9df1]/15 text-[#1e9df1] ring-[#1e9df1]/30"
+                        ? "bg-[var(--primary)]/15 text-[var(--primary)] ring-[var(--primary)]/30"
                         : "bg-zinc-700/40 text-zinc-300 ring-zinc-600/40";
                   return (
                     <span
@@ -840,7 +840,7 @@ export default function ExplorerPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <Link href={`/explorer/${prop.id}`}>
-                      <h3 className="font-semibold text-[var(--foreground)] hover:text-[#1e9df1] transition-colors">
+                      <h3 className="font-semibold text-[var(--foreground)] hover:text-[var(--primary)] transition-colors">
                         {prop.title}
                       </h3>
                     </Link>
@@ -849,7 +849,7 @@ export default function ExplorerPage() {
                       {prop.location.city}, {prop.location.country}
                     </p>
                   </div>
-                  <p className="text-lg font-bold text-[#1e9df1]">
+                  <p className="text-lg font-bold text-[var(--primary)]">
                     {formatPrice(prop.price, prop.currency)}
                   </p>
                 </div>
@@ -880,7 +880,7 @@ export default function ExplorerPage() {
           <button
             onClick={loadMore}
             disabled={loadingMore}
-            className="px-6 py-3 rounded-xl bg-[#1e9df1] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors disabled:opacity-60 flex items-center gap-2"
+            className="px-6 py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors disabled:opacity-60 flex items-center gap-2"
           >
             {loadingMore ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -900,7 +900,7 @@ export default function ExplorerPage() {
       <button
         onClick={() => setShowMap((v) => !v)}
         className="fixed bottom-20 md:bottom-8 right-6 z-30 px-5 py-3 rounded-full font-medium flex items-center gap-2 shadow-xl text-white hover:opacity-90 transition-opacity"
-        style={{ background: "#1e9df1" }}
+        style={{ background: "var(--primary)" }}
       >
         <Map size={18} />
         Carte
@@ -917,7 +917,7 @@ export default function ExplorerPage() {
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--card-border)] bg-[var(--card)] shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0" style={{ background: "#1e9df1" }}>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0" style={{ background: "var(--primary)" }}>
                 <Map size={18} />
               </div>
               <div>

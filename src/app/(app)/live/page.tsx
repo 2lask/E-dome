@@ -146,7 +146,7 @@ export default function LivePage() {
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary)] text-white text-sm font-medium hover:opacity-90 transition"
           >
             <Radio size={16} /> Programmer un live
           </button>
@@ -176,7 +176,7 @@ export default function LivePage() {
                 <button
                   onClick={() => setHandRaised(!handRaised)}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                    handRaised ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]"
+                    handRaised ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)]"
                   }`}
                 >
                   {handRaised ? "Main levée" : "Lever la main"}
@@ -199,7 +199,7 @@ export default function LivePage() {
             <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-80 lg:max-h-[400px]">
               {chatMessages.map((msg, idx) => (
                 <div key={idx}>
-                  <span className="text-xs text-[#1e9df1] font-medium">{msg.user}</span>
+                  <span className="text-xs text-[var(--primary)] font-medium">{msg.user}</span>
                   <span className="text-xs text-[var(--text-muted)] ml-2">{msg.time}</span>
                   <p className="text-sm text-[var(--foreground)]">{msg.message}</p>
                 </div>
@@ -216,7 +216,7 @@ export default function LivePage() {
               />
               <button
                 onClick={handleSendChat}
-                className="px-3 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
+                className="px-3 py-2 rounded-lg bg-[var(--primary)] text-white text-sm font-medium hover:opacity-90 transition"
               >
                 Envoyer
               </button>
@@ -230,7 +230,7 @@ export default function LivePage() {
           {countdown && (
             <div
               className="relative overflow-hidden rounded-2xl p-8 md:p-10 text-center"
-              style={{ background: "linear-gradient(135deg, #1e9df1 0%, #5ec1ff 50%, #1e9df1 100%)" }}
+              style={{ background: "linear-gradient(135deg, var(--primary) 0%, #5ec1ff 50%, var(--primary) 100%)" }}
             >
               {/* Decorative circles */}
               <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-2xl" />
@@ -269,7 +269,7 @@ export default function LivePage() {
                     const firstLive = UPCOMING_LIVES[0];
                     if (firstLive && !inscriptions.has(firstLive.id)) handleInscription(firstLive.id);
                   }}
-                  className="px-6 py-3 rounded-xl bg-white text-[#1e9df1] font-semibold text-sm hover:bg-white/90 transition shadow-lg flex items-center gap-2"
+                  className="px-6 py-3 rounded-xl bg-white text-[var(--primary)] font-semibold text-sm hover:bg-white/90 transition shadow-lg flex items-center gap-2"
                 >
                   <Bell size={16} /> S&apos;inscrire
                 </button>
@@ -305,12 +305,12 @@ export default function LivePage() {
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Prochains lives</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {UPCOMING_LIVES.map((live) => (
-            <div key={live.id} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-3 hover:border-[#1e9df1]/40 transition">
+            <div key={live.id} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-3 hover:border-[var(--primary)]/40 transition">
               <h3 className="font-medium text-[var(--foreground)]">{live.titre}</h3>
               <p className="text-sm text-[var(--text-secondary)]">{live.speaker} — {live.role}</p>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[var(--text-muted)]">{live.date}</span>
-                <span className="text-[#1e9df1] font-medium">{liveInscrits[live.id] ?? live.inscrits} inscrits</span>
+                <span className="text-[var(--primary)] font-medium">{liveInscrits[live.id] ?? live.inscrits} inscrits</span>
               </div>
               {inscriptions.has(live.id) ? (
                 <button
@@ -322,7 +322,7 @@ export default function LivePage() {
               ) : (
                 <button
                   onClick={() => handleInscription(live.id)}
-                  className="w-full px-4 py-2 rounded-lg border border-[#1e9df1] text-[#1e9df1] text-sm font-medium hover:bg-[#1e9df1]/10 transition"
+                  className="w-full px-4 py-2 rounded-lg border border-[var(--primary)] text-[var(--primary)] text-sm font-medium hover:bg-[var(--primary)]/10 transition"
                 >
                   S&apos;inscrire
                 </button>
@@ -366,7 +366,7 @@ export default function LivePage() {
             <Link
               key={replay.id}
               href={`/live/replay/${idx + 1}`}
-              className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden hover:border-[#1e9df1]/40 transition cursor-pointer block"
+              className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden hover:border-[var(--primary)]/40 transition cursor-pointer block"
             >
               <div className="aspect-video bg-gray-800 flex items-center justify-center relative">
                 <div className="text-3xl text-white/40">▶</div>
@@ -403,7 +403,7 @@ export default function LivePage() {
                   value={newLive.titre}
                   onChange={(e) => setNewLive({ ...newLive, titre: e.target.value })}
                   placeholder="Titre du live..."
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] transition"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -413,7 +413,7 @@ export default function LivePage() {
                     type="datetime-local"
                     value={newLive.date}
                     onChange={(e) => setNewLive({ ...newLive, date: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#1e9df1] transition"
+                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition"
                   />
                 </div>
                 <div className="space-y-1">
@@ -424,7 +424,7 @@ export default function LivePage() {
                     step="15"
                     value={newLive.duree}
                     onChange={(e) => setNewLive({ ...newLive, duree: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#1e9df1] transition"
+                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition"
                   />
                 </div>
               </div>
@@ -435,7 +435,7 @@ export default function LivePage() {
                   onChange={(e) => setNewLive({ ...newLive, description: e.target.value })}
                   placeholder="Décrivez votre live..."
                   rows={3}
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] transition resize-none"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition resize-none"
                 />
               </div>
               <div className="space-y-1">
@@ -446,7 +446,7 @@ export default function LivePage() {
                   step="5"
                   value={newLive.prix}
                   onChange={(e) => setNewLive({ ...newLive, prix: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[#1e9df1] transition"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition"
                 />
                 {newLive.prix === "0" && (
                   <p className="text-xs text-green-500 mt-1">Gratuit</p>
@@ -466,7 +466,7 @@ export default function LivePage() {
                   setToastVisible(true);
                   setTimeout(() => setToastVisible(false), 3000);
                 }}
-                className="px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
+                className="px-4 py-2 rounded-lg bg-[var(--primary)] text-white text-sm font-medium hover:opacity-90 transition"
               >
                 Publier
               </button>

@@ -77,7 +77,7 @@ export default function ConfidentialitePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
       {/* Demo disclaimer */}
-      <div className="p-4 rounded-xl border border-[#1e9df1]/40 bg-[#1e9df1]/5 text-xs text-[var(--text-secondary)] leading-relaxed">
+      <div className="p-4 rounded-xl border border-[var(--primary)]/40 bg-[var(--primary)]/5 text-xs text-[var(--text-secondary)] leading-relaxed">
         <span className="mr-1">&#9888;&#65039;</span>
         Ce document est fourni à titre indicatif dans le cadre de la maquette de démonstration E-Dome. Il ne constitue pas un document légal contraignant.
       </div>
@@ -94,7 +94,7 @@ export default function ConfidentialitePage() {
           <button
             key={s.id}
             onClick={() => scrollTo(s.id)}
-            className="block text-sm text-[var(--text-secondary)] hover:text-[#1e9df1] transition text-left"
+            className="block text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition text-left"
           >
             {s.title}
           </button>

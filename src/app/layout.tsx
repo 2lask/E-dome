@@ -34,7 +34,7 @@ export const metadata: Metadata = {
    - userScalable: false + maximumScale 1 : annule le double-tap zoom
      iOS (qui zoom et casse le feel app)
    - themeColor : couleur de la barre Chrome Android + chip "ajouter à
-     l'écran d'accueil". #000 par défaut (dark mode), #1e9df1 quand PWA
+     l'écran d'accueil". #000 par défaut (dark mode), var(--primary) quand PWA
      standalone (status bar tinted) */
 export const viewport: Viewport = {
   width: "device-width",

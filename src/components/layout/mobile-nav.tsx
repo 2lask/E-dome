@@ -129,7 +129,7 @@ export function MobileNav() {
                   className="w-11 h-11 rounded-full flex items-center justify-center -mt-4 transition-transform"
                   style={{
                     background: "var(--primary)",
-                    boxShadow: "0 4px 12px rgba(30,157,241,0.25)",
+                    boxShadow: "0 4px 12px rgba(245, 113, 50,0.25)",
                     transform: menuOpen ? "rotate(45deg)" : "rotate(0deg)",
                   }}
                 >

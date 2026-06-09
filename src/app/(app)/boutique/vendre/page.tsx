@@ -32,7 +32,7 @@ const emptyForm: ProductForm = {
   autoriserApporteurs: true, termsAccepted: false,
 };
 
-const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors";
+const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors";
 const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5";
 
 export default function VendreProduitPage() {
@@ -72,7 +72,7 @@ export default function VendreProduitPage() {
           <Link href="/boutique" className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
             Retour à la boutique
           </Link>
-          <Link href="/dashboard" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">
+          <Link href="/dashboard" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">
             Voir mon dashboard
           </Link>
         </div>
@@ -124,7 +124,7 @@ export default function VendreProduitPage() {
                 key={cat}
                 type="button"
                 onClick={() => update("categorie", cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${form.categorie === cat ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${form.categorie === cat ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--primary)]/40"}`}
               >
                 {cat}
               </button>
@@ -205,7 +205,7 @@ export default function VendreProduitPage() {
             <button
               type="button"
               onClick={addPhoto}
-              className="px-4 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl text-sm font-medium transition-colors"
+              className="px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl text-sm font-medium transition-colors"
             >
               Ajouter
             </button>
@@ -251,7 +251,7 @@ export default function VendreProduitPage() {
         <button
           type="button"
           onClick={() => update("autoriserApporteurs", !form.autoriserApporteurs)}
-          className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form.autoriserApporteurs ? "bg-[#1e9df1]/10 border-[#1e9df1]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[#1e9df1]/40"}`}
+          className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form.autoriserApporteurs ? "bg-[var(--primary)]/10 border-[var(--primary)]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[var(--primary)]/40"}`}
         >
           <div className="text-left">
             <h3 className="font-medium">Autoriser les apporteurs d&apos;affaires</h3>
@@ -259,7 +259,7 @@ export default function VendreProduitPage() {
               Les apporteurs pourront partager votre fiche produit. Leur part (10–30 %) est prélevée sur la commission marketplace d&apos;E-Dome — jamais ajoutée au prix.
             </p>
           </div>
-          <div className={`w-12 h-6 rounded-full transition-colors relative shrink-0 ${form.autoriserApporteurs ? "bg-[#1e9df1]" : "bg-[var(--card-border)]"}`}>
+          <div className={`w-12 h-6 rounded-full transition-colors relative shrink-0 ${form.autoriserApporteurs ? "bg-[var(--primary)]" : "bg-[var(--card-border)]"}`}>
             <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${form.autoriserApporteurs ? "translate-x-6" : "translate-x-0.5"}`} />
           </div>
         </button>
@@ -273,7 +273,7 @@ export default function VendreProduitPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">Commission E-Dome (8 % indicatif)</span>
-              <span className="text-[#1e9df1]">−{formatPrice(form.prix * 0.08)}</span>
+              <span className="text-[var(--primary)]">−{formatPrice(form.prix * 0.08)}</span>
             </div>
             <div className="h-px bg-[var(--card-border)]" />
             <div className="flex justify-between">
@@ -291,7 +291,7 @@ export default function VendreProduitPage() {
           <button
             type="button"
             onClick={() => update("termsAccepted", !form.termsAccepted)}
-            className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${form.termsAccepted ? "bg-[#1e9df1] border-[#1e9df1]" : "border-[var(--text-muted)]"}`}
+            className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${form.termsAccepted ? "bg-[var(--primary)] border-[var(--primary)]" : "border-[var(--text-muted)]"}`}
           >
             {form.termsAccepted && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
           </button>
@@ -308,7 +308,7 @@ export default function VendreProduitPage() {
             type="button"
             onClick={() => setPublished(true)}
             disabled={!isValid}
-            className={`px-8 py-3 rounded-xl font-medium transition-colors ${isValid ? "bg-[#1e9df1] hover:bg-[#1583c9] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}
+            className={`px-8 py-3 rounded-xl font-medium transition-colors ${isValid ? "bg-[var(--primary)] hover:bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}
           >
             Publier le produit
           </button>

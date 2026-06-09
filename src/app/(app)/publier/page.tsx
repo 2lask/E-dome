@@ -85,7 +85,7 @@ const emptyForm: PublishForm = {
   optionMiseEnAvant: false, optionPhotosPro: false, optionVisite3D: false, termsAccepted: false,
 };
 
-const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#1e9df1]/50 transition-colors";
+const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors";
 const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5";
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
@@ -190,7 +190,7 @@ export default function PublierPage() {
           </div>
           <h1 className="text-2xl page-heading mb-2">Bien publié avec succès !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre annonce &quot;{form.titre}&quot; est maintenant en ligne.</p>
-          <a href="/explorer" className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors inline-block">
+          <a href="/explorer" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
             Voir l&apos;annonce
           </a>
         </div>
@@ -236,7 +236,7 @@ export default function PublierPage() {
             <div className="space-y-1">
               {drafts.map((d) => (
                 <div key={d.id} className="flex items-center justify-between text-sm">
-                  <button onClick={() => loadDraft(d.id)} className="text-[#1e9df1] hover:underline">{d.titre} - {d.date}</button>
+                  <button onClick={() => loadDraft(d.id)} className="text-[var(--primary)] hover:underline">{d.titre} - {d.date}</button>
                   <button onClick={() => deleteDraft(d.id)} className="text-red-400 hover:text-red-300 text-xs">Supprimer</button>
                 </div>
               ))}
@@ -248,11 +248,11 @@ export default function PublierPage() {
         <div className="flex items-center gap-2 mb-8">
           {stepLabels.map((s, i) => (
             <React.Fragment key={i}>
-              <button onClick={() => setStep(i + 1)} className={`px-3 py-2 rounded-full text-xs font-medium transition-colors ${step === i + 1 ? "bg-[#1e9df1] text-white" : step > i + 1 ? "bg-[#1e9df1]/20 text-[#1e9df1]" : "bg-[var(--card)] text-[var(--text-muted)]"}`}>
+              <button onClick={() => setStep(i + 1)} className={`px-3 py-2 rounded-full text-xs font-medium transition-colors ${step === i + 1 ? "bg-[var(--primary)] text-white" : step > i + 1 ? "bg-[var(--primary)]/20 text-[var(--primary)]" : "bg-[var(--card)] text-[var(--text-muted)]"}`}>
                 <span className="hidden sm:inline">{s}</span>
                 <span className="sm:hidden">{i + 1}</span>
               </button>
-              {i < stepLabels.length - 1 && <div className={`flex-1 h-0.5 ${step > i + 1 ? "bg-[#1e9df1]" : "bg-[var(--card-border)]"}`} />}
+              {i < stepLabels.length - 1 && <div className={`flex-1 h-0.5 ${step > i + 1 ? "bg-[var(--primary)]" : "bg-[var(--card-border)]"}`} />}
             </React.Fragment>
           ))}
         </div>
@@ -264,7 +264,7 @@ export default function PublierPage() {
               <label className={labelCls}>Type de transaction</label>
               <div className="grid grid-cols-3 gap-3">
                 {TRANSACTION_TYPES.map((t) => (
-                  <button key={t.value} onClick={() => update("transactionType", t.value)} className={`p-4 rounded-xl text-sm font-medium text-center transition-colors border ${form.transactionType === t.value ? "bg-[#1e9df1]/20 border-[#1e9df1] text-[#1e9df1]" : "bg-[var(--card)] border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
+                  <button key={t.value} onClick={() => update("transactionType", t.value)} className={`p-4 rounded-xl text-sm font-medium text-center transition-colors border ${form.transactionType === t.value ? "bg-[var(--primary)]/20 border-[var(--primary)] text-[var(--primary)]" : "bg-[var(--card)] border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--primary)]/40"}`}>
                     {t.label}
                   </button>
                 ))}
@@ -274,7 +274,7 @@ export default function PublierPage() {
               <label className={labelCls}>Type de bien</label>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                 {PROPERTY_TYPES.map((t) => (
-                  <button key={t.value} onClick={() => update("propertyType", t.value)} className={`px-3 py-2 rounded-xl text-xs font-medium transition-colors border ${form.propertyType === t.value ? "bg-[#1e9df1]/20 border-[#1e9df1] text-[#1e9df1]" : "bg-[var(--card)] border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
+                  <button key={t.value} onClick={() => update("propertyType", t.value)} className={`px-3 py-2 rounded-xl text-xs font-medium transition-colors border ${form.propertyType === t.value ? "bg-[var(--primary)]/20 border-[var(--primary)] text-[var(--primary)]" : "bg-[var(--card)] border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--primary)]/40"}`}>
                     {t.label}
                   </button>
                 ))}
@@ -291,7 +291,7 @@ export default function PublierPage() {
               {form.prix > 0 && <p className="text-xs text-[var(--text-muted)] mt-1">Affiche : {formatPrice(form.prix)}</p>}
             </div>
             <div className="flex justify-end">
-              <button onClick={() => setStep(2)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(2)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -308,7 +308,7 @@ export default function PublierPage() {
             <div><label className={labelCls}>Description</label><textarea className={`${inputCls} min-h-[150px] resize-y`} placeholder="Décrivez votre bien en détail..." value={form.description} onChange={(e) => update("description", e.target.value)} /></div>
             <div className="flex justify-between">
               <button onClick={() => setStep(1)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(3)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(3)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -321,7 +321,7 @@ export default function PublierPage() {
               <label className={labelCls}>Photos</label>
               <div className="flex gap-2 mb-3">
                 <input className={`${inputCls} flex-1`} placeholder="URL de la photo..." value={photoInput} onChange={(e) => setPhotoInput(e.target.value)} />
-                <button onClick={addPhoto} className="px-4 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Ajouter</button>
+                <button onClick={addPhoto} className="px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Ajouter</button>
               </div>
               {/* Drag-reorder hint */}
               {form.photos.length > 1 && <p className="text-xs text-[var(--text-muted)] mb-2">Cliquez sur les flèches pour réordonner.</p>}
@@ -329,7 +329,7 @@ export default function PublierPage() {
                 {form.photos.map((url, i) => (
                   <div key={i} className="relative group">
                     <img src={url} alt={`Photo ${i + 1}`} className="w-full h-28 object-cover rounded-xl" />
-                    {i === 0 && <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#1e9df1] text-white text-[10px] rounded-full">Principale</span>}
+                    {i === 0 && <span className="absolute top-2 left-2 px-2 py-0.5 bg-[var(--primary)] text-white text-[10px] rounded-full">Principale</span>}
                     <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       {i > 0 && <button onClick={() => reorderPhoto(i, i - 1)} className="w-6 h-6 bg-black/50 text-white rounded-full flex items-center justify-center text-xs">&lt;</button>}
                       {i < form.photos.length - 1 && <button onClick={() => reorderPhoto(i, i + 1)} className="w-6 h-6 bg-black/50 text-white rounded-full flex items-center justify-center text-xs">&gt;</button>}
@@ -338,7 +338,7 @@ export default function PublierPage() {
                   </div>
                 ))}
                 {/* Drop zone placeholder */}
-                <button onClick={() => fileRef.current?.click()} className="h-28 border-2 border-dashed border-[var(--card-border)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[#1e9df1]/40 transition-colors">
+                <button onClick={() => fileRef.current?.click()} className="h-28 border-2 border-dashed border-[var(--card-border)] rounded-xl flex flex-col items-center justify-center text-[var(--text-muted)] hover:border-[var(--primary)]/40 transition-colors">
                   <LottiePlayer src="/lottie/lottieflow-multimedia-8-5-000000-easey.json" width={40} height={40} />
                   <span className="text-xs">Glisser-déposer</span>
                 </button>
@@ -385,7 +385,7 @@ export default function PublierPage() {
 
             <div className="flex justify-between">
               <button onClick={() => setStep(2)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(4)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(4)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -396,14 +396,14 @@ export default function PublierPage() {
             <h2 className="text-xl font-semibold">Équipements</h2>
             <div className="flex flex-wrap gap-2">
               {EQUIPEMENTS.map((eq) => (
-                <button key={eq} onClick={() => toggleEquipement(eq)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${form.equipements.includes(eq) ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
+                <button key={eq} onClick={() => toggleEquipement(eq)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${form.equipements.includes(eq) ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--primary)]/40"}`}>
                   {eq}
                 </button>
               ))}
             </div>
             <div className="flex justify-between">
               <button onClick={() => setStep(3)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(5)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(5)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -438,7 +438,7 @@ export default function PublierPage() {
             </div>
             <div className="flex justify-between">
               <button onClick={() => setStep(3)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(5)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(5)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -449,14 +449,14 @@ export default function PublierPage() {
             <h2 className="text-xl font-semibold">Équipements</h2>
             <div className="flex flex-wrap gap-2">
               {EQUIPEMENTS.map((eq) => (
-                <button key={eq} onClick={() => toggleEquipement(eq)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${form.equipements.includes(eq) ? "bg-[#1e9df1] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[#1e9df1]/40"}`}>
+                <button key={eq} onClick={() => toggleEquipement(eq)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${form.equipements.includes(eq) ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--primary)]/40"}`}>
                   {eq}
                 </button>
               ))}
             </div>
             <div className="flex justify-between">
               <button onClick={() => setStep(4)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(6)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(6)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -470,13 +470,13 @@ export default function PublierPage() {
             {/* Toggle autoriser */}
             <button
               onClick={() => update("autoriserApporteurs", !form.autoriserApporteurs)}
-              className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form.autoriserApporteurs ? "bg-[#1e9df1]/10 border-[#1e9df1]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[#1e9df1]/40"}`}
+              className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form.autoriserApporteurs ? "bg-[var(--primary)]/10 border-[var(--primary)]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[var(--primary)]/40"}`}
             >
               <div className="text-left">
                 <h3 className="font-medium">Autoriser les apporteurs</h3>
                 <p className="text-xs text-[var(--text-muted)]">Les apporteurs pourront partager votre annonce via leur lien personnel</p>
               </div>
-              <div className={`w-12 h-6 rounded-full transition-colors relative ${form.autoriserApporteurs ? "bg-[#1e9df1]" : "bg-[var(--card-border)]"}`}>
+              <div className={`w-12 h-6 rounded-full transition-colors relative ${form.autoriserApporteurs ? "bg-[var(--primary)]" : "bg-[var(--card-border)]"}`}>
                 <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${form.autoriserApporteurs ? "translate-x-6" : "translate-x-0.5"}`} />
               </div>
             </button>
@@ -490,7 +490,7 @@ export default function PublierPage() {
             {form.autoriserApporteurs && (
               <div className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-5">
                 {/* Bandeau lecture seule */}
-                <div className="p-4 rounded-xl bg-[#1e9df1]/5 border border-[#1e9df1]/20 space-y-2">
+                <div className="p-4 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 space-y-2">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-sm font-medium text-[var(--foreground)]">
                       Taux apporteur fixé par la plateforme
@@ -543,7 +543,7 @@ export default function PublierPage() {
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-[var(--text-secondary)]">Part apporteur (10 – 30 % de la rémunération E-Dome)</span>
-                        <span className="font-medium text-[#1e9df1] tabular-nums">
+                        <span className="font-medium text-[var(--primary)] tabular-nums">
                           {formatPrice(apporteurLow)} – {formatPrice(apporteurHigh)}
                         </span>
                       </div>
@@ -571,7 +571,7 @@ export default function PublierPage() {
 
             <div className="flex justify-between">
               <button onClick={() => setStep(isVente ? 5 : 4)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(totalSteps)} className="px-6 py-3 bg-[#1e9df1] hover:bg-[#1583c9] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => setStep(totalSteps)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -590,7 +590,7 @@ export default function PublierPage() {
             <div>
               <h2 className="text-xl font-semibold mb-4">Frais de publication</h2>
               {form.transactionType === "vente" && (
-                <div className="p-5 rounded-2xl border border-[#1e9df1]/30 bg-[#1e9df1]/5 space-y-3">
+                <div className="p-5 rounded-2xl border border-[var(--primary)]/30 bg-[var(--primary)]/5 space-y-3">
                   <div className="flex items-baseline justify-between">
                     <p className="text-sm text-[var(--text-secondary)]">
                       {form.prix > 0 && form.prix < 1_000_000
@@ -599,7 +599,7 @@ export default function PublierPage() {
                         ? "Bien supérieur ou égal à 1 000 000 CHF"
                         : "Selon le prix renseigné à l'étape 2"}
                     </p>
-                    <span className="text-2xl font-bold text-[#1e9df1] tabular-nums">
+                    <span className="text-2xl font-bold text-[var(--primary)] tabular-nums">
                       {form.prix > 0
                         ? formatPrice(form.prix < 1_000_000 ? 500 : 2500)
                         : formatPrice(500) + " ou " + formatPrice(2500)}
@@ -613,22 +613,22 @@ export default function PublierPage() {
                 </div>
               )}
               {form.transactionType === "location-lt" && (
-                <div className="p-5 rounded-2xl border border-[#1e9df1]/30 bg-[#1e9df1]/5 space-y-3">
+                <div className="p-5 rounded-2xl border border-[var(--primary)]/30 bg-[var(--primary)]/5 space-y-3">
                   <p className="text-sm text-[var(--text-secondary)] mb-2">
                     Frais fixe de mise en ligne, selon la durée du bail :
                   </p>
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
                       <p className="text-xs text-[var(--text-muted)]">Bail 1–6 mois</p>
-                      <p className="text-lg font-bold text-[#1e9df1] tabular-nums">{formatPrice(150)}</p>
+                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(150)}</p>
                     </div>
                     <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
                       <p className="text-xs text-[var(--text-muted)]">Bail 6–12 mois</p>
-                      <p className="text-lg font-bold text-[#1e9df1] tabular-nums">{formatPrice(250)}</p>
+                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(250)}</p>
                     </div>
                     <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
                       <p className="text-xs text-[var(--text-muted)]">Bail 12 mois +</p>
-                      <p className="text-lg font-bold text-[#1e9df1] tabular-nums">{formatPrice(400)}</p>
+                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(400)}</p>
                     </div>
                   </div>
                   <p className="text-xs text-[var(--text-muted)] leading-relaxed">
@@ -660,13 +660,13 @@ export default function PublierPage() {
                   { key: "optionPhotosPro" as const, label: "Photos professionnelles", desc: "Un photographe professionnel viendra sur place", price: 199 },
                   { key: "optionVisite3D" as const, label: "Visite 3D", desc: "Création d'une visite virtuelle 360°", price: 349 },
                 ].map((opt) => (
-                  <button key={opt.key} onClick={() => update(opt.key, !form[opt.key])} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form[opt.key] ? "bg-[#1e9df1]/10 border-[#1e9df1]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[#1e9df1]/40"}`}>
+                  <button key={opt.key} onClick={() => update(opt.key, !form[opt.key])} className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form[opt.key] ? "bg-[var(--primary)]/10 border-[var(--primary)]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[var(--primary)]/40"}`}>
                     <div className="text-left">
                       <h3 className="font-medium">{opt.label}</h3>
                       <p className="text-xs text-[var(--text-muted)]">{opt.desc}</p>
                     </div>
                     <div className="text-right flex-shrink-0 ml-4">
-                      <span className="font-bold text-[#1e9df1]">{formatPrice(opt.price)}</span>
+                      <span className="font-bold text-[var(--primary)]">{formatPrice(opt.price)}</span>
                     </div>
                   </button>
                 ))}
@@ -686,14 +686,14 @@ export default function PublierPage() {
                     {form.sallesDeBain > 0 && <span>{form.sallesDeBain} sdb.</span>}
                     {form.surface > 0 && <span>{form.surface} m2</span>}
                   </div>
-                  <p className="font-bold text-xl text-[#1e9df1]">{form.prix > 0 ? formatPrice(form.prix) : "Prix à définir"}</p>
+                  <p className="font-bold text-xl text-[var(--primary)]">{form.prix > 0 ? formatPrice(form.prix) : "Prix à définir"}</p>
                 </div>
               </div>
             </div>
 
             {/* Terms */}
             <label className="flex items-start gap-3 cursor-pointer">
-              <button onClick={() => update("termsAccepted", !form.termsAccepted)} className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${form.termsAccepted ? "bg-[#1e9df1] border-[#1e9df1]" : "border-[var(--text-muted)]"}`}>
+              <button onClick={() => update("termsAccepted", !form.termsAccepted)} className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${form.termsAccepted ? "bg-[var(--primary)] border-[var(--primary)]" : "border-[var(--text-muted)]"}`}>
                 {form.termsAccepted && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
               </button>
               <span className="text-sm text-[var(--text-secondary)]">J&apos;accepte les conditions générales d&apos;utilisation et la politique de confidentialité d&apos;E-Dome.</span>
@@ -701,7 +701,7 @@ export default function PublierPage() {
 
             <div className="flex justify-between">
               <button onClick={() => setStep(isVente ? 6 : 5)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={handlePublish} disabled={!form.termsAccepted} className={`px-8 py-3 rounded-xl font-medium transition-colors ${form.termsAccepted ? "bg-[#1e9df1] hover:bg-[#1583c9] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}>
+              <button onClick={handlePublish} disabled={!form.termsAccepted} className={`px-8 py-3 rounded-xl font-medium transition-colors ${form.termsAccepted ? "bg-[var(--primary)] hover:bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}>
                 Publier le bien
               </button>
             </div>

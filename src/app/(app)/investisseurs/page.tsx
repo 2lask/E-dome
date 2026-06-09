@@ -93,7 +93,7 @@ export default function InvestisseursPage() {
         <div className="flex gap-2">
           <button
             onClick={() => handleExport("pdf")}
-            className="px-4 py-2 rounded-lg bg-[#1e9df1] text-white text-sm font-medium hover:opacity-90 transition"
+            className="px-4 py-2 rounded-lg bg-[var(--primary)] text-white text-sm font-medium hover:opacity-90 transition"
           >
             Export PDF
           </button>
@@ -122,7 +122,7 @@ export default function InvestisseursPage() {
                 onChange={(e) => handleKpiChange(idx, e.target.value)}
                 onBlur={() => setEditingKpi(null)}
                 autoFocus
-                className="w-full text-2xl font-bold bg-transparent text-[var(--foreground)] border-b border-[#1e9df1] outline-none"
+                className="w-full text-2xl font-bold bg-transparent text-[var(--foreground)] border-b border-[var(--primary)] outline-none"
               />
             ) : (
               <p className="text-2xl font-bold text-[var(--foreground)]">
@@ -130,7 +130,7 @@ export default function InvestisseursPage() {
               </p>
             )}
             {kpi.editable && (
-              <p className="text-xs text-[#1e9df1]">Cliquez pour modifier</p>
+              <p className="text-xs text-[var(--primary)]">Cliquez pour modifier</p>
             )}
           </div>
         ))}
@@ -161,7 +161,7 @@ export default function InvestisseursPage() {
                           onChange={(e) => handleProjectionChange(rowIdx, col, e.target.value)}
                           onBlur={() => setEditingCell(null)}
                           autoFocus
-                          className="w-24 bg-transparent border-b border-[#1e9df1] outline-none text-[var(--foreground)]"
+                          className="w-24 bg-transparent border-b border-[var(--primary)] outline-none text-[var(--foreground)]"
                         />
                       ) : col === "rendement" ? (
                         `${p[col]}%`
@@ -186,7 +186,7 @@ export default function InvestisseursPage() {
               <div key={idx} className="flex-1 flex flex-col items-center gap-1">
                 <span className="text-[10px] text-[var(--text-muted)]">{formatPrice(d.value)}</span>
                 <div
-                  className="w-full rounded-t bg-[#1e9df1]/80 hover:bg-[#1e9df1] transition"
+                  className="w-full rounded-t bg-[var(--primary)]/80 hover:bg-[var(--primary)] transition"
                   style={{ height: `${(d.value / maxGrowth) * 100}%` }}
                 />
                 <span className="text-xs text-[var(--text-muted)]">{d.label}</span>

@@ -123,7 +123,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               }}
             >
               {/* Banniere demo : toujours visible, meme sur le dashboard. */}
-              <div className="w-full px-4 py-1.5 bg-[#1e9df1]/10 border-b border-[#1e9df1]/20 text-center text-xs text-[#1e9df1] flex items-center justify-center gap-1.5">
+              <div className="w-full px-4 py-1.5 bg-[var(--primary)]/10 border-b border-[var(--primary)]/20 text-center text-xs text-[var(--primary)] flex items-center justify-center gap-1.5">
                 <Wrench size={12} strokeWidth={2} />
                 <span>
                   Maquette de démonstration — Toutes les données sont fictives ·{" "}

@@ -593,7 +593,7 @@ function renderContent(content: string) {
           key={i}
           href={`/recherche?q=${encodeURIComponent(part)}`}
           onClick={(e) => e.stopPropagation()}
-          className="text-[#1e9df1] hover:underline"
+          className="text-[var(--primary)] hover:underline"
         >
           {part}
         </Link>
@@ -697,7 +697,7 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
         {muted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
       </button>
       <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/15">
-        <div className="h-full bg-[#1e9df1]" style={{ width: `${progress}%` }} />
+        <div className="h-full bg-[var(--primary)]" style={{ width: `${progress}%` }} />
       </div>
     </div>
   );
@@ -850,7 +850,7 @@ function PostCaption({ content }: { content: string }) {
       {!expanded && overflowing && (
         <button
           onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
-          className="text-[#1e9df1] text-sm font-medium hover:underline mt-1"
+          className="text-[var(--primary)] text-sm font-medium hover:underline mt-1"
         >
           Voir plus
         </button>
@@ -858,7 +858,7 @@ function PostCaption({ content }: { content: string }) {
       {expanded && (
         <button
           onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
-          className="text-[#1e9df1] text-sm font-medium hover:underline mt-1"
+          className="text-[var(--primary)] text-sm font-medium hover:underline mt-1"
         >
           Voir moins
         </button>
@@ -884,11 +884,11 @@ function ComposerAction({ icon: Icon, label, onClick, badge }: ComposerActionPro
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="relative w-10 h-10 flex items-center justify-center rounded-full text-[#1e9df1] hover:bg-[#1e9df1]/10 transition-colors"
+      className="relative w-10 h-10 flex items-center justify-center rounded-full text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors"
     >
       <Icon size={18} />
       {badge && (
-        <span aria-hidden className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#1e9df1]" />
+        <span aria-hidden className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
       )}
     </button>
   );
@@ -1019,7 +1019,7 @@ interface SparklineProps {
   color?: string;
 }
 
-function Sparkline({ data, width = 96, height = 28, color = "#1e9df1" }: SparklineProps) {
+function Sparkline({ data, width = 96, height = 28, color = "var(--primary)" }: SparklineProps) {
   if (!data.length) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
@@ -1069,7 +1069,7 @@ function PropertyAttachCard({ property, onRemove }: { property: Property; onRemo
       <Link href={`/explorer/${property.id}`} className="flex">
         <img src={property.images[0]} alt="" className="w-28 h-28 object-cover shrink-0" />
         <div className="flex-1 p-3 min-w-0">
-          <p className="text-xs text-[#1e9df1] font-medium">Bien immobilier</p>
+          <p className="text-xs text-[var(--primary)] font-medium">Bien immobilier</p>
           <p className="text-sm font-semibold text-[var(--foreground)] mt-0.5 line-clamp-2">
             {property.title}
           </p>
@@ -1077,7 +1077,7 @@ function PropertyAttachCard({ property, onRemove }: { property: Property; onRemo
             <MapPin size={11} /> {property.location.city}
             {property.area ? ` · ${property.area} m²` : ""}
           </p>
-          <p className="text-sm font-bold text-[#1e9df1] mt-1.5">
+          <p className="text-sm font-bold text-[var(--primary)] mt-1.5">
             {formatPrice(property.price, property.currency)}
             {transactionSuffix && (
               <span className="text-xs text-[var(--text-muted)] font-normal">{transactionSuffix}</span>
@@ -1123,7 +1123,7 @@ function FormationAttachCard({ formation, onRemove }: { formation: FormationLike
           <p className="text-xs text-[var(--text-muted)] mt-1">
             Par {formation.instructor} · {formatCount(formation.students)} élèves
           </p>
-          <p className="text-sm font-bold text-[#1e9df1] mt-1.5">{formatPrice(formation.price)}</p>
+          <p className="text-sm font-bold text-[var(--primary)] mt-1.5">{formatPrice(formation.price)}</p>
         </div>
       </Link>
       {onRemove && (
@@ -1155,7 +1155,7 @@ function EventAttachCard({ event, onRemove }: { event: ComposerEvent; onRemove?:
           <p className="text-xs text-[var(--text-muted)] mt-1">
             {formatDate(event.date)} · {event.lieu}
           </p>
-          <p className="text-sm font-bold text-[#1e9df1] mt-1.5">
+          <p className="text-sm font-bold text-[var(--primary)] mt-1.5">
             {event.prix && event.prix > 0 ? formatPrice(event.prix) : "Gratuit"}
             {typeof event.spotsRemaining === "number" && (
               <span className="text-xs text-[var(--text-muted)] font-normal">
@@ -1383,11 +1383,11 @@ function PostCard({
           <img src={post.property.images[0]} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
-              <Building2 className="w-3.5 h-3.5 text-[#1e9df1]" />
-              <span className="text-[10px] uppercase tracking-wider text-[#1e9df1] font-semibold">Bien</span>
+              <Building2 className="w-3.5 h-3.5 text-[var(--primary)]" />
+              <span className="text-[10px] uppercase tracking-wider text-[var(--primary)] font-semibold">Bien</span>
             </div>
             <p className="text-sm font-medium text-[var(--foreground)] truncate">{post.property.title}</p>
-            <p className="text-sm font-bold text-[#1e9df1] mt-0.5 tabular-nums">
+            <p className="text-sm font-bold text-[var(--primary)] mt-0.5 tabular-nums">
               {formatPrice(post.property.price, post.property.currency)}
             </p>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">
@@ -1410,11 +1410,11 @@ function PostCard({
           <img src={post.formation.thumbnail} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
-              <GraduationCap className="w-3.5 h-3.5 text-[#1e9df1]" />
-              <span className="text-[10px] uppercase tracking-wider text-[#1e9df1] font-semibold">Formation</span>
+              <GraduationCap className="w-3.5 h-3.5 text-[var(--primary)]" />
+              <span className="text-[10px] uppercase tracking-wider text-[var(--primary)] font-semibold">Formation</span>
             </div>
             <p className="text-sm font-medium text-[var(--foreground)] truncate">{post.formation.title}</p>
-            <p className="text-sm font-bold text-[#1e9df1] mt-0.5 tabular-nums">
+            <p className="text-sm font-bold text-[var(--primary)] mt-0.5 tabular-nums">
               {formatPrice(post.formation.price)}
             </p>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">
@@ -1442,7 +1442,7 @@ function PostCard({
             <p className="text-xs text-[var(--text-muted)] mt-0.5">
               {formatEventDate(event.date)} · {event.heure} · {event.lieu}
             </p>
-            <p className="text-sm font-bold text-[#1e9df1] mt-0.5 tabular-nums">
+            <p className="text-sm font-bold text-[var(--primary)] mt-0.5 tabular-nums">
               {event.prix === 0 ? "Gratuit" : formatPrice(event.prix)}
             </p>
           </div>
@@ -1470,11 +1470,11 @@ function PostCard({
           onClick={(e) => e.stopPropagation()}
           className="mx-4 mt-3 flex items-center gap-3 p-2.5 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
         >
-          <div className="w-12 h-12 rounded-xl bg-[#1e9df1]/10 flex items-center justify-center shrink-0">
-            {cta.icon === "users" ? <Users className="w-5 h-5 text-[#1e9df1]" />
-              : cta.icon === "search" ? <Search className="w-5 h-5 text-[#1e9df1]" />
-              : cta.icon === "calendar" ? <Calendar className="w-5 h-5 text-[#1e9df1]" />
-              : <UserIcon className="w-5 h-5 text-[#1e9df1]" />}
+          <div className="w-12 h-12 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
+            {cta.icon === "users" ? <Users className="w-5 h-5 text-[var(--primary)]" />
+              : cta.icon === "search" ? <Search className="w-5 h-5 text-[var(--primary)]" />
+              : cta.icon === "calendar" ? <Calendar className="w-5 h-5 text-[var(--primary)]" />
+              : <UserIcon className="w-5 h-5 text-[var(--primary)]" />}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-[var(--foreground)] truncate">{cta.title}</p>
@@ -1492,11 +1492,11 @@ function PostCard({
         {/* Reply (commentaire) */}
         <button
           onClick={(e) => { e.stopPropagation(); onOpenComments(); }}
-          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[#1e9df1]/10"
+          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[var(--primary)]/10"
           aria-label="Répondre"
         >
-          <MessageCircle className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[#1e9df1] transition-colors" />
-          <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85 group-hover:text-[#1e9df1] transition-colors">
+          <MessageCircle className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors" />
+          <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85 group-hover:text-[var(--primary)] transition-colors">
             {formatCount(post.comments.length)}
           </span>
         </button>
@@ -1564,12 +1564,12 @@ function PostCard({
         {/* Bookmark */}
         <button
           onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
-          className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[#1e9df1]/10 shrink-0"
+          className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[var(--primary)]/10 shrink-0"
           aria-label={saved ? "Retirer du marque-pages" : "Enregistrer"}
           aria-pressed={saved}
         >
           <Bookmark className={`w-5 h-5 transition-colors ${
-            saved ? "fill-[#1e9df1] text-[#1e9df1]" : "text-[var(--text-muted)] group-hover:text-[#1e9df1]"
+            saved ? "fill-[var(--primary)] text-[var(--primary)]" : "text-[var(--text-muted)] group-hover:text-[var(--primary)]"
           }`} />
         </button>
 
@@ -1577,11 +1577,11 @@ function PostCard({
         <div className="relative shrink-0">
           <button
             onClick={(e) => { e.stopPropagation(); onOpenShare(); }}
-            className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[#1e9df1]/10"
+            className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[var(--primary)]/10"
             aria-label="Partager"
             aria-expanded={shareOpen}
           >
-            <Share2 className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[#1e9df1] transition-colors" />
+            <Share2 className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors" />
           </button>
           {shareOpen && (
             <div
@@ -1896,7 +1896,7 @@ export default function FeedPage() {
                   onClick={() => setActiveTab(tab)}
                   className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                     activeTab === tab
-                      ? "bg-[#1e9df1] text-white"
+                      ? "bg-[var(--primary)] text-white"
                       : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
                   }`}
                 >
@@ -2084,7 +2084,7 @@ export default function FeedPage() {
                       <button
                         onClick={publishFromComposer}
                         disabled={!composerHasContent}
-                        className="px-5 h-9 rounded-full bg-[#1e9df1] hover:bg-[#1583c9] text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="px-5 h-9 rounded-full bg-[var(--primary)] hover:bg-[var(--primary)] text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         Publier
                       </button>
@@ -2161,7 +2161,7 @@ export default function FeedPage() {
             <input
               type="search"
               placeholder="Rechercher sur E-Dome"
-              className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1] transition-colors"
+              className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition-colors"
             />
           </form>
 
@@ -2301,7 +2301,7 @@ export default function FeedPage() {
             <div className="border-t border-[var(--card-border)] p-3">
               {replyTo && (
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-[#1e9df1]">Réponse à @{replyTo}</span>
+                  <span className="text-xs text-[var(--primary)]">Réponse à @{replyTo}</span>
                   <button onClick={() => setReplyTo(null)} className="text-[var(--text-muted)]">
                     <X className="w-3 h-3" />
                   </button>
@@ -2315,13 +2315,13 @@ export default function FeedPage() {
                   onChange={(e) => setCommentInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && addComment(commentsForPost.id)}
                   placeholder={replyTo ? `Répondre à ${replyTo}...` : "Écrire un commentaire..."}
-                  className="flex-1 px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]"
+                  className="flex-1 px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)]"
                   autoFocus
                 />
                 <button
                   onClick={() => addComment(commentsForPost.id)}
                   disabled={!commentInput.trim()}
-                  className="p-2.5 rounded-lg bg-[#1e9df1] text-white hover:bg-[#1583c9] transition-colors disabled:opacity-40"
+                  className="p-2.5 rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--primary)] transition-colors disabled:opacity-40"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -2348,7 +2348,7 @@ export default function FeedPage() {
                 onChange={(e) => setEditContent(e.target.value)}
                 maxLength={2000}
                 rows={6}
-                className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl p-3 text-sm text-[var(--foreground)] outline-none resize-none focus:border-[#1e9df1]"
+                className="w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl p-3 text-sm text-[var(--foreground)] outline-none resize-none focus:border-[var(--primary)]"
               />
               <div className="flex gap-2 justify-end">
                 <button
@@ -2359,7 +2359,7 @@ export default function FeedPage() {
                 </button>
                 <button
                   onClick={() => saveEdit(editModalPost)}
-                  className="px-4 py-2 rounded-lg bg-[#1e9df1] hover:bg-[#1583c9] text-white text-sm font-medium transition-colors"
+                  className="px-4 py-2 rounded-lg bg-[var(--primary)] hover:bg-[var(--primary)] text-white text-sm font-medium transition-colors"
                 >
                   Sauvegarder
                 </button>
@@ -2474,7 +2474,7 @@ function PropertyPickerList({
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Rechercher un bien…"
-          className="w-full pl-9 pr-3 h-10 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]/40"
+          className="w-full pl-9 pr-3 h-10 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)]/40"
         />
       </div>
       {filtered.length === 0 ? (
@@ -2493,7 +2493,7 @@ function PropertyPickerList({
                 <MapPin size={11} /> {p.location.city} · {formatPrice(p.price, p.currency)}
               </p>
             </div>
-            <span className="text-xs font-medium text-[#1e9df1] shrink-0">{ctaLabel}</span>
+            <span className="text-xs font-medium text-[var(--primary)] shrink-0">{ctaLabel}</span>
           </button>
         ))
       )}
@@ -2538,7 +2538,7 @@ function FormationPickerList({ onSelect }: { onSelect: (f: FormationLike) => voi
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Rechercher une formation…"
-          className="w-full pl-9 pr-3 h-10 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[#1e9df1]/40"
+          className="w-full pl-9 pr-3 h-10 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)]/40"
         />
       </div>
       {filtered.length === 0 ? (
@@ -2557,7 +2557,7 @@ function FormationPickerList({ onSelect }: { onSelect: (f: FormationLike) => voi
                 {f.instructor} · {formatPrice(f.price)}
               </p>
             </div>
-            <span className="text-xs font-medium text-[#1e9df1] shrink-0">Attacher</span>
+            <span className="text-xs font-medium text-[var(--primary)] shrink-0">Attacher</span>
           </button>
         ))
       )}
@@ -2589,7 +2589,7 @@ function EventPickerList({
               {e.prix && e.prix > 0 ? formatPrice(e.prix) : "Gratuit"}
             </p>
           </div>
-          <span className="text-xs font-medium text-[#1e9df1] shrink-0">Attacher</span>
+          <span className="text-xs font-medium text-[var(--primary)] shrink-0">Attacher</span>
         </button>
       ))}
     </>
@@ -2642,9 +2642,9 @@ function AnalyticsMetricPicker({
         <button
           key={m.key}
           onClick={() => onSelect(m.key)}
-          className="w-full flex items-center gap-3 p-3 rounded-xl border border-[var(--card-border)] hover:border-[#1e9df1]/40 hover:bg-[var(--hover-bg)] text-left transition-colors mb-2"
+          className="w-full flex items-center gap-3 p-3 rounded-xl border border-[var(--card-border)] hover:border-[var(--primary)]/40 hover:bg-[var(--hover-bg)] text-left transition-colors mb-2"
         >
-          <div className="w-10 h-10 rounded-xl bg-[#1e9df1]/15 text-[#1e9df1] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/15 text-[var(--primary)] flex items-center justify-center shrink-0">
             <BarChart3 size={18} />
           </div>
           <div className="flex-1 min-w-0">

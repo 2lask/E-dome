@@ -128,9 +128,9 @@ export default function CreerReelPage() {
   const goldBtnStyle: React.CSSProperties = {
     display: "flex", alignItems: "center", gap: 6,
     padding: "10px 24px", borderRadius: 12, fontSize: 14,
-    background: "#1e9df1", color: "#fff", border: "none",
+    background: "var(--primary)", color: "#fff", border: "none",
     cursor: "pointer", fontWeight: 600, transition: "all 0.2s",
-    boxShadow: "0 4px 15px rgba(30, 157, 242,0.3)",
+    boxShadow: "0 4px 15px rgba(245, 113, 50,0.3)",
   };
 
   const outlineBtnStyle: React.CSSProperties = {
@@ -166,7 +166,7 @@ export default function CreerReelPage() {
           <ArrowLeft size={18} /> {step > 1 ? "Retour" : "Retour"}
         </button>
         <span style={{ fontSize: 16, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
-          <Film size={18} color="#1e9df1" /> Creer un Reel
+          <Film size={18} color="var(--primary)" /> Creer un Reel
         </span>
         <div style={{ width: 70 }} />
       </div>
@@ -185,7 +185,7 @@ export default function CreerReelPage() {
                 width: 28, height: 28, borderRadius: "50%",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 13, fontWeight: 700,
-                background: step >= s ? "#1e9df1" : "var(--hover-bg)",
+                background: step >= s ? "var(--primary)" : "var(--hover-bg)",
                 color: step >= s ? "#fff" : "var(--text-muted, #666)",
                 transition: "all 0.3s",
               }}>
@@ -204,7 +204,7 @@ export default function CreerReelPage() {
             {s < 3 && (
               <div style={{
                 width: 40, height: 2, borderRadius: 1,
-                background: step > s ? "#1e9df1" : "var(--divider)",
+                background: step > s ? "var(--primary)" : "var(--divider)",
                 transition: "background 0.3s",
               }} />
             )}
@@ -230,8 +230,8 @@ export default function CreerReelPage() {
                     aspectRatio: "9/16",
                     maxHeight: "60vh",
                     borderRadius: 16,
-                    border: `2px dashed ${isDragging ? "#1e9df1" : "var(--card-border)"}`,
-                    background: isDragging ? "rgba(30, 157, 242,0.08)" : "var(--hover-bg)",
+                    border: `2px dashed ${isDragging ? "var(--primary)" : "var(--card-border)"}`,
+                    background: isDragging ? "rgba(245, 113, 50,0.08)" : "var(--hover-bg)",
                     display: "flex", flexDirection: "column",
                     alignItems: "center", justifyContent: "center",
                     cursor: "pointer", transition: "all 0.3s", gap: 16,
@@ -278,7 +278,7 @@ export default function CreerReelPage() {
                   style={{
                     ...outlineBtnStyle,
                     justifyContent: "center", width: "100%",
-                    borderColor: "rgba(30, 157, 242,0.3)", color: "#1e9df1",
+                    borderColor: "rgba(245, 113, 50,0.3)", color: "var(--primary)",
                   }}
                 >
                   <Film size={16} /> Parcourir le dossier informations
@@ -305,7 +305,7 @@ export default function CreerReelPage() {
                   }}>
                     <div style={{
                       width: 56, height: 56, borderRadius: "50%",
-                      background: "rgba(30, 157, 242,0.9)", display: "flex",
+                      background: "rgba(245, 113, 50,0.9)", display: "flex",
                       alignItems: "center", justifyContent: "center",
                     }}>
                       <Play size={24} color="#fff" style={{ marginLeft: 3 }} />
@@ -330,7 +330,7 @@ export default function CreerReelPage() {
                   background: "var(--hover-bg)",
                   border: "1px solid var(--hover-bg)",
                 }}>
-                  <FileVideo size={18} color="#1e9df1" />
+                  <FileVideo size={18} color="var(--primary)" />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 600 }}>{videoName}</div>
                     <div style={{ fontSize: 11, color: "var(--text-muted, #888)" }}>
@@ -419,9 +419,9 @@ export default function CreerReelPage() {
                   position: "absolute",
                   left: `${trim.start}%`, width: `${trim.end - trim.start}%`,
                   top: 0, bottom: 0,
-                  background: "rgba(30, 157, 242,0.25)",
-                  borderLeft: "2px solid #1e9df1",
-                  borderRight: "2px solid #1e9df1",
+                  background: "rgba(245, 113, 50,0.25)",
+                  borderLeft: "2px solid var(--primary)",
+                  borderRight: "2px solid var(--primary)",
                 }} />
                 {/* Playhead */}
                 <div style={{
@@ -464,9 +464,9 @@ export default function CreerReelPage() {
                     flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                     padding: "10px 0", borderRadius: 12, fontSize: 13, fontWeight: 500,
                     cursor: "pointer", transition: "all 0.2s",
-                    background: activeTool2 === tool.key ? "rgba(30, 157, 242,0.2)" : "var(--hover-bg)",
-                    color: activeTool2 === tool.key ? "#1e9df1" : "var(--foreground)",
-                    border: activeTool2 === tool.key ? "1px solid #1e9df1" : "1px solid var(--border, var(--divider))",
+                    background: activeTool2 === tool.key ? "rgba(245, 113, 50,0.2)" : "var(--hover-bg)",
+                    color: activeTool2 === tool.key ? "var(--primary)" : "var(--foreground)",
+                    border: activeTool2 === tool.key ? "1px solid var(--primary)" : "1px solid var(--border, var(--divider))",
                   }}
                 >
                   {tool.icon} {tool.label}
@@ -480,7 +480,7 @@ export default function CreerReelPage() {
                 {/* Decouper */}
                 {activeTool2 === "decouper" && (
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#1e9df1" }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "var(--primary)" }}>
                       Decouper la video
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -491,7 +491,7 @@ export default function CreerReelPage() {
                         <input
                           type="range" min={0} max={trim.end - 5} value={trim.start}
                           onChange={(e) => setTrim({ ...trim, start: Number(e.target.value) })}
-                          style={{ width: "100%", accentColor: "#1e9df1" }}
+                          style={{ width: "100%", accentColor: "var(--primary)" }}
                         />
                       </div>
                       <div>
@@ -501,13 +501,13 @@ export default function CreerReelPage() {
                         <input
                           type="range" min={trim.start + 5} max={100} value={trim.end}
                           onChange={(e) => setTrim({ ...trim, end: Number(e.target.value) })}
-                          style={{ width: "100%", accentColor: "#1e9df1" }}
+                          style={{ width: "100%", accentColor: "var(--primary)" }}
                         />
                       </div>
                       <div style={{
                         fontSize: 12, color: "var(--text-muted, #888)", textAlign: "center",
                         padding: "6px 0", borderRadius: 8,
-                        background: "rgba(30, 157, 242,0.1)",
+                        background: "rgba(245, 113, 50,0.1)",
                       }}>
                         Duree : {formatTime(((trim.end - trim.start) / 100) * SAMPLE_DURATION)}
                       </div>
@@ -518,7 +518,7 @@ export default function CreerReelPage() {
                 {/* Legende */}
                 {activeTool2 === "legende" && (
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#1e9df1" }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "var(--primary)" }}>
                       Legende video
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -547,7 +547,7 @@ export default function CreerReelPage() {
                               style={{
                                 flex: 1, padding: "8px 0", borderRadius: 8,
                                 fontSize: 12, fontWeight: 500, cursor: "pointer",
-                                background: caption.position === pos ? "#1e9df1" : "var(--hover-bg)",
+                                background: caption.position === pos ? "var(--primary)" : "var(--hover-bg)",
                                 color: caption.position === pos ? "#fff" : "var(--text-muted, #aaa)",
                                 border: "none", transition: "all 0.2s",
                               }}
@@ -564,7 +564,7 @@ export default function CreerReelPage() {
                 {/* Couverture */}
                 {activeTool2 === "couverture" && (
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#1e9df1" }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "var(--primary)" }}>
                       Image de couverture
                     </div>
                     <div style={{ fontSize: 12, color: "var(--text-muted, #888)", marginBottom: 8 }}>
@@ -573,7 +573,7 @@ export default function CreerReelPage() {
                     <input
                       type="range" min={0} max={100} value={coverFrame}
                       onChange={(e) => setCoverFrame(Number(e.target.value))}
-                      style={{ width: "100%", accentColor: "#1e9df1", marginBottom: 8 }}
+                      style={{ width: "100%", accentColor: "var(--primary)", marginBottom: 8 }}
                     />
                     <div style={{
                       display: "flex", gap: 6, justifyContent: "center",
@@ -585,7 +585,7 @@ export default function CreerReelPage() {
                           style={{
                             width: 48, height: 72, borderRadius: 6, overflow: "hidden",
                             cursor: "pointer",
-                            border: coverFrame === f ? "2px solid #1e9df1" : "2px solid transparent",
+                            border: coverFrame === f ? "2px solid var(--primary)" : "2px solid transparent",
                             opacity: coverFrame === f ? 1 : 0.6,
                             transition: "all 0.2s",
                           }}
@@ -646,7 +646,7 @@ export default function CreerReelPage() {
                   <Clock size={11} /> {formatTime(SAMPLE_DURATION)}
                 </div>
                 {caption.text && (
-                  <div style={{ fontSize: 11, color: "#1e9df1" }}>
+                  <div style={{ fontSize: 11, color: "var(--primary)" }}>
                     Legende : &quot;{caption.text}&quot;
                   </div>
                 )}
@@ -703,7 +703,7 @@ export default function CreerReelPage() {
                   onClick={addHashtag}
                   style={{
                     padding: "8px 14px", borderRadius: 8, fontSize: 13,
-                    background: "#1e9df1", color: "#fff", border: "none",
+                    background: "var(--primary)", color: "#fff", border: "none",
                     cursor: "pointer", fontWeight: 600,
                   }}
                 >
@@ -718,8 +718,8 @@ export default function CreerReelPage() {
                       style={{
                         display: "flex", alignItems: "center", gap: 4,
                         padding: "4px 10px", borderRadius: 20, fontSize: 12,
-                        background: "rgba(30, 157, 242,0.15)", color: "#1e9df1",
-                        border: "1px solid rgba(30, 157, 242,0.3)",
+                        background: "rgba(245, 113, 50,0.15)", color: "var(--primary)",
+                        border: "1px solid rgba(245, 113, 50,0.3)",
                       }}
                     >
                       #{tag}
@@ -740,7 +740,7 @@ export default function CreerReelPage() {
               {/* Visibility */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Eye size={16} color="#1e9df1" />
+                  <Eye size={16} color="var(--primary)" />
                   <span style={{ fontSize: 13 }}>Visibilite</span>
                 </div>
                 <div style={{ display: "flex", gap: 4 }}>
@@ -751,7 +751,7 @@ export default function CreerReelPage() {
                       style={{
                         padding: "5px 12px", borderRadius: 8, fontSize: 12,
                         cursor: "pointer", fontWeight: 500,
-                        background: visibility === v ? "#1e9df1" : "var(--hover-bg)",
+                        background: visibility === v ? "var(--primary)" : "var(--hover-bg)",
                         color: visibility === v ? "#fff" : "var(--text-muted, #aaa)",
                         border: "none", transition: "all 0.2s",
                       }}
@@ -765,7 +765,7 @@ export default function CreerReelPage() {
               {/* Comments */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <MessageCircle size={16} color="#1e9df1" />
+                  <MessageCircle size={16} color="var(--primary)" />
                   <span style={{ fontSize: 13 }}>Commentaires</span>
                 </div>
                 <div style={{ display: "flex", gap: 4 }}>
@@ -776,7 +776,7 @@ export default function CreerReelPage() {
                       style={{
                         padding: "5px 12px", borderRadius: 8, fontSize: 12,
                         cursor: "pointer", fontWeight: 500,
-                        background: comments === c ? "#1e9df1" : "var(--hover-bg)",
+                        background: comments === c ? "var(--primary)" : "var(--hover-bg)",
                         color: comments === c ? "#fff" : "var(--text-muted, #aaa)",
                         border: "none", transition: "all 0.2s",
                       }}
@@ -790,7 +790,7 @@ export default function CreerReelPage() {
               {/* Lien apporteur */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Link2 size={16} color="#1e9df1" />
+                  <Link2 size={16} color="var(--primary)" />
                   <span style={{ fontSize: 13 }}>Lien apporteur</span>
                 </div>
                 <button
@@ -798,7 +798,7 @@ export default function CreerReelPage() {
                   style={{
                     width: 44, height: 24, borderRadius: 12, border: "none",
                     cursor: "pointer", position: "relative",
-                    background: lienApporteur ? "#1e9df1" : "var(--card-border)",
+                    background: lienApporteur ? "var(--primary)" : "var(--card-border)",
                     transition: "background 0.3s",
                   }}
                 >
@@ -824,8 +824,8 @@ export default function CreerReelPage() {
               <button
                 onClick={handlePublish}
                 style={{ ...goldBtnStyle, flex: 1, justifyContent: "center" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#1583c9")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "#1e9df1")}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "var(--primary)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "var(--primary)")}
               >
                 <Check size={16} /> Publier le Reel
               </button>

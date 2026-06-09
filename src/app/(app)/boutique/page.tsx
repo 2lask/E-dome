@@ -317,7 +317,7 @@ export default function BoutiquePage() {
                         style={{
                           color: active ? "var(--primary)" : "var(--foreground)",
                           fontWeight: active ? 600 : 500,
-                          background: active ? "rgba(30,157,241,0.08)" : "transparent",
+                          background: active ? "rgba(245, 113, 50,0.08)" : "transparent",
                         }}
                         onMouseEnter={(e) => {
                           if (!active) e.currentTarget.style.background = "var(--hover-bg)";
@@ -390,7 +390,7 @@ export default function BoutiquePage() {
                           type="checkbox"
                           checked={conditions.has(c)}
                           onChange={() => toggleCondition(c)}
-                          className="accent-[#1e9df1]"
+                          className="accent-[var(--primary)]"
                         />
                         {c}
                       </label>
@@ -406,7 +406,7 @@ export default function BoutiquePage() {
                     type="checkbox"
                     checked={freeShippingOnly}
                     onChange={(e) => setFreeShippingOnly(e.target.checked)}
-                    className="accent-[#1e9df1]"
+                    className="accent-[var(--primary)]"
                   />
                   <Truck size={13} style={{ color: "var(--text-muted)" }} />
                   Livraison gratuite
@@ -416,7 +416,7 @@ export default function BoutiquePage() {
                     type="checkbox"
                     checked={topRatedOnly}
                     onChange={(e) => setTopRatedOnly(e.target.checked)}
-                    className="accent-[#1e9df1]"
+                    className="accent-[var(--primary)]"
                   />
                   <Sparkles size={13} style={{ color: "var(--text-muted)" }} />
                   Top vendeur

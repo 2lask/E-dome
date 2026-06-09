@@ -653,7 +653,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                       disabled={product.stock === 0}
                       className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       style={{ border: "1px solid var(--primary)", color: "var(--primary)", background: "var(--card)" }}
-                      onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "rgba(30,157,241,0.06)"; }}
+                      onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "rgba(245, 113, 50,0.06)"; }}
                       onMouseLeave={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "var(--card)"; }}
                     >
                       <ShoppingBag size={16} />

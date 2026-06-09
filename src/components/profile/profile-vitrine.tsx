@@ -199,7 +199,7 @@ export function ProfileVitrine({
         className="relative h-32 md:h-40 rounded-b-2xl overflow-hidden"
         style={{
           background:
-            "linear-gradient(135deg, rgba(30,157,241,0.16), rgba(30,157,241,0.04) 60%, var(--background))",
+            "linear-gradient(135deg, rgba(245, 113, 50,0.16), rgba(245, 113, 50,0.04) 60%, var(--background))",
         }}
       />
 
@@ -641,7 +641,7 @@ export function ProfileVitrine({
                       <span
                         className="absolute top-2 left-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-semibold"
                         style={{
-                          background: l.status === "scheduled" ? "rgba(30,157,241,0.92)" : "rgba(15,15,15,0.85)",
+                          background: l.status === "scheduled" ? "rgba(245, 113, 50,0.92)" : "rgba(15,15,15,0.85)",
                           color: "#fff",
                         }}
                       >

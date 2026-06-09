@@ -31,7 +31,7 @@ interface AttachedProperty {
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-const GOLD = "#1e9df1";
+const GOLD = "var(--primary)";
 
 // Fond du post hardcodé en noir basique. Le sélecteur de fond (11
 // gradients + upload image custom) a été retiré pour rester sobre :
@@ -49,7 +49,7 @@ const FONTS = [
 const FONT_SIZES: Record<string, string> = { S: "14px", M: "16px", L: "20px", XL: "26px" };
 
 const TEXT_COLORS = [
-  "#000000", "#ffffff", "#1e9df1", "#ef4444", "#f59e0b", "#22c55e",
+  "#000000", "#ffffff", "var(--primary)", "#ef4444", "#f59e0b", "#22c55e",
   "#3b82f6", "#8b5cf6", "#ec4899", "#6b7280", "#0f172a", "#78350f",
 ];
 
