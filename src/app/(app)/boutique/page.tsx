@@ -549,8 +549,9 @@ export default function BoutiquePage() {
                           <span style={{ color: "var(--text-muted)" }}>· {p.shippingDays}</span>
                         </div>
 
-                        {/* Vendeur */}
-                        <Link href="#" className="flex items-center gap-1 text-[11px] truncate hover:underline" style={{ color: "var(--text-secondary)" }}>
+                        {/* Vendeur — pas de fiche vendeur dédiée, on route
+                            vers /recherche pour afficher tous ses listings. */}
+                        <Link href={`/recherche?q=${encodeURIComponent(p.vendor)}`} className="flex items-center gap-1 text-[11px] truncate hover:underline" style={{ color: "var(--text-secondary)" }}>
                           <span className="truncate">{p.vendor}</span>
                           <span style={{ color: "var(--text-muted)" }}>·</span>
                           <Star size={10} style={{ color: "var(--rating)", fill: "var(--rating)" }} />

@@ -257,7 +257,7 @@ function SearchResults() {
           <div className="grid sm:grid-cols-2 gap-3">
             {results!.formations.map((f) => (
               <div key={f.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition cursor-pointer"
-                onClick={() => router.push("/formations")}>
+                onClick={() => router.push(`/formations/${f.id}`)}>
                 <h3 className="font-medium text-[var(--foreground)]">{f.titre}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">{f.instructeur} — {f.niveau}</p>
                 <p className="text-sm font-bold text-[#1e9df1] mt-1">{formatPrice(f.prix)}</p>
@@ -286,7 +286,13 @@ function SearchResults() {
                     <p className="text-xs text-[var(--text-muted)]">{u.role} — {u.ville}</p>
                   </div>
                 </div>
-                <button className="px-3 py-1.5 rounded-lg border border-[var(--card-border)] text-[var(--foreground)] text-sm hover:bg-[var(--hover-bg)] transition">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/profil/${u.id}`);
+                  }}
+                  className="px-3 py-1.5 rounded-lg border border-[var(--card-border)] text-[var(--foreground)] text-sm hover:bg-[var(--hover-bg)] transition"
+                >
                   Voir le profil
                 </button>
               </div>
@@ -324,10 +330,14 @@ function SearchResults() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {results!.services.map((s) => (
-              <div key={s.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition">
+              <div
+                key={s.id}
+                onClick={() => router.push("/services")}
+                className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[#1e9df1]/40 transition cursor-pointer"
+              >
                 <h3 className="font-medium text-[var(--foreground)]">{s.titre}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">{s.description}</p>
-                <p className="text-sm font-bold text-[#1e9df1] mt-2">Des {formatPrice(s.prix)}</p>
+                <p className="text-sm font-bold text-[#1e9df1] mt-2">Dès {formatPrice(s.prix)}</p>
               </div>
             ))}
           </div>

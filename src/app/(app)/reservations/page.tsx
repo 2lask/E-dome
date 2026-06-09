@@ -372,7 +372,7 @@ export default function ReservationsPage() {
                           </>
                         )}
                         <Link
-                          href="/messages"
+                          href={`/messages?to=${res.guest.id}`}
                           className="px-3 py-1.5 text-xs rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
                         >
                           Contacter

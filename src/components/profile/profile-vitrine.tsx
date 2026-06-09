@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { formatCount } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast";
 
 /* ─────────────────────────────────────────────────────────────
    ProfileVitrine — composant partagé entre /profil (mon profil)
@@ -130,9 +131,32 @@ export function ProfileVitrine({
   onMessage,
 }: ProfileVitrineProps) {
   const { formatPrice } = useApp();
+  const { addToast } = useToast();
   const [tab, setTab] = useState<TabKey>("publications");
 
   const totalAvis = data.ratingBreakdown.reduce((s, r) => s + r.count, 0);
+
+  /* Partage profil : tente l'API Web Share native (mobile, OS share sheet),
+     sinon fallback copie de l'URL au presse-papier + toast info. */
+  const handleShare = React.useCallback(async () => {
+    if (typeof window === "undefined") return;
+    const url = window.location.href;
+    const title = `${user.firstName} ${user.lastName} — E-Dome`;
+    try {
+      if (typeof navigator !== "undefined" && "share" in navigator) {
+        await navigator.share({ title, url });
+        return;
+      }
+    } catch {
+      // user cancelled — silencieux
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      addToast("Lien du profil copié", "success");
+    } catch {
+      addToast("Impossible de copier le lien", "error");
+    }
+  }, [user.firstName, user.lastName, addToast]);
 
   return (
     <div className="max-w-4xl mx-auto pb-12 animate-fade-in">
@@ -236,8 +260,9 @@ export function ProfileVitrine({
                   Message
                 </button>
                 <button
-                  aria-label="Partager"
-                  className="p-2 text-sm rounded-xl transition-colors"
+                  onClick={handleShare}
+                  aria-label="Partager le profil"
+                  className="flex items-center justify-center min-w-[44px] min-h-[44px] p-2 text-sm rounded-xl transition-colors"
                   style={{
                     border: "1px solid var(--card-border)",
                     color: "var(--foreground)",

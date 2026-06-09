@@ -736,7 +736,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <img src={product.vendorAvatar} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <Link href="#" className="text-sm font-semibold hover:underline truncate" style={{ color: "var(--foreground)" }}>
+                    <Link href={`/recherche?q=${encodeURIComponent(product.vendor)}`} className="text-sm font-semibold hover:underline truncate" style={{ color: "var(--foreground)" }}>
                       {product.vendor}
                     </Link>
                     {product.topRated && (
@@ -756,7 +756,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   </div>
                 </div>
                 <Link
-                  href="/messages"
+                  href={`/messages?product=${encodeURIComponent(product.id)}&vendor=${encodeURIComponent(product.vendor)}`}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0"
                   style={{ border: "1px solid var(--card-border)", color: "var(--foreground)", background: "var(--card)" }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
@@ -953,7 +953,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <HelpCircle size={18} style={{ color: "var(--primary)" }} />
               Questions et réponses
             </h2>
-            <Link href="/messages"
+            <Link href={`/messages?product=${encodeURIComponent(product.id)}&vendor=${encodeURIComponent(product.vendor)}`}
               className="text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
               style={{ border: "1px solid var(--card-border)", color: "var(--foreground)" }}
             >

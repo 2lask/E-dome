@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Check, CheckCheck,
   Mic, MicOff, Video, VideoOff, MonitorUp, Hand,
@@ -156,6 +157,17 @@ const mockConversations: Conversation[] = [
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function MessagesPage() {
+  /* Wrappe le contenu réel dans <Suspense> car useSearchParams() requiert
+     une boundary en App Router (Next 16). Sans ça : warning prerender. */
+  return (
+    <Suspense fallback={null}>
+      <MessagesPageInner />
+    </Suspense>
+  );
+}
+
+function MessagesPageInner() {
+  const searchParams = useSearchParams();
   const [conversations, setConversations] = useState(mockConversations);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -191,6 +203,36 @@ export default function MessagesPage() {
     const name = `${c.participant.firstName} ${c.participant.lastName}`.toLowerCase();
     return name.includes(search.toLowerCase());
   });
+
+  /* Auto-sélection de conversation depuis une query string :
+     - /messages?to=u1            → ouvre la conv avec u1
+     - /messages?product=b3&...   → ouvre la 1ère conv et pré-remplit
+       le message avec une référence au produit (UX deeplink depuis
+       boutique/[id] "Contacter" / "Poser une question").
+     Ne tente qu'une seule fois (refs) pour ne pas écraser l'état. */
+  const autoSelectAppliedRef = useRef(false);
+  useEffect(() => {
+    if (autoSelectAppliedRef.current) return;
+    const to = searchParams.get("to");
+    const productId = searchParams.get("product");
+    const vendor = searchParams.get("vendor");
+    if (to) {
+      const conv = conversations.find((c) => c.participant.id === to);
+      if (conv) {
+        setActiveConvId(conv.id);
+        autoSelectAppliedRef.current = true;
+      }
+    } else if (productId) {
+      const conv = conversations[0];
+      if (conv) {
+        setActiveConvId(conv.id);
+        setMessage(
+          `Bonjour${vendor ? " " + vendor : ""}, je vous contacte au sujet de l'annonce ${productId}.`
+        );
+        autoSelectAppliedRef.current = true;
+      }
+    }
+  }, [searchParams, conversations]);
 
   // Scroll to bottom on new message
   useEffect(() => {
