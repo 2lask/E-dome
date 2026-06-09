@@ -14,16 +14,37 @@ import {
   MoreHorizontal,
   Plus,
   Search,
+  Megaphone,
+  FileText,
+  CalendarCheck,
 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { KpiCardIcon } from "@/components/dashboard/kpi-card-icon";
+import { StatusBadge } from "@/components/dashboard/status-badge";
+import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/format";
 
-/* ─────────────────────────────────────────────────────────────
-   Mes annonces & produits — vue agrégée du compte.
-   Réunit dans une seule grille tout ce que l'utilisateur publie :
-   biens, produits boutique, formations, lives, événements, services.
-   Données fictives. Filtres simples par type + recherche.
-   ───────────────────────────────────────────────────────────── */
+/* Refonte Annonces : aligne sur le pattern shadcn-admin + brutaliste.
+   Vue agregee de tout ce que l'utilisateur publie : biens, produits
+   boutique, formations, lives, evenements, services.
+   - 4 KPI cards en haut
+   - Recherche + filtres pills
+   - Grille de cards mono-style (cover + meta + actions discrete) */
 
-type ListingType = "bien" | "produit" | "formation" | "live" | "evenement" | "service";
+type ListingType =
+  | "bien"
+  | "produit"
+  | "formation"
+  | "live"
+  | "evenement"
+  | "service";
 
 interface Listing {
   id: string;
@@ -37,21 +58,30 @@ interface Listing {
 }
 
 const TYPE_LABEL: Record<ListingType, string> = {
-  bien: "Bien immobilier",
-  produit: "Produit boutique",
+  bien: "Bien",
+  produit: "Produit",
   formation: "Formation",
   live: "Live",
   evenement: "Événement",
   service: "Service",
 };
 
-const TYPE_ICON: Record<ListingType, React.ComponentType<{ size?: number }>> = {
+const TYPE_ICON: Record<
+  ListingType,
+  React.ComponentType<{ className?: string; size?: number }>
+> = {
   bien: Building2,
   produit: ShoppingBag,
   formation: GraduationCap,
   live: Video,
   evenement: CalendarDays,
   service: Briefcase,
+};
+
+const STATUS_MAP: Record<Listing["status"], string> = {
+  publie: "published",
+  brouillon: "draft",
+  expire: "cancelled",
 };
 
 const MOCK_LISTINGS: Listing[] = [
@@ -75,12 +105,6 @@ const FILTERS: { value: ListingType | "all"; label: string }[] = [
   { value: "service", label: "Services" },
 ];
 
-const STATUS_STYLE: Record<Listing["status"], { label: string; bg: string; color: string }> = {
-  publie: { label: "Publiée", bg: "color-mix(in srgb, var(--success) 10%, transparent)", color: "var(--success)" },
-  brouillon: { label: "Brouillon", bg: "rgba(115,115,115,0.10)", color: "#525252" },
-  expire: { label: "Expirée", bg: "rgba(244,63,94,0.10)", color: "#e11d48" },
-};
-
 export default function MesAnnoncesPage() {
   const [filter, setFilter] = useState<ListingType | "all">("all");
   const [search, setSearch] = useState("");
@@ -88,144 +112,202 @@ export default function MesAnnoncesPage() {
   const filtered = useMemo(() => {
     return MOCK_LISTINGS.filter((l) => {
       if (filter !== "all" && l.type !== filter) return false;
-      if (search && !l.title.toLowerCase().includes(search.toLowerCase())) return false;
+      if (search && !l.title.toLowerCase().includes(search.toLowerCase()))
+        return false;
       return true;
     });
   }, [filter, search]);
 
   const counts = useMemo(() => {
-    const c: Record<ListingType | "all", number> = { all: MOCK_LISTINGS.length, bien: 0, produit: 0, formation: 0, live: 0, evenement: 0, service: 0 };
-    MOCK_LISTINGS.forEach((l) => { c[l.type] += 1; });
+    const c: Record<ListingType | "all", number> = {
+      all: MOCK_LISTINGS.length,
+      bien: 0,
+      produit: 0,
+      formation: 0,
+      live: 0,
+      evenement: 0,
+      service: 0,
+    };
+    MOCK_LISTINGS.forEach((l) => {
+      c[l.type] += 1;
+    });
     return c;
   }, []);
 
+  const totalViews = MOCK_LISTINGS.reduce((s, l) => s + l.views, 0);
+  const publishedCount = MOCK_LISTINGS.filter((l) => l.status === "publie")
+    .length;
+  const draftCount = MOCK_LISTINGS.filter((l) => l.status === "brouillon")
+    .length;
+
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
-      <header className="flex items-end justify-between gap-4 flex-wrap">
+    <div className="space-y-4">
+      <div className="mb-2 flex items-center justify-between space-y-2">
         <div>
-          <h1 className="text-2xl page-heading text-[var(--foreground)]">Mes annonces &amp; produits</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Toutes vos publications, tous pôles confondus.
+          <h1 className="text-2xl font-bold tracking-tight">Mes annonces</h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            Tout ce que vous publiez : biens, produits, formations, lives, événements, services
           </p>
         </div>
-        <Link
-          href="/publier"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-        >
-          <Plus size={16} />
-          Nouvelle annonce
-        </Link>
-      </header>
-
-      {/* Search + filtres */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1 max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher dans mes annonces…"
-            className="w-full pl-9 pr-4 py-2 rounded-xl text-sm outline-none transition-colors"
-            style={{ background: "var(--card)", border: "1px solid var(--card-border)", color: "var(--foreground)" }}
-          />
-        </div>
+        <Button variant="default" size="sm" asChild>
+          <Link href="/publier">
+            <Plus className="mr-2 h-4 w-4" />
+            Nouvelle annonce
+          </Link>
+        </Button>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
-        {FILTERS.map((f) => {
-          const active = filter === f.value;
-          return (
-            <button
-              key={f.value}
-              onClick={() => setFilter(f.value)}
-              className="shrink-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
-              style={{
-                background: active ? "var(--primary)" : "var(--card)",
-                color: active ? "var(--primary-foreground)" : "var(--text-secondary)",
-                border: "1px solid " + (active ? "var(--primary)" : "var(--card-border)"),
-              }}
-            >
-              <span>{f.label}</span>
-              <span
-                className="tabular-nums text-[10px] px-1.5 py-0.5 rounded-full"
-                style={{
-                  background: active ? "rgba(255,255,255,0.18)" : "var(--hover-bg)",
-                  color: active ? "var(--primary-foreground)" : "var(--text-muted)",
-                }}
-              >
-                {counts[f.value]}
-              </span>
-            </button>
-          );
-        })}
+      {/* 4 KPI cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiCardIcon
+          title="Total annonces"
+          value={String(MOCK_LISTINGS.length)}
+          delta={`${publishedCount} publiées, ${draftCount} brouillons`}
+          icon={Megaphone}
+          deltaTone="neutral"
+        />
+        <KpiCardIcon
+          title="Vues totales"
+          value={formatNumber(totalViews)}
+          delta="Cumul depuis la publication"
+          icon={Eye}
+          deltaTone="up"
+        />
+        <KpiCardIcon
+          title="Brouillons"
+          value={String(draftCount)}
+          delta={draftCount > 0 ? "À finaliser" : "Aucun"}
+          icon={FileText}
+          deltaTone={draftCount > 0 ? "neutral" : "up"}
+        />
+        <KpiCardIcon
+          title="Programmées"
+          value={String(MOCK_LISTINGS.filter((l) => l.status === "brouillon").length)}
+          delta="Lives & événements à venir"
+          icon={CalendarCheck}
+          deltaTone="neutral"
+        />
       </div>
 
-      {/* Grille des annonces */}
-      {filtered.length === 0 ? (
-        <div className="py-20 text-center text-sm" style={{ color: "var(--text-muted)" }}>
-          Aucune annonce ne correspond à votre recherche.
-        </div>
-      ) : (
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((l) => {
-            const Icon = TYPE_ICON[l.type];
-            const statusStyle = STATUS_STYLE[l.status];
-            return (
-              <li
-                key={l.id}
-                className="rounded-2xl overflow-hidden transition-colors"
-                style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
+      <Card>
+        <CardHeader className="gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <CardTitle className="text-sm font-medium">
+                Catalogue ({filtered.length})
+              </CardTitle>
+              <CardDescription>Filtrer par type ou rechercher</CardDescription>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher un titre..."
+                className="h-9 w-64 rounded-md border bg-background pl-8 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {FILTERS.map((f) => (
+              <button
+                key={f.value}
+                type="button"
+                onClick={() => setFilter(f.value)}
+                aria-pressed={filter === f.value}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-xs transition-colors",
+                  filter === f.value
+                    ? "bg-foreground text-background"
+                    : "bg-muted text-muted-foreground hover:text-foreground",
+                )}
               >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <img src={l.cover} alt="" className="w-full h-full object-cover" />
-                  <span
-                    className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium"
-                    style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}
+                {f.label}
+                <span className="ml-1.5 tabular-nums opacity-70">
+                  {counts[f.value]}
+                </span>
+              </button>
+            ))}
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          {filtered.length === 0 ? (
+            <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+              {search
+                ? `Aucune annonce pour "${search}".`
+                : "Aucune annonce dans cette catégorie."}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((l) => {
+                const Icon = TYPE_ICON[l.type];
+                return (
+                  <article
+                    key={l.id}
+                    className="group flex flex-col overflow-hidden rounded-lg border bg-card transition-colors hover:border-foreground"
                   >
-                    <Icon size={12} />
-                    {TYPE_LABEL[l.type]}
-                  </span>
-                  <span
-                    className="absolute top-2 right-2 inline-flex items-center px-2 py-1 rounded-full text-[10px] font-medium"
-                    style={{ background: statusStyle.bg, color: statusStyle.color }}
-                  >
-                    {statusStyle.label}
-                  </span>
-                </div>
-                <div className="p-4 space-y-2">
-                  <h3 className="text-sm font-semibold text-[var(--foreground)] leading-tight line-clamp-1">{l.title}</h3>
-                  <p className="text-xs text-[var(--text-secondary)] tabular-nums">{l.metric}</p>
-                  <div className="flex items-center justify-between text-[11px] mt-2" style={{ color: "var(--text-muted)" }}>
-                    <span className="inline-flex items-center gap-1">
-                      <Eye size={12} />
-                      <span className="tabular-nums">{l.views.toLocaleString("fr-CH")} vues</span>
-                    </span>
-                    <span className="tabular-nums">Publiée le {l.publishedAt}</span>
-                  </div>
-                  <div className="flex items-center gap-2 pt-2">
-                    <button
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                      style={{ background: "var(--hover-bg)", color: "var(--foreground)" }}
-                    >
-                      <Edit3 size={12} />
-                      Modifier
-                    </button>
-                    <button
-                      className="px-2 py-1.5 rounded-lg transition-colors"
-                      style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}
-                      aria-label="Plus d'actions"
-                    >
-                      <MoreHorizontal size={14} />
-                    </button>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                    {/* Cover image */}
+                    <div className="relative aspect-[16/9] bg-muted">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={l.cover}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                      <div className="absolute top-2 left-2">
+                        <span className="inline-flex items-center gap-1 rounded-md bg-background/90 px-2 py-0.5 text-[11px] font-medium backdrop-blur">
+                          <Icon className="h-3 w-3" />
+                          {TYPE_LABEL[l.type]}
+                        </span>
+                      </div>
+                      <div className="absolute top-2 right-2">
+                        <StatusBadge status={STATUS_MAP[l.status]} />
+                      </div>
+                    </div>
+
+                    {/* Body */}
+                    <div className="flex flex-1 flex-col gap-2 p-3">
+                      <h3 className="line-clamp-1 text-sm font-medium">
+                        {l.title}
+                      </h3>
+                      {l.metric && (
+                        <p className="text-xs text-muted-foreground">
+                          {l.metric}
+                        </p>
+                      )}
+                      <div className="mt-auto flex items-center justify-between pt-2 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1 tabular-nums">
+                          <Eye className="h-3 w-3" />
+                          {formatNumber(l.views)}
+                        </span>
+                        <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                          <button
+                            className="rounded p-1 hover:bg-muted"
+                            aria-label="Modifier"
+                            title="Modifier"
+                          >
+                            <Edit3 className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            className="rounded p-1 hover:bg-muted"
+                            aria-label="Plus d'options"
+                            title="Plus d'options"
+                          >
+                            <MoreHorizontal className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
