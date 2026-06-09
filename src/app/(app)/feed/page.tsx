@@ -108,22 +108,22 @@ const clip = (n: number) => `/videos/feed/clip-${String(n).padStart(2, "0")}.mp4
 const VIDEO_POSTS: SocialPost[] = [
   {
     id: "p1", author: U_LEO,
-    content: "Bienvenue sur E-Dome 🌍\n\nLa plateforme qui réunit hôtes, investisseurs, apporteurs et formateurs autour de l'immobilier — sans intermédiaire. Trois mois de bêta, +4 500 inscrits, on accélère.\n\nMerci à toute la communauté qui construit ça avec nous. #immobilier #suisse #startup",
+    content: "Bienvenue sur E-Dome\n\nLa plateforme qui réunit hôtes, investisseurs, apporteurs et formateurs autour de l'immobilier — sans intermédiaire. Trois mois de bêta, +4 500 inscrits, on accélère.\n\nMerci à toute la communauté qui construit ça avec nous. #immobilier #suisse #startup",
     media: [clip(1)], type: "post", likes: 4521, location: "Genève, Suisse",
     createdAt: hAgo(2),
     comments: mkComments("p1", [
-      { author: U_SOPHIE, content: "Tellement fier de faire partie de l'aventure depuis le jour 1 🚀", h: 1.5, likes: 84 },
+      { author: U_SOPHIE, content: "Tellement fier de faire partie de l'aventure depuis le jour 1", h: 1.5, likes: 84 },
       { author: U_MARC, content: "La meilleure plateforme pour les investisseurs sérieux. On continue.", h: 1, likes: 56 },
-      { author: U_AMIRA, content: "Bravo @léo, le Maroc te remercie 🌅", h: 0.5, likes: 42 },
+      { author: U_AMIRA, content: "Bravo @léo, le Maroc te remercie", h: 0.5, likes: 42 },
     ]),
   },
   {
     id: "p2", author: U_SOPHIE,
-    content: "Visite express de mon appart 135 m² avec vue sur le Léman 🌊\n\nBelle luminosité, parquet d'origine, cuisine refaite l'an dernier. Disponible à la vente — DM si intéressé. #lausanne #appartement #vente",
+    content: "Visite express de mon appart 135 m² avec vue sur le Léman\n\nBelle luminosité, parquet d'origine, cuisine refaite l'an dernier. Disponible à la vente — DM si intéressé. #lausanne #appartement #vente",
     media: [clip(2)], type: "post", likes: 312, location: "Lausanne, Suisse",
     createdAt: hAgo(5),
     comments: mkComments("p2", [
-      { author: U_MARC, content: "La vue lac est un argument de vente redoutable 🎯", h: 4, likes: 18 },
+      { author: U_MARC, content: "La vue lac est un argument de vente redoutable", h: 4, likes: 18 },
       { author: U_THOMAS, content: "Le standing est superbe. Tu acceptes les visites week-end ?", h: 2, likes: 6 },
     ]),
     property: mkProp({
@@ -137,11 +137,11 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p3", author: U_AMIRA,
-    content: "Riad d'exception au cœur de la médina ✨\n\n200 m², patio central, hammam privé, 4 suites. Rendement locatif courte durée : 9.5 % brut. Une perle rare — déjà 12 demandes de visite. #marrakech #riad #investissement",
+    content: "Riad d'exception au cœur de la médina\n\n200 m², patio central, hammam privé, 4 suites. Rendement locatif courte durée : 9.5 % brut. Une perle rare — déjà 12 demandes de visite. #marrakech #riad #investissement",
     media: [clip(3)], type: "post", likes: 845, location: "Marrakech, Maroc",
     createdAt: hAgo(8),
     comments: mkComments("p3", [
-      { author: U_MARC, content: "Marrakech affiche des rendements imbattables en ce moment. À surveiller 🔥", h: 6, likes: 32 },
+      { author: U_MARC, content: "Marrakech affiche des rendements imbattables en ce moment. À surveiller", h: 6, likes: 32 },
       { author: U_YASMIN, content: "Magnifique. Tu as la fiscalité sur la table ?", h: 4, likes: 14 },
       { author: U_LEO, content: "Le bois de cèdre original, c'est rare. Bravo Amira.", h: 2, likes: 21 },
     ]),
@@ -156,18 +156,18 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p4", author: U_MARC,
-    content: "Le marché suisse romand sur 5 ans : +37 % en moyenne sur les biens premium 📈\n\nMa formation \"Analyse financière pour investisseurs\" passe au crible chaque ratio : rendement brut/net, ROI, TIR, LTV. Inscriptions ouvertes — les places partent vite. #investissement #formation",
+    content: "Le marché suisse romand sur 5 ans : +37 % en moyenne sur les biens premium\n\nMa formation \"Analyse financière pour investisseurs\" passe au crible chaque ratio : rendement brut/net, ROI, TIR, LTV. Inscriptions ouvertes — les places partent vite. #investissement #formation",
     media: [clip(4)], type: "post", likes: 1240, location: "Genève, Suisse",
     createdAt: hAgo(12),
     comments: mkComments("p4", [
       { author: U_LEO, content: "La meilleure formation de la plateforme. Sérieux et rigoureux.", h: 10, likes: 67 },
-      { author: U_SOPHIE, content: "Inscrite à la prochaine session, hâte 🎯", h: 8, likes: 12 },
+      { author: U_SOPHIE, content: "Inscrite à la prochaine session, hâte", h: 8, likes: 12 },
     ]),
     formation: { id: "f5", title: "Analyse financière pour investisseurs", instructor: "Marc Dubois", price: 349, students: 420, thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop" },
   },
   {
     id: "p5", author: U_THOMAS,
-    content: "Premier coup d'œil sur notre nouveau projet — Zurich Nord 🏗️\n\n28 logements certifiés Minergie-P, livraison Q3 2026, vue dégagée sur le Limmat. Réservez votre visite privée avant l'ouverture officielle. #promotion #zurich #minergie",
+    content: "Premier coup d'œil sur notre nouveau projet — Zurich Nord\n\n28 logements certifiés Minergie-P, livraison Q3 2026, vue dégagée sur le Limmat. Réservez votre visite privée avant l'ouverture officielle. #promotion #zurich #minergie",
     media: [clip(5)], type: "post", likes: 578, location: "Zurich, Suisse",
     createdAt: hAgo(16),
     comments: mkComments("p5", [
@@ -184,7 +184,7 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p6", author: U_YASMIN,
-    content: "Off-market à Dubaï Marina 🏙️\n\nPenthouse 4 chambres, vue Burj Al Arab, livré meublé, vendu 12 % sous le prix du marché. Pas publié sur les portails — réservé à mon réseau d'apporteurs.\n\nDM avec votre budget. #dubai #offmarket #apporteur",
+    content: "Off-market à Dubaï Marina\n\nPenthouse 4 chambres, vue Burj Al Arab, livré meublé, vendu 12 % sous le prix du marché. Pas publié sur les portails — réservé à mon réseau d'apporteurs.\n\nDM avec votre budget. #dubai #offmarket #apporteur",
     media: [clip(6)], type: "post", likes: 2103, location: "Dubaï, Émirats arabes unis",
     createdAt: hAgo(20),
     comments: mkComments("p6", [
@@ -194,21 +194,21 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p7", author: U_SOPHIE,
-    content: "Mon astuce préférée pour booster mes revenus Airbnb 📸\n\nChanger les photos tous les 3 mois pour suivre la saisonnalité : +18 % de réservations en moyenne. La formation d'@amina détaille tout. #locationcourtedurée #airbnb #conseil",
+    content: "Mon astuce préférée pour booster mes revenus Airbnb\n\nChanger les photos tous les 3 mois pour suivre la saisonnalité : +18 % de réservations en moyenne. La formation d'@amina détaille tout. #locationcourtedurée #airbnb #conseil",
     media: [clip(7)], type: "post", likes: 421, location: "Lausanne, Suisse",
     createdAt: hAgo(26),
     comments: mkComments("p7", [
-      { author: U_AMINA, content: "Exact ! Le pricing dynamique fait le reste. Merci pour le shout-out 💙", h: 22, likes: 28 },
+      { author: U_AMINA, content: "Exact ! Le pricing dynamique fait le reste. Merci pour le shout-out", h: 22, likes: 28 },
     ]),
     formation: { id: "f2", title: "Gestion locative avancée", instructor: "Amina El Idrissi", price: 199, students: 890, thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop" },
   },
   {
     id: "p8", author: U_AMINA,
-    content: "Nouveau module dans \"Gestion locative avancée\" 🚀\n\nPricing dynamique avec automatisation Beyond Pricing + PriceLabs. Mes étudiants augmentent leurs revenus de 30 à 40 % en moyenne. Inscriptions sur le profil. #gestionlocative #formation #automatisation",
+    content: "Nouveau module dans \"Gestion locative avancée\"\n\nPricing dynamique avec automatisation Beyond Pricing + PriceLabs. Mes étudiants augmentent leurs revenus de 30 à 40 % en moyenne. Inscriptions sur le profil. #gestionlocative #formation #automatisation",
     media: [clip(8)], type: "post", likes: 1567, location: "Marrakech, Maroc",
     createdAt: hAgo(32),
     comments: mkComments("p8", [
-      { author: U_SOPHIE, content: "J'attendais ce module 🔥 module commandé.", h: 30, likes: 19 },
+      { author: U_SOPHIE, content: "J'attendais ce module module commandé.", h: 30, likes: 19 },
       { author: U_THOMAS, content: "Tu peux automatiser ça aussi sur les long-séjours ?", h: 28, likes: 8 },
       { author: U_AMIRA, content: "Référence dans le métier. Merci Amina.", h: 26, likes: 22 },
     ]),
@@ -216,21 +216,21 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p9", author: U_LEO,
-    content: "On y sera le 15 mai au Palexpo 🎯\n\nStand E-Dome — venez discuter de notre roadmap 2026 et tester les nouvelles fonctionnalités en avant-première. Places limitées, pensez à réserver. #salon #geneve #networking",
+    content: "On y sera le 15 mai au Palexpo\n\nStand E-Dome — venez discuter de notre roadmap 2026 et tester les nouvelles fonctionnalités en avant-première. Places limitées, pensez à réserver. #salon #geneve #networking",
     media: [clip(9)], type: "post", likes: 894, location: "Genève, Suisse",
     createdAt: hAgo(40),
     comments: mkComments("p9", [
       { author: U_MARC, content: "Je passe avec deux investisseurs. À très vite.", h: 38, likes: 15 },
-      { author: U_AMIRA, content: "Le Maroc sera représenté 💪", h: 36, likes: 11 },
+      { author: U_AMIRA, content: "Le Maroc sera représenté", h: 36, likes: 11 },
     ]),
   },
   {
     id: "p10", author: U_MARC,
-    content: "Visite privée hier soir d'un penthouse rive droite à Genève 🌆\n\n280 m², terrasse 60 m², vue Mont-Blanc 360°. Prix : 4.8 M CHF. Je négocie pour un client — disponible jusqu'à fin du mois si l'offre n'aboutit pas. #penthouse #geneve #luxe",
+    content: "Visite privée hier soir d'un penthouse rive droite à Genève\n\n280 m², terrasse 60 m², vue Mont-Blanc 360°. Prix : 4.8 M CHF. Je négocie pour un client — disponible jusqu'à fin du mois si l'offre n'aboutit pas. #penthouse #geneve #luxe",
     media: [clip(10)], type: "post", likes: 1052, location: "Genève, Suisse",
     createdAt: hAgo(48),
     comments: mkComments("p10", [
-      { author: U_YASMIN, content: "Niveau Dubaï 👌", h: 46, likes: 19 },
+      { author: U_YASMIN, content: "Niveau Dubaï", h: 46, likes: 19 },
       { author: U_LEO, content: "Un de mes clients pourrait être intéressé. Je t'écris.", h: 44, likes: 12 },
     ]),
     property: mkProp({
@@ -244,41 +244,41 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p11", author: U_AMIRA,
-    content: "La médina à l'aube — magie pure 🌅\n\nTrois biens en stock cette semaine pour investisseurs courageux. Rendement net 7-9 % sur le courte durée saisonnier. #marrakech #medina #investissement",
+    content: "La médina à l'aube — magie pure\n\nTrois biens en stock cette semaine pour investisseurs courageux. Rendement net 7-9 % sur le courte durée saisonnier. #marrakech #medina #investissement",
     media: [clip(11)], type: "post", likes: 612, location: "Marrakech, Maroc",
     createdAt: hAgo(56),
     comments: mkComments("p11", [
-      { author: U_SOPHIE, content: "Splendide 😍", h: 54, likes: 8 },
+      { author: U_SOPHIE, content: "Splendide", h: 54, likes: 8 },
     ]),
   },
   {
     id: "p12", author: U_THOMAS,
-    content: "Webinaire gratuit le 20 avril à 18h 🎥\n\nComment lire un dossier de rendement comme un promoteur — on déchire 3 cas réels en direct (Lausanne, Lugano, Zurich). Posez vos questions en live. #webinaire #rendement #formation",
+    content: "Webinaire gratuit le 20 avril à 18h\n\nComment lire un dossier de rendement comme un promoteur — on déchire 3 cas réels en direct (Lausanne, Lugano, Zurich). Posez vos questions en live. #webinaire #rendement #formation",
     media: [clip(12)], type: "post", likes: 387, location: "En ligne",
     createdAt: hAgo(64),
     comments: mkComments("p12", [
-      { author: U_MARC, content: "Inscrit ✅", h: 62, likes: 14 },
+      { author: U_MARC, content: "Inscrit", h: 62, likes: 14 },
       { author: U_LEO, content: "Format que je recommande à tous mes étudiants débutants.", h: 60, likes: 22 },
     ]),
   },
   {
     id: "p13", author: U_SOPHIE,
-    content: "Atelier home staging Lausanne — déjà inscrite 🎨\n\nClaire Bernard est une référence en Suisse romande. J'attendais ce cours depuis 6 mois. Encore 8 places dispo. #homestaging #atelier #lausanne",
+    content: "Atelier home staging Lausanne — déjà inscrite\n\nClaire Bernard est une référence en Suisse romande. J'attendais ce cours depuis 6 mois. Encore 8 places dispo. #homestaging #atelier #lausanne",
     media: [clip(13)], type: "post", likes: 234, location: "Lausanne, Suisse",
     createdAt: hAgo(72),
     comments: mkComments("p13", [
-      { author: U_AMINA, content: "Claire est incroyable, tu vas voir 👌", h: 70, likes: 9 },
+      { author: U_AMINA, content: "Claire est incroyable, tu vas voir", h: 70, likes: 9 },
     ]),
   },
   {
     id: "p14", author: U_YASMIN,
-    content: "Nouveau lancement Dubai Marina 🏝️\n\n1 chambre à partir de 480 000 AED, livraison 2027, plan de paiement 60/40. Mes clients européens prennent leur place avant l'official launch — les meilleures vues partent en 48h. #dubai #investissement #neuf",
+    content: "Nouveau lancement Dubai Marina\n\n1 chambre à partir de 480 000 AED, livraison 2027, plan de paiement 60/40. Mes clients européens prennent leur place avant l'official launch — les meilleures vues partent en 48h. #dubai #investissement #neuf",
     media: [clip(14)], type: "post", likes: 1789, location: "Dubaï, Émirats arabes unis",
     createdAt: hAgo(80),
     comments: mkComments("p14", [
       { author: U_MARC, content: "Le 60/40, c'est devenu standard ? Je vois ça partout.", h: 78, likes: 16 },
       { author: U_YASMIN, content: "@marc oui, c'est devenu le standard sur les off-plans depuis 2025.", h: 76, likes: 22 },
-      { author: U_LEO, content: "Yasmin, tu es ma référence Dubaï. Continue 🚀", h: 72, likes: 41 },
+      { author: U_LEO, content: "Yasmin, tu es ma référence Dubaï. Continue", h: 72, likes: 41 },
     ]),
     property: mkProp({
       id: "prop4", title: "Studio Dubai Marina · Off-plan 2027",
@@ -291,7 +291,7 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p15", author: U_MARC,
-    content: "Networking investisseurs romands — Montreux 🏔️\n\nLa dernière édition a généré 3 deals à 7 chiffres. Je serai sur place le 5 avril, venez checker. Format : drinks → pitch → matchmaking. #networking #investisseurs #montreux",
+    content: "Networking investisseurs romands — Montreux\n\nLa dernière édition a généré 3 deals à 7 chiffres. Je serai sur place le 5 avril, venez checker. Format : drinks → pitch → matchmaking. #networking #investisseurs #montreux",
     media: [clip(15)], type: "post", likes: 412, location: "Montreux, Suisse",
     createdAt: hAgo(88),
     comments: mkComments("p15", [
@@ -300,11 +300,11 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p16", author: U_AMIRA,
-    content: "Cinéma dans ce riad du XVIIIe siècle restauré 🎬\n\nMosaïques originales, plafonds de cèdre sculpté, source dans le patio. À vendre, hors marché. Investisseurs passion → DM. #riad #patrimoine #marrakech",
+    content: "Cinéma dans ce riad du XVIIIe siècle restauré\n\nMosaïques originales, plafonds de cèdre sculpté, source dans le patio. À vendre, hors marché. Investisseurs passion → DM. #riad #patrimoine #marrakech",
     media: [clip(16)], type: "post", likes: 1023, location: "Marrakech, Maroc",
     createdAt: hAgo(96),
     comments: mkComments("p16", [
-      { author: U_SOPHIE, content: "Le plus beau riad que j'ai vu cette année 😍", h: 94, likes: 24 },
+      { author: U_SOPHIE, content: "Le plus beau riad que j'ai vu cette année", h: 94, likes: 24 },
       { author: U_LEO, content: "Patrimoine pur. Bravo Amira.", h: 92, likes: 31 },
     ]),
     property: mkProp({
@@ -318,19 +318,19 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p17", author: U_LEO,
-    content: "Ma formation \"Investissement immobilier : de 0 à expert\" a déjà accompagné 342 personnes 🎓\n\nDe la première analyse au closing notarial, tout est cadré. Module 1 gratuit en commentaire si tu débutes. #formation #investissement #zeroaexpert",
+    content: "Ma formation \"Investissement immobilier : de 0 à expert\" a déjà accompagné 342 personnes\n\nDe la première analyse au closing notarial, tout est cadré. Module 1 gratuit en commentaire si tu débutes. #formation #investissement #zeroaexpert",
     media: [clip(17)], type: "post", likes: 1875, location: "Genève, Suisse",
     createdAt: hAgo(104),
     comments: mkComments("p17", [
       { author: U_SOPHIE, content: "C'est la formation qui m'a fait basculer dans le métier. Merci.", h: 102, likes: 56 },
       { author: U_MARC, content: "Référence absolue. Je l'envoie à tous mes débutants.", h: 100, likes: 38 },
-      { author: U_AMINA, content: "Module 1 svp ! 🙏", h: 98, likes: 14 },
+      { author: U_AMINA, content: "Module 1 svp !", h: 98, likes: 14 },
     ]),
     formation: { id: "f1", title: "Investissement immobilier : de 0 à expert", instructor: "Léo Martin", price: 497, students: 342, thumbnail: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop" },
   },
   {
     id: "p18", author: U_SOPHIE,
-    content: "Coup de cœur cette semaine — chalet à Verbier 🏔️\n\n5 chambres, jacuzzi sous étoiles, ski-in/ski-out. Mon client veut louer 6 mois/an et habiter le reste. On planifie sa stratégie hybride. #verbier #chalet #montagne",
+    content: "Coup de cœur cette semaine — chalet à Verbier\n\n5 chambres, jacuzzi sous étoiles, ski-in/ski-out. Mon client veut louer 6 mois/an et habiter le reste. On planifie sa stratégie hybride. #verbier #chalet #montagne",
     media: [clip(18)], type: "post", likes: 467, location: "Verbier, Suisse",
     createdAt: hAgo(112),
     comments: mkComments("p18", [
@@ -347,7 +347,7 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p19", author: U_THOMAS,
-    content: "Notre nouveau projet à Lugano repense l'éco-conception 🌱\n\nPanneaux solaires intégrés à la façade, géothermie, récupération d'eau de pluie. Performance énergétique A+. Bientôt en pré-vente, avant-premières privées en mai. #ecoresponsable #lugano #minergie",
+    content: "Notre nouveau projet à Lugano repense l'éco-conception\n\nPanneaux solaires intégrés à la façade, géothermie, récupération d'eau de pluie. Performance énergétique A+. Bientôt en pré-vente, avant-premières privées en mai. #ecoresponsable #lugano #minergie",
     media: [clip(19)], type: "post", likes: 821, location: "Lugano, Suisse",
     createdAt: hAgo(120),
     comments: mkComments("p19", [
@@ -365,17 +365,17 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p20", author: U_AMINA,
-    content: "30 secondes pour comprendre pourquoi tes annonces ne convertissent pas ⚡\n\nSpoiler : c'est la première photo. Toujours. Si elle est sombre ou floue, tu perds 60 % des regards. #astuce #marketing #airbnb",
+    content: "30 secondes pour comprendre pourquoi tes annonces ne convertissent pas\n\nSpoiler : c'est la première photo. Toujours. Si elle est sombre ou floue, tu perds 60 % des regards. #astuce #marketing #airbnb",
     media: [clip(20)], type: "post", likes: 1340, location: "Marrakech, Maroc",
     createdAt: hAgo(128),
     comments: mkComments("p20", [
       { author: U_SOPHIE, content: "Tellement vrai. J'ai refait mes 12 covers ce mois-ci, +24 % de bookings.", h: 126, likes: 41 },
-      { author: U_AMIRA, content: "Confirmation totale 👌", h: 124, likes: 15 },
+      { author: U_AMIRA, content: "Confirmation totale", h: 124, likes: 15 },
     ]),
   },
   {
     id: "p21", author: U_MARC,
-    content: "Formation live le 20 mars — fiscalité immobilière en Suisse 📚\n\nOptimisation légale, impôts sur la fortune, gain en capital, structures holding. Pour investisseurs sérieux uniquement. Tarif early bird jusqu'à dimanche. #fiscalite #formation #live",
+    content: "Formation live le 20 mars — fiscalité immobilière en Suisse\n\nOptimisation légale, impôts sur la fortune, gain en capital, structures holding. Pour investisseurs sérieux uniquement. Tarif early bird jusqu'à dimanche. #fiscalite #formation #live",
     media: [clip(21)], type: "post", likes: 532, location: "En ligne",
     createdAt: hAgo(136),
     comments: mkComments("p21", [
@@ -384,11 +384,11 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p22", author: U_YASMIN,
-    content: "Vue aérienne du quartier où je viens de boucler un deal 🛸\n\nDowntown Dubai, 200 m du Burj Khalifa. Vente sous 9 jours, +18 % au-dessus de la mise à prix. Quand le réseau parle, ça va vite. #dubai #downtown #deal",
+    content: "Vue aérienne du quartier où je viens de boucler un deal\n\nDowntown Dubai, 200 m du Burj Khalifa. Vente sous 9 jours, +18 % au-dessus de la mise à prix. Quand le réseau parle, ça va vite. #dubai #downtown #deal",
     media: [clip(22)], type: "post", likes: 2456, location: "Dubaï, Émirats arabes unis",
     createdAt: hAgo(144),
     comments: mkComments("p22", [
-      { author: U_LEO, content: "Performance hallucinante. La méthode Al Falasi 🔥", h: 142, likes: 87 },
+      { author: U_LEO, content: "Performance hallucinante. La méthode Al Falasi", h: 142, likes: 87 },
       { author: U_MARC, content: "+18 % en 9 jours, ça se challenge sérieusement. Bravo.", h: 140, likes: 42 },
       { author: U_AMIRA, content: "Yasmin, on parle Marrakech bientôt ?", h: 138, likes: 19 },
     ]),
@@ -403,7 +403,7 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p23", author: U_SOPHIE,
-    content: "Témoignage d'un de mes locataires longue durée 💬\n\nIl repart après 3 ans, hôte heureuse. Communication régulière + entretien sérieux = locataires qui restent. Mon meilleur ROI, c'est la confiance. #temoignage #locationlongue #relation",
+    content: "Témoignage d'un de mes locataires longue durée\n\nIl repart après 3 ans, hôte heureuse. Communication régulière + entretien sérieux = locataires qui restent. Mon meilleur ROI, c'est la confiance. #temoignage #locationlongue #relation",
     media: [clip(23)], type: "post", likes: 654, location: "Lausanne, Suisse",
     createdAt: hAgo(152),
     comments: mkComments("p23", [
@@ -412,7 +412,7 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p24", author: U_LEO,
-    content: "Conférence \"Marché immobilier 2026\" à l'EPFL le 10 mars 🎤\n\nGratuit, sur inscription. Je présente nos data internes E-Dome — les chiffres que personne d'autre n'a sur les volumes et la rotation du marché romand. #conference #epfl #marche",
+    content: "Conférence \"Marché immobilier 2026\" à l'EPFL le 10 mars\n\nGratuit, sur inscription. Je présente nos data internes E-Dome — les chiffres que personne d'autre n'a sur les volumes et la rotation du marché romand. #conference #epfl #marche",
     media: [clip(24)], type: "post", likes: 1102, location: "Lausanne, Suisse",
     createdAt: hAgo(160),
     comments: mkComments("p24", [
@@ -422,17 +422,17 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p25", author: U_AMIRA,
-    content: "Coucher de soleil sur les remparts 🌇\n\nMarrakech n'est pas seulement un investissement, c'est un mode de vie. Si tu n'as pas encore visité, c'est l'année. #marrakech #medina #coucherdesoleil",
+    content: "Coucher de soleil sur les remparts\n\nMarrakech n'est pas seulement un investissement, c'est un mode de vie. Si tu n'as pas encore visité, c'est l'année. #marrakech #medina #coucherdesoleil",
     media: [clip(25)], type: "post", likes: 1567, location: "Marrakech, Maroc",
     createdAt: hAgo(168),
     comments: mkComments("p25", [
-      { author: U_SOPHIE, content: "Je réserve mes billets dès demain 😍", h: 166, likes: 22 },
+      { author: U_SOPHIE, content: "Je réserve mes billets dès demain", h: 166, likes: 22 },
       { author: U_LEO, content: "Une des plus belles villes du monde. Confirmé.", h: 164, likes: 35 },
     ]),
   },
   {
     id: "p26", author: U_THOMAS,
-    content: "Survol drone d'un projet alpin en cours 🚁\n\n12 chalets en bois local, certifiés Minergie-P, prix de départ 1.2 M CHF. Pré-réservations ouvertes en mai. Vue plein sud, accès ski direct. #chalet #alpes #ecoresponsable",
+    content: "Survol drone d'un projet alpin en cours\n\n12 chalets en bois local, certifiés Minergie-P, prix de départ 1.2 M CHF. Pré-réservations ouvertes en mai. Vue plein sud, accès ski direct. #chalet #alpes #ecoresponsable",
     media: [clip(26)], type: "post", likes: 743, location: "Crans-Montana, Suisse",
     createdAt: hAgo(176),
     comments: mkComments("p26", [
@@ -449,7 +449,7 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p27", author: U_AMINA,
-    content: "Nouveau module dans \"Marketing digital immobilier\" 📲\n\nInstagram Reels qui convertissent — les leads ne viennent plus des portails, ils viennent du contenu. Inscriptions ouvertes jusqu'au 30 mai. #marketing #reels #formation",
+    content: "Nouveau module dans \"Marketing digital immobilier\"\n\nInstagram Reels qui convertissent — les leads ne viennent plus des portails, ils viennent du contenu. Inscriptions ouvertes jusqu'au 30 mai. #marketing #reels #formation",
     media: [clip(27)], type: "post", likes: 1289, location: "Marrakech, Maroc",
     createdAt: hAgo(184),
     comments: mkComments("p27", [

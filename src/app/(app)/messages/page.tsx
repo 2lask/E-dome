@@ -6,6 +6,7 @@ import {
   Mic, MicOff, Video, VideoOff, MonitorUp, Hand,
   Users as UsersIcon, MessageSquare, PhoneOff, ShieldCheck,
   LayoutGrid, Maximize2, X as XIcon, Send as SendIcon, Link as LinkIcon,
+  Paperclip,
 } from "lucide-react";
 import type { Conversation, Message } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
@@ -152,12 +153,6 @@ const mockConversations: Conversation[] = [
   },
 ];
 
-const EMOJIS = [
-  "😀","😂","🥰","😍","😎","🤩","😊","🙏","👍","👋",
-  "❤️","🔥","✨","🎉","💪","🏠","🏡","🌟","💰","📞",
-  "✅","🤝","💬","📋","🎯","🏆","💎","🌍","📍","🔑",
-];
-
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function MessagesPage() {
@@ -165,7 +160,6 @@ export default function MessagesPage() {
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [search, setSearch] = useState("");
-  const [showEmoji, setShowEmoji] = useState(false);
   const [showAttach, setShowAttach] = useState(false);
   /* ─── Conférence privée ───────────────────────────────────────────────
      Remplace l'ancien appel 1-1 par une visio multi-participants
@@ -329,7 +323,6 @@ export default function MessagesPage() {
       )
     );
     setMessage("");
-    setShowEmoji(false);
   }, [message, activeConvId]);
 
   const deleteMessage = useCallback(
@@ -583,23 +576,6 @@ export default function MessagesPage() {
 
             {/* Input */}
             <div className="p-4 border-t border-[var(--card-border)]">
-              {/* Emoji picker */}
-              {showEmoji && (
-                <div className="mb-2 p-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl">
-                  <div className="grid grid-cols-10 gap-1">
-                    {EMOJIS.map((e) => (
-                      <button
-                        key={e}
-                        onClick={() => setMessage((m) => m + e)}
-                        className="text-xl p-1 hover:bg-[var(--hover-bg)] rounded"
-                      >
-                        {e}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Attachment menu */}
               {showAttach && (
                 <div className="mb-2 flex gap-2">
@@ -617,23 +593,11 @@ export default function MessagesPage() {
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => { setShowAttach(!showAttach); setShowEmoji(false); }}
+                  onClick={() => setShowAttach(!showAttach)}
+                  aria-label="Joindre un fichier"
                   className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-secondary)]"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => { setShowEmoji(!showEmoji); setShowAttach(false); }}
-                  className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-secondary)]"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                    <line x1="9" y1="9" x2="9.01" y2="9" />
-                    <line x1="15" y1="9" x2="15.01" y2="9" />
-                  </svg>
+                  <Paperclip size={20} />
                 </button>
                 <input
                   type="text"
