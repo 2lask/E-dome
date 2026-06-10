@@ -133,10 +133,16 @@ export interface ServiceLead {
   status: ServiceLeadStatus;
 }
 
+/* Identite utilisateur unique pour TOUT l'espace dashboard ET le
+   profil. Avant : 2 jeux de roles divergents (3 vs 4) — desormais
+   aligne avec /profil. Investisseur retenu car credible vu son
+   activite/bio "passionne immobilier 15 ans". */
 export const dashboardUser = {
+  firstName: "Léo",
+  lastName: "Martin",
   name: "Léo Martin",
   initials: "LM",
-  roles: ["Hôte", "Formateur", "Apporteur"] as const,
+  roles: ["Hôte", "Formateur", "Apporteur", "Investisseur"] as const,
 };
 
 /* Les 3 memes biens partout. */

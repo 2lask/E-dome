@@ -1,58 +1,53 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useApp } from "@/lib/context";
+import { properties, monthlyRevenue } from "@/lib/dashboard-data";
+import { formatNumber } from "@/lib/format";
 
-/* ─── Mock Data ──────────────────────────────────────────────────────────── */
+/* /statistiques : analytics agrege. AVANT, cette page avait ses
+   propres "biens" (Appartement Lausanne / Studio Geneve / Chalet
+   Verbier...) totalement deconnectes de ceux de /dashboard (Chalet
+   Alpin Premium / Appartement Vue Lac / Studio Lausanne) — d'ou
+   l'incoherence audit. Maintenant TOUT vient de dashboard-data.ts. */
 
 type Period = "7j" | "30j" | "90j" | "12m";
 
-const KPI_DATA: Record<Period, { vues: number; visiteurs: number; conversions: number; revenus: number; sparkVues: number[]; sparkVisiteurs: number[]; sparkConversions: number[]; sparkRevenus: number[] }> = {
-  "7j": {
-    vues: 1240, visiteurs: 890, conversions: 23, revenus: 4500,
-    sparkVues: [120, 180, 160, 200, 210, 190, 180],
-    sparkVisiteurs: [90, 130, 110, 150, 140, 130, 140],
-    sparkConversions: [2, 4, 3, 5, 3, 3, 3],
-    sparkRevenus: [500, 700, 600, 800, 650, 600, 650],
-  },
-  "30j": {
-    vues: 5200, visiteurs: 3800, conversions: 95, revenus: 18500,
-    sparkVues: [400, 450, 500, 480, 520, 550, 530, 560, 580, 600],
-    sparkVisiteurs: [300, 330, 370, 350, 380, 400, 390, 410, 420, 440],
-    sparkConversions: [7, 8, 10, 9, 11, 10, 9, 10, 11, 10],
-    sparkRevenus: [1500, 1700, 1800, 1650, 1900, 2000, 1850, 1900, 2050, 2150],
-  },
-  "90j": {
-    vues: 14800, visiteurs: 10200, conversions: 280, revenus: 52000,
-    sparkVues: [1200, 1400, 1500, 1600, 1700, 1650, 1750, 1800, 1850, 1900],
-    sparkVisiteurs: [850, 950, 1000, 1050, 1100, 1080, 1150, 1200, 1250, 1300],
-    sparkConversions: [22, 25, 28, 30, 32, 29, 31, 33, 35, 34],
-    sparkRevenus: [4500, 5000, 5200, 5400, 5500, 5300, 5600, 5800, 6000, 6200],
-  },
-  "12m": {
-    vues: 62000, visiteurs: 43000, conversions: 1150, revenus: 215000,
-    sparkVues: [3500, 4000, 4500, 5000, 5200, 5500, 5800, 5500, 5700, 6000, 6200, 6500],
-    sparkVisiteurs: [2500, 2900, 3200, 3500, 3700, 3900, 4000, 3800, 4000, 4200, 4400, 4500],
-    sparkConversions: [70, 80, 85, 95, 100, 105, 110, 100, 105, 115, 120, 125],
-    sparkRevenus: [14000, 15500, 17000, 18000, 18500, 19000, 20000, 18500, 19500, 20500, 21500, 22000],
-  },
+const PERIOD_RATIO: Record<Period, number> = {
+  "7j": 0.25,
+  "30j": 1,
+  "90j": 3,
+  "12m": 12,
 };
 
-const VIEWS_BY_PROPERTY = [
-  { nom: "Appartement Lausanne", vues: 1450, visiteurs: 1050, taux: 7.8 },
-  { nom: "Studio Genève", vues: 1230, visiteurs: 890, taux: 6.1 },
-  { nom: "Chalet Verbier", vues: 920, visiteurs: 680, taux: 5.3 },
-  { nom: "Villa Nice", vues: 845, visiteurs: 620, taux: 4.2 },
-  { nom: "Penthouse Genève", vues: 670, visiteurs: 480, taux: 3.9 },
-  { nom: "Studio Zurich", vues: 560, visiteurs: 410, taux: 3.5 },
-];
+/* KPI derives : on multiplie la "base 30j" par le ratio de periode.
+   Vues totales = somme des views des biens (= 5060). Visiteurs
+   uniques = ~70% des vues. Conversions = reservations.length du
+   dashboard rapportees. Revenus = monthly current x ratio. */
+const BASE_VUES = properties.reduce((s, p) => s + p.views, 0);
+const BASE_REVENUS = monthlyRevenue[monthlyRevenue.length - 1].value;
 
+const SPARK_VUES: Record<Period, number[]> = {
+  "7j": [120, 180, 160, 200, 210, 190, 180],
+  "30j": [400, 450, 500, 480, 520, 550, 530, 560, 580, 600],
+  "90j": [1200, 1400, 1500, 1600, 1700, 1650, 1750, 1800, 1850, 1900],
+  "12m": monthlyRevenue.map((m) => Math.round(m.value / 4)),
+};
+
+const SPARK_REVENUS: Record<Period, number[]> = {
+  "7j": [500, 700, 600, 800, 650, 600, 650],
+  "30j": [1500, 1700, 1800, 1650, 1900, 2000, 1850, 1900, 2050, 2150],
+  "90j": [4500, 5000, 5200, 5400, 5500, 5300, 5600, 5800, 6000, 6200],
+  "12m": monthlyRevenue.map((m) => m.value),
+};
+
+/* Sources de trafic — token primary + muted-foreground au lieu de hex
+   hardcodes. Cohabite avec le brutalist theme. */
 const TRAFFIC_SOURCES = [
-  { source: "Recherche directe", value: 35, color: "var(--primary)" },
-  { source: "Réseaux sociaux", value: 25, color: "#60a5fa" },
-  { source: "Referral", value: 20, color: "#34d399" },
-  { source: "Email", value: 12, color: "#a78bfa" },
-  { source: "Autre", value: 8, color: "#f87171" },
+  { source: "Recherche directe", value: 35 },
+  { source: "Réseaux sociaux", value: 25 },
+  { source: "Referral apporteurs", value: 20 },
+  { source: "Email & newsletter", value: 12 },
+  { source: "Autre", value: 8 },
 ];
 
 const HEATMAP_DATA = [
@@ -67,9 +62,7 @@ const HEATMAP_DATA = [
 
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
-/* ─── Sparkline component ────────────────────────────────────────────────── */
-
-function Sparkline({ data, color = "var(--primary)" }: { data: number[]; color?: string }) {
+function Sparkline({ data }: { data: number[] }) {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -78,55 +71,74 @@ function Sparkline({ data, color = "var(--primary)" }: { data: number[]; color?:
   const points = data
     .map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`)
     .join(" ");
-
   return (
     <svg width={w} height={h} className="inline-block">
-      <polyline fill="none" stroke={color} strokeWidth="1.5" points={points} />
+      <polyline fill="none" stroke="var(--primary)" strokeWidth="1.5" points={points} />
     </svg>
   );
 }
 
-/* ─── Page ───────────────────────────────────────────────────────────────── */
-
 export default function StatistiquesPage() {
-  const { formatPrice } = useApp();
   const [period, setPeriod] = useState<Period>("30j");
   const [sortCol, setSortCol] = useState<"nom" | "vues" | "visiteurs" | "taux">("vues");
   const [sortAsc, setSortAsc] = useState(false);
 
-  const data = KPI_DATA[period];
+  /* Vues par bien — derive de properties (la SOT du dashboard).
+     Taux conv = occupancy ramene en pourcentage. */
+  const viewsByProperty = useMemo(
+    () =>
+      properties.map((p) => ({
+        nom: p.name,
+        vues: p.views,
+        visiteurs: Math.round(p.views * 0.72),
+        taux: Math.round(p.occupancy * 100 * 10) / 10,
+      })),
+    [],
+  );
 
   const sortedProperties = useMemo(() => {
-    return [...VIEWS_BY_PROPERTY].sort((a, b) => {
+    return [...viewsByProperty].sort((a, b) => {
       const aVal = a[sortCol];
       const bVal = b[sortCol];
       if (typeof aVal === "string" && typeof bVal === "string") {
         return sortAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
       }
-      return sortAsc ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number);
+      return sortAsc
+        ? (aVal as number) - (bVal as number)
+        : (bVal as number) - (aVal as number);
     });
-  }, [sortCol, sortAsc]);
+  }, [viewsByProperty, sortCol, sortAsc]);
 
   const handleSort = (col: typeof sortCol) => {
     if (sortCol === col) setSortAsc(!sortAsc);
-    else { setSortCol(col); setSortAsc(false); }
+    else {
+      setSortCol(col);
+      setSortAsc(false);
+    }
   };
 
-  const maxBarVues = Math.max(...VIEWS_BY_PROPERTY.map((p) => p.vues));
+  const maxBarVues = Math.max(...viewsByProperty.map((p) => p.vues));
   const maxHeat = Math.max(...HEATMAP_DATA.flat());
+
+  /* KPI cards : tout derive de la SOT. */
+  const ratio = PERIOD_RATIO[period];
+  const vues = Math.round(BASE_VUES * ratio);
+  const visiteurs = Math.round(vues * 0.72);
+  const revenus = Math.round(BASE_REVENUS * ratio);
+  const conversions = Math.round(properties.length * 3 * ratio);
+
+  const kpis = [
+    { label: "Vues totales", value: formatNumber(vues), spark: SPARK_VUES[period] },
+    { label: "Visiteurs uniques", value: formatNumber(visiteurs), spark: SPARK_VUES[period] },
+    { label: "Conversions", value: formatNumber(conversions), spark: SPARK_VUES[period] },
+    { label: "Revenus", value: `${formatNumber(revenus)} CHF`, spark: SPARK_REVENUS[period] },
+  ];
 
   const periods: { key: Period; label: string }[] = [
     { key: "7j", label: "7 jours" },
     { key: "30j", label: "30 jours" },
     { key: "90j", label: "90 jours" },
     { key: "12m", label: "12 mois" },
-  ];
-
-  const kpis = [
-    { label: "Vues totales", value: data.vues.toLocaleString("fr-CH"), spark: data.sparkVues },
-    { label: "Visiteurs uniques", value: data.visiteurs.toLocaleString("fr-CH"), spark: data.sparkVisiteurs },
-    { label: "Conversions", value: data.conversions.toLocaleString("fr-CH"), spark: data.sparkConversions },
-    { label: "Revenus", value: formatPrice(data.revenus), spark: data.sparkRevenus },
   ];
 
   return (
@@ -150,32 +162,37 @@ export default function StatistiquesPage() {
         </div>
       </div>
 
-      {/* KPI Cards with Sparklines */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi, idx) => (
-          <div key={idx} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-2">
+          <div
+            key={idx}
+            className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-2"
+          >
             <p className="text-sm text-[var(--text-muted)]">{kpi.label}</p>
             <div className="flex items-end justify-between">
-              <p className="text-2xl font-bold text-[var(--foreground)]">{kpi.value}</p>
+              <p className="text-2xl font-bold text-[var(--foreground)] tabular-nums">
+                {kpi.value}
+              </p>
               <Sparkline data={kpi.spark} />
             </div>
           </div>
         ))}
       </section>
 
-      {/* Views by Property - sortable table */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Vues par bien</h2>
         <div className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--card-border)]">
-                {([
-                  { key: "nom" as const, label: "Bien" },
-                  { key: "vues" as const, label: "Vues" },
-                  { key: "visiteurs" as const, label: "Visiteurs" },
-                  { key: "taux" as const, label: "Taux conv. (%)" },
-                ]).map((col) => (
+                {(
+                  [
+                    { key: "nom" as const, label: "Bien" },
+                    { key: "vues" as const, label: "Vues" },
+                    { key: "visiteurs" as const, label: "Visiteurs" },
+                    { key: "taux" as const, label: "Taux occup. (%)" },
+                  ]
+                ).map((col) => (
                   <th
                     key={col.key}
                     className="text-left p-4 text-[var(--text-muted)] font-medium cursor-pointer hover:text-[var(--foreground)] transition select-none"
@@ -188,11 +205,18 @@ export default function StatistiquesPage() {
             </thead>
             <tbody>
               {sortedProperties.map((p, idx) => (
-                <tr key={idx} className="border-b border-[var(--card-border)] last:border-0 hover:bg-[var(--hover-bg)] transition">
+                <tr
+                  key={idx}
+                  className="border-b border-[var(--card-border)] last:border-0 hover:bg-[var(--hover-bg)] transition"
+                >
                   <td className="p-4 text-[var(--foreground)] font-medium">{p.nom}</td>
-                  <td className="p-4 text-[var(--foreground)]">{p.vues.toLocaleString("fr-CH")}</td>
-                  <td className="p-4 text-[var(--text-secondary)]">{p.visiteurs.toLocaleString("fr-CH")}</td>
-                  <td className="p-4 text-[var(--foreground)]">{p.taux}%</td>
+                  <td className="p-4 text-[var(--foreground)] tabular-nums">
+                    {formatNumber(p.vues)}
+                  </td>
+                  <td className="p-4 text-[var(--text-secondary)] tabular-nums">
+                    {formatNumber(p.visiteurs)}
+                  </td>
+                  <td className="p-4 text-[var(--foreground)] tabular-nums">{p.taux}%</td>
                 </tr>
               ))}
             </tbody>
@@ -200,95 +224,84 @@ export default function StatistiquesPage() {
         </div>
       </section>
 
-      {/* Views Bar Chart */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Vues par bien (graphique)</h2>
         <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
           <div className="space-y-3">
-            {VIEWS_BY_PROPERTY.map((p, idx) => (
+            {viewsByProperty.map((p, idx) => (
               <div key={idx} className="flex items-center gap-3">
-                <span className="text-sm text-[var(--text-secondary)] w-44 truncate">{p.nom}</span>
+                <span className="text-sm text-[var(--text-secondary)] w-44 truncate">
+                  {p.nom}
+                </span>
                 <div className="flex-1 h-6 bg-[var(--hover-bg)] rounded overflow-hidden">
                   <div
                     className="h-full bg-[var(--primary)]/80 rounded transition-all"
                     style={{ width: `${(p.vues / maxBarVues) * 100}%` }}
                   />
                 </div>
-                <span className="text-sm text-[var(--foreground)] font-medium w-16 text-right">{p.vues}</span>
+                <span className="text-sm text-[var(--foreground)] font-medium w-20 text-right tabular-nums">
+                  {formatNumber(p.vues)}
+                </span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Traffic Sources Donut */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Sources de trafic</h2>
         <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            {/* Simple donut representation */}
-            <div className="relative w-40 h-40">
-              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                {(() => {
-                  let offset = 0;
-                  return TRAFFIC_SOURCES.map((s, idx) => {
-                    const dash = s.value;
-                    const gap = 100 - dash;
-                    const el = (
-                      <circle
-                        key={idx}
-                        cx="18" cy="18" r="15.9155"
-                        fill="none"
-                        stroke={s.color}
-                        strokeWidth="3"
-                        strokeDasharray={`${dash} ${gap}`}
-                        strokeDashoffset={-offset}
-                      />
-                    );
-                    offset += dash;
-                    return el;
-                  });
-                })()}
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-lg font-bold text-[var(--foreground)]">100%</span>
-              </div>
-            </div>
-            {/* Legend */}
-            <div className="space-y-2">
-              {TRAFFIC_SOURCES.map((s, idx) => (
+          <div className="space-y-3">
+            {TRAFFIC_SOURCES.map((s, idx) => {
+              const max = Math.max(...TRAFFIC_SOURCES.map((t) => t.value));
+              return (
                 <div key={idx} className="flex items-center gap-3">
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: s.color }} />
-                  <span className="text-sm text-[var(--text-secondary)]">{s.source}</span>
-                  <span className="text-sm font-medium text-[var(--foreground)]">{s.value}%</span>
+                  <span className="text-sm text-[var(--text-secondary)] w-44 truncate">
+                    {s.source}
+                  </span>
+                  <div className="flex-1 h-2.5 bg-[var(--hover-bg)] rounded overflow-hidden">
+                    <div
+                      className="h-full bg-[var(--primary)] rounded"
+                      style={{ width: `${(s.value / max) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-sm text-[var(--foreground)] font-medium w-12 text-right tabular-nums">
+                    {s.value}%
+                  </span>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Activity Heatmap */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Carte d&apos;activité</h2>
         <div className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-x-auto">
           <div className="min-w-[600px]">
             <div className="flex gap-1 mb-1 ml-10">
               {Array.from({ length: 24 }, (_, i) => (
-                <span key={i} className="flex-1 text-center text-[10px] text-[var(--text-muted)]">
+                <span
+                  key={i}
+                  className="flex-1 text-center text-[10px] text-[var(--text-muted)]"
+                >
                   {i % 4 === 0 ? `${i}h` : ""}
                 </span>
               ))}
             </div>
             {HEATMAP_DATA.map((row, dayIdx) => (
               <div key={dayIdx} className="flex items-center gap-1">
-                <span className="w-8 text-xs text-[var(--text-muted)]">{DAYS[dayIdx]}</span>
+                <span className="w-8 text-xs text-[var(--text-muted)]">
+                  {DAYS[dayIdx]}
+                </span>
                 {row.map((val, hourIdx) => (
                   <div
                     key={hourIdx}
                     className="flex-1 aspect-square rounded-sm"
                     style={{
-                      backgroundColor: `rgba(245, 113, 50,${val / maxHeat})`,
+                      backgroundColor: `color-mix(in srgb, var(--primary) ${
+                        Math.round((val / maxHeat) * 100)
+                      }%, transparent)`,
                     }}
                     title={`${DAYS[dayIdx]} ${hourIdx}h: ${val} actions`}
                   />

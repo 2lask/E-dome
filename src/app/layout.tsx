@@ -28,19 +28,19 @@ export const metadata: Metadata = {
   },
 };
 
-/* Viewport séparé (recommandé Next.js 16) :
-   - viewportFit: "cover" : le contenu peut s'étendre sous notch / home
-     indicator (on a déjà env(safe-area-inset-*) partout)
-   - userScalable: false + maximumScale 1 : annule le double-tap zoom
-     iOS (qui zoom et casse le feel app)
-   - themeColor : couleur de la barre Chrome Android + chip "ajouter à
-     l'écran d'accueil". #000 par défaut (dark mode), var(--primary) quand PWA
-     standalone (status bar tinted) */
+/* Viewport (recommandé Next.js 16) :
+   - viewportFit: "cover" : le contenu peut s'étendre sous notch /
+     home indicator (on a déjà env(safe-area-inset-*) partout)
+   - maximumScale=5 + userScalable=true : zoom mobile autorisé
+     (exigence WCAG 1.4.4). Le precedent maximumScale:1 +
+     userScalable:false bloquait le pinch-zoom et echouait l'audit
+     accessibilite, tout en cassant l'experience malvoyants.
+   - themeColor : couleur de la barre Chrome + chip PWA. */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: dark)", color: "#000000" },

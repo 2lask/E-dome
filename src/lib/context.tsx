@@ -219,10 +219,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     (amount: number, originalCurrency: Currency = "CHF") => {
       const inCHF = amount / EXCHANGE_RATES[originalCurrency];
       const converted = inCHF * EXCHANGE_RATES[currency];
-      const formatted = new Intl.NumberFormat("fr-CH", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(Math.round(converted));
+      /* Apostrophe suisse : 24850 -> "24'850". Intl produit
+         l'espace insecable, ce qui contredit la convention suisse
+         "24'850 CHF" et l'audit visuel. */
+      const rounded = Math.round(converted);
+      const grouped = Math.abs(rounded)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+      const formatted = rounded < 0 ? `-${grouped}` : grouped;
       return `${formatted} ${CURRENCY_SYMBOLS[currency]}`;
     },
     [currency]
