@@ -245,10 +245,18 @@ export const revenueByType: { label: string; value: number }[] = [
 ];
 
 export const transactions: Transaction[] = [
-  { id: "t1", label: "Chalet Alpin Premium", sublabel: "Sophie Bernard", amount: 2450, status: "confirmed", kind: "reservation" },
-  { id: "t2", label: "Virement mensuel", sublabel: "Versé le 25.03", amount: 3500, status: "completed", kind: "payout" },
-  { id: "t3", label: "Commission apporteur", sublabel: "Marc Dupont", amount: 100, status: "pending", kind: "commission" },
-  { id: "t4", label: "Appartement Vue Lac", sublabel: "Remboursement", amount: -720, status: "cancelled", kind: "refund" },
+  { id: "t1", label: "Chalet Alpin Premium", sublabel: "Sophie Bernard · 10-17 juin", amount: 2450, status: "confirmed", kind: "reservation" },
+  { id: "t2", label: "Studio Lausanne", sublabel: "Pierre Aubry · 22-28 juin", amount: 1068, status: "confirmed", kind: "reservation" },
+  { id: "t3", label: "Appartement Vue Lac", sublabel: "Jean Dupont · 15-20 juin", amount: 900, status: "pending", kind: "reservation" },
+  { id: "t4", label: "Virement mensuel", sublabel: "Versé le 5 juin · IBAN ****8124", amount: 3500, status: "completed", kind: "payout" },
+  { id: "t5", label: "Versement Stripe", sublabel: "Versé le 1 juin · Frais 2.9%", amount: 1830, status: "completed", kind: "payout" },
+  { id: "t6", label: "Commission Agence Léman", sublabel: "Chalet Alpin · 3 résa apportées", amount: 294, status: "completed", kind: "commission" },
+  { id: "t7", label: "Commission SwissHome", sublabel: "Appartement Vue Lac · 2 résa", amount: 144, status: "pending", kind: "commission" },
+  { id: "t8", label: "Commission Alpine Props", sublabel: "Studio Lausanne · 1 résa", amount: 28, status: "pending", kind: "commission" },
+  { id: "t9", label: "Appartement Vue Lac", sublabel: "Sophie Bernard · Annulation", amount: -720, status: "cancelled", kind: "refund" },
+  { id: "t10", label: "Formation LCD", sublabel: "Cédric Lopez · Rétractation 14j", amount: -189, status: "cancelled", kind: "refund" },
+  { id: "t11", label: "Maîtriser la LCD", sublabel: "Anne Schmid · Vente formation", amount: 189, status: "confirmed", kind: "reservation" },
+  { id: "t12", label: "Boutique - Plaid lin lavé", sublabel: "Sophie B. · 1× 89 CHF", amount: 89, status: "confirmed", kind: "reservation" },
 ];
 
 export const dashboardReservations: Reservation[] = [

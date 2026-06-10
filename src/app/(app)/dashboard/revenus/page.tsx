@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
+import { TransactionsList } from "@/components/dashboard/transactions-list";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
 import {
@@ -378,6 +379,11 @@ export default function RevenusPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Transactions detaillees (deplacees depuis /dashboard) :
+          Paiements / Virements / Commissions / Remboursements
+          avec filtres par kind. Format suisse + tokens semantiques. */}
+      <TransactionsList />
     </div>
   );
 }
