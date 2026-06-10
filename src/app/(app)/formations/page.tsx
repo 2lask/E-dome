@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
+import { PageHeader } from "@/components/ui/page-header";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -70,17 +71,21 @@ export default function FormationsPage() {
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl page-heading">Formations</h1>
-            <p className="text-[var(--text-secondary)] mt-1">Développez vos compétences immobilières</p>
-          </div>
-          {activeRole === "formateur" && (
-            <Link href="/formations/creer" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">
-              + Créer une formation
-            </Link>
-          )}
-        </div>
+        <PageHeader
+          title="Formations"
+          description="Développez vos compétences immobilières"
+          variant="serif"
+          actions={
+            activeRole === "formateur" ? (
+              <Link
+                href="/formations/creer"
+                className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-xl font-medium transition-colors"
+              >
+                + Créer une formation
+              </Link>
+            ) : undefined
+          }
+        />
 
         {/* ── Mes formations en cours ──────────────────────────────────────────
             Migre vers <HorizontalScroller> : sur mobile les cards faisaient

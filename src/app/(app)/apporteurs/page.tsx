@@ -103,10 +103,11 @@ function shareEmail(url: string, label: string) {
   window.open(`mailto:?subject=E-Dome - ${label}&body=${encodeURIComponent(`https://${url}`)}`, "_blank");
 }
 
+/* Tokens semantiques au lieu de emerald-500/amber-500/red-500 hardcodes. */
 const statusStyles: Record<string, string> = {
-  converti: "bg-emerald-500/20 text-emerald-400",
-  en_cours: "bg-amber-500/20 text-amber-400",
-  expire: "bg-red-500/20 text-red-400",
+  converti: "chip-success-soft",
+  en_cours: "chip-warning-soft",
+  expire: "chip-danger-soft",
 };
 
 const statusLabels: Record<string, string> = {

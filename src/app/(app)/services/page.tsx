@@ -6,6 +6,7 @@ import {
   Scale, Briefcase, Hammer, Package, Check, type LucideIcon,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { PageHeader } from "@/components/ui/page-header";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -112,15 +113,19 @@ export default function ServicesPage() {
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl page-heading">Services</h1>
-            <p className="text-[var(--text-secondary)] mt-1">Trouvez les meilleurs prestataires pour vos biens</p>
-          </div>
-          <a href="/services/proposer" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">
-            Proposer un service
-          </a>
-        </div>
+        <PageHeader
+          title="Services"
+          description="Trouvez les meilleurs prestataires pour vos biens"
+          variant="serif"
+          actions={
+            <a
+              href="/services/proposer"
+              className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-xl font-medium transition-colors"
+            >
+              Proposer un service
+            </a>
+          }
+        />
 
         {/* Search */}
         <div className="relative">

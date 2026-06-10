@@ -17,12 +17,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { DataRow } from "@/components/ui/data-row";
 import { upcomingEvents, type EventKind } from "@/lib/dashboard-data";
 import { formatNumber } from "@/lib/format";
-
-/* UpcomingEvents : prochains lives + visites + ateliers + evenements
-   dans les 30 jours. Affiche taux de remplissage + CA previsionnel.
-   Critique pour signaler "live demain a 19h, 87/120 places". */
 
 const KIND_ICON: Record<EventKind, LucideIcon> = {
   live: Video,
@@ -65,14 +62,16 @@ export function UpcomingEvents({ limit = 4 }: { limit?: number }) {
           const fillPct = Math.round((e.spotsTaken / e.spotsTotal) * 100);
           const urgent = e.daysUntil <= 2;
           return (
-            <div
+            <DataRow
               key={e.id}
-              className="flex items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/40"
-            >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                <Icon className="h-4 w-4" />
-              </div>
-              <div className="flex-1 min-w-0 space-y-1.5">
+              align="start"
+              leading={
+                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <Icon className="h-4 w-4" />
+                </div>
+              }
+              title={e.title}
+              meta={
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge variant="outline" className="text-[10px] font-normal">
                     {KIND_LABEL[e.kind]}
@@ -87,19 +86,20 @@ export function UpcomingEvents({ limit = 4 }: { limit?: number }) {
                     {e.whenLabel}
                   </span>
                 </div>
-                <p className="truncate text-sm font-medium">{e.title}</p>
-                <div className="flex items-center gap-2">
+              }
+              subtitle={
+                <span className="inline-flex items-center gap-2">
                   <Progress
                     value={fillPct}
-                    className="h-1.5 flex-1 max-w-[160px]"
+                    className="h-1.5 w-[120px]"
                   />
-                  <span className="text-xs text-muted-foreground tabular-nums shrink-0">
-                    {e.spotsTaken}/{e.spotsTotal}
+                  <span className="tabular-nums">
+                    {e.spotsTaken}/{e.spotsTotal} places
                   </span>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                {e.price > 0 ? (
+                </span>
+              }
+              trailing={
+                e.price > 0 ? (
                   <>
                     <p className="text-sm font-medium tabular-nums">
                       {formatNumber(e.forecast)} CHF
@@ -112,9 +112,9 @@ export function UpcomingEvents({ limit = 4 }: { limit?: number }) {
                   <Badge variant="outline" className="text-[10px]">
                     Gratuit
                   </Badge>
-                )}
-              </div>
-            </div>
+                )
+              }
+            />
           );
         })}
       </CardContent>

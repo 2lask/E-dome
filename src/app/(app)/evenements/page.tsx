@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Check } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { PageHeader } from "@/components/ui/page-header";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -98,25 +99,26 @@ export default function EvenementsPage() {
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl page-heading">Événements</h1>
-            <p className="text-[var(--text-secondary)] mt-1">Découvrez les événements de la communauté</p>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={() => setViewMode("list")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "list" ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
-              Liste
-            </button>
-            <button onClick={() => setViewMode("calendar")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "calendar" ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
-              Calendrier
-            </button>
-            {canCreateEvent && (
-              <a href="/evenements/creer" className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl text-sm font-medium transition-colors">
-                + Cr&eacute;er
-              </a>
-            )}
-          </div>
-        </div>
+        <PageHeader
+          title="Événements"
+          description="Découvrez les événements de la communauté"
+          variant="serif"
+          actions={
+            <>
+              <button onClick={() => setViewMode("list")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "list" ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
+                Liste
+              </button>
+              <button onClick={() => setViewMode("calendar")} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === "calendar" ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-secondary)]"}`}>
+                Calendrier
+              </button>
+              {canCreateEvent && (
+                <a href="/evenements/creer" className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-xl text-sm font-medium transition-colors">
+                  + Créer
+                </a>
+              )}
+            </>
+          }
+        />
 
         {/* ── Featured banner ──────────────────────────────────────────── */}
         {featured && viewMode === "list" && (

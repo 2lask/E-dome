@@ -9,14 +9,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DataRow } from "@/components/ui/data-row";
 import { boutiqueAlerts, type StockLevel } from "@/lib/dashboard-data";
 import { formatNumber } from "@/lib/format";
 
-/* BoutiqueAlerts : produits en rupture ou en stock faible — vue
-   actionnable, hosts qui vendent du produit. Critique pour eviter
-   la rupture silencieuse. */
-
-const LEVEL: Record<StockLevel, { label: string; chip: string; icon: typeof Package }> = {
+const LEVEL: Record<
+  StockLevel,
+  { label: string; chip: string; icon: typeof Package }
+> = {
   rupture: { label: "Rupture", chip: "chip-danger-soft", icon: PackageX },
   faible: { label: "Stock faible", chip: "chip-warning-soft", icon: AlertTriangle },
   ok: { label: "OK", chip: "bg-muted text-muted-foreground", icon: Package },
@@ -52,30 +52,28 @@ export function BoutiqueAlerts() {
           const cfg = LEVEL[p.level];
           const Icon = cfg.icon;
           return (
-            <div
+            <DataRow
               key={p.id}
-              className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/40"
-            >
-              <div
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${cfg.chip}`}
-              >
-                <Icon className="h-4 w-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-medium">{p.name}</p>
-                <p className="text-xs text-muted-foreground tabular-nums">
-                  {p.soldThisMonth} vendus ce mois · {formatNumber(p.price)} CHF
-                </p>
-              </div>
-              <div className="text-right shrink-0">
-                <Badge variant="outline" className={`${cfg.chip} border-0`}>
-                  {p.stock === 0 ? "0" : p.stock} en stock
-                </Badge>
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  {cfg.label}
-                </p>
-              </div>
-            </div>
+              leading={
+                <div
+                  className={`flex h-9 w-9 items-center justify-center rounded-md ${cfg.chip}`}
+                >
+                  <Icon className="h-4 w-4" />
+                </div>
+              }
+              title={p.name}
+              subtitle={`${p.soldThisMonth} vendus ce mois · ${formatNumber(p.price)} CHF`}
+              trailing={
+                <>
+                  <Badge variant="outline" className={`${cfg.chip} border-0`}>
+                    {p.stock === 0 ? "0" : p.stock} en stock
+                  </Badge>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    {cfg.label}
+                  </p>
+                </>
+              }
+            />
           );
         })}
         {items.length === 0 && (

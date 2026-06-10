@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { DataRow } from "@/components/ui/data-row";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { dashboardReservations, getProperty } from "@/lib/dashboard-data";
 import { formatNumber } from "@/lib/format";
 
-/* BookingsList : adapte de RecentTransactions (dashboard-2) au
-   domaine immobilier. Reservations recentes avec Avatar guest +
-   nom + email-style "bien · dates" + StatusBadge + montant + date. */
+/* BookingsList : reservations recentes. Refondu sur DataRow pour
+   eliminer la duplication avec top-properties, top-formations, etc. */
 
 const DATE_LABEL: Record<string, string> = {
   dr1: "Il y a 2h",
@@ -23,6 +23,7 @@ const DATE_LABEL: Record<string, string> = {
   dr3: "Hier",
   dr5: "Il y a 2j",
   dr7: "Il y a 3j",
+  dr9: "Il y a 6h",
 };
 
 export function BookingsList({ limit = 5 }: { limit?: number }) {
@@ -49,18 +50,12 @@ export function BookingsList({ limit = 5 }: { limit?: number }) {
           const property = getProperty(r.propertyId);
           const when = DATE_LABEL[r.id] ?? "Récemment";
           return (
-            <div
+            <DataRow
               key={r.id}
-              className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/40"
-            >
-              <Avatar name={r.guest} size="sm" />
-              <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{r.guest}</p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {property?.name} · {r.dateLabel}
-                  </p>
-                </div>
+              leading={<Avatar name={r.guest} size="sm" />}
+              title={r.guest}
+              subtitle={`${property?.name} · ${r.dateLabel}`}
+              trailing={
                 <div className="flex items-center gap-3">
                   <StatusBadge status={r.status} />
                   <div className="text-right">
@@ -70,8 +65,8 @@ export function BookingsList({ limit = 5 }: { limit?: number }) {
                     <p className="text-xs text-muted-foreground">{when}</p>
                   </div>
                 </div>
-              </div>
-            </div>
+              }
+            />
           );
         })}
       </CardContent>

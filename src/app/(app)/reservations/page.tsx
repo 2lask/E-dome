@@ -46,21 +46,23 @@ const statusLabels: Record<string, string> = {
   completed: "Terminée",
 };
 
+/* Tokens semantiques du theme : chip-*-soft pour les chips
+   (cohabite avec StatusBadge), bg-success/warning/danger pour
+   les points du calendrier. Plus de emerald-500/amber-400/red-500
+   hardcodes — coherent en clair ET sombre. */
 const statusColors: Record<string, string> = {
-  pending: "bg-amber-500/20 text-amber-400",
-  confirmed: "bg-emerald-500/20 text-emerald-400",
-  cancelled: "bg-red-500/20 text-red-400",
-  completed: "bg-blue-500/20 text-blue-400",
+  pending: "chip-warning-soft",
+  confirmed: "chip-success-soft",
+  cancelled: "chip-danger-soft",
+  completed: "bg-muted text-muted-foreground",
 };
 
-// Calendar dot colors — un point coloré sous le numéro du jour, beaucoup
-// plus lisible que la cell entière colorée (qui devenait illisible quand
-// plusieurs réservations chevauchent et dévorait le chiffre du jour).
+// Dot colore sous le numero du jour — utilise les tokens semantiques.
 const calendarDotColors: Record<string, string> = {
-  confirmed: "bg-emerald-500",
-  pending: "bg-amber-400",
-  completed: "bg-gray-500",
-  cancelled: "bg-red-500",
+  confirmed: "bg-success",
+  pending: "bg-warning",
+  completed: "bg-muted-foreground",
+  cancelled: "bg-danger",
 };
 
 // ─── Component ──────────────────────────────────────────────────────────────
