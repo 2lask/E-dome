@@ -1,170 +1,383 @@
-import { Download } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { DashboardPageHeader } from "@/components/dashboard/page-header";
-import {
-  KpiCardPremium,
-  KpiGrid,
-} from "@/components/dashboard/kpi-card-premium";
-import { RevenueBreakdown } from "@/components/dashboard/revenue-breakdown";
-import { OverviewChart } from "@/components/dashboard/overview-chart";
-import { SimpleBarList } from "@/components/dashboard/simple-bar-list";
-import {
-  dashboard,
-  formations,
-  upcomingEvents,
-} from "@/lib/dashboard-data";
-import { formatNumber } from "@/lib/format";
+"use client";
 
-/* /dashboard/revenus : detail des 7 sources de revenus.
-   Avant : 3 KPI (Locations / Commissions / Boutique) ignoraient
-   4 sources sur 7. Refonte avec breakdown complet + top actifs
-   cross-categorie (biens ET formations ET evenements). */
+import { useMemo, useState } from "react";
+import { Download, ChevronLeft, TrendingUp, ChevronRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
+import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/format";
+import {
+  AnalyticsChart,
+  type ChartMode,
+  type ChartVisual,
+} from "@/components/dashboard/analytics-chart";
+import {
+  buildView,
+  SOURCE_OPTIONS,
+  TYPES,
+  type SourceId,
+  type PropType,
+  type Period,
+} from "@/lib/revenue-data";
+
+/* /dashboard/revenus refondu — page interactive avec filtres profonds
+   (source x periode x mode chart x visuel x type x bien). Inspire du
+   pattern shadcn-admin (3 docs fournis par l'utilisateur). Drill-down :
+   on clique un bien dans le breakdown -> on zoom dessus. */
+
+function Seg<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: string }[];
+}) {
+  return (
+    <div className="inline-flex gap-0.5 rounded-md bg-muted p-0.5">
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          onClick={() => onChange(o.value)}
+          aria-pressed={value === o.value}
+          className={cn(
+            "rounded-[6px] px-2.5 py-1 text-xs transition-colors",
+            value === o.value
+              ? "bg-background font-medium text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Tile({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+}) {
+  return (
+    <div className="rounded-lg bg-muted p-4">
+      <p className="mb-1 text-xs text-muted-foreground">{label}</p>
+      <p className="truncate text-xl font-medium tabular-nums">{value}</p>
+      {sub && <p className="mt-0.5 truncate text-xs text-muted-foreground">{sub}</p>}
+    </div>
+  );
+}
+
+const PERIODS: { value: Period; label: string }[] = [
+  { value: "7j", label: "7j" },
+  { value: "30j", label: "30j" },
+  { value: "12m", label: "12m" },
+];
+const MODES: { value: ChartMode; label: string }[] = [
+  { value: "evolution", label: "Évolution" },
+  { value: "comparison", label: "Comparaison" },
+  { value: "repartition", label: "Répartition" },
+];
+const VISUALS: { value: ChartVisual; label: string }[] = [
+  { value: "bar", label: "Barres" },
+  { value: "line", label: "Courbe" },
+];
+const TYPE_OPTS: { value: PropType; label: string }[] = [
+  { value: "all", label: "Tous types" },
+  ...TYPES.map((t) => ({ value: t.id as PropType, label: t.short })),
+];
 
 export default function RevenusPage() {
-  const { revenueBySource, properties, monthlyRevenue, kpis } = dashboard;
+  const [source, setSource] = useState<SourceId>("immobilier");
+  const [period, setPeriod] = useState<Period>("12m");
+  const [mode, setMode] = useState<ChartMode>("evolution");
+  const [visual, setVisual] = useState<ChartVisual>("bar");
+  const [propType, setPropType] = useState<PropType>("all");
+  const [bien, setBien] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<"value" | "name">("value");
 
-  const totalRevenue = revenueBySource.reduce((s, i) => s + i.value, 0);
-  const totalBiens =
-    revenueBySource.find((s) => s.key === "biens")?.value ?? 0;
-  const totalFormations =
-    revenueBySource.find((s) => s.key === "formations")?.value ?? 0;
-  const totalEvents =
-    revenueBySource.find((s) => s.key === "evenements")?.value ?? 0;
+  const vm = useMemo(
+    () => buildView({ source, period, propType, bien }),
+    [source, period, propType, bien],
+  );
 
-  const overviewData = monthlyRevenue.map((m) => ({
-    label: m.label,
-    value: m.value,
-  }));
+  function changeSource(v: SourceId) {
+    setSource(v);
+    setBien(null);
+    setPropType("all");
+  }
 
-  /* Top actifs cross-categorie : biens (monthRevenue), formations
-     (monthRevenue), evenements (forecast). Trie par CA et limite a 8. */
-  const topActifs = [
-    ...properties.map((p) => ({
-      name: `${p.name} (bien)`,
-      value: p.monthRevenue,
-    })),
-    ...formations.map((f) => ({
-      name: `${f.title} (formation)`,
-      value: f.monthRevenue,
-    })),
-    ...upcomingEvents
-      .filter((e) => e.forecast > 0)
-      .map((e) => ({ name: `${e.title} (${e.kind})`, value: e.forecast })),
-  ]
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 8);
+  const legend =
+    mode === "repartition"
+      ? vm.categories.map((c) => ({ name: c.label, color: c.color, value: c.value }))
+      : mode === "evolution" && vm.series.length > 1
+        ? vm.series.map((s) => ({
+            name: s.name,
+            color: s.color,
+            value: undefined as number | undefined,
+          }))
+        : [];
+  const legendTotal = legend.reduce((s, l) => s + (l.value || 0), 0) || 1;
 
-  const pct = (v: number) =>
-    totalRevenue > 0 ? Math.round((v / totalRevenue) * 100) : 0;
+  const sortedBiens = vm.biens
+    ? vm.biens
+        .slice()
+        .sort((a, b) =>
+          sortKey === "value" ? b.value - a.value : a.name.localeCompare(b.name),
+        )
+    : null;
 
   return (
     <div className="space-y-6">
       <DashboardPageHeader
-        title="Revenus"
-        description="Détail des 7 sources de revenus et de leur évolution"
+        title="Revenus & performance"
+        description="Vue d'ensemble interactive de vos sources de revenus"
         actions={
           <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-            Exporter
+            <Download className="mr-2 h-4 w-4" /> Exporter
           </Button>
         }
       />
 
-      <KpiGrid>
-        <KpiCardPremium
-          label="Total revenus"
-          value={`${formatNumber(totalRevenue)} CHF`}
-          delta={kpis.revenueDelta}
-          trend="up"
-          footer="Cumul du mois en cours"
-          subfooter="Toutes sources confondues"
-        />
-        <KpiCardPremium
-          label="Biens (locations)"
-          value={`${formatNumber(totalBiens)} CHF`}
-          delta={`${pct(totalBiens)}%`}
-          trend="up"
-          footer="Réservations courte durée"
-          subfooter="Part dans le total"
-        />
-        <KpiCardPremium
-          label="Formations"
-          value={`${formatNumber(totalFormations)} CHF`}
-          delta={`${pct(totalFormations)}%`}
-          trend="up"
-          footer="Ventes e-learning"
-          subfooter="Part dans le total"
-        />
-        <KpiCardPremium
-          label="Événements & services"
-          value={`${formatNumber(totalEvents)} CHF`}
-          delta={`${pct(totalEvents)}%`}
-          trend="up"
-          footer="Lives, ateliers, visites"
-          subfooter="Part dans le total"
-        />
-      </KpiGrid>
+      <Card>
+        <CardContent className="flex flex-wrap items-end gap-x-6 gap-y-4 pt-6">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-xs text-muted-foreground">Source de revenu</span>
+            <Select
+              value={source}
+              onValueChange={(v) => changeSource(v as SourceId)}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SOURCE_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs text-muted-foreground">Période</span>
+            <Seg value={period} onChange={setPeriod} options={PERIODS} />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs text-muted-foreground">Graphique</span>
+            <Seg value={mode} onChange={setMode} options={MODES} />
+          </div>
+          {mode !== "repartition" && (
+            <div className="flex flex-col gap-1.5">
+              <span className="text-xs text-muted-foreground">Type</span>
+              <Seg value={visual} onChange={setVisual} options={VISUALS} />
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Chart évolution + Mix breakdown côte à côte */}
-      <div className="grid gap-6 lg:grid-cols-12">
-        <Card className="lg:col-span-8">
-          <CardHeader>
-            <CardTitle>Évolution mensuelle</CardTitle>
-            <CardDescription>
-              Revenus totaux sur 12 mois · mois courant accentué
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-2 pb-6">
-            <OverviewChart data={overviewData} height={300} />
-          </CardContent>
-        </Card>
-        <div className="lg:col-span-4">
-          <RevenueBreakdown />
+      {vm.showTypeFilter && (
+        <div className="flex flex-wrap items-center gap-3">
+          {vm.selectedBien && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-muted-foreground"
+              onClick={() => setBien(null)}
+            >
+              <ChevronLeft className="mr-1 h-4 w-4" /> Tous les biens
+            </Button>
+          )}
+          <Seg value={propType} onChange={setPropType} options={TYPE_OPTS} />
+          {vm.selectedBien && (
+            <span className="text-sm text-muted-foreground">
+              {vm.selectedBien.name} · {vm.selectedBien.city}
+            </span>
+          )}
+        </div>
+      )}
+
+      <div>
+        <p className="mb-1 text-sm text-muted-foreground">{vm.heroLabel}</p>
+        <div className="flex flex-wrap items-baseline gap-2.5">
+          <span className="text-4xl font-medium tracking-tight tabular-nums">
+            {formatNumber(vm.total)}
+          </span>
+          <span className="text-base text-muted-foreground">CHF</span>
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium",
+              vm.delta >= 0 ? "chip-success-soft" : "chip-danger-soft",
+            )}
+          >
+            <TrendingUp className="h-3.5 w-3.5" />
+            {vm.delta >= 0 ? "+" : ""}
+            {vm.delta}%
+          </span>
         </div>
       </div>
 
-      {/* Top actifs cross-cat + détail par source */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Top actifs (toutes catégories)</CardTitle>
-            <CardDescription>
-              Biens, formations et événements les plus rentables ce mois
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SimpleBarList
-              items={topActifs}
-              valueFormatter={(n) => `${formatNumber(n)} CHF`}
-              barClass="bg-primary"
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Détail par source</CardTitle>
-            <CardDescription>
-              Répartition des 7 sources de revenus
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SimpleBarList
-              items={[...revenueBySource]
-                .sort((a, b) => b.value - a.value)
-                .map((s) => ({ name: s.label, value: s.value }))}
-              valueFormatter={(n) => `${formatNumber(n)} CHF`}
-              barClass="bg-muted-foreground"
-            />
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+        {vm.kpis.map((k) => (
+          <Tile key={k.label} label={k.label} value={k.value} sub={k.sub} />
+        ))}
       </div>
+
+      <Card>
+        <CardContent className="pt-6">
+          {legend.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+              {legend.map((l) => (
+                <span key={l.name} className="flex items-center gap-1.5">
+                  <span
+                    className="h-2.5 w-2.5 rounded-[2px]"
+                    style={{ background: l.color }}
+                  />
+                  {l.name}
+                  {l.value !== undefined
+                    ? ` ${Math.round((l.value / legendTotal) * 100)}%`
+                    : ""}
+                </span>
+              ))}
+            </div>
+          )}
+          <AnalyticsChart
+            mode={mode}
+            visual={visual}
+            labels={vm.labels}
+            series={vm.series}
+            categories={vm.categories}
+          />
+        </CardContent>
+      </Card>
+
+      {vm.apporteur ? (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="mb-3 flex items-baseline justify-between">
+              <span className="text-sm font-medium">{vm.breakdownTitle}</span>
+              <span className="font-mono text-[11px] text-muted-foreground">
+                12 mois
+              </span>
+            </div>
+            {vm.apporteur.list.map((a) => (
+              <div
+                key={a.name}
+                className="flex items-center gap-3 border-t py-2.5 first:border-t-0"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm">{a.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {a.bien} · {a.res} résa · {formatNumber(a.ca)} CHF apportés
+                  </p>
+                </div>
+                <span className="text-sm font-medium tabular-nums text-destructive">
+                  −{formatNumber(a.paid)} CHF
+                </span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      ) : sortedBiens ? (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm font-medium">{vm.breakdownTitle}</span>
+              <Seg
+                value={sortKey}
+                onChange={setSortKey}
+                options={[
+                  { value: "value", label: "Revenu" },
+                  { value: "name", label: "Nom" },
+                ]}
+              />
+            </div>
+            {sortedBiens.map((b) => (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => setBien(b.id)}
+                className="flex w-full items-center gap-3 border-t py-3 text-left transition-colors first:border-t-0 hover:bg-muted/50"
+              >
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-xs font-medium text-white"
+                  style={{ background: b.color }}
+                >
+                  {b.initials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium">{b.name}</p>
+                  <p className="text-xs text-muted-foreground">{b.city}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium tabular-nums">
+                    {formatNumber(b.value)} CHF
+                  </p>
+                  <p
+                    className={cn(
+                      "text-xs",
+                      b.delta >= 0 ? "text-success" : "text-destructive",
+                    )}
+                  >
+                    {b.delta >= 0 ? "+" : ""}
+                    {b.delta}%
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </button>
+            ))}
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="pt-6">
+            <p className="mb-3 text-sm font-medium">{vm.breakdownTitle}</p>
+            {vm.categories
+              .slice()
+              .sort((a, b) => b.value - a.value)
+              .map((c) => {
+                const tot = vm.categories.reduce((s, x) => s + x.value, 0) || 1;
+                const pct = Math.round((c.value / tot) * 100);
+                return (
+                  <div key={c.label} className="mb-3 last:mb-0">
+                    <div className="mb-1.5 flex justify-between text-sm">
+                      <span className="flex items-center gap-2">
+                        <span
+                          className="h-2.5 w-2.5 rounded-[2px]"
+                          style={{ background: c.color }}
+                        />
+                        {c.label}
+                      </span>
+                      <span className="tabular-nums text-muted-foreground">
+                        {formatNumber(c.value)} CHF · {pct}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${pct}%`, background: c.color }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
