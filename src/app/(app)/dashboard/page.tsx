@@ -37,29 +37,27 @@ import { buildView } from "@/lib/revenue-data";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-/* /dashboard = page UNIQUE (fusion Vue d'ensemble + Revenus).
-   La page Revenus autonome n'existe plus -- son contenu est extrait
-   dans <RevenueSection> et rendu ici dans la Zone 2 (id="revenus"
-   pour les liens entrants depuis le redirect 308).
-
-   Structure 3 zones :
-   - Zone 1 : Cockpit (Hero + 4 KPI + alertes + a venir + objectifs)
-   - Zone 2 : RevenueSection (filtres profonds + chart + transactions)
-   - Zone 3 : Explorer le reste (6 SummaryCards "Voir tout ->")
-
-   Tout derive de la SOT (dashboard-data + revenue-data). Aucun
-   chiffre hardcode. */
+/* /dashboard = page UNIQUE en 3 zones, style blueprint monochrome.
+   Discipline : mono pour eyebrows/labels/chiffres, couleurs uniquement
+   dans le graphe et les initiales de biens. Pas de titres "remplissage"
+   (l'eyebrow suffit). Une seule famille de carte (border hairline,
+   radius homogene, ombre quasi nulle via card.tsx). */
 
 export default function DashboardOverviewPage() {
   const { objectives } = dashboard;
 
-  /* Zone 1 : 4 KPI transversaux derives. */
-  const revenue12m = buildView({
+  /* Total CA 12 mois TOUTES sources via buildView('all'). Cette
+     somme = immobilier + formations + evenements + boutique +
+     apporteur, derivee de la SOT (revenue-data). Le sub-libellé
+     "Toutes sources" le distingue du 57'606 immobilier seul que
+     l'utilisateur verra plus bas dans la RevenueSection. */
+  const revenue12mAll = buildView({
     source: "all",
     period: "12m",
     propType: "all",
     bien: null,
   });
+
   const occupancyAvg =
     properties.reduce((s, p) => s + p.occupancy, 0) / properties.length;
 
@@ -68,57 +66,69 @@ export default function DashboardOverviewPage() {
     (r) => r.status === "pending",
   ).length;
 
+  /* Decomposition annonces precise pour la SummaryCard. Avant on
+     n'avait que "biens + formations" qui n'expliquait pas le total
+     16. Maintenant : 3 biens + 3 formations + 4 evenements + 3
+     services + 3 boutique = 16. */
+  const annoncesDecomp = [
+    `${activeListingsCount.biens} biens`,
+    `${activeListingsCount.formations} formations`,
+    `${activeListingsCount.events} événements`,
+    `${activeListingsCount.services} services`,
+    `${activeListingsCount.boutique} produits`,
+  ].join(" · ");
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <DashboardHero />
 
       {/* ─── ZONE 1 : COCKPIT ─────────────────────────────── */}
+      <ZoneSeparator />
       <section className="space-y-6">
-        {/* 4 KPI transversaux (tuiles chiffrees, pas de graphe) */}
+        {/* 4 KPI transversaux blueprint mono */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <KpiTile
             icon={TrendingUp}
             label="Revenus · 12 mois"
-            value={`${formatNumber(revenue12m.total)} CHF`}
+            sub="Toutes sources"
+            value={`${formatNumber(revenue12mAll.total)} CHF`}
             delta="+15%"
-            tone="primary"
           />
           <KpiTile
             icon={CalendarDays}
             label="Réservations"
+            sub="Sur la période"
             value={String(dashboardReservations.length)}
             delta="+21%"
-            tone="primary"
           />
           <KpiTile
             icon={Percent}
             label="Occupation moyenne"
+            sub="Sur portefeuille"
             value={`${Math.round(occupancyAvg * 100)}%`}
             delta="+4 pts"
-            tone="success"
           />
           <KpiTile
             icon={Star}
             label="Note moyenne"
+            sub={`${reviewsSummary.total} avis`}
             value={`${reviewsSummary.avg.toFixed(2)} / 5`}
-            delta={`${reviewsSummary.total} avis`}
-            tone="warning"
           />
         </div>
 
-        {/* Bande d'alertes cliquables (chips, derivees) */}
-        <AlertsBanner
-          pendingReservations={pendingReservations}
-          pendingReviews={reviewsSummary.pendingResponse}
-          pendingCommissions={apporteurSummary.pending}
-        />
+        {/* Bande d'alertes : ne contient PLUS que ce qui n'est pas
+            deja dans le hero. Reservations + avis sont dans le hero,
+            commissions est unique a cette bande. */}
+        <AlertsBanner pendingCommissions={apporteurSummary.pending} />
 
         {/* Prochains rendez-vous + Objectifs (2-cols) */}
         <div className="grid gap-6 lg:grid-cols-2">
           <UpcomingEvents limit={3} />
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>Objectifs du mois</CardTitle>
+              <CardTitle className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                Objectifs du mois
+              </CardTitle>
               <CardDescription>Progression vers vos cibles</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -140,11 +150,14 @@ export default function DashboardOverviewPage() {
                 target={objectives.rating.target}
                 display={`${objectives.rating.current.toFixed(2)} / ${objectives.rating.target}`}
               />
+              {/* "Diversification 6/7 sources" remplace par "Taux
+                  d'occupation cible" : objectif metier concret pour
+                  un host immobilier. */}
               <ProgressRow
-                label="Diversification"
-                current={objectives.diversification.current}
-                target={objectives.diversification.target}
-                display={`${objectives.diversification.current} / ${objectives.diversification.target} sources`}
+                label="Taux d'occupation cible"
+                current={Math.round(occupancyAvg * 100)}
+                target={85}
+                display={`${Math.round(occupancyAvg * 100)}% / 85%`}
               />
             </CardContent>
           </Card>
@@ -152,18 +165,15 @@ export default function DashboardOverviewPage() {
       </section>
 
       {/* ─── ZONE 2 : REVENUS & PERFORMANCE ───────────────── */}
+      <ZoneSeparator />
       <RevenueSection />
 
       {/* ─── ZONE 3 : EXPLORER LE RESTE ───────────────────── */}
+      <ZoneSeparator />
       <section className="space-y-4">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-primary">
-            Explorer le reste
-          </p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight">
-            Voir tout dans chaque section
-          </h2>
-        </div>
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          Explorer le reste
+        </p>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <SummaryCard
             icon={CalendarDays}
@@ -183,13 +193,13 @@ export default function DashboardOverviewPage() {
             value={`${reviewsSummary.avg.toFixed(2)} · ${reviewsSummary.pendingResponse} à répondre`}
             hint="Note moyenne pondérée"
             href="/dashboard/avis"
-            tone={reviewsSummary.pendingResponse > 0 ? "warning" : "success"}
+            tone={reviewsSummary.pendingResponse > 0 ? "warning" : "default"}
           />
           <SummaryCard
             icon={Building2}
             label="Annonces"
             value={`${activeListingsCount.total} actives`}
-            hint={`${activeListingsCount.biens} biens + ${activeListingsCount.formations} formations`}
+            hint={annoncesDecomp}
             href="/dashboard/annonces"
           />
           <SummaryCard
@@ -221,102 +231,78 @@ export default function DashboardOverviewPage() {
   );
 }
 
-/* KpiTile : tuile chiffrée premium pour la Zone 1 du cockpit.
-   Icone chip a gauche, valeur enorme, delta colorise. */
+/* Filet pleine largeur entre zones : blueprint = espace + hairline. */
+function ZoneSeparator() {
+  return <div className="h-px w-full bg-border" aria-hidden />;
+}
+
+/* KpiTile blueprint : eyebrow mono uppercase + sub mono + valeur
+   tabular-nums. Icone discrete chip muted. Pas de tone colore -
+   la couleur est reservee au graphe. */
 function KpiTile({
   icon: Icon,
   label,
+  sub,
   value,
   delta,
-  tone = "primary",
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
+  sub?: string;
   value: string;
   delta?: string;
-  tone?: "primary" | "success" | "warning";
 }) {
-  const chip =
-    tone === "warning"
-      ? "chip-warning-soft"
-      : tone === "success"
-      ? "chip-success-soft"
-      : "bg-primary/10 text-primary";
   return (
     <Card>
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-3">
-          <div
-            className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center rounded-md",
-              chip,
-            )}
-          >
-            <Icon className="h-5 w-5" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-muted-foreground">
+            <Icon className="h-4 w-4" />
           </div>
           {delta && (
-            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+            <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
               {delta}
             </span>
           )}
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">{label}</p>
-        <p className="mt-0.5 text-2xl font-semibold tabular-nums">{value}</p>
+        <p className="mt-3 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          {label}
+        </p>
+        <p className="mt-0.5 font-mono text-2xl font-medium tabular-nums">
+          {value}
+        </p>
+        {sub && (
+          <p className="mt-0.5 text-[11px] text-muted-foreground">{sub}</p>
+        )}
       </CardContent>
     </Card>
   );
 }
 
-/* AlertsBanner : chips d'actions requises, derivees des compteurs. */
+/* AlertsBanner : ne contient plus que les commissions
+   (reservations + avis sont dans le hero). Si rien -> bordure
+   dashed sobre. */
 function AlertsBanner({
-  pendingReservations,
-  pendingReviews,
   pendingCommissions,
 }: {
-  pendingReservations: number;
-  pendingReviews: number;
   pendingCommissions: number;
 }) {
-  const items = [
-    pendingReservations > 0 && {
-      href: "/dashboard/reservations",
-      label: `${pendingReservations} réservation${pendingReservations > 1 ? "s" : ""} en attente`,
-      icon: CalendarDays,
-    },
-    pendingReviews > 0 && {
-      href: "/dashboard/avis",
-      label: `${pendingReviews} avis à répondre`,
-      icon: Star,
-    },
-    pendingCommissions > 0 && {
-      href: "/dashboard/apporteurs",
-      label: `${formatNumber(pendingCommissions)} CHF de commissions en attente`,
-      icon: Handshake,
-    },
-  ].filter(Boolean) as Array<{ href: string; label: string; icon: React.ComponentType<{ className?: string }> }>;
-
-  if (items.length === 0) {
-    return (
-      <div className="rounded-lg border border-dashed bg-success/5 px-4 py-3 text-sm text-muted-foreground">
-        <span className="font-medium text-foreground">Tout est à jour.</span>{" "}
-        Aucune action requise pour le moment.
-      </div>
-    );
+  if (pendingCommissions <= 0) {
+    return null;
   }
 
   return (
     <div className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className="chip-warning-soft inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-80"
-        >
-          <item.icon className="h-3.5 w-3.5" />
-          {item.label}
-          <ArrowRight className="h-3 w-3" />
-        </Link>
-      ))}
+      <Link
+        href="/dashboard/apporteurs"
+        className={cn(
+          "chip-warning-soft inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-80",
+        )}
+      >
+        <Handshake className="h-3.5 w-3.5" />
+        {formatNumber(pendingCommissions)} CHF de commissions en attente
+        <ArrowRight className="h-3 w-3" />
+      </Link>
     </div>
   );
 }
@@ -336,15 +322,16 @@ function ProgressRow({
   const reached = pct >= 100;
   return (
     <div>
-      <div className="mb-1.5 flex items-baseline justify-between text-sm">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="tabular-nums">{display}</span>
+      <div className="mb-1.5 flex items-baseline justify-between">
+        <span className="text-sm text-muted-foreground">{label}</span>
+        <span className="font-mono text-xs tabular-nums">{display}</span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+      <div className="h-1 overflow-hidden rounded-full bg-muted">
         <div
-          className={
-            reached ? "h-full bg-success rounded-full" : "h-full bg-primary rounded-full"
-          }
+          className={cn(
+            "h-full rounded-full transition-all motion-reduce:transition-none",
+            reached ? "bg-foreground" : "bg-foreground/70",
+          )}
           style={{ width: `${pct}%` }}
         />
       </div>

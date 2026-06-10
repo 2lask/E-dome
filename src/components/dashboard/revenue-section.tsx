@@ -1,7 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Download, ChevronLeft, TrendingUp, ChevronRight } from "lucide-react";
+import {
+  Download,
+  ChevronLeft,
+  TrendingUp,
+  ChevronRight,
+  BarChart2,
+  LineChart as LineChartIcon,
+  PieChart as PieChartIcon,
+  Activity,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +45,38 @@ import {
 
    API : aucune (autonome). Filtres source x periode x mode x visuel
    x type x bien, drill-down par bien, TransactionsList en bas. */
+
+/* IconToggle : bouton icone 28px discret pour contrôles d'AFFICHAGE
+   du chart (Mode + Visuel). Etat actif = bg muted. Focus visible. */
+function IconToggle({
+  active,
+  onClick,
+  Icon,
+  title,
+}: {
+  active: boolean;
+  onClick: () => void;
+  Icon: React.ComponentType<{ className?: string }>;
+  title: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={title}
+      aria-pressed={active}
+      title={title}
+      className={cn(
+        "inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        active
+          ? "bg-muted text-foreground"
+          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" />
+    </button>
+  );
+}
 
 function Seg<T extends string>({
   value,
@@ -78,9 +119,13 @@ function Tile({
   sub?: string;
 }) {
   return (
-    <div className="rounded-lg bg-muted p-4">
-      <p className="mb-1 text-xs text-muted-foreground">{label}</p>
-      <p className="truncate text-xl font-medium tabular-nums">{value}</p>
+    <div className="rounded-lg border p-4">
+      <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+        {label}
+      </p>
+      <p className="truncate font-mono text-xl font-medium tabular-nums">
+        {value}
+      </p>
       {sub && <p className="mt-0.5 truncate text-xs text-muted-foreground">{sub}</p>}
     </div>
   );
@@ -91,15 +136,8 @@ const PERIODS: { value: Period; label: string }[] = [
   { value: "30j", label: "30j" },
   { value: "12m", label: "12m" },
 ];
-const MODES: { value: ChartMode; label: string }[] = [
-  { value: "evolution", label: "Évolution" },
-  { value: "comparison", label: "Comparaison" },
-  { value: "repartition", label: "Répartition" },
-];
-const VISUALS: { value: ChartVisual; label: string }[] = [
-  { value: "bar", label: "Barres" },
-  { value: "line", label: "Courbe" },
-];
+/* MODES + VISUALS plus utilises comme Seg : remplaces par les
+   IconToggle discrets en haut a droite du chart. */
 const TYPE_OPTS: { value: PropType; label: string }[] = [
   { value: "all", label: "Tous types" },
   ...TYPES.map((t) => ({ value: t.id as PropType, label: t.short })),
@@ -147,24 +185,25 @@ export function RevenueSection() {
 
   return (
     <section id="revenus" className="space-y-6 scroll-mt-20">
-      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-primary">
-            Revenus & performance
-          </p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight lg:text-3xl">
-            Analyser vos sources de revenus
-          </h2>
-        </div>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          Revenus & performance
+        </p>
         <Button variant="outline" size="sm">
           <Download className="mr-2 h-4 w-4" /> Exporter
         </Button>
       </div>
 
+      {/* Filtres DE DONNEES (Source / Periode / Type immo) en avant
+          dans une seule carte. Le mode (Evolution / Comparaison /
+          Repartition) et le visuel (Barres / Courbe) sont des
+          options d'AFFICHAGE -> reduits a droite du graphe. */}
       <Card>
         <CardContent className="flex flex-wrap items-end gap-x-6 gap-y-4 pt-6">
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs text-muted-foreground">Source de revenu</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+              Source
+            </span>
             <Select
               value={source}
               onValueChange={(v) => changeSource(v as SourceId)}
@@ -182,53 +221,53 @@ export function RevenueSection() {
             </Select>
           </label>
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs text-muted-foreground">Période</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+              Période
+            </span>
             <Seg value={period} onChange={setPeriod} options={PERIODS} />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs text-muted-foreground">Graphique</span>
-            <Seg value={mode} onChange={setMode} options={MODES} />
-          </div>
-          {mode !== "repartition" && (
+          {source === "immobilier" && (
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-muted-foreground">Type</span>
-              <Seg value={visual} onChange={setVisual} options={VISUALS} />
+              <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+                Type immobilier
+              </span>
+              <Seg value={propType} onChange={setPropType} options={TYPE_OPTS} />
             </div>
           )}
         </CardContent>
       </Card>
 
-      {vm.showTypeFilter && (
+      {/* Breadcrumb quand on a drill-down un bien specifique. Le
+          filtre propType est dans la card principale (deja affiche
+          quand source=immobilier). */}
+      {vm.selectedBien && (
         <div className="flex flex-wrap items-center gap-3">
-          {vm.selectedBien && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 text-muted-foreground"
-              onClick={() => setBien(null)}
-            >
-              <ChevronLeft className="mr-1 h-4 w-4" /> Tous les biens
-            </Button>
-          )}
-          <Seg value={propType} onChange={setPropType} options={TYPE_OPTS} />
-          {vm.selectedBien && (
-            <span className="text-sm text-muted-foreground">
-              {vm.selectedBien.name} · {vm.selectedBien.city}
-            </span>
-          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 text-muted-foreground"
+            onClick={() => setBien(null)}
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" /> Tous les biens
+          </Button>
+          <span className="font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
+            {vm.selectedBien.name} · {vm.selectedBien.city}
+          </span>
         </div>
       )}
 
       <div>
-        <p className="mb-1 text-sm text-muted-foreground">{vm.heroLabel}</p>
+        <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+          {vm.heroLabel}
+        </p>
         <div className="flex flex-wrap items-baseline gap-2.5">
-          <span className="text-4xl font-medium tracking-tight tabular-nums">
+          <span className="font-mono text-4xl font-medium tracking-tight tabular-nums">
             {formatNumber(vm.total)}
           </span>
           <span className="text-base text-muted-foreground">CHF</span>
           <span
             className={cn(
-              "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium",
+              "inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono text-[11px] font-medium tabular-nums",
               vm.delta >= 0 ? "chip-success-soft" : "chip-danger-soft",
             )}
           >
@@ -247,22 +286,67 @@ export function RevenueSection() {
 
       <Card>
         <CardContent className="pt-6">
-          {legend.length > 0 && (
-            <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-              {legend.map((l) => (
-                <span key={l.name} className="flex items-center gap-1.5">
-                  <span
-                    className="h-2.5 w-2.5 rounded-[2px]"
-                    style={{ background: l.color }}
+          {/* Controles d'AFFICHAGE discrets en haut a droite du chart :
+              Mode (Evolution/Comparaison/Repartition) + Visuel (Barres
+              /Courbe). Pas dans la card de filtres principale -> ce
+              sont des options de rendu, pas de donnees. */}
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            {legend.length > 0 ? (
+              <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+                {legend.map((l) => (
+                  <span key={l.name} className="flex items-center gap-1.5">
+                    <span
+                      className="h-2.5 w-2.5 rounded-[2px]"
+                      style={{ background: l.color }}
+                    />
+                    {l.name}
+                    {l.value !== undefined
+                      ? ` ${Math.round((l.value / legendTotal) * 100)}%`
+                      : ""}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span />
+            )}
+            <div className="flex items-center gap-1">
+              <IconToggle
+                active={mode === "evolution"}
+                onClick={() => setMode("evolution")}
+                Icon={Activity}
+                title="Évolution"
+              />
+              <IconToggle
+                active={mode === "comparison"}
+                onClick={() => setMode("comparison")}
+                Icon={BarChart2}
+                title="Comparaison"
+              />
+              <IconToggle
+                active={mode === "repartition"}
+                onClick={() => setMode("repartition")}
+                Icon={PieChartIcon}
+                title="Répartition"
+              />
+              {mode !== "repartition" && (
+                <>
+                  <span className="mx-1 h-4 w-px bg-border" aria-hidden />
+                  <IconToggle
+                    active={visual === "bar"}
+                    onClick={() => setVisual("bar")}
+                    Icon={BarChart2}
+                    title="Barres"
                   />
-                  {l.name}
-                  {l.value !== undefined
-                    ? ` ${Math.round((l.value / legendTotal) * 100)}%`
-                    : ""}
-                </span>
-              ))}
+                  <IconToggle
+                    active={visual === "line"}
+                    onClick={() => setVisual("line")}
+                    Icon={LineChartIcon}
+                    title="Courbe"
+                  />
+                </>
+              )}
             </div>
-          )}
+          </div>
           <AnalyticsChart
             mode={mode}
             visual={visual}

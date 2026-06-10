@@ -1,90 +1,73 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  Calendar,
-  Download,
-  Plus,
-  Star,
-} from "lucide-react";
+import { ArrowRight, Calendar, Plus, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   dashboardUser,
   dashboardReservations,
   reviewsSummary,
-  kpis,
 } from "@/lib/dashboard-data";
-import { formatNumber } from "@/lib/format";
 
-/* DashboardHero : bandeau d'accueil personnalise. Donne un signal
-   visuel fort : tu sais qui tu es, ce qui demande ton attention
-   aujourd'hui, et tu peux exporter / publier en 1 clic.
-   Inspire des pattern "command center" Hostaway / Smoobu. */
+/* DashboardHero ALLEGE (blueprint monochrome).
+   Avant : salutation + grand titre stat (annonces + previsionnels)
+   + ligne attention + 2 boutons (Exporter + Nouvelle annonce) + 2
+   chips d'action. C'etait surcharge et les stats se repetaient
+   dans les KPI cards juste en dessous.
+
+   Apres : salutation mono, UNE ligne de priorite du jour, UN
+   bouton primaire (Nouvelle annonce), et les chips d'actions
+   d'attention. L'export vit dans la section Revenus uniquement. */
 
 export function DashboardHero() {
   const pending = dashboardReservations.filter((r) => r.status === "pending")
     .length;
   const totalAttention = pending + reviewsSummary.pendingResponse;
-
-  /* On evite Date.now() pour rester compatible SSR statique :
-     "Bonjour" + prenom. */
   const firstName = dashboardUser.firstName ?? "Léo";
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/8 via-card to-card p-6 md:p-8">
-      {/* Halo decoratif */}
-      <div className="pointer-events-none absolute -top-32 -right-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
-
-      <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-2 min-w-0">
-          <p className="text-xs font-medium uppercase tracking-wider text-primary">
-            Bonjour {firstName} 👋
+    <section className="space-y-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="space-y-1 min-w-0">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Bonjour {firstName}
           </p>
-          <h1 className="text-3xl font-bold tracking-tight lg:text-4xl">
-            Vous avez {formatNumber(kpis.activeListings)} annonces actives
-            <br className="hidden md:block" />
-            et {formatNumber(Math.round(kpis.forecast30d))} CHF prévisionnels.
-          </h1>
-          <p className="max-w-xl text-sm text-muted-foreground">
+          <p className="max-w-xl text-base text-foreground md:text-lg">
             {totalAttention > 0 ? (
               <>
-                <strong className="font-medium text-foreground">
+                <span className="font-medium">
                   {totalAttention} action{totalAttention > 1 ? "s" : ""} demande
                   {totalAttention > 1 ? "nt" : ""}
-                </strong>{" "}
-                votre attention aujourd&apos;hui — {pending} réservation
-                {pending > 1 ? "s" : ""} en attente, {reviewsSummary.pendingResponse}{" "}
-                avis à répondre.
+                </span>{" "}
+                votre attention aujourd&apos;hui.
               </>
             ) : (
-              <>Tout est à jour. Profitez-en pour planifier votre prochaine action.</>
+              <>
+                <span className="font-medium">Tout est à jour.</span> Profitez-en
+                pour planifier votre prochaine action.
+              </>
             )}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-            Exporter
-          </Button>
-          <Button size="sm" asChild>
-            <Link href="/publier">
-              <Plus className="mr-2 h-4 w-4" />
-              Nouvelle annonce
-            </Link>
-          </Button>
-        </div>
+        <Button size="sm" asChild>
+          <Link href="/publier">
+            <Plus className="mr-2 h-4 w-4" />
+            Nouvelle annonce
+          </Link>
+        </Button>
       </div>
 
-      {/* Actions rapides contextuelles */}
+      {/* Chips d'actions contextuelles : restent pour donner un
+          point d'entree direct. La bande d'alertes du cockpit ne
+          duplique plus ce contenu (elle n'affiche que les
+          commissions, info absente d'ici). */}
       {totalAttention > 0 && (
-        <div className="relative mt-6 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {pending > 0 && (
             <Link
               href="/dashboard/reservations"
-              className="inline-flex items-center gap-1.5 rounded-md border bg-background/60 px-3 py-1.5 text-xs font-medium backdrop-blur transition-colors hover:bg-background"
+              className="chip-warning-soft inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-80"
             >
-              <Calendar className="h-3.5 w-3.5 text-warning" />
+              <Calendar className="h-3.5 w-3.5" />
               Traiter {pending} réservation{pending > 1 ? "s" : ""} en attente
               <ArrowRight className="h-3 w-3" />
             </Link>
@@ -92,9 +75,9 @@ export function DashboardHero() {
           {reviewsSummary.pendingResponse > 0 && (
             <Link
               href="/dashboard/avis"
-              className="inline-flex items-center gap-1.5 rounded-md border bg-background/60 px-3 py-1.5 text-xs font-medium backdrop-blur transition-colors hover:bg-background"
+              className="chip-warning-soft inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-80"
             >
-              <Star className="h-3.5 w-3.5 text-rating" />
+              <Star className="h-3.5 w-3.5" />
               Répondre à {reviewsSummary.pendingResponse} avis
               <ArrowRight className="h-3 w-3" />
             </Link>

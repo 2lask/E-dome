@@ -2,13 +2,17 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/* Card blueprint : border hairline (border-border) + radius homogene +
+   PAS d'ombre (le theme brutalist neutralise shadow-sm de toute facon,
+   on retire la classe pour eviter la dette DOM trompeuse). Le rendu
+   est plat et discipline. */
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
       data-slot="card"
       className={cn(
-        "rounded-lg border bg-card text-card-foreground shadow-sm",
+        "rounded-lg border bg-card text-card-foreground",
         className,
       )}
       {...props}
