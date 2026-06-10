@@ -86,7 +86,9 @@ const LEADERBOARD = [
   { rank: 1, nom: "Sarah K.", apports: 52, commissions: 4200 },
   { rank: 2, nom: "Jean-Pierre D.", apports: 41, commissions: 3380 },
   { rank: 3, nom: "Laura M.", apports: 39, commissions: 3010 },
-  { rank: 4, nom: "Léo M. (Vous)", apports: 28, commissions: 1184, isYou: true },
+  /* Note : nom sans " (Vous)" — le rendu ajoute deja le tag (vous)
+     en bleu via isYou. Avoir les deux donnait "Leo M. (Vous) (vous)". */
+  { rank: 4, nom: "Léo M.", apports: 28, commissions: 1034, isYou: true },
   { rank: 5, nom: "Nadia S.", apports: 25, commissions: 1050 },
   { rank: 6, nom: "Thomas R.", apports: 22, commissions: 920 },
   { rank: 7, nom: "Amina K.", apports: 19, commissions: 780 },

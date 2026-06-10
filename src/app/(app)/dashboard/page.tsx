@@ -7,54 +7,42 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Building2,
+  GraduationCap,
+  Handshake,
+  ShoppingBag,
+} from "lucide-react";
 import { DashboardHero } from "@/components/dashboard/dashboard-hero";
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
-import { MetricsSecondary } from "@/components/dashboard/metrics-secondary";
 import { SalesAreaChart } from "@/components/dashboard/sales-area-chart";
-import { RevenueBreakdown } from "@/components/dashboard/revenue-breakdown";
-import { TopProperties } from "@/components/dashboard/top-properties";
-import { TopFormations } from "@/components/dashboard/top-formations";
-import { BookingsList } from "@/components/dashboard/bookings-list";
 import { UpcomingEvents } from "@/components/dashboard/upcoming-events";
-import { BoutiqueAlerts } from "@/components/dashboard/boutique-alerts";
+import { BookingsList } from "@/components/dashboard/bookings-list";
+import { SummaryCard } from "@/components/dashboard/summary-card";
 import {
-  KpiCardPremium,
-  KpiGrid,
-} from "@/components/dashboard/kpi-card-premium";
-import { AnalyticsAreaChart } from "@/components/dashboard/analytics-area-chart";
-import { SimpleBarList } from "@/components/dashboard/simple-bar-list";
-import { dashboard, referralChannels } from "@/lib/dashboard-data";
+  dashboard,
+  formations,
+  properties,
+  boutiqueAlerts,
+  apporteurSummary,
+} from "@/lib/dashboard-data";
 import { formatNumber } from "@/lib/format";
 
-/* Vue d'ensemble dashboard — refonte MULTI-SOURCE.
-   Structure pensee pour densifier l'ecran (max-w-[1680px]) :
-   - 4 KPI premium (CA total, annonces actives, note pond., previs 30j)
-   - 4 mini KPI (reservations, commissions, occupation, lives a venir)
-   - Tab Overview : grid 12-col
-     · row 1 : SalesAreaChart col-8 + RevenueBreakdown col-4
-     · row 2 : TopProperties col-6 + TopFormations col-6
-     · row 3 : UpcomingEvents col-6 + BoutiqueAlerts col-6
-     · row 4 : BookingsList col-8 + Objectifs col-4
-   - Tab Analytics : trafic + canaux + sources
-   Couverture multi-source : 7/7 (avant : 2/7). */
+/* Vue d'ensemble degraissee — VRAI resume.
+   AVANT : Hero + 4 KPI + 4 mini KPI + Tabs (Vue/Analytics) avec
+   row 1 chart+breakdown, row 2 TopProp+TopForm, row 3 Events+Boutique,
+   row 4 Bookings+Objectifs. C'etait dense mais cela DUPLIQUAIT le
+   contenu des pages dediees (/dashboard/revenus a deja le breakdown,
+   /dashboard/annonces a deja TopProp et TopForm, etc.).
 
-const ANALYTICS_WEEK = [
-  { label: "Lun", series1: 142, series2: 98 },
-  { label: "Mar", series1: 178, series2: 112 },
-  { label: "Mer", series1: 156, series2: 102 },
-  { label: "Jeu", series1: 224, series2: 148 },
-  { label: "Ven", series1: 268, series2: 174 },
-  { label: "Sam", series1: 312, series2: 218 },
-  { label: "Dim", series1: 286, series2: 196 },
-];
+   APRES : Hero + 4 KPI premium + chart 8col/objectifs 4col + 4 cards
+   "Voir tout" (Biens / Formations / Boutique / Apporteurs) + prochains
+   rendez-vous + 3 dernieres reservations. La home est un INDEX, les
+   pages dediees ont le detail. */
 
 export default function DashboardOverviewPage() {
   const { objectives } = dashboard;
-
-  const topChannels = [...referralChannels]
-    .sort((a, b) => b.conversions - a.conversions)
-    .map((c) => ({ name: c.label, value: c.conversions }));
+  const draftBoutique = boutiqueAlerts.filter((b) => b.level !== "ok").length;
 
   return (
     <div className="space-y-6">
@@ -63,166 +51,88 @@ export default function DashboardOverviewPage() {
       {/* 4 KPI cards premium multi-source */}
       <MetricsOverview />
 
-      {/* 4 mini KPI secondaires actionnables */}
-      <MetricsSecondary />
-
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-        </TabsList>
-
-        {/* ─── VUE D'ENSEMBLE ─────────────────────────────── */}
-        <TabsContent value="overview" className="space-y-6">
-          {/* Row 1 : Chart 12 mois + Mix multi-source */}
-          <div className="grid gap-6 lg:grid-cols-12">
-            <div className="lg:col-span-8">
-              <SalesAreaChart />
-            </div>
-            <div className="lg:col-span-4">
-              <RevenueBreakdown />
-            </div>
-          </div>
-
-          {/* Row 2 : Top biens + Top formations */}
-          <div className="grid gap-6 md:grid-cols-2">
-            <TopProperties />
-            <TopFormations />
-          </div>
-
-          {/* Row 3 : Prochainement + Alertes boutique */}
-          <div className="grid gap-6 md:grid-cols-2">
-            <UpcomingEvents />
-            <BoutiqueAlerts />
-          </div>
-
-          {/* Row 4 : Réservations récentes + Objectifs */}
-          <div className="grid gap-6 lg:grid-cols-12">
-            <div className="lg:col-span-8">
-              <BookingsList limit={5} />
-            </div>
-            <div className="lg:col-span-4">
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>Objectifs du mois</CardTitle>
-                  <CardDescription>Progression vers vos cibles</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ProgressRow
-                    label="Revenus"
-                    current={objectives.revenue.current}
-                    target={objectives.revenue.target}
-                    display={`${formatNumber(objectives.revenue.current)} / ${formatNumber(objectives.revenue.target)} CHF`}
-                  />
-                  <ProgressRow
-                    label="Réservations"
-                    current={objectives.reservations.current}
-                    target={objectives.reservations.target}
-                    display={`${objectives.reservations.current} / ${objectives.reservations.target}`}
-                  />
-                  <ProgressRow
-                    label="Note moyenne"
-                    current={objectives.rating.current}
-                    target={objectives.rating.target}
-                    display={`${objectives.rating.current} / ${objectives.rating.target}`}
-                  />
-                  <ProgressRow
-                    label="Diversification"
-                    current={objectives.diversification.current}
-                    target={objectives.diversification.target}
-                    display={`${objectives.diversification.current} / ${objectives.diversification.target} sources`}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* ─── ANALYTICS ──────────────────────────────────── */}
-        <TabsContent value="analytics" className="space-y-6">
-          <Card>
+      {/* Chart 12 mois + Objectifs (le seul "tableau" qu'on garde,
+          car il appartient a la Vue d'ensemble par nature). */}
+      <div className="grid gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-8">
+          <SalesAreaChart />
+        </div>
+        <div className="lg:col-span-4">
+          <Card className="h-full">
             <CardHeader>
-              <CardTitle>Trafic hebdomadaire</CardTitle>
-              <CardDescription>
-                Vues uniques vs visiteurs sur 7 derniers jours
-              </CardDescription>
+              <CardTitle>Objectifs du mois</CardTitle>
+              <CardDescription>Progression vers vos cibles</CardDescription>
             </CardHeader>
-            <CardContent className="px-6">
-              <AnalyticsAreaChart data={ANALYTICS_WEEK} />
+            <CardContent className="space-y-4">
+              <ProgressRow
+                label="Revenus"
+                current={objectives.revenue.current}
+                target={objectives.revenue.target}
+                display={`${formatNumber(objectives.revenue.current)} / ${formatNumber(objectives.revenue.target)} CHF`}
+              />
+              <ProgressRow
+                label="Réservations"
+                current={objectives.reservations.current}
+                target={objectives.reservations.target}
+                display={`${objectives.reservations.current} / ${objectives.reservations.target}`}
+              />
+              <ProgressRow
+                label="Note moyenne"
+                current={objectives.rating.current}
+                target={objectives.rating.target}
+                display={`${objectives.rating.current} / ${objectives.rating.target}`}
+              />
+              <ProgressRow
+                label="Diversification"
+                current={objectives.diversification.current}
+                target={objectives.diversification.target}
+                display={`${objectives.diversification.current} / ${objectives.diversification.target} sources`}
+              />
             </CardContent>
           </Card>
+        </div>
+      </div>
 
-          <KpiGrid>
-            <KpiCardPremium
-              label="Vues totales"
-              value="1 566"
-              delta="+12.4%"
-              trend="up"
-              footer="Trafic en hausse"
-              subfooter="Vs semaine dernière"
-            />
-            <KpiCardPremium
-              label="Visiteurs uniques"
-              value="1 048"
-              delta="+5.8%"
-              trend="up"
-              footer="Audience qualifiée"
-              subfooter="Vs semaine dernière"
-            />
-            <KpiCardPremium
-              label="Taux de conversion"
-              value="4.2%"
-              delta="-0.3%"
-              trend="down"
-              footer="Légère baisse"
-              subfooter="À surveiller cette semaine"
-            />
-            <KpiCardPremium
-              label="Durée moyenne"
-              value="3m 24s"
-              delta="+18s"
-              trend="up"
-              footer="Engagement accru"
-              subfooter="Vs semaine dernière"
-            />
-          </KpiGrid>
+      {/* 4 cards compactes "Voir tout" -> pages dediees */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <SummaryCard
+          icon={Building2}
+          label="Biens performants"
+          value={`${properties.length} biens`}
+          hint={`Top : ${properties[0]?.name ?? "—"}`}
+          href="/dashboard/annonces"
+        />
+        <SummaryCard
+          icon={GraduationCap}
+          label="Formations en vente"
+          value={`${formations.length} actives`}
+          hint={`${formations.reduce((s, f) => s + f.studentsThisMonth, 0)} élèves ce mois`}
+          href="/dashboard/annonces"
+        />
+        <SummaryCard
+          icon={ShoppingBag}
+          label="Boutique"
+          value={draftBoutique > 0 ? `${draftBoutique} alertes` : "À jour"}
+          hint="Stock à réapprovisionner"
+          href="/dashboard/annonces"
+          tone={draftBoutique > 0 ? "warning" : "success"}
+        />
+        <SummaryCard
+          icon={Handshake}
+          label="Apporteurs"
+          value={`${formatNumber(apporteurSummary.pending)} CHF`}
+          hint="En attente de versement"
+          href="/dashboard/apporteurs"
+          tone={apporteurSummary.pending > 0 ? "warning" : "default"}
+        />
+      </div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Canaux apporteurs</CardTitle>
-                <CardDescription>Conversions par canal ce mois</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <SimpleBarList
-                  items={topChannels}
-                  valueFormatter={(n) => `${n} conv.`}
-                  barClass="bg-primary"
-                />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Sources de trafic</CardTitle>
-                <CardDescription>D&apos;où viennent vos visiteurs</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <SimpleBarList
-                  items={[
-                    { name: "Direct", value: 612 },
-                    { name: "Recherche organique", value: 348 },
-                    { name: "Réseaux sociaux", value: 218 },
-                    { name: "Liens d'apporteurs", value: 138 },
-                    { name: "Newsletter", value: 67 },
-                  ]}
-                  valueFormatter={(n) => `${formatNumber(n)} visites`}
-                  barClass="bg-muted-foreground"
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+      {/* Prochains rendez-vous + 3 dernieres reservations.
+          BookingsList limit=3 (au lieu de 5 pour rester compact). */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <UpcomingEvents limit={4} />
+        <BookingsList limit={3} />
+      </div>
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
   Handshake,
   Star,
   Calendar,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -47,6 +48,7 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
       { href: "/dashboard/calendrier", label: "Calendrier", icon: Calendar },
       { href: "/dashboard/revenus", label: "Revenus", icon: TrendingUp },
+      { href: "/dashboard/audience", label: "Audience", icon: BarChart3 },
     ],
   },
   {

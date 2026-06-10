@@ -501,7 +501,13 @@ export function buildView(state: RevenueState): RevenueView {
       { label: "Revenu immobilier", value: fmtC(total) },
       { label: "Biens actifs", value: String(PROPS.length) },
       { label: "Bien n°1", value: top ? top.name : "—" },
-      { label: "Croissance", value: "+15%" },
+      /* Auparavant "Croissance +15%" qui doublait le delta du hero.
+         Remplace par revenu moyen par bien actif (info utile et non
+         redondante). */
+      {
+        label: "Revenu / bien",
+        value: fmtC(Math.round(total / Math.max(1, PROPS.length))),
+      },
     ],
     labels,
     series,
