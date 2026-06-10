@@ -9,7 +9,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  TrendingUp,
   CalendarDays,
   Building2,
   Handshake,
@@ -47,7 +46,6 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
       { href: "/dashboard/calendrier", label: "Calendrier", icon: Calendar },
-      { href: "/dashboard/revenus", label: "Revenus", icon: TrendingUp },
       { href: "/dashboard/audience", label: "Audience", icon: BarChart3 },
     ],
   },

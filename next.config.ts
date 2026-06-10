@@ -7,11 +7,11 @@ const nextConfig: NextConfig = {
     ],
   },
   /* Redirects 308 (permanent) pour consolider les doublons :
-     - /statistiques -> /dashboard/audience (renomme + integre au shell)
+     - /statistiques -> /dashboard/audience (renomme)
      - /reservations -> /dashboard/reservations (canonique)
      - /apporteurs -> /dashboard/apporteurs (canonique)
-     L'ancien /statistiques/page.tsx a un redirect() server-side au
-     cas ou un navigateur ne suivrait pas le 308. */
+     - /dashboard/revenus -> /dashboard#revenus (fusionne dans la
+       Vue d'ensemble, ancre vers la section RevenueSection) */
   async redirects() {
     return [
       {
@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
       {
         source: "/apporteurs",
         destination: "/dashboard/apporteurs",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/revenus",
+        destination: "/dashboard#revenus",
         permanent: true,
       },
     ];

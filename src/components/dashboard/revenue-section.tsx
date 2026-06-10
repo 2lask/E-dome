@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { TransactionsList } from "@/components/dashboard/transactions-list";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
@@ -29,10 +28,14 @@ import {
   type Period,
 } from "@/lib/revenue-data";
 
-/* /dashboard/revenus refondu — page interactive avec filtres profonds
-   (source x periode x mode chart x visuel x type x bien). Inspire du
-   pattern shadcn-admin (3 docs fournis par l'utilisateur). Drill-down :
-   on clique un bien dans le breakdown -> on zoom dessus. */
+/* RevenueSection : tout le contenu interactif de l'ancien
+   /dashboard/revenus extrait en composant. Rendu maintenant
+   directement dans /dashboard (fusion home + revenus) -- la page
+   /dashboard/revenus n'existe plus, un redirect 308 pointe vers
+   /dashboard#revenus.
+
+   API : aucune (autonome). Filtres source x periode x mode x visuel
+   x type x bien, drill-down par bien, TransactionsList en bas. */
 
 function Seg<T extends string>({
   value,
@@ -102,7 +105,7 @@ const TYPE_OPTS: { value: PropType; label: string }[] = [
   ...TYPES.map((t) => ({ value: t.id as PropType, label: t.short })),
 ];
 
-export default function RevenusPage() {
+export function RevenueSection() {
   const [source, setSource] = useState<SourceId>("immobilier");
   const [period, setPeriod] = useState<Period>("12m");
   const [mode, setMode] = useState<ChartMode>("evolution");
@@ -143,16 +146,20 @@ export default function RevenusPage() {
     : null;
 
   return (
-    <div className="space-y-6">
-      <DashboardPageHeader
-        title="Revenus & performance"
-        description="Vue d'ensemble interactive de vos sources de revenus"
-        actions={
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" /> Exporter
-          </Button>
-        }
-      />
+    <section id="revenus" className="space-y-6 scroll-mt-20">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wider text-primary">
+            Revenus & performance
+          </p>
+          <h2 className="mt-1 text-2xl font-bold tracking-tight lg:text-3xl">
+            Analyser vos sources de revenus
+          </h2>
+        </div>
+        <Button variant="outline" size="sm">
+          <Download className="mr-2 h-4 w-4" /> Exporter
+        </Button>
+      </div>
 
       <Card>
         <CardContent className="flex flex-wrap items-end gap-x-6 gap-y-4 pt-6">
@@ -380,10 +387,9 @@ export default function RevenusPage() {
         </Card>
       )}
 
-      {/* Transactions detaillees (deplacees depuis /dashboard) :
-          Paiements / Virements / Commissions / Remboursements
-          avec filtres par kind. Format suisse + tokens semantiques. */}
+      {/* Transactions : paiements / virements / commissions /
+          remboursements avec filtres par kind. */}
       <TransactionsList />
-    </div>
+    </section>
   );
 }

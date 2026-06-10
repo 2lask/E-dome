@@ -362,10 +362,17 @@ const forecastServices = serviceLeads
   .reduce((sum, s) => sum + sum * 0 + s.amount * 0.5, 0); // 50% de conversion estimee
 export const forecast30d = forecastReservations + forecastEvents + forecastServices;
 
+/* Note moyenne SOT = moyenne arithmetique des reviews recus.
+   Avant 4.8 hardcode partout (objectives, kpis) qui contredisait
+   la realite : 7 avis dont 2 a 3 etoiles et un a 2 etoiles ->
+   moyenne reelle 4.14. Aligne sur la page Avis. */
+const reviewsAvg =
+  reviews.reduce((s, r) => s + r.rating, 0) / Math.max(1, reviews.length);
+
 export const objectives = {
   revenue: { current: totalRevenue, target: 30000 },
   reservations: { current: dashboardReservations.length, target: 12 },
-  rating: { current: 4.8, target: 5 },
+  rating: { current: Number(reviewsAvg.toFixed(2)), target: 4.5 },
   diversification: {
     current: revenueBySource.filter((s) => s.value > 0).length,
     target: 7,
@@ -381,7 +388,7 @@ export const kpis = {
   commissionsDelta: "+26%",
   occupancy: avgOccupancy,
   occupancyDelta: "+4 pts",
-  rating: 4.8,
+  rating: Number(reviewsAvg.toFixed(2)),
   weightedRating, // multi-source
   activeListings: activeListingsCount.total,
   forecast30d,
