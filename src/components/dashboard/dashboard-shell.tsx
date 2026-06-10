@@ -1,9 +1,9 @@
 "use client";
 
-/* DashboardShell v2 : sidebar groupee (Pilotage / Activite / Catalogue
-   / Croissance) + badges de notification (messages unread, avis a
-   repondre, reservations pending). Header sticky avec recherche
-   globale. Largeur etendue. */
+/* DashboardShell : sidebar groupee (Pilotage / Activite / Catalogue
+   & croissance). Pas de Messages (la messagerie reste dans la nav
+   globale, comme demande par l'audit). Badges count sur Avis +
+   Reservations pending. Largeur etendue 1680px. */
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,16 +13,13 @@ import {
   CalendarDays,
   Building2,
   Handshake,
-  MessageSquare,
   Star,
   Calendar,
-  Bell,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   dashboardUser,
-  messagesSummary,
   reviewsSummary,
   dashboardReservations,
 } from "@/lib/dashboard-data";
@@ -55,12 +52,6 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Activité",
     items: [
-      {
-        href: "/dashboard/messages",
-        label: "Messages",
-        icon: MessageSquare,
-        badge: messagesSummary.unread > 0 ? messagesSummary.unread : undefined,
-      },
       {
         href: "/dashboard/reservations",
         label: "Réservations",
@@ -134,10 +125,6 @@ function NavLink({
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const allItems = NAV_GROUPS.flatMap((g) => g.items);
-  const totalNotifs =
-    messagesSummary.unread +
-    reviewsSummary.pendingResponse +
-    pendingReservations;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -149,20 +136,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </Link>
 
           <div className="flex items-center gap-2.5">
-            {/* Notification bell */}
-            <Link
-              href="/dashboard/messages"
-              aria-label="Notifications"
-              className="relative inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <Bell className="h-4 w-4" />
-              {totalNotifs > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-medium text-primary-foreground tabular-nums">
-                  {totalNotifs > 9 ? "9+" : totalNotifs}
-                </span>
-              )}
-            </Link>
-
             <div className="hidden text-right leading-tight sm:block">
               <p className="text-[13px] font-medium">{dashboardUser.name}</p>
               <p className="text-[11px] text-muted-foreground">

@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { Download, Plus } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -9,9 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DashboardPageHeader } from "@/components/dashboard/page-header";
+import { DashboardHero } from "@/components/dashboard/dashboard-hero";
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { MetricsSecondary } from "@/components/dashboard/metrics-secondary";
 import { SalesAreaChart } from "@/components/dashboard/sales-area-chart";
@@ -61,24 +58,7 @@ export default function DashboardOverviewPage() {
 
   return (
     <div className="space-y-6">
-      <DashboardPageHeader
-        title="Tableau de bord"
-        description="Vue d'ensemble multi-revenus : biens, formations, boutique, événements, services & apporteurs"
-        actions={
-          <>
-            <Button variant="outline" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Exporter
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/publier">
-                <Plus className="mr-2 h-4 w-4" />
-                Nouvelle annonce
-              </Link>
-            </Button>
-          </>
-        }
-      />
+      <DashboardHero />
 
       {/* 4 KPI cards premium multi-source */}
       <MetricsOverview />
