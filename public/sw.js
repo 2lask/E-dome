@@ -1,82 +1,36 @@
-const CACHE_NAME = "edome-v10";
-const OFFLINE_URL = "/offline.html";
+/* Kill-switch Service Worker — vide les caches accumulees par les
+   anciennes versions (edome-v10 etc.), se desinscrit, puis force le
+   reload des onglets ouverts.
 
-const PRECACHE_URLS = [
-  "/",
-  "/feed",
-  "/explorer",
-  "/dashboard",
-  "/offline.html",
-];
+   Contexte : l'ancien sw.js precachait /dashboard en network-first
+   avec fallback cache. Les utilisateurs qui ont visite le site avant
+   2026-06-10 voient l'ancien /dashboard servi depuis ce cache, malgre
+   les deploiements (34 reservations, Studio Centre-Ville, etc.).
+   Ce stub neutralise le SW chez tout visiteur deja "infecte". */
 
-// Install — precache essential pages
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_URLS);
-    })
-  );
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
-// Activate — clean old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
+    (async () => {
+      const names = await caches.keys();
+      await Promise.all(names.map((n) => caches.delete(n)));
+      await self.registration.unregister();
+      const clients = await self.clients.matchAll({ type: "window" });
+      for (const client of clients) {
+        try {
+          client.navigate(client.url);
+        } catch {
+          /* navigate peut echouer si le client n'est plus controle ;
+             on ignore silencieusement, le prochain reload manuel
+             chargera la version a jour. */
+        }
+      }
+    })(),
   );
-  self.clients.claim();
 });
 
-// Fetch — network first, cache fallback
-self.addEventListener("fetch", (event) => {
-  if (event.request.mode === "navigate") {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          // Cache successful navigations
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, clone);
-          });
-          return response;
-        })
-        .catch(() => {
-          // Try cache first, then offline page
-          return caches.match(event.request).then((cached) => {
-            return cached || caches.match(OFFLINE_URL);
-          });
-        })
-    );
-    return;
-  }
-
-  // For non-navigation requests: cache first for static assets
-  if (
-    event.request.url.includes("/lottie/") ||
-    event.request.url.includes("/icons/") ||
-    event.request.url.match(/\.(js|css|woff2?|png|jpg|svg)$/)
-  ) {
-    event.respondWith(
-      caches.match(event.request).then((cached) => {
-        if (cached) return cached;
-        return fetch(event.request).then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, clone);
-          });
-          return response;
-        });
-      })
-    );
-    return;
-  }
-
-  // Default: network only
-  event.respondWith(fetch(event.request));
-});
+/* Fetch handler intentionnellement absent : on laisse le navigateur
+   faire ses requetes reseau normalement, plus aucune mise en cache. */
