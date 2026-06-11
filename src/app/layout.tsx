@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "E-Dome",
   },
   other: {
@@ -29,13 +29,10 @@ export const metadata: Metadata = {
 };
 
 /* Viewport (recommandé Next.js 16) :
-   - viewportFit: "cover" : le contenu peut s'étendre sous notch /
-     home indicator (on a déjà env(safe-area-inset-*) partout)
-   - maximumScale=5 + userScalable=true : zoom mobile autorisé
-     (exigence WCAG 1.4.4). Le precedent maximumScale:1 +
-     userScalable:false bloquait le pinch-zoom et echouait l'audit
-     accessibilite, tout en cassant l'experience malvoyants.
-   - themeColor : couleur de la barre Chrome + chip PWA. */
+   - viewportFit: "cover" : safe-area-inset (notch/home indicator)
+   - maximumScale=5 + userScalable=true : zoom mobile autorise (WCAG)
+   - themeColor : barre Chrome + chip PWA. Default mode CLAIR -> blanc.
+     Mode sombre prefere systeme -> #0a0a0a coherent avec --background. */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -43,8 +40,8 @@ export const viewport: Viewport = {
   userScalable: true,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-    { color: "#000000" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { color: "#ffffff" },
   ],
 };
 
@@ -54,11 +51,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className="dark" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="E-Dome" />
         <meta name="format-detection" content="telephone=no" />
       </head>

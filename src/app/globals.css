@@ -3,64 +3,58 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ─── Theme brutaliste ────────────────────────────────────────
-   Refonte complete : palette oklch, accent orange, bordures fortes
-   (noir/blanc pur), radius 0, aucune ombre. Fonts Inter / Source
-   Serif 4 / JetBrains Mono. La maquette demo reste forcee en mode
-   sombre via <html className="dark"> dans le RootLayout. */
+/* ─── Theme clair (mode par defaut) ────────────────────────────
+   Palette Zinc/neutral : background blanc, foreground noir, primary
+   noir (#18181b) pour boutons et CTA. Chart : orange/teal/dark-cyan/
+   amber. Mode sombre disponible via class .dark (mais le default
+   est CLAIR : <html> sans className="dark"). */
 :root {
-  --background: oklch(0.9383 0.0042 236.4993);
-  --foreground: oklch(0 0 0);
-  --card: oklch(0.9383 0.0042 236.4993);
-  --card-foreground: oklch(0 0 0);
-  --popover: oklch(0.9383 0.0042 236.4993);
-  --popover-foreground: oklch(0 0 0);
-  --primary: oklch(0.6602 0.2294 35.4025);
-  --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.9383 0.0042 236.4993);
-  --secondary-foreground: oklch(0 0 0);
-  --muted: oklch(0.9383 0.0042 236.4993);
-  --muted-foreground: oklch(0.3867 0 0);
-  --accent: oklch(0.9383 0.0042 236.4993);
-  --accent-foreground: oklch(0 0 0);
-  --destructive: oklch(0.6280 0.2577 29.2339);
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0 0 0);
-  --input: oklch(0.9383 0.0042 236.4993);
-  --ring: oklch(0.6602 0.2294 35.4025);
-  --chart-1: oklch(0.7156 0.0605 248.6845);
-  --chart-2: oklch(0.7875 0.0917 35.9616);
-  --chart-3: oklch(0.5778 0.0759 254.1573);
-  --chart-4: oklch(0.5016 0.0849 259.4902);
-  --chart-5: oklch(0.4241 0.0952 264.0306);
-  --sidebar: oklch(0.9383 0.0042 236.4993);
-  --sidebar-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0.6602 0.2294 35.4025);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
-  --sidebar-accent: oklch(0.9383 0.0042 236.4993);
-  --sidebar-accent-foreground: oklch(0 0 0);
-  --sidebar-border: oklch(0 0 0);
-  --sidebar-ring: oklch(0.6602 0.2294 35.4025);
-  --font-sans: Inter, sans-serif;
-  --font-serif: Source Serif 4, serif;
-  --font-mono: JetBrains Mono, monospace;
-  --radius: 0px;
-  --shadow-x: 0px;
-  --shadow-y: 0px;
-  --shadow-blur: 0px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 0;
-  --shadow-color: transparent;
-  --shadow-2xs: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-xs: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-sm: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow-md: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 2px 4px -1px hsl(0 0% 0% / 0.00);
-  --shadow-lg: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 4px 6px -1px hsl(0 0% 0% / 0.00);
-  --shadow-xl: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 8px 10px -1px hsl(0 0% 0% / 0.00);
-  --shadow-2xl: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
-  --tracking-normal: 0em;
-  --spacing: 0.25rem;
+  --card: #ffffff;
+  --ring: #d4d4d8;
+  --input: #d4d4d8;
+  --muted: #f4f4f5;
+  --accent: #f4f4f5;
+  --border: #e4e4e7;
+  --radius: 0.625rem;
+  --chart-1: #ea580c;
+  --chart-2: #0d9488;
+  --chart-3: #164e63;
+  --chart-4: #fbbf24;
+  --chart-5: #f59e0b;
+  --popover: #ffffff;
+  --primary: #18181b;
+  --sidebar: #fafafa;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --secondary: #f4f4f5;
+  --background: #ffffff;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --foreground: #0a0a0a;
+  --destructive: #ef4444;
+  --sidebar-ring: #d4d4d8;
+  --sidebar-accent: #f4f4f5;
+  --sidebar-border: #e4e4e7;
+  --card-foreground: #0a0a0a;
+  --sidebar-primary: #18181b;
+  --muted-foreground: #71717a;
+  --accent-foreground: #18181b;
+  --popover-foreground: #0a0a0a;
+  --primary-foreground: #fafafa;
+  --sidebar-foreground: #0a0a0a;
+  --secondary-foreground: #18181b;
+  --destructive-foreground: #ef4444;
+  --sidebar-accent-foreground: #18181b;
+  --sidebar-primary-foreground: #fafafa;
+
+  /* Shadows : on garde tres legeres (style blueprint discipline). */
+  --shadow-2xs: 0 1px 0 0 rgb(0 0 0 / 0.02);
+  --shadow-xs: 0 1px 1px 0 rgb(0 0 0 / 0.03);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.10);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.12);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.18);
 
   /* ─── Aliases LEGACY (compat) ────────────────────────────
      Tokens utilises par les composants existants — mappes sur le
@@ -74,93 +68,97 @@
   --bg-primary: var(--background);
   --bg-secondary: var(--card);
   --card-border: var(--border);
-  --hover-bg: rgba(0, 0, 0, 0.06);
+  --hover-bg: rgba(0, 0, 0, 0.04);
   --divider: var(--border);
   --input-bg: var(--input);
   --input-border: var(--border);
   --gold: var(--primary);
   --gold-hover: var(--primary);
   --accent-hover: var(--primary);
-  --shadow-card: none;
-  --shadow-soft: none;
+  --shadow-card: var(--shadow-sm);
+  --shadow-soft: var(--shadow-xs);
 
-  /* Couleurs semantiques : pas dans le theme brutalist mais utilisees
-     par badges/statuts dans tous le code (deltas KPI, status pending,
-     ratings etoiles, level formation, etc.). On garde l'emerald/amber
-     classiques pour la lisibilite. */
-  --rating: #fbbf24;
-  --warning: #fbbf24;
-  --success: #10b981;
-  --success-soft: #34d399;
+  /* Couleurs semantiques pour deltas/status/ratings.
+     Versions LISIBLES sur fond blanc : warning-text et success-text
+     plus fonces que les fills pour assurer le contraste WCAG. */
+  --rating: #f59e0b;
+  --warning: #d97706;
+  --warning-soft: #fef3c7;
+  --warning-text: #92400e;
+  --success: #059669;
+  --success-soft: #d1fae5;
+  --success-text: #065f46;
   --danger: var(--destructive);
-  --tag: #a78bfa;
+  --danger-soft: #fee2e2;
+  --danger-text: #991b1b;
+  --tag: #7c3aed;
 }
 
 .dark {
-  --background: oklch(0.2598 0.0306 262.6666);
-  --foreground: oklch(1.0000 0 0);
-  --card: oklch(0.2598 0.0306 262.6666);
-  --card-foreground: oklch(1.0000 0 0);
-  --popover: oklch(0.2598 0.0306 262.6666);
-  --popover-foreground: oklch(1.0000 0 0);
-  --primary: oklch(0.6824 0.2108 37.6975);
-  --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.2598 0.0306 262.6666);
-  --secondary-foreground: oklch(1.0000 0 0);
-  --muted: oklch(0.2598 0.0306 262.6666);
-  --muted-foreground: oklch(0.8452 0 0);
-  --accent: oklch(0.2598 0.0306 262.6666);
-  --accent-foreground: oklch(1.0000 0 0);
-  --destructive: oklch(0.6636 0.2231 25.7269);
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(1.0000 0 0);
-  --input: oklch(0.2598 0.0306 262.6666);
-  --ring: oklch(0.6824 0.2108 37.6975);
-  --chart-1: oklch(0.7156 0.0605 248.6845);
-  --chart-2: oklch(0.7693 0.0876 34.1875);
-  --chart-3: oklch(0.5778 0.0759 254.1573);
-  --chart-4: oklch(0.5016 0.0849 259.4902);
-  --chart-5: oklch(0.4241 0.0952 264.0306);
-  --sidebar: oklch(0.2598 0.0306 262.6666);
-  --sidebar-foreground: oklch(1.0000 0 0);
-  --sidebar-primary: oklch(0.6824 0.2108 37.6975);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
-  --sidebar-accent: oklch(0.2598 0.0306 262.6666);
-  --sidebar-accent-foreground: oklch(1.0000 0 0);
-  --sidebar-border: oklch(1.0000 0 0);
-  --sidebar-ring: oklch(0.6824 0.2108 37.6975);
-  --font-sans: Inter, sans-serif;
-  --font-serif: Source Serif 4, serif;
-  --font-mono: JetBrains Mono, monospace;
-  --radius: 0px;
-  --shadow-x: 0px;
-  --shadow-y: 0px;
-  --shadow-blur: 0px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 0;
-  --shadow-color: transparent;
-  --shadow-2xs: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-xs: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
-  --shadow-sm: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
-  --shadow-md: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 2px 4px -1px hsl(0 0% 0% / 0.00);
-  --shadow-lg: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 4px 6px -1px hsl(0 0% 0% / 0.00);
-  --shadow-xl: 0px 0px 0px 0px hsl(0 0% 0% / 0.00), 0px 8px 10px -1px hsl(0 0% 0% / 0.00);
-  --shadow-2xl: 0px 0px 0px 0px hsl(0 0% 0% / 0.00);
+  --card: #0a0a0a;
+  --ring: #52525b;
+  --input: #27272a;
+  --muted: #18181b;
+  --accent: #18181b;
+  --border: #27272a;
+  --radius: 0.625rem;
+  --chart-1: #1d4ed8;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #8b5cf6;
+  --chart-5: #f43f5e;
+  --popover: #0a0a0a;
+  --primary: #fafafa;
+  --sidebar: #171717;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --secondary: #27272a;
+  --background: #0a0a0a;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --foreground: #fafafa;
+  --destructive: #7f1d1d;
+  --sidebar-ring: #52525b;
+  --sidebar-accent: #262626;
+  --sidebar-border: #27272a;
+  --card-foreground: #fafafa;
+  --sidebar-primary: #1d4ed8;
+  --muted-foreground: #a1a1aa;
+  --accent-foreground: #fafafa;
+  --popover-foreground: #fafafa;
+  --primary-foreground: #18181b;
+  --sidebar-foreground: #fafafa;
+  --secondary-foreground: #fafafa;
+  --destructive-foreground: #ef4444;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-primary-foreground: #fafafa;
 
   /* Aliases legacy dark mode */
   --text-primary: var(--foreground);
   --text-secondary: var(--muted-foreground);
   --text-muted: var(--muted-foreground);
   --card-border: var(--border);
-  --hover-bg: rgba(255, 255, 255, 0.06);
+  --hover-bg: rgba(255, 255, 255, 0.04);
   --divider: var(--border);
   --input-bg: var(--input);
   --input-border: var(--border);
   --accent-hover: var(--primary);
   --gold-hover: var(--primary);
-  --shadow-card: none;
-  --shadow-soft: none;
+  --shadow-card: var(--shadow-sm);
+  --shadow-soft: var(--shadow-xs);
+
+  /* Semantique en mode sombre : on inverse soft/text pour avoir
+     du contraste sur fond sombre. */
+  --rating: #fbbf24;
+  --warning: #fbbf24;
+  --warning-soft: rgba(217, 119, 6, 0.18);
+  --warning-text: #fcd34d;
+  --success: #10b981;
+  --success-soft: rgba(5, 150, 105, 0.18);
+  --success-text: #6ee7b7;
+  --danger: #ef4444;
+  --danger-soft: rgba(239, 68, 68, 0.18);
+  --danger-text: #fca5a5;
+  --tag: #a78bfa;
 }
 
 @theme inline {
@@ -241,7 +239,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   /* Tabular numerals : aligne les chiffres dans les KPI/tables/prix. */
   font-feature-settings: "tnum";
@@ -380,41 +378,45 @@ body {
   background: var(--success);
   color: #fff;
 }
+/* Chips semantiques : fond pastel + texte fonce pour bon contraste
+   en mode clair. En mode sombre, --success-soft / warning-soft /
+   danger-soft sont surcharges en rgba pour fond sombre approprie. */
 .chip-success-soft {
-  background: color-mix(in srgb, var(--success) 18%, transparent);
-  color: var(--success-soft);
+  background: var(--success-soft);
+  color: var(--success-text);
 }
 .chip-warning-soft {
-  background: color-mix(in srgb, var(--warning) 18%, transparent);
-  color: var(--warning);
+  background: var(--warning-soft);
+  color: var(--warning-text);
 }
 .chip-danger-soft {
-  background: color-mix(in srgb, var(--danger) 18%, transparent);
-  color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger-text);
 }
 .badge-level-beginner {
-  background: color-mix(in srgb, var(--success) 18%, transparent);
-  color: var(--success-soft);
+  background: var(--success-soft);
+  color: var(--success-text);
 }
 .badge-level-intermediate {
-  background: color-mix(in srgb, var(--warning) 18%, transparent);
-  color: var(--warning);
+  background: var(--warning-soft);
+  color: var(--warning-text);
 }
 .badge-level-advanced {
-  background: color-mix(in srgb, var(--danger) 18%, transparent);
-  color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger-text);
 }
 .text-rating    { color: var(--rating); }
 .fill-rating    { fill: var(--rating); }
 .text-success   { color: var(--success); }
-.text-success-soft { color: var(--success-soft); }
+.text-success-soft { color: var(--success-text); }
 .text-danger    { color: var(--danger); }
 
-/* ─── Wrapper .app-shell : maquette en MODE SOMBRE ─── */
+/* ─── Wrapper .app-shell : palette globale (mode clair par defaut,
+   bascule via .dark sur <html>). ─── */
 .app-shell {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   min-height: 100vh;
 }
 
