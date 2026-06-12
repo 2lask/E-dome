@@ -1,8 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Trophy, Medal, Award } from "lucide-react";
+import { Trophy, Medal, Award, Plus, MousePointer2, UserPlus2, CheckCircle2 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -124,10 +132,45 @@ export default function ApporteursPage() {
   const { formatPrice } = useApp();
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [showQR, setShowQR] = useState<number | null>(null);
+  /* referralLinks en state pour permettre l'ajout via Dialog "Nouveau lien". */
+  const [referralLinks, setReferralLinks] = useState<typeof REFERRAL_LINKS>(REFERRAL_LINKS);
+  const [showNewLink, setShowNewLink] = useState(false);
+  const [newLinkLabel, setNewLinkLabel] = useState("");
+  const [newLinkType, setNewLinkType] = useState("Amener un hôte");
 
   const totalCommissions = MOCK_APPORTS.reduce((s, a) => s + a.commission, 0);
   const totalVersements = MOCK_VERSEMENTS.reduce((s, v) => s + v.montant, 0);
   const enAttente = totalCommissions - totalVersements;
+
+  /* Funnel KPI : agrege clics / conversions sur l'ensemble des liens. */
+  const funnelClicks = referralLinks.reduce((s, l) => s + l.clicks, 0);
+  const funnelConversions = referralLinks.reduce((s, l) => s + l.conversions, 0);
+  const funnelProspects = Math.max(funnelClicks - funnelConversions, 0);
+  const conversionRate = funnelClicks > 0 ? Math.round((funnelConversions / funnelClicks) * 100) : 0;
+
+  const handleCreateLink = () => {
+    if (!newLinkLabel.trim()) return;
+    const slug = newLinkLabel
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 30);
+    setReferralLinks((prev) => [
+      ...prev,
+      {
+        label: newLinkLabel,
+        url: `edome.world/ref/${slug}/${REFERRAL_ID}`,
+        description: `Lien personnalise cree pour : ${newLinkLabel}. Tracking 30j.`,
+        commission: APPORT_TYPES.find((t) => t.title === newLinkType)?.commission ?? "Variable",
+        clicks: 0,
+        conversions: 0,
+        earned: 0,
+        color: "bg-[var(--primary)]/15 text-[var(--primary)]",
+      },
+    ]);
+    setNewLinkLabel("");
+    setShowNewLink(false);
+  };
 
   const handleCopy = (url: string, idx: number) => {
     copyToClipboard(url);
@@ -175,9 +218,56 @@ export default function ApporteursPage() {
         </ul>
       </section>
 
-      {/* Referral Link Cards */}
-      <section className="grid md:grid-cols-3 gap-6">
-        {REFERRAL_LINKS.map((link, idx) => (
+      {/* Funnel KPI : visualisation clics → prospects → conversions */}
+      <section className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              Funnel apports — 30 derniers jours
+            </p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Taux de conversion global : <strong className="text-foreground">{conversionRate}%</strong>
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          <FunnelTile
+            icon={MousePointer2}
+            label="Clics"
+            value={funnelClicks}
+            pct={100}
+          />
+          <FunnelTile
+            icon={UserPlus2}
+            label="Prospects en cours"
+            value={funnelProspects}
+            pct={funnelClicks > 0 ? Math.round((funnelProspects / funnelClicks) * 100) : 0}
+          />
+          <FunnelTile
+            icon={CheckCircle2}
+            label="Conversions"
+            value={funnelConversions}
+            pct={conversionRate}
+          />
+        </div>
+      </section>
+
+      {/* Referral Link Cards + bouton "Nouveau lien" */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Mes liens d&apos;invitation
+          </h2>
+          <button
+            onClick={() => setShowNewLink(true)}
+            className="inline-flex items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background hover:opacity-90"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Créer un nouveau lien
+          </button>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+        {referralLinks.map((link, idx) => (
           <div key={idx} className="p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
             <div className="flex items-center justify-between">
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${link.color}`}>{link.label}</span>
@@ -227,6 +317,7 @@ export default function ApporteursPage() {
             </div>
           </div>
         ))}
+        </div>
       </section>
 
       {/* Types d'Apport */}
@@ -418,6 +509,97 @@ export default function ApporteursPage() {
           </table>
         </div>
       </section>
+
+      {/* Dialog : creation d'un nouveau lien d'invitation */}
+      <Dialog open={showNewLink} onOpenChange={setShowNewLink}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Créer un nouveau lien</DialogTitle>
+            <DialogDescription>
+              Personnalisez l&apos;intitulé. L&apos;URL est générée automatiquement avec tracking 30 jours.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground" htmlFor="link-label">
+                Intitulé du lien
+              </label>
+              <input
+                id="link-label"
+                value={newLinkLabel}
+                onChange={(e) => setNewLinkLabel(e.target.value)}
+                placeholder="Ex : Campagne Verbier Mars"
+                className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground/40 focus:ring-2 focus:ring-foreground/10"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground" htmlFor="link-type">
+                Type d&apos;apport
+              </label>
+              <select
+                id="link-type"
+                value={newLinkType}
+                onChange={(e) => setNewLinkType(e.target.value)}
+                className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground/40 focus:ring-2 focus:ring-foreground/10"
+              >
+                {APPORT_TYPES.map((t) => (
+                  <option key={t.title} value={t.title}>{t.title}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setShowNewLink(false)}
+              className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              onClick={handleCreateLink}
+              disabled={!newLinkLabel.trim()}
+              className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-50"
+            >
+              Créer le lien
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function FunnelTile({
+  icon: Icon,
+  label,
+  value,
+  pct,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: number;
+  pct: number;
+}) {
+  return (
+    <div className="rounded-lg border border-border bg-background p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex h-7 w-7 items-center justify-center rounded-md border text-muted-foreground">
+          <Icon className="h-3.5 w-3.5" />
+        </div>
+        <span className="font-mono text-[10px] tabular-nums text-muted-foreground">{pct}%</span>
+      </div>
+      <p className="mt-2 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-0.5 font-mono text-2xl font-medium tabular-nums">{value}</p>
+      <div className="mt-2 h-1 overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full bg-foreground transition-all motion-reduce:transition-none"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
     </div>
   );
 }
