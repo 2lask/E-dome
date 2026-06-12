@@ -1282,338 +1282,348 @@ function PostCard({
   return (
     <article
       onClick={closeMenus}
-      className="w-full max-w-[600px] border-b border-[var(--card-border)] last:border-b-0 transition-colors hover:bg-[var(--hover-bg)]/40"
+      className="w-full border-b border-[var(--card-border)] last:border-b-0 px-4 py-3 transition-colors hover:bg-[var(--hover-bg)]/30"
     >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3 p-4 pb-3">
+      {/* Layout Twitter : avatar gauche + colonne contenu droite */}
+      <div className="flex gap-3">
+        {/* Avatar gauche */}
         <Link href={`/profil/${post.author.id}`} onClick={(e) => e.stopPropagation()} className="shrink-0">
           <img
             src={post.author.avatar}
             alt={post.author.firstName}
-            className="w-11 h-11 rounded-full object-cover hover:opacity-80 transition-opacity"
+            className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity"
           />
         </Link>
+
+        {/* Colonne contenu */}
         <div className="flex-1 min-w-0">
-          <Link
-            href={`/profil/${post.author.id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="text-[15px] font-semibold text-[var(--foreground)] hover:underline truncate block leading-tight"
-          >
-            {post.author.firstName} {post.author.lastName}
-          </Link>
-          <div className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)] mt-0.5">
-            <span>@{handle}</span>
-            {post.location && (
-              <>
-                <span aria-hidden>·</span>
-                <MapPin className="w-3 h-3" />
-                <span className="truncate max-w-[160px]">{post.location}</span>
-              </>
-            )}
-            <span aria-hidden>·</span>
-            <span>{timeAgo(post.createdAt)}</span>
-          </div>
-        </div>
-        {/* More menu */}
-        <div className="relative shrink-0">
-          <button
-            onClick={(e) => { e.stopPropagation(); onOpenMore(); }}
-            className="p-2 -mr-1 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors"
-            aria-label="Plus d'options"
-          >
-            <MoreHorizontal className="w-5 h-5" />
-          </button>
-          {moreOpen && (
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="absolute right-0 top-10 w-48 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden"
-            >
-              {isOwn ? (
+          {/* Header inline : nom · @handle · time + menu */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0 min-w-0">
+              <Link
+                href={`/profil/${post.author.id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-[14px] font-semibold text-[var(--foreground)] hover:underline truncate leading-tight"
+              >
+                {post.author.firstName} {post.author.lastName}
+              </Link>
+              <span className="text-[13px] text-[var(--text-muted)] truncate">@{handle}</span>
+              <span className="text-[13px] text-[var(--text-muted)]" aria-hidden>·</span>
+              <span className="text-[13px] text-[var(--text-muted)]">{timeAgo(post.createdAt)}</span>
+              {post.location && (
                 <>
-                  <button onClick={onEdit} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
-                    <Edit3 className="w-4 h-4" /> Modifier
-                  </button>
-                  <button onClick={onDelete} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-[var(--hover-bg)] transition-colors">
-                    <Trash2 className="w-4 h-4" /> Supprimer
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button onClick={onSignal} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
-                    <Flag className="w-4 h-4" /> Signaler
-                  </button>
-                  <button onClick={closeMenus} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
-                    <EyeOff className="w-4 h-4" /> Ne plus afficher
-                  </button>
+                  <span className="text-[13px] text-[var(--text-muted)]" aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-0.5 text-[12px] text-[var(--text-muted)] truncate max-w-[140px]">
+                    <MapPin className="w-3 h-3" />
+                    {post.location}
+                  </span>
                 </>
               )}
             </div>
+
+            {/* More menu */}
+            <div className="relative shrink-0 -mt-1 -mr-1">
+              <button
+                onClick={(e) => { e.stopPropagation(); onOpenMore(); }}
+                className="p-1.5 rounded-full hover:bg-[var(--hover-bg)] text-[var(--text-muted)] transition-colors"
+                aria-label="Plus d'options"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+              {moreOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute right-0 top-9 w-48 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden"
+                >
+                  {isOwn ? (
+                    <>
+                      <button onClick={onEdit} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+                        <Edit3 className="w-4 h-4" /> Modifier
+                      </button>
+                      <button onClick={onDelete} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-[var(--hover-bg)] transition-colors">
+                        <Trash2 className="w-4 h-4" /> Supprimer
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={onSignal} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+                        <Flag className="w-4 h-4" /> Signaler
+                      </button>
+                      <button onClick={closeMenus} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+                        <EyeOff className="w-4 h-4" /> Ne plus afficher
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Caption — directement sous le header, sans gap excessif */}
+          {post.content && (
+            <div className="mt-0.5">
+              <PostCaption content={post.content} />
+            </div>
           )}
-        </div>
-      </div>
 
-      {/* Media — video unique, image unique ou galerie multi-photos.
-          Detection : si le 1er media est .mp4, on affiche le player video,
-          sinon on bascule sur la galerie qui choisit le layout selon la
-          longueur (1/2/3/4+). Posts texte seul : aucun bloc media. */}
-      {post.media.length > 0 && (
-        <div className="px-4">
-          {isVideo ? (
-            <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
-          ) : (
-            <MediaGallery media={post.media} />
+          {/* Media — video, image ou galerie. Plein bord de la colonne contenu. */}
+          {post.media.length > 0 && (
+            <div className="mt-2 overflow-hidden rounded-2xl border border-[var(--card-border)]">
+              {isVideo ? (
+                <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
+              ) : (
+                <MediaGallery media={post.media} />
+              )}
+            </div>
           )}
-        </div>
-      )}
 
-      {/* Caption avec « Voir plus » bleu si tronquée */}
-      {post.content && (
-        <div className="px-4 pt-3">
-          <PostCaption content={post.content} />
-        </div>
-      )}
-
-      {/* Property CTA */}
-      {post.property && (
-        <Link
-          href={`/explorer/${post.property.id}`}
-          onClick={(e) => e.stopPropagation()}
-          className="mx-4 mt-3 flex gap-3 p-2.5 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
-        >
-          <img src={post.property.images[0]} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <Building2 className="w-3.5 h-3.5 text-[var(--primary)]" />
-              <span className="text-[10px] uppercase tracking-wider text-[var(--primary)] font-semibold">Bien</span>
-            </div>
-            <p className="text-sm font-medium text-[var(--foreground)] truncate">{post.property.title}</p>
-            <p className="text-sm font-bold text-[var(--primary)] mt-0.5 tabular-nums">
-              {formatPrice(post.property.price, post.property.currency)}
-            </p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">
-              {post.property.bedrooms} ch · {post.property.area} m²
-              {post.property.transactionType === "vente" && post.property.analytics &&
-                ` · ${post.property.analytics.rendementBrut.toFixed(1)} % brut`}
-            </p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
-        </Link>
-      )}
-
-      {/* Formation CTA */}
-      {post.formation && (
-        <Link
-          href={`/formations/${post.formation.id}`}
-          onClick={(e) => e.stopPropagation()}
-          className="mx-4 mt-3 flex gap-3 p-2.5 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
-        >
-          <img src={post.formation.thumbnail} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <GraduationCap className="w-3.5 h-3.5 text-[var(--primary)]" />
-              <span className="text-[10px] uppercase tracking-wider text-[var(--primary)] font-semibold">Formation</span>
-            </div>
-            <p className="text-sm font-medium text-[var(--foreground)] truncate">{post.formation.title}</p>
-            <p className="text-sm font-bold text-[var(--primary)] mt-0.5 tabular-nums">
-              {formatPrice(post.formation.price)}
-            </p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">
-              {post.formation.instructor} · {post.formation.students} étudiants
-            </p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
-        </Link>
-      )}
-
-      {/* Event CTA (ancien format via EVENTS_BY_POST map) */}
-      {event && (
-        <Link
-          href={`/evenements/${event.id}`}
-          onClick={(e) => e.stopPropagation()}
-          className="mx-4 mt-3 flex gap-3 p-2.5 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
-        >
-          <img src={event.thumbnail} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <Calendar className="w-3.5 h-3.5 text-violet-300" />
-              <span className="text-[10px] uppercase tracking-wider text-violet-300 font-semibold">Événement · {event.type}</span>
-            </div>
-            <p className="text-sm font-medium text-[var(--foreground)] truncate">{event.titre}</p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">
-              {formatEventDate(event.date)} · {event.heure} · {event.lieu}
-            </p>
-            <p className="text-sm font-bold text-[var(--primary)] mt-0.5 tabular-nums">
-              {event.prix === 0 ? "Gratuit" : formatPrice(event.prix)}
-            </p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
-        </Link>
-      )}
-
-      {/* Nouveau format : post.attachment (event ou analytics) — utilisé
-          par les publications créées depuis le composer du feed. */}
-      {post.attachment?.type === "event" && (
-        <div className="mx-4 mt-3" onClick={(e) => e.stopPropagation()}>
-          <EventAttachCard event={post.attachment.event} />
-        </div>
-      )}
-      {post.attachment?.type === "analytics" && (
-        <div className="mx-4 mt-3" onClick={(e) => e.stopPropagation()}>
-          <AnalyticsAttachCard data={post.attachment.data} />
-        </div>
-      )}
-
-      {/* Custom CTA */}
-      {cta && (
-        <Link
-          href={cta.href}
-          onClick={(e) => e.stopPropagation()}
-          className="mx-4 mt-3 flex items-center gap-3 p-2.5 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
-        >
-          <div className="w-12 h-12 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
-            {cta.icon === "users" ? <Users className="w-5 h-5 text-[var(--primary)]" />
-              : cta.icon === "search" ? <Search className="w-5 h-5 text-[var(--primary)]" />
-              : cta.icon === "calendar" ? <Calendar className="w-5 h-5 text-[var(--primary)]" />
-              : <UserIcon className="w-5 h-5 text-[var(--primary)]" />}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[var(--foreground)] truncate">{cta.title}</p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">{cta.subtitle}</p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
-        </Link>
-      )}
-
-      {/* Actions — ordre Twitter/X : Reply | Repost | Like | View | Bookmark | Share.
-          Couleurs sémantiques au hover : reply=bleu, repost=vert, like=rose,
-          bookmark=primary. View count en lecture seule à droite. */}
-      <div className="mt-3 flex items-center gap-1 px-3 py-2 border-t border-[var(--card-border)]">
-
-        {/* Reply (commentaire) */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onOpenComments(); }}
-          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[var(--primary)]/10"
-          aria-label="Répondre"
-        >
-          <MessageCircle className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors" />
-          <span className="text-sm font-medium tabular-nums max-sm:hidden text-[var(--foreground)]/85 group-hover:text-[var(--primary)] transition-colors">
-            {formatCount(post.comments.length)}
-          </span>
-        </button>
-
-        {/* Repost (Twitter retweet) */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onToggleRepost(); }}
-          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-emerald-500/10"
-          aria-label={reposted ? "Annuler le repost" : "Reposter"}
-          aria-pressed={reposted}
-        >
-          <Repeat2
-            key={reposted ? "reposted" : "not-reposted"}
-            className={`w-5 h-5 transition-colors ${
-              reposted
-                ? "text-emerald-500 animate-pop"
-                : "text-[var(--text-muted)] group-hover:text-emerald-500"
-            }`}
-          />
-          <span className={`text-sm font-medium tabular-nums max-sm:hidden transition-colors ${
-            reposted
-              ? "text-emerald-500"
-              : "text-[var(--foreground)]/85 group-hover:text-emerald-500"
-          }`}>
-            {formatCount(Math.round(post.likes / 8) + (reposted ? 1 : 0))}
-          </span>
-        </button>
-
-        {/* Like */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onToggleLike(); }}
-          className="group flex grow items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-rose-500/10"
-          aria-label={liked ? "Retirer le j'aime" : "J'aime"}
-          aria-pressed={liked}
-        >
-          <Heart
-            key={liked ? "liked" : "unliked"}
-            className={`w-5 h-5 transition-colors ${
-              liked
-                ? "fill-rose-500 text-rose-500 animate-pop"
-                : "text-[var(--text-muted)] group-hover:text-rose-500"
-            }`}
-          />
-          <span className={`text-sm font-medium tabular-nums max-sm:hidden transition-colors ${
-            liked
-              ? "text-rose-500"
-              : "text-[var(--foreground)]/85 group-hover:text-rose-500"
-          }`}>
-            {formatCount(post.likes)}
-          </span>
-        </button>
-
-        {/* View count (lecture seule, mock derive likes * 25 + comments * 50) */}
-        <div
-          className="hidden md:flex grow items-center justify-center gap-1.5 px-3 py-2 cursor-default"
-          title="Vues estimées"
-          aria-label={`${formatCount(post.likes * 25 + post.comments.length * 50)} vues`}
-        >
-          <Eye className="w-4 h-4 text-[var(--text-muted)]" />
-          <span className="text-sm font-medium tabular-nums text-[var(--foreground)]/85">
-            {formatCount(post.likes * 25 + post.comments.length * 50)}
-          </span>
-        </div>
-
-        {/* Bookmark */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
-          className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[var(--primary)]/10 shrink-0"
-          aria-label={saved ? "Retirer du marque-pages" : "Enregistrer"}
-          aria-pressed={saved}
-        >
-          <Bookmark className={`w-5 h-5 transition-colors ${
-            saved ? "fill-[var(--primary)] text-[var(--primary)]" : "text-[var(--text-muted)] group-hover:text-[var(--primary)]"
-          }`} />
-        </button>
-
-        {/* Share menu */}
-        <div className="relative shrink-0">
-          <button
-            onClick={(e) => { e.stopPropagation(); onOpenShare(); }}
-            className="group flex items-center justify-center gap-2 rounded-xl px-3 py-2 min-h-[44px] transition-colors hover:bg-[var(--primary)]/10"
-            aria-label="Partager"
-            aria-expanded={shareOpen}
-          >
-            <Share2 className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors" />
-          </button>
-          {shareOpen && (
-            <div
+          {/* Property CTA — compact */}
+          {post.property && (
+            <Link
+              href={`/explorer/${post.property.id}`}
               onClick={(e) => e.stopPropagation()}
-              className="absolute right-0 bottom-12 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden"
+              className="mt-2 flex gap-2.5 p-2 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
             >
-              <button
-                onClick={(e) => { e.stopPropagation(); onShareCopy(); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-              >
-                <Copy className="w-4 h-4" />
-                Copier le lien
-              </button>
-              <button
-                onClick={closeMenus}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-              >
-                <Send className="w-4 h-4" />
-                Envoyer par message
-              </button>
-              <button
-                onClick={closeMenus}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-              >
-                <Share2 className="w-4 h-4" />
-                Partager via…
-              </button>
+              <img src={post.property.images[0]} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <Building2 className="w-3 h-3 text-[var(--primary)]" />
+                  <span className="text-[10px] uppercase tracking-wider text-[var(--primary)] font-semibold">Bien</span>
+                </div>
+                <p className="text-[13px] font-medium text-[var(--foreground)] truncate leading-tight">{post.property.title}</p>
+                <p className="text-[12px] text-[var(--text-muted)] mt-0.5 truncate">
+                  <span className="font-semibold tabular-nums text-[var(--foreground)]">
+                    {formatPrice(post.property.price, post.property.currency)}
+                  </span>
+                  {" · "}{post.property.bedrooms} ch · {post.property.area} m²
+                  {post.property.transactionType === "vente" && post.property.analytics &&
+                    ` · ${post.property.analytics.rendementBrut.toFixed(1)} % brut`}
+                </p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
+            </Link>
+          )}
+
+          {/* Formation CTA */}
+          {post.formation && (
+            <Link
+              href={`/formations/${post.formation.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-2 flex gap-2.5 p-2 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
+            >
+              <img src={post.formation.thumbnail} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <GraduationCap className="w-3 h-3 text-[var(--primary)]" />
+                  <span className="text-[10px] uppercase tracking-wider text-[var(--primary)] font-semibold">Formation</span>
+                </div>
+                <p className="text-[13px] font-medium text-[var(--foreground)] truncate leading-tight">{post.formation.title}</p>
+                <p className="text-[12px] text-[var(--text-muted)] mt-0.5 truncate">
+                  <span className="font-semibold tabular-nums text-[var(--foreground)]">{formatPrice(post.formation.price)}</span>
+                  {" · "}{post.formation.instructor} · {post.formation.students} étudiants
+                </p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
+            </Link>
+          )}
+
+          {/* Event CTA (ancien format via EVENTS_BY_POST map) */}
+          {event && (
+            <Link
+              href={`/evenements/${event.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-2 flex gap-2.5 p-2 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
+            >
+              <img src={event.thumbnail} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="w-3 h-3 text-violet-400" />
+                  <span className="text-[10px] uppercase tracking-wider text-violet-400 font-semibold">Événement · {event.type}</span>
+                </div>
+                <p className="text-[13px] font-medium text-[var(--foreground)] truncate leading-tight">{event.titre}</p>
+                <p className="text-[12px] text-[var(--text-muted)] mt-0.5 truncate">
+                  {formatEventDate(event.date)} · {event.heure} · {event.lieu} · {event.prix === 0 ? "Gratuit" : formatPrice(event.prix)}
+                </p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
+            </Link>
+          )}
+
+          {/* Nouveau format : post.attachment (event ou analytics) */}
+          {post.attachment?.type === "event" && (
+            <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+              <EventAttachCard event={post.attachment.event} />
             </div>
           )}
+          {post.attachment?.type === "analytics" && (
+            <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+              <AnalyticsAttachCard data={post.attachment.data} />
+            </div>
+          )}
+
+          {/* Custom CTA */}
+          {cta && (
+            <Link
+              href={cta.href}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-2 flex items-center gap-2.5 p-2 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
+            >
+              <div className="w-10 h-10 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
+                {cta.icon === "users" ? <Users className="w-4 h-4 text-[var(--primary)]" />
+                  : cta.icon === "search" ? <Search className="w-4 h-4 text-[var(--primary)]" />
+                  : cta.icon === "calendar" ? <Calendar className="w-4 h-4 text-[var(--primary)]" />
+                  : <UserIcon className="w-4 h-4 text-[var(--primary)]" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-medium text-[var(--foreground)] truncate">{cta.title}</p>
+                <p className="text-[11px] text-[var(--text-muted)] truncate">{cta.subtitle}</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
+            </Link>
+          )}
+
+          {/* Actions — Twitter-style : Reply | Repost | Like | View | Bookmark | Share.
+              Compact, sans border-t, dans le flux de la colonne contenu. */}
+          <div className="mt-2 -ml-2 flex items-center justify-between max-w-md">
+            <ActionBtn
+              onClick={(e) => { e.stopPropagation(); onOpenComments(); }}
+              hoverColor="primary"
+              label="Répondre"
+              count={post.comments.length}
+            >
+              <MessageCircle className="w-[18px] h-[18px]" />
+            </ActionBtn>
+
+            <ActionBtn
+              onClick={(e) => { e.stopPropagation(); onToggleRepost(); }}
+              hoverColor="emerald"
+              label={reposted ? "Annuler le repost" : "Reposter"}
+              active={reposted}
+              count={Math.round(post.likes / 8) + (reposted ? 1 : 0)}
+            >
+              <Repeat2 className={`w-[18px] h-[18px] ${reposted ? "animate-pop" : ""}`} />
+            </ActionBtn>
+
+            <ActionBtn
+              onClick={(e) => { e.stopPropagation(); onToggleLike(); }}
+              hoverColor="rose"
+              label={liked ? "Retirer le j'aime" : "J'aime"}
+              active={liked}
+              count={post.likes}
+            >
+              <Heart className={`w-[18px] h-[18px] ${liked ? "fill-rose-500 text-rose-500 animate-pop" : ""}`} />
+            </ActionBtn>
+
+            <div className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--text-muted)]">
+              <Eye className="w-[16px] h-[16px]" />
+              <span className="tabular-nums">{formatCount(post.likes * 25 + post.comments.length * 50)}</span>
+            </div>
+
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
+              className={`group p-1.5 rounded-full transition-colors hover:bg-[var(--primary)]/10 ${
+                saved ? "text-[var(--primary)]" : "text-[var(--text-muted)] hover:text-[var(--primary)]"
+              }`}
+              aria-label={saved ? "Retirer du marque-pages" : "Enregistrer"}
+              aria-pressed={saved}
+            >
+              <Bookmark className={`w-[18px] h-[18px] ${saved ? "fill-current" : ""}`} />
+            </button>
+
+            <div className="relative">
+              <button
+                onClick={(e) => { e.stopPropagation(); onOpenShare(); }}
+                className="group p-1.5 rounded-full text-[var(--text-muted)] hover:bg-[var(--primary)]/10 hover:text-[var(--primary)] transition-colors"
+                aria-label="Partager"
+                aria-expanded={shareOpen}
+              >
+                <Share2 className="w-[18px] h-[18px]" />
+              </button>
+              {shareOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute right-0 bottom-10 w-44 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl z-20 animate-scale-in overflow-hidden"
+                >
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onShareCopy(); }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+                  >
+                    <Copy className="w-4 h-4" />
+                    Copier le lien
+                  </button>
+                  <button
+                    onClick={closeMenus}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+                  >
+                    <Send className="w-4 h-4" />
+                    Envoyer par message
+                  </button>
+                  <button
+                    onClick={closeMenus}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Partager via…
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </article>
+  );
+}
+
+/* ActionBtn : bouton d'action compact style Twitter — icone + count
+   inline, hover colore selon hoverColor (primary/emerald/rose). */
+function ActionBtn({
+  children, onClick, hoverColor, label, count, active,
+}: {
+  children: React.ReactNode;
+  onClick: (e: React.MouseEvent) => void;
+  hoverColor: "primary" | "emerald" | "rose";
+  label: string;
+  count?: number;
+  active?: boolean;
+}) {
+  const colorClass = active
+    ? hoverColor === "emerald"
+      ? "text-emerald-500"
+      : hoverColor === "rose"
+      ? "text-rose-500"
+      : "text-[var(--primary)]"
+    : "text-[var(--text-muted)]";
+  const hoverClass =
+    hoverColor === "emerald"
+      ? "group-hover:bg-emerald-500/10 group-hover:text-emerald-500"
+      : hoverColor === "rose"
+      ? "group-hover:bg-rose-500/10 group-hover:text-rose-500"
+      : "group-hover:bg-[var(--primary)]/10 group-hover:text-[var(--primary)]";
+  const countColorClass = active
+    ? colorClass
+    : hoverColor === "emerald"
+    ? "group-hover:text-emerald-500"
+    : hoverColor === "rose"
+    ? "group-hover:text-rose-500"
+    : "group-hover:text-[var(--primary)]";
+
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={active}
+      className="group inline-flex items-center gap-1 px-2 py-1 transition-colors"
+    >
+      <span className={`p-1 rounded-full transition-colors ${colorClass} ${hoverClass}`}>
+        {children}
+      </span>
+      {typeof count === "number" && count > 0 && (
+        <span className={`text-[12px] font-medium tabular-nums transition-colors ${colorClass} ${countColorClass}`}>
+          {formatCount(count)}
+        </span>
+      )}
+    </button>
   );
 }
 
