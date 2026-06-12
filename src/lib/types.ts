@@ -211,11 +211,18 @@ export interface Message {
 
 export interface Conversation {
   id: string;
+  /* participant : pour direct = l'autre personne. Pour group =
+     dernier auteur (utile pour preview "X: ..."). */
   participant: User;
   messages: Message[];
   unreadCount: number;
   lastMessage: string;
   isOnline: boolean;
+  /* Group chat (optionnels — direct si absents). */
+  type?: "direct" | "group";
+  name?: string;
+  groupAvatar?: string;
+  members?: User[];
 }
 
 // ─── Reservation ─────────────────────────────────────────────────────────────

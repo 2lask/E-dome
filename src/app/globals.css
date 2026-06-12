@@ -91,6 +91,8 @@
   --danger: var(--destructive);
   --danger-soft: #fee2e2;
   --danger-text: #991b1b;
+  --info-soft: #dbeafe;
+  --info-text: #1e40af;
   --tag: #7c3aed;
 }
 
@@ -158,6 +160,8 @@
   --danger: #ef4444;
   --danger-soft: rgba(239, 68, 68, 0.18);
   --danger-text: #fca5a5;
+  --info-soft: rgba(59, 130, 246, 0.18);
+  --info-text: #93c5fd;
   --tag: #a78bfa;
 }
 
@@ -392,6 +396,21 @@ body {
 .chip-danger-soft {
   background: var(--danger-soft);
   color: var(--danger-text);
+}
+.chip-info-soft {
+  background: var(--info-soft);
+  color: var(--info-text);
+}
+
+/* Radix Dialog/Dropdown : transitions data-state simples (sans plugin
+   tailwindcss-animate). Opacity + scale legere pour eviter le pop brutal. */
+[data-state="open"][data-slot="dialog-overlay"],
+[data-state="open"][data-slot="dialog-content"] {
+  animation: scale-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-state="closed"][data-slot="dialog-overlay"],
+[data-state="closed"][data-slot="dialog-content"] {
+  animation: fade-in 120ms ease-out reverse;
 }
 .badge-level-beginner {
   background: var(--success-soft);

@@ -319,7 +319,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1616137466211-f736a1f8e5e0?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop',
     ],
-    videos: ['/videos/property-tour-1.mp4'],
+    videos: [],
     host: users[1], // Sophie
     bedrooms: 3,
     bathrooms: 2,
@@ -390,7 +390,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&h=600&fit=crop',
     ],
-    videos: ['/videos/property-tour-2.mp4'],
+    videos: [],
     host: users[4], // Lucas
     bedrooms: 5,
     bathrooms: 3,
@@ -430,7 +430,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&h=600&fit=crop',
     ],
-    videos: ['/videos/property-tour-3.mp4'],
+    videos: [],
     host: users[3], // Amina
     bedrooms: 4,
     bathrooms: 4,
@@ -498,7 +498,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800&h=600&fit=crop',
     ],
-    videos: ['/videos/property-tour-4.mp4'],
+    videos: [],
     host: users[5], // Yasmin
     bedrooms: 4,
     bathrooms: 5,
@@ -563,7 +563,7 @@ export const properties: Property[] = [
     location: { city: 'Lisbonne', country: 'Portugal', address: 'Rua de S\u00e3o Miguel 34', lat: 38.7103, lng: -9.1302 },
     images: [
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1598928506311-c55ez637a9?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=800&h=600&fit=crop',
@@ -608,7 +608,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1615571022219-eb45cf7faa36?w=800&h=600&fit=crop',
     ],
-    videos: ['/videos/property-tour-5.mp4'],
+    videos: [],
     host: users[10], // Alexandre
     bedrooms: 4,
     bathrooms: 3,
@@ -717,7 +717,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1580502304784-8985b7eb7260?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&h=600&fit=crop',
     ],
-    videos: ['/videos/property-tour-6.mp4'],
+    videos: [],
     host: users[13], // Elena
     bedrooms: 3,
     bathrooms: 2,
@@ -784,7 +784,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1585412459212-a]c67e1c6f28?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
     ],
     videos: [],
     host: users[14], // Jean-Luc
@@ -1262,7 +1262,6 @@ export const formations: Formation[] = [
     ],
     rating: 4.8,
     studentCount: 342,
-    previewVideo: '/videos/formation-preview-1.mp4',
   },
   {
     id: 'form-002',
@@ -1400,7 +1399,6 @@ export const formations: Formation[] = [
     ],
     rating: 4.9,
     studentCount: 89,
-    previewVideo: '/videos/formation-preview-4.mp4',
   },
   {
     id: 'form-005',
@@ -1581,7 +1579,6 @@ export const formations: Formation[] = [
     ],
     rating: 4.7,
     studentCount: 312,
-    previewVideo: '/videos/formation-preview-8.mp4',
   },
   {
     id: 'form-009',

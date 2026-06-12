@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Check, CheckCheck,
   Mic, MicOff, Video, VideoOff, MonitorUp, Hand,
@@ -152,6 +152,93 @@ const mockConversations: Conversation[] = [
     lastMessage: "Parfait, j'active mon lien dès maintenant.",
     isOnline: false,
   },
+  /* ─── Groupes (chat multi-membres) ────────────────────────────
+     L'attribut `type: 'group'` declenche un rendu different :
+     groupAvatar + name + compteur de membres au lieu de l'avatar
+     d'un seul participant. */
+  {
+    id: "g1",
+    type: "group",
+    name: "Hôtes Verbier 2026",
+    groupAvatar:
+      "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=200&h=200&fit=crop",
+    participant: {
+      id: "u1", firstName: "Sophie", lastName: "Martin", email: "s@e.ch",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+      city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote",
+      stats: { followers: 120, following: 45, properties: 3, reviews: 28, rating: 4.8, transactions: 15, revenue: 24000 },
+      bio: "",
+    },
+    members: [
+      {
+        id: "u1", firstName: "Sophie", lastName: "Martin", email: "s@e.ch",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+        city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote",
+        stats: { followers: 120, following: 45, properties: 3, reviews: 28, rating: 4.8, transactions: 15, revenue: 24000 },
+        bio: "",
+      },
+      {
+        id: "u3", firstName: "Marie", lastName: "Leroy", email: "m@e.ch",
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
+        city: "Zürich", country: "Suisse", roles: ["agence"], activeRole: "agence",
+        stats: { followers: 250, following: 80, properties: 12, reviews: 45, rating: 4.9, transactions: 30, revenue: 85000 },
+        bio: "",
+      },
+      {
+        id: "u5", firstName: "Pierre", lastName: "Fournier", email: "p@e.ch",
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
+        city: "Verbier", country: "Suisse", roles: ["hote"], activeRole: "hote",
+        stats: { followers: 90, following: 30, properties: 2, reviews: 18, rating: 4.6, transactions: 8, revenue: 18000 },
+        bio: "",
+      },
+    ],
+    messages: [
+      { id: "gm1", senderId: "u3", content: "Bonjour à tous ! Je propose qu'on se synchronise sur les disponibilités fin avril.", timestamp: "2026-04-03T09:00:00", read: true },
+      { id: "gm2", senderId: "u5", content: "Mon chalet est libre du 18 au 25.", timestamp: "2026-04-03T09:15:00", read: true },
+      { id: "gm3", senderId: currentUserId, content: "Idem chez moi. Je peux héberger un overflow si besoin.", timestamp: "2026-04-03T09:20:00", read: true },
+      { id: "gm4", senderId: "u1", content: "Super, on prépare un tableau partagé ?", timestamp: "2026-04-03T09:30:00", read: false },
+    ],
+    unreadCount: 1,
+    lastMessage: "Sophie: Super, on prépare un tableau partagé ?",
+    isOnline: true,
+  },
+  {
+    id: "g2",
+    type: "group",
+    name: "Investisseurs Suisse Romande",
+    groupAvatar:
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=200&fit=crop",
+    participant: {
+      id: "u2", firstName: "Jean", lastName: "Dupont", email: "j@e.ch",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+      city: "Genève", country: "Suisse", roles: ["client"], activeRole: "client",
+      stats: { followers: 30, following: 60, properties: 0, reviews: 5, rating: 4.2, transactions: 3, revenue: 0 },
+      bio: "",
+    },
+    members: [
+      {
+        id: "u2", firstName: "Jean", lastName: "Dupont", email: "j@e.ch",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+        city: "Genève", country: "Suisse", roles: ["client"], activeRole: "client",
+        stats: { followers: 30, following: 60, properties: 0, reviews: 5, rating: 4.2, transactions: 3, revenue: 0 },
+        bio: "",
+      },
+      {
+        id: "u4", firstName: "Amira", lastName: "El Fassi", email: "a@e.ch",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
+        city: "Marrakech", country: "Maroc", roles: ["hote"], activeRole: "hote",
+        stats: { followers: 180, following: 90, properties: 5, reviews: 32, rating: 4.7, transactions: 12, revenue: 42000 },
+        bio: "",
+      },
+    ],
+    messages: [
+      { id: "gm10", senderId: "u2", content: "On se voit ce vendredi pour l'AG annuelle ?", timestamp: "2026-04-02T17:00:00", read: true },
+      { id: "gm11", senderId: currentUserId, content: "Présent. J'apporte les chiffres du Q1.", timestamp: "2026-04-02T17:05:00", read: true },
+    ],
+    unreadCount: 0,
+    lastMessage: "Vous: Présent. J'apporte les chiffres du Q1.",
+    isOnline: false,
+  },
 ];
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -168,6 +255,7 @@ export default function MessagesPage() {
 
 function MessagesPageInner() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [conversations, setConversations] = useState(mockConversations);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -450,7 +538,15 @@ function MessagesPageInner() {
                 </p>
               )}
             </div>
-          ) : filteredConvs.map((conv) => (
+          ) : filteredConvs.map((conv) => {
+            const isGroup = conv.type === "group";
+            const displayName = isGroup
+              ? conv.name
+              : `${conv.participant.firstName} ${conv.participant.lastName}`;
+            const displayAvatar = isGroup
+              ? conv.groupAvatar
+              : conv.participant.avatar;
+            return (
             <button
               key={conv.id}
               onClick={() => setActiveConvId(conv.id)}
@@ -460,18 +556,23 @@ function MessagesPageInner() {
             >
               <div className="relative flex-shrink-0">
                 <img
-                  src={conv.participant.avatar}
+                  src={displayAvatar}
                   alt=""
                   className="w-12 h-12 rounded-full object-cover"
                 />
-                {conv.isOnline && (
+                {!isGroup && conv.isOnline && (
                   <div className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[var(--background)]" />
+                )}
+                {isGroup && (
+                  <div className="absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full bg-foreground px-1 py-0.5 text-[8px] font-mono font-medium text-background">
+                    {conv.members?.length ?? 0}
+                  </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-[var(--foreground)] truncate">
-                    {conv.participant.firstName} {conv.participant.lastName}
+                    {displayName}
                   </span>
                   <span className="text-[10px] text-[var(--text-muted)] flex-shrink-0">
                     {formatTime(conv.messages[conv.messages.length - 1]?.timestamp || "")}
@@ -487,7 +588,8 @@ function MessagesPageInner() {
                 </div>
               </div>
             </button>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -511,30 +613,51 @@ function MessagesPageInner() {
               </button>
               <div className="relative">
                 <img
-                  src={activeConv.participant.avatar}
+                  src={
+                    activeConv.type === "group"
+                      ? activeConv.groupAvatar
+                      : activeConv.participant.avatar
+                  }
                   alt=""
                   className="w-10 h-10 rounded-full object-cover"
                 />
-                {activeConv.isOnline && (
+                {activeConv.type !== "group" && activeConv.isOnline && (
                   <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[var(--background)]" />
                 )}
               </div>
               <div className="flex-1">
-                <div className="text-sm font-medium text-[var(--foreground)]">
-                  {activeConv.participant.firstName} {activeConv.participant.lastName}
+                <div className="text-sm font-medium text-[var(--foreground)] flex items-center gap-2">
+                  {activeConv.type === "group"
+                    ? activeConv.name
+                    : `${activeConv.participant.firstName} ${activeConv.participant.lastName}`}
+                  {activeConv.type === "group" && (
+                    <span className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+                      Groupe
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-[var(--text-muted)]">
-                  {activeConv.isOnline ? "En ligne" : "Hors ligne"}
+                  {activeConv.type === "group"
+                    ? `${activeConv.members?.length ?? 0} membres`
+                    : activeConv.isOnline
+                    ? "En ligne"
+                    : "Hors ligne"}
                 </div>
               </div>
               <button
-                onClick={startConference}
-                aria-label="Démarrer une réunion privée"
-                title="Démarrer une réunion privée"
+                onClick={() =>
+                  router.push(
+                    `/reunion/${activeConv.id}?titre=${encodeURIComponent(
+                      `Visio avec ${activeConv.participant.firstName} ${activeConv.participant.lastName}`,
+                    )}`,
+                  )
+                }
+                aria-label="Démarrer une visio Jitsi"
+                title="Démarrer une visio Jitsi"
                 className="flex items-center gap-1.5 px-3 h-11 rounded-lg bg-[var(--primary)]/10 hover:bg-[var(--primary)]/15 text-[var(--primary)] text-xs font-medium transition-colors"
               >
                 <Video size={16} />
-                <span className="hidden sm:inline">Réunion</span>
+                <span className="hidden sm:inline">Visio</span>
               </button>
             </div>
 
