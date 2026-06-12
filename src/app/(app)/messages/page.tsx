@@ -7,10 +7,19 @@ import {
   Mic, MicOff, Video, VideoOff, MonitorUp, Hand,
   Users as UsersIcon, MessageSquare, PhoneOff, ShieldCheck,
   LayoutGrid, Maximize2, X as XIcon, Send as SendIcon, Link as LinkIcon,
-  Paperclip,
+  Paperclip, Plus, UserPlus,
 } from "lucide-react";
-import type { Conversation, Message } from "@/lib/types";
+import type { Conversation, Message, User } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import { users as allUsers, currentUser as currentUserMock } from "@/lib/mock-data";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 /* ─── Conférence privée (visio Zoom-style) ────────────────────────────────
    Modèle volontairement multi-participants : on ouvre une "salle" à 4 — soi,
@@ -281,6 +290,10 @@ function MessagesPageInner() {
   const [deletedMessages, setDeletedMessages] = useState<Set<string>>(new Set());
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [showNewConv, setShowNewConv] = useState(false);
+  const [showNewGroup, setShowNewGroup] = useState(false);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [newGroupMembers, setNewGroupMembers] = useState<string[]>([]);
+  const [newGroupSearch, setNewGroupSearch] = useState("");
   const [newConvSearch, setNewConvSearch] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const callIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -503,13 +516,23 @@ function MessagesPageInner() {
               <LottiePlayer src="/lottie/lottieflow-chat-17-9-000000-easey.json" width={32} height={32} />
               <h1 className="text-xl page-heading text-[var(--foreground)]">Messages</h1>
             </div>
-            <button
-              onClick={() => setShowNewConv(true)}
-              className="w-8 h-8 rounded-full bg-[var(--primary)] text-white flex items-center justify-center hover:bg-[var(--primary)] transition-colors"
-              title="Nouvelle conversation"
-            >
-              <LottiePlayer src="/lottie/lottieflow-chat-17-1-000000-easey.json" width={24} height={24} />
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setShowNewGroup(true)}
+                className="flex h-8 items-center gap-1 rounded-full border border-[var(--card-border)] bg-[var(--background)] px-2.5 text-[11px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--hover-bg)]"
+                title="Nouveau groupe"
+              >
+                <UsersIcon className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Groupe</span>
+              </button>
+              <button
+                onClick={() => setShowNewConv(true)}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--primary)] text-white transition-colors hover:opacity-90"
+                title="Nouvelle conversation"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+            </div>
           </div>
           <input
             type="text"
@@ -869,6 +892,149 @@ function MessagesPageInner() {
           </div>
         </div>
       )}
+
+      {/* ─── Nouveau groupe ─────────────────────────────────────────────── */}
+      <Dialog open={showNewGroup} onOpenChange={(open) => {
+        if (!open) {
+          setShowNewGroup(false);
+          setNewGroupName("");
+          setNewGroupMembers([]);
+          setNewGroupSearch("");
+        }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Nouveau groupe</DialogTitle>
+            <DialogDescription>
+              Donnez un nom au groupe et ajoutez au moins 2 membres.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground" htmlFor="group-name">
+                Nom du groupe
+              </label>
+              <input
+                id="group-name"
+                value={newGroupName}
+                onChange={(e) => setNewGroupName(e.target.value)}
+                placeholder="Ex : Investisseurs Romandie"
+                className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground/40 focus:ring-2 focus:ring-foreground/10"
+              />
+            </div>
+
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <label className="text-xs font-medium text-muted-foreground" htmlFor="group-search">
+                  Membres
+                </label>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  {newGroupMembers.length} sélectionné{newGroupMembers.length > 1 ? "s" : ""}
+                </span>
+              </div>
+              <input
+                id="group-search"
+                value={newGroupSearch}
+                onChange={(e) => setNewGroupSearch(e.target.value)}
+                placeholder="Rechercher un utilisateur…"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground/40 focus:ring-2 focus:ring-foreground/10"
+              />
+              <div className="mt-2 max-h-56 overflow-y-auto rounded-md border border-border">
+                {allUsers
+                  .filter((u) => u.id !== currentUserMock.id)
+                  .filter((u) =>
+                    `${u.firstName} ${u.lastName} ${u.city}`
+                      .toLowerCase()
+                      .includes(newGroupSearch.toLowerCase()),
+                  )
+                  .map((user) => {
+                    const checked = newGroupMembers.includes(user.id);
+                    return (
+                      <label
+                        key={user.id}
+                        className="flex cursor-pointer items-center gap-3 border-b border-border px-3 py-2 last:border-b-0 hover:bg-muted/40"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            setNewGroupMembers((prev) =>
+                              checked ? prev.filter((id) => id !== user.id) : [...prev, user.id],
+                            );
+                          }}
+                          className="h-4 w-4 shrink-0 rounded border-border"
+                        />
+                        <img
+                          src={user.avatar}
+                          alt=""
+                          className="h-7 w-7 shrink-0 rounded-full object-cover"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">
+                            {user.firstName} {user.lastName}
+                          </p>
+                          <p className="truncate text-[11px] text-muted-foreground">
+                            {user.city}, {user.country}
+                          </p>
+                        </div>
+                      </label>
+                    );
+                  })}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => {
+                setShowNewGroup(false);
+                setNewGroupName("");
+                setNewGroupMembers([]);
+                setNewGroupSearch("");
+              }}
+              className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!newGroupName.trim() || newGroupMembers.length < 2) return;
+                const members = allUsers.filter((u) => newGroupMembers.includes(u.id));
+                /* On garde currentUser implicite dans le groupe : seul lui peut
+                   l'ouvrir, donc on ne le re-stocke pas comme membre dans la
+                   liste affichee. */
+                const newGroup: Conversation = {
+                  id: `g-new-${Date.now()}`,
+                  type: "group",
+                  name: newGroupName.trim(),
+                  groupAvatar:
+                    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
+                  participant: members[0] as User,
+                  members,
+                  messages: [],
+                  unreadCount: 0,
+                  lastMessage: "",
+                  isOnline: false,
+                };
+                setConversations((prev) => [newGroup, ...prev]);
+                setActiveConvId(newGroup.id);
+                setShowNewGroup(false);
+                setNewGroupName("");
+                setNewGroupMembers([]);
+                setNewGroupSearch("");
+              }}
+              disabled={!newGroupName.trim() || newGroupMembers.length < 2}
+              className="inline-flex items-center gap-1.5 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-40"
+            >
+              <UserPlus className="h-3.5 w-3.5" />
+              Créer le groupe
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* ─── Conférence privée (visio Zoom-style) ──────────────────────── */}
       {showConference && activeConv && (

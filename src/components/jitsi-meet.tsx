@@ -6,6 +6,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
    - roomName : identifiant unique de la salle (visible dans l'URL Jitsi).
    - displayName : nom affiche du participant dans la salle.
    - subject : titre affiche en haut de la conference.
+   - audioMuted / videoMuted : etat initial du micro/camera au join.
+   - hidePrejoin : skip l'ecran "Etes-vous pret a rejoindre ?" interne
+     a Jitsi (on a notre propre lobby E-Dome au-dessus).
 
    Notes :
    - meet.jit.si est public ; ajoute un prefix "edome-" devant roomName pour
@@ -20,10 +23,21 @@ interface JitsiMeetProps {
   roomName: string;
   displayName?: string;
   subject?: string;
+  audioMuted?: boolean;
+  videoMuted?: boolean;
+  hidePrejoin?: boolean;
   className?: string;
 }
 
-export function JitsiMeet({ roomName, displayName, subject, className }: JitsiMeetProps) {
+export function JitsiMeet({
+  roomName,
+  displayName,
+  subject,
+  audioMuted = false,
+  videoMuted = false,
+  hidePrejoin = true,
+  className,
+}: JitsiMeetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -34,14 +48,18 @@ export function JitsiMeet({ roomName, displayName, subject, className }: JitsiMe
      interpretes par Jitsi pour configurer la salle SANS avoir besoin du SDK. */
   const url = useMemo(() => {
     const params: Record<string, string | boolean> = {
-      "config.prejoinPageEnabled": true,
+      "config.prejoinPageEnabled": !hidePrejoin,
       "config.disableDeepLinking": true,
-      "config.startWithAudioMuted": false,
-      "config.startWithVideoMuted": false,
+      "config.startWithAudioMuted": audioMuted,
+      "config.startWithVideoMuted": videoMuted,
+      "config.disableInviteFunctions": true,
       "interfaceConfig.SHOW_JITSI_WATERMARK": false,
       "interfaceConfig.SHOW_WATERMARK_FOR_GUESTS": false,
       "interfaceConfig.DEFAULT_BACKGROUND": "#0a0a0a",
       "interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME": "Participant",
+      "interfaceConfig.MOBILE_APP_PROMO": false,
+      "interfaceConfig.SHOW_PROMOTIONAL_CLOSE_PAGE": false,
+      "interfaceConfig.HIDE_INVITE_MORE_HEADER": true,
     };
     if (displayName) {
       params["userInfo.displayName"] = displayName;
@@ -53,7 +71,7 @@ export function JitsiMeet({ roomName, displayName, subject, className }: JitsiMe
       .map(([k, v]) => `${k}=${typeof v === "string" ? encodeURIComponent(JSON.stringify(v)) : v}`)
       .join("&");
     return `https://${DOMAIN}/${safeRoom}#${hash}`;
-  }, [safeRoom, displayName, subject]);
+  }, [safeRoom, displayName, subject, audioMuted, videoMuted, hidePrejoin]);
 
   useEffect(() => {
     setLoaded(true);
@@ -62,7 +80,7 @@ export function JitsiMeet({ roomName, displayName, subject, className }: JitsiMe
   return (
     <div
       ref={containerRef}
-      className={className ?? "relative w-full h-full overflow-hidden rounded-lg border border-border bg-black"}
+      className={className ?? "relative w-full h-full overflow-hidden bg-black"}
     >
       {loaded ? (
         <iframe
@@ -73,8 +91,8 @@ export function JitsiMeet({ roomName, displayName, subject, className }: JitsiMe
           style={{ border: 0 }}
         />
       ) : (
-        <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-          <span className="font-mono text-xs uppercase tracking-wider">Chargement de la salle…</span>
+        <div className="flex h-full w-full items-center justify-center text-white/60">
+          <span className="font-mono text-xs uppercase tracking-wider">Connexion à la salle…</span>
         </div>
       )}
     </div>

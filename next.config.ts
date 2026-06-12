@@ -6,27 +6,19 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
-  /* Redirects 308 (permanent) pour consolider les doublons :
-     - /statistiques -> /dashboard/audience (renomme)
-     - /reservations -> /dashboard/reservations (canonique)
-     - /apporteurs -> /dashboard/apporteurs (canonique)
-     - /dashboard/revenus -> /dashboard#revenus (fusionne dans la
-       Vue d'ensemble, ancre vers la section RevenueSection) */
+  /* Redirects 308 (permanent) :
+     - /statistiques -> /dashboard/audience (page racine supprimee)
+     - /dashboard/revenus -> /dashboard#revenus (fusionnee dans la
+       Vue d'ensemble, ancre vers la section RevenueSection)
+
+     Note : /apporteurs et /reservations existent toujours en racine ET
+     en sous-page dashboard avec 2 contenus distincts (vue utilisateur vs
+     vue host/business). On n'utilise plus de redirect, les 2 cohabitent. */
   async redirects() {
     return [
       {
         source: "/statistiques",
         destination: "/dashboard/audience",
-        permanent: true,
-      },
-      {
-        source: "/reservations",
-        destination: "/dashboard/reservations",
-        permanent: true,
-      },
-      {
-        source: "/apporteurs",
-        destination: "/dashboard/apporteurs",
         permanent: true,
       },
       {

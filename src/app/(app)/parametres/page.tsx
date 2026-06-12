@@ -6,6 +6,7 @@ import { useApp } from "@/lib/context";
 import { roleLabels } from "@/lib/types";
 import type { Role } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import { LogoutButton } from "@/components/auth/logout-button";
 
 // ─── Alert types ────────────────────────────────────────────────────────────
 
@@ -670,6 +671,19 @@ export default function ParametresPage() {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Compte : deconnexion */}
+      <div className="mt-8 border-t border-[var(--card-border)] pt-6">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-[var(--foreground)]">Compte</p>
+            <p className="text-xs text-[var(--text-muted)]">
+              Vous serez ramené à la page d&apos;accueil. Vous pourrez vous reconnecter à tout moment.
+            </p>
+          </div>
+          <LogoutButton variant="danger" />
         </div>
       </div>
 
