@@ -1654,7 +1654,9 @@ export default function FeedPage() {
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX_COMPOSER_MEDIA = 4;
-  const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis">("pour-vous");
+  /* 3 tabs Whop-style : "Tous" (=pour-vous), "En cours de suivi"
+     (=suivis), "Repère" (=repere, filtre des posts saved/repere). */
+  const [activeTab, setActiveTab] = useState<"pour-vous" | "suivis" | "repere">("pour-vous");
 
   // Persiste l'état mute entre les posts (le user ne doit pas le réajuster à chaque card).
   const [muted, setMuted] = useState(true);
@@ -1675,13 +1677,16 @@ export default function FeedPage() {
     // Tri par date desc pour que les nouveaux formats varies (texte seul,
     // galeries photo) se melangent naturellement avec les videos selon
     // leur createdAt, plutot que d'apparaitre en bas du tableau.
-    const base = activeTab === "suivis"
-      ? posts.filter((p) => isFollowing(p.author.id))
-      : posts;
+    const base =
+      activeTab === "suivis"
+        ? posts.filter((p) => isFollowing(p.author.id))
+        : activeTab === "repere"
+        ? posts.filter((p) => savedPosts.has(p.id))
+        : posts;
     return [...base].sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [posts, activeTab, isFollowing]);
+  }, [posts, activeTab, isFollowing, savedPosts]);
 
   const toggleLike = (postId: string) => {
     const wasLiked = likedPosts.has(postId);
@@ -1889,30 +1894,53 @@ export default function FeedPage() {
       <div className="flex gap-6">
         {/* Colonne centrale — timeline */}
         <div className="flex-1 min-w-0">
-          {/* DiscoverHub : barre horizontale Airbnb-style avec icones des
-              autres sections (Biens, Formations, Apporteurs, etc.) pour
-              que les nouveaux venus sachent ce qu'il y a sur la plateforme
-              sans avoir a ouvrir le hamburger. */}
-          <div className="max-w-[600px] mx-auto">
-            <DiscoverHub />
+          {/* Header Whop-style : titre Communauté + dot online + chip balance
+              à droite. Pas de DiscoverHub massif — Whop n'a rien à cet
+              endroit, juste le nom de la communauté et le solde. */}
+          <div className="max-w-[680px] mx-auto px-3 pt-2 pb-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <h1 className="page-heading text-2xl md:text-[26px] text-foreground truncate">
+                  Communauté E-Dome
+                </h1>
+                <span
+                  className="h-2 w-2 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_0_3px_rgba(16,185,129,0.18)]"
+                  aria-label="Communauté active"
+                />
+              </div>
+              <div className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-mono tabular-nums">
+                <span className="text-muted-foreground">Solde ·</span>
+                <span className="font-semibold text-foreground">0,00 CHF</span>
+              </div>
+            </div>
           </div>
 
-          {/* Tabs sticky (suivent le scroll de la page) */}
-          <div className="sticky top-16 z-20 -mx-4 px-4 py-3 bg-[var(--background)]/85 backdrop-blur-md border-b border-[var(--card-border)] md:-mx-0 md:px-0 md:rounded-xl md:border-0 md:bg-transparent md:backdrop-blur-0">
-            <div className="max-w-[600px] mx-auto flex gap-1 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-              {(["pour-vous", "suivis"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                    activeTab === tab
-                      ? "bg-[var(--primary)] text-white"
-                      : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  {tab === "pour-vous" ? "Pour vous" : "Suivis"}
-                </button>
-              ))}
+          {/* Tabs Whop-style : underline minimal, pas de pills colorées */}
+          <div className="sticky top-16 z-20 bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--card-border)]">
+            <div className="max-w-[680px] mx-auto flex items-center gap-1 px-3">
+              {(["pour-vous", "suivis", "repere"] as const).map((tab) => {
+                const isActive = activeTab === tab;
+                const label =
+                  tab === "pour-vous" ? "Tous"
+                  : tab === "suivis" ? "En cours de suivi"
+                  : "Repère";
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`relative px-3 py-3 text-[13px] transition-colors ${
+                      isActive
+                        ? "font-semibold text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {label}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-foreground" aria-hidden />
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -2160,57 +2188,20 @@ export default function FeedPage() {
           </div>
         </div>
 
-        {/* Colonne droite — minimale et discrete (desktop large uniquement).
-            On a retire le bloc Actualites pour epurer. Restent : recherche,
-            tendances (3 items max), suggestions (3 items max). Fond transparent,
-            pas de cartes bordees lourdes. */}
-        <aside className="hidden lg:block w-[300px] shrink-0 sticky top-20 self-start space-y-6">
-          {/* Search */}
-          <form onSubmit={(e) => e.preventDefault()} className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
-            <input
-              type="search"
-              placeholder="Rechercher sur E-Dome"
-              className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition-colors"
-            />
-          </form>
-
-          {/* Tendances — minimal */}
-          <div>
-            <h3 className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-              Tendances
-            </h3>
-            <ul className="space-y-0.5">
-              {TRENDING_HASHTAGS.slice(0, 3).map((item) => (
-                <li key={item.tag}>
-                  <Link
-                    href={`/recherche?q=${encodeURIComponent(item.tag)}`}
-                    className="flex items-center justify-between gap-2 px-2 py-2 rounded-lg hover:bg-[var(--hover-bg)] transition-colors"
-                  >
-                    <span className="text-sm font-medium text-[var(--foreground)] truncate">{item.tag}</span>
-                    <span className="text-[11px] text-[var(--text-muted)] tabular-nums shrink-0">
-                      {formatCount(item.count)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/recherche"
-              className="block mt-1 px-2 py-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--foreground)] transition-colors"
-            >
-              Voir plus →
-            </Link>
-          </div>
-
-          {/* Suggestions — minimal */}
-          <div>
-            <h3 className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-              Suggestions
-            </h3>
-            <ul className="space-y-1">
-              {SUGGESTIONS.slice(0, 3).map((user) => (
-                <li key={user.id} className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[var(--hover-bg)] transition-colors">
+        {/* Colonne droite Whop-style : UNIQUEMENT liste verticale de profils
+            à suivre. Pas de header de section. Pour chaque item :
+            avatar circle 36px + nom en VERT + sous-titre gris + bouton
+            "Suivre" outline violet à droite. Padding inter-item réduit. */}
+        <aside className="hidden lg:block w-[260px] shrink-0 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto">
+          <ul className="space-y-0.5">
+            {SUGGESTIONS.slice(0, 12).map((user) => {
+              const following = isFollowing(user.id);
+              const monthsAgo = ((user.id.charCodeAt(user.id.length - 1) % 11) + 1);
+              return (
+                <li
+                  key={user.id}
+                  className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] transition-colors"
+                >
                   <Link href={`/profil/${user.id}`} className="shrink-0">
                     <img
                       src={user.avatar}
@@ -2221,35 +2212,28 @@ export default function FeedPage() {
                   <div className="flex-1 min-w-0">
                     <Link
                       href={`/profil/${user.id}`}
-                      className="text-sm font-medium text-[var(--foreground)] hover:underline truncate block leading-tight"
+                      className="text-[13px] font-medium text-emerald-600 hover:underline truncate block leading-tight"
                     >
                       {user.firstName} {user.lastName}
                     </Link>
-                    <p className="text-[11px] text-[var(--text-muted)] truncate">
-                      {roleLabels[user.activeRole]}
+                    <p className="text-[10px] text-[var(--text-muted)] truncate leading-tight mt-0.5">
+                      Créateur de E-Dome · {monthsAgo} mois
                     </p>
                   </div>
                   <button
                     onClick={() => toggleFollow(user.id)}
-                    className="text-xs px-3 py-1 rounded-full font-medium transition-colors shrink-0"
-                    style={{
-                      background: isFollowing(user.id) ? "transparent" : "var(--foreground)",
-                      color: isFollowing(user.id) ? "var(--text-secondary)" : "var(--background)",
-                      border: isFollowing(user.id) ? "1px solid var(--card-border)" : "none",
-                    }}
+                    className={`shrink-0 text-[11px] px-3 py-1 rounded-full font-medium border transition-colors ${
+                      following
+                        ? "border-border bg-transparent text-muted-foreground hover:bg-muted"
+                        : "border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50"
+                    }`}
                   >
-                    {isFollowing(user.id) ? "Suivi" : "Suivre"}
+                    {following ? "Suivi" : "Suivre"}
                   </button>
                 </li>
-              ))}
-            </ul>
-            <Link
-              href="/recherche"
-              className="block mt-1 px-2 py-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--foreground)] transition-colors"
-            >
-              Voir plus →
-            </Link>
-          </div>
+              );
+            })}
+          </ul>
         </aside>
       </div>
 
