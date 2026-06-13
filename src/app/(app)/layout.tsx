@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/components/ui/toast";
 import { Wrench } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
+import { SidebarWhop, SIDEBAR_WHOP_WIDTH } from "@/components/layout/sidebar-whop";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ExplorerTabs } from "@/components/layout/explorer-tabs";
@@ -32,11 +33,10 @@ const EXPLORER_PATHS = new Set([
   "/evenements/creer",
 ]);
 
-/* Largeur de la sidebar collapsed (icones uniquement). Elle se deroule
-   en overlay au survol — le contenu ne se redecale pas, on offset
-   simplement de cette largeur fixe. Doit rester sync avec COLLAPSED_WIDTH
-   dans sidebar.tsx. */
-const SIDEBAR_COLLAPSED_WIDTH = 56;
+/* Largeur de la sidebar permanente Whop-style. Le contenu central
+   s'offset de cette largeur a gauche. Sur mobile la sidebar passe en
+   overlay drawer (ancien composant Sidebar forceExpanded). */
+const SIDEBAR_COLLAPSED_WIDTH = SIDEBAR_WHOP_WIDTH;
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -87,13 +87,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               minHeight: "100vh",
             }}
           >
-            {/* Sidebar globale + drawer mobile : masques sur /dashboard/*
-                car le DashboardShell prend le relais avec sa propre nav. */}
+            {/* Sidebar globale Whop-style + drawer mobile : masques sur
+                /dashboard/* car le DashboardShell prend le relais. */}
             {!isDashboardRoute && (
               <>
-                <div className="hidden md:block">
-                  <Sidebar />
-                </div>
+                <SidebarWhop />
 
                 {mobileMenuOpen && (
                   <div className="fixed inset-0 z-50 md:hidden">
@@ -115,12 +113,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </>
             )}
 
-            {/* Main content */}
+            {/* Main content — offset de la sidebar Whop sur md+ uniquement
+                (sur mobile la sidebar est en drawer overlay). */}
             <div
-              className="flex-1 flex flex-col min-h-screen app-content"
-              style={{
-                marginLeft: isDashboardRoute ? 0 : `${SIDEBAR_COLLAPSED_WIDTH}px`,
-              }}
+              className={`flex-1 flex flex-col min-h-screen app-content ${
+                isDashboardRoute ? "" : "md:ml-[240px]"
+              }`}
             >
               {/* Banniere demo : toujours visible, meme sur le dashboard. */}
               <div className="w-full px-4 py-1.5 bg-[var(--primary)]/10 border-b border-[var(--primary)]/20 text-center text-xs text-[var(--primary)] flex items-center justify-center gap-1.5">
