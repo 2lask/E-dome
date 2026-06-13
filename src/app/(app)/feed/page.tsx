@@ -618,40 +618,47 @@ const clampAspect = (r: number) => Math.max(ASPECT_MIN, Math.min(r, ASPECT_MAX))
 const MEDIA_MAX_HEIGHT = "min(72svh, 620px)";
 
 function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   // Aspect ratio natif détecté à onLoadedMetadata, fallback 16:9.
   const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
+  /* mounted : controle le rendering DU <video> tag lui-meme. Tant que pas
+     mounted, on affiche un poster sombre + bouton Play. Le <video> n'est
+     mis dans le DOM qu'apres intersection (vrai lazy load).
+     Vu que les MP4 font 1-16MB, on evite ainsi de monter 27 <video> tags
+     simultanement (chaque tag charge metadata + premieres frames). */
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
+    const c = containerRef.current;
+    if (!c) return;
     const obs = new IntersectionObserver(
       ([entry]) => {
+        if (entry.intersectionRatio >= 0.5) {
+          /* Mount le <video> tag pour la 1ere fois si necessaire. */
+          if (!mounted) setMounted(true);
+        }
+        const v = videoRef.current;
+        if (!v) return;
         if (entry.intersectionRatio >= 0.6) {
-          /* Charge la video uniquement quand visible (preload="none"
-             par defaut pour eviter de saturer le reseau avec ~30 videos). */
-          if (v.readyState === 0) v.load();
-          v.currentTime = 0;
           v.play().then(() => setPaused(false)).catch(() => {});
         } else {
           v.pause();
-          /* Liberation memoire quand sort de la view : reset le buffer. */
-          if (entry.intersectionRatio < 0.1) {
-            v.removeAttribute("src");
-            v.load();
-            v.setAttribute("src", src);
-          }
         }
       },
-      { threshold: [0, 0.1, 0.3, 0.6, 0.8] }
+      { threshold: [0, 0.3, 0.5, 0.6, 0.8] }
     );
-    obs.observe(v);
+    obs.observe(c);
     return () => obs.disconnect();
-  }, [src]);
+  }, [mounted]);
 
   const togglePlay = () => {
+    if (!mounted) {
+      setMounted(true);
+      return;
+    }
     const v = videoRef.current;
     if (!v) return;
     if (v.paused) {
@@ -664,29 +671,46 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
 
   return (
     <div
+      ref={containerRef}
       className="relative bg-black rounded-2xl overflow-hidden"
       style={{ aspectRatio, maxHeight: MEDIA_MAX_HEIGHT }}
     >
-      <video
-        ref={videoRef}
-        src={src}
-        muted={muted}
-        loop
-        playsInline
-        preload="none"
-        className="absolute inset-0 w-full h-full object-cover cursor-pointer"
-        onClick={togglePlay}
-        onLoadedMetadata={(e) => {
-          const v = e.currentTarget;
-          if (v.videoWidth > 0 && v.videoHeight > 0) {
-            setAspectRatio(clampAspect(v.videoWidth / v.videoHeight));
-          }
-        }}
-        onTimeUpdate={(e) => {
-          const v = e.currentTarget;
-          if (v.duration > 0) setProgress((v.currentTime / v.duration) * 100);
-        }}
-      />
+      {/* Le <video> n'est rendu QUE quand mounted=true. Avant : poster noir. */}
+      {mounted ? (
+        <video
+          ref={videoRef}
+          src={src}
+          muted={muted}
+          loop
+          playsInline
+          preload="metadata"
+          autoPlay
+          className="absolute inset-0 w-full h-full object-cover cursor-pointer"
+          onClick={togglePlay}
+          onLoadedMetadata={(e) => {
+            const v = e.currentTarget;
+            if (v.videoWidth > 0 && v.videoHeight > 0) {
+              setAspectRatio(clampAspect(v.videoWidth / v.videoHeight));
+            }
+          }}
+          onTimeUpdate={(e) => {
+            const v = e.currentTarget;
+            if (v.duration > 0) setProgress((v.currentTime / v.duration) * 100);
+          }}
+        />
+      ) : (
+        /* Poster : fond noir + Play discret. Aucun reseau utilise. */
+        <button
+          type="button"
+          onClick={togglePlay}
+          className="absolute inset-0 flex items-center justify-center bg-black cursor-pointer"
+          aria-label="Charger et lire la vidéo"
+        >
+          <div className="w-14 h-14 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center ring-1 ring-white/30">
+            <Play className="w-6 h-6 text-white fill-white" />
+          </div>
+        </button>
+      )}
       {paused && (
         <button
           onClick={togglePlay}
