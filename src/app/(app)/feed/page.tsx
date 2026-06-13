@@ -1878,7 +1878,7 @@ export default function FeedPage() {
     : null;
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-[1280px] mx-auto">
       {/* Toast */}
       {feedToast && (
         <div className="fixed top-6 right-6 z-[100] inline-flex items-center gap-1.5 px-5 py-3 rounded-xl toast-success text-sm font-medium shadow-lg animate-fade-in">
@@ -1886,31 +1886,34 @@ export default function FeedPage() {
         </div>
       )}
 
-      <div className="flex gap-6">
-        {/* Colonne centrale — timeline */}
+      <div className="flex gap-8">
+        {/* Colonne centrale — timeline (760px Whop-style) */}
         <div className="flex-1 min-w-0">
-          {/* DiscoverHub : barre horizontale Airbnb-style avec icones des
-              autres sections (Biens, Formations, Apporteurs, etc.) pour
-              que les nouveaux venus sachent ce qu'il y a sur la plateforme
-              sans avoir a ouvrir le hamburger. */}
-          <div className="max-w-[600px] mx-auto">
+          {/* DiscoverHub */}
+          <div className="max-w-[760px] mx-auto">
             <DiscoverHub />
           </div>
 
-          {/* Tabs sticky (suivent le scroll de la page) */}
-          <div className="sticky top-16 z-20 -mx-4 px-4 py-3 bg-[var(--background)]/85 backdrop-blur-md border-b border-[var(--card-border)] md:-mx-0 md:px-0 md:rounded-xl md:border-0 md:bg-transparent md:backdrop-blur-0">
-            <div className="max-w-[600px] mx-auto flex gap-1 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+          {/* Tabs sticky : style underline minimal (Whop), font-14 gap-6 */}
+          <div className="sticky top-16 z-20 -mx-4 px-4 py-2 bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--card-border)] md:-mx-0 md:px-0 md:bg-transparent md:backdrop-blur-0">
+            <div className="max-w-[760px] mx-auto flex items-center gap-6 px-2">
               {(["pour-vous", "suivis"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                  className={`relative py-3 text-[14px] font-medium transition-colors ${
                     activeTab === tab
-                      ? "bg-[var(--primary)] text-white"
+                      ? "text-[var(--foreground)]"
                       : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
                   }`}
                 >
                   {tab === "pour-vous" ? "Pour vous" : "Suivis"}
+                  {activeTab === tab && (
+                    <span
+                      className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[var(--foreground)]"
+                      aria-hidden
+                    />
+                  )}
                 </button>
               ))}
             </div>
@@ -1921,13 +1924,13 @@ export default function FeedPage() {
               dans le projet), à la place upload média (image+vidéo, jusqu'à
               4 via picker iOS natif) + 4 attachements pertinents : Bien
               immobilier, Formation, Événement, Analyse de bien. */}
-          <div className="mt-2 max-w-[600px] mx-auto">
-            <div className="px-3 py-3 border-b border-[var(--card-border)]">
+          <div className="mt-2 max-w-[760px] mx-auto">
+            <div className="px-4 py-3 border-b border-[var(--card-border)]">
               <div className="flex gap-3">
                 <img
                   src={CURRENT_USER.avatar}
                   alt=""
-                  className="w-10 h-10 rounded-full object-cover shrink-0"
+                  className="w-8 h-8 rounded-full object-cover shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <textarea
@@ -2160,18 +2163,17 @@ export default function FeedPage() {
           </div>
         </div>
 
-        {/* Colonne droite — minimale et discrete (desktop large uniquement).
-            On a retire le bloc Actualites pour epurer. Restent : recherche,
-            tendances (3 items max), suggestions (3 items max). Fond transparent,
-            pas de cartes bordees lourdes. */}
-        <aside className="hidden lg:block w-[300px] shrink-0 sticky top-20 self-start space-y-6">
+        {/* Colonne droite Whop-style : 245px, sections plus compactes,
+            avatars 40px, bouton Suivre pill. Recherche + Tendances +
+            Suggestions tous preserves. */}
+        <aside className="hidden lg:block w-[245px] shrink-0 sticky top-20 self-start space-y-4">
           {/* Search */}
           <form onSubmit={(e) => e.preventDefault()} className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-muted)] pointer-events-none" />
             <input
               type="search"
               placeholder="Rechercher sur E-Dome"
-              className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition-colors"
+              className="w-full pl-10 pr-3 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-[13px] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition-colors"
             />
           </form>
 
@@ -2203,25 +2205,25 @@ export default function FeedPage() {
             </Link>
           </div>
 
-          {/* Suggestions — minimal */}
+          {/* Suggestions — avatars 40px + bouton Suivre pill 12px (Whop) */}
           <div>
             <h3 className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Suggestions
             </h3>
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {SUGGESTIONS.slice(0, 3).map((user) => (
-                <li key={user.id} className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[var(--hover-bg)] transition-colors">
+                <li key={user.id} className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-[var(--hover-bg)] transition-colors">
                   <Link href={`/profil/${user.id}`} className="shrink-0">
                     <img
                       src={user.avatar}
                       alt=""
-                      className="w-9 h-9 rounded-full object-cover hover:opacity-80 transition-opacity"
+                      className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity"
                     />
                   </Link>
                   <div className="flex-1 min-w-0">
                     <Link
                       href={`/profil/${user.id}`}
-                      className="text-sm font-medium text-[var(--foreground)] hover:underline truncate block leading-tight"
+                      className="text-[13px] font-semibold text-[var(--foreground)] hover:underline truncate block leading-tight"
                     >
                       {user.firstName} {user.lastName}
                     </Link>
@@ -2231,7 +2233,7 @@ export default function FeedPage() {
                   </div>
                   <button
                     onClick={() => toggleFollow(user.id)}
-                    className="text-xs px-3 py-1 rounded-full font-medium transition-colors shrink-0"
+                    className="text-[12px] px-3.5 py-1 rounded-full font-semibold transition-colors shrink-0"
                     style={{
                       background: isFollowing(user.id) ? "transparent" : "var(--foreground)",
                       color: isFollowing(user.id) ? "var(--text-secondary)" : "var(--background)",
