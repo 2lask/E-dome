@@ -1315,38 +1315,38 @@ function PostCard({
   return (
     <article
       onClick={closeMenus}
-      className="w-full border-b border-[var(--card-border)] last:border-b-0 px-4 py-3 transition-colors hover:bg-[var(--hover-bg)]/30"
+      className="w-full border-b border-[var(--card-border)] last:border-b-0 px-4 py-2.5 transition-colors"
     >
       {/* Layout Twitter : avatar gauche + colonne contenu droite */}
       <div className="flex gap-3">
-        {/* Avatar gauche */}
+        {/* Avatar gauche - 32px Whop */}
         <Link href={`/profil/${post.author.id}`} onClick={(e) => e.stopPropagation()} className="shrink-0">
           <img
             src={post.author.avatar}
             alt={post.author.firstName}
-            className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity"
+            className="w-8 h-8 rounded-full object-cover hover:opacity-80 transition-opacity"
           />
         </Link>
 
         {/* Colonne contenu */}
         <div className="flex-1 min-w-0">
-          {/* Header inline : nom · @handle · time + menu */}
+          {/* Header inline : nom · @handle · time + menu (text-13 Whop) */}
           <div className="flex items-start justify-between gap-2">
             <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0 min-w-0">
               <Link
                 href={`/profil/${post.author.id}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-[14px] font-semibold text-[var(--foreground)] hover:underline truncate leading-tight"
+                className="text-[13px] font-semibold text-[var(--foreground)] hover:underline truncate leading-tight"
               >
                 {post.author.firstName} {post.author.lastName}
               </Link>
-              <span className="text-[13px] text-[var(--text-muted)] truncate">@{handle}</span>
-              <span className="text-[13px] text-[var(--text-muted)]" aria-hidden>·</span>
-              <span className="text-[13px] text-[var(--text-muted)]">{timeAgo(post.createdAt)}</span>
+              <span className="text-[12px] text-[var(--text-muted)] truncate">@{handle}</span>
+              <span className="text-[12px] text-[var(--text-muted)]" aria-hidden>·</span>
+              <span className="text-[12px] text-[var(--text-muted)]">{timeAgo(post.createdAt)}</span>
               {post.location && (
                 <>
-                  <span className="text-[13px] text-[var(--text-muted)]" aria-hidden>·</span>
-                  <span className="inline-flex items-center gap-0.5 text-[12px] text-[var(--text-muted)] truncate max-w-[140px]">
+                  <span className="text-[12px] text-[var(--text-muted)]" aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-0.5 text-[11px] text-[var(--text-muted)] truncate max-w-[140px]">
                     <MapPin className="w-3 h-3" />
                     {post.location}
                   </span>
@@ -1524,7 +1524,7 @@ function PostCard({
               label="Répondre"
               count={post.comments.length}
             >
-              <MessageCircle className="w-[18px] h-[18px]" />
+              <MessageCircle className="w-[16px] h-[16px]" />
             </ActionBtn>
 
             <ActionBtn
@@ -1534,7 +1534,7 @@ function PostCard({
               active={reposted}
               count={Math.round(post.likes / 8) + (reposted ? 1 : 0)}
             >
-              <Repeat2 className={`w-[18px] h-[18px] ${reposted ? "animate-pop" : ""}`} />
+              <Repeat2 className={`w-[16px] h-[16px] ${reposted ? "animate-pop" : ""}`} />
             </ActionBtn>
 
             <ActionBtn
@@ -1544,10 +1544,10 @@ function PostCard({
               active={liked}
               count={post.likes}
             >
-              <Heart className={`w-[18px] h-[18px] ${liked ? "fill-rose-500 text-rose-500 animate-pop" : ""}`} />
+              <Heart className={`w-[16px] h-[16px] ${liked ? "fill-rose-500 text-rose-500 animate-pop" : ""}`} />
             </ActionBtn>
 
-            <div className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--text-muted)]">
+            <div className="hidden items-center gap-1 px-2 py-1 text-[12px] text-[var(--text-muted)]">
               <Eye className="w-[16px] h-[16px]" />
               <span className="tabular-nums">{formatCount(post.likes * 25 + post.comments.length * 50)}</span>
             </div>
@@ -1560,7 +1560,7 @@ function PostCard({
               aria-label={saved ? "Retirer du marque-pages" : "Enregistrer"}
               aria-pressed={saved}
             >
-              <Bookmark className={`w-[18px] h-[18px] ${saved ? "fill-current" : ""}`} />
+              <Bookmark className={`w-[16px] h-[16px] ${saved ? "fill-current" : ""}`} />
             </button>
 
             <div className="relative">
@@ -1570,7 +1570,7 @@ function PostCard({
                 aria-label="Partager"
                 aria-expanded={shareOpen}
               >
-                <Share2 className="w-[18px] h-[18px]" />
+                <Share2 className="w-[16px] h-[16px]" />
               </button>
               {shareOpen && (
                 <div
@@ -1646,13 +1646,13 @@ function ActionBtn({
       onClick={onClick}
       aria-label={label}
       aria-pressed={active}
-      className="group inline-flex items-center gap-1 px-2 py-1 transition-colors"
+      className="group inline-flex items-center gap-1 px-1.5 py-1 transition-colors"
     >
       <span className={`p-1 rounded-full transition-colors ${colorClass} ${hoverClass}`}>
         {children}
       </span>
       {typeof count === "number" && count > 0 && (
-        <span className={`text-[12px] font-medium tabular-nums transition-colors ${colorClass} ${countColorClass}`}>
+        <span className={`text-[12px] tabular-nums transition-colors ${colorClass} ${countColorClass}`}>
           {formatCount(count)}
         </span>
       )}
@@ -1929,17 +1929,18 @@ export default function FeedPage() {
             <DiscoverHub />
           </div>
 
-          {/* Tabs sticky : style underline minimal (Whop), font-14 gap-6 */}
-          <div className="sticky top-16 z-20 -mx-4 px-4 py-2 bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--card-border)] md:-mx-0 md:px-0 md:bg-transparent md:backdrop-blur-0">
-            <div className="max-w-[760px] flex items-center gap-6 px-2">
+          {/* Tabs sticky : style underline subtle (Whop). py-2 gap-5,
+              inactif text-muted, underline plus discret. */}
+          <div className="sticky top-16 z-20 -mx-4 px-4 py-1 bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--card-border)] md:-mx-0 md:px-0 md:bg-transparent md:backdrop-blur-0">
+            <div className="max-w-[760px] flex items-center gap-5 px-2">
               {(["pour-vous", "suivis"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`relative py-3 text-[14px] font-medium transition-colors ${
+                  className={`relative py-2 text-[14px] font-medium transition-colors ${
                     activeTab === tab
                       ? "text-[var(--foreground)]"
-                      : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
+                      : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
                   }`}
                 >
                   {tab === "pour-vous" ? "Pour vous" : "Suivis"}
@@ -2198,12 +2199,11 @@ export default function FeedPage() {
           </div>
         </div>
 
-        {/* Colonne droite Whop-style : 245px, sections plus compactes,
-            avatars 40px, bouton Suivre pill. Recherche + Tendances +
-            Suggestions tous preserves. */}
-        <aside className="hidden lg:block w-[245px] shrink-0 sticky top-20 self-start space-y-4">
-          {/* Search */}
-          <form onSubmit={(e) => e.preventDefault()} className="relative">
+        {/* Colonne droite Whop : 280px, UNIQUEMENT suggestions a suivre
+            (Search + Tendances masques pour matcher la sidebar simple Whop). */}
+        <aside className="hidden lg:block w-[280px] shrink-0 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto">
+          {/* Search — masque (Whop n'a pas de search dans la sidebar droite) */}
+          <form onSubmit={(e) => e.preventDefault()} className="hidden">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-muted)] pointer-events-none" />
             <input
               type="search"
@@ -2212,8 +2212,8 @@ export default function FeedPage() {
             />
           </form>
 
-          {/* Tendances — minimal */}
-          <div>
+          {/* Tendances — masque (Whop ne montre pas trending sur la home) */}
+          <div className="hidden">
             <h3 className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Tendances
             </h3>
@@ -2240,14 +2240,12 @@ export default function FeedPage() {
             </Link>
           </div>
 
-          {/* Suggestions — avatars 40px + bouton Suivre pill 12px (Whop) */}
+          {/* Suggestions Whop : aucun header de section, liste verticale
+              dense, 10 profils, avatar 40px + bouton Suivre pill. */}
           <div>
-            <h3 className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-              Suggestions
-            </h3>
             <ul className="space-y-0.5">
-              {SUGGESTIONS.slice(0, 3).map((user) => (
-                <li key={user.id} className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-[var(--hover-bg)] transition-colors">
+              {SUGGESTIONS.slice(0, 10).map((user) => (
+                <li key={user.id} className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] transition-colors">
                   <Link href={`/profil/${user.id}`} className="shrink-0">
                     <img
                       src={user.avatar}
@@ -2268,7 +2266,7 @@ export default function FeedPage() {
                   </div>
                   <button
                     onClick={() => toggleFollow(user.id)}
-                    className="text-[12px] px-3.5 py-1 rounded-full font-semibold transition-colors shrink-0"
+                    className="text-[12px] px-3.5 py-1.5 rounded-full font-semibold transition-colors shrink-0"
                     style={{
                       background: isFollowing(user.id) ? "transparent" : "var(--foreground)",
                       color: isFollowing(user.id) ? "var(--text-secondary)" : "var(--background)",

@@ -50,6 +50,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
      une triple navigation sur ces pages. La banniere demo reste
      toujours visible (info essentielle). */
   const isDashboardRoute = pathname.startsWith("/dashboard");
+  /* /feed (et /) : pas de Header global pour matcher le layout Whop
+     ou le contenu colle direct sous la banniere demo. */
+  const isFeedRoute = pathname === "/feed" || pathname === "/";
 
   /* Ferme automatiquement la sidebar overlay mobile dès qu'on
      change de route. */
@@ -120,11 +123,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 isDashboardRoute ? "" : "md:ml-[220px]"
               }`}
             >
-              {/* Banniere demo : toujours visible, meme sur le dashboard. */}
-              <div className="w-full px-4 py-1.5 bg-[var(--primary)]/10 border-b border-[var(--primary)]/20 text-center text-xs text-[var(--primary)] flex items-center justify-center gap-1.5">
-                <Wrench size={12} strokeWidth={2} />
+              {/* Banniere demo : compacte (Whop n'a pas de banniere). */}
+              <div className="w-full px-4 py-1 bg-[var(--primary)]/5 border-b border-[var(--primary)]/10 text-center text-[10px] text-[var(--primary)] flex items-center justify-center gap-1">
+                <Wrench size={10} strokeWidth={2} />
                 <span>
-                  Maquette de démonstration — Toutes les données sont fictives ·{" "}
+                  Maquette de démonstration — Données fictives ·{" "}
                   <a
                     href="/"
                     className="underline hover:opacity-80"
@@ -135,9 +138,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </span>
               </div>
 
-              {/* Header global : masque sur /dashboard/* (DashboardShell a
-                  son propre header EDOME). */}
-              {!isDashboardRoute && (
+              {/* Header global : masque sur /dashboard/* et sur /feed (Whop). */}
+              {!isDashboardRoute && !isFeedRoute && (
                 <Header onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} />
               )}
 
