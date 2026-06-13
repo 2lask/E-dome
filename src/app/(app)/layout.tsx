@@ -117,7 +117,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 (sur mobile la sidebar est en drawer overlay). */}
             <div
               className={`flex-1 flex flex-col min-h-screen app-content ${
-                isDashboardRoute ? "" : "md:ml-[168px]"
+                isDashboardRoute ? "" : "md:ml-[220px]"
               }`}
             >
               {/* Banniere demo : toujours visible, meme sur le dashboard. */}
