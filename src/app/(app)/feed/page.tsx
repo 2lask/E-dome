@@ -1366,9 +1366,9 @@ function PostCard({
             </div>
           )}
 
-          {/* Media — video, image ou galerie. Plein bord de la colonne contenu. */}
+          {/* Media — video, image ou galerie. Format d'origine inchange. */}
           {post.media.length > 0 && (
-            <div className="mt-2 overflow-hidden rounded-2xl border border-[var(--card-border)]">
+            <div className="mt-2">
               {isVideo ? (
                 <VideoPlayer src={post.media[0]} muted={muted} onToggleMute={onToggleMute} />
               ) : (
