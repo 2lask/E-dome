@@ -14,6 +14,7 @@ import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
 import { timeAgo, formatCount, formatDate } from "@/lib/utils";
 import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/lib/mock-data";
+import { getVideoMetadata } from "@/lib/video-metadata";
 import type {
   User, SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData,
   PostAttachment,
@@ -622,8 +623,17 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
-  // Aspect ratio natif détecté à onLoadedMetadata, fallback 16:9.
-  const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
+  /* Aspect ratio : on tente d'abord la map statique (VIDEO_RATIOS via
+     getVideoMetadata) pour que le container ait le BON ratio des le 1er
+     render, avant meme que la balise <video> soit montee. Sinon fallback
+     9:16 (portrait) car 89% des clips du feed sont verticaux (Reels-like).
+     onLoadedMetadata reste branche en filet de securite pour les URLs
+     inconnues (blob: du composer, mocks futurs). */
+  const initialAspect = useMemo(() => {
+    const meta = getVideoMetadata(src);
+    return clampAspect(meta ? meta.ratio : 9 / 16);
+  }, [src]);
+  const [aspectRatio, setAspectRatio] = useState<number>(initialAspect);
   /* mounted : controle le rendering DU <video> tag lui-meme. Tant que pas
      mounted, on affiche un poster sombre + bouton Play. Le <video> n'est
      mis dans le DOM qu'apres intersection (vrai lazy load).
