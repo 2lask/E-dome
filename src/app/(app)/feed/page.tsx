@@ -630,17 +630,26 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.intersectionRatio >= 0.6) {
+          /* Charge la video uniquement quand visible (preload="none"
+             par defaut pour eviter de saturer le reseau avec ~30 videos). */
+          if (v.readyState === 0) v.load();
           v.currentTime = 0;
           v.play().then(() => setPaused(false)).catch(() => {});
         } else {
           v.pause();
+          /* Liberation memoire quand sort de la view : reset le buffer. */
+          if (entry.intersectionRatio < 0.1) {
+            v.removeAttribute("src");
+            v.load();
+            v.setAttribute("src", src);
+          }
         }
       },
-      { threshold: [0, 0.3, 0.6, 0.8] }
+      { threshold: [0, 0.1, 0.3, 0.6, 0.8] }
     );
     obs.observe(v);
     return () => obs.disconnect();
-  }, []);
+  }, [src]);
 
   const togglePlay = () => {
     const v = videoRef.current;
@@ -664,7 +673,7 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
         muted={muted}
         loop
         playsInline
-        preload="metadata"
+        preload="none"
         className="absolute inset-0 w-full h-full object-cover cursor-pointer"
         onClick={togglePlay}
         onLoadedMetadata={(e) => {
@@ -1878,7 +1887,7 @@ export default function FeedPage() {
     : null;
 
   return (
-    <div className="max-w-[1280px] mx-auto">
+    <div>
       {/* Toast */}
       {feedToast && (
         <div className="fixed top-6 right-6 z-[100] inline-flex items-center gap-1.5 px-5 py-3 rounded-xl toast-success text-sm font-medium shadow-lg animate-fade-in">
@@ -1886,17 +1895,19 @@ export default function FeedPage() {
         </div>
       )}
 
+      {/* Pas de max-w/centrage : le feed est colle a gauche apres la sidebar
+          (style Whop ou le centre n'est PAS au milieu de l'espace). */}
       <div className="flex gap-8">
-        {/* Colonne centrale — timeline (760px Whop-style) */}
+        {/* Colonne centrale — timeline alignee a gauche */}
         <div className="flex-1 min-w-0">
           {/* DiscoverHub */}
-          <div className="max-w-[760px] mx-auto">
+          <div className="max-w-[760px]">
             <DiscoverHub />
           </div>
 
           {/* Tabs sticky : style underline minimal (Whop), font-14 gap-6 */}
           <div className="sticky top-16 z-20 -mx-4 px-4 py-2 bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--card-border)] md:-mx-0 md:px-0 md:bg-transparent md:backdrop-blur-0">
-            <div className="max-w-[760px] mx-auto flex items-center gap-6 px-2">
+            <div className="max-w-[760px] flex items-center gap-6 px-2">
               {(["pour-vous", "suivis"] as const).map((tab) => (
                 <button
                   key={tab}
@@ -1924,7 +1935,7 @@ export default function FeedPage() {
               dans le projet), à la place upload média (image+vidéo, jusqu'à
               4 via picker iOS natif) + 4 attachements pertinents : Bien
               immobilier, Formation, Événement, Analyse de bien. */}
-          <div className="mt-2 max-w-[760px] mx-auto">
+          <div className="mt-2 max-w-[760px]">
             <div className="px-4 py-3 border-b border-[var(--card-border)]">
               <div className="flex gap-3">
                 <img
