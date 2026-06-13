@@ -24,7 +24,7 @@ import { conversations } from "@/lib/mock-data";
    - Logo en haut, footer minimal en bas
    ───────────────────────────────────────────────────────────── */
 
-export const SIDEBAR_WHOP_WIDTH = 192;
+export const SIDEBAR_WHOP_WIDTH = 168;
 
 interface NavItem {
   label: string;
@@ -111,16 +111,16 @@ export function SidebarWhop() {
                 key={group.id}
                 href={`/messages?conv=${group.id}`}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-2 py-1 transition-colors",
+                  "flex items-center gap-1.5 rounded-md px-1.5 py-0.5 transition-colors",
                   "hover:bg-sidebar-accent",
                 )}
               >
                 <img
                   src={group.groupAvatar}
                   alt=""
-                  className="h-7 w-7 shrink-0 rounded-md object-cover"
+                  className="h-6 w-6 shrink-0 rounded-md object-cover"
                 />
-                <span className="truncate text-[12px] text-foreground/85 leading-tight">
+                <span className="truncate text-[11.5px] text-foreground/85 leading-tight">
                   {group.name}
                 </span>
                 {group.unreadCount > 0 && (
@@ -180,11 +180,11 @@ export function SidebarWhop() {
 
 function NavSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="mt-4 first:mt-0 px-1.5">
-      <p className="px-2 pb-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+    <div className="mt-2 first:mt-0 px-1.5">
+      <p className="px-2 pb-0.5 font-mono text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </p>
-      <div className="space-y-0.5">{children}</div>
+      <div className="space-y-0">{children}</div>
     </div>
   );
 }
@@ -195,16 +195,16 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
     <Link
       href={item.href}
       className={cn(
-        "flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] transition-colors",
+        "flex items-center gap-2 rounded-md px-2 py-1 text-[12.5px] transition-colors",
         active
           ? "bg-sidebar-accent font-medium text-foreground"
           : "text-foreground/75 hover:bg-sidebar-accent hover:text-foreground",
       )}
     >
-      <Icon className="h-[17px] w-[17px] shrink-0" />
+      <Icon className="h-[16px] w-[16px] shrink-0" />
       <span className="flex-1 truncate">{item.label}</span>
       {item.badge && (
-        <span className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-foreground px-1 font-mono text-[10px] font-semibold text-background">
+        <span className="inline-flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-foreground px-1 font-mono text-[9px] font-semibold text-background">
           {item.badge}
         </span>
       )}
