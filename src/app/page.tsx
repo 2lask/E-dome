@@ -1,59 +1,77 @@
-/* Landing page — base vide.
-   À construire selon brief design. Pour accéder à la démo : /feed. */
+import type { Metadata } from "next";
+import { LandingNav } from "@/components/landing/landing-nav";
+import { Hero } from "@/components/landing/hero";
+import { TrustStrip } from "@/components/landing/trust-strip";
+import { EditorialPitch } from "@/components/landing/editorial-pitch";
+import { Pillars } from "@/components/landing/pillars";
+import { Showcase } from "@/components/landing/showcase";
+import { Testimonials } from "@/components/landing/testimonials";
+import { CtaFinal } from "@/components/landing/cta-final";
+import { FooterLanding } from "@/components/landing/footer-landing";
 
-export const metadata = {
-  title: "E-Dome",
-  description: "L'écosystème immobilier suisse.",
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://e-dome.ch";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
+  title: "E-Dome — L'immobilier suisse, repensé",
+  description:
+    "Une seule plateforme pour les investisseurs, hôtes et apporteurs. Rendement net calculé, deals de gré à gré, formations et communauté — de l'annonce à l'acte notarié.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "E-Dome — L'immobilier suisse, repensé",
+    description:
+      "Investisseurs, hôtes, apporteurs : une seule plateforme pour tout l'immobilier suisse.",
+    url: BASE_URL,
+    siteName: "E-Dome",
+    type: "website",
+    locale: "fr_CH",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "E-Dome",
+    description:
+      "Investisseurs, hôtes, apporteurs : une seule plateforme pour tout l'immobilier suisse.",
+  },
 };
 
 export default function LandingPage() {
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "var(--background)",
-        color: "var(--foreground)",
-        fontFamily: "var(--font-sans)",
-      }}
-    >
-      <div style={{ textAlign: "center", padding: "0 24px" }}>
-        <h1
-          style={{
-            fontFamily: "var(--font-serif)",
-            fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
-            fontWeight: 500,
-            letterSpacing: "-0.02em",
-            margin: 0,
-            marginBottom: 16,
-          }}
-        >
-          E-Dome
-        </h1>
-        <p
-          style={{
-            fontSize: 16,
-            color: "var(--muted-foreground)",
-            margin: 0,
-            marginBottom: 32,
-          }}
-        >
-          Landing à construire — accédez à la démo via{" "}
-          <a
-            href="/feed"
-            style={{
-              color: "var(--foreground)",
-              textDecoration: "underline",
-              textUnderlineOffset: 4,
-            }}
-          >
-            /feed
-          </a>
-          .
-        </p>
-      </div>
-    </main>
+    <>
+      <a href="#main" className="ed-skip-link">
+        Aller au contenu
+      </a>
+      <LandingNav />
+      <main id="main" tabIndex={-1} style={{ outline: "none" }}>
+        <Hero />
+        <TrustStrip />
+        <EditorialPitch />
+        <Pillars />
+        <Showcase />
+        <Testimonials />
+        <CtaFinal />
+      </main>
+      <FooterLanding />
+
+      {/* Skip-link discret en bas */}
+      <style>{`
+        .ed-skip-link {
+          position: absolute;
+          left: 16px;
+          top: -48px;
+          padding: 10px 16px;
+          background: var(--ed-accent);
+          color: #ffffff;
+          font-size: 13px;
+          font-weight: 500;
+          border-radius: 8px;
+          text-decoration: none;
+          z-index: 999;
+          transition: top 200ms ease;
+        }
+        .ed-skip-link:focus {
+          top: 16px;
+        }
+      `}</style>
+    </>
   );
 }
