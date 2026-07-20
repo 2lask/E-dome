@@ -639,16 +639,23 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
      Vu que les MP4 font 1-16MB, on evite ainsi de monter 27 <video> tags
      simultanement (chaque tag charge metadata + premieres frames). */
   const [mounted, setMounted] = useState(false);
+  const ratioRef = useRef(0);
 
+  /* Observer cree UNE seule fois (deps []) : le recreer a chaque fois que
+     `mounted` change faisait perdre le prochain tick d'intersection en cas
+     de scroll rapide (le nouvel observer n'a pas le temps de rapporter son
+     premier ratio avant que la video soit deja hors champ) -> la lecture
+     ne se declenchait jamais, contrairement a un feed type Instagram/TikTok.
+     rootMargin precharge le <video> un demi-ecran a l'avance (mount des 10%
+     visible) pour laisser le temps au buffer reseau avant le seuil de
+     lecture a 60%. */
   useEffect(() => {
     const c = containerRef.current;
     if (!c) return;
     const obs = new IntersectionObserver(
       ([entry]) => {
-        if (entry.intersectionRatio >= 0.5) {
-          /* Mount le <video> tag pour la 1ere fois si necessaire. */
-          if (!mounted) setMounted(true);
-        }
+        ratioRef.current = entry.intersectionRatio;
+        if (entry.intersectionRatio >= 0.1) setMounted(true);
         const v = videoRef.current;
         if (!v) return;
         if (entry.intersectionRatio >= 0.6) {
@@ -657,10 +664,22 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
           v.pause();
         }
       },
-      { threshold: [0, 0.3, 0.5, 0.6, 0.8] }
+      { threshold: [0, 0.1, 0.3, 0.5, 0.6, 0.8], rootMargin: "50% 0px" }
     );
     obs.observe(c);
     return () => obs.disconnect();
+  }, []);
+
+  /* Des que le <video> vient d'etre monte, on tente la lecture tout de
+     suite sur le dernier ratio connu (ratioRef) au lieu d'attendre le
+     prochain callback de l'observer -- sinon meme delai/race qu'avant
+     en cas de scroll rapide. */
+  useEffect(() => {
+    if (!mounted) return;
+    const v = videoRef.current;
+    if (v && ratioRef.current >= 0.6) {
+      v.play().then(() => setPaused(false)).catch(() => {});
+    }
   }, [mounted]);
 
   const togglePlay = () => {
@@ -692,7 +711,7 @@ function VideoPlayer({ src, muted, onToggleMute }: MediaProps) {
           muted={muted}
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           autoPlay
           className="absolute inset-0 w-full h-full object-cover cursor-pointer"
           onClick={togglePlay}
