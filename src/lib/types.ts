@@ -164,6 +164,20 @@ export interface AnalyticsCardData {
   sparkData?: number[];
 }
 
+/* Lien de tracking d'un apporteur d'affaires (page /apporteurs). Partagé
+   avec le composer du feed pour permettre d'attacher un lien de
+   redirection affilié directement dans une publication. */
+export interface ReferralLink {
+  label: string;
+  url: string;
+  description: string;
+  commission: string;
+  clicks: number;
+  conversions: number;
+  earned: number;
+  color: string;
+}
+
 export type PostAttachment =
   | {
       type: "event";
@@ -178,7 +192,8 @@ export type PostAttachment =
         prix?: number;
       };
     }
-  | { type: "analytics"; data: AnalyticsCardData };
+  | { type: "analytics"; data: AnalyticsCardData }
+  | { type: "affiliate"; link: ReferralLink };
 
 export interface SocialPost {
   id: string;

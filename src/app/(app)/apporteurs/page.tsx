@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Trophy, Medal, Award, Plus, MousePointer2, UserPlus2, CheckCircle2 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { slugifyLinkLabel, buildReferralUrl } from "@/lib/referral-links";
 import {
   Dialog,
   DialogContent,
@@ -14,8 +15,6 @@ import {
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
-const REFERRAL_ID = "AP-7291";
-
 /* ── Modèle de rémunération (V1.0) ──────────────────────────────────────────
    L'apporteur est rémunéré sur le REVENU D'E-DOME (10–30 % de ce qu'E-Dome
    gagne sur le trafic apporté), JAMAIS sur un % du prix payé par le client,
@@ -25,40 +24,11 @@ const REFERRAL_ID = "AP-7291";
    marketplace (location courte, services, événements, lives, formations,
    e-commerce), il touche une PART de la commission marketplace E-Dome.
    Les bounties fixes (hôte activé, prestataire qualifié) sont du referral
-   pur — ce ne sont pas des % de transaction. */
+   pur — ce ne sont pas des % de transaction.
 
-const REFERRAL_LINKS = [
-  {
-    label: "Amener un hôte",
-    url: `edome.world/ref/hote/${REFERRAL_ID}`,
-    description: "Partagez ce lien pour inviter un propriétaire à publier ses biens sur E-Dome. Bounty fixe de 100 CHF dès activation du compte (referral marketing).",
-    commission: "100 CHF / hôte activé",
-    clicks: 8,
-    conversions: 2,
-    earned: 200,
-    color: "bg-amber-500/20 text-amber-400",
-  },
-  {
-    label: "Amener un client",
-    url: `edome.world/ref/client/${REFERRAL_ID}`,
-    description: "Invitez des locataires ou acheteurs potentiels à rejoindre la plateforme. Sur une location courte ou un achat marketplace, vous touchez une part de la commission marketplace d'E-Dome — jamais ajoutée au prix payé.",
-    commission: "10–30 % de la commission E-Dome",
-    clicks: 12,
-    conversions: 5,
-    earned: 320,
-    color: "bg-blue-500/20 text-blue-400",
-  },
-  {
-    label: "Amener un bien",
-    url: `edome.world/ref/bien/${REFERRAL_ID}`,
-    description: "Recommandez un bien à la vente entre particuliers ou à la location longue durée. Vous touchez une part du frais fixe de plateforme E-Dome (500 ou 2 500 CHF en vente, 150 / 250 / 400 CHF en location LT) — pas un % du prix.",
-    commission: "10–30 % du frais plateforme",
-    clicks: 3,
-    conversions: 1,
-    earned: 250,
-    color: "bg-emerald-500/20 text-emerald-400",
-  },
-];
+   Les liens eux-mêmes (REFERRAL_LINKS) vivent maintenant dans le contexte
+   global (useApp().referralLinks) pour être partagés avec le composer du
+   feed — voir src/lib/referral-links.ts pour les valeurs par défaut. */
 
 const APPORT_TYPES = [
   { title: "Amener un hôte", desc: "Invitez un propriétaire à publier ses biens sur E-Dome", icon: "\uD83C\uDFE0", commission: "Bounty fixe 100 CHF" },
@@ -129,11 +99,9 @@ const statusLabels: Record<string, string> = {
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function ApporteursPage() {
-  const { formatPrice } = useApp();
+  const { formatPrice, referralLinks, addReferralLink } = useApp();
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [showQR, setShowQR] = useState<number | null>(null);
-  /* referralLinks en state pour permettre l'ajout via Dialog "Nouveau lien". */
-  const [referralLinks, setReferralLinks] = useState<typeof REFERRAL_LINKS>(REFERRAL_LINKS);
   const [showNewLink, setShowNewLink] = useState(false);
   const [newLinkLabel, setNewLinkLabel] = useState("");
   const [newLinkType, setNewLinkType] = useState("Amener un hôte");
@@ -150,24 +118,17 @@ export default function ApporteursPage() {
 
   const handleCreateLink = () => {
     if (!newLinkLabel.trim()) return;
-    const slug = newLinkLabel
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
-      .slice(0, 30);
-    setReferralLinks((prev) => [
-      ...prev,
-      {
-        label: newLinkLabel,
-        url: `edome.world/ref/${slug}/${REFERRAL_ID}`,
-        description: `Lien personnalise cree pour : ${newLinkLabel}. Tracking 30j.`,
-        commission: APPORT_TYPES.find((t) => t.title === newLinkType)?.commission ?? "Variable",
-        clicks: 0,
-        conversions: 0,
-        earned: 0,
-        color: "bg-[var(--primary)]/15 text-[var(--primary)]",
-      },
-    ]);
+    const slug = slugifyLinkLabel(newLinkLabel);
+    addReferralLink({
+      label: newLinkLabel,
+      url: buildReferralUrl(slug),
+      description: `Lien personnalise cree pour : ${newLinkLabel}. Tracking 30j.`,
+      commission: APPORT_TYPES.find((t) => t.title === newLinkType)?.commission ?? "Variable",
+      clicks: 0,
+      conversions: 0,
+      earned: 0,
+      color: "bg-[var(--primary)]/15 text-[var(--primary)]",
+    });
     setNewLinkLabel("");
     setShowNewLink(false);
   };

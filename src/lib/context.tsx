@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
-import type { Role, Currency } from "./types";
+import type { Role, Currency, ReferralLink } from "./types";
+import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
 
 // ─── Exchange rates (base CHF = 1) ──────────────────────────────────────────
 
@@ -58,6 +59,10 @@ interface AppContextValue {
   removeFromCart: (id: string) => void;
   updateCartQty: (id: string, qty: number) => void;
   clearCart: () => void;
+  /* ── Liens d'apporteur d'affaires (partagés entre /apporteurs et le
+     composer du feed, pour attacher un lien de redirection affilié) ── */
+  referralLinks: ReferralLink[];
+  addReferralLink: (link: ReferralLink) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -80,6 +85,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [referralLinks, setReferralLinks] = useState<ReferralLink[]>(DEFAULT_REFERRAL_LINKS);
 
   // Load from localStorage after mount
   useEffect(() => {
@@ -103,6 +109,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (storedCart) {
         const parsed = JSON.parse(storedCart);
         if (Array.isArray(parsed)) setCart(parsed);
+      }
+
+      const storedReferralLinks = localStorage.getItem(`${STORAGE_PREFIX}referralLinks`);
+      if (storedReferralLinks) {
+        const parsed = JSON.parse(storedReferralLinks);
+        if (Array.isArray(parsed)) setReferralLinks(parsed);
       }
     } catch {
       // ignore
@@ -140,6 +152,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
     localStorage.setItem(`${STORAGE_PREFIX}cart`, JSON.stringify(cart));
   }, [cart, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem(`${STORAGE_PREFIX}referralLinks`, JSON.stringify(referralLinks));
+  }, [referralLinks, mounted]);
 
   // ── Actions ─────────────────────────────────────────────────────────────
 
@@ -213,6 +230,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = useCallback(() => setCart([]), []);
 
+  const addReferralLink = useCallback((link: ReferralLink) => {
+    setReferralLinks((prev) => [...prev, link]);
+  }, []);
+
   const cartCount = useMemo(() => cart.reduce((s, c) => s + c.qty, 0), [cart]);
 
   const formatPrice = useCallback(
@@ -253,6 +274,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       removeFromCart,
       updateCartQty,
       clearCart,
+      referralLinks,
+      addReferralLink,
     }),
     [
       activeRole,
@@ -274,6 +297,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       removeFromCart,
       updateCartQty,
       clearCart,
+      referralLinks,
+      addReferralLink,
     ]
   );
 

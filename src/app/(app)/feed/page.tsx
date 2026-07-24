@@ -9,6 +9,7 @@ import {
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
   Users, Building2, GraduationCap,
   Image as ImageIcon, BarChart3, Film, Paperclip, TrendingUp, TrendingDown, ArrowRight,
+  Link2,
 } from "lucide-react";
 import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
@@ -17,7 +18,7 @@ import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/li
 import { getVideoMetadata } from "@/lib/video-metadata";
 import type {
   User, SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData,
-  PostAttachment,
+  PostAttachment, ReferralLink,
 } from "@/lib/types";
 import { DiscoverHub } from "@/components/layout/discover-hub";
 
@@ -1298,6 +1299,40 @@ function AnalyticsAttachCard({ data, onRemove }: { data: AnalyticsCardData; onRe
   );
 }
 
+/* Lien d'apporteur d'affaires attaché à un post : redirige (nouvel onglet)
+   vers l'URL de tracking edome.world/ref/... — même logique de clic que
+   les liens copiés/partagés depuis la page /apporteurs. */
+function AffiliateLinkAttachCard({ link, onRemove }: { link: ReferralLink; onRemove?: () => void }) {
+  return (
+    <div className="relative rounded-2xl border border-[var(--card-border)] overflow-hidden bg-[var(--card)]">
+      <a href={`https://${link.url}`} target="_blank" rel="noopener noreferrer nofollow" className="flex">
+        <div className="w-28 h-28 shrink-0 flex items-center justify-center bg-[var(--primary)]/10">
+          <Link2 size={28} className="text-[var(--primary)]" />
+        </div>
+        <div className="flex-1 p-3 min-w-0">
+          <p className="text-xs text-[var(--primary)] font-medium inline-flex items-center gap-1">
+            <Link2 size={11} /> Lien d&apos;apporteur d&apos;affaires
+          </p>
+          <p className="text-sm font-semibold text-[var(--foreground)] mt-0.5 line-clamp-2">
+            {link.label}
+          </p>
+          <p className="text-xs text-[var(--text-muted)] mt-1 truncate">{link.url}</p>
+          <p className="text-xs font-medium text-[var(--primary)] mt-1.5">{link.commission}</p>
+        </div>
+      </a>
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          aria-label="Retirer le lien d'affiliation attaché"
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center transition-colors"
+        >
+          <X size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ─── PostCard ──────────────────────────────────────────────────────────────
 
 type PostCardProps = {
@@ -1521,6 +1556,11 @@ function PostCard({
               <AnalyticsAttachCard data={post.attachment.data} />
             </div>
           )}
+          {post.attachment?.type === "affiliate" && (
+            <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+              <AffiliateLinkAttachCard link={post.attachment.link} />
+            </div>
+          )}
 
           {/* Custom CTA */}
           {cta && (
@@ -1691,7 +1731,7 @@ function ActionBtn({
 // ─── Page ──────────────────────────────────────────────────────────────────
 
 export default function FeedPage() {
-  const { isFollowing, toggleFollow } = useApp();
+  const { isFollowing, toggleFollow, referralLinks } = useApp();
   const [posts, setPosts] = useState<SocialPost[]>(VIDEO_POSTS);
   /* ─── Composer rapide en tête du feed ─────────────────────────────────
      Texte court (≤280) + jusqu'à 4 médias (image/vidéo) + 1 attachement
@@ -1704,10 +1744,11 @@ export default function FeedPage() {
     | { kind: "formation"; formation: FormationLike }
     | { kind: "event"; event: ComposerEvent }
     | { kind: "analytics"; data: AnalyticsCardData }
+    | { kind: "affiliate"; link: ReferralLink }
     | null;
   const [composerAttachment, setComposerAttachment] = useState<ComposerAttachmentState>(null);
   const [attachPicker, setAttachPicker] = useState<
-    null | "property" | "formation" | "event" | "analytics"
+    null | "property" | "formation" | "event" | "analytics" | "affiliate"
   >(null);
   /* Pour l'onglet "Analyse", il faut d'abord choisir un bien, puis la
      métrique. On garde le bien sélectionné en attente. */
@@ -1842,7 +1883,7 @@ export default function FeedPage() {
     });
   };
 
-  const openAttachPicker = (kind: "property" | "formation" | "event" | "analytics") => {
+  const openAttachPicker = (kind: "property" | "formation" | "event" | "analytics" | "affiliate") => {
     setAttachPicker(kind);
     setAnalyticsPickerProperty(null);
   };
@@ -1868,6 +1909,10 @@ export default function FeedPage() {
       kind: "analytics",
       data: computeAnalyticsCard(p, metric),
     });
+    closeAttachPicker();
+  };
+  const attachAffiliateLink = (link: ReferralLink) => {
+    setComposerAttachment({ kind: "affiliate", link });
     closeAttachPicker();
   };
 
@@ -1904,6 +1949,9 @@ export default function FeedPage() {
       newPost.attachment = a;
     } else if (composerAttachment?.kind === "analytics") {
       const a: PostAttachment = { type: "analytics", data: composerAttachment.data };
+      newPost.attachment = a;
+    } else if (composerAttachment?.kind === "affiliate") {
+      const a: PostAttachment = { type: "affiliate", link: composerAttachment.link };
       newPost.attachment = a;
     }
 
@@ -2096,6 +2144,12 @@ export default function FeedPage() {
                           onRemove={() => setComposerAttachment(null)}
                         />
                       )}
+                      {composerAttachment.kind === "affiliate" && (
+                        <AffiliateLinkAttachCard
+                          link={composerAttachment.link}
+                          onRemove={() => setComposerAttachment(null)}
+                        />
+                      )}
                     </div>
                   )}
 
@@ -2143,6 +2197,12 @@ export default function FeedPage() {
                         label="Attacher une analyse de bien"
                         onClick={() => openAttachPicker("analytics")}
                         badge={composerAttachment?.kind === "analytics"}
+                      />
+                      <ComposerAction
+                        icon={Link2}
+                        label="Attacher un lien d'affiliation (apporteur)"
+                        onClick={() => openAttachPicker("affiliate")}
+                        badge={composerAttachment?.kind === "affiliate"}
                       />
                     </div>
                     <div className="flex items-center gap-3">
@@ -2463,6 +2523,7 @@ export default function FeedPage() {
                 {attachPicker === "event" && "Attacher un événement"}
                 {attachPicker === "analytics" &&
                   (analyticsPickerProperty ? "Choisir l'indicateur" : "Analyser un bien")}
+                {attachPicker === "affiliate" && "Attacher un lien d'affiliation"}
               </h3>
               <button
                 onClick={closeAttachPicker}
@@ -2497,6 +2558,9 @@ export default function FeedPage() {
                   onBack={() => setAnalyticsPickerProperty(null)}
                   onSelect={(m) => attachAnalytics(analyticsPickerProperty, m)}
                 />
+              )}
+              {attachPicker === "affiliate" && (
+                <AffiliateLinkPickerList links={referralLinks} onSelect={attachAffiliateLink} />
               )}
             </div>
 
@@ -2725,6 +2789,42 @@ function AnalyticsMetricPicker({
             <p className="text-xs text-[var(--text-muted)]">{m.desc}</p>
           </div>
           <ArrowRight size={14} className="text-[var(--text-muted)] shrink-0" />
+        </button>
+      ))}
+    </>
+  );
+}
+
+function AffiliateLinkPickerList({
+  links,
+  onSelect,
+}: {
+  links: ReferralLink[];
+  onSelect: (link: ReferralLink) => void;
+}) {
+  if (links.length === 0) {
+    return (
+      <p className="text-center text-sm text-[var(--text-muted)] py-8">
+        Aucun lien d&apos;apporteur pour l&apos;instant — créez-en un depuis la page Apporteurs.
+      </p>
+    );
+  }
+  return (
+    <>
+      {links.map((link, idx) => (
+        <button
+          key={idx}
+          onClick={() => onSelect(link)}
+          className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[var(--hover-bg)] text-left transition-colors"
+        >
+          <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/15 text-[var(--primary)] flex items-center justify-center shrink-0">
+            <Link2 size={16} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-[var(--foreground)] truncate">{link.label}</p>
+            <p className="text-xs text-[var(--text-muted)] truncate">{link.url}</p>
+          </div>
+          <span className="text-xs font-medium text-[var(--primary)] shrink-0">Attacher</span>
         </button>
       ))}
     </>
