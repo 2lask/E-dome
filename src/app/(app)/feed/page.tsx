@@ -16,6 +16,7 @@ import { useApp } from "@/lib/context";
 import { timeAgo, formatCount, formatDate } from "@/lib/utils";
 import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/lib/mock-data";
 import { getVideoMetadata } from "@/lib/video-metadata";
+import { buildObjectAffiliate } from "@/lib/referral-links";
 import type {
   User, SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData,
   PostAttachment, ReferralLink,
@@ -204,6 +205,8 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_AMINA, content: "Exact ! Le pricing dynamique fait le reste. Merci pour le shout-out", h: 22, likes: 28 },
     ]),
     formation: { id: "f2", title: "Gestion locative avancée", instructor: "Amina El Idrissi", price: 199, students: 890, thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop" },
+    // Sophie recommande la formation d'Amina via son lien d'affiliation.
+    affiliate: buildObjectAffiliate("formation", "f2", "Gestion locative avancée"),
   },
   {
     id: "p8", author: U_AMINA,
@@ -1299,37 +1302,76 @@ function AnalyticsAttachCard({ data, onRemove }: { data: AnalyticsCardData; onRe
   );
 }
 
-/* Lien d'apporteur d'affaires attaché à un post : redirige (nouvel onglet)
-   vers l'URL de tracking edome.world/ref/... — même logique de clic que
-   les liens copiés/partagés depuis la page /apporteurs. */
-function AffiliateLinkAttachCard({ link, onRemove }: { link: ReferralLink; onRemove?: () => void }) {
+/* Interrupteur « Affiliation » affiché sous un objet vendable dans le
+   composer. Activé → un lien de tracking apporteur sera généré à la
+   publication (buildObjectAffiliate) et l'auteur touchera la commission
+   affichée si quelqu'un achète via sa recommandation. */
+function AffiliateToggle({
+  on,
+  onToggle,
+  commission,
+}: {
+  on: boolean;
+  onToggle: () => void;
+  commission: string;
+}) {
   return (
-    <div className="relative rounded-2xl border border-[var(--card-border)] overflow-hidden bg-[var(--card)]">
-      <a href={`https://${link.url}`} target="_blank" rel="noopener noreferrer nofollow" className="flex">
-        <div className="w-28 h-28 shrink-0 flex items-center justify-center bg-[var(--primary)]/10">
-          <Link2 size={28} className="text-[var(--primary)]" />
-        </div>
-        <div className="flex-1 p-3 min-w-0">
-          <p className="text-xs text-[var(--primary)] font-medium inline-flex items-center gap-1">
-            <Link2 size={11} /> Lien d&apos;apporteur d&apos;affaires
-          </p>
-          <p className="text-sm font-semibold text-[var(--foreground)] mt-0.5 line-clamp-2">
-            {link.label}
-          </p>
-          <p className="text-xs text-[var(--text-muted)] mt-1 truncate">{link.url}</p>
-          <p className="text-xs font-medium text-[var(--primary)] mt-1.5">{link.commission}</p>
-        </div>
-      </a>
-      {onRemove && (
-        <button
-          onClick={onRemove}
-          aria-label="Retirer le lien d'affiliation attaché"
-          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center transition-colors"
-        >
-          <X size={14} />
-        </button>
-      )}
-    </div>
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={on}
+      className={`mt-1.5 w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-left transition-colors ${
+        on
+          ? "border-[var(--primary)]/40 bg-[var(--primary)]/10"
+          : "border-[var(--card-border)] hover:bg-[var(--hover-bg)]"
+      }`}
+    >
+      <div
+        className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+          on ? "bg-[var(--primary)]/20 text-[var(--primary)]" : "bg-[var(--hover-bg)] text-[var(--text-muted)]"
+        }`}
+      >
+        <Link2 size={15} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[13px] font-medium text-[var(--foreground)]">Lien d&apos;affiliation</p>
+        <p className="text-xs text-[var(--text-muted)] truncate">
+          {on ? `Commission ${commission}` : "Gagnez une commission si on achète via votre reco"}
+        </p>
+      </div>
+      {/* Switch visuel */}
+      <span
+        aria-hidden
+        className={`relative w-9 h-5 rounded-full shrink-0 transition-colors ${
+          on ? "bg-[var(--primary)]" : "bg-[var(--card-border)]"
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+            on ? "translate-x-4" : "translate-x-0.5"
+          }`}
+        />
+      </span>
+    </button>
+  );
+}
+
+/* Badge d'affiliation d'un post publié : bandeau compact sous l'objet
+   vendable recommandé. Clic → URL de tracking apporteur (nouvel onglet),
+   même logique que les liens de la page /apporteurs. */
+function AffiliatePostBadge({ link }: { link: ReferralLink }) {
+  return (
+    <a
+      href={`https://${link.url}`}
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--primary)]/[0.08] border border-[var(--primary)]/20 hover:bg-[var(--primary)]/15 transition-colors"
+    >
+      <Link2 size={13} className="text-[var(--primary)] shrink-0" />
+      <span className="text-xs font-medium text-[var(--primary)] shrink-0">Lien d&apos;affiliation</span>
+      <span className="text-xs text-[var(--text-muted)] truncate">· {link.commission}</span>
+      <ArrowRight size={12} className="ml-auto text-[var(--primary)] shrink-0" />
+    </a>
   );
 }
 
@@ -1556,9 +1598,11 @@ function PostCard({
               <AnalyticsAttachCard data={post.attachment.data} />
             </div>
           )}
-          {post.attachment?.type === "affiliate" && (
-            <div className="mt-2" onClick={(e) => e.stopPropagation()}>
-              <AffiliateLinkAttachCard link={post.attachment.link} />
+          {/* Badge d'affiliation — sous l'objet vendable recommandé (bien /
+              formation / événement). Clic → URL de tracking apporteur. */}
+          {post.affiliate && (
+            <div className="mt-1.5" onClick={(e) => e.stopPropagation()}>
+              <AffiliatePostBadge link={post.affiliate} />
             </div>
           )}
 
@@ -1731,7 +1775,7 @@ function ActionBtn({
 // ─── Page ──────────────────────────────────────────────────────────────────
 
 export default function FeedPage() {
-  const { isFollowing, toggleFollow, referralLinks } = useApp();
+  const { isFollowing, toggleFollow } = useApp();
   const [posts, setPosts] = useState<SocialPost[]>(VIDEO_POSTS);
   /* ─── Composer rapide en tête du feed ─────────────────────────────────
      Texte court (≤280) + jusqu'à 4 médias (image/vidéo) + 1 attachement
@@ -1739,16 +1783,20 @@ export default function FeedPage() {
      pour l'attachement (ouvre un drawer modal plein écran sur mobile). */
   const [composerText, setComposerText] = useState("");
   const [composerMedia, setComposerMedia] = useState<{ url: string; type: "image" | "video" }[]>([]);
+  /* Les objets vendables (bien/formation/événement) portent un flag
+     `affiliate` : l'interrupteur « Affiliation » de leur aperçu. À la
+     publication, s'il est actif, un lien de tracking est généré
+     (buildObjectAffiliate) et attaché au post. L'analyse n'est pas vendable
+     → pas d'affiliation. */
   type ComposerAttachmentState =
-    | { kind: "property"; property: Property }
-    | { kind: "formation"; formation: FormationLike }
-    | { kind: "event"; event: ComposerEvent }
+    | { kind: "property"; property: Property; affiliate: boolean }
+    | { kind: "formation"; formation: FormationLike; affiliate: boolean }
+    | { kind: "event"; event: ComposerEvent; affiliate: boolean }
     | { kind: "analytics"; data: AnalyticsCardData }
-    | { kind: "affiliate"; link: ReferralLink }
     | null;
   const [composerAttachment, setComposerAttachment] = useState<ComposerAttachmentState>(null);
   const [attachPicker, setAttachPicker] = useState<
-    null | "property" | "formation" | "event" | "analytics" | "affiliate"
+    null | "property" | "formation" | "event" | "analytics"
   >(null);
   /* Pour l'onglet "Analyse", il faut d'abord choisir un bien, puis la
      métrique. On garde le bien sélectionné en attente. */
@@ -1883,7 +1931,7 @@ export default function FeedPage() {
     });
   };
 
-  const openAttachPicker = (kind: "property" | "formation" | "event" | "analytics" | "affiliate") => {
+  const openAttachPicker = (kind: "property" | "formation" | "event" | "analytics") => {
     setAttachPicker(kind);
     setAnalyticsPickerProperty(null);
   };
@@ -1893,15 +1941,15 @@ export default function FeedPage() {
   };
 
   const attachProperty = (p: Property) => {
-    setComposerAttachment({ kind: "property", property: p });
+    setComposerAttachment({ kind: "property", property: p, affiliate: false });
     closeAttachPicker();
   };
   const attachFormation = (f: FormationLike) => {
-    setComposerAttachment({ kind: "formation", formation: f });
+    setComposerAttachment({ kind: "formation", formation: f, affiliate: false });
     closeAttachPicker();
   };
   const attachEvent = (e: ComposerEvent) => {
-    setComposerAttachment({ kind: "event", event: e });
+    setComposerAttachment({ kind: "event", event: e, affiliate: false });
     closeAttachPicker();
   };
   const attachAnalytics = (p: Property, metric: AnalyticsMetric) => {
@@ -1911,9 +1959,23 @@ export default function FeedPage() {
     });
     closeAttachPicker();
   };
-  const attachAffiliateLink = (link: ReferralLink) => {
-    setComposerAttachment({ kind: "affiliate", link });
-    closeAttachPicker();
+
+  /* Lien d'affiliation correspondant à l'objet vendable actuellement attaché
+     (null pour l'analyse ou l'absence d'objet). Sert à afficher la commission
+     sous l'interrupteur et à générer le lien final à la publication. */
+  const composerAffiliateLink = (): ReferralLink | null => {
+    const a = composerAttachment;
+    if (!a) return null;
+    if (a.kind === "property") return buildObjectAffiliate("bien", a.property.id, a.property.title);
+    if (a.kind === "formation") return buildObjectAffiliate("formation", a.formation.id, a.formation.title);
+    if (a.kind === "event") return buildObjectAffiliate("evenement", a.event.id, a.event.titre);
+    return null;
+  };
+  /* Bascule l'interrupteur « Affiliation » de l'objet vendable attaché. */
+  const toggleComposerAffiliate = () => {
+    setComposerAttachment((prev) =>
+      prev && prev.kind !== "analytics" ? { ...prev, affiliate: !prev.affiliate } : prev,
+    );
   };
 
   const composerHasContent =
@@ -1950,9 +2012,12 @@ export default function FeedPage() {
     } else if (composerAttachment?.kind === "analytics") {
       const a: PostAttachment = { type: "analytics", data: composerAttachment.data };
       newPost.attachment = a;
-    } else if (composerAttachment?.kind === "affiliate") {
-      const a: PostAttachment = { type: "affiliate", link: composerAttachment.link };
-      newPost.attachment = a;
+    }
+
+    // Objet vendable + affiliation activée → lien de tracking généré.
+    if (composerAttachment && composerAttachment.kind !== "analytics" && composerAttachment.affiliate) {
+      const link = composerAffiliateLink();
+      if (link) newPost.affiliate = link;
     }
 
     setPosts((prev) => [newPost, ...prev]);
@@ -2144,10 +2209,13 @@ export default function FeedPage() {
                           onRemove={() => setComposerAttachment(null)}
                         />
                       )}
-                      {composerAttachment.kind === "affiliate" && (
-                        <AffiliateLinkAttachCard
-                          link={composerAttachment.link}
-                          onRemove={() => setComposerAttachment(null)}
+                      {/* Interrupteur d'affiliation — objets vendables uniquement
+                          (bien / formation / événement), jamais sur l'analyse. */}
+                      {composerAttachment.kind !== "analytics" && (
+                        <AffiliateToggle
+                          on={composerAttachment.affiliate}
+                          onToggle={toggleComposerAffiliate}
+                          commission={composerAffiliateLink()?.commission ?? ""}
                         />
                       )}
                     </div>
@@ -2197,12 +2265,6 @@ export default function FeedPage() {
                         label="Attacher une analyse de bien"
                         onClick={() => openAttachPicker("analytics")}
                         badge={composerAttachment?.kind === "analytics"}
-                      />
-                      <ComposerAction
-                        icon={Link2}
-                        label="Attacher un lien d'affiliation (apporteur)"
-                        onClick={() => openAttachPicker("affiliate")}
-                        badge={composerAttachment?.kind === "affiliate"}
                       />
                     </div>
                     <div className="flex items-center gap-3">
@@ -2523,7 +2585,6 @@ export default function FeedPage() {
                 {attachPicker === "event" && "Attacher un événement"}
                 {attachPicker === "analytics" &&
                   (analyticsPickerProperty ? "Choisir l'indicateur" : "Analyser un bien")}
-                {attachPicker === "affiliate" && "Attacher un lien d'affiliation"}
               </h3>
               <button
                 onClick={closeAttachPicker}
@@ -2558,9 +2619,6 @@ export default function FeedPage() {
                   onBack={() => setAnalyticsPickerProperty(null)}
                   onSelect={(m) => attachAnalytics(analyticsPickerProperty, m)}
                 />
-              )}
-              {attachPicker === "affiliate" && (
-                <AffiliateLinkPickerList links={referralLinks} onSelect={attachAffiliateLink} />
               )}
             </div>
 
@@ -2795,38 +2853,3 @@ function AnalyticsMetricPicker({
   );
 }
 
-function AffiliateLinkPickerList({
-  links,
-  onSelect,
-}: {
-  links: ReferralLink[];
-  onSelect: (link: ReferralLink) => void;
-}) {
-  if (links.length === 0) {
-    return (
-      <p className="text-center text-sm text-[var(--text-muted)] py-8">
-        Aucun lien d&apos;apporteur pour l&apos;instant — créez-en un depuis la page Apporteurs.
-      </p>
-    );
-  }
-  return (
-    <>
-      {links.map((link, idx) => (
-        <button
-          key={idx}
-          onClick={() => onSelect(link)}
-          className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[var(--hover-bg)] text-left transition-colors"
-        >
-          <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/15 text-[var(--primary)] flex items-center justify-center shrink-0">
-            <Link2 size={16} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[var(--foreground)] truncate">{link.label}</p>
-            <p className="text-xs text-[var(--text-muted)] truncate">{link.url}</p>
-          </div>
-          <span className="text-xs font-medium text-[var(--primary)] shrink-0">Attacher</span>
-        </button>
-      ))}
-    </>
-  );
-}

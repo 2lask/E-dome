@@ -192,8 +192,7 @@ export type PostAttachment =
         prix?: number;
       };
     }
-  | { type: "analytics"; data: AnalyticsCardData }
-  | { type: "affiliate"; link: ReferralLink };
+  | { type: "analytics"; data: AnalyticsCardData };
 
 export interface SocialPost {
   id: string;
@@ -211,6 +210,11 @@ export interface SocialPost {
   property?: Property;
   formation?: { id: string; title: string; instructor: string; price: number; students: number; thumbnail: string };
   attachment?: PostAttachment;
+  /* Lien d'affiliation attaché à l'objet vendable du post (bien, formation
+     ou événement). Généré à la publication quand l'auteur active
+     l'interrupteur « Affiliation » sur l'objet. Redirige vers l'URL de
+     tracking apporteur et affiche la commission. Cf. buildObjectAffiliate. */
+  affiliate?: ReferralLink;
 }
 
 // ─── Messaging ───────────────────────────────────────────────────────────────
