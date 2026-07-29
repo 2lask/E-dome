@@ -1,103 +1,23 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Link from "next/link";
 import {
-  Search, SlidersHorizontal, Heart, MapPin, Bed, Bath, Maximize,
-  Star, ChevronDown, Grid3X3, List, Map, Bookmark, BookmarkCheck,
-  X, Loader2, SortAsc, Building2, TrendingUp, Rocket,
-  Building, Home, Mountain, Landmark, Crown, Square, TreePine,
+  Search, SlidersHorizontal, Heart, MapPin, Bed, Bath, Maximize, Star,
+  Grid3X3, List, Map as MapIcon, X, Loader2, Building2, TrendingUp,
+  Building, Home, Mountain, Landmark, Crown, Square, TreePine, ArrowRight,
+  ShieldCheck, Sparkles, ChevronRight,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { LottiePlayer } from "@/components/ui/lottie-player";
 import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 import { AirbnbPropertyCard } from "@/components/ui/airbnb-property-card";
 import { useLockBodyScroll, useIsMobile } from "@/lib/hooks/use-lock-body-scroll";
+import { properties as ALL_PROPERTIES } from "@/lib/mock-data";
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
 
-// ─── Mock properties ──────────────────────────────────────────────────────
-
-const MOCK_PROPERTIES: Property[] = [
-  {
-    id: "prop1", title: "Villa moderne avec piscine", description: "Magnifique villa contemporaine",
-    type: "villa", transactionType: "vente", price: 1850000, currency: "CHF",
-    location: { city: "Lausanne", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600", "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"],
-    host: { id: "u1", firstName: "Sophie", lastName: "Martin", email: "", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100", city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 5, bathrooms: 3, area: 320, amenities: ["Piscine", "Jardin", "Garage"], rating: 4.9, reviewCount: 24, featured: true,
-    analytics: { rendementBrut: 5.2, rendementNet: 3.8, prixM2: 5781, dpe: "A", etatGeneral: "Neuf", anneeConstruction: 2023, potentielPlusValue: 15, roi5ans: 32, roi10ans: 72, tauxOccupation: 95 },
-  },
-  {
-    id: "prop2", title: "Appartement vue lac", description: "Superbe appartement avec vue imprenable",
-    type: "appartement", transactionType: "location-ct", price: 250, currency: "CHF",
-    location: { city: "Montreux", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600"],
-    host: { id: "u2", firstName: "Marc", lastName: "Dubois", email: "", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", city: "Genève", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 3, bathrooms: 2, area: 120, amenities: ["Vue lac", "Balcon", "Parking"], rating: 4.7, reviewCount: 56,
-  },
-  {
-    id: "prop3", title: "Riad traditionnel Marrakech", description: "Authentique riad avec cour intérieure",
-    type: "riad", transactionType: "vente", price: 380000, currency: "EUR",
-    location: { city: "Marrakech", country: "Maroc" },
-    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600"],
-    host: { id: "u3", firstName: "Amira", lastName: "El Fassi", email: "", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100", city: "Marrakech", country: "Maroc", roles: ["agence"], activeRole: "agence", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 4, bathrooms: 4, area: 250, amenities: ["Piscine", "Hammam", "Terrasse"], rating: 4.8, reviewCount: 89,
-    analytics: { rendementBrut: 7.5, rendementNet: 5.2, prixM2: 1520, dpe: "C", etatGeneral: "Rénové", anneeConstruction: 1920, potentielPlusValue: 20, roi5ans: 45, roi10ans: 95, tauxOccupation: 78 },
-  },
-  {
-    id: "prop4", title: "Penthouse panoramique", description: "Penthouse de luxe au dernier étage",
-    type: "penthouse", transactionType: "vente", price: 3200000, currency: "CHF",
-    location: { city: "Genève", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"],
-    host: { id: "u4", firstName: "Thomas", lastName: "Weber", email: "", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100", city: "Zurich", country: "Suisse", roles: ["promoteur"], activeRole: "promoteur", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 4, bathrooms: 3, area: 280, amenities: ["Terrasse", "Spa", "Cave à vin"], rating: 5.0, reviewCount: 12, featured: true,
-    analytics: { rendementBrut: 3.8, rendementNet: 2.5, prixM2: 11428, dpe: "A", etatGeneral: "Neuf", anneeConstruction: 2024, potentielPlusValue: 10, roi5ans: 22, roi10ans: 50, tauxOccupation: 90 },
-  },
-  {
-    id: "prop5", title: "Chalet alpin authentique", description: "Charmant chalet en bois",
-    type: "chalet", transactionType: "location-ct", price: 350, currency: "CHF",
-    location: { city: "Verbier", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600"],
-    host: { id: "u1", firstName: "Sophie", lastName: "Martin", email: "", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100", city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 6, bathrooms: 4, area: 400, amenities: ["Jacuzzi", "Sauna", "Cheminée", "Ski-in/ski-out"], rating: 4.9, reviewCount: 134,
-  },
-  {
-    id: "prop6", title: "Studio centre-ville", description: "Studio rénové idéalement situé",
-    type: "studio", transactionType: "location-lt", price: 1200, currency: "CHF",
-    location: { city: "Zurich", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"],
-    host: { id: "u2", firstName: "Marc", lastName: "Dubois", email: "", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", city: "Genève", country: "Suisse", roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 1, bathrooms: 1, area: 35, amenities: ["Meublé", "Buanderie"], rating: 4.3, reviewCount: 28,
-  },
-  {
-    id: "prop7", title: "Terrain constructible vue mer", description: "Magnifique terrain en bord de mer",
-    type: "terrain", transactionType: "vente", price: 450000, currency: "EUR",
-    location: { city: "Tanger", country: "Maroc" },
-    images: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600"],
-    host: { id: "u3", firstName: "Amira", lastName: "El Fassi", email: "", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100", city: "Marrakech", country: "Maroc", roles: ["agence"], activeRole: "agence", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 0, bathrooms: 0, area: 2000, amenities: ["Vue mer", "Viabilisé"], rating: 4.5, reviewCount: 5,
-    analytics: { rendementBrut: 0, rendementNet: 0, prixM2: 225, dpe: "N/A", etatGeneral: "Terrain", anneeConstruction: 0, potentielPlusValue: 35, roi5ans: 50, roi10ans: 120, tauxOccupation: 0 },
-  },
-  {
-    id: "prop8", title: "Maison familiale avec jardin", description: "Belle maison pour famille",
-    type: "maison", transactionType: "vente", price: 980000, currency: "CHF",
-    location: { city: "Neuchâtel", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"],
-    host: { id: "u4", firstName: "Thomas", lastName: "Weber", email: "", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100", city: "Zurich", country: "Suisse", roles: ["promoteur"], activeRole: "promoteur", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 4, bathrooms: 2, area: 180, amenities: ["Jardin", "Garage double", "Cave"], rating: 4.6, reviewCount: 18,
-    analytics: { rendementBrut: 4.1, rendementNet: 2.9, prixM2: 5444, dpe: "B", etatGeneral: "Bon", anneeConstruction: 2010, potentielPlusValue: 8, roi5ans: 18, roi10ans: 40, tauxOccupation: 100 },
-  },
-  {
-    id: "prop9", title: "Bureau moderne open-space", description: "Espace de bureau contemporain",
-    type: "bureau", transactionType: "location-lt", price: 3500, currency: "CHF",
-    location: { city: "Bâle", country: "Suisse" },
-    images: ["https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600"],
-    host: { id: "u2", firstName: "Marc", lastName: "Dubois", email: "", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", city: "Genève", country: "Suisse", roles: ["investisseur"], activeRole: "investisseur", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "" },
-    bedrooms: 0, bathrooms: 2, area: 150, amenities: ["Climatisation", "Salle de réunion", "Parking"], rating: 4.4, reviewCount: 8,
-  },
-];
+// ─── Constantes ─────────────────────────────────────────────────────────────
 
 const PROPERTY_TYPES: { value: PropertyType | ""; label: string }[] = [
   { value: "", label: "Tout type" },
@@ -107,129 +27,131 @@ const PROPERTY_TYPES: { value: PropertyType | ""; label: string }[] = [
   { value: "chalet", label: "Chalet" },
   { value: "studio", label: "Studio" },
   { value: "penthouse", label: "Penthouse" },
-  { value: "terrain", label: "Terrain" },
-  { value: "commercial", label: "Commercial" },
-  { value: "bureau", label: "Bureau" },
   { value: "riad", label: "Riad" },
+  { value: "terrain", label: "Terrain" },
 ];
 
-const COUNTRIES = ["", "Suisse", "Maroc", "France"];
+const COUNTRIES = ["Suisse", "Maroc", "France", "Émirats arabes unis"];
 
-const CITY_COORDS: Record<string, [number, number]> = {
-  "Lausanne": [46.5197, 6.6323],
-  "Genève": [46.2044, 6.1432],
-  "Montreux": [46.4312, 6.9107],
-  "Verbier": [46.0967, 7.2286],
-  "Zurich": [47.3769, 8.5417],
-  "Neuchâtel": [46.9920, 6.9311],
-  "Bâle": [47.5596, 7.5886],
-  "Nice": [43.7102, 7.2620],
-  "Marrakech": [31.6295, -7.9811],
-  "Tanger": [35.7595, -5.8340],
-  "Phuket": [7.8804, 98.3923],
-  "Dubai": [25.2048, 55.2708],
-};
+const CATEGORY_CHIPS: { type: PropertyType | ""; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { type: "", label: "Tous", icon: Building2 },
+  { type: "appartement", label: "Appartement", icon: Building },
+  { type: "villa", label: "Villa", icon: Home },
+  { type: "penthouse", label: "Penthouse", icon: Crown },
+  { type: "chalet", label: "Chalet", icon: Mountain },
+  { type: "riad", label: "Riad", icon: Landmark },
+  { type: "studio", label: "Studio", icon: Square },
+  { type: "maison", label: "Maison", icon: Home },
+  { type: "terrain", label: "Terrain", icon: TreePine },
+];
 
-const TRANSACTION_TABS: { value: TransactionType | "all" | "terrains"; label: string }[] = [
+const TRANSACTION_TABS: { value: TransactionType | "all"; label: string }[] = [
   { value: "all", label: "Tout" },
-  { value: "location-ct", label: "Location CT" },
-  { value: "location-lt", label: "Location LT" },
-  { value: "vente", label: "Vente" },
-  { value: "terrains", label: "Terrains" },
+  { value: "vente", label: "Acheter" },
+  { value: "location-lt", label: "Louer" },
+  { value: "location-ct", label: "Court séjour" },
 ];
+
+const priceSuffix = (t: TransactionType) =>
+  t === "location-ct" ? " / nuit" : t === "location-lt" ? " / mois" : "";
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+// ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function ExplorerPage() {
   const { formatPrice, toggleFavorite, isFavorite } = useApp();
+
   const [search, setSearch] = useState("");
-  const [savedSearches, setSavedSearches] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [filterType, setFilterType] = useState<PropertyType | "">("");
-  const [filterTransaction, setFilterTransaction] = useState<TransactionType | "all" | "terrains">("all");
+  const [filterTransaction, setFilterTransaction] = useState<TransactionType | "all">("all");
   const [filterCountry, setFilterCountry] = useState("");
   const [filterPriceMin, setFilterPriceMin] = useState("");
   const [filterPriceMax, setFilterPriceMax] = useState("");
   const [filterBedrooms, setFilterBedrooms] = useState("");
-  const [sortBy, setSortBy] = useState<"recent" | "price-asc" | "price-desc">("recent");
+  const [sortBy, setSortBy] = useState<"recommande" | "price-asc" | "price-desc" | "rendement">("recommande");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showMap, setShowMap] = useState(false);
   const [recentlyViewed, setRecentlyViewed] = useState<Property[]>([]);
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState(8);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  /* Coups de coeur de la semaine — top 8 biens : featured d'abord puis
-     les mieux notes. Carousel horizontal Airbnb-style en haut de page. */
-  const featuredProperties = useMemo(() => {
-    return [...MOCK_PROPERTIES]
-      .sort((a, b) => {
-        const af = a.featured ? 1 : 0;
-        const bf = b.featured ? 1 : 0;
-        if (af !== bf) return bf - af;
-        return (b.rating ?? 0) - (a.rating ?? 0);
-      })
-      .slice(0, 8);
-  }, []);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<maplibregl.Map | null>(null);
 
-  /* Bottom-sheet mobile pour les filtres : empeche le scroll de la
-     page derriere quand ouvert sur mobile UNIQUEMENT. Sur desktop
-     les filtres sont un panel inline (pas un modal) donc verrouiller
-     le body bloque le scroll de la page entiere = bug majeur. */
   const isMobile = useIsMobile();
   useLockBodyScroll(showFilters && isMobile);
 
-  // Reset visible count when filters change
-  useEffect(() => {
-    setVisibleCount(6);
-  }, [search, filterType, filterTransaction, filterCountry, filterPriceMin, filterPriceMax, filterBedrooms, sortBy]);
+  // Un filtre/recherche est actif → on passe en mode « résultats » (on masque
+  // les collections éditoriales pour se concentrer sur la recherche).
+  const hasActiveQuery =
+    Boolean(search) || Boolean(filterType) || filterTransaction !== "all" ||
+    Boolean(filterCountry) || Boolean(filterPriceMin) || Boolean(filterPriceMax) ||
+    Boolean(filterBedrooms);
 
-  // Load saved searches and recently viewed
+  useEffect(() => { setVisibleCount(8); }, [
+    search, filterType, filterTransaction, filterCountry, filterPriceMin, filterPriceMax, filterBedrooms, sortBy,
+  ]);
+
   useEffect(() => {
     try {
-      const ss = localStorage.getItem("edome_saved_searches");
-      if (ss) setSavedSearches(JSON.parse(ss));
       const rv = localStorage.getItem("edome_recently_viewed");
       if (rv) {
         const ids: string[] = JSON.parse(rv);
-        setRecentlyViewed(MOCK_PROPERTIES.filter((p) => ids.includes(p.id)));
+        setRecentlyViewed(ALL_PROPERTIES.filter((p) => ids.includes(p.id)));
       }
     } catch { /* ignore */ }
   }, []);
 
-  // ─── MapLibre map ref ───────
-  const mapInstanceRef = useRef<maplibregl.Map | null>(null);
+  // ─── Collections éditoriales (mode découverte) ──────────────────────────
+  const coupsDeCoeur = useMemo(
+    () =>
+      [...ALL_PROPERTIES]
+        .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || (b.rating ?? 0) - (a.rating ?? 0))
+        .slice(0, 10),
+    [],
+  );
+  const meilleursRendements = useMemo(
+    () =>
+      ALL_PROPERTIES.filter((p) => p.transactionType === "vente" && (p.analytics?.rendementBrut ?? 0) > 0)
+        .sort((a, b) => (b.analytics!.rendementBrut) - (a.analytics!.rendementBrut))
+        .slice(0, 10),
+    [],
+  );
+  const sejoursCourts = useMemo(
+    () => ALL_PROPERTIES.filter((p) => p.transactionType === "location-ct").slice(0, 10),
+    [],
+  );
 
-  const saveSearch = () => {
-    if (!search.trim()) return;
-    const updated = [search, ...savedSearches.filter((s) => s !== search)].slice(0, 5);
-    setSavedSearches(updated);
-    localStorage.setItem("edome_saved_searches", JSON.stringify(updated));
-  };
+  // Destinations : villes les plus représentées + une image de couverture.
+  const destinations = useMemo(() => {
+    const map = new Map<string, { city: string; country: string; image: string; count: number }>();
+    for (const p of ALL_PROPERTIES) {
+      const key = p.location.city;
+      if (!map.has(key)) {
+        map.set(key, { city: p.location.city, country: p.location.country, image: p.images[0], count: 0 });
+      }
+      map.get(key)!.count++;
+    }
+    return [...map.values()].sort((a, b) => b.count - a.count).slice(0, 6);
+  }, []);
 
-  const removeSavedSearch = (s: string) => {
-    const updated = savedSearches.filter((r) => r !== s);
-    setSavedSearches(updated);
-    localStorage.setItem("edome_saved_searches", JSON.stringify(updated));
-  };
-
+  // ─── Résultats filtrés ──────────────────────────────────────────────────
   const filtered = useMemo(() => {
-    let results = [...MOCK_PROPERTIES];
-
+    let results = [...ALL_PROPERTIES];
     if (search) {
       const q = search.toLowerCase();
       results = results.filter(
         (p) =>
           p.title.toLowerCase().includes(q) ||
           p.location.city.toLowerCase().includes(q) ||
-          p.location.country.toLowerCase().includes(q)
+          p.location.country.toLowerCase().includes(q) ||
+          p.type.toLowerCase().includes(q),
       );
     }
     if (filterType) results = results.filter((p) => p.type === filterType);
-    if (filterTransaction !== "all") {
-      if (filterTransaction === "terrains") {
-        results = results.filter((p) => p.type === "terrain");
-      } else {
-        results = results.filter((p) => p.transactionType === filterTransaction);
-      }
-    }
+    if (filterTransaction !== "all") results = results.filter((p) => p.transactionType === filterTransaction);
     if (filterCountry) results = results.filter((p) => p.location.country === filterCountry);
     if (filterPriceMin) results = results.filter((p) => p.price >= Number(filterPriceMin));
     if (filterPriceMax) results = results.filter((p) => p.price <= Number(filterPriceMax));
@@ -237,11 +159,47 @@ export default function ExplorerPage() {
 
     if (sortBy === "price-asc") results.sort((a, b) => a.price - b.price);
     else if (sortBy === "price-desc") results.sort((a, b) => b.price - a.price);
+    else if (sortBy === "rendement")
+      results.sort((a, b) => (b.analytics?.rendementBrut ?? 0) - (a.analytics?.rendementBrut ?? 0));
+    else
+      results.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || (b.rating ?? 0) - (a.rating ?? 0));
 
     return results;
   }, [search, filterType, filterTransaction, filterCountry, filterPriceMin, filterPriceMax, filterBedrooms, sortBy]);
 
-  // ─── MapLibre map useEffect ────────────────────────────────────────
+  const visibleProperties = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  const loadMore = () => {
+    setLoadingMore(true);
+    setTimeout(() => {
+      setVisibleCount((prev) => prev + 8);
+      setLoadingMore(false);
+    }, 500);
+  };
+
+  const resetFilters = () => {
+    setFilterType("");
+    setFilterTransaction("all");
+    setFilterCountry("");
+    setFilterPriceMin("");
+    setFilterPriceMax("");
+    setFilterBedrooms("");
+    setSearch("");
+  };
+
+  const scrollToResults = useCallback(() => {
+    requestAnimationFrame(() =>
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  }, []);
+
+  const pickDestination = (city: string) => {
+    setSearch(city);
+    scrollToResults();
+  };
+
+  // ─── Carte MapLibre (coordonnées réelles) ───────────────────────────────
   useEffect(() => {
     if (!showMap) return;
     const container = document.getElementById("map-container");
@@ -253,173 +211,168 @@ export default function ExplorerPage() {
       center: [8.2, 46.8],
       zoom: 4,
     });
-
     map.addControl(new maplibregl.NavigationControl(), "bottom-right");
 
-    filtered.forEach((prop) => {
-      const coords = CITY_COORDS[prop.location.city];
-      if (!coords) return;
-
-      const suffix = prop.transactionType === "location-ct" ? "/nuit" : prop.transactionType === "location-lt" ? "/mois" : "";
-
+    const withCoords = filtered.filter((p) => p.location.lat != null && p.location.lng != null);
+    withCoords.forEach((prop) => {
+      const suffix = priceSuffix(prop.transactionType);
       const el = document.createElement("div");
-      el.className = "map-marker";
-      el.innerHTML = `<span style="background:var(--primary);color:white;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2)">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix}</span>`;
-
-      const popup = new maplibregl.Popup({ offset: 25, closeButton: false }).setHTML(
-        `<div style="font-family:system-ui;min-width:200px">
+      el.innerHTML = `<span style="background:var(--primary);color:var(--primary-foreground);padding:4px 9px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.25)">${formatPrice(prop.price, prop.currency as Currency)}${suffix}</span>`;
+      const popup = new maplibregl.Popup({ offset: 24, closeButton: false }).setHTML(
+        `<div style="font-family:system-ui;min-width:210px">
           <img src="${prop.images[0]}" style="width:100%;height:120px;object-fit:cover;border-radius:8px 8px 0 0" />
-          <div style="padding:8px">
-            <p style="font-weight:600;margin:0">${prop.title}</p>
-            <p style="color:var(--primary);font-weight:700;margin:4px 0">${formatPrice(prop.price, prop.currency as import("@/lib/types").Currency)}${suffix ? ` <span style="font-weight:400;color:#888;font-size:11px">${suffix}</span>` : ""}</p>
-            <p style="color:#888;font-size:12px;margin:0;display:flex;align-items:center;gap:4px">
-              <span>${prop.location.city}</span>
-              ${prop.rating ? `<span>·</span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>${prop.rating}</span>` : ""}
-            </p>
-            <a href="/explorer/${prop.id}" style="display:block;margin-top:8px;color:var(--primary);font-size:12px;font-weight:600;text-decoration:none">Voir le bien →</a>
+          <div style="padding:8px 10px">
+            <p style="font-weight:600;margin:0;font-size:13px">${prop.title}</p>
+            <p style="color:var(--primary);font-weight:700;margin:4px 0;font-size:14px">${formatPrice(prop.price, prop.currency as Currency)}${suffix}</p>
+            <a href="/explorer/${prop.id}" style="display:inline-flex;gap:4px;margin-top:2px;color:var(--primary);font-size:12px;font-weight:600;text-decoration:none">Voir le bien →</a>
           </div>
-        </div>`
+        </div>`,
       );
-
       new maplibregl.Marker({ element: el })
-        .setLngLat([coords[1], coords[0]])
+        .setLngLat([prop.location.lng!, prop.location.lat!])
         .setPopup(popup)
         .addTo(map);
     });
 
-    // Fit bounds
-    const validCoords = filtered.map((p) => CITY_COORDS[p.location.city]).filter(Boolean);
-    if (validCoords.length > 1) {
+    const coords = withCoords.map((p) => [p.location.lng!, p.location.lat!] as [number, number]);
+    if (coords.length > 1) {
       const bounds = new maplibregl.LngLatBounds();
-      validCoords.forEach((c) => bounds.extend([c![1], c![0]]));
-      map.fitBounds(bounds, { padding: 50 });
+      coords.forEach((c) => bounds.extend(c));
+      map.fitBounds(bounds, { padding: 60 });
     }
 
     mapInstanceRef.current = map;
     return () => { map.remove(); mapInstanceRef.current = null; };
   }, [showMap, filtered, formatPrice]);
 
-  const visibleProperties = filtered.slice(0, visibleCount);
-  const hasMore = visibleCount < filtered.length;
-
-  const loadMore = () => {
-    setLoadingMore(true);
-    setTimeout(() => {
-      setVisibleCount((prev) => prev + 6);
-      setLoadingMore(false);
-    }, 600);
+  // ─── Rendu d'une carte bien (réutilise AirbnbPropertyCard) ──────────────
+  const renderCard = (prop: Property) => {
+    const suffix = priceSuffix(prop.transactionType);
+    const priceLabel = `${formatPrice(prop.price, prop.currency)}${suffix}`;
+    const subtitle = [prop.bedrooms > 0 ? `${prop.bedrooms} ch.` : null, `${prop.area} m²`]
+      .filter(Boolean)
+      .join(" · ");
+    const r = prop.analytics?.rendementBrut;
+    const bottomBadge =
+      prop.transactionType === "vente" && r && r > 0
+        ? {
+            label: `${r.toFixed(1)}% brut`,
+            tone: (r > 7 ? "warning" : r >= 5 ? "success" : "info") as "success" | "warning" | "info",
+          }
+        : undefined;
+    return (
+      <AirbnbPropertyCard
+        key={prop.id}
+        href={`/explorer/${prop.id}`}
+        images={prop.images}
+        type={capitalize(prop.type)}
+        location={prop.location.city}
+        subtitle={subtitle}
+        priceLabel={priceLabel}
+        rating={prop.rating}
+        highlighted={prop.featured}
+        bottomBadge={bottomBadge}
+        favorited={isFavorite(prop.id)}
+        onToggleFavorite={() => toggleFavorite(prop.id)}
+      />
+    );
   };
 
-  const selectClass = "px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)] appearance-none cursor-pointer";
+  const selectClass =
+    "w-full px-3 py-2 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)] appearance-none cursor-pointer";
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <h1 className="text-2xl page-heading text-[var(--foreground)] mb-6">Explorer</h1>
-
-      {/* Coups de coeur de la semaine — carousel horizontal Airbnb-style.
-          Top 8 biens (featured + best-rated), cartes plus grandes que
-          'Recently viewed' (cover 16:10 + 3 lignes de metadonnees). */}
-      {featuredProperties.length > 0 && (
-        <div className="mb-12">
-          <HorizontalScroller
-            title={
-              <>
-                Logements populaires <span className="text-[var(--text-muted)] font-normal">· Suisse romande</span>
-              </>
-            }
-            ctaHref="/explorer"
-            cardWidth="260px"
-            gap="16px"
-          >
-            {featuredProperties.map((prop) => {
-              const priceLabel =
-                prop.transactionType === "location-ct"
-                  ? `${formatPrice(prop.price, prop.currency)} / nuit`
-                  : prop.transactionType === "location-lt"
-                  ? `${formatPrice(prop.price, prop.currency)} / mois`
-                  : `${formatPrice(prop.price, prop.currency)} au total`;
-              const typeLabel = prop.type.charAt(0).toUpperCase() + prop.type.slice(1);
-              return (
-                <AirbnbPropertyCard
-                  key={prop.id}
-                  href={`/explorer/${prop.id}`}
-                  images={prop.images}
-                  type={typeLabel}
-                  location={prop.location.city}
-                  priceLabel={priceLabel}
-                  rating={prop.rating}
-                  highlighted={prop.featured}
-                  favorited={isFavorite(prop.id)}
-                  onToggleFavorite={() => toggleFavorite(prop.id)}
-                />
-              );
-            })}
-          </HorizontalScroller>
+    <div className="max-w-7xl mx-auto pb-24">
+      {/* ── Hero éditorial ─────────────────────────────────────────────── */}
+      <header className="pt-2 pb-6">
+        <h1 className="font-serif text-3xl md:text-5xl leading-[1.05] tracking-tight text-[var(--foreground)]">
+          Trouvez le lieu
+          <br className="hidden sm:block" /> qui vous ressemble.
+        </h1>
+        <p className="mt-3 max-w-xl text-[15px] text-[var(--text-secondary)]">
+          Acheter, louer ou investir — sans intermédiaire, avec le rendement affiché en toute
+          transparence.
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[var(--text-muted)]">
+          <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-[var(--success)]" /> {ALL_PROPERTIES.length} biens vérifiés</span>
+          <span className="inline-flex items-center gap-1.5"><TrendingUp className="w-3.5 h-3.5" /> Rendement transparent</span>
+          <span className="inline-flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" /> Recommandez &amp; gagnez</span>
         </div>
-      )}
+      </header>
 
-      {/* Recently viewed — migre vers HorizontalScroller (chevrons desktop +
-          scroll snap mobile + ResizeObserver pour activer/desactiver les
-          fleches automatiquement). */}
-      {recentlyViewed.length > 0 && (
-        <div className="mb-8">
-          <HorizontalScroller
-            title="Consultés récemment"
-            cardWidth="192px"
-            gap="12px"
-          >
-            {recentlyViewed.map((prop) => (
-              <Link
-                key={prop.id}
-                href={`/explorer/${prop.id}`}
-                className="block rounded-xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden hover:border-[var(--primary)]/30 transition-colors h-full"
+      {/* ── Barre de recherche + transaction (sticky) ──────────────────── */}
+      <div className="sticky top-2 z-30 mb-6">
+        <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)]/95 backdrop-blur-md p-2 shadow-sm">
+          <div className="flex gap-2">
+            <div className="flex-1 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") scrollToResults(); }}
+                placeholder="Ville, pays, type de bien…"
+                className="w-full pl-12 pr-10 py-3 rounded-xl bg-[var(--input-bg)] border border-transparent text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  aria-label="Effacer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <button
+              onClick={() => setShowFilters((v) => !v)}
+              className={`px-4 rounded-xl border transition-colors flex items-center gap-2 ${
+                showFilters
+                  ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
+                  : "border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]"
+              }`}
+            >
+              <SlidersHorizontal className="w-5 h-5" />
+              <span className="hidden sm:inline text-sm font-medium">Filtres</span>
+            </button>
+          </div>
+
+          {/* Segment transaction */}
+          <div className="mt-2 flex gap-1 p-1 rounded-xl bg-[var(--input-bg)] overflow-x-auto no-scrollbar">
+            {TRANSACTION_TABS.map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setFilterTransaction(tab.value)}
+                className={`flex-1 whitespace-nowrap py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                  filterTransaction === tab.value
+                    ? "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm"
+                    : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
+                }`}
               >
-                <img src={prop.images[0]} alt="" className="w-full h-24 object-cover" />
-                <div className="p-2.5">
-                  <p className="text-xs font-medium text-[var(--foreground)] truncate">{prop.title}</p>
-                  <p className="text-xs text-[var(--primary)] font-semibold mt-0.5">
-                    {formatPrice(prop.price, prop.currency)}
-                    {prop.transactionType === "location-ct" && <span className="text-[var(--text-muted)]">/nuit</span>}
-                    {prop.transactionType === "location-lt" && <span className="text-[var(--text-muted)]">/mois</span>}
-                  </p>
-                </div>
-              </Link>
+                {tab.label}
+              </button>
             ))}
-          </HorizontalScroller>
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Type categories — barre horizontale Airbnb-style.
-          Remplace l'ancienne grille 5 grandes cartes-images qui prenait
-          ~280px de hauteur pour un simple filtre redondant avec le drawer
-          Filtres. Cette barre fait 64px, scroll horizontal, et expose
-          plus de types d'un coup. */}
-      <div className="mb-6 -mx-1 overflow-x-auto no-scrollbar">
-        <div className="flex items-center gap-1 px-1 min-w-max">
-          {[
-            { type: "" as PropertyType | "", label: "Tous", icon: Building2 },
-            { type: "appartement" as const, label: "Appartement", icon: Building },
-            { type: "villa" as const, label: "Villa", icon: Home },
-            { type: "chalet" as const, label: "Chalet", icon: Mountain },
-            { type: "riad" as const, label: "Riad", icon: Landmark },
-            { type: "penthouse" as const, label: "Penthouse", icon: Crown },
-            { type: "studio" as const, label: "Studio", icon: Square },
-            { type: "maison" as const, label: "Maison", icon: Building2 },
-            { type: "terrain" as const, label: "Terrain", icon: TreePine },
-          ].map((item) => {
+      {/* ── Chips catégories ────────────────────────────────────────────── */}
+      <div className="mb-8 -mx-1 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1.5 px-1 min-w-max">
+          {CATEGORY_CHIPS.map((item) => {
             const active = filterType === item.type;
             const Icon = item.icon;
             return (
               <button
                 key={item.label}
-                onClick={() => setFilterType(item.type as PropertyType | "")}
-                className={`flex flex-col items-center justify-center gap-1.5 shrink-0 min-w-[78px] px-3 py-2.5 rounded-xl transition-colors ${
+                onClick={() => setFilterType(active ? "" : item.type)}
+                className={`flex flex-col items-center justify-center gap-1.5 shrink-0 min-w-[76px] px-3 py-2.5 rounded-xl border transition-colors ${
                   active
-                    ? "text-[var(--primary)] bg-[var(--primary)]/10 ring-1 ring-[var(--primary)]/25"
-                    : "text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)]"
+                    ? "text-[var(--primary)] bg-[var(--primary)]/10 border-[var(--primary)]/30"
+                    : "text-[var(--text-muted)] border-transparent hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)]"
                 }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-[18px] h-[18px]" />
                 <span className="text-[11px] font-medium tracking-tight">{item.label}</span>
               </button>
             );
@@ -427,246 +380,324 @@ export default function ExplorerPage() {
         </div>
       </div>
 
-      {/* Search bar */}
-      <div className="flex gap-3 mb-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher par ville, type, titre..."
-            className="w-full pl-12 pr-12 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] transition-colors"
-          />
-          <button
-            onClick={saveSearch}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
-            title="Sauvegarder la recherche"
-          >
-            {savedSearches.includes(search) ? (
-              <BookmarkCheck className="w-5 h-5 text-[var(--primary)]" />
-            ) : (
-              <Bookmark className="w-5 h-5" />
-            )}
-          </button>
-        </div>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={`px-4 py-3 rounded-xl border transition-colors flex items-center gap-2 ${
-            showFilters
-              ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-              : "border-[var(--card-border)] bg-[var(--card)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]"
-          }`}
-        >
-          <SlidersHorizontal className="w-5 h-5" />
-          <span className="hidden sm:inline text-sm">Filtres</span>
-        </button>
-      </div>
-
-      {/* Saved searches */}
-      {savedSearches.length > 0 && (
-        <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
-          {savedSearches.map((s) => (
-            <div
-              key={s}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--card-border)] shrink-0"
-            >
-              <button
-                onClick={() => setSearch(s)}
-                className="text-xs text-[var(--text-secondary)] hover:text-[var(--foreground)]"
-              >
-                {s}
-              </button>
-              <button
-                onClick={() => removeSavedSearch(s)}
-                aria-label={`Supprimer la recherche enregistrée « ${s} »`}
-                className="flex items-center justify-center w-8 h-8 -mr-1 text-[var(--text-muted)] hover:text-[var(--foreground)]"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+      {/* ══ MODE DÉCOUVERTE (aucun filtre actif) ════════════════════════ */}
+      {!hasActiveQuery && (
+        <div className="space-y-12 mb-14">
+          {/* Destinations */}
+          <section>
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight text-[var(--foreground)] mb-4">
+              Explorer par destination
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {destinations.map((d) => (
+                <button
+                  key={d.city}
+                  onClick={() => pickDestination(d.city)}
+                  className="group relative h-36 md:h-44 rounded-2xl overflow-hidden text-left"
+                >
+                  <img
+                    src={d.image}
+                    alt={d.city}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-white font-semibold text-lg leading-tight">{d.city}</p>
+                    <p className="text-white/80 text-xs mt-0.5">
+                      {d.country} · {d.count} bien{d.count > 1 ? "s" : ""}
+                    </p>
+                  </div>
+                  <span className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </button>
+              ))}
             </div>
-          ))}
+          </section>
+
+          {/* Consultés récemment */}
+          {recentlyViewed.length > 0 && (
+            <HorizontalScroller title="Consultés récemment" cardWidth="220px" gap="16px">
+              {recentlyViewed.map(renderCard)}
+            </HorizontalScroller>
+          )}
+
+          {/* Coups de cœur */}
+          <HorizontalScroller
+            title="Coups de cœur"
+            subtitle="Les biens les mieux notés et mis en avant"
+            cardWidth="260px"
+            gap="16px"
+          >
+            {coupsDeCoeur.map(renderCard)}
+          </HorizontalScroller>
+
+          {/* Meilleurs rendements — USP E-Dome */}
+          {meilleursRendements.length > 0 && (
+            <HorizontalScroller
+              title="Meilleurs rendements"
+              subtitle="À la vente · rendement brut le plus élevé"
+              cardWidth="260px"
+              gap="16px"
+            >
+              {meilleursRendements.map(renderCard)}
+            </HorizontalScroller>
+          )}
+
+          {/* Séjours courte durée */}
+          {sejoursCourts.length > 0 && (
+            <HorizontalScroller
+              title="Séjours courte durée"
+              subtitle="Réservez à la nuit"
+              cardWidth="260px"
+              gap="16px"
+            >
+              {sejoursCourts.map(renderCard)}
+            </HorizontalScroller>
+          )}
         </div>
       )}
 
-      {/* Filters — panel inline desktop, bottom-sheet mobile (Airbnb-style).
-          Mobile: voile sombre + drawer monte du bas, scrollable, sticky CTA
-          'Reinitialiser' / 'Voir resultats' en bas pour les actions cle. */}
+      {/* ══ RÉSULTATS ═══════════════════════════════════════════════════ */}
+      <div ref={resultsRef} className="scroll-mt-24">
+        {/* En-tête résultats */}
+        <div className="flex items-end justify-between gap-4 mb-5">
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight text-[var(--foreground)]">
+              {hasActiveQuery ? "Résultats" : "Tous les biens"}
+            </h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
+              {filtered.length} bien{filtered.length > 1 ? "s" : ""}
+              {search && <> · « {search} »</>}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="text-sm bg-[var(--card)] border border-[var(--card-border)] rounded-lg px-3 py-2 text-[var(--text-secondary)] outline-none cursor-pointer hover:border-[var(--text-muted)]"
+            >
+              <option value="recommande">Recommandés</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+              <option value="rendement">Meilleur rendement</option>
+            </select>
+            <div role="group" aria-label="Affichage" className="hidden sm:flex rounded-lg border border-[var(--card-border)] overflow-hidden">
+              <button
+                onClick={() => setViewMode("grid")}
+                aria-label="Grille"
+                aria-pressed={viewMode === "grid"}
+                className={`flex items-center justify-center w-10 h-10 transition-colors ${viewMode === "grid" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"}`}
+              >
+                <Grid3X3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                aria-label="Liste"
+                aria-pressed={viewMode === "list"}
+                className={`flex items-center justify-center w-10 h-10 transition-colors ${viewMode === "list" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"}`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Chips filtres actifs */}
+        {hasActiveQuery && (
+          <div className="flex flex-wrap items-center gap-2 mb-6">
+            {filterTransaction !== "all" && (
+              <FilterChip label={TRANSACTION_TABS.find((t) => t.value === filterTransaction)?.label ?? ""} onClear={() => setFilterTransaction("all")} />
+            )}
+            {filterType && <FilterChip label={capitalize(filterType)} onClear={() => setFilterType("")} />}
+            {filterCountry && <FilterChip label={filterCountry} onClear={() => setFilterCountry("")} />}
+            {filterBedrooms && <FilterChip label={`${filterBedrooms}+ ch.`} onClear={() => setFilterBedrooms("")} />}
+            {(filterPriceMin || filterPriceMax) && (
+              <FilterChip
+                label={`${filterPriceMin || "0"} – ${filterPriceMax || "∞"}`}
+                onClear={() => { setFilterPriceMin(""); setFilterPriceMax(""); }}
+              />
+            )}
+            <button onClick={resetFilters} className="text-xs font-medium text-[var(--primary)] hover:underline ml-1">
+              Tout effacer
+            </button>
+          </div>
+        )}
+
+        {/* Grille / Liste / Vide */}
+        {visibleProperties.length === 0 ? (
+          <div className="text-center py-24 rounded-2xl border border-dashed border-[var(--card-border)]">
+            <Building2 className="w-14 h-14 text-[var(--text-muted)] mx-auto mb-4" />
+            <p className="text-lg font-medium text-[var(--foreground)] mb-1">Aucun bien trouvé</p>
+            <p className="text-sm text-[var(--text-secondary)] mb-5">Élargissez vos critères pour voir plus de biens.</p>
+            <button
+              onClick={resetFilters}
+              className="px-5 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-sm font-medium hover:opacity-90 transition"
+            >
+              Réinitialiser la recherche
+            </button>
+          </div>
+        ) : viewMode === "grid" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-8">
+            {visibleProperties.map(renderCard)}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {visibleProperties.map((prop, idx) => {
+              const suffix = priceSuffix(prop.transactionType);
+              return (
+                <Link
+                  key={prop.id}
+                  href={`/explorer/${prop.id}`}
+                  className="group flex flex-col sm:flex-row gap-0 sm:gap-4 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden hover:border-[var(--primary)]/40 hover:shadow-md transition-all animate-fade-in"
+                  style={{ animationDelay: `${idx * 40}ms` }}
+                >
+                  <div className="relative w-full sm:w-64 h-52 sm:h-auto shrink-0 overflow-hidden">
+                    <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    {prop.featured && (
+                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-semibold" style={{ background: "#fff", color: "#222" }}>
+                        Coup de cœur
+                      </span>
+                    )}
+                    <button
+                      onClick={(e) => { e.preventDefault(); toggleFavorite(prop.id); }}
+                      aria-label="Favori"
+                      className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center active:scale-90 transition-transform"
+                    >
+                      <Heart size={24} fill={isFavorite(prop.id) ? "#ff385c" : "rgba(0,0,0,0.45)"} stroke={isFavorite(prop.id) ? "#ff385c" : "#fff"} strokeWidth={2} className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]" />
+                    </button>
+                  </div>
+                  <div className="flex-1 p-4 sm:py-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-[var(--foreground)] truncate group-hover:text-[var(--primary)] transition-colors">{prop.title}</h3>
+                        <p className="text-sm text-[var(--text-muted)] flex items-center gap-1 mt-1">
+                          <MapPin className="w-3.5 h-3.5" /> {prop.location.city}, {prop.location.country}
+                        </p>
+                      </div>
+                      <p className="text-lg font-bold text-[var(--foreground)] whitespace-nowrap">
+                        {formatPrice(prop.price, prop.currency)}
+                        <span className="text-xs font-normal text-[var(--text-muted)]">{suffix}</span>
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-sm text-[var(--text-secondary)]">
+                      {prop.bedrooms > 0 && <span className="flex items-center gap-1"><Bed className="w-4 h-4" /> {prop.bedrooms} ch</span>}
+                      {prop.bathrooms > 0 && <span className="flex items-center gap-1"><Bath className="w-4 h-4" /> {prop.bathrooms} sdb</span>}
+                      <span className="flex items-center gap-1"><Maximize className="w-4 h-4" /> {prop.area} m²</span>
+                      {prop.rating != null && <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-current" /> {prop.rating.toFixed(1)}</span>}
+                    </div>
+                    {prop.transactionType === "vente" && prop.analytics && prop.analytics.rendementBrut > 0 && (
+                      <p className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--success)]">
+                        <TrendingUp className="w-3.5 h-3.5" />
+                        Rendement {prop.analytics.rendementBrut.toFixed(1)}% brut · ROI 5 ans +{prop.analytics.roi5ans}%
+                      </p>
+                    )}
+                    <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-[var(--primary)] opacity-0 group-hover:opacity-100 transition-opacity">
+                      Voir le bien <ChevronRight className="w-4 h-4" />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Charger plus */}
+        {visibleProperties.length > 0 && (
+          <div className="flex flex-col items-center gap-3 mt-10">
+            <p className="text-sm text-[var(--text-muted)]">
+              {visibleProperties.length} sur {filtered.length} bien{filtered.length > 1 ? "s" : ""}
+            </p>
+            {hasMore ? (
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="px-6 py-3 rounded-xl border border-[var(--card-border)] font-medium text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors disabled:opacity-60 flex items-center gap-2"
+              >
+                {loadingMore ? <><Loader2 className="w-4 h-4 animate-spin" /> Chargement…</> : <>Charger plus de biens</>}
+              </button>
+            ) : (
+              <p className="text-sm text-[var(--text-muted)] italic">Vous avez tout vu.</p>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── Bouton carte flottant ──────────────────────────────────────── */}
+      <button
+        onClick={() => setShowMap(true)}
+        className="fixed bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 z-30 px-5 py-3 rounded-full font-medium flex items-center gap-2 shadow-xl text-[var(--primary-foreground)] hover:opacity-90 transition-opacity"
+        style={{ background: "var(--primary)" }}
+      >
+        <MapIcon size={18} /> Carte
+      </button>
+
+      {/* ── Modale carte ───────────────────────────────────────────────── */}
+      {showMap && (
+        <div role="dialog" aria-modal="true" aria-labelledby="map-modal-title" className="fixed inset-0 z-50 flex flex-col bg-[var(--background)]">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--card-border)] bg-[var(--card)] shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--primary-foreground)] shrink-0" style={{ background: "var(--primary)" }}>
+                <MapIcon size={18} />
+              </div>
+              <div>
+                <h3 id="map-modal-title" className="font-semibold text-[var(--foreground)] text-sm">Carte des biens</h3>
+                <p className="text-xs text-[var(--text-muted)]">{filtered.length} bien{filtered.length > 1 ? "s" : ""}</p>
+              </div>
+            </div>
+            <button onClick={() => setShowMap(false)} aria-label="Fermer" className="flex items-center justify-center w-11 h-11 rounded-xl text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="flex-1 relative">
+            <div id="map-container" className="absolute inset-0" />
+          </div>
+        </div>
+      )}
+
+      {/* ── Filtres : panel desktop + bottom-sheet mobile ──────────────── */}
       {showFilters && (
         <>
-          {/* Desktop : panel inline qui s'integre dans le flux de la page. */}
-          <div className="hidden md:block mb-6 p-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] animate-fade-in">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Type de bien</label>
-                <select value={filterType} onChange={(e) => setFilterType(e.target.value as PropertyType | "")} className={selectClass + " w-full"}>
-                  {PROPERTY_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Pays</label>
-                <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className={selectClass + " w-full"}>
-                  <option value="">Tous les pays</option>
-                  {COUNTRIES.filter(Boolean).map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix min</label>
-                <input
-                  type="number"
-                  value={filterPriceMin}
-                  onChange={(e) => setFilterPriceMin(e.target.value)}
-                  placeholder="0"
-                  className={selectClass + " w-full"}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix max</label>
-                <input
-                  type="number"
-                  value={filterPriceMax}
-                  onChange={(e) => setFilterPriceMax(e.target.value)}
-                  placeholder="Illimité"
-                  className={selectClass + " w-full"}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Chambres min</label>
-                <select value={filterBedrooms} onChange={(e) => setFilterBedrooms(e.target.value)} className={selectClass + " w-full"}>
-                  <option value="">Toutes</option>
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <option key={n} value={n}>{n}+</option>
-                  ))}
-                </select>
-              </div>
+          <div className="hidden md:block fixed inset-0 z-40" onClick={() => setShowFilters(false)} aria-hidden />
+          <div className="hidden md:block fixed right-6 top-24 z-50 w-80 p-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] shadow-2xl animate-scale-in">
+            <FiltersBody
+              selectClass={selectClass}
+              filterType={filterType} setFilterType={setFilterType}
+              filterCountry={filterCountry} setFilterCountry={setFilterCountry}
+              filterPriceMin={filterPriceMin} setFilterPriceMin={setFilterPriceMin}
+              filterPriceMax={filterPriceMax} setFilterPriceMax={setFilterPriceMax}
+              filterBedrooms={filterBedrooms} setFilterBedrooms={setFilterBedrooms}
+            />
+            <div className="flex gap-2 mt-5">
+              <button onClick={resetFilters} className="flex-1 py-2.5 rounded-xl border border-[var(--card-border)] text-sm font-medium text-[var(--foreground)] hover:bg-[var(--hover-bg)]">
+                Réinitialiser
+              </button>
+              <button onClick={() => setShowFilters(false)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-[var(--primary-foreground)]" style={{ background: "var(--primary)" }}>
+                Voir {filtered.length} bien{filtered.length > 1 ? "s" : ""}
+              </button>
             </div>
           </div>
 
-          {/* Mobile : bottom-sheet fullscreen avec voile + drag handle. */}
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Filtres"
-            className="md:hidden fixed inset-0 z-[70] flex items-end animate-fade-in"
-            style={{ background: "rgba(0,0,0,0.6)" }}
-            onClick={() => setShowFilters(false)}
-          >
-            <div
-              className="w-full max-h-[85vh] rounded-t-2xl flex flex-col animate-slide-in-bottom"
-              style={{
-                background: "var(--card)",
-                border: "1px solid var(--card-border)",
-                borderBottom: "none",
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Drag handle Airbnb-style */}
-              <div className="flex justify-center pt-3 pb-1">
-                <div className="w-10 h-1.5 rounded-full" style={{ background: "var(--card-border)" }} />
+          <div className="md:hidden fixed inset-0 z-[70] flex items-end animate-fade-in" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setShowFilters(false)}>
+            <div className="w-full max-h-[85vh] rounded-t-2xl flex flex-col animate-slide-in-bottom bg-[var(--card)] border border-b-0 border-[var(--card-border)]" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-center pt-3 pb-1"><div className="w-10 h-1.5 rounded-full bg-[var(--card-border)]" /></div>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--card-border)] shrink-0">
+                <h2 className="text-base font-semibold text-[var(--foreground)]">Filtres</h2>
+                <button onClick={() => setShowFilters(false)} aria-label="Fermer" className="flex items-center justify-center w-11 h-11 rounded-lg text-[var(--text-muted)]"><X size={18} /></button>
               </div>
-              {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b shrink-0"
-                style={{ borderColor: "var(--card-border)" }}>
-                <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
-                  Filtres
-                </h2>
-                <button
-                  onClick={() => setShowFilters(false)}
-                  aria-label="Fermer"
-                  className="flex items-center justify-center w-11 h-11 rounded-lg"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  <X size={18} />
-                </button>
+              <div className="flex-1 overflow-y-auto px-4 py-4">
+                <FiltersBody
+                  selectClass={selectClass}
+                  filterType={filterType} setFilterType={setFilterType}
+                  filterCountry={filterCountry} setFilterCountry={setFilterCountry}
+                  filterPriceMin={filterPriceMin} setFilterPriceMin={setFilterPriceMin}
+                  filterPriceMax={filterPriceMax} setFilterPriceMax={setFilterPriceMax}
+                  filterBedrooms={filterBedrooms} setFilterBedrooms={setFilterBedrooms}
+                />
               </div>
-              {/* Body scrollable */}
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
-                <div>
-                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Type de bien</label>
-                  <select value={filterType} onChange={(e) => setFilterType(e.target.value as PropertyType | "")} className={selectClass + " w-full"}>
-                    {PROPERTY_TYPES.map((t) => (
-                      <option key={t.value} value={t.value}>{t.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Pays</label>
-                  <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className={selectClass + " w-full"}>
-                    <option value="">Tous les pays</option>
-                    {COUNTRIES.filter(Boolean).map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix min</label>
-                    <input
-                      type="number"
-                      value={filterPriceMin}
-                      onChange={(e) => setFilterPriceMin(e.target.value)}
-                      placeholder="0"
-                      className={selectClass + " w-full"}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Prix max</label>
-                    <input
-                      type="number"
-                      value={filterPriceMax}
-                      onChange={(e) => setFilterPriceMax(e.target.value)}
-                      placeholder="Illimité"
-                      className={selectClass + " w-full"}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Chambres min</label>
-                  <select value={filterBedrooms} onChange={(e) => setFilterBedrooms(e.target.value)} className={selectClass + " w-full"}>
-                    <option value="">Toutes</option>
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <option key={n} value={n}>{n}+</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              {/* Footer sticky CTA */}
-              <div
-                className="flex gap-3 px-4 py-3 border-t shrink-0"
-                style={{
-                  borderColor: "var(--card-border)",
-                  paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)",
-                }}
-              >
-                <button
-                  onClick={() => {
-                    setFilterType("");
-                    setFilterCountry("");
-                    setFilterPriceMin("");
-                    setFilterPriceMax("");
-                    setFilterBedrooms("");
-                  }}
-                  className="flex-1 py-3 rounded-xl text-sm font-medium border transition-colors"
-                  style={{
-                    borderColor: "var(--card-border)",
-                    color: "var(--foreground)",
-                    background: "var(--card)",
-                  }}
-                >
-                  Réinitialiser
-                </button>
-                <button
-                  onClick={() => setShowFilters(false)}
-                  className="flex-1 py-3 rounded-xl text-sm font-semibold"
-                  style={{
-                    background: "var(--primary)",
-                    color: "var(--primary-foreground)",
-                  }}
-                >
+              <div className="flex gap-3 px-4 py-3 border-t border-[var(--card-border)] shrink-0" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}>
+                <button onClick={resetFilters} className="flex-1 py-3 rounded-xl text-sm font-medium border border-[var(--card-border)] text-[var(--foreground)]">Réinitialiser</button>
+                <button onClick={() => setShowFilters(false)} className="flex-1 py-3 rounded-xl text-sm font-semibold text-[var(--primary-foreground)]" style={{ background: "var(--primary)" }}>
                   Voir {filtered.length} bien{filtered.length > 1 ? "s" : ""}
                 </button>
               </div>
@@ -674,271 +705,71 @@ export default function ExplorerPage() {
           </div>
         </>
       )}
+    </div>
+  );
+}
 
-      {/* Transaction tabs */}
-      <div className="flex gap-1 mb-6 p-1 rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-x-auto no-scrollbar">
-        {TRANSACTION_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setFilterTransaction(tab.value)}
-            className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-              filterTransaction === tab.value
-                ? "bg-[var(--primary)] text-white"
-                : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+// ─── Sous-composants ─────────────────────────────────────────────────────────
 
-      {/* Toolbar */}
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-[var(--text-secondary)]">
-          {filtered.length} bien{filtered.length > 1 ? "s" : ""} trouvé{filtered.length > 1 ? "s" : ""}
-        </p>
-        <div className="flex items-center gap-3">
-          {/* Sort */}
-          <div className="flex items-center gap-1">
-            <LottiePlayer src="/lottie/lottieflow-dropdown-02-000000-easey.json" width={20} height={20} />
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="text-sm bg-[var(--card)] border border-[var(--card-border)] rounded-lg px-3 py-1.5 text-[var(--text-secondary)] outline-none cursor-pointer"
-          >
-            <option value="recent">Plus récents</option>
-            <option value="price-asc">Prix croissant</option>
-            <option value="price-desc">Prix décroissant</option>
-          </select>
-          </div>
-          {/* View toggle */}
-          <div role="group" aria-label="Choix de l'affichage" className="flex rounded-lg border border-[var(--card-border)] overflow-hidden">
-            <button
-              onClick={() => setViewMode("grid")}
-              aria-label="Vue en grille"
-              aria-pressed={viewMode === "grid"}
-              className={`flex items-center justify-center w-11 h-11 transition-colors ${viewMode === "grid" ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
-            >
-              <Grid3X3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              aria-label="Vue en liste"
-              aria-pressed={viewMode === "list"}
-              className={`flex items-center justify-center w-11 h-11 transition-colors ${viewMode === "list" ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)]"}`}
-            >
-              <List className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Property grid / list */}
-      {visibleProperties.length === 0 ? (
-        <div className="text-center py-20">
-          <Building2 className="w-16 h-16 text-[var(--text-muted)] mx-auto mb-4" />
-          <p className="text-lg font-medium text-[var(--foreground)] mb-2">Aucun bien trouvé</p>
-          <p className="text-sm text-[var(--text-secondary)]">
-            Essayez de modifier vos critères de recherche.
-          </p>
-        </div>
-      ) : viewMode === "grid" ? (
-        /* Grille principale : refondue au pattern Airbnb (cards epurees
-           avec carousel photos integre, coeur favori, badge bottom-left
-           rendement pour valeurs E-Dome). */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-8">
-          {visibleProperties.map((prop) => {
-            const priceLabel =
-              prop.transactionType === "location-ct"
-                ? `${formatPrice(prop.price, prop.currency)} / nuit`
-                : prop.transactionType === "location-lt"
-                ? `${formatPrice(prop.price, prop.currency)} / mois`
-                : `${formatPrice(prop.price, prop.currency)} au total`;
-            const typeLabel = prop.type.charAt(0).toUpperCase() + prop.type.slice(1);
-            const subtitle = [
-              prop.bedrooms > 0 ? `${prop.bedrooms} ch.` : null,
-              `${prop.area} m²`,
-            ]
-              .filter(Boolean)
-              .join(" · ");
-            const rendement = prop.analytics?.rendementBrut;
-            const bottomBadge =
-              prop.transactionType === "vente" && rendement && rendement > 0
-                ? {
-                    label: `${rendement.toFixed(1)}% brut`,
-                    tone:
-                      rendement > 7
-                        ? ("warning" as const)
-                        : rendement >= 5
-                        ? ("success" as const)
-                        : ("info" as const),
-                  }
-                : undefined;
-            return (
-              <AirbnbPropertyCard
-                key={prop.id}
-                href={`/explorer/${prop.id}`}
-                images={prop.images}
-                type={typeLabel}
-                location={prop.location.city}
-                subtitle={subtitle}
-                priceLabel={priceLabel}
-                rating={prop.rating}
-                highlighted={prop.featured}
-                bottomBadge={bottomBadge}
-                favorited={isFavorite(prop.id)}
-                onToggleFavorite={() => toggleFavorite(prop.id)}
-              />
-            );
-          })}
-        </div>
-      ) : (
-        /* List view */
-        <div className="space-y-4">
-          {visibleProperties.map((prop, idx) => (
-            <div
-              key={prop.id}
-              className="flex gap-4 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden card-hover animate-fade-in"
-              style={{ animationDelay: `${idx * 60}ms` }}
-            >
-              <div className="relative w-60 shrink-0">
-                <Link href={`/explorer/${prop.id}`}>
-                  <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover" />
-                </Link>
-                {prop.featured && (
-                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-xs font-medium flex items-center gap-1" style={{ background: "var(--primary)" }}>
-                    <Rocket className="w-3 h-3" /> Mis en avant
-                  </span>
-                )}
-                <button
-                  onClick={() => toggleFavorite(prop.id)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white"
-                >
-                  <Heart className={`w-4 h-4 ${isFavorite(prop.id) ? "fill-red-400 text-red-400" : ""}`} />
-                </button>
-                {/* Rendement badge — palette sémantique */}
-                {prop.analytics && prop.analytics.rendementBrut > 0 && prop.transactionType === "vente" && (() => {
-                  const r = prop.analytics.rendementBrut;
-                  const tone = r > 7
-                    ? "bg-amber-400/15 text-amber-300 ring-amber-400/30"
-                    : r >= 5
-                      ? "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30"
-                      : r >= 3
-                        ? "bg-[var(--primary)]/15 text-[var(--primary)] ring-[var(--primary)]/30"
-                        : "bg-zinc-700/40 text-zinc-300 ring-zinc-600/40";
-                  return (
-                    <span
-                      className={`absolute bottom-3 left-3 px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-sm flex items-center gap-1 ring-1 tabular-nums ${tone}`}
-                      title="Donnée communiquée par le vendeur. À vérifier — E-Dome ne garantit pas ce chiffre."
-                    >
-                      <TrendingUp className="w-3 h-3" /> {r.toFixed(1)}%
-                    </span>
-                  );
-                })()}
-              </div>
-              <div className="flex-1 p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <Link href={`/explorer/${prop.id}`}>
-                      <h3 className="font-semibold text-[var(--foreground)] hover:text-[var(--primary)] transition-colors">
-                        {prop.title}
-                      </h3>
-                    </Link>
-                    <p className="text-sm text-[var(--text-muted)] flex items-center gap-1 mt-1">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {prop.location.city}, {prop.location.country}
-                    </p>
-                  </div>
-                  <p className="text-lg font-bold text-[var(--primary)]">
-                    {formatPrice(prop.price, prop.currency)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 mt-3 text-sm text-[var(--text-secondary)]">
-                  {prop.bedrooms > 0 && <span className="flex items-center gap-1"><Bed className="w-4 h-4" /> {prop.bedrooms} ch</span>}
-                  {prop.bathrooms > 0 && <span className="flex items-center gap-1"><Bath className="w-4 h-4" /> {prop.bathrooms} sdb</span>}
-                  <span className="flex items-center gap-1"><Maximize className="w-4 h-4" /> {prop.area}m²</span>
-                  <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-amber-400 text-amber-400" /> {prop.rating}</span>
-                </div>
-                {prop.transactionType === "vente" && prop.analytics && (
-                  <p className="mt-2 text-xs text-green-400 flex items-center gap-1">
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    Rendement {prop.analytics.rendementBrut.toFixed(1)}% brut · ROI 5 ans: +{prop.analytics.roi5ans}%
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Load more / Pagination */}
-      <div className="flex flex-col items-center gap-3 mt-8">
-        <p className="text-sm text-[var(--text-secondary)]">
-          Affichage de {visibleProperties.length} sur {filtered.length} bien{filtered.length > 1 ? "s" : ""}
-        </p>
-        {hasMore ? (
-          <button
-            onClick={loadMore}
-            disabled={loadingMore}
-            className="px-6 py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-medium transition-colors disabled:opacity-60 flex items-center gap-2"
-          >
-            {loadingMore ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                <span>Charger plus</span>
-                <LottiePlayer src="/lottie/lottieflow-arrow-02-000000-easey.json" width={24} height={24} />
-              </>
-            )}
-          </button>
-        ) : filtered.length > 0 ? (
-          <p className="text-sm text-[var(--text-muted)] italic">Tous les biens sont affichés</p>
-        ) : null}
-      </div>
-
-      {/* Map floating button */}
-      <button
-        onClick={() => setShowMap((v) => !v)}
-        className="fixed bottom-20 md:bottom-8 right-6 z-30 px-5 py-3 rounded-full font-medium flex items-center gap-2 shadow-xl text-white hover:opacity-90 transition-opacity"
-        style={{ background: "var(--primary)" }}
-      >
-        <Map size={18} />
-        Carte
+function FilterChip({ label, onClear }: { label: string; onClear: () => void }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-medium">
+      {label}
+      <button onClick={onClear} aria-label={`Retirer ${label}`} className="w-4 h-4 flex items-center justify-center rounded-full hover:bg-[var(--primary)]/20">
+        <X className="w-3 h-3" />
       </button>
+    </span>
+  );
+}
 
-      {/* Map modal — MapLibre interactive */}
-      {showMap && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="map-modal-title"
-          className="fixed inset-0 z-50 flex flex-col bg-[var(--background)]"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--card-border)] bg-[var(--card)] shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0" style={{ background: "var(--primary)" }}>
-                <Map size={18} />
-              </div>
-              <div>
-                <h3 id="map-modal-title" className="font-semibold text-[var(--foreground)] text-sm">Carte des biens</h3>
-                <p className="text-xs text-[var(--text-muted)]">{filtered.length} bien{filtered.length > 1 ? "s" : ""} disponible{filtered.length > 1 ? "s" : ""}</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowMap(false)}
-              aria-label="Fermer la carte"
-              className="flex items-center justify-center w-11 h-11 rounded-xl text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          {/* Map container */}
-          <div className="flex-1 relative">
-            <div id="map-container" className="absolute inset-0" style={{ borderRadius: "inherit" }} />
-          </div>
+function FiltersBody(props: {
+  selectClass: string;
+  filterType: PropertyType | ""; setFilterType: (v: PropertyType | "") => void;
+  filterCountry: string; setFilterCountry: (v: string) => void;
+  filterPriceMin: string; setFilterPriceMin: (v: string) => void;
+  filterPriceMax: string; setFilterPriceMax: (v: string) => void;
+  filterBedrooms: string; setFilterBedrooms: (v: string) => void;
+}) {
+  const {
+    selectClass, filterType, setFilterType, filterCountry, setFilterCountry,
+    filterPriceMin, setFilterPriceMin, filterPriceMax, setFilterPriceMax,
+    filterBedrooms, setFilterBedrooms,
+  } = props;
+  const label = "block text-xs font-medium text-[var(--text-muted)] mb-1.5";
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className={label}>Type de bien</label>
+        <select value={filterType} onChange={(e) => setFilterType(e.target.value as PropertyType | "")} className={selectClass}>
+          {PROPERTY_TYPES.map((t) => (
+            <option key={t.value} value={t.value}>{t.label}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className={label}>Pays</label>
+        <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className={selectClass}>
+          <option value="">Tous les pays</option>
+          {COUNTRIES.map((c) => (<option key={c} value={c}>{c}</option>))}
+        </select>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={label}>Prix min</label>
+          <input type="number" value={filterPriceMin} onChange={(e) => setFilterPriceMin(e.target.value)} placeholder="0" className={selectClass} />
         </div>
-      )}
+        <div>
+          <label className={label}>Prix max</label>
+          <input type="number" value={filterPriceMax} onChange={(e) => setFilterPriceMax(e.target.value)} placeholder="Illimité" className={selectClass} />
+        </div>
+      </div>
+      <div>
+        <label className={label}>Chambres min</label>
+        <select value={filterBedrooms} onChange={(e) => setFilterBedrooms(e.target.value)} className={selectClass}>
+          <option value="">Toutes</option>
+          {[1, 2, 3, 4, 5].map((n) => (<option key={n} value={n}>{n}+</option>))}
+        </select>
+      </div>
     </div>
   );
 }
