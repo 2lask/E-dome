@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Link2, Check, Copy, ArrowRight } from "lucide-react";
+import { Link2, Check, Copy, ArrowRight, Zap, Coins } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { buildObjectAffiliate } from "@/lib/referral-links";
-import type { ReferralTargetKind } from "@/lib/types";
+import { estimateEarning, POINTS } from "@/lib/rewards";
+import type { ReferralTargetKind, TransactionType, Currency } from "@/lib/types";
 
 /* Bouton « Recommander & gagner » posé sur chaque annonce vendable.
    Au clic : génère (ou retrouve) le lien d'affiliation rattaché à
-   l'annonce, l'ajoute à « Mes liens » (dédup côté contexte) et ouvre un
-   petit popover avec l'URL partageable, la commission et un accès direct
-   à la page Apporteurs. Entièrement autonome (pas de provider requis). */
+   l'annonce, l'ajoute à « Mes liens » (dédup côté contexte), crédite des
+   points de récompense, et ouvre un popover avec le gain potentiel, l'URL
+   partageable et un accès à la page Apporteurs. */
 export function RecommendButton({
   kind,
   id,
@@ -19,6 +20,7 @@ export function RecommendButton({
   image,
   price,
   currency,
+  transactionType,
   className,
 }: {
   kind: ReferralTargetKind;
@@ -27,18 +29,26 @@ export function RecommendButton({
   image?: string;
   price?: number;
   currency?: string;
+  transactionType?: TransactionType;
   className?: string;
 }) {
-  const { addReferralLink, hasReferralLinkFor } = useApp();
+  const { addReferralLink, hasReferralLinkFor, addRewardPoints, formatPrice } = useApp();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [existed, setExisted] = useState(false);
+  const [awarded, setAwarded] = useState(false);
 
   const link = buildObjectAffiliate(kind, id, title, { image, price, currency });
+  const earning = price != null
+    ? estimateEarning(kind, price, { transactionType, currency: currency as Currency | undefined })
+    : null;
 
   const handleClick = () => {
-    setExisted(hasReferralLinkFor(kind, id));
-    addReferralLink(link); // no-op si déjà présent (dédup par url)
+    const already = hasReferralLinkFor(kind, id);
+    setExisted(already);
+    const created = addReferralLink(link);
+    if (created) { addRewardPoints(POINTS.createLink); setAwarded(true); }
+    else setAwarded(false);
     setOpen((o) => !o);
   };
 
@@ -64,16 +74,30 @@ export function RecommendButton({
 
       {open && (
         <>
-          {/* Backdrop invisible pour fermer au clic extérieur */}
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden />
           <div className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl p-3 animate-scale-in">
+            {/* Gain potentiel — accroche lucrative */}
+            {earning && earning.max > 0 && (
+              <div className="flex items-center gap-2 rounded-lg bg-[var(--primary)]/[0.07] border border-[var(--primary)]/20 px-3 py-2 mb-2.5">
+                <Coins className="w-4 h-4 text-[var(--primary)] shrink-0" />
+                <p className="text-sm text-[var(--foreground)]">
+                  Gagnez jusqu&apos;à{" "}
+                  <span className="font-bold text-[var(--primary)]">{formatPrice(earning.max, earning.currency)}</span>
+                </p>
+              </div>
+            )}
+
             <p className="text-sm font-semibold text-[var(--foreground)] inline-flex items-center gap-1.5">
               <Check size={14} className="text-emerald-400" />
               {existed ? "Lien déjà dans vos liens" : "Lien d'affiliation créé"}
+              {awarded && (
+                <span className="inline-flex items-center gap-0.5 ml-1 text-[11px] font-bold text-[var(--primary)]">
+                  <Zap size={11} /> +{POINTS.createLink} pts
+                </span>
+              )}
             </p>
-            <p className="text-xs text-[var(--text-muted)] mt-1">
-              Commission : <span className="text-[var(--primary)] font-medium">{link.commission}</span>
-            </p>
+            <p className="text-xs text-[var(--text-muted)] mt-1">Commission : <span className="text-[var(--primary)] font-medium">{link.commission}</span></p>
+
             <div className="mt-2 flex items-center gap-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] px-2 py-1.5">
               <span className="text-xs text-[var(--text-muted)] truncate flex-1">{link.url}</span>
             </div>
@@ -83,15 +107,7 @@ export function RecommendButton({
                 onClick={copy}
                 className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--primary)] text-white text-sm font-medium hover:opacity-90 transition"
               >
-                {copied ? (
-                  <>
-                    <Check size={14} /> Copié
-                  </>
-                ) : (
-                  <>
-                    <Copy size={14} /> Copier
-                  </>
-                )}
+                {copied ? (<><Check size={14} /> Copié</>) : (<><Copy size={14} /> Copier</>)}
               </button>
               <Link
                 href="/apporteurs"

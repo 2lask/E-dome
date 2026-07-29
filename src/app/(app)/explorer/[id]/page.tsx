@@ -481,6 +481,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               image={property.images?.[0]}
               price={property.price}
               currency={property.currency}
+              transactionType={property.transactionType}
               className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-colors"
             />
             {(activeRole === "hote" || activeRole === "agence" || activeRole === "promoteur") && (

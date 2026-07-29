@@ -22,6 +22,7 @@ import type {
   PostAttachment, ReferralLink,
 } from "@/lib/types";
 import { DiscoverHub } from "@/components/layout/discover-hub";
+import { RewardsBar } from "@/components/affiliate/rewards-bar";
 
 // ─── Users ─────────────────────────────────────────────────────────────────
 
@@ -2076,6 +2077,11 @@ export default function FeedPage() {
           {/* DiscoverHub */}
           <div className="max-w-[760px]">
             <DiscoverHub />
+          </div>
+
+          {/* Récompenses apporteur — solde, points, palier (façon Whop) */}
+          <div className="max-w-[760px] mt-3">
+            <RewardsBar />
           </div>
 
           {/* Tabs sticky : style underline subtle (Whop). py-2 gap-5,

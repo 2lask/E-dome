@@ -4,9 +4,11 @@ import React, { useMemo, useState } from "react";
 import {
   Trophy, Medal, Award, Plus, MousePointer2, UserPlus2, CheckCircle2,
   Tag, Search, ExternalLink, Building2, GraduationCap, Calendar, ShoppingBag, Check,
+  Zap, Coins, Lock, Share2,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { slugifyLinkLabel, buildReferralUrl, buildObjectAffiliate } from "@/lib/referral-links";
+import { getTierProgress, TIERS, POINTS } from "@/lib/rewards";
 import { properties, formations } from "@/lib/mock-data";
 import { EVENTS } from "../evenements/[id]/page";
 import { PRODUCTS } from "../boutique/[id]/page";
@@ -171,7 +173,16 @@ const statusLabels: Record<string, string> = {
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function ApporteursPage() {
-  const { formatPrice, referralLinks, addReferralLink, hasReferralLinkFor } = useApp();
+  const { formatPrice, referralLinks, addReferralLink, hasReferralLinkFor, rewardPoints } = useApp();
+  const rewardBalance = referralLinks.reduce((s, l) => s + (l.earned || 0), 0);
+  const tier = getTierProgress(rewardPoints);
+  const fmtPts = (n: number) => n.toLocaleString("fr-CH");
+  const EARN_ACTIONS = [
+    { icon: Tag, label: "Créer un lien pour une annonce", pts: POINTS.createLink },
+    { icon: Share2, label: "Partager un lien", pts: POINTS.share },
+    { icon: MousePointer2, label: "Un clic reçu sur votre lien", pts: POINTS.click },
+    { icon: CheckCircle2, label: "Une conversion (vente / inscription)", pts: POINTS.conversion },
+  ];
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [showQR, setShowQR] = useState<number | null>(null);
   const [showNewLink, setShowNewLink] = useState(false);
@@ -248,6 +259,72 @@ export default function ApporteursPage() {
         <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
           Générez des revenus en recommandant E-Dome à votre réseau. Chaque conversion vous reverse une part des revenus de plateforme d&apos;E-Dome (10 à 30 %) ou un bounty fixe selon le pôle, jamais ajoutée au prix payé par le client. L&apos;apporteur fait du referral marketing digital : il ne négocie aucun prix, ne représente aucune partie, n&apos;est jamais payé directement par le vendeur ou l&apos;acheteur, et n&apos;est ni agent immobilier ni courtier.
         </p>
+      </section>
+
+      {/* ── Programme récompenses (gamification) ─────────────────────────── */}
+      <section className="rounded-2xl border border-[var(--card-border)] overflow-hidden">
+        <div className={`p-5 sm:p-6 bg-gradient-to-r ${tier.current.gradient}`}>
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--background)]/70 backdrop-blur flex items-center justify-center text-3xl shrink-0">{tier.current.emoji}</div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-lg font-bold text-[var(--foreground)]">Palier {tier.current.name}</h2>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--primary)]/12 text-[var(--primary)] font-semibold">commission {tier.current.shareLabel}</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-sm text-[var(--text-secondary)]">
+                <span className="inline-flex items-center gap-1.5"><Coins className="w-4 h-4" /> <b className="text-[var(--foreground)]">{formatPrice(rewardBalance)}</b> gagnés</span>
+                <span className="inline-flex items-center gap-1.5"><Zap className="w-4 h-4" /> <b className="text-[var(--foreground)]">{fmtPts(rewardPoints)}</b> points</span>
+              </div>
+            </div>
+          </div>
+          {tier.next && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-xs text-[var(--text-secondary)] mb-1.5">
+                <span>{tier.current.emoji} {tier.current.name}</span>
+                <span>Plus que <b className="text-[var(--foreground)]">{fmtPts(tier.pointsToNext)} pts</b></span>
+                <span>{tier.next.emoji} {tier.next.name}</span>
+              </div>
+              <div className="h-2 rounded-full bg-black/10 overflow-hidden">
+                <div className="h-full rounded-full bg-[var(--primary)] transition-all" style={{ width: `${Math.round(tier.progress * 100)}%` }} />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Les paliers */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-4">
+          {TIERS.map((t) => {
+            const reached = rewardPoints >= t.min;
+            const isCurrent = t.key === tier.current.key;
+            return (
+              <div key={t.key} className={`relative rounded-xl border p-3 text-center ${isCurrent ? "border-[var(--primary)] bg-[var(--primary)]/5" : "border-[var(--card-border)]"}`}>
+                <div className={`text-2xl ${reached ? "" : "grayscale opacity-40"}`}>{t.emoji}</div>
+                <p className="text-sm font-semibold text-[var(--foreground)] mt-1">{t.name}</p>
+                <p className="text-[11px] text-[var(--text-muted)]">commission {t.shareLabel}</p>
+                <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{t.min === 0 ? "Départ" : `${fmtPts(t.min)} pts`}</p>
+                {!reached && <Lock className="absolute top-2 right-2 w-3 h-3 text-[var(--text-muted)]" />}
+                {isCurrent && <span className="absolute top-2 left-2 text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] font-bold">Vous</span>}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Comment gagner des points */}
+        <div className="p-4 border-t border-[var(--card-border)]">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Comment gagner des points</h3>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {EARN_ACTIONS.map((a) => {
+              const Icon = a.icon;
+              return (
+                <div key={a.label} className="flex items-center gap-3 rounded-xl border border-[var(--card-border)] px-3 py-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center shrink-0"><Icon className="w-4 h-4" /></div>
+                  <span className="flex-1 text-sm text-[var(--foreground)]">{a.label}</span>
+                  <span className="inline-flex items-center gap-0.5 text-sm font-bold text-[var(--primary)]"><Zap className="w-3.5 h-3.5" /> +{a.pts}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       {/* Bloc cadrage juridique V1.0 — KYC + double opt-in.
