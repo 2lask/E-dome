@@ -9,7 +9,7 @@ import {
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
   Users, Building2, GraduationCap,
   Image as ImageIcon, BarChart3, Film, Paperclip, TrendingUp, TrendingDown, ArrowRight,
-  Link2,
+  Link2, Coins,
 } from "lucide-react";
 import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
@@ -17,9 +17,10 @@ import { timeAgo, formatCount, formatDate } from "@/lib/utils";
 import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/lib/mock-data";
 import { getVideoMetadata } from "@/lib/video-metadata";
 import { buildObjectAffiliate } from "@/lib/referral-links";
+import { estimateEarning } from "@/lib/rewards";
 import type {
   User, SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData,
-  PostAttachment, ReferralLink,
+  PostAttachment, ReferralLink, Currency,
 } from "@/lib/types";
 import { DiscoverHub } from "@/components/layout/discover-hub";
 import { AffiliateHub } from "@/components/affiliate/affiliate-hub";
@@ -1361,14 +1362,30 @@ function AffiliateToggle({
    vendable recommandé. Clic → URL de tracking apporteur (nouvel onglet),
    même logique que les liens de la page /apporteurs. */
 function AffiliatePostBadge({ link }: { link: ReferralLink }) {
+  const { formatPrice } = useApp();
+  // Commission potentielle concrète pour ce lien (façon Whop) : « Gagnez
+  // jusqu'à X CHF » calculée depuis la cible (prix + type). Repli sur le %
+  // si le prix n'est pas connu (anciens liens génériques).
+  const earn =
+    link.target?.price != null
+      ? estimateEarning(link.target.kind, link.target.price, { currency: link.target.currency as Currency | undefined })
+      : null;
   const cls =
-    "flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--primary)]/[0.08] border border-[var(--primary)]/20 hover:bg-[var(--primary)]/15 transition-colors";
+    "flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[var(--primary)]/[0.08] border border-[var(--primary)]/20 hover:bg-[var(--primary)]/15 transition-colors";
   const inner = (
     <>
-      <Link2 size={13} className="text-[var(--primary)] shrink-0" />
-      <span className="text-xs font-medium text-[var(--primary)] shrink-0">Lien d&apos;affiliation</span>
-      <span className="text-xs text-[var(--text-muted)] truncate">· {link.commission}</span>
-      <ArrowRight size={12} className="ml-auto text-[var(--primary)] shrink-0" />
+      <Coins size={15} className="text-[var(--primary)] shrink-0" />
+      {earn && earn.max > 0 ? (
+        <span className="text-sm text-[var(--foreground)] truncate">
+          Gagnez jusqu&apos;à{" "}
+          <span className="font-bold text-[var(--primary)]">{formatPrice(earn.max, earn.currency)}</span> de commission
+        </span>
+      ) : (
+        <span className="text-sm text-[var(--foreground)] truncate">
+          Lien d&apos;affiliation · <span className="font-medium text-[var(--primary)]">{link.commission}</span>
+        </span>
+      )}
+      <ArrowRight size={13} className="ml-auto text-[var(--primary)] shrink-0" />
     </>
   );
   // Lien interne réel (redirige vers l'annonce + trace le clic) si dispo,
