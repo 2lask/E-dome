@@ -10,7 +10,7 @@ import {
   TrendingUp, BarChart3, Shield, Check, Send, Flag,
   Mail, Copy, Phone, MessageCircle, Users,
   Building2, Layers, DollarSign, Percent, Award, Rocket,
-  Handshake, QrCode, Wallet, Info,
+  Handshake, QrCode, Wallet, Info, Sparkles,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
@@ -484,6 +484,20 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               transactionType={property.transactionType}
               className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-colors"
             />
+            <button
+              onClick={() =>
+                window.dispatchEvent(
+                  new CustomEvent("edome:ai-open", {
+                    detail: {
+                      prompt: `Analyse le bien « ${property.title} » (id ${property.id}) comme investissement : rendement, points forts et faibles, et une recommandation nuancée.`,
+                    },
+                  }),
+                )
+              }
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--card-border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+            >
+              <Sparkles className="w-4 h-4 text-[var(--primary)]" /> Analyser avec l&apos;IA
+            </button>
             {(activeRole === "hote" || activeRole === "agence" || activeRole === "promoteur") && (
               <button
                 onClick={() => setShowBoostModal(true)}

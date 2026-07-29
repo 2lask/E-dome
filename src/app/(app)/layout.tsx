@@ -11,6 +11,7 @@ import { SidebarWhop, SIDEBAR_WHOP_WIDTH } from "@/components/layout/sidebar-who
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ExplorerTabs } from "@/components/layout/explorer-tabs";
+import { AiAssistant } from "@/components/ai/ai-assistant";
 
 /* Routes des hubs Explorer — liste blanche explicite.
    Les onglets de hub sont rendus uniquement sur ces pathnames exacts.
@@ -161,6 +162,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             {/* MobileNav (barre bas mobile) : masque sur /dashboard/* car
                 DashboardShell a sa propre nav horizontale en haut sur mobile. */}
             {!isDashboardRoute && <MobileNav />}
+
+            {/* Assistant IA « Expert E-Dome » — accessible partout. */}
+            <AiAssistant />
           </div>
         </ToastProvider>
       </LanguageProvider>
