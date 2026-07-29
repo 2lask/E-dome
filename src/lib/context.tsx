@@ -62,7 +62,14 @@ interface AppContextValue {
   /* ── Liens d'apporteur d'affaires (partagés entre /apporteurs et le
      composer du feed, pour attacher un lien de redirection affilié) ── */
   referralLinks: ReferralLink[];
-  addReferralLink: (link: ReferralLink) => void;
+  /* Ajoute un lien s'il n'existe pas déjà (dédup par url). Retourne true si
+     un nouveau lien a été créé, false s'il existait déjà. */
+  addReferralLink: (link: ReferralLink) => boolean;
+  /* Vrai si un lien rattaché à cette annonce existe déjà. */
+  hasReferralLinkFor: (kind: string, id: string) => boolean;
+  /* Incrémente le compteur de clics du lien rattaché à cette annonce (clic
+     depuis une redirection ?ref=). No-op si aucun lien ne correspond. */
+  registerReferralClick: (target: { kind: string; id: string }) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -231,8 +238,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const clearCart = useCallback(() => setCart([]), []);
 
   const addReferralLink = useCallback((link: ReferralLink) => {
-    setReferralLinks((prev) => [...prev, link]);
+    let created = false;
+    setReferralLinks((prev) => {
+      if (prev.some((l) => l.url === link.url)) return prev; // dédup
+      created = true;
+      return [...prev, link];
+    });
+    return created;
   }, []);
+
+  const hasReferralLinkFor = useCallback(
+    (kind: string, id: string) =>
+      referralLinks.some((l) => l.target?.kind === kind && l.target?.id === id),
+    [referralLinks],
+  );
+
+  const registerReferralClick = useCallback(
+    (target: { kind: string; id: string }) => {
+      setReferralLinks((prev) =>
+        prev.map((l) =>
+          l.target?.kind === target.kind && l.target?.id === target.id
+            ? { ...l, clicks: l.clicks + 1 }
+            : l,
+        ),
+      );
+    },
+    [],
+  );
 
   const cartCount = useMemo(() => cart.reduce((s, c) => s + c.qty, 0), [cart]);
 
@@ -276,6 +308,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       clearCart,
       referralLinks,
       addReferralLink,
+      hasReferralLinkFor,
+      registerReferralClick,
     }),
     [
       activeRole,
@@ -299,6 +333,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       clearCart,
       referralLinks,
       addReferralLink,
+      hasReferralLinkFor,
+      registerReferralClick,
     ]
   );
 

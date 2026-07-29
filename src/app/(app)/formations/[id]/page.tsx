@@ -12,6 +12,8 @@ import {
   formations as allFormations,
 } from "@/lib/mock-data";
 import type { Formation } from "@/lib/types";
+import { RecommendButton } from "@/components/affiliate/recommend-button";
+import { ReferralBanner } from "@/components/affiliate/referral-banner";
 
 /* ─── Resolve formation by ID (handles f1, form-001, etc.) ─────────────── */
 
@@ -187,6 +189,10 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Bannière de confiance si on arrive via un lien d'apporteur (?ref=) */}
+        <div className="mb-6">
+          <ReferralBanner kind="formation" id={formation.id} />
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* ── Left Column ─────────────────────────────────────────────── */}
@@ -321,6 +327,15 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
                   Inscrit
                 </button>
               )}
+              <RecommendButton
+                kind="formation"
+                id={formation.id}
+                title={formation.title}
+                image={formation.thumbnail}
+                price={formation.price}
+                currency={formation.currency}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[var(--primary)]/40 text-[var(--primary)] text-sm font-medium hover:bg-[var(--primary)]/10 transition-colors"
+              />
               <div className="space-y-3 text-sm text-[var(--text-secondary)]">
                 <div className="flex justify-between"><span>Durée</span><span className="font-medium text-[var(--foreground)]">{formation.duration}</span></div>
                 <div className="flex justify-between"><span>Modules</span><span className="font-medium text-[var(--foreground)]">{formation.modules.length}</span></div>

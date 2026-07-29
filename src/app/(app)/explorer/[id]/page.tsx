@@ -24,6 +24,9 @@ import {
   getReviewsForProperty,
 } from "@/lib/mock-data";
 import type { Review } from "@/lib/mock-data";
+import { RecommendButton } from "@/components/affiliate/recommend-button";
+import { ReferralBanner } from "@/components/affiliate/referral-banner";
+import { REFERRAL_ID } from "@/lib/referral-links";
 
 // ─── Paid options (applicable to location-ct) ───────────────────────────────
 
@@ -290,6 +293,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         <ArrowLeft className="w-4 h-4" /> Retour
       </Link>
 
+      {/* Bannière de confiance si on arrive via un lien d'apporteur (?ref=) */}
+      <div className="mb-4">
+        <ReferralBanner kind="bien" id={property.id} />
+      </div>
+
       {/* Gallery */}
       <div className="relative rounded-2xl overflow-hidden mb-8">
         <div className="grid grid-cols-4 grid-rows-2 gap-1 h-[400px] md:h-[500px]">
@@ -466,6 +474,15 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             >
               <PenSquare className="w-4 h-4" /> Publier un post
             </Link>
+            <RecommendButton
+              kind="bien"
+              id={property.id}
+              title={property.title}
+              image={property.images?.[0]}
+              price={property.price}
+              currency={property.currency}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-colors"
+            />
             {(activeRole === "hote" || activeRole === "agence" || activeRole === "promoteur") && (
               <button
                 onClick={() => setShowBoostModal(true)}
@@ -891,16 +908,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             {/* Lien de parrainage */}
             <div className="flex items-center gap-2">
               <div className="flex-1 px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-xs text-[var(--text-secondary)] truncate">
-                edome.world/ref/bien/AP-{Math.floor(Math.random()*9000+1000)}/{property.id}
+                edome.world/ref/bien/{property.id}/{REFERRAL_ID}
               </div>
-              <button onClick={() => { navigator.clipboard.writeText(`edome.world/ref/bien/${property.id}`); setCopyFeedback(true); setTimeout(() => setCopyFeedback(false), 2000); }} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--primary)] text-white text-xs font-medium hover:bg-[var(--primary)]">
+              <button onClick={() => { navigator.clipboard.writeText(`https://edome.world/ref/bien/${property.id}/${REFERRAL_ID}`); setCopyFeedback(true); setTimeout(() => setCopyFeedback(false), 2000); }} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--primary)] text-white text-xs font-medium hover:bg-[var(--primary)]">
                 {copyFeedback ? <><Check size={12} strokeWidth={2.5} /> Copié</> : <><Copy size={12} /> Copier</>}
               </button>
             </div>
 
             {/* Share buttons */}
             <div className="flex gap-2">
-              <a href={`mailto:?subject=Bien E-Dome&body=${encodeURIComponent("Découvrez ce bien : edome.world/ref/bien/" + property.id)}`} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">
+              <a href={`mailto:?subject=Bien E-Dome&body=${encodeURIComponent("Découvrez ce bien : https://edome.world/ref/bien/" + property.id + "/" + REFERRAL_ID)}`} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">
                 <Mail size={12} /> Email
               </a>
               <button className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">

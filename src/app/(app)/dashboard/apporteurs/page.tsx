@@ -25,8 +25,9 @@ import {
   leaderboard,
   apporteurSummary,
 } from "@/lib/dashboard-data";
+import { REFERRAL_ID } from "@/lib/referral-links";
 
-const REFERRAL_LINK = "https://e-dome.ch/r/LEO2026";
+const REFERRAL_LINK = `https://edome.world/ref/${REFERRAL_ID}`;
 
 export default function ApporteursPage() {
   const totalConversions = referralChannels.reduce(

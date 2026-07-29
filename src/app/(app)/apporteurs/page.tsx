@@ -1,9 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import { Trophy, Medal, Award, Plus, MousePointer2, UserPlus2, CheckCircle2 } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import {
+  Trophy, Medal, Award, Plus, MousePointer2, UserPlus2, CheckCircle2,
+  Tag, Search, ExternalLink, Building2, GraduationCap, Calendar, ShoppingBag, Check,
+} from "lucide-react";
 import { useApp } from "@/lib/context";
-import { slugifyLinkLabel, buildReferralUrl } from "@/lib/referral-links";
+import { slugifyLinkLabel, buildReferralUrl, buildObjectAffiliate } from "@/lib/referral-links";
+import { properties, formations } from "@/lib/mock-data";
+import { EVENTS } from "../evenements/[id]/page";
+import { PRODUCTS } from "../boutique/[id]/page";
+import type { ReferralTargetKind } from "@/lib/types";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +19,71 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+/* ─── Catalogue d'annonces recommandables ────────────────────────────────
+   Normalise biens / formations / événements / produits en une seule forme
+   pour le picker. Les ids sont ceux reconnus par les pages de détail, donc
+   le `redirect` du lien généré tombe juste. */
+type CatalogItem = {
+  kind: ReferralTargetKind;
+  id: string;
+  title: string;
+  image: string;
+  price: number;
+  currency?: string;
+  subtitle: string;
+};
+
+const KIND_LABEL: Record<ReferralTargetKind, string> = {
+  bien: "Bien",
+  formation: "Formation",
+  evenement: "Événement",
+  produit: "Produit",
+};
+
+const CATALOG_TABS: {
+  key: ReferralTargetKind;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  items: CatalogItem[];
+}[] = [
+  {
+    key: "bien",
+    label: "Biens",
+    icon: Building2,
+    items: properties.map((p) => ({
+      kind: "bien", id: p.id, title: p.title, image: p.images[0], price: p.price,
+      currency: p.currency, subtitle: `${p.location.city} · ${p.area} m²`,
+    })),
+  },
+  {
+    key: "formation",
+    label: "Formations",
+    icon: GraduationCap,
+    items: formations.map((f) => ({
+      kind: "formation", id: f.id, title: f.title, image: f.thumbnail, price: f.price,
+      currency: f.currency, subtitle: `Par ${f.instructor.firstName} ${f.instructor.lastName}`,
+    })),
+  },
+  {
+    key: "evenement",
+    label: "Événements",
+    icon: Calendar,
+    items: EVENTS.map((e) => ({
+      kind: "evenement", id: e.id, title: e.titre, image: e.thumbnail, price: e.prix,
+      currency: "CHF", subtitle: `${e.type} · ${e.lieu}`,
+    })),
+  },
+  {
+    key: "produit",
+    label: "Produits",
+    icon: ShoppingBag,
+    items: PRODUCTS.map((p) => ({
+      kind: "produit", id: p.id, title: p.title, image: p.gallery[0], price: p.price,
+      currency: "CHF", subtitle: p.category,
+    })),
+  },
+];
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -99,12 +171,39 @@ const statusLabels: Record<string, string> = {
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function ApporteursPage() {
-  const { formatPrice, referralLinks, addReferralLink } = useApp();
+  const { formatPrice, referralLinks, addReferralLink, hasReferralLinkFor } = useApp();
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [showQR, setShowQR] = useState<number | null>(null);
   const [showNewLink, setShowNewLink] = useState(false);
   const [newLinkLabel, setNewLinkLabel] = useState("");
   const [newLinkType, setNewLinkType] = useState("Amener un hôte");
+
+  /* ── Picker « lien pour une annonce » ── */
+  const [showListingPicker, setShowListingPicker] = useState(false);
+  const [listingTab, setListingTab] = useState<ReferralTargetKind>("bien");
+  const [listingSearch, setListingSearch] = useState("");
+  const [listingToast, setListingToast] = useState<string | null>(null);
+
+  const currentTab = CATALOG_TABS.find((t) => t.key === listingTab)!;
+  const filteredListings = useMemo(() => {
+    const q = listingSearch.trim().toLowerCase();
+    if (!q) return currentTab.items;
+    return currentTab.items.filter(
+      (it) => it.title.toLowerCase().includes(q) || it.subtitle.toLowerCase().includes(q),
+    );
+  }, [currentTab, listingSearch]);
+
+  const handleCreateListingLink = (item: CatalogItem) => {
+    const created = addReferralLink(
+      buildObjectAffiliate(item.kind, item.id, item.title, {
+        image: item.image,
+        price: item.price,
+        currency: item.currency,
+      }),
+    );
+    setListingToast(created ? `Lien créé pour « ${item.title} »` : "Ce lien existe déjà dans vos liens");
+    setTimeout(() => setListingToast(null), 2400);
+  };
 
   const totalCommissions = MOCK_APPORTS.reduce((s, a) => s + a.commission, 0);
   const totalVersements = MOCK_VERSEMENTS.reduce((s, v) => s + v.montant, 0);
@@ -219,20 +318,41 @@ export default function ApporteursPage() {
           <h2 className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
             Mes liens d&apos;invitation
           </h2>
-          <button
-            onClick={() => setShowNewLink(true)}
-            className="inline-flex items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background hover:opacity-90"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Créer un nouveau lien
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowListingPicker(true)}
+              className="inline-flex items-center gap-1.5 rounded-md bg-[var(--primary)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
+            >
+              <Tag className="h-3.5 w-3.5" />
+              Lien pour une annonce
+            </button>
+            <button
+              onClick={() => setShowNewLink(true)}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Lien générique
+            </button>
+          </div>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
         {referralLinks.map((link, idx) => (
           <div key={idx} className="p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
-            <div className="flex items-center justify-between">
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${link.color}`}>{link.label}</span>
-            </div>
+            {link.target ? (
+              <div className="flex items-center gap-3">
+                <img src={link.target.image} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${link.color}`}>
+                    {KIND_LABEL[link.target.kind]}
+                  </span>
+                  <p className="text-sm font-medium text-[var(--foreground)] truncate mt-1">{link.target.title}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${link.color}`}>{link.label}</span>
+              </div>
+            )}
             <p className="text-sm text-[var(--text-secondary)]">{link.description}</p>
             <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[var(--primary)]/20 text-[var(--primary)]">
               Rémunération : {link.commission}
@@ -262,6 +382,14 @@ export default function ApporteursPage() {
                 QR
               </button>
             </div>
+            {link.redirect && (
+              <a
+                href={link.redirect}
+                className="flex items-center justify-center gap-1.5 w-full px-3 py-2 rounded-lg border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition"
+              >
+                <ExternalLink size={14} /> Voir l&apos;annonce
+              </a>
+            )}
             {showQR === idx && (
               <div className="flex items-center justify-center p-4 rounded-lg" style={{ background: "var(--background)" }}>
                 <div className="w-32 h-32 rounded flex items-center justify-center text-xs text-center"
@@ -470,6 +598,102 @@ export default function ApporteursPage() {
           </table>
         </div>
       </section>
+
+      {/* Dialog : catalogue d'annonces → lien d'affiliation rattaché */}
+      <Dialog open={showListingPicker} onOpenChange={setShowListingPicker}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Créer un lien pour une annonce</DialogTitle>
+            <DialogDescription>
+              Choisissez une annonce : son lien d&apos;affiliation et la commission sont générés
+              automatiquement. Chaque clic redirige vers l&apos;annonce et est tracé.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Onglets par type d'annonce */}
+          <div className="flex gap-1 rounded-lg bg-muted p-1">
+            {CATALOG_TABS.map((t) => {
+              const active = listingTab === t.key;
+              return (
+                <button
+                  key={t.key}
+                  onClick={() => { setListingTab(t.key); setListingSearch(""); }}
+                  className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition ${
+                    active ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <t.icon className="h-3.5 w-3.5" />
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Recherche */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              value={listingSearch}
+              onChange={(e) => setListingSearch(e.target.value)}
+              placeholder={`Rechercher parmi les ${currentTab.label.toLowerCase()}…`}
+              className="w-full rounded-md border border-border bg-background pl-9 pr-3 py-2 text-sm outline-none focus:border-foreground/40 focus:ring-2 focus:ring-foreground/10"
+            />
+          </div>
+
+          {/* Liste des annonces */}
+          <div className="max-h-[46vh] overflow-y-auto space-y-2 pr-1">
+            {filteredListings.map((it) => {
+              const existing = hasReferralLinkFor(it.kind, it.id);
+              return (
+                <div key={it.id} className="flex items-center gap-3 rounded-xl border border-border p-2">
+                  <img src={it.image} alt="" className="h-12 w-12 rounded-lg object-cover shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-foreground">{it.title}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {it.subtitle} · {formatPrice(it.price, it.currency as any)}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleCreateListingLink(it)}
+                    className={`shrink-0 inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition ${
+                      existing
+                        ? "bg-[var(--hover-bg)] text-[var(--text-secondary)]"
+                        : "bg-[var(--primary)] text-white hover:opacity-90"
+                    }`}
+                  >
+                    {existing ? (
+                      <>
+                        <Check className="h-3.5 w-3.5" /> Créé
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="h-3.5 w-3.5" /> Créer le lien
+                      </>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+            {filteredListings.length === 0 && (
+              <p className="py-8 text-center text-sm text-muted-foreground">Aucune annonce ne correspond.</p>
+            )}
+          </div>
+
+          {listingToast && (
+            <p className="text-center text-xs font-medium text-[var(--primary)]">{listingToast}</p>
+          )}
+
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setShowListingPicker(false)}
+              className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
+            >
+              Fermer
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog : creation d'un nouveau lien d'invitation */}
       <Dialog open={showNewLink} onOpenChange={setShowNewLink}>

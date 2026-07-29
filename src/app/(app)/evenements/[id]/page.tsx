@@ -5,10 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import { Calendar, Check } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { BackButton } from "@/components/ui/back-button";
+import { RecommendButton } from "@/components/affiliate/recommend-button";
+import { ReferralBanner } from "@/components/affiliate/referral-banner";
 
 /* ─── Mock Data (same as evenements list) ──────────────────────────────── */
 
-const EVENTS = [
+/* Exporté pour alimenter le catalogue d'annonces de la page /apporteurs
+   (mêmes ids que la route pour que les redirections ?ref= tombent juste). */
+export const EVENTS = [
   { id: "e1", titre: "Salon de l'immobilier Suisse 2026", type: "Conférence", date: "2026-05-15", heure: "09:00", duree: "8h", lieu: "Palexpo, Genève", description: "Le plus grand salon immobilier de Suisse romande. Retrouvez plus de 200 exposants, des conférences thématiques et des ateliers pratiques pour tous les profils : investisseurs, propriétaires, courtiers et passionnés d'immobilier.", thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop", spots: 500, spotsRemaining: 127, prix: 45, featured: true, intervenant: "Plusieurs experts", programme: ["09:00 — Ouverture des portes", "10:00 — Keynote : Tendances immobilières 2026", "11:30 — Table ronde : Investir en Suisse romande", "14:00 — Ateliers pratiques (3 salles)", "16:00 — Networking & cocktail", "17:00 — Clôture"] },
   { id: "e2", titre: "Webinaire : Optimiser son rendement locatif", type: "Webinaire", date: "2026-04-20", heure: "18:00", duree: "1h30", lieu: "En ligne", description: "Stratégies concrètes pour maximiser la rentabilité de vos biens locatifs. Calcul du rendement net, optimisation fiscale, gestion des charges et conseils pour réduire la vacance locative.", thumbnail: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600&h=400&fit=crop", spots: 200, spotsRemaining: 84, prix: 0, featured: false, intervenant: "Sophie Martin", programme: ["18:00 — Introduction et objectifs", "18:15 — Calcul du rendement net réel", "18:45 — Optimisation fiscale", "19:15 — Questions / Réponses", "19:30 — Fin"] },
   { id: "e3", titre: "Atelier : Home staging pratique", type: "Atelier", date: "2026-04-10", heure: "14:00", duree: "3h", lieu: "Lausanne, Centre Flon", description: "Apprenez les techniques de home staging pour vendre plus vite et au meilleur prix. Mise en scène, photographie, dépersonnalisation et conseils de décoration accessibles à tous.", thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", spots: 30, spotsRemaining: 8, prix: 89, featured: false, intervenant: "Claire Bernard", programme: ["14:00 — Accueil", "14:15 — Les bases du home staging", "15:00 — Exercice pratique en binôme", "16:00 — Retours et astuces avancées", "17:00 — Fin"] },
@@ -81,6 +85,8 @@ export default function EvenementDetailPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        {/* Bannière de confiance si on arrive via un lien d'apporteur (?ref=) */}
+        <ReferralBanner kind="evenement" id={event.id} />
         {/* Info cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4 text-center">
@@ -195,6 +201,19 @@ export default function EvenementDetailPage() {
                     Lien
                   </button>
                 </div>
+              </div>
+
+              {/* Recommander & gagner (apporteur d'affaires) */}
+              <div className="pt-4 border-t border-[var(--card-border)]">
+                <RecommendButton
+                  kind="evenement"
+                  id={event.id}
+                  title={event.titre}
+                  image={event.thumbnail}
+                  price={event.prix}
+                  currency="CHF"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[var(--primary)]/40 text-[var(--primary)] text-sm font-medium hover:bg-[var(--primary)]/10 transition-colors"
+                />
               </div>
             </div>
           </div>

@@ -164,9 +164,27 @@ export interface AnalyticsCardData {
   sparkData?: number[];
 }
 
+/* Cible d'un lien d'affiliation rattaché à une annonce vendable précise
+   (bien, formation, événement, produit boutique). Absente pour les liens
+   génériques (acquisition plateforme). */
+export type ReferralTargetKind = "bien" | "formation" | "evenement" | "produit";
+
+export interface ReferralTarget {
+  kind: ReferralTargetKind;
+  id: string;
+  title: string;
+  image?: string;
+  price?: number;
+  currency?: string;
+}
+
 /* Lien de tracking d'un apporteur d'affaires (page /apporteurs). Partagé
-   avec le composer du feed pour permettre d'attacher un lien de
-   redirection affilié directement dans une publication. */
+   avec le composer du feed et les pages d'annonce pour attacher/générer un
+   lien de redirection affilié.
+   · url      — chaîne « jolie » partageable (edome.world/ref/…), affichée/copiée.
+   · redirect — route interne réelle avec ?ref= (ex: /explorer/prop11?ref=AP-7291)
+                utilisée par les clics in-app pour rediriger + tracer.
+   · target   — l'annonce rattachée (absent = lien générique). */
 export interface ReferralLink {
   label: string;
   url: string;
@@ -176,6 +194,8 @@ export interface ReferralLink {
   conversions: number;
   earned: number;
   color: string;
+  target?: ReferralTarget;
+  redirect?: string;
 }
 
 export type PostAttachment =

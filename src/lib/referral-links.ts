@@ -1,4 +1,4 @@
-import type { ReferralLink } from "./types";
+import type { ReferralLink, ReferralTargetKind } from "./types";
 
 /* Identifiant apporteur du user courant (mock — un seul apporteur dans la
    démo, cf. page /apporteurs). Partagé pour que les liens générés là-bas
@@ -51,46 +51,76 @@ export function buildReferralUrl(slug: string) {
   return `edome.world/ref/${slug}/${REFERRAL_ID}`;
 }
 
-/* Lien d'affiliation généré pour un objet vendable précis (bien, formation
-   ou événement) quand l'auteur active l'interrupteur « Affiliation » dans le
-   composer du feed. Contrairement aux DEFAULT_REFERRAL_LINKS (génériques,
-   orientés acquisition plateforme), celui-ci pointe vers l'objet lui-même —
-   edome.world/ref/<type>/<id>/<AP-…> — et porte la commission propre au type.
-   Les stats (clicks/conversions/earned) démarrent à 0 : c'est un lien neuf. */
+/* Route interne (page de détail) de destination par type d'annonce. Sert à
+   construire le `redirect` réel d'un lien d'affiliation. */
+export const REFERRAL_ROUTE: Record<ReferralTargetKind, string> = {
+  bien: "/explorer",
+  formation: "/formations",
+  evenement: "/evenements",
+  produit: "/boutique",
+};
+
+const AFFILIATE_CONFIG: Record<
+  ReferralTargetKind,
+  { commission: string; description: (title: string) => string; color: string }
+> = {
+  bien: {
+    commission: "10–30 % du frais plateforme",
+    description: (t) =>
+      `Recommandez « ${t} » via votre lien. Si l'acheteur ou le locataire conclut sur E-Dome, vous touchez une part du frais fixe de plateforme — jamais ajoutée au prix payé.`,
+    color: "bg-emerald-500/20 text-emerald-400",
+  },
+  formation: {
+    commission: "20 % du prix de la formation",
+    description: (t) =>
+      `Recommandez la formation « ${t} » via votre lien. Vous touchez 20 % du prix pour chaque inscription issue de votre recommandation.`,
+    color: "bg-orange-500/20 text-orange-400",
+  },
+  evenement: {
+    commission: "15 % du prix du billet",
+    description: (t) =>
+      `Recommandez l'événement « ${t} » via votre lien. Vous touchez 15 % du prix pour chaque billet vendu grâce à votre recommandation.`,
+    color: "bg-purple-500/20 text-purple-400",
+  },
+  produit: {
+    commission: "10 % du prix de vente",
+    description: (t) =>
+      `Recommandez le produit « ${t} » via votre lien. Vous touchez 10 % de la commission E-Dome pour chaque vente issue de votre recommandation.`,
+    color: "bg-blue-500/20 text-blue-400",
+  },
+};
+
+/* Lien d'affiliation généré pour une annonce vendable précise (bien,
+   formation, événement, produit). Contrairement aux DEFAULT_REFERRAL_LINKS
+   (génériques, acquisition plateforme), celui-ci est rattaché à l'objet :
+   · url      — chaîne partageable edome.world/ref/<type>/<id>/<AP-…>
+   · redirect — route interne réelle /<route>/<id>?ref=<AP-…> (clics in-app)
+   · target   — l'annonce (vignette, prix) pour l'affichage des cartes
+   Les stats démarrent à 0 : c'est un lien neuf. */
 export function buildObjectAffiliate(
-  kind: "bien" | "formation" | "evenement",
+  kind: ReferralTargetKind,
   objectId: string,
   title: string,
+  extra?: { image?: string; price?: number; currency?: string },
 ): ReferralLink {
-  const config = {
-    bien: {
-      commission: "10–30 % du frais plateforme",
-      description:
-        "Recommandez ce bien via votre lien. Si l'acheteur ou le locataire conclut sur E-Dome, vous touchez une part du frais fixe de plateforme — jamais ajoutée au prix payé.",
-      color: "bg-emerald-500/20 text-emerald-400",
-    },
-    formation: {
-      commission: "20 % du prix de la formation",
-      description:
-        "Recommandez cette formation via votre lien. Vous touchez 20 % du prix pour chaque inscription réalisée à partir de votre recommandation.",
-      color: "bg-orange-500/20 text-orange-400",
-    },
-    evenement: {
-      commission: "15 % du prix du billet",
-      description:
-        "Recommandez cet événement via votre lien. Vous touchez 15 % du prix pour chaque billet vendu grâce à votre recommandation.",
-      color: "bg-purple-500/20 text-purple-400",
-    },
-  } as const;
-  const c = config[kind];
+  const c = AFFILIATE_CONFIG[kind];
   return {
     label: title,
     url: `edome.world/ref/${kind}/${objectId}/${REFERRAL_ID}`,
-    description: c.description,
+    redirect: `${REFERRAL_ROUTE[kind]}/${objectId}?ref=${REFERRAL_ID}`,
+    description: c.description(title),
     commission: c.commission,
     clicks: 0,
     conversions: 0,
     earned: 0,
     color: c.color,
+    target: {
+      kind,
+      id: objectId,
+      title,
+      image: extra?.image,
+      price: extra?.price,
+      currency: extra?.currency,
+    },
   };
 }

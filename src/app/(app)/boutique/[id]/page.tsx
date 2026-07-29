@@ -28,6 +28,8 @@ import {
 import { useApp } from "@/lib/context";
 import { BlurImage } from "@/components/ui/blur-image";
 import { BackButton } from "@/components/ui/back-button";
+import { RecommendButton } from "@/components/affiliate/recommend-button";
+import { ReferralBanner } from "@/components/affiliate/referral-banner";
 
 /* /boutique/[id] — Fiche produit refondue au standard marketplace (eBay).
 
@@ -72,7 +74,9 @@ interface Product {
 
 // ─── Données fictives (réutilisent les images/vendor du mock /boutique) ──
 
-const PRODUCTS: Product[] = [
+/* Exporté pour alimenter le catalogue d'annonces de la page /apporteurs
+   (mêmes ids que la route pour que les redirections ?ref= tombent juste). */
+export const PRODUCTS: Product[] = [
   {
     id: "b1",
     title: "Canapé d'angle modulable lin naturel",
@@ -459,6 +463,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           </span>
         </nav>
 
+        {/* Bannière de confiance si on arrive via un lien d'apporteur (?ref=) */}
+        <ReferralBanner kind="produit" id={product.id} />
+
         {/* Layout 2 colonnes principal */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
@@ -681,6 +688,15 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     Partager
                   </button>
                 </div>
+                {/* Recommander & gagner (apporteur d'affaires) */}
+                <RecommendButton
+                  kind="produit"
+                  id={product.id}
+                  title={product.title}
+                  image={product.gallery?.[0]}
+                  price={product.price}
+                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border border-[var(--primary)]/40 text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors"
+                />
               </div>
             </div>
 

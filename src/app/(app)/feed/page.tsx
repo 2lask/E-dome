@@ -1360,17 +1360,25 @@ function AffiliateToggle({
    vendable recommandé. Clic → URL de tracking apporteur (nouvel onglet),
    même logique que les liens de la page /apporteurs. */
 function AffiliatePostBadge({ link }: { link: ReferralLink }) {
-  return (
-    <a
-      href={`https://${link.url}`}
-      target="_blank"
-      rel="noopener noreferrer nofollow"
-      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--primary)]/[0.08] border border-[var(--primary)]/20 hover:bg-[var(--primary)]/15 transition-colors"
-    >
+  const cls =
+    "flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--primary)]/[0.08] border border-[var(--primary)]/20 hover:bg-[var(--primary)]/15 transition-colors";
+  const inner = (
+    <>
       <Link2 size={13} className="text-[var(--primary)] shrink-0" />
       <span className="text-xs font-medium text-[var(--primary)] shrink-0">Lien d&apos;affiliation</span>
       <span className="text-xs text-[var(--text-muted)] truncate">· {link.commission}</span>
       <ArrowRight size={12} className="ml-auto text-[var(--primary)] shrink-0" />
+    </>
+  );
+  // Lien interne réel (redirige vers l'annonce + trace le clic) si dispo,
+  // sinon repli sur la chaîne partageable externe (anciens liens).
+  return link.redirect ? (
+    <Link href={link.redirect} className={cls}>
+      {inner}
+    </Link>
+  ) : (
+    <a href={`https://${link.url}`} target="_blank" rel="noopener noreferrer nofollow" className={cls}>
+      {inner}
     </a>
   );
 }
