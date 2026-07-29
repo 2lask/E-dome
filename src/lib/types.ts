@@ -176,6 +176,7 @@ export interface ReferralTarget {
   image?: string;
   price?: number;
   currency?: string;
+  transactionType?: TransactionType;
 }
 
 /* Lien de tracking d'un apporteur d'affaires (page /apporteurs). Partagé

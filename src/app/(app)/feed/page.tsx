@@ -208,7 +208,10 @@ const VIDEO_POSTS: SocialPost[] = [
     ]),
     formation: { id: "f2", title: "Gestion locative avancée", instructor: "Amina El Idrissi", price: 199, students: 890, thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop" },
     // Sophie recommande la formation d'Amina via son lien d'affiliation.
-    affiliate: buildObjectAffiliate("formation", "f2", "Gestion locative avancée"),
+    affiliate: buildObjectAffiliate("formation", "f2", "Gestion locative avancée", {
+      price: 199,
+      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+    }),
   },
   {
     id: "p8", author: U_AMINA,
@@ -1311,12 +1314,23 @@ function AnalyticsAttachCard({ data, onRemove }: { data: AnalyticsCardData; onRe
 function AffiliateToggle({
   on,
   onToggle,
-  commission,
+  link,
 }: {
   on: boolean;
   onToggle: () => void;
-  commission: string;
+  link: ReferralLink | null;
 }) {
+  const { formatPrice } = useApp();
+  const t = link?.target;
+  const earn =
+    t?.price != null
+      ? estimateEarning(t.kind, t.price, {
+          transactionType: t.transactionType,
+          currency: t.currency as Currency | undefined,
+        })
+      : null;
+  const earnLabel = earn && earn.max > 0 ? formatPrice(earn.max, earn.currency) : null;
+
   return (
     <button
       type="button"
@@ -1338,7 +1352,11 @@ function AffiliateToggle({
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-medium text-[var(--foreground)]">Lien d&apos;affiliation</p>
         <p className="text-xs text-[var(--text-muted)] truncate">
-          {on ? `Commission ${commission}` : "Gagnez une commission si on achète via votre reco"}
+          {!on
+            ? "Gagnez une commission si on achète via votre reco"
+            : earnLabel
+              ? <>Gagnez jusqu&apos;à <span className="font-semibold text-[var(--primary)]">{earnLabel}</span> de commission</>
+              : `Commission ${link?.commission ?? ""}`}
         </p>
       </div>
       {/* Switch visuel */}
@@ -1364,28 +1382,55 @@ function AffiliateToggle({
 function AffiliatePostBadge({ link }: { link: ReferralLink }) {
   const { formatPrice } = useApp();
   // Commission potentielle concrète pour ce lien (façon Whop) : « Gagnez
-  // jusqu'à X CHF » calculée depuis la cible (prix + type). Repli sur le %
-  // si le prix n'est pas connu (anciens liens génériques).
+  // jusqu'à X CHF » calculée depuis la cible (prix + type de transaction).
+  // Repli sur le % si le prix n'est pas connu (anciens liens génériques).
+  const t = link.target;
   const earn =
-    link.target?.price != null
-      ? estimateEarning(link.target.kind, link.target.price, { currency: link.target.currency as Currency | undefined })
+    t?.price != null
+      ? estimateEarning(t.kind, t.price, {
+          transactionType: t.transactionType,
+          currency: t.currency as Currency | undefined,
+        })
       : null;
+  const hasAmount = !!earn && earn.max > 0;
+
   const cls =
-    "flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[var(--primary)]/[0.08] border border-[var(--primary)]/20 hover:bg-[var(--primary)]/15 transition-colors";
+    "group/aff relative flex items-center gap-3 px-3 py-2.5 rounded-xl overflow-hidden " +
+    "bg-gradient-to-r from-[var(--primary)]/[0.12] via-[var(--primary)]/[0.05] to-transparent " +
+    "border border-[var(--primary)]/25 hover:border-[var(--primary)]/45 transition-colors";
+
   const inner = (
     <>
-      <Coins size={15} className="text-[var(--primary)] shrink-0" />
-      {earn && earn.max > 0 ? (
-        <span className="text-sm text-[var(--foreground)] truncate">
-          Gagnez jusqu&apos;à{" "}
-          <span className="font-bold text-[var(--primary)]">{formatPrice(earn.max, earn.currency)}</span> de commission
-        </span>
-      ) : (
-        <span className="text-sm text-[var(--foreground)] truncate">
-          Lien d&apos;affiliation · <span className="font-medium text-[var(--primary)]">{link.commission}</span>
-        </span>
-      )}
-      <ArrowRight size={13} className="ml-auto text-[var(--primary)] shrink-0" />
+      {/* Reflet qui balaie au survol (effet « offre »). */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 -left-full w-1/2 skew-x-12 bg-white/10 transition-[left] duration-700 ease-out group-hover/aff:left-[140%]"
+      />
+      {/* Icône pleine */}
+      <span className="shrink-0 w-9 h-9 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center">
+        <Coins size={17} />
+      </span>
+      {/* Accroche */}
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          Recommandez &amp; gagnez
+        </p>
+        {hasAmount ? (
+          <p className="text-[15px] leading-tight text-[var(--foreground)] truncate">
+            Jusqu&apos;à{" "}
+            <span className="font-extrabold text-[var(--primary)]">{formatPrice(earn.max, earn.currency)}</span>
+            <span className="text-[var(--text-muted)]"> de commission</span>
+          </p>
+        ) : (
+          <p className="text-[15px] leading-tight text-[var(--foreground)] truncate">
+            Commission <span className="font-bold text-[var(--primary)]">{link.commission}</span>
+          </p>
+        )}
+      </div>
+      {/* Flèche */}
+      <span className="shrink-0 w-7 h-7 rounded-full bg-[var(--primary)]/12 text-[var(--primary)] flex items-center justify-center transition-colors group-hover/aff:bg-[var(--primary)] group-hover/aff:text-[var(--primary-foreground)]">
+        <ArrowRight size={14} />
+      </span>
     </>
   );
   // Lien interne réel (redirige vers l'annonce + trace le clic) si dispo,
@@ -1992,9 +2037,23 @@ export default function FeedPage() {
   const composerAffiliateLink = (): ReferralLink | null => {
     const a = composerAttachment;
     if (!a) return null;
-    if (a.kind === "property") return buildObjectAffiliate("bien", a.property.id, a.property.title);
-    if (a.kind === "formation") return buildObjectAffiliate("formation", a.formation.id, a.formation.title);
-    if (a.kind === "event") return buildObjectAffiliate("evenement", a.event.id, a.event.titre);
+    if (a.kind === "property")
+      return buildObjectAffiliate("bien", a.property.id, a.property.title, {
+        image: a.property.images[0],
+        price: a.property.price,
+        currency: a.property.currency,
+        transactionType: a.property.transactionType,
+      });
+    if (a.kind === "formation")
+      return buildObjectAffiliate("formation", a.formation.id, a.formation.title, {
+        image: a.formation.thumbnail,
+        price: a.formation.price,
+      });
+    if (a.kind === "event")
+      return buildObjectAffiliate("evenement", a.event.id, a.event.titre, {
+        image: a.event.thumbnail,
+        price: a.event.prix,
+      });
     return null;
   };
   /* Bascule l'interrupteur « Affiliation » de l'objet vendable attaché. */
@@ -2247,7 +2306,7 @@ export default function FeedPage() {
                         <AffiliateToggle
                           on={composerAttachment.affiliate}
                           onToggle={toggleComposerAffiliate}
-                          commission={composerAffiliateLink()?.commission ?? ""}
+                          link={composerAffiliateLink()}
                         />
                       )}
                     </div>

@@ -1,4 +1,4 @@
-import type { ReferralLink, ReferralTargetKind } from "./types";
+import type { ReferralLink, ReferralTargetKind, TransactionType } from "./types";
 
 /* Identifiant apporteur du user courant (mock — un seul apporteur dans la
    démo, cf. page /apporteurs). Partagé pour que les liens générés là-bas
@@ -101,7 +101,7 @@ export function buildObjectAffiliate(
   kind: ReferralTargetKind,
   objectId: string,
   title: string,
-  extra?: { image?: string; price?: number; currency?: string },
+  extra?: { image?: string; price?: number; currency?: string; transactionType?: TransactionType },
 ): ReferralLink {
   const c = AFFILIATE_CONFIG[kind];
   return {
@@ -121,6 +121,7 @@ export function buildObjectAffiliate(
       image: extra?.image,
       price: extra?.price,
       currency: extra?.currency,
+      transactionType: extra?.transactionType,
     },
   };
 }

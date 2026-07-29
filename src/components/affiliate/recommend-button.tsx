@@ -37,7 +37,7 @@ export function RecommendButton({
   const [copied, setCopied] = useState(false);
   const [existed, setExisted] = useState(false);
 
-  const link = buildObjectAffiliate(kind, id, title, { image, price, currency });
+  const link = buildObjectAffiliate(kind, id, title, { image, price, currency, transactionType });
   const earning = price != null
     ? estimateEarning(kind, price, { transactionType, currency: currency as Currency | undefined })
     : null;
