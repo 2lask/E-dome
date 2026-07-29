@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import Anthropic from "@anthropic-ai/sdk";
 import { isAiConfigured, runAssistant, type ChatMessage } from "@/lib/ai/provider";
 import { checkAndConsume } from "@/lib/ai/entitlements";
 import { contextBlock } from "@/lib/ai/prompt";
@@ -81,9 +82,24 @@ export async function POST(req: Request) {
     });
   } catch (e) {
     console.error("[ai/chat] erreur:", e);
-    return NextResponse.json(
-      { error: "ai_error", message: "L'assistant a rencontré une erreur. Réessayez dans un instant." },
-      { status: 502 },
-    );
+    // Surface une cause claire pour faciliter la configuration.
+    let message = "L'assistant a rencontré une erreur. Réessayez dans un instant.";
+    if (e instanceof Anthropic.APIError) {
+      const detail = String(e.message || "");
+      if (e.status === 401) {
+        message = "🔑 Clé API Anthropic invalide. Vérifiez la variable ANTHROPIC_API_KEY sur Vercel (aucun espace, clé complète).";
+      } else if (e.status === 400 && /credit|balance|quota/i.test(detail)) {
+        message = "💳 Crédits Anthropic insuffisants. Ajoutez des crédits sur console.anthropic.com → Billing, puis réessayez.";
+      } else if (e.status === 403) {
+        message = "⛔ Accès refusé par Anthropic (clé sans permission, ou crédits/facturation à activer).";
+      } else if (e.status === 404) {
+        message = "Le modèle configuré est indisponible pour ce compte. Essayez AI_MODEL=claude-haiku-4-5 sur Vercel.";
+      } else if (e.status === 429) {
+        message = "⏳ Trop de requêtes vers Anthropic. Patientez quelques secondes et réessayez.";
+      } else {
+        message = `Erreur IA (${e.status ?? "?"}) : ${detail.slice(0, 160)}`;
+      }
+    }
+    return NextResponse.json({ error: "ai_error", message }, { status: 502 });
   }
 }
