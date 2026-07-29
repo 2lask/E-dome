@@ -23,7 +23,7 @@ import type {
   PostAttachment, ReferralLink, Currency,
 } from "@/lib/types";
 import { DiscoverHub } from "@/components/layout/discover-hub";
-import { AffiliateHub } from "@/components/affiliate/affiliate-hub";
+import { RecommendedCarousel } from "@/components/feed/recommended-carousel";
 
 // ─── Users ─────────────────────────────────────────────────────────────────
 
@@ -2096,9 +2096,10 @@ export default function FeedPage() {
             <DiscoverHub />
           </div>
 
-          {/* Espace apporteur — gains + recommandations lucratives (façon Whop) */}
-          <div className="max-w-[760px] mt-3">
-            <AffiliateHub />
+          {/* Recommandations — carrousel automatique de biens de prestige
+              et d'événements premium (remplace l'ancienne barre de solde). */}
+          <div className="max-w-[760px] mt-4">
+            <RecommendedCarousel />
           </div>
 
           {/* Tabs sticky : style underline subtle (Whop). py-2 gap-5,
