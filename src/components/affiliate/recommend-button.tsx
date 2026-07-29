@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Link2, Check, Copy, ArrowRight, Zap, Coins } from "lucide-react";
+import { Link2, Check, Copy, ArrowRight, Coins } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { buildObjectAffiliate } from "@/lib/referral-links";
-import { estimateEarning, POINTS } from "@/lib/rewards";
+import { estimateEarning } from "@/lib/rewards";
 import type { ReferralTargetKind, TransactionType, Currency } from "@/lib/types";
 
 /* Bouton « Recommander & gagner » posé sur chaque annonce vendable.
@@ -32,11 +32,10 @@ export function RecommendButton({
   transactionType?: TransactionType;
   className?: string;
 }) {
-  const { addReferralLink, hasReferralLinkFor, addRewardPoints, formatPrice } = useApp();
+  const { addReferralLink, hasReferralLinkFor, formatPrice } = useApp();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [existed, setExisted] = useState(false);
-  const [awarded, setAwarded] = useState(false);
 
   const link = buildObjectAffiliate(kind, id, title, { image, price, currency });
   const earning = price != null
@@ -44,11 +43,8 @@ export function RecommendButton({
     : null;
 
   const handleClick = () => {
-    const already = hasReferralLinkFor(kind, id);
-    setExisted(already);
-    const created = addReferralLink(link);
-    if (created) { addRewardPoints(POINTS.createLink); setAwarded(true); }
-    else setAwarded(false);
+    setExisted(hasReferralLinkFor(kind, id));
+    addReferralLink(link);
     setOpen((o) => !o);
   };
 
@@ -90,11 +86,6 @@ export function RecommendButton({
             <p className="text-sm font-semibold text-[var(--foreground)] inline-flex items-center gap-1.5">
               <Check size={14} className="text-emerald-400" />
               {existed ? "Lien déjà dans vos liens" : "Lien d'affiliation créé"}
-              {awarded && (
-                <span className="inline-flex items-center gap-0.5 ml-1 text-[11px] font-bold text-[var(--primary)]">
-                  <Zap size={11} /> +{POINTS.createLink} pts
-                </span>
-              )}
             </p>
             <p className="text-xs text-[var(--text-muted)] mt-1">Commission : <span className="text-[var(--primary)] font-medium">{link.commission}</span></p>
 

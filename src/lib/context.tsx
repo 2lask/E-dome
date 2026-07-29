@@ -70,9 +70,6 @@ interface AppContextValue {
   /* Incrémente le compteur de clics du lien rattaché à cette annonce (clic
      depuis une redirection ?ref=). No-op si aucun lien ne correspond. */
   registerReferralClick: (target: { kind: string; id: string }) => void;
-  /* ── Récompenses (gamification apporteur) ── */
-  rewardPoints: number;
-  addRewardPoints: (n: number) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -96,7 +93,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [referralLinks, setReferralLinks] = useState<ReferralLink[]>(DEFAULT_REFERRAL_LINKS);
-  const [rewardPoints, setRewardPoints] = useState<number>(1450); // seed démo → palier Argent
 
   // Load from localStorage after mount
   useEffect(() => {
@@ -126,12 +122,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (storedReferralLinks) {
         const parsed = JSON.parse(storedReferralLinks);
         if (Array.isArray(parsed)) setReferralLinks(parsed);
-      }
-
-      const storedPoints = localStorage.getItem(`${STORAGE_PREFIX}rewardPoints`);
-      if (storedPoints != null) {
-        const n = Number(storedPoints);
-        if (Number.isFinite(n)) setRewardPoints(n);
       }
     } catch {
       // ignore
@@ -174,11 +164,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
     localStorage.setItem(`${STORAGE_PREFIX}referralLinks`, JSON.stringify(referralLinks));
   }, [referralLinks, mounted]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}rewardPoints`, String(rewardPoints));
-  }, [rewardPoints, mounted]);
 
   // ── Actions ─────────────────────────────────────────────────────────────
 
@@ -281,10 +266,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  const addRewardPoints = useCallback((n: number) => {
-    setRewardPoints((prev) => Math.max(0, prev + n));
-  }, []);
-
   const cartCount = useMemo(() => cart.reduce((s, c) => s + c.qty, 0), [cart]);
 
   const formatPrice = useCallback(
@@ -329,8 +310,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addReferralLink,
       hasReferralLinkFor,
       registerReferralClick,
-      rewardPoints,
-      addRewardPoints,
     }),
     [
       activeRole,
@@ -356,8 +335,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addReferralLink,
       hasReferralLinkFor,
       registerReferralClick,
-      rewardPoints,
-      addRewardPoints,
     ]
   );
 
