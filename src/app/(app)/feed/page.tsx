@@ -24,6 +24,7 @@ import type {
 } from "@/lib/types";
 import { DiscoverHub } from "@/components/layout/discover-hub";
 import { RecommendedCarousel } from "@/components/feed/recommended-carousel";
+import { MarketPulse } from "@/components/feed/market-pulse";
 
 // ─── Users ─────────────────────────────────────────────────────────────────
 
@@ -2526,6 +2527,9 @@ export default function FeedPage() {
               Voir plus →
             </Link>
           </div>
+
+          {/* Pouls du marché — fil « En direct », actualités/règles, pub. */}
+          <MarketPulse />
         </aside>
       </div>
 

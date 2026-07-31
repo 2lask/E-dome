@@ -582,6 +582,17 @@ body {
 .animate-fade-in { animation: fade-in 180ms ease-out; }
 .animate-pop { animation: pop 320ms cubic-bezier(0.16, 1, 0.3, 1); }
 
+/* Marquee vertical (fil d'actus « En direct ») : la liste est dupliquee
+   deux fois dans la piste ; on translate de -50% pour une boucle sans
+   couture. La duree est pilotee par --marquee-duration. Pause au survol
+   via le conteneur .marquee-y-mask. */
+@keyframes marquee-y {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+.animate-marquee-y { animation: marquee-y var(--marquee-duration, 30s) linear infinite; }
+.marquee-y-mask:hover .animate-marquee-y { animation-play-state: paused; }
+
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -608,6 +619,7 @@ body {
   .animate-scale-in,
   .animate-fade-in,
   .animate-pop,
+  .animate-marquee-y,
   .skeleton,
   .blur-up {
     animation: none !important;
