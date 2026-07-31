@@ -14,8 +14,7 @@ import {
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useLanguage, type Language } from "@/lib/i18n";
-import { roleLabels, roleBadgeColors } from "@/lib/types";
-import type { Currency, Role } from "@/lib/types";
+import type { Currency } from "@/lib/types";
 
 const CURRENCIES: { code: Currency; label: string }[] = [
   { code: "CHF", label: "CHF - Franc suisse" },
@@ -39,7 +38,7 @@ interface HeaderProps {
 
 export function Header({ onMenuToggle }: HeaderProps) {
   const router = useRouter();
-  const { activeRole, setActiveRole, availableRoles, currency, setCurrency } = useApp();
+  const { currency, setCurrency } = useApp();
   const { language, setLanguage, t } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,7 +46,6 @@ export function Header({ onMenuToggle }: HeaderProps) {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [showCurrency, setShowCurrency] = useState(false);
   const [showLanguage, setShowLanguage] = useState(false);
-  const [showRole, setShowRole] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
@@ -69,7 +67,6 @@ export function Header({ onMenuToggle }: HeaderProps) {
       if (!target.closest("[data-dropdown]")) {
         setShowCurrency(false);
         setShowLanguage(false);
-        setShowRole(false);
         setShowNotifications(false);
       }
       if (searchRef.current && !searchRef.current.contains(target as Node)) {
@@ -83,7 +80,6 @@ export function Header({ onMenuToggle }: HeaderProps) {
   const closeAllDropdowns = () => {
     setShowCurrency(false);
     setShowLanguage(false);
-    setShowRole(false);
     setShowNotifications(false);
   };
 
@@ -301,45 +297,6 @@ export function Header({ onMenuToggle }: HeaderProps) {
                   onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                 >
                   {c.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Role switcher */}
-        <div className="relative hidden md:block" data-dropdown>
-          <button
-            onClick={() => {
-              closeAllDropdowns();
-              setShowRole(!showRole);
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer ${roleBadgeColors[activeRole]}`}
-          >
-            <span>{roleLabels[activeRole]}</span>
-            <ChevronDown size={12} />
-          </button>
-          {showRole && (
-            <div style={dropdownStyle}>
-              {availableRoles.map((role: Role) => (
-                <button
-                  key={role}
-                  onClick={() => {
-                    setActiveRole(role);
-                    setShowRole(false);
-                  }}
-                  className="w-full text-left px-3 py-2 rounded-lg text-sm cursor-pointer flex items-center gap-2"
-                  style={{
-                    color: activeRole === role ? "var(--gold)" : "var(--text-secondary)",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                >
-                  <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full ${roleBadgeColors[role]}`}
-                  >
-                    {roleLabels[role]}
-                  </span>
                 </button>
               ))}
             </div>
