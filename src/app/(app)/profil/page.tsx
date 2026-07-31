@@ -1,25 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
-import { ProfileVitrine, type ProfileUser, type ProfileData } from "@/components/profile/profile-vitrine";
+import { useApp } from "@/lib/context";
+import { ProfileView } from "@/components/profile/profile-view";
+import type { ProfileData } from "@/components/profile/profile-showcase";
 
-/* /profil — mon profil. Consomme <ProfileVitrine> avec isOwn=true.
-   Données fictives partagées avec /profil/[id] pour cohérence visuelle. */
+/* /profil — mon profil. Identité + sections « LinkedIn » viennent du contexte
+   (profile, persisté et éditable). La vitrine (biens/formations/avis…) reste
+   sur des données de démo pour l'instant. */
 
-const ME: ProfileUser = {
-  id: "me",
-  firstName: "Léo",
-  lastName: "Martin",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=240",
-  city: "Lausanne",
-  country: "Suisse",
-  roles: ["Hôte", "Formateur", "Apporteur", "Investisseur"],
-  bio: "Passionné d'immobilier depuis 15 ans. Hôte actif en Suisse romande, formateur certifié USPI et apporteur d'affaires.",
-  isMembreFondateur: true,
-  stats: { followers: 2340, following: 812, rating: 4.8, reviewsCount: 56 },
-};
-
-const DATA: ProfileData = {
+const SHOWCASE: ProfileData = {
   publications: [
     { id: "pub1", src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600", caption: "Visite du jour : villa contemporaine à Genolier." },
     { id: "pub2", src: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=600", caption: "Chalet Verbier sous la première neige." },
@@ -68,52 +57,6 @@ const DATA: ProfileData = {
 };
 
 export default function ProfilPage() {
-  const [showEditModal, setShowEditModal] = useState(false);
-
-  return (
-    <>
-      <ProfileVitrine user={ME} data={DATA} isOwn onEdit={() => setShowEditModal(true)} />
-
-      {showEditModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
-          style={{ background: "rgba(0,0,0,0.5)" }}
-          onClick={() => setShowEditModal(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-2xl p-6 animate-scale-in"
-            style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}
-          >
-            <h3 className="text-lg font-semibold mb-4" style={{ color: "var(--foreground)" }}>
-              Modifier le profil
-            </h3>
-            <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
-              Formulaire d&apos;édition (maquette).
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="flex-1 py-2.5 text-sm rounded-xl transition-colors"
-                style={{
-                  border: "1px solid var(--card-border)",
-                  color: "var(--text-secondary)",
-                  background: "var(--card)",
-                }}
-              >
-                Annuler
-              </button>
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="flex-1 py-2.5 text-sm font-medium rounded-xl transition-colors"
-                style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-              >
-                Sauvegarder
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
+  const { profile } = useApp();
+  return <ProfileView profile={profile} isOwn showcase={SHOWCASE} />;
 }

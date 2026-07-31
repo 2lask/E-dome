@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import type { Role, Currency, ReferralLink } from "./types";
+import type { Profile } from "./profile-types";
+import { DEFAULT_PROFILE } from "./profile-data";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
 
 // ─── Exchange rates (base CHF = 1) ──────────────────────────────────────────
@@ -70,6 +72,14 @@ interface AppContextValue {
   /* Incrémente le compteur de clics du lien rattaché à cette annonce (clic
      depuis une redirection ?ref=). No-op si aucun lien ne correspond. */
   registerReferralClick: (target: { kind: string; id: string }) => void;
+  /* ── Profil (source de vérité unique, persisté en localStorage) ──
+     Partagé entre /profil, l'onboarding et les paramètres. Les modales
+     d'édition calculent le nouvel état d'une section et appellent
+     updateProfile({ experiences: [...] }) — API générique et évolutive.
+     Interface prête à être branchée sur Supabase sans toucher à l'UI. */
+  profile: Profile;
+  updateProfile: (patch: Partial<Profile>) => void;
+  resetProfile: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -93,6 +103,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [referralLinks, setReferralLinks] = useState<ReferralLink[]>(DEFAULT_REFERRAL_LINKS);
+  const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
 
   // Load from localStorage after mount
   useEffect(() => {
@@ -122,6 +133,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (storedReferralLinks) {
         const parsed = JSON.parse(storedReferralLinks);
         if (Array.isArray(parsed)) setReferralLinks(parsed);
+      }
+
+      const storedProfile = localStorage.getItem(`${STORAGE_PREFIX}profile`);
+      if (storedProfile) {
+        const parsed = JSON.parse(storedProfile) as Partial<Profile>;
+        /* Merge sur DEFAULT_PROFILE pour tolérer l'évolution du schéma :
+           un profil stocké avant l'ajout d'un champ reste valide. */
+        setProfile({
+          ...DEFAULT_PROFILE,
+          ...parsed,
+          location: { ...DEFAULT_PROFILE.location, ...(parsed.location ?? {}) },
+          visibility: { ...DEFAULT_PROFILE.visibility, ...(parsed.visibility ?? {}) },
+          meta: { ...DEFAULT_PROFILE.meta, ...(parsed.meta ?? {}) },
+          stats: { ...DEFAULT_PROFILE.stats, ...(parsed.stats ?? {}) },
+        });
       }
     } catch {
       // ignore
@@ -164,6 +190,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
     localStorage.setItem(`${STORAGE_PREFIX}referralLinks`, JSON.stringify(referralLinks));
   }, [referralLinks, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem(`${STORAGE_PREFIX}profile`, JSON.stringify(profile));
+  }, [profile, mounted]);
 
   // ── Actions ─────────────────────────────────────────────────────────────
 
@@ -266,6 +297,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const updateProfile = useCallback((patch: Partial<Profile>) => {
+    setProfile((prev) => ({ ...prev, ...patch }));
+  }, []);
+
+  const resetProfile = useCallback(() => setProfile(DEFAULT_PROFILE), []);
+
   const cartCount = useMemo(() => cart.reduce((s, c) => s + c.qty, 0), [cart]);
 
   const formatPrice = useCallback(
@@ -310,6 +347,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addReferralLink,
       hasReferralLinkFor,
       registerReferralClick,
+      profile,
+      updateProfile,
+      resetProfile,
     }),
     [
       activeRole,
@@ -335,6 +375,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addReferralLink,
       hasReferralLinkFor,
       registerReferralClick,
+      profile,
+      updateProfile,
+      resetProfile,
     ]
   );
 

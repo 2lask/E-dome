@@ -1,12 +1,24 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
-import { X } from "lucide-react";
+import React, { useState, useCallback, useRef } from "react";
+import Link from "next/link";
+import { X, Camera, ArrowRight } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { roleLabels } from "@/lib/types";
 import type { Role } from "@/lib/types";
+import type { ProfileVisibility, ToggleableSection } from "@/lib/profile-types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import { LogoutButton } from "@/components/auth/logout-button";
+
+const SECTION_LABELS: Record<ToggleableSection, string> = {
+  about: "À propos",
+  experiences: "Expériences",
+  education: "Formation",
+  skills: "Compétences",
+  languages: "Langues",
+  certifications: "Certifications",
+  links: "Liens",
+};
 
 // ─── Alert types ────────────────────────────────────────────────────────────
 
@@ -39,27 +51,63 @@ const ALL_ROLES: Role[] = [
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function ParametresPage() {
-  const { formatPrice, availableRoles, toggleAvailableRole } = useApp();
+  const { formatPrice, availableRoles, toggleAvailableRole, profile, updateProfile } = useApp();
   const [section, setSection] = useState<Section>("general");
   const [toast, setToast] = useState<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
   }, []);
 
-  // General
+  // General — seedé depuis le profil (source de vérité). Enregistrer écrit
+  // dans le contexte, qui persiste et alimente /profil.
   const [genForm, setGenForm] = useState({
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-    firstName: "Léo",
-    lastName: "Martin",
-    email: "leo@e-dome.ch",
-    phone: "+41 79 123 45 67",
-    country: "Suisse",
-    city: "Lausanne",
-    bio: "Passionné d'immobilier.",
+    avatar: profile.avatar,
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    email: profile.email,
+    phone: profile.phone ?? "",
+    country: profile.location.country,
+    city: profile.location.city,
+    headline: profile.headline,
+    bio: profile.about,
     language: "fr",
   });
+
+  const saveGeneral = () => {
+    updateProfile({
+      avatar: genForm.avatar,
+      firstName: genForm.firstName.trim(),
+      lastName: genForm.lastName.trim(),
+      email: genForm.email.trim(),
+      phone: genForm.phone.trim() || undefined,
+      headline: genForm.headline.trim(),
+      about: genForm.bio,
+      location: { city: genForm.city.trim(), country: genForm.country.trim() },
+    });
+    showToast("Profil sauvegardé !");
+  };
+
+  const onAvatarFile = (file?: File) => {
+    if (!file || !file.type.startsWith("image/") || file.size > 3 * 1024 * 1024) return;
+    const reader = new FileReader();
+    reader.onload = () => setGenForm((f) => ({ ...f, avatar: String(reader.result) }));
+    reader.readAsDataURL(file);
+  };
+
+  // Confidentialité — pilotée par profile.visibility (persisté).
+  const setVis = (patch: Partial<ProfileVisibility>) =>
+    updateProfile({ visibility: { ...profile.visibility, ...patch } });
+  const toggleSection = (key: ToggleableSection) => {
+    const hidden = profile.visibility.hiddenSections.includes(key);
+    setVis({
+      hiddenSections: hidden
+        ? profile.visibility.hiddenSections.filter((s) => s !== key)
+        : [...profile.visibility.hiddenSections, key],
+    });
+  };
 
   // Security
   const [passwords, setPasswords] = useState({ current: "", newPwd: "", confirm: "" });
@@ -91,13 +139,7 @@ export default function ParametresPage() {
     systeme: true,
   });
 
-  // Privacy
-  const [privacy, setPrivacy] = useState({
-    profilePublic: true,
-    showEmail: false,
-    showPhone: false,
-    showStats: true,
-  });
+  // Privacy — cf. profile.visibility (setVis / toggleSection).
   const [showGDPR, setShowGDPR] = useState(false);
 
   // Property alerts
@@ -178,10 +220,25 @@ export default function ParametresPage() {
 
               <div className="flex items-center gap-4">
                 <img src={genForm.avatar} alt="" className="w-16 h-16 rounded-full object-cover" />
-                <button className="px-4 py-2 text-sm rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]">
-                  Changer la photo
+                <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => onAvatarFile(e.target.files?.[0])} />
+                <button
+                  onClick={() => avatarInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+                >
+                  <Camera size={15} /> Changer la photo
                 </button>
               </div>
+
+              <Link
+                href="/profil"
+                className="flex items-center justify-between gap-3 p-3 rounded-xl border border-[var(--card-border)] hover:border-[var(--primary)]/50 hover:bg-[var(--hover-bg)] transition-colors"
+              >
+                <div>
+                  <p className="text-sm font-medium text-[var(--foreground)]">Profil complet</p>
+                  <p className="text-xs text-[var(--text-muted)]">Expériences, formation, compétences, liens…</p>
+                </div>
+                <ArrowRight size={16} className="text-[var(--text-muted)]" />
+              </Link>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
@@ -204,11 +261,22 @@ export default function ParametresPage() {
               </div>
 
               <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Bio</label>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">Titre professionnel</label>
+                <input
+                  value={genForm.headline}
+                  onChange={(e) => setGenForm({ ...genForm, headline: e.target.value })}
+                  maxLength={160}
+                  placeholder="Ex : Investisseur & formateur immobilier"
+                  className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">À propos</label>
                 <textarea
                   value={genForm.bio}
                   onChange={(e) => setGenForm({ ...genForm, bio: e.target.value })}
-                  rows={3}
+                  rows={4}
                   className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] resize-none"
                 />
               </div>
@@ -227,8 +295,8 @@ export default function ParametresPage() {
               </div>
 
               <button
-                onClick={() => showToast("Profil sauvegardé !")}
-                className="px-6 py-2.5 text-sm rounded-xl bg-[var(--primary)] text-white hover:bg-[var(--primary)] transition-colors"
+                onClick={saveGeneral}
+                className="px-6 py-2.5 text-sm rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity"
               >
                 Sauvegarder
               </button>
@@ -491,26 +559,46 @@ export default function ParametresPage() {
               <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6">
                 <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">Confidentialité</h2>
                 <div className="space-y-3">
-                  {[
-                    { key: "profilePublic", label: "Profil public" },
+                  {([
+                    { key: "isPublic", label: "Profil public" },
                     { key: "showEmail", label: "Afficher l'email" },
                     { key: "showPhone", label: "Afficher le téléphone" },
                     { key: "showStats", label: "Afficher les statistiques" },
-                  ].map((item) => (
-                    <div key={item.key} className="flex items-center justify-between py-2">
-                      <span className="text-sm text-[var(--foreground)]">{item.label}</span>
-                      <button
-                        onClick={() => setPrivacy({ ...privacy, [item.key]: !privacy[item.key as keyof typeof privacy] })}
-                        className={`w-12 h-6 rounded-full transition-colors relative ${
-                          privacy[item.key as keyof typeof privacy] ? "bg-[var(--primary)]" : "bg-[var(--input-bg)]"
-                        }`}
-                      >
-                        <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform ${
-                          privacy[item.key as keyof typeof privacy] ? "translate-x-6" : "translate-x-0.5"
-                        }`} />
-                      </button>
-                    </div>
-                  ))}
+                  ] as { key: keyof ProfileVisibility; label: string }[]).map((item) => {
+                    const on = Boolean(profile.visibility[item.key]);
+                    return (
+                      <div key={item.key} className="flex items-center justify-between py-2">
+                        <span className="text-sm text-[var(--foreground)]">{item.label}</span>
+                        <button
+                          onClick={() => setVis({ [item.key]: !on } as Partial<ProfileVisibility>)}
+                          className={`w-12 h-6 rounded-full transition-colors relative ${on ? "bg-[var(--primary)]" : "bg-[var(--input-bg)]"}`}
+                        >
+                          <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform ${on ? "translate-x-6" : "translate-x-0.5"}`} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6">
+                <h2 className="text-lg font-semibold text-[var(--foreground)] mb-1">Visibilité des sections</h2>
+                <p className="text-sm text-[var(--text-muted)] mb-4">Choisissez les sections visibles sur votre profil public.</p>
+                <div className="space-y-3">
+                  {(Object.keys(SECTION_LABELS) as ToggleableSection[]).map((key) => {
+                    const visible = !profile.visibility.hiddenSections.includes(key);
+                    return (
+                      <div key={key} className="flex items-center justify-between py-2">
+                        <span className="text-sm text-[var(--foreground)]">{SECTION_LABELS[key]}</span>
+                        <button
+                          onClick={() => toggleSection(key)}
+                          className={`w-12 h-6 rounded-full transition-colors relative ${visible ? "bg-[var(--primary)]" : "bg-[var(--input-bg)]"}`}
+                        >
+                          <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform ${visible ? "translate-x-6" : "translate-x-0.5"}`} />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
