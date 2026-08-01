@@ -168,6 +168,19 @@ export interface Profile {
   };
 }
 
+// ─── Résumé d'une personne (listes réseau / contacts) ────────────────────
+
+export interface PersonSummary {
+  id: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  headline: string;
+  city: string;
+  country: string;
+  roles: Role[];
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────
 
 /** Identifiant court et unique pour un élément de section (démo). */

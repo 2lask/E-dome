@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { X, Camera, ArrowRight } from "lucide-react";
 import { useApp } from "@/lib/context";
@@ -59,6 +59,12 @@ export default function ParametresPage() {
   const showToast = useCallback((msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
+  }, []);
+
+  // Ouvre la bonne section depuis un lien profond (?section=confidentialite…).
+  useEffect(() => {
+    const s = new URLSearchParams(window.location.search).get("section");
+    if (s && SECTIONS.some((x) => x.key === s)) setSection(s as Section);
   }, []);
 
   // General — seedé depuis le profil (source de vérité). Enregistrer écrit

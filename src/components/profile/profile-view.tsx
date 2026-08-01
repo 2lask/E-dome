@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Profile, ToggleableSection } from "@/lib/profile-types";
 import { ProfileHeader } from "./profile-header";
 import { ProfileCompletion } from "./profile-completion";
+import { PrivateSpace } from "./private-space";
 import { AboutSection } from "./sections/about-section";
 import { ExperienceSection } from "./sections/experience-section";
 import { EducationSection } from "./sections/education-section";
@@ -59,6 +60,7 @@ export function ProfileView({
       />
 
       {isOwn && <ProfileCompletion profile={profile} open={open} />}
+      {isOwn && <PrivateSpace open={open} />}
 
       {visible("about", profile.about.trim().length > 0) && (
         <AboutSection profile={profile} isOwn={isOwn} open={open} />
@@ -78,7 +80,7 @@ export function ProfileView({
 
       {/* Vitrine commerciale (toujours visible) */}
       <div className="pt-2">
-        <ProfileShowcase data={showcase} rating={profile.stats.rating} />
+        <ProfileShowcase data={showcase} rating={profile.stats.rating} isOwn={isOwn} />
       </div>
 
       {/* Modales d'édition (owner) */}

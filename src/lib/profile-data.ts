@@ -1,4 +1,4 @@
-import type { Profile, ProfileVisibility } from "./profile-types";
+import type { Profile, ProfileVisibility, PersonSummary } from "./profile-types";
 
 /* ─── Données de profil (démo) ────────────────────────────────────────────
    - DEFAULT_PROFILE : mon profil (Léo), source initiale du contexte, ensuite
@@ -231,6 +231,78 @@ const PUBLIC_SEEDS: Record<string, PublicSeed> = {
     stats: { followers: 280, following: 150, rating: 4.5, reviewsCount: 22 },
     skills: ["Vente", "Gestion locative", "Estimation", "Conseil"],
   },
+  "user-007": {
+    firstName: "Camille",
+    lastName: "Rochat",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=240",
+    headline: "Investisseuse · Rendement locatif en Suisse romande",
+    city: "Fribourg",
+    country: "Suisse",
+    roles: ["investisseur"],
+    about: "Investisseuse immobilière axée rendement et diversification. Adepte du locatif longue durée et de la colocation premium.",
+    stats: { followers: 410, following: 190, rating: 4.7, reviewsCount: 18 },
+    skills: ["Investissement locatif", "Colocation", "Financement"],
+  },
+  "user-008": {
+    firstName: "Nicolas",
+    lastName: "Berger",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240",
+    headline: "Promoteur · Programmes neufs certifiés Minergie",
+    city: "Zurich",
+    country: "Suisse",
+    roles: ["promoteur"],
+    about: "Promoteur spécialisé dans les programmes résidentiels neufs à haute performance énergétique.",
+    stats: { followers: 1500, following: 220, rating: 4.6, reviewsCount: 31 },
+    skills: ["Promotion immobilière", "Minergie", "Développement foncier"],
+  },
+  "user-009": {
+    firstName: "Fatima",
+    lastName: "Zahra",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240",
+    headline: "Agence · Immobilier résidentiel à Casablanca",
+    city: "Casablanca",
+    country: "Maroc",
+    roles: ["agence"],
+    about: "Directrice d'agence à Casablanca. Vente et location de biens résidentiels et bureaux.",
+    stats: { followers: 2100, following: 340, rating: 4.8, reviewsCount: 76 },
+    skills: ["Vente", "Location", "Bureaux"],
+  },
+  "user-010": {
+    firstName: "David",
+    lastName: "Meier",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=240",
+    headline: "Courtier · Financement hypothécaire & fiscalité",
+    city: "Zoug",
+    country: "Suisse",
+    roles: ["courtier"],
+    about: "Courtier en financement. J'optimise le montage hypothécaire et la fiscalité de vos acquisitions.",
+    stats: { followers: 720, following: 160, rating: 4.9, reviewsCount: 44 },
+    skills: ["Hypothèque", "Fiscalité", "Négociation"],
+  },
+  "user-011": {
+    firstName: "Elena",
+    lastName: "Rossi",
+    avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=240",
+    headline: "Formatrice · Home staging & valorisation",
+    city: "Lugano",
+    country: "Suisse",
+    roles: ["formateur"],
+    about: "Formatrice en home staging et valorisation de biens pour accélérer la vente.",
+    stats: { followers: 980, following: 280, rating: 4.8, reviewsCount: 52 },
+    skills: ["Home staging", "Décoration", "Photographie"],
+  },
+  "user-012": {
+    firstName: "Omar",
+    lastName: "Haddad",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=240",
+    headline: "Apporteur d'affaires · Off-market Émirats",
+    city: "Dubaï",
+    country: "EAU",
+    roles: ["apporteur"],
+    about: "Apporteur d'affaires spécialisé off-market à Dubaï et Abu Dhabi pour investisseurs internationaux.",
+    stats: { followers: 3400, following: 410, rating: 4.9, reviewsCount: 61 },
+    skills: ["Off-market", "Investissement international", "Négociation"],
+  },
 };
 
 const GENERIC_BANNER = "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1200&h=400&fit=crop";
@@ -265,3 +337,21 @@ export function getMockProfile(id: string): Profile | null {
 }
 
 export const PUBLIC_PROFILE_IDS = Object.keys(PUBLIC_SEEDS);
+
+/* Liste des personnes (hors moi) pour les pages réseau / contacts. Source
+   unique : dérivée des seeds publics, donc chaque personne ouvre une vraie
+   fiche /profil/[id]. */
+export function listPeople(): PersonSummary[] {
+  return Object.entries(PUBLIC_SEEDS)
+    .filter(([id]) => id !== "user-001")
+    .map(([id, s]) => ({
+      id,
+      firstName: s.firstName,
+      lastName: s.lastName,
+      avatar: s.avatar,
+      headline: s.headline,
+      city: s.city,
+      country: s.country,
+      roles: s.roles,
+    }));
+}

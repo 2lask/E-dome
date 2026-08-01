@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   Building2, ShoppingBag, GraduationCap, Video, Briefcase, Star, Newspaper,
+  Plus, ArrowRight,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 
-/* Vitrine commerciale du profil : onglets Publications / Biens / Produits /
-   Formations / Lives / Services / Avis. Extrait de l'ancien ProfileVitrine
-   pour être composé sous les sections « LinkedIn » du profil. */
+/* Vitrine du profil : onglets Publications / Biens / Produits / Formations /
+   Lives / Services / Avis. Chaque onglet affiche un compteur, une barre
+   d'actions (Voir tout + action owner) et un état vide avec CTA. */
 
 // ─── Types (données de vitrine) ───────────────────────────────────────────
 
@@ -44,6 +45,17 @@ const TABS: { key: TabKey; label: string; icon: React.ComponentType<{ size?: num
   { key: "avis", label: "Avis", icon: Star },
 ];
 
+// Liens « Voir tout » (page globale) + action de création (owner) par onglet.
+const TAB_LINKS: Record<TabKey, { seeAll?: string; add?: { href: string; label: string }; empty: string }> = {
+  publications: { seeAll: "/feed", add: { href: "/creer-post", label: "Publier" }, empty: "Aucune publication" },
+  biens: { seeAll: "/explorer", add: { href: "/publier", label: "Publier un bien" }, empty: "Aucun bien publié" },
+  produits: { seeAll: "/boutique", add: { href: "/boutique", label: "Gérer la boutique" }, empty: "Aucun produit en vente" },
+  formations: { seeAll: "/formations", add: { href: "/formations/creer", label: "Créer une formation" }, empty: "Aucune formation" },
+  lives: { seeAll: "/live", add: { href: "/live", label: "Programmer un live" }, empty: "Aucun live programmé" },
+  services: { seeAll: "/services", add: { href: "/services/proposer", label: "Proposer un service" }, empty: "Aucun service" },
+  avis: { empty: "Aucun avis" },
+};
+
 function CardImage({ src, alt = "", aspect = "4/3" }: { src: string; alt?: string; aspect?: string }) {
   return (
     <div className="overflow-hidden bg-[var(--hover-bg)]" style={{ aspectRatio: aspect }}>
@@ -58,22 +70,66 @@ function Card({ children, href }: { children: React.ReactNode; href?: string }) 
   return <div className={cls}>{children}</div>;
 }
 
-function EmptyState({ label }: { label: string }) {
-  return <div className="py-16 text-center text-sm text-[var(--text-muted)]">{label}</div>;
+function EmptyState({ label, isOwn, add }: { label: string; isOwn: boolean; add?: { href: string; label: string } }) {
+  return (
+    <div className="py-16 text-center">
+      <p className="text-sm text-[var(--text-muted)]">{label}</p>
+      {isOwn && add && (
+        <Link
+          href={add.href}
+          className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          <Plus size={15} /> {add.label}
+        </Link>
+      )}
+    </div>
+  );
 }
 
-export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: number }) {
+function Toolbar({ tab, isOwn }: { tab: TabKey; isOwn: boolean }) {
+  const meta = TAB_LINKS[tab];
+  if (!meta.seeAll && !(isOwn && meta.add)) return null;
+  return (
+    <div className="flex items-center justify-end gap-2 mb-3">
+      {isOwn && meta.add && (
+        <Link
+          href={meta.add.href}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--card-border)] text-sm font-medium text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
+        >
+          <Plus size={15} /> {meta.add.label}
+        </Link>
+      )}
+      {meta.seeAll && (
+        <Link
+          href={meta.seeAll}
+          className="inline-flex items-center gap-1 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
+        >
+          Voir tout <ArrowRight size={14} />
+        </Link>
+      )}
+    </div>
+  );
+}
+
+export function ProfileShowcase({ data, rating, isOwn }: { data: ProfileData; rating: number; isOwn: boolean }) {
   const { formatPrice } = useApp();
   const [tab, setTab] = useState<TabKey>("publications");
   const totalAvis = data.ratingBreakdown.reduce((s, r) => s + r.count, 0);
 
+  const counts: Record<TabKey, number> = {
+    publications: data.publications.length,
+    biens: data.biens.length,
+    produits: data.produits.length,
+    formations: data.formations.length,
+    lives: data.lives.length,
+    services: data.services.length,
+    avis: data.avis.length,
+  };
+
   return (
     <div>
-      {/* Onglets */}
-      <nav
-        className="sticky top-16 z-20 mb-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)]"
-        aria-label="Onglets profil"
-      >
+      {/* Onglets + compteurs */}
+      <nav className="sticky top-16 z-20 mb-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)]" aria-label="Onglets profil">
         <div className="overflow-x-auto no-scrollbar">
           <ul className="flex items-center gap-1 px-2 min-w-max">
             {TABS.map((t) => {
@@ -88,6 +144,9 @@ export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: n
                   >
                     <Icon size={16} />
                     <span>{t.label}</span>
+                    {counts[t.key] > 0 && (
+                      <span className="text-xs tabular-nums text-[var(--text-muted)]">{counts[t.key]}</span>
+                    )}
                     {active && <span aria-hidden className="absolute left-3 right-3 -bottom-px h-[2px] rounded-full bg-[var(--primary)]" />}
                   </button>
                 </li>
@@ -98,16 +157,16 @@ export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: n
       </nav>
 
       <div key={tab} className="animate-fade-in">
+        {tab !== "avis" && <Toolbar tab={tab} isOwn={isOwn} />}
+
         {tab === "publications" && (
-          data.publications.length === 0 ? <EmptyState label="Aucune publication" /> : (
+          data.publications.length === 0 ? <EmptyState label={TAB_LINKS.publications.empty} isOwn={isOwn} add={TAB_LINKS.publications.add} /> : (
             <ul className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {data.publications.map((p) => (
                 <li key={p.id} className="group">
                   <Card>
                     <CardImage src={p.src} aspect="1/1" />
-                    <div className="p-3">
-                      <p className="text-xs line-clamp-2 text-[var(--text-secondary)]">{p.caption}</p>
-                    </div>
+                    <div className="p-3"><p className="text-xs line-clamp-2 text-[var(--text-secondary)]">{p.caption}</p></div>
                   </Card>
                 </li>
               ))}
@@ -116,7 +175,7 @@ export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: n
         )}
 
         {tab === "biens" && (
-          data.biens.length === 0 ? <EmptyState label="Aucun bien publié" /> : (
+          data.biens.length === 0 ? <EmptyState label={TAB_LINKS.biens.empty} isOwn={isOwn} add={TAB_LINKS.biens.add} /> : (
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {data.biens.map((b) => (
                 <li key={b.id}>
@@ -125,9 +184,7 @@ export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: n
                     <div className="p-4">
                       <h3 className="text-sm font-semibold leading-tight line-clamp-1 text-[var(--foreground)]">{b.title}</h3>
                       <p className="text-xs mt-1 text-[var(--text-muted)]">{b.location}</p>
-                      <p className="text-sm font-semibold mt-2 tabular-nums text-[var(--primary)]">
-                        {formatPrice(b.price, b.currency as "CHF")}{b.unit}
-                      </p>
+                      <p className="text-sm font-semibold mt-2 tabular-nums text-[var(--primary)]">{formatPrice(b.price, b.currency as "CHF")}{b.unit}</p>
                     </div>
                   </Card>
                 </li>
@@ -137,7 +194,7 @@ export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: n
         )}
 
         {tab === "produits" && (
-          data.produits.length === 0 ? <EmptyState label="Aucun produit en vente" /> : (
+          data.produits.length === 0 ? <EmptyState label={TAB_LINKS.produits.empty} isOwn={isOwn} add={TAB_LINKS.produits.add} /> : (
             <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {data.produits.map((p) => (
                 <li key={p.id}>
@@ -158,7 +215,7 @@ export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: n
         )}
 
         {tab === "formations" && (
-          data.formations.length === 0 ? <EmptyState label="Aucune formation" /> : (
+          data.formations.length === 0 ? <EmptyState label={TAB_LINKS.formations.empty} isOwn={isOwn} add={TAB_LINKS.formations.add} /> : (
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {data.formations.map((f) => (
                 <li key={f.id}>
@@ -183,17 +240,14 @@ export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: n
         )}
 
         {tab === "lives" && (
-          data.lives.length === 0 ? <EmptyState label="Aucun live programmé" /> : (
+          data.lives.length === 0 ? <EmptyState label={TAB_LINKS.lives.empty} isOwn={isOwn} add={TAB_LINKS.lives.add} /> : (
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {data.lives.map((l) => (
                 <li key={l.id}>
                   <Card href="/live">
                     <div className="relative">
                       <CardImage src={l.cover} aspect="16/9" />
-                      <span
-                        className="absolute top-2 left-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-semibold text-white"
-                        style={{ background: l.status === "scheduled" ? "var(--primary)" : "rgba(15,15,15,0.85)" }}
-                      >
+                      <span className="absolute top-2 left-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-semibold text-white" style={{ background: l.status === "scheduled" ? "var(--primary)" : "rgba(15,15,15,0.85)" }}>
                         <Video size={11} />
                         {l.status === "scheduled" ? "Programmé" : "Replay"}
                       </span>
@@ -212,7 +266,7 @@ export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: n
         )}
 
         {tab === "services" && (
-          data.services.length === 0 ? <EmptyState label="Aucun service" /> : (
+          data.services.length === 0 ? <EmptyState label={TAB_LINKS.services.empty} isOwn={isOwn} add={TAB_LINKS.services.add} /> : (
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {data.services.map((s) => (
                 <li key={s.id}>
@@ -230,7 +284,7 @@ export function ProfileShowcase({ data, rating }: { data: ProfileData; rating: n
         )}
 
         {tab === "avis" && (
-          data.avis.length === 0 ? <EmptyState label="Aucun avis" /> : (
+          data.avis.length === 0 ? <EmptyState label={TAB_LINKS.avis.empty} isOwn={isOwn} /> : (
             <div className="space-y-4">
               <div className="rounded-2xl p-5 bg-[var(--card)] border border-[var(--card-border)]">
                 <div className="flex items-center gap-6">

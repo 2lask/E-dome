@@ -239,8 +239,8 @@ export function ProfileHeader({
           {/* Stats */}
           {showStats && (
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
-              <Stat value={formatCount(profile.stats.followers)} label="abonnés" />
-              <Stat value={formatCount(profile.stats.following)} label="suivis" />
+              <Stat value={formatCount(profile.stats.followers)} label="abonnés" href={isOwn ? "/reseau" : undefined} />
+              <Stat value={formatCount(profile.stats.following)} label="suivis" href={isOwn ? "/reseau" : undefined} />
               <div className="text-sm flex items-center gap-1.5 text-[var(--text-secondary)]">
                 <BadgeCheck size={14} className="text-[var(--success)]" />
                 <span className="font-semibold text-[var(--foreground)] tabular-nums">{profile.stats.rating}</span>
@@ -254,12 +254,20 @@ export function ProfileHeader({
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="text-sm text-[var(--text-secondary)]">
+function Stat({ value, label, href }: { value: string; label: string; href?: string }) {
+  const content = (
+    <>
       <span className="font-semibold text-[var(--foreground)] tabular-nums">{value}</span> {label}
-    </div>
+    </>
   );
+  if (href) {
+    return (
+      <Link href={href} className="text-sm text-[var(--text-secondary)] hover:text-[var(--foreground)] transition-colors">
+        {content}
+      </Link>
+    );
+  }
+  return <div className="text-sm text-[var(--text-secondary)]">{content}</div>;
 }
 
 function MenuLink({
