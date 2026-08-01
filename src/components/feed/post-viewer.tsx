@@ -6,6 +6,7 @@ import {
   Heart, MessageCircle, Send, Bookmark, Share2, X, ChevronLeft, ChevronRight,
   Volume2, VolumeX, Play, MapPin, Building2, GraduationCap, Coins, ArrowRight,
   MoreHorizontal, Pin, PinOff, Trash2, Copy, Flag, Calendar, BarChart3, TrendingUp, TrendingDown,
+  Repeat2, Eye,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
@@ -286,8 +287,81 @@ export function PostViewer({
     setDraft("");
   };
 
-  const firstIsVideo = post.media.length > 0 && isVideo(post.media[0], 0, post);
+  const hasMedia = post.media.length > 0;
+  const firstIsVideo = hasMedia && isVideo(post.media[0], 0, post);
   const author = post.author;
+  const handle = author.firstName.toLowerCase();
+
+  // Sondage avec le vote local appliqué (barres + option choisie).
+  const displayPoll = post.poll
+    ? (pollChoice[id]
+        ? { ...post.poll, userVote: pollChoice[id], totalVotes: post.poll.totalVotes + 1, options: post.poll.options.map((o) => (o.id === pollChoice[id] ? { ...o, votes: o.votes + 1 } : o)) }
+        : post.poll)
+    : null;
+
+  // ── Blocs réutilisés par les deux mises en page ──
+  const moreMenu = (
+    <div className="relative shrink-0">
+      <button onClick={() => setMenuOpen((v) => !v)} aria-label="Options" className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+        <MoreHorizontal size={18} />
+      </button>
+      {menuOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} aria-hidden />
+          <div role="menu" className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-lg py-1.5 z-50 animate-fade-in">
+            {isOwn ? (
+              <>
+                <MenuItem icon={isPinned(id) ? PinOff : Pin} label={isPinned(id) ? "Désépingler" : "Épingler en haut"} onClick={doPin} />
+                <MenuItem icon={Share2} label="Partager" onClick={sharePost} />
+                <MenuItem icon={Copy} label="Copier le lien" onClick={copyLink} />
+                <div className="my-1 h-px bg-[var(--card-border)]" />
+                <MenuItem icon={Trash2} label="Supprimer" danger onClick={doDelete} />
+              </>
+            ) : (
+              <>
+                <MenuItem icon={Share2} label="Partager" onClick={sharePost} />
+                <MenuItem icon={Copy} label="Copier le lien" onClick={copyLink} />
+                <div className="my-1 h-px bg-[var(--card-border)]" />
+                <MenuItem icon={Flag} label="Signaler" danger onClick={() => { setShowReport(true); setMenuOpen(false); }} />
+              </>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+
+  const attachments = (
+    <>
+      {post.property && <AttachedProperty property={post.property} />}
+      {post.formation && <AttachedFormation formation={post.formation} />}
+      {post.affiliate && <AffiliateBadge link={post.affiliate} />}
+      {displayPoll && <PollBlock poll={displayPoll} onVote={(o) => setPollChoice((m) => ({ ...m, [id]: o }))} />}
+      {post.attachment?.type === "event" && <EventCard event={post.attachment.event} />}
+      {post.attachment?.type === "analytics" && <AnalyticsCard data={post.attachment.data} />}
+    </>
+  );
+
+  const commentsBlock =
+    comments.length > 0 ? (
+      <div className="space-y-3">{comments.map((c) => <CommentRow key={c.id} c={c} />)}</div>
+    ) : null;
+
+  const commentInput = (
+    <div className="flex items-center gap-2">
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") submitComment(); }}
+        placeholder="Ajouter un commentaire…"
+        className="flex-1 bg-transparent text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none"
+      />
+      <button onClick={submitComment} disabled={!draft.trim()} className="text-[var(--primary)] disabled:opacity-40 transition-opacity" aria-label="Publier">
+        <Send size={18} />
+      </button>
+    </div>
+  );
 
   return (
     <div
@@ -325,149 +399,137 @@ export function PostViewer({
         </>
       )}
 
-      {/* Fenêtre : média + infos */}
-      <div className="relative z-10 w-full sm:w-auto sm:max-w-[1040px] h-[100dvh] sm:h-[86vh] flex flex-col sm:flex-row overflow-y-auto sm:overflow-hidden sm:rounded-2xl bg-[var(--card)] animate-scale-in">
-        {/* Média */}
-        <div
-          key={`media-${id}`}
-          className="relative bg-black shrink-0 w-full sm:w-[min(62vw,640px)] flex items-center justify-center"
-          style={{ minHeight: "42vh" }}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchEnd={(e) => e.stopPropagation()}
-        >
-          {post.media.length === 0 ? (
-            <div className="w-full h-full min-h-[42vh] flex items-center justify-center p-8" onDoubleClick={doubleLike}>
-              <p className="text-white/90 text-lg leading-relaxed text-center whitespace-pre-wrap">{post.content}</p>
-            </div>
-          ) : firstIsVideo ? (
-            <div className="w-full h-full min-h-[42vh]"><ModalVideo src={post.media[0]} onLike={doubleLike} /></div>
-          ) : (
-            <div className="w-full h-full min-h-[42vh]"><ImageCarousel media={post.media} onLike={doubleLike} /></div>
-          )}
-          {/* Cœur double-tap */}
-          {burst && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <Heart className="w-24 h-24 text-white fill-white drop-shadow-2xl animate-pop" />
-            </div>
-          )}
-        </div>
+      {/* Média présent → mise en page Instagram (2 panneaux). Sinon → carte X. */}
+      {hasMedia ? (
+        <div className="relative z-10 w-full sm:w-auto sm:max-w-[1040px] h-[100dvh] sm:h-[86vh] flex flex-col sm:flex-row overflow-y-auto sm:overflow-hidden sm:rounded-2xl bg-[var(--card)] animate-scale-in">
+          {/* Média */}
+          <div
+            key={`media-${id}`}
+            className="relative bg-black shrink-0 w-full sm:w-[min(62vw,640px)] flex items-center justify-center"
+            style={{ minHeight: "42vh" }}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+          >
+            {firstIsVideo ? (
+              <div className="w-full h-full min-h-[42vh]"><ModalVideo src={post.media[0]} onLike={doubleLike} /></div>
+            ) : (
+              <div className="w-full h-full min-h-[42vh]"><ImageCarousel media={post.media} onLike={doubleLike} /></div>
+            )}
+            {burst && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <Heart className="w-24 h-24 text-white fill-white drop-shadow-2xl animate-pop" />
+              </div>
+            )}
+          </div>
 
-        {/* Infos + commentaires */}
-        <div key={`info-${id}`} className="flex flex-col w-full sm:w-[360px] shrink-0 bg-[var(--card)] sm:h-full">
-          {/* Auteur */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--card-border)]">
-            <Link href={`/profil/${author.id}`}><img src={author.avatar} alt="" className="w-9 h-9 rounded-full object-cover" /></Link>
-            <div className="min-w-0 flex-1">
-              <span className="inline-flex items-center gap-1.5">
-                <Link href={`/profil/${author.id}`} className="text-sm font-semibold text-[var(--foreground)] hover:underline">{author.firstName} {author.lastName}</Link>
-                {isOwn && isPinned(id) && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--primary)]"><Pin size={11} /> Épinglé</span>
-                )}
-              </span>
-              <p className="text-[11px] text-[var(--text-muted)] truncate">{roleLabels[author.activeRole]}{post.location ? ` · ${post.location}` : ""}</p>
+          {/* Infos + commentaires */}
+          <div key={`info-${id}`} className="flex flex-col w-full sm:w-[360px] shrink-0 bg-[var(--card)] sm:h-full">
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--card-border)]">
+              <Link href={`/profil/${author.id}`}><img src={author.avatar} alt="" className="w-9 h-9 rounded-full object-cover" /></Link>
+              <div className="min-w-0 flex-1">
+                <span className="inline-flex items-center gap-1.5">
+                  <Link href={`/profil/${author.id}`} className="text-sm font-semibold text-[var(--foreground)] hover:underline">{author.firstName} {author.lastName}</Link>
+                  {isOwn && isPinned(id) && <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--primary)]"><Pin size={11} /> Épinglé</span>}
+                </span>
+                <p className="text-[11px] text-[var(--text-muted)] truncate">{roleLabels[author.activeRole]}{post.location ? ` · ${post.location}` : ""}</p>
+              </div>
+              {moreMenu}
             </div>
 
-            {/* Menu … */}
-            <div className="relative shrink-0">
-              <button onClick={() => setMenuOpen((v) => !v)} aria-label="Options" className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
-                <MoreHorizontal size={18} />
-              </button>
-              {menuOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} aria-hidden />
-                  <div role="menu" className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-lg py-1.5 z-50 animate-fade-in">
-                    {isOwn ? (
-                      <>
-                        <MenuItem icon={isPinned(id) ? PinOff : Pin} label={isPinned(id) ? "Désépingler" : "Épingler en haut"} onClick={doPin} />
-                        <MenuItem icon={Share2} label="Partager" onClick={sharePost} />
-                        <MenuItem icon={Copy} label="Copier le lien" onClick={copyLink} />
-                        <div className="my-1 h-px bg-[var(--card-border)]" />
-                        <MenuItem icon={Trash2} label="Supprimer" danger onClick={doDelete} />
-                      </>
-                    ) : (
-                      <>
-                        <MenuItem icon={Share2} label="Partager" onClick={sharePost} />
-                        <MenuItem icon={Copy} label="Copier le lien" onClick={copyLink} />
-                        <div className="my-1 h-px bg-[var(--card-border)]" />
-                        <MenuItem icon={Flag} label="Signaler" danger onClick={() => { setShowReport(true); setMenuOpen(false); }} />
-                      </>
-                    )}
-                  </div>
-                </>
+            <div className="flex-1 sm:overflow-y-auto px-4 py-3 space-y-3">
+              {post.content && (
+                <div className="flex items-start gap-2.5">
+                  <img src={author.avatar} alt="" className="w-7 h-7 rounded-full object-cover mt-0.5 shrink-0" />
+                  <p className="text-[13px] text-[var(--foreground)] leading-snug">
+                    <span className="font-semibold">{author.firstName} {author.lastName}</span>{" "}
+                    <span className="text-[var(--text-secondary)] whitespace-pre-wrap">{post.content}</span>
+                  </p>
+                </div>
               )}
+              {attachments}
+              {commentsBlock}
             </div>
-          </div>
 
-          {/* Corps scrollable : légende + attachés + commentaires */}
-          <div className="flex-1 sm:overflow-y-auto px-4 py-3 space-y-3">
-            {post.content && post.media.length > 0 && (
-              <div className="flex items-start gap-2.5">
-                <img src={author.avatar} alt="" className="w-7 h-7 rounded-full object-cover mt-0.5 shrink-0" />
-                <p className="text-[13px] text-[var(--foreground)] leading-snug">
-                  <span className="font-semibold">{author.firstName} {author.lastName}</span>{" "}
-                  <span className="text-[var(--text-secondary)] whitespace-pre-wrap">{post.content}</span>
-                </p>
+            <div className="border-t border-[var(--card-border)] px-4 pt-2.5 pb-3">
+              <div className="flex items-center gap-1 -ml-1.5">
+                <button onClick={toggleLike} aria-label="J'aime" className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)] transition-colors" style={{ color: liked ? "var(--destructive)" : "var(--foreground)" }}>
+                  <Heart size={22} fill={liked ? "currentColor" : "none"} />
+                </button>
+                <button onClick={() => inputRef.current?.focus()} aria-label="Commenter" className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+                  <MessageCircle size={21} />
+                </button>
+                <button onClick={sharePost} aria-label="Partager" className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+                  <Share2 size={20} />
+                </button>
+                <button onClick={toggleSave} aria-label="Enregistrer" className="ml-auto w-9 h-9 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)] transition-colors" style={{ color: saved ? "var(--primary)" : "var(--foreground)" }}>
+                  <Bookmark size={21} fill={saved ? "currentColor" : "none"} />
+                </button>
               </div>
-            )}
-
-            {post.property && <AttachedProperty property={post.property} />}
-            {post.formation && <AttachedFormation formation={post.formation} />}
-            {post.affiliate && <AffiliateBadge link={post.affiliate} />}
-            {post.poll && (() => {
-              const chosen = pollChoice[id];
-              const display = chosen
-                ? { ...post.poll, userVote: chosen, totalVotes: post.poll.totalVotes + 1, options: post.poll.options.map((o) => (o.id === chosen ? { ...o, votes: o.votes + 1 } : o)) }
-                : post.poll;
-              return <PollBlock poll={display} onVote={(o) => setPollChoice((m) => ({ ...m, [id]: o }))} />;
-            })()}
-            {post.attachment?.type === "event" && <EventCard event={post.attachment.event} />}
-            {post.attachment?.type === "analytics" && <AnalyticsCard data={post.attachment.data} />}
-
-            {comments.length > 0 && (
-              <div className="space-y-3 pt-1">
-                {comments.map((c) => <CommentRow key={c.id} c={c} />)}
-              </div>
-            )}
-            {comments.length === 0 && !post.content && (
-              <p className="text-sm text-[var(--text-muted)] text-center py-6">Aucun commentaire pour l'instant.</p>
-            )}
-          </div>
-
-          {/* Actions + saisie */}
-          <div className="border-t border-[var(--card-border)] px-4 pt-2.5 pb-3">
-            <div className="flex items-center gap-1 -ml-1.5">
-              <button onClick={toggleLike} aria-label="J'aime" className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)] transition-colors" style={{ color: liked ? "var(--destructive)" : "var(--foreground)" }}>
-                <Heart size={22} fill={liked ? "currentColor" : "none"} />
-              </button>
-              <button onClick={() => inputRef.current?.focus()} aria-label="Commenter" className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
-                <MessageCircle size={21} />
-              </button>
-              <button aria-label="Partager" className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
-                <Share2 size={20} />
-              </button>
-              <button onClick={toggleSave} aria-label="Enregistrer" className="ml-auto w-9 h-9 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)] transition-colors" style={{ color: saved ? "var(--primary)" : "var(--foreground)" }}>
-                <Bookmark size={21} fill={saved ? "currentColor" : "none"} />
-              </button>
-            </div>
-            <p className="text-sm font-semibold text-[var(--foreground)] mt-1">{formatCount(likeCount)} j'aime</p>
-            <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide mt-0.5">{timeAgo(post.createdAt)}</p>
-
-            <div className="flex items-center gap-2 mt-2.5">
-              <input
-                ref={inputRef}
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") submitComment(); }}
-                placeholder="Ajouter un commentaire…"
-                className="flex-1 bg-transparent text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none"
-              />
-              <button onClick={submitComment} disabled={!draft.trim()} className="text-[var(--primary)] disabled:opacity-40 transition-opacity" aria-label="Publier">
-                <Send size={18} />
-              </button>
+              <p className="text-sm font-semibold text-[var(--foreground)] mt-1">{formatCount(likeCount)} j'aime</p>
+              <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide mt-0.5">{timeAgo(post.createdAt)}</p>
+              <div className="mt-2.5">{commentInput}</div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        /* ── Carte façon X (posts sans média : texte, sondage, événement…) ── */
+        <div className="relative z-10 w-full sm:max-w-[600px] max-h-[100dvh] sm:max-h-[88vh] overflow-y-auto sm:rounded-2xl bg-[var(--card)] animate-scale-in mt-12 sm:mt-0">
+          <div className="p-4">
+            {/* En-tête auteur (X) */}
+            <div className="flex items-start gap-3">
+              <Link href={`/profil/${author.id}`} className="shrink-0"><img src={author.avatar} alt="" className="w-11 h-11 rounded-full object-cover" /></Link>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-x-1.5">
+                  <Link href={`/profil/${author.id}`} className="text-[15px] font-bold text-[var(--foreground)] hover:underline">{author.firstName} {author.lastName}</Link>
+                  {isOwn && isPinned(id) && <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--primary)]"><Pin size={11} /> Épinglé</span>}
+                </div>
+                <p className="text-[13px] text-[var(--text-muted)] truncate">@{handle} · {timeAgo(post.createdAt)}{post.location ? ` · ${post.location}` : ""}</p>
+              </div>
+              {moreMenu}
+            </div>
+
+            {/* Contenu (grand, X) */}
+            {post.content && (
+              <p className="text-[19px] sm:text-[22px] leading-snug text-[var(--foreground)] whitespace-pre-wrap mt-3">{post.content}</p>
+            )}
+
+            {/* Pièces jointes (sondage / événement / analytics / bien / formation) */}
+            <div className="mt-3 space-y-3">{attachments}</div>
+
+            {/* Barre d'actions X : réponses · reposts · j'aime · vues · enregistrer · partager */}
+            <div className="mt-3 pt-2 border-t border-[var(--card-border)] flex items-center justify-between max-w-md text-[var(--text-muted)]">
+              <button onClick={() => inputRef.current?.focus()} className="inline-flex items-center gap-1.5 text-sm hover:text-[var(--primary)] transition-colors">
+                <MessageCircle size={18} /> <span className="tabular-nums">{formatCount(comments.length)}</span>
+              </button>
+              <span className="inline-flex items-center gap-1.5 text-sm">
+                <Repeat2 size={18} /> <span className="tabular-nums">{formatCount(Math.round(post.likes / 8))}</span>
+              </span>
+              <button onClick={toggleLike} className="inline-flex items-center gap-1.5 text-sm transition-colors" style={{ color: liked ? "var(--destructive)" : undefined }}>
+                <Heart size={18} fill={liked ? "currentColor" : "none"} /> <span className="tabular-nums">{formatCount(likeCount)}</span>
+              </button>
+              <span className="inline-flex items-center gap-1.5 text-sm">
+                <Eye size={18} /> <span className="tabular-nums">{formatCount(post.likes * 25 + comments.length * 50)}</span>
+              </span>
+              <button onClick={toggleSave} aria-label="Enregistrer" className="transition-colors" style={{ color: saved ? "var(--primary)" : undefined }}>
+                <Bookmark size={18} fill={saved ? "currentColor" : "none"} />
+              </button>
+              <button onClick={sharePost} aria-label="Partager" className="hover:text-[var(--primary)] transition-colors">
+                <Share2 size={18} />
+              </button>
+            </div>
+
+            {/* Commentaires */}
+            <div className="mt-3 pt-3 border-t border-[var(--card-border)] space-y-3">
+              {commentsBlock ?? <p className="text-sm text-[var(--text-muted)] text-center py-2">Aucune réponse pour l'instant.</p>}
+            </div>
+          </div>
+
+          {/* Saisie (collée en bas) */}
+          <div className="sticky bottom-0 bg-[var(--card)] border-t border-[var(--card-border)] px-4 py-2.5">
+            {commentInput}
+          </div>
+        </div>
+      )}
 
       {showReport && <ReportModal onClose={() => setShowReport(false)} />}
     </div>
