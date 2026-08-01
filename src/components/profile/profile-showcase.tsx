@@ -345,7 +345,7 @@ export function ProfileShowcase({
           {data.posts.length === 0 ? (
             <EmptyState label={TAB_LINKS.publications.empty} isOwn={isOwn} add={TAB_LINKS.publications.add} />
           ) : (
-            <PostsGrid posts={data.posts} />
+            <PostsGrid posts={data.posts} isOwn={isOwn} />
           )}
         </div>
       )}

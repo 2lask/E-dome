@@ -80,6 +80,14 @@ interface AppContextValue {
   profile: Profile;
   updateProfile: (patch: Partial<Profile>) => void;
   resetProfile: () => void;
+  /* ── Publications : épinglage & masquage (persistés) ──
+     pinnedPosts : ids épinglés en haut du profil (max 3, façon Instagram).
+     hiddenPosts : ids supprimés/masqués de la vue. */
+  pinnedPosts: string[];
+  togglePinPost: (id: string) => "pinned" | "unpinned" | "limit";
+  isPinned: (id: string) => boolean;
+  hiddenPosts: string[];
+  hidePost: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -104,6 +112,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [referralLinks, setReferralLinks] = useState<ReferralLink[]>(DEFAULT_REFERRAL_LINKS);
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
+  const [pinnedPosts, setPinnedPosts] = useState<string[]>([]);
+  const [hiddenPosts, setHiddenPosts] = useState<string[]>([]);
 
   // Load from localStorage after mount
   useEffect(() => {
@@ -149,6 +159,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           stats: { ...DEFAULT_PROFILE.stats, ...(parsed.stats ?? {}) },
         });
       }
+
+      const storedPinned = localStorage.getItem(`${STORAGE_PREFIX}pinnedPosts`);
+      if (storedPinned) { const p = JSON.parse(storedPinned); if (Array.isArray(p)) setPinnedPosts(p); }
+      const storedHidden = localStorage.getItem(`${STORAGE_PREFIX}hiddenPosts`);
+      if (storedHidden) { const p = JSON.parse(storedHidden); if (Array.isArray(p)) setHiddenPosts(p); }
     } catch {
       // ignore
     }
@@ -195,6 +210,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
     localStorage.setItem(`${STORAGE_PREFIX}profile`, JSON.stringify(profile));
   }, [profile, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem(`${STORAGE_PREFIX}pinnedPosts`, JSON.stringify(pinnedPosts));
+  }, [pinnedPosts, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem(`${STORAGE_PREFIX}hiddenPosts`, JSON.stringify(hiddenPosts));
+  }, [hiddenPosts, mounted]);
 
   // ── Actions ─────────────────────────────────────────────────────────────
 
@@ -303,6 +328,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const resetProfile = useCallback(() => setProfile(DEFAULT_PROFILE), []);
 
+  const MAX_PINNED = 3;
+  const togglePinPost = useCallback((postId: string): "pinned" | "unpinned" | "limit" => {
+    let result: "pinned" | "unpinned" | "limit" = "pinned";
+    setPinnedPosts((prev) => {
+      if (prev.includes(postId)) { result = "unpinned"; return prev.filter((x) => x !== postId); }
+      if (prev.length >= MAX_PINNED) { result = "limit"; return prev; }
+      result = "pinned";
+      return [...prev, postId];
+    });
+    return result;
+  }, []);
+
+  const isPinned = useCallback((postId: string) => pinnedPosts.includes(postId), [pinnedPosts]);
+
+  const hidePost = useCallback((postId: string) => {
+    setHiddenPosts((prev) => (prev.includes(postId) ? prev : [...prev, postId]));
+    setPinnedPosts((prev) => prev.filter((x) => x !== postId));
+  }, []);
+
   const cartCount = useMemo(() => cart.reduce((s, c) => s + c.qty, 0), [cart]);
 
   const formatPrice = useCallback(
@@ -350,6 +394,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       profile,
       updateProfile,
       resetProfile,
+      pinnedPosts,
+      togglePinPost,
+      isPinned,
+      hiddenPosts,
+      hidePost,
     }),
     [
       activeRole,
@@ -378,6 +427,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       profile,
       updateProfile,
       resetProfile,
+      pinnedPosts,
+      togglePinPost,
+      isPinned,
+      hiddenPosts,
+      hidePost,
     ]
   );
 

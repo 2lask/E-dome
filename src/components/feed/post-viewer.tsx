@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 import Link from "next/link";
 import {
   Heart, MessageCircle, Send, Bookmark, Share2, X, ChevronLeft, ChevronRight,
   Volume2, VolumeX, Play, MapPin, Building2, GraduationCap, Coins, ArrowRight,
+  MoreHorizontal, Pin, PinOff, Trash2, Copy, Flag,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { useToast } from "@/components/ui/toast";
 import { timeAgo, formatCount } from "@/lib/utils";
-import { getVideoMetadata } from "@/lib/video-metadata";
 import { estimateEarning } from "@/lib/rewards";
 import { profileToAuthor } from "@/lib/profile-posts";
 import { roleLabels } from "@/lib/types";
 import type { SocialPost, Comment, ReferralLink, Currency } from "@/lib/types";
+import { ReportModal } from "./report-modal";
 
 /* Visualiseur de post façon Instagram : deux panneaux (média à gauche, infos
    + commentaires à droite) sur desktop, empilé sur mobile. Carrousel d'images,
@@ -166,14 +168,16 @@ function CommentRow({ c }: { c: Comment }) {
 // ─── Visualiseur ──────────────────────────────────────────────────────────
 
 export function PostViewer({
-  posts, index, onClose, onNav,
+  posts, index, onClose, onNav, isOwn,
 }: {
   posts: SocialPost[];
   index: number;
   onClose: () => void;
   onNav: (dir: 1 | -1) => void;
+  isOwn: boolean;
 }) {
-  const { profile } = useApp();
+  const { profile, togglePinPost, hidePost, isPinned } = useApp();
+  const { addToast } = useToast();
   const post = posts[index];
   const id = post.id;
 
@@ -183,8 +187,37 @@ export function PostViewer({
   const [extra, setExtra] = useState<Record<string, Comment[]>>({});
   const [draft, setDraft] = useState("");
   const [burst, setBurst] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const touch = useRef<{ x: number; y: number } | null>(null);
+
+  const permalink = () =>
+    typeof window !== "undefined" ? `${window.location.origin}${window.location.pathname}#post-${id}` : "";
+  const copyLink = async () => {
+    try { await navigator.clipboard.writeText(permalink()); addToast("Lien copié", "success"); }
+    catch { addToast("Impossible de copier le lien", "error"); }
+    setMenuOpen(false);
+  };
+  const sharePost = async () => {
+    const url = permalink();
+    try { if (typeof navigator !== "undefined" && "share" in navigator) { await navigator.share({ title: `Publication de ${post.author.firstName}`, url }); setMenuOpen(false); return; } } catch { /* annulé */ }
+    copyLink();
+  };
+  const doPin = () => {
+    const r = togglePinPost(id);
+    addToast(
+      r === "pinned" ? "Épinglé en haut du profil" : r === "unpinned" ? "Publication désépinglée" : "Maximum 3 publications épinglées",
+      r === "limit" ? "error" : "success",
+    );
+    setMenuOpen(false);
+  };
+  const doDelete = () => {
+    hidePost(id);
+    addToast("Publication supprimée", "success");
+    setMenuOpen(false);
+    onClose();
+  };
 
   const liked = !!likedMap[id];
   const saved = !!savedMap[id];
@@ -289,9 +322,44 @@ export function PostViewer({
           {/* Auteur */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--card-border)]">
             <Link href={`/profil/${author.id}`}><img src={author.avatar} alt="" className="w-9 h-9 rounded-full object-cover" /></Link>
-            <div className="min-w-0">
-              <Link href={`/profil/${author.id}`} className="text-sm font-semibold text-[var(--foreground)] hover:underline">{author.firstName} {author.lastName}</Link>
+            <div className="min-w-0 flex-1">
+              <span className="inline-flex items-center gap-1.5">
+                <Link href={`/profil/${author.id}`} className="text-sm font-semibold text-[var(--foreground)] hover:underline">{author.firstName} {author.lastName}</Link>
+                {isOwn && isPinned(id) && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--primary)]"><Pin size={11} /> Épinglé</span>
+                )}
+              </span>
               <p className="text-[11px] text-[var(--text-muted)] truncate">{roleLabels[author.activeRole]}{post.location ? ` · ${post.location}` : ""}</p>
+            </div>
+
+            {/* Menu … */}
+            <div className="relative shrink-0">
+              <button onClick={() => setMenuOpen((v) => !v)} aria-label="Options" className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
+                <MoreHorizontal size={18} />
+              </button>
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} aria-hidden />
+                  <div role="menu" className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-lg py-1.5 z-50 animate-fade-in">
+                    {isOwn ? (
+                      <>
+                        <MenuItem icon={isPinned(id) ? PinOff : Pin} label={isPinned(id) ? "Désépingler" : "Épingler en haut"} onClick={doPin} />
+                        <MenuItem icon={Share2} label="Partager" onClick={sharePost} />
+                        <MenuItem icon={Copy} label="Copier le lien" onClick={copyLink} />
+                        <div className="my-1 h-px bg-[var(--card-border)]" />
+                        <MenuItem icon={Trash2} label="Supprimer" danger onClick={doDelete} />
+                      </>
+                    ) : (
+                      <>
+                        <MenuItem icon={Share2} label="Partager" onClick={sharePost} />
+                        <MenuItem icon={Copy} label="Copier le lien" onClick={copyLink} />
+                        <div className="my-1 h-px bg-[var(--card-border)]" />
+                        <MenuItem icon={Flag} label="Signaler" danger onClick={() => { setShowReport(true); setMenuOpen(false); }} />
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -356,6 +424,25 @@ export function PostViewer({
           </div>
         </div>
       </div>
+
+      {showReport && <ReportModal onClose={() => setShowReport(false)} />}
     </div>
+  );
+}
+
+function MenuItem({
+  icon: Icon, label, danger, onClick,
+}: {
+  icon: ComponentType<{ size?: number }>; label: string; danger?: boolean; onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors hover:bg-[var(--hover-bg)]"
+      style={{ color: danger ? "var(--destructive)" : "var(--foreground)" }}
+    >
+      <Icon size={16} />
+      {label}
+    </button>
   );
 }
