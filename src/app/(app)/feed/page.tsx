@@ -550,6 +550,72 @@ const VIDEO_POSTS: SocialPost[] = [
     ]),
     formation: { id: "f5", title: "Analyse financiere pour investisseurs", instructor: "Marc Dubois", price: 349, students: 420, thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop" },
   },
+
+  /* ── Posts texte seul (facon X / Twitter) ─────────────────────────────
+     Formats courts, mis en avant en grand par le PostCard quand il n'y a
+     ni media ni objet attache. createdAt recents pour remonter dans le tri. */
+  {
+    id: "p-t2", author: U_LEO,
+    content: "Rappel du jour : le meilleur moment pour investir dans l'immobilier, c'etait il y a 10 ans. Le deuxieme meilleur moment, c'est aujourd'hui.\n\nArretez d'attendre le marche parfait. #investissement #mindset",
+    media: [], type: "post", likes: 1284, location: "Geneve, Suisse", createdAt: hAgo(0.4),
+    comments: mkComments("p-t2", [
+      { author: U_MARC, content: "A encadrer.", h: 0.3, likes: 54 },
+      { author: U_SOPHIE, content: "Tellement vrai, j'ai trop attendu pour mon 1er bien.", h: 0.2, likes: 31 },
+    ]),
+  },
+  {
+    id: "p-t3", author: U_MARC,
+    content: "Petit sondage pour la communaute : en 2026, vous misez sur quoi ?\n\n1) Locatif longue duree\n2) Courte duree / Airbnb\n3) Colocation\n4) Parking / box\n\nJe lis toutes vos reponses en commentaire.",
+    media: [], type: "post", likes: 642, location: "Geneve, Suisse", createdAt: hAgo(0.8),
+    comments: mkComments("p-t3", [
+      { author: U_THOMAS, content: "3) La colocation, rendement imbattable en ville.", h: 0.6, likes: 22 },
+      { author: U_AMINA, content: "2) sans hesiter, mais faut gerer le pricing.", h: 0.5, likes: 18 },
+      { author: U_YASMIN, content: "1) pour la tranquillite.", h: 0.4, likes: 9 },
+    ]),
+  },
+  {
+    id: "p-t4", author: U_SOPHIE,
+    content: "3 ans que je suis hote sur E-Dome. Ce que j'aurais aime savoir au debut :\n\n— Repondre en < 1h change tout\n— Les photos font 80% de la reservation\n— Un bon menage vaut chaque centime\n\n#locationcourteduree #conseils",
+    media: [], type: "post", likes: 917, location: "Lausanne, Suisse", createdAt: hAgo(4),
+    comments: mkComments("p-t4", [
+      { author: U_AMINA, content: "La regle du < 1h est sous-estimee. Bravo.", h: 3, likes: 27 },
+    ]),
+  },
+  {
+    id: "p-t5", author: U_AMINA,
+    content: "Hot take : la plupart des gens ne calculent JAMAIS leur rendement net. Ils regardent le loyer, pas les charges, la vacance, les impots et la gestion.\n\nResultat : ils croient faire 6% et font 3%. #fiscalite #rendement",
+    media: [], type: "post", likes: 1533, location: "Marrakech, Maroc", createdAt: hAgo(7),
+    comments: mkComments("p-t5", [
+      { author: U_MARC, content: "Je le repete a chaque formation. Merci de le dire.", h: 6, likes: 44 },
+      { author: U_LEO, content: "Le brut ment, le net dit la verite.", h: 5, likes: 38 },
+    ]),
+  },
+  {
+    id: "p-t6", author: U_THOMAS,
+    content: "Zurich vient de depasser 15'000 CHF/m2 en moyenne dans l'hypercentre. Geneve suit de pres.\n\nLa Suisse reste l'un des marches les plus resilients d'Europe. Qui investit encore en ville ?",
+    media: [], type: "post", likes: 728, location: "Zurich, Suisse", createdAt: hAgo(11),
+    comments: mkComments("p-t6", [
+      { author: U_MARC, content: "Les prix defient la gravite.", h: 9, likes: 19 },
+    ]),
+  },
+  {
+    id: "p-analytics-1", author: U_MARC,
+    content: "Petite demo de la carte analytique E-Dome : le rendement net d'un bien, en un coup d'oeil. On adore la transparence. #data #immobilier",
+    media: [], type: "post", likes: 512, location: "Geneve, Suisse", createdAt: hAgo(15),
+    comments: mkComments("p-analytics-1", [
+      { author: U_SOPHIE, content: "Cette carte est geniale pour comparer vite.", h: 13, likes: 12 },
+    ]),
+    attachment: {
+      type: "analytics",
+      data: {
+        propertyId: "prop1",
+        propertyTitle: "Appartement vue lac · Lausanne",
+        metric: "rendementNet",
+        label: "Rendement net annuel",
+        headline: "3.8%",
+      },
+    },
+  },
 ];
 
 // CTAs custom par id de post.
@@ -890,10 +956,17 @@ function MediaGallery({ media }: { media: string[] }) {
 // quand le texte est tronqué. Détecte le débordement via scrollHeight vs
 // clientHeight (ref-based) après le rendu, recalcule à chaque changement
 // de contenu et au resize.
-function PostCaption({ content }: { content: string }) {
+function PostCaption({ content, big = false }: { content: string; big?: boolean }) {
   const pRef = useRef<HTMLParagraphElement>(null);
   const [overflowing, setOverflowing] = useState(false);
   const [expanded, setExpanded] = useState(false);
+
+  /* Post texte seul (façon X) : texte plus grand, montré en entier jusqu'à
+     ~10 lignes, puis « Voir plus ». Sinon : légende compacte clampée à 3. */
+  const clampLines = big ? "line-clamp-[10]" : "line-clamp-3";
+  const sizeClass = big
+    ? "text-[17px] sm:text-[19px] leading-snug"
+    : "text-[14px] leading-relaxed";
 
   useEffect(() => {
     const p = pRef.current;
@@ -912,8 +985,8 @@ function PostCaption({ content }: { content: string }) {
     <>
       <p
         ref={pRef}
-        className={`text-[14px] text-[var(--foreground)] whitespace-pre-wrap leading-relaxed ${
-          expanded ? "" : "line-clamp-3"
+        className={`${sizeClass} text-[var(--foreground)] whitespace-pre-wrap ${
+          expanded ? "" : clampLines
         }`}
       >
         {renderContent(content)}
@@ -1488,6 +1561,10 @@ function PostCard({
     post.media[0]?.endsWith(".mp4") ||
     post.media[0]?.endsWith(".webm");
   const handle = post.author.firstName.toLowerCase();
+  /* Post « texte seul » (façon X) : aucun média ni objet attaché → on met le
+     texte en avant, plus grand. */
+  const textOnly =
+    post.media.length === 0 && !post.property && !post.formation && !post.attachment && !cta && !event;
 
   return (
     <article
@@ -1569,10 +1646,10 @@ function PostCard({
             </div>
           </div>
 
-          {/* Caption — directement sous le header, sans gap excessif */}
+          {/* Caption — directement sous le header. Texte seul = plus grand (X). */}
           {post.content && (
-            <div className="mt-0.5">
-              <PostCaption content={post.content} />
+            <div className={textOnly ? "mt-1.5" : "mt-0.5"}>
+              <PostCaption content={post.content} big={textOnly} />
             </div>
           )}
 
