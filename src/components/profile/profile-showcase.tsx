@@ -7,6 +7,8 @@ import {
   Plus, ArrowRight, UserRound, Store,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { PostCard } from "@/components/feed/post-card";
+import type { SocialPost } from "@/lib/types";
 
 /* Vitrine du profil — 3 grands onglets (façon Instagram) :
    1. Parcours     : sections CV (fournies en prop).
@@ -18,7 +20,6 @@ import { useApp } from "@/lib/context";
 
 // ─── Types (données de vitrine) ───────────────────────────────────────────
 
-export interface ProfilePublication { id: string; src: string; caption: string }
 export interface ProfileBien { id: string; title: string; cover: string; price: number; currency: string; unit: string; location: string }
 export interface ProfileProduit { id: string; title: string; cover: string; price: number; currency: string; stock: number }
 export interface ProfileFormation { id: string; title: string; cover: string; price: number; currency: string; students: number; rating: number }
@@ -27,7 +28,7 @@ export interface ProfileService { id: string; title: string; cover: string; pric
 export interface ProfileAvis { id: string; author: string; rating: number; text: string; date: string }
 
 export interface ProfileData {
-  publications: ProfilePublication[];
+  posts: SocialPost[];
   biens: ProfileBien[];
   produits: ProfileProduit[];
   formations: ProfileFormation[];
@@ -145,7 +146,7 @@ export function ProfileShowcase({
 
   const topTabs: { key: TopTab; label: string; icon: React.ComponentType<{ size?: number }>; count?: number }[] = [
     ...(parcours ? [{ key: "parcours" as const, label: "Parcours", icon: UserRound }] : []),
-    { key: "publications", label: "Publications", icon: Newspaper, count: data.publications.length },
+    { key: "publications", label: "Publications", icon: Newspaper, count: data.posts.length },
     { key: "vitrine", label: "Vitrine", icon: Store, count: vitrineTotal },
   ];
 
@@ -337,23 +338,16 @@ export function ProfileShowcase({
       {/* Parcours */}
       {top === "parcours" && <div className="animate-fade-in">{parcours}</div>}
 
-      {/* Publications */}
+      {/* Publications — vrais posts du feed (vidéos, commentaires, affiliation) */}
       {top === "publications" && (
         <div key="publications" className="animate-fade-in">
           <Toolbar linkKey="publications" isOwn={isOwn} />
-          {data.publications.length === 0 ? (
+          {data.posts.length === 0 ? (
             <EmptyState label={TAB_LINKS.publications.empty} isOwn={isOwn} add={TAB_LINKS.publications.add} />
           ) : (
-            <ul className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {data.publications.map((p) => (
-                <li key={p.id} className="group">
-                  <Card>
-                    <CardImage src={p.src} aspect="1/1" />
-                    <div className="p-3"><p className="text-xs line-clamp-2 text-[var(--text-secondary)]">{p.caption}</p></div>
-                  </Card>
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-4 max-w-[600px]">
+              {data.posts.map((p) => <PostCard key={p.id} post={p} />)}
+            </div>
           )}
         </div>
       )}

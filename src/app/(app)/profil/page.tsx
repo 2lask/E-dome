@@ -1,22 +1,16 @@
 "use client";
 
+import { useMemo } from "react";
 import { useApp } from "@/lib/context";
 import { ProfileView } from "@/components/profile/profile-view";
 import type { ProfileData } from "@/components/profile/profile-showcase";
+import { getMyPosts, profileToAuthor } from "@/lib/profile-posts";
 
 /* /profil — mon profil. Identité + sections « LinkedIn » viennent du contexte
-   (profile, persisté et éditable). La vitrine (biens/formations/avis…) reste
-   sur des données de démo pour l'instant. */
+   (profile, persisté et éditable). L'onglet Publications rend mes vrais posts
+   du feed ; la vitrine (biens/formations/avis…) reste en données de démo. */
 
-const SHOWCASE: ProfileData = {
-  publications: [
-    { id: "pub1", src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600", caption: "Visite du jour : villa contemporaine à Genolier." },
-    { id: "pub2", src: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=600", caption: "Chalet Verbier sous la première neige." },
-    { id: "pub3", src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600", caption: "Aménagement intérieur signé Studio Verbier." },
-    { id: "pub4", src: "https://images.unsplash.com/photo-1590073242678-70ee818e55fb?w=600", caption: "Riad Marrakech — patio rénové." },
-    { id: "pub5", src: "https://images.unsplash.com/photo-1600047509807-ba7fdd402464?w=600", caption: "Penthouse Montreux, vue lac." },
-    { id: "pub6", src: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=600", caption: "Évolution du rendement locatif 2026." },
-  ],
+const SHOWCASE: Omit<ProfileData, "posts"> = {
   biens: [
     { id: "prop1", title: "Chalet Alpin Premium", cover: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=600", price: 350, currency: "CHF", unit: "/nuit", location: "Verbier, Suisse" },
     { id: "prop2", title: "Appartement Vue Lac", cover: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600", price: 1_250_000, currency: "CHF", unit: "", location: "Montreux, Suisse" },
@@ -58,5 +52,9 @@ const SHOWCASE: ProfileData = {
 
 export default function ProfilPage() {
   const { profile } = useApp();
-  return <ProfileView profile={profile} isOwn showcase={SHOWCASE} />;
+  const showcase: ProfileData = useMemo(
+    () => ({ ...SHOWCASE, posts: getMyPosts(profileToAuthor(profile)) }),
+    [profile],
+  );
+  return <ProfileView profile={profile} isOwn showcase={showcase} />;
 }

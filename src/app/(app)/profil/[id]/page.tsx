@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getMockProfile } from "@/lib/profile-data";
 import { ProfileView } from "@/components/profile/profile-view";
 import type { ProfileData } from "@/components/profile/profile-showcase";
+import { getPublicPosts, profileToAuthor } from "@/lib/profile-posts";
 import { BackButton } from "@/components/ui/back-button";
 import type { Role } from "@/lib/types";
 
@@ -12,12 +13,6 @@ import type { Role } from "@/lib/types";
    sections LinkedIn) vient de getMockProfile ; la vitrine (biens/formations…)
    est générée selon le rôle principal. Lecture seule (isOwn=false). */
 
-const PUBLICATIONS = [
-  { id: "pub1", src: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600", caption: "Nouveau bien sur le marché — vue panoramique." },
-  { id: "pub2", src: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=600", caption: "Saison ouverte sur les locations alpines." },
-  { id: "pub3", src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600", caption: "Inspirations design pour vos intérieurs." },
-  { id: "pub4", src: "https://images.unsplash.com/photo-1590073242678-70ee818e55fb?w=600", caption: "Visite d'un riad rénové." },
-];
 const BIENS = [
   { id: "prop1", title: "Chalet Verbier", cover: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=600", price: 350, currency: "CHF", unit: "/nuit", location: "Verbier, Suisse" },
   { id: "prop2", title: "Appartement Vue Lac", cover: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600", price: 1_250_000, currency: "CHF", unit: "", location: "Montreux, Suisse" },
@@ -49,10 +44,9 @@ const RATING_BREAKDOWN = [
 
 /* Vitrine adaptée au rôle principal : une agence/courtier/promoteur affiche
    surtout des biens, un formateur surtout des formations, etc. */
-function showcaseForRole(primary: Role): ProfileData {
+function showcaseForRole(primary: Role): Omit<ProfileData, "posts"> {
   if (primary === "agence" || primary === "courtier" || primary === "promoteur") {
     return {
-      publications: PUBLICATIONS.slice(0, 3),
       biens: [
         ...BIENS,
         { id: "prop-extra-1", title: "Penthouse Genève", cover: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600", price: 3_200_000, currency: "CHF", unit: "", location: "Genève, Suisse" },
@@ -68,7 +62,6 @@ function showcaseForRole(primary: Role): ProfileData {
   }
   if (primary === "formateur") {
     return {
-      publications: PUBLICATIONS.slice(0, 4),
       biens: BIENS.slice(0, 1),
       produits: [],
       formations: [
@@ -83,7 +76,6 @@ function showcaseForRole(primary: Role): ProfileData {
     };
   }
   return {
-    publications: PUBLICATIONS,
     biens: BIENS,
     produits: PRODUITS,
     formations: FORMATIONS,
@@ -118,7 +110,10 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
     );
   }
 
-  const showcase = showcaseForRole(profile.roles[0] ?? "client");
+  const showcase: ProfileData = {
+    ...showcaseForRole(profile.roles[0] ?? "client"),
+    posts: getPublicPosts(profileToAuthor(profile)),
+  };
 
   return (
     <>
