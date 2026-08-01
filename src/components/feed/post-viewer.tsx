@@ -5,16 +5,17 @@ import Link from "next/link";
 import {
   Heart, MessageCircle, Send, Bookmark, Share2, X, ChevronLeft, ChevronRight,
   Volume2, VolumeX, Play, MapPin, Building2, GraduationCap, Coins, ArrowRight,
-  MoreHorizontal, Pin, PinOff, Trash2, Copy, Flag,
+  MoreHorizontal, Pin, PinOff, Trash2, Copy, Flag, Calendar, BarChart3, TrendingUp, TrendingDown,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
-import { timeAgo, formatCount } from "@/lib/utils";
+import { timeAgo, formatCount, formatDate } from "@/lib/utils";
 import { estimateEarning } from "@/lib/rewards";
 import { profileToAuthor } from "@/lib/profile-posts";
 import { roleLabels } from "@/lib/types";
-import type { SocialPost, Comment, ReferralLink, Currency } from "@/lib/types";
+import type { SocialPost, Comment, ReferralLink, Currency, PostAttachment } from "@/lib/types";
 import { ReportModal } from "./report-modal";
+import { PollBlock } from "./poll-block";
 
 /* Visualiseur de post façon Instagram : deux panneaux (média à gauche, infos
    + commentaires à droite) sur desktop, empilé sur mobile. Carrousel d'images,
@@ -148,6 +149,39 @@ function AffiliateBadge({ link }: { link: ReferralLink }) {
   return link.redirect ? <Link href={link.redirect} className={cls}>{inner}</Link> : <a href={`https://${link.url}`} target="_blank" rel="noopener noreferrer nofollow" className={cls}>{inner}</a>;
 }
 
+function EventCard({ event }: { event: Extract<PostAttachment, { type: "event" }>["event"] }) {
+  const { formatPrice } = useApp();
+  return (
+    <Link href={`/evenements/${event.id}`} className="flex rounded-xl border border-[var(--card-border)] overflow-hidden bg-[var(--card)] hover:border-[var(--text-muted)]/40 transition-colors">
+      <img src={event.thumbnail} alt="" className="w-20 h-20 object-cover shrink-0" />
+      <div className="flex-1 p-2.5 min-w-0">
+        <p className="text-[11px] text-violet-400 font-medium inline-flex items-center gap-1"><Calendar size={10} /> {event.eventType}</p>
+        <p className="text-[13px] font-semibold text-[var(--foreground)] line-clamp-1">{event.titre}</p>
+        <p className="text-[11px] text-[var(--text-muted)] truncate">{formatDate(event.date)} · {event.lieu}</p>
+        <p className="text-[12px] font-bold text-[var(--primary)]">{event.prix ? formatPrice(event.prix) : "Gratuit"}</p>
+      </div>
+    </Link>
+  );
+}
+
+function AnalyticsCard({ data }: { data: Extract<PostAttachment, { type: "analytics" }>["data"] }) {
+  const up = (data.delta ?? 0) >= 0;
+  return (
+    <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-3">
+      <p className="text-[11px] text-[var(--text-muted)] inline-flex items-center gap-1"><BarChart3 size={11} /> {data.label}</p>
+      <div className="flex items-baseline gap-2 mt-0.5">
+        <span className="text-2xl font-bold text-[var(--foreground)] tabular-nums">{data.headline}</span>
+        {data.delta != null && (
+          <span className={`text-xs font-semibold inline-flex items-center gap-0.5 ${up ? "text-emerald-500" : "text-rose-500"}`}>
+            {up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}{Math.abs(data.delta)}
+          </span>
+        )}
+      </div>
+      <p className="text-[12px] text-[var(--text-muted)] mt-0.5 truncate">{data.propertyTitle}</p>
+    </div>
+  );
+}
+
 // ─── Ligne de commentaire ─────────────────────────────────────────────────
 
 function CommentRow({ c }: { c: Comment }) {
@@ -187,6 +221,7 @@ export function PostViewer({
   const [extra, setExtra] = useState<Record<string, Comment[]>>({});
   const [draft, setDraft] = useState("");
   const [burst, setBurst] = useState(false);
+  const [pollChoice, setPollChoice] = useState<Record<string, string>>({});
   const [menuOpen, setMenuOpen] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -378,6 +413,15 @@ export function PostViewer({
             {post.property && <AttachedProperty property={post.property} />}
             {post.formation && <AttachedFormation formation={post.formation} />}
             {post.affiliate && <AffiliateBadge link={post.affiliate} />}
+            {post.poll && (() => {
+              const chosen = pollChoice[id];
+              const display = chosen
+                ? { ...post.poll, userVote: chosen, totalVotes: post.poll.totalVotes + 1, options: post.poll.options.map((o) => (o.id === chosen ? { ...o, votes: o.votes + 1 } : o)) }
+                : post.poll;
+              return <PollBlock poll={display} onVote={(o) => setPollChoice((m) => ({ ...m, [id]: o }))} />;
+            })()}
+            {post.attachment?.type === "event" && <EventCard event={post.attachment.event} />}
+            {post.attachment?.type === "analytics" && <AnalyticsCard data={post.attachment.data} />}
 
             {comments.length > 0 && (
               <div className="space-y-3 pt-1">

@@ -92,6 +92,42 @@ export function getMyPosts(author: User): SocialPost[] {
       ]),
     },
     {
+      id: "me-poll", author,
+      content: "Selon vous, quel canton offre le meilleur rendement locatif en 2026 ?",
+      media: [], type: "post", likes: 340, location: "Genève, Suisse", createdAt: hAgo(4),
+      comments: mkComments("me-poll", [{ author: C_MARC, content: "Fribourg, clairement.", h: 3, likes: 12 }]),
+      poll: {
+        options: [
+          { id: "o1", label: "Genève", votes: 210 },
+          { id: "o2", label: "Vaud", votes: 180 },
+          { id: "o3", label: "Fribourg", votes: 150 },
+          { id: "o4", label: "Valais", votes: 90 },
+        ],
+        totalVotes: 630,
+        endsAt: new Date(Date.now() + 2 * 24 * 3600_000).toISOString(),
+      },
+    },
+    {
+      id: "me-event", author,
+      content: "Je serai présent au Salon de l'immobilier — venez échanger sur vos projets ! #événement",
+      media: [], type: "post", likes: 275, location: "Genève, Suisse", createdAt: hAgo(30),
+      comments: mkComments("me-event", [{ author: C_SOPHIE, content: "J'y serai aussi !", h: 28, likes: 6 }]),
+      attachment: {
+        type: "event",
+        event: { id: "e1", titre: "Salon de l'immobilier Suisse 2026", date: "2026-05-15", lieu: "Palexpo, Genève", thumbnail: IMG("1540575467063-178a50c2df87", 600), eventType: "Conférence", spotsRemaining: 120, prix: 45 },
+      },
+    },
+    {
+      id: "me-analytics", author,
+      content: "La carte analytique d'un de mes biens : rendement net en un coup d'œil. #data",
+      media: [], type: "post", likes: 198, location: "Lausanne, Suisse", createdAt: hAgo(64),
+      comments: [],
+      attachment: {
+        type: "analytics",
+        data: { propertyId: "prop1", propertyTitle: "Appartement vue lac · Lausanne", metric: "rendementNet", label: "Rendement net annuel", headline: "3.8%", delta: 0.4 },
+      },
+    },
+    {
       id: "me-p2", author,
       content: "Coup de cœur : appartement vue lac à Lausanne. Je le recommande à mon réseau — belle opportunité de rendement.\n\nLien direct ci-dessous 👇 #bien #lausanne",
       media: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&h=900&fit=crop"], type: "post",

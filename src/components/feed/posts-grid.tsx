@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Play, Images, Heart, MessageCircle, FileText, Pin } from "lucide-react";
+import { Play, Images, Heart, MessageCircle, FileText, Pin, ListChecks, Calendar, BarChart3 } from "lucide-react";
 import { formatCount } from "@/lib/utils";
 import { useApp } from "@/lib/context";
 import type { SocialPost } from "@/lib/types";
@@ -22,6 +22,10 @@ function Thumb({ post, pinned, onOpen }: { post: SocialPost; pinned: boolean; on
   const hasMedia = post.media.length > 0;
   const video = postIsVideo(post);
   const multi = post.media.length > 1;
+  const poll = !!post.poll;
+  const isEvent = post.attachment?.type === "event";
+  const isAnalytics = post.attachment?.type === "analytics";
+  const TypeIcon = video ? Play : multi ? Images : poll ? ListChecks : isEvent ? Calendar : isAnalytics ? BarChart3 : !hasMedia ? FileText : null;
 
   return (
     <button onClick={onOpen} className="group relative block w-full overflow-hidden bg-[var(--hover-bg)]" style={{ aspectRatio: "1/1" }} aria-label="Voir la publication">
@@ -42,10 +46,11 @@ function Thumb({ post, pinned, onOpen }: { post: SocialPost; pinned: boolean; on
           <Pin size={11} className="fill-white" /> Épinglé
         </span>
       )}
-      {(video || multi) && (
-        <span className="absolute top-2 right-2 text-white drop-shadow-md">{video ? <Play size={16} className="fill-white" /> : <Images size={16} />}</span>
+      {TypeIcon && (
+        <span className={`absolute top-2 right-2 ${hasMedia ? "text-white drop-shadow-md" : "text-[var(--text-muted)]"}`}>
+          <TypeIcon size={16} className={video ? "fill-white" : ""} />
+        </span>
       )}
-      {!hasMedia && <span className="absolute top-2 right-2 text-[var(--text-muted)]"><FileText size={15} /></span>}
 
       <div className="absolute inset-0 hidden sm:flex items-center justify-center gap-5 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity">
         <span className="inline-flex items-center gap-1.5 text-white font-semibold text-sm"><Heart size={17} className="fill-white" /> {formatCount(post.likes)}</span>
