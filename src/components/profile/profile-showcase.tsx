@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   Building2, ShoppingBag, GraduationCap, Video, Briefcase, Star, Newspaper,
-  Plus, ArrowRight,
+  Plus, ArrowRight, UserRound,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 
@@ -111,10 +111,24 @@ function Toolbar({ tab, isOwn }: { tab: TabKey; isOwn: boolean }) {
   );
 }
 
-export function ProfileShowcase({ data, rating, isOwn }: { data: ProfileData; rating: number; isOwn: boolean }) {
+export function ProfileShowcase({
+  data,
+  rating,
+  isOwn,
+  parcours,
+}: {
+  data: ProfileData;
+  rating: number;
+  isOwn: boolean;
+  parcours?: React.ReactNode;
+}) {
   const { formatPrice } = useApp();
-  const [tab, setTab] = useState<TabKey>("publications");
+  const [tab, setTab] = useState<TabKey | "parcours">(parcours ? "parcours" : "publications");
   const totalAvis = data.ratingBreakdown.reduce((s, r) => s + r.count, 0);
+
+  // Onglet « Parcours » (sections CV) en tête, quand fourni.
+  const allTabs: { key: TabKey | "parcours"; label: string; icon: React.ComponentType<{ size?: number }> }[] =
+    parcours ? [{ key: "parcours", label: "Parcours", icon: UserRound }, ...TABS] : TABS;
 
   const counts: Record<TabKey, number> = {
     publications: data.publications.length,
@@ -132,9 +146,10 @@ export function ProfileShowcase({ data, rating, isOwn }: { data: ProfileData; ra
       <nav className="sticky top-16 z-20 mb-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)]" aria-label="Onglets profil">
         <div className="overflow-x-auto no-scrollbar">
           <ul className="flex items-center gap-1 px-2 min-w-max">
-            {TABS.map((t) => {
+            {allTabs.map((t) => {
               const Icon = t.icon;
               const active = tab === t.key;
+              const count = t.key !== "parcours" ? counts[t.key as TabKey] : 0;
               return (
                 <li key={t.key}>
                   <button
@@ -144,8 +159,8 @@ export function ProfileShowcase({ data, rating, isOwn }: { data: ProfileData; ra
                   >
                     <Icon size={16} />
                     <span>{t.label}</span>
-                    {counts[t.key] > 0 && (
-                      <span className="text-xs tabular-nums text-[var(--text-muted)]">{counts[t.key]}</span>
+                    {count > 0 && (
+                      <span className="text-xs tabular-nums text-[var(--text-muted)]">{count}</span>
                     )}
                     {active && <span aria-hidden className="absolute left-3 right-3 -bottom-px h-[2px] rounded-full bg-[var(--primary)]" />}
                   </button>
@@ -157,7 +172,9 @@ export function ProfileShowcase({ data, rating, isOwn }: { data: ProfileData; ra
       </nav>
 
       <div key={tab} className="animate-fade-in">
-        {tab !== "avis" && <Toolbar tab={tab} isOwn={isOwn} />}
+        {tab === "parcours" && parcours}
+
+        {tab !== "avis" && tab !== "parcours" && <Toolbar tab={tab} isOwn={isOwn} />}
 
         {tab === "publications" && (
           data.publications.length === 0 ? <EmptyState label={TAB_LINKS.publications.empty} isOwn={isOwn} add={TAB_LINKS.publications.add} /> : (

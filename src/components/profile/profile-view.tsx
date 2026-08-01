@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { Profile, ToggleableSection } from "@/lib/profile-types";
 import { ProfileHeader } from "./profile-header";
 import { ProfileCompletion } from "./profile-completion";
-import { PrivateSpace } from "./private-space";
 import { AboutSection } from "./sections/about-section";
 import { ExperienceSection } from "./sections/experience-section";
 import { EducationSection } from "./sections/education-section";
@@ -20,10 +19,13 @@ import { EditSkillsModal } from "./editors/edit-skills-modal";
 import { EditLinksModal } from "./editors/edit-links-modal";
 import { EditImageModal } from "./editors/edit-image-modal";
 
-/* Orchestrateur du profil : en-tête + complétion (owner) + sections LinkedIn
-   + vitrine (onglets). Monte toutes les modales d'édition — les sections et
-   la complétion se contentent d'appeler open(...). En vue publique, respecte
-   la visibilité (sections masquées ou vides non rendues). */
+/* Orchestrateur du profil — navigation par onglets (façon Instagram) : on ne
+   empile plus toutes les sections sur une page. L'en-tête reste en haut ; le
+   reste vit dans un seul jeu d'onglets où « Parcours » regroupe les sections
+   CV (À propos, Expériences, Formation, Compétences, Liens) et les autres
+   onglets montrent les contenus (Publications, Biens, Formations…).
+   Monte toutes les modales d'édition ; en vue publique, respecte la
+   visibilité (sections masquées ou vides non rendues). */
 export function ProfileView({
   profile,
   isOwn,
@@ -43,25 +45,12 @@ export function ProfileView({
   const open = (e: ProfileEditor) => setEditor(e);
   const close = () => setEditor(null);
 
-  // Une section s'affiche si : on est l'owner (toujours, pour éditer), sinon
-  // seulement si elle n'est pas masquée ET a du contenu.
   const visible = (key: ToggleableSection, hasContent: boolean) =>
     isOwn || (!profile.visibility.hiddenSections.includes(key) && hasContent);
 
-  return (
-    <div className="max-w-4xl mx-auto pb-12 space-y-4 animate-fade-in">
-      <ProfileHeader
-        profile={profile}
-        isOwn={isOwn}
-        open={open}
-        isFollowing={isFollowing}
-        onToggleFollow={onToggleFollow}
-        onMessage={onMessage}
-      />
-
-      {isOwn && <ProfileCompletion profile={profile} open={open} />}
-      {isOwn && <PrivateSpace open={open} />}
-
+  // Contenu de l'onglet « Parcours » (sections CV).
+  const parcours = (
+    <div className="space-y-4">
       {visible("about", profile.about.trim().length > 0) && (
         <AboutSection profile={profile} isOwn={isOwn} open={open} />
       )}
@@ -77,11 +66,23 @@ export function ProfileView({
       {visible("links", profile.links.length > 0) && (
         <LinksSection profile={profile} isOwn={isOwn} open={open} />
       )}
+    </div>
+  );
 
-      {/* Vitrine commerciale (toujours visible) */}
-      <div className="pt-2">
-        <ProfileShowcase data={showcase} rating={profile.stats.rating} isOwn={isOwn} />
-      </div>
+  return (
+    <div className="max-w-4xl mx-auto pb-12 space-y-4 animate-fade-in">
+      <ProfileHeader
+        profile={profile}
+        isOwn={isOwn}
+        open={open}
+        isFollowing={isFollowing}
+        onToggleFollow={onToggleFollow}
+        onMessage={onMessage}
+      />
+
+      {isOwn && <ProfileCompletion profile={profile} open={open} />}
+
+      <ProfileShowcase data={showcase} rating={profile.stats.rating} isOwn={isOwn} parcours={parcours} />
 
       {/* Modales d'édition (owner) */}
       {isOwn && editor?.type === "intro" && <EditIntroModal onClose={close} />}
