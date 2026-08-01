@@ -215,6 +215,21 @@ export type PostAttachment =
     }
   | { type: "analytics"; data: AnalyticsCardData };
 
+/* Sondage attaché à un post (façon X). `userVote` = id de l'option choisie
+   par l'utilisateur courant (undefined = pas encore voté). */
+export interface PollOption {
+  id: string;
+  label: string;
+  votes: number;
+}
+
+export interface Poll {
+  options: PollOption[];
+  totalVotes: number;
+  endsAt?: string;
+  userVote?: string;
+}
+
 export interface SocialPost {
   id: string;
   author: User;
@@ -231,6 +246,8 @@ export interface SocialPost {
   property?: Property;
   formation?: { id: string; title: string; instructor: string; price: number; students: number; thumbnail: string };
   attachment?: PostAttachment;
+  /* Sondage interactif (options + votes). Cf. PollBlock dans le feed. */
+  poll?: Poll;
   /* Lien d'affiliation attaché à l'objet vendable du post (bien, formation
      ou événement). Généré à la publication quand l'auteur active
      l'interrupteur « Affiliation » sur l'objet. Redirige vers l'URL de

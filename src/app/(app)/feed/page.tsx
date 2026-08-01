@@ -9,7 +9,7 @@ import {
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
   Users, Building2, GraduationCap,
   Image as ImageIcon, BarChart3, Film, Paperclip, TrendingUp, TrendingDown, ArrowRight,
-  Link2, Coins,
+  Link2, Coins, ListChecks, Plus,
 } from "lucide-react";
 import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
@@ -20,7 +20,7 @@ import { buildObjectAffiliate } from "@/lib/referral-links";
 import { estimateEarning } from "@/lib/rewards";
 import type {
   User, SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData,
-  PostAttachment, ReferralLink, Currency,
+  PostAttachment, ReferralLink, Currency, Poll,
 } from "@/lib/types";
 import { DiscoverHub } from "@/components/layout/discover-hub";
 import { RecommendedCarousel } from "@/components/feed/recommended-carousel";
@@ -614,6 +614,43 @@ const VIDEO_POSTS: SocialPost[] = [
         label: "Rendement net annuel",
         headline: "3.8%",
       },
+    },
+  },
+
+  /* ── Sondages interactifs (facon X) ───────────────────────────────────── */
+  {
+    id: "p-poll-1", author: U_LEO,
+    content: "Selon vous, quelle ville romande offre le meilleur potentiel d'investissement en 2026 ?",
+    media: [], type: "post", likes: 486, location: "Geneve, Suisse", createdAt: hAgo(0.5),
+    comments: mkComments("p-poll-1", [
+      { author: U_MARC, content: "Geneve pour la liquidite, mais Fribourg pour le rendement.", h: 0.4, likes: 21 },
+    ]),
+    poll: {
+      options: [
+        { id: "o1", label: "Geneve", votes: 420 },
+        { id: "o2", label: "Lausanne", votes: 380 },
+        { id: "o3", label: "Fribourg", votes: 95 },
+        { id: "o4", label: "Sion", votes: 60 },
+      ],
+      totalVotes: 955,
+      endsAt: new Date(Date.now() + 2 * 24 * 3600_000).toISOString(),
+    },
+  },
+  {
+    id: "p-poll-2", author: U_MARC,
+    content: "Location courte duree ou longue duree : votre strategie preferee ?",
+    media: [], type: "post", likes: 312, location: "Geneve, Suisse", createdAt: hAgo(9),
+    comments: mkComments("p-poll-2", [
+      { author: U_AMINA, content: "Courte duree, mais il faut aimer gerer.", h: 8, likes: 14 },
+    ]),
+    poll: {
+      options: [
+        { id: "o1", label: "Courte duree", votes: 512 },
+        { id: "o2", label: "Longue duree", votes: 388 },
+        { id: "o3", label: "Les deux", votes: 240 },
+      ],
+      totalVotes: 1140,
+      endsAt: new Date(Date.now() + 6 * 3600_000).toISOString(),
     },
   },
 ];
@@ -1520,6 +1557,66 @@ function AffiliatePostBadge({ link }: { link: ReferralLink }) {
   );
 }
 
+// ─── Sondage (façon X) ──────────────────────────────────────────────────────
+
+function pollTimeLeft(endsAt: string): string {
+  const ms = new Date(endsAt).getTime() - Date.now();
+  if (ms <= 0) return "Sondage terminé";
+  const h = Math.floor(ms / 3600_000);
+  if (h >= 24) return `${Math.floor(h / 24)} j restants`;
+  if (h >= 1) return `${h} h restantes`;
+  return `${Math.max(1, Math.floor(ms / 60_000))} min restantes`;
+}
+
+/* Bloc de sondage interactif : avant vote → options cliquables ; après vote
+   (ou sondage terminé) → barres avec pourcentages, option choisie mise en
+   avant, total des votes + temps restant. */
+function PollBlock({ poll, onVote }: { poll: Poll; onVote: (optionId: string) => void }) {
+  const ended = poll.endsAt ? new Date(poll.endsAt).getTime() < Date.now() : false;
+  const locked = !!poll.userVote || ended;
+  const total = poll.totalVotes || 0;
+
+  return (
+    <div className="mt-2 space-y-1.5 max-w-md" onClick={(e) => e.stopPropagation()}>
+      {poll.options.map((o) => {
+        const pct = total > 0 ? Math.round((o.votes / total) * 100) : 0;
+        const chosen = poll.userVote === o.id;
+        if (!locked) {
+          return (
+            <button
+              key={o.id}
+              onClick={() => onVote(o.id)}
+              className="w-full text-center px-4 py-2 rounded-full border border-[var(--primary)]/45 text-sm font-semibold text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors"
+            >
+              {o.label}
+            </button>
+          );
+        }
+        return (
+          <div key={o.id} className="relative w-full h-9 rounded-lg overflow-hidden border border-[var(--card-border)] bg-[var(--card)]">
+            <div
+              className="absolute inset-y-0 left-0 transition-[width] duration-500"
+              style={{ width: `${pct}%`, background: `color-mix(in srgb, var(--primary) ${chosen ? 28 : 12}%, transparent)` }}
+            />
+            <div className="relative flex items-center justify-between h-full px-3">
+              <span className={`text-sm text-[var(--foreground)] inline-flex items-center gap-1.5 ${chosen ? "font-semibold" : ""}`}>
+                {o.label}
+                {chosen && <Check className="w-3.5 h-3.5 text-[var(--primary)]" strokeWidth={3} />}
+              </span>
+              <span className="text-sm font-semibold tabular-nums text-[var(--foreground)]">{pct}%</span>
+            </div>
+          </div>
+        );
+      })}
+      <p className="text-xs text-[var(--text-muted)] pt-0.5">
+        {formatCount(total)} vote{total > 1 ? "s" : ""}
+        {poll.endsAt ? ` · ${pollTimeLeft(poll.endsAt)}` : ""}
+        {locked && !poll.userVote ? "" : ""}
+      </p>
+    </div>
+  );
+}
+
 // ─── PostCard ──────────────────────────────────────────────────────────────
 
 type PostCardProps = {
@@ -1542,12 +1639,13 @@ type PostCardProps = {
   onDelete: () => void;
   onSignal: () => void;
   onShareCopy: () => void;
+  onVotePoll: (optionId: string) => void;
 };
 
 function PostCard({
   post, liked, saved, reposted, muted, onToggleMute,
   onToggleLike, onToggleSave, onToggleRepost, onOpenComments, onOpenShare, onOpenMore,
-  shareOpen, moreOpen, closeMenus, onEdit, onDelete, onSignal, onShareCopy,
+  shareOpen, moreOpen, closeMenus, onEdit, onDelete, onSignal, onShareCopy, onVotePoll,
 }: PostCardProps) {
   const { formatPrice } = useApp();
   const cta = CUSTOM_CTA[post.id];
@@ -1564,7 +1662,7 @@ function PostCard({
   /* Post « texte seul » (façon X) : aucun média ni objet attaché → on met le
      texte en avant, plus grand. */
   const textOnly =
-    post.media.length === 0 && !post.property && !post.formation && !post.attachment && !cta && !event;
+    post.media.length === 0 && !post.property && !post.formation && !post.attachment && !post.poll && !cta && !event;
 
   return (
     <article
@@ -1652,6 +1750,9 @@ function PostCard({
               <PostCaption content={post.content} big={textOnly} />
             </div>
           )}
+
+          {/* Sondage interactif */}
+          {post.poll && <PollBlock poll={post.poll} onVote={onVotePoll} />}
 
           {/* Media — video, image ou galerie. Format d'origine inchange. */}
           {post.media.length > 0 && (
@@ -1944,6 +2045,10 @@ export default function FeedPage() {
     | { kind: "analytics"; data: AnalyticsCardData }
     | null;
   const [composerAttachment, setComposerAttachment] = useState<ComposerAttachmentState>(null);
+  /* Sondage en cours de création : actif + 2 à 4 options. Exclusif avec une
+     pièce jointe (bien/formation/…). La question = le texte du composer. */
+  const [pollActive, setPollActive] = useState(false);
+  const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
   const [attachPicker, setAttachPicker] = useState<
     null | "property" | "formation" | "event" | "analytics"
   >(null);
@@ -2054,6 +2159,17 @@ export default function FeedPage() {
     setMoreMenuPost(null);
   };
 
+  /* Vote de sondage : incrémente l'option choisie et verrouille (1 vote). */
+  const votePoll = (postId: string, optionId: string) => {
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== postId || !p.poll || p.poll.userVote) return p;
+        const options = p.poll.options.map((o) => (o.id === optionId ? { ...o, votes: o.votes + 1 } : o));
+        return { ...p, poll: { ...p.poll, options, totalVotes: p.poll.totalVotes + 1, userVote: optionId } };
+      }),
+    );
+  };
+
   /* ─── Composer : handlers ─────────────────────────────────────────── */
 
   const handleAddMedia = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2141,8 +2257,26 @@ export default function FeedPage() {
     );
   };
 
+  /* ─── Sondage : handlers ─────────────────────────────────────────── */
+  const togglePoll = () => {
+    setPollActive((on) => {
+      const next = !on;
+      if (next) setComposerAttachment(null); // exclusif avec une pièce jointe
+      else setPollOptions(["", ""]);
+      return next;
+    });
+  };
+  const setPollOption = (i: number, v: string) =>
+    setPollOptions((prev) => prev.map((o, k) => (k === i ? v : o)));
+  const addPollOption = () => setPollOptions((prev) => (prev.length >= 4 ? prev : [...prev, ""]));
+  const removePollOption = (i: number) =>
+    setPollOptions((prev) => (prev.length <= 2 ? prev : prev.filter((_, k) => k !== i)));
+
+  const pollFilled = pollOptions.map((o) => o.trim()).filter(Boolean);
+  const pollReady = pollActive && composerText.trim().length > 0 && pollFilled.length >= 2;
+
   const composerHasContent =
-    composerText.trim().length > 0 ||
+    (pollActive ? pollReady : composerText.trim().length > 0) ||
     composerMedia.length > 0 ||
     composerAttachment !== null;
 
@@ -2183,10 +2317,21 @@ export default function FeedPage() {
       if (link) newPost.affiliate = link;
     }
 
+    // Sondage → attaché au post (les options remplies deviennent votables).
+    if (pollReady) {
+      newPost.poll = {
+        options: pollFilled.map((label, i) => ({ id: `o${i}`, label, votes: 0 })),
+        totalVotes: 0,
+        endsAt: new Date(Date.now() + 24 * 3600_000).toISOString(),
+      };
+    }
+
     setPosts((prev) => [newPost, ...prev]);
     setComposerText("");
     setComposerMedia([]);
     setComposerAttachment(null);
+    setPollActive(false);
+    setPollOptions(["", ""]);
     setActiveTab("pour-vous");
     setFeedToast("Publié");
     setTimeout(() => setFeedToast(null), 1800);
@@ -2390,6 +2535,49 @@ export default function FeedPage() {
                     </div>
                   )}
 
+                  {/* Éditeur de sondage (options) */}
+                  {pollActive && (
+                    <div className="mt-2 rounded-xl border border-[var(--card-border)] p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] inline-flex items-center gap-1.5">
+                          <ListChecks className="w-3.5 h-3.5" /> Sondage
+                        </p>
+                        <button
+                          onClick={togglePoll}
+                          className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] inline-flex items-center gap-1"
+                        >
+                          <X className="w-3.5 h-3.5" /> Retirer
+                        </button>
+                      </div>
+                      {composerText.trim().length === 0 && (
+                        <p className="text-[11px] text-[var(--text-muted)] mb-2">Écrivez votre question dans le champ ci-dessus.</p>
+                      )}
+                      <div className="space-y-2">
+                        {pollOptions.map((opt, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            <input
+                              value={opt}
+                              onChange={(e) => setPollOption(i, e.target.value)}
+                              maxLength={40}
+                              placeholder={`Option ${i + 1}`}
+                              className="flex-1 px-3 py-2 text-sm rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)]"
+                            />
+                            {pollOptions.length > 2 && (
+                              <button onClick={() => removePollOption(i)} aria-label="Retirer l'option" className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--hover-bg)] transition-colors">
+                                <X className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {pollOptions.length < 4 && (
+                        <button onClick={addPollOption} className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--primary)] hover:underline">
+                          <Plus className="w-4 h-4" /> Ajouter une option
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   {/* Input file caché — accept image+video, multiple, pas de
                       `capture` pour laisser iOS proposer le choix entre
                       Bibliothèque / Photo / Vidéo via le bottom sheet
@@ -2434,6 +2622,12 @@ export default function FeedPage() {
                         label="Attacher une analyse de bien"
                         onClick={() => openAttachPicker("analytics")}
                         badge={composerAttachment?.kind === "analytics"}
+                      />
+                      <ComposerAction
+                        icon={ListChecks}
+                        label="Créer un sondage"
+                        onClick={togglePoll}
+                        badge={pollActive}
                       />
                     </div>
                     <div className="flex items-center gap-3">
@@ -2506,6 +2700,7 @@ export default function FeedPage() {
                     showToast("Publication signalée");
                   }}
                   onShareCopy={() => handleShareCopy(post.id)}
+                  onVotePoll={(optionId) => votePoll(post.id, optionId)}
                 />
               ))
             )}
