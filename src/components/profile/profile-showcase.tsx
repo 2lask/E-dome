@@ -7,7 +7,7 @@ import {
   Plus, ArrowRight, UserRound, Store,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { PostCard } from "@/components/feed/post-card";
+import { PostsGrid } from "@/components/feed/posts-grid";
 import type { SocialPost } from "@/lib/types";
 
 /* Vitrine du profil — 3 grands onglets (façon Instagram) :
@@ -345,9 +345,7 @@ export function ProfileShowcase({
           {data.posts.length === 0 ? (
             <EmptyState label={TAB_LINKS.publications.empty} isOwn={isOwn} add={TAB_LINKS.publications.add} />
           ) : (
-            <div className="space-y-4 max-w-[600px]">
-              {data.posts.map((p) => <PostCard key={p.id} post={p} />)}
-            </div>
+            <PostsGrid posts={data.posts} />
           )}
         </div>
       )}
