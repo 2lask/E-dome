@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, MapPin, Crown, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, MapPin, Crown, CalendarDays, ChevronLeft, ChevronRight, Coins, TrendingUp } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { properties, events } from "@/lib/mock-data";
 import type { Currency } from "@/lib/types";
@@ -22,13 +22,26 @@ const toChf = (price: number, currency: string) => price * (TO_CHF[currency] ?? 
 type Slide = {
   id: string;
   href: string;
-  image: string;
   badge: string;
-  kind: "bien" | "evenement";
+  kind: "bien" | "evenement" | "apporteur";
   title: string;
-  location: string;
-  price: string;
   cta: string;
+  image?: string;
+  location?: string;
+  price?: string;
+  /** Sous-titre (slide promo apporteur). */
+  subtitle?: string;
+};
+
+/* Slide promotionnelle : rejoindre le réseau d'apporteurs d'affaires. */
+const APPORTEUR_SLIDE: Slide = {
+  id: "apporteur-cta",
+  href: "/apporteurs",
+  kind: "apporteur",
+  badge: "Programme apporteurs",
+  title: "Commencez à toucher vos premières commissions",
+  subtitle: "Recommandez des biens, formations et événements — et gagnez jusqu'à 0,5 % sur chaque vente conclue via votre lien.",
+  cta: "Rejoindre le réseau",
 };
 
 const AUTOPLAY_MS = 5000;
@@ -77,6 +90,9 @@ export function RecommendedCarousel() {
       if (i === 1 && topEvents[0]) merged.push(eventSlide(topEvents[0]));
       if (i === 3 && topEvents[1]) merged.push(eventSlide(topEvents[1]));
     });
+    // Insère la promo apporteur en 2ᵉ position (visible tôt, sans voler la
+    // vedette au 1ᵉʳ bien de prestige).
+    merged.splice(1, 0, APPORTEUR_SLIDE);
     return merged;
   }, [formatPrice]);
 
@@ -114,38 +130,61 @@ export function RecommendedCarousel() {
           className="flex transition-transform duration-500 ease-out"
           style={{ transform: `translateX(-${index * 100}%)` }}
         >
-          {slides.map((s) => (
-            <Link
-              key={s.id}
-              href={s.href}
-              className="relative block w-full shrink-0 h-52 sm:h-56"
-            >
-              <img
-                src={s.image}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/5" />
-              <div className="absolute inset-x-0 bottom-0 p-5">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-[11px] font-semibold uppercase tracking-wide ring-1 ring-white/25">
-                  {s.kind === "bien" ? <Crown className="w-3 h-3" /> : <CalendarDays className="w-3 h-3" />}
-                  {s.badge}
-                </span>
-                <h3 className="text-white text-lg font-bold leading-snug mt-2 line-clamp-1 drop-shadow">
-                  {s.title}
-                </h3>
-                <p className="text-white/80 text-xs mt-0.5 inline-flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> {s.location}
-                </p>
-                <div className="flex items-end justify-between gap-3 mt-2.5">
-                  <p className="text-white text-xl font-bold drop-shadow">{s.price}</p>
-                  <span className="shrink-0 inline-flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-white text-black text-sm font-semibold group-hover:bg-white/90 transition">
-                    {s.cta} <ArrowRight className="w-4 h-4" />
+          {slides.map((s) =>
+            s.kind === "apporteur" ? (
+              /* Slide promo apporteur — fond de marque (dégradé émeraude), pas de photo. */
+              <Link key={s.id} href={s.href} className="relative block w-full shrink-0 h-52 sm:h-56 overflow-hidden">
+                <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #065f46 0%, #0f172a 72%)" }} />
+                <Coins aria-hidden className="absolute -right-5 -bottom-6 w-44 h-44 text-white/10" />
+                <div className="absolute inset-x-0 bottom-0 p-5">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-[11px] font-semibold uppercase tracking-wide ring-1 ring-white/25">
+                    <Coins className="w-3 h-3" /> {s.badge}
                   </span>
+                  <h3 className="text-white text-lg sm:text-xl font-bold leading-snug mt-2 line-clamp-2 drop-shadow max-w-[85%]">
+                    {s.title}
+                  </h3>
+                  {s.subtitle && (
+                    <p className="text-white/85 text-xs sm:text-[13px] mt-1 line-clamp-2 max-w-[92%]">{s.subtitle}</p>
+                  )}
+                  <div className="flex items-center justify-between gap-3 mt-2.5">
+                    <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-medium">
+                      <TrendingUp className="w-4 h-4" /> Gratuit · sans engagement
+                    </span>
+                    <span className="shrink-0 inline-flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-white text-black text-sm font-semibold group-hover:bg-white/90 transition">
+                      {s.cta} <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ) : (
+              <Link key={s.id} href={s.href} className="relative block w-full shrink-0 h-52 sm:h-56">
+                <img
+                  src={s.image}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/5" />
+                <div className="absolute inset-x-0 bottom-0 p-5">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-[11px] font-semibold uppercase tracking-wide ring-1 ring-white/25">
+                    {s.kind === "bien" ? <Crown className="w-3 h-3" /> : <CalendarDays className="w-3 h-3" />}
+                    {s.badge}
+                  </span>
+                  <h3 className="text-white text-lg font-bold leading-snug mt-2 line-clamp-1 drop-shadow">
+                    {s.title}
+                  </h3>
+                  <p className="text-white/80 text-xs mt-0.5 inline-flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> {s.location}
+                  </p>
+                  <div className="flex items-end justify-between gap-3 mt-2.5">
+                    <p className="text-white text-xl font-bold drop-shadow">{s.price}</p>
+                    <span className="shrink-0 inline-flex items-center gap-1.5 px-3.5 h-9 rounded-full bg-white text-black text-sm font-semibold group-hover:bg-white/90 transition">
+                      {s.cta} <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ),
+          )}
         </div>
 
         {/* Flèches — visibles au survol (desktop). */}
