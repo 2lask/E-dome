@@ -40,7 +40,7 @@ const APPORTEUR_SLIDE: Slide = {
   kind: "apporteur",
   badge: "Programme apporteurs",
   title: "Commencez à toucher vos premières commissions",
-  subtitle: "Recommandez des biens, formations et événements — et gagnez jusqu'à 0,5 % sur chaque vente conclue via votre lien.",
+  subtitle: "Recommandez des biens, formations et événements — et touchez une commission sur chaque vente conclue via votre lien.",
   cta: "Rejoindre le réseau",
 };
 
