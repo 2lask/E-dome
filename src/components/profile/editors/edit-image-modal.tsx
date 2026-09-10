@@ -22,19 +22,45 @@ export function EditImageModal({
   const [error, setError] = useState<string | undefined>();
   const fileRef = useRef<HTMLInputElement>(null);
 
+  /* Une image de 3 Mo encodée en base64 pèse ~4 Mo, soit la quasi-totalité du
+     quota localStorage (~5 Mo) : l'enregistrement faisait sauter le stockage
+     et cassait l'application. On redimensionne donc avant d'encoder — 512 px
+     suffisent largement pour un avatar, 1600 px pour une bannière. La limite
+     d'entrée peut du coup être plus généreuse qu'avant. */
+  const MAX_EDGE = kind === "avatar" ? 512 : 1600;
+
   const onFile = (file?: File) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       setError("Le fichier doit être une image.");
       return;
     }
-    if (file.size > 3 * 1024 * 1024) {
-      setError("Image trop lourde (max 3 Mo).");
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Image trop lourde (max 10 Mo).");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => { setValue(String(reader.result)); setError(undefined); };
-    reader.readAsDataURL(file);
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, MAX_EDGE / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
+      const ctx = canvas.getContext("2d");
+      URL.revokeObjectURL(objectUrl);
+      if (!ctx) {
+        setError("Impossible de traiter cette image.");
+        return;
+      }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      setValue(canvas.toDataURL("image/jpeg", 0.82));
+      setError(undefined);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      setError("Fichier image illisible.");
+    };
+    img.src = objectUrl;
   };
 
   const save = () => {

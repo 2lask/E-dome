@@ -100,6 +100,21 @@ const DEFAULT_CURRENCY: Currency = "CHF";
 const DEFAULT_FAVORITES: string[] = ["prop2", "prop5", "prop3", "prop9"];
 const STORAGE_PREFIX = "edome_";
 
+/* Ecriture localStorage tolerante aux pannes.
+   setItem leve QuotaExceededError des que le quota (~5 Mo) est atteint —
+   typiquement une photo de profil encodee en base64 — et leve
+   systematiquement en navigation privee Safari. Appelee a nu dans un
+   useEffect, l'exception remonte a l'error boundary et casse l'application
+   entiere. On degrade silencieusement : la donnee n'est pas persistee,
+   mais la session reste utilisable. */
+function persist(key: string, value: string) {
+  try {
+    localStorage.setItem(`${STORAGE_PREFIX}${key}`, value);
+  } catch {
+    /* Quota depasse ou stockage indisponible. */
+  }
+}
+
 // ─── Provider ───────────────────────────────────────────────────────────────
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -173,52 +188,52 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Persist effects (only after mount)
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}activeRole`, activeRole);
+    persist("activeRole", activeRole);
   }, [activeRole, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}availableRoles`, JSON.stringify(availableRoles));
+    persist("availableRoles", JSON.stringify(availableRoles));
   }, [availableRoles, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}favorites`, JSON.stringify([...favorites]));
+    persist("favorites", JSON.stringify([...favorites]));
   }, [favorites, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}followedUsers`, JSON.stringify([...followedUsers]));
+    persist("followedUsers", JSON.stringify([...followedUsers]));
   }, [followedUsers, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}currency`, currency);
+    persist("currency", currency);
   }, [currency, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}cart`, JSON.stringify(cart));
+    persist("cart", JSON.stringify(cart));
   }, [cart, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}referralLinks`, JSON.stringify(referralLinks));
+    persist("referralLinks", JSON.stringify(referralLinks));
   }, [referralLinks, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}profile`, JSON.stringify(profile));
+    persist("profile", JSON.stringify(profile));
   }, [profile, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}pinnedPosts`, JSON.stringify(pinnedPosts));
+    persist("pinnedPosts", JSON.stringify(pinnedPosts));
   }, [pinnedPosts, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem(`${STORAGE_PREFIX}hiddenPosts`, JSON.stringify(hiddenPosts));
+    persist("hiddenPosts", JSON.stringify(hiddenPosts));
   }, [hiddenPosts, mounted]);
 
   // ── Actions ─────────────────────────────────────────────────────────────
