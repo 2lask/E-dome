@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { AlertTriangle } from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
@@ -33,11 +34,19 @@ export default function PaiementPage() {
   // Payment method
   const [method, setMethod] = useState<"carte" | "twint" | "virement">("carte");
 
-  // Card form
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvc, setCardCvc] = useState("");
-  const [cardName, setCardName] = useState("");
+  /* Formulaire carte — VERROUILLE EN MODE DEMONSTRATION.
+     Cette page n'a aucun prestataire de paiement : rien n'est transmis, rien
+     n'est chiffre, et le "3-D Secure" plus bas est un setTimeout. Laisser la
+     saisie ouverte revenait a inviter un visiteur a taper un vrai numero de
+     carte sur une page publique. Les champs sont donc pre-remplis avec la
+     carte de test 4242… (jamais debitable) et passes en lecture seule : le
+     parcours reste demontrable, aucune donnee bancaire reelle ne peut entrer.
+     A remplacer par Stripe Payment Element — le PAN ne doit jamais transiter
+     par notre code (hors perimetre PCI-DSS). */
+  const [cardNumber, setCardNumber] = useState("4242 4242 4242 4242");
+  const [cardExpiry, setCardExpiry] = useState("12/28");
+  const [cardCvc, setCardCvc] = useState("123");
+  const [cardName, setCardName] = useState("DEMONSTRATION E-DOME");
 
   // 3D Secure
   const [show3DS, setShow3DS] = useState(false);
@@ -173,15 +182,28 @@ export default function PaiementPage() {
             {/* ── Card form ─────────────────────────────────────────── */}
             {method === "carte" && (
               <div className="p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl space-y-4 animate-fade-in">
+                <div
+                  role="note"
+                  className="flex gap-3 p-3 rounded-xl border border-[var(--warning)] bg-[var(--warning-soft)] text-[var(--warning-text)]"
+                >
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
+                  <p className="text-xs leading-relaxed">
+                    <strong>Demonstration — ne saisissez aucune vraie carte.</strong> Aucun
+                    prestataire de paiement n&apos;est connecte : rien n&apos;est transmis ni
+                    debite. Les champs sont pre-remplis avec une carte de test et verrouilles.
+                  </p>
+                </div>
                 <div>
                   <label className={labelCls}>Numero de carte</label>
                   <div className="relative">
                     <input
-                      className={inputCls}
+                      className={`${inputCls} opacity-70 cursor-not-allowed`}
                       placeholder="1234 5678 9012 3456"
                       value={cardNumber}
                       onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                       maxLength={19}
+                      readOnly
+                      aria-readonly="true"
                     />
                     {cardType && (
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-muted)] uppercase">
@@ -190,15 +212,15 @@ export default function PaiementPage() {
                     )}
                   </div>
                 </div>
-                <div><label className={labelCls}>Nom du titulaire</label><input className={inputCls} placeholder="Jean Dupont" value={cardName} onChange={(e) => setCardName(e.target.value)} /></div>
+                <div><label className={labelCls}>Nom du titulaire</label><input className={`${inputCls} opacity-70 cursor-not-allowed`} placeholder="Jean Dupont" value={cardName} onChange={(e) => setCardName(e.target.value)} readOnly aria-readonly="true" /></div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className={labelCls}>Expiration</label>
-                    <input className={inputCls} placeholder="MM/AA" value={cardExpiry} onChange={(e) => setCardExpiry(formatExpiry(e.target.value))} maxLength={5} />
+                    <input className={`${inputCls} opacity-70 cursor-not-allowed`} placeholder="MM/AA" value={cardExpiry} onChange={(e) => setCardExpiry(formatExpiry(e.target.value))} maxLength={5} readOnly aria-readonly="true" />
                   </div>
                   <div>
                     <label className={labelCls}>CVC</label>
-                    <input className={inputCls} placeholder="123" value={cardCvc} onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, "").slice(0, 3))} maxLength={3} type="password" />
+                    <input className={`${inputCls} opacity-70 cursor-not-allowed`} placeholder="123" value={cardCvc} onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, "").slice(0, 3))} maxLength={3} readOnly aria-readonly="true" />
                   </div>
                 </div>
               </div>
