@@ -1,9 +1,21 @@
-"use client";
-
-import { use } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Film } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
+
+/* ── SERVER COMPONENT ────────────────────────────────────────────────────────
+   Première page du groupe (app) convertie après le découpage du layout.
+   Elle n'a aucune interactivité propre (le seul élément client est
+   `BackButton`, importé comme composant), donc rien ne justifiait de
+   l'envoyer au navigateur.
+
+   Ce que la conversion débloque concrètement :
+   - `generateMetadata` : titre et description réels par replay, pour le
+     partage et le référencement — impossible tant que la page était client.
+   - `generateStaticParams` : les 6 replays sont prérendus au build. C'est
+     aussi un prérequis de `output: "export"`, nécessaire pour empaqueter
+     l'application avec Capacitor.
+   Modèle à suivre pour /explorer, /formations, /evenements, /boutique. */
 
 /* ─── Replay Data ───────────────────────────────────────────────────────── */
 
@@ -16,10 +28,39 @@ const REPLAYS: Record<string, { title: string; speaker: string; date: string; vu
   "6": { title: "Photographie immobiliere pro", speaker: "Amina Kone", date: "20 fev. 2026", vues: "780", youtubeId: "FqjDgXlE2nQ" },
 };
 
+/* ─── Prérendu & métadonnées ─────────────────────────────────────────────── */
+
+export function generateStaticParams() {
+  return Object.keys(REPLAYS).map((id) => ({ id }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const replay = REPLAYS[id];
+
+  if (!replay) {
+    return { title: "Replay introuvable · E-Dome" };
+  }
+
+  return {
+    title: `${replay.title} · Replay E-Dome`,
+    description: `Replay du live « ${replay.title} » animé par ${replay.speaker} le ${replay.date}.`,
+    openGraph: {
+      title: replay.title,
+      description: `Live animé par ${replay.speaker} · ${replay.vues} vues`,
+      type: "video.other",
+    },
+  };
+}
+
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
-export default function ReplayPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default async function ReplayPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const replay = REPLAYS[id];
 
   if (!replay) {
