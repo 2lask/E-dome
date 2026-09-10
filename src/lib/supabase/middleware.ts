@@ -7,7 +7,10 @@ import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from "./conf
    un route protege sans etre connecte. Routes proteges = tout (app)
    sauf /auth/* et les pages publiques. */
 
-const PUBLIC_ROUTES = ["/", "/auth", "/api", "/_next", "/favicon", "/icons", "/images", "/videos", "/manifest"];
+/* Prefixes publics. Le suffixe "/" est ajoute a la comparaison pour eviter
+   qu'une future route "/apidoc" ou "/imagesecretes" soit exemptee par hasard.
+   La racine "/" est traitee a part : en prefixe, elle rendrait TOUT public. */
+const PUBLIC_PREFIXES = ["/auth", "/api", "/_next", "/favicon", "/icons", "/images", "/videos", "/manifest"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -38,7 +41,9 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isPublic = PUBLIC_ROUTES.some((p) => pathname.startsWith(p));
+  const isPublic =
+    pathname === "/" ||
+    PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();

@@ -22,7 +22,9 @@ const BodySchema = z.object({
     .min(1)
     .max(30),
   sessionId: z.string().min(1).max(100).optional(),
-  plan: z.enum(["free", "pro", "business", "enterprise"]).optional(),
+  /* NE PAS rajouter "plan" ici. La formule doit etre derivee cote serveur de
+     l'utilisateur authentifie, jamais lue dans le corps de la requete : sinon
+     n'importe qui envoie {"plan":"enterprise"} et obtient un quota infini. */
   context: z
     .object({ currentPropertyId: z.string().optional(), route: z.string().optional() })
     .optional(),
@@ -36,8 +38,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Requête invalide" }, { status: 400 });
   }
 
+  /* TODO(auth) : remplacer par l'utilisateur authentifie —
+     key = user.id et plan = lecture de la table subscriptions.
+     Tant que la route est anonyme, sessionId reste contournable
+     (nouvel identifiant = compteur remis a zero) : le vrai garde-fou
+     devra etre un rate limit par IP + une session obligatoire. */
   const key = body.sessionId ?? "anon";
-  const plan = body.plan ?? "free";
+  const plan = "free" as const;
 
   // Quota appliqué côté serveur, avant tout appel LLM.
   const quota = checkAndConsume(key, plan);

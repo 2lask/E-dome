@@ -20,7 +20,11 @@ interface AuthFormProps {
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") ?? "/feed";
+  /* Chemin relatif uniquement : router.push() suit volontiers une URL absolue
+     hors domaine. Sans ce garde, "?redirect=https://evil.com" ejecte
+     l'utilisateur vers un site tiers juste apres une connexion reussie. */
+  const rawRedirect = searchParams.get("redirect") ?? "/feed";
+  const redirect = /^\/(?!\/)/.test(rawRedirect) ? rawRedirect : "/feed";
   const supabase = createClient();
   const configured = isSupabaseConfigured();
 
