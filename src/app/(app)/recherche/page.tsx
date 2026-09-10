@@ -4,6 +4,11 @@ import React, { Suspense, useState, useMemo, useCallback, useEffect, useRef } fr
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search as SearchIcon, SearchX, X, Clock } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { listProperties } from "@/lib/data/properties";
+import { listEvents } from "@/lib/data/events";
+import { formations as ALL_FORMATIONS } from "@/lib/mock-data";
+import { listPeople } from "@/lib/profile-data";
+import { roleLabels, type Formation } from "@/lib/types";
 
 /* Cle localStorage partagee avec le header (composants/layout/header.tsx)
    pour que recherches recentes soient unifiees entre la barre du header
@@ -11,37 +16,58 @@ import { useApp } from "@/lib/context";
 const RECENT_SEARCHES_KEY = "edome_recent_searches";
 const MAX_RECENT_SEARCHES = 8;
 
-/* ─── Mock Data ──────────────────────────────────────────────────────────── */
+/* ─── Index de recherche ─────────────────────────────────────────────────────
+
+   Derive des sources reelles. Ce fichier definissait auparavant son propre
+   index avec des identifiants inventes (B1→B8, F1→F4, U1→U5, E1→E3) : comme
+   les routes de destination resolvent `prop*`, `form-*`, `user-*` et `e*`,
+   CHAQUE resultat de recherche menait a une page d erreur.
+
+   La forme de vue (titre / prix / ville / …) est conservee telle quelle :
+   seule l origine des donnees change, donc les filtres et le rendu plus bas
+   sont inchanges.
+
+   Les services restent locaux : il n existe pas de route `/services/[id]`,
+   le clic renvoie vers `/services`. */
+
+const LEVEL_LABELS: Record<Formation["level"], string> = {
+  debutant: "Débutant",
+  intermediaire: "Intermédiaire",
+  avance: "Avancé",
+};
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const ALL_RESULTS = {
-  biens: [
-    { id: "B1", titre: "Appartement 3p Lausanne", prix: 450000, type: "Appartement", ville: "Lausanne", pays: "Suisse" },
-    { id: "B2", titre: "Villa Montreux vue lac", prix: 1250000, type: "Villa", ville: "Montreux", pays: "Suisse" },
-    { id: "B3", titre: "Studio Genève centre", prix: 285000, type: "Studio", ville: "Genève", pays: "Suisse" },
-    { id: "B4", titre: "Chalet Verbier luxe", prix: 890000, type: "Chalet", ville: "Verbier", pays: "Suisse" },
-    { id: "B5", titre: "Penthouse Zurich", prix: 2100000, type: "Penthouse", ville: "Zurich", pays: "Suisse" },
-    { id: "B6", titre: "Loft Berne centre", prix: 520000, type: "Loft", ville: "Berne", pays: "Suisse" },
-    { id: "B7", titre: "Maison Neuchatel", prix: 680000, type: "Maison", ville: "Neuchatel", pays: "Suisse" },
-    { id: "B8", titre: "Riad Marrakech", prix: 380000, type: "Riad", ville: "Marrakech", pays: "Maroc" },
-  ],
-  formations: [
-    { id: "F1", titre: "Investir dans l'immobilier", instructeur: "Marc Bonnard", prix: 299, niveau: "Débutant" },
-    { id: "F2", titre: "Photographie immobilière", instructeur: "Amina Koné", prix: 199, niveau: "Intermédiaire" },
-    { id: "F3", titre: "Droit du bail suisse", instructeur: "Thomas Roth", prix: 349, niveau: "Avancé" },
-    { id: "F4", titre: "Home staging efficace", instructeur: "Laura Fischer", prix: 149, niveau: "Débutant" },
-  ],
-  utilisateurs: [
-    { id: "U1", nom: "Marie Dupont", role: "Hote", ville: "Lausanne" },
-    { id: "U2", nom: "Jean Martin", role: "Client", ville: "Genève" },
-    { id: "U3", nom: "Sophie Meier", role: "Agence", ville: "Zurich" },
-    { id: "U4", nom: "Leo Martin", role: "Apporteur", ville: "Montreux" },
-    { id: "U5", nom: "Laura Fischer", role: "Investisseur", ville: "Berne" },
-  ],
-  evenements: [
-    { id: "E1", titre: "Salon de l'immobilier Genève", date: "2026-05-15", lieu: "Palexpo, Genève" },
-    { id: "E2", titre: "Workshop investissement Lausanne", date: "2026-04-20", lieu: "SwissTech, Lausanne" },
-    { id: "E3", titre: "Conference PropTech Zurich", date: "2026-06-10", lieu: "Zurich Convention Center" },
-  ],
+  biens: listProperties().map((p) => ({
+    id: p.id,
+    titre: p.title,
+    prix: p.price,
+    type: capitalize(p.type),
+    ville: p.location.city,
+    pays: p.location.country,
+  })),
+  formations: ALL_FORMATIONS.map((f) => ({
+    id: f.id,
+    titre: f.title,
+    instructeur: `${f.instructor.firstName} ${f.instructor.lastName}`,
+    prix: f.price,
+    niveau: LEVEL_LABELS[f.level],
+  })),
+  /* listPeople() ne renvoie que des profils que /profil/[id] sait resoudre —
+     garantit qu aucun resultat utilisateur ne mene a « Profil introuvable ». */
+  utilisateurs: listPeople().map((u) => ({
+    id: u.id,
+    nom: `${u.firstName} ${u.lastName}`,
+    role: roleLabels[u.roles[0] ?? "client"],
+    ville: u.city,
+  })),
+  evenements: listEvents().map((e) => ({
+    id: e.id,
+    titre: e.titre,
+    date: e.date,
+    lieu: e.lieu,
+  })),
   services: [
     { id: "S1", titre: "Estimation immobilière", description: "Estimation professionnelle de votre bien", prix: 150 },
     { id: "S2", titre: "Photographie immobilière pro", description: "Séance photo HDR + drone", prix: 450 },

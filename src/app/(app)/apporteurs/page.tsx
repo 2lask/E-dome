@@ -8,8 +8,12 @@ import {
 import { useApp } from "@/lib/context";
 import { slugifyLinkLabel, buildReferralUrl, buildObjectAffiliate } from "@/lib/referral-links";
 import { properties, formations } from "@/lib/mock-data";
-import { EVENTS } from "../evenements/[id]/page";
-import { PRODUCTS } from "../boutique/[id]/page";
+/* Catalogues lus depuis la couche de données, plus depuis des modules de
+   route : importer `../evenements/[id]/page` ou `../boutique/[id]/page`
+   embarquait la page fiche entière dans le bundle de /apporteurs, et
+   limitait le catalogue produits aux 6 fiches que cette page connaissait. */
+import { EVENTS } from "@/lib/data/events";
+import { PRODUCTS } from "@/lib/data/products";
 import type { ReferralTargetKind } from "@/lib/types";
 import {
   Dialog,

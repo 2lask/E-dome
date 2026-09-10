@@ -4,25 +4,10 @@ import React, { useState, useMemo } from "react";
 import { Check } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { PageHeader } from "@/components/ui/page-header";
+import { EVENTS, EVENT_TYPE_COLORS as TYPE_COLORS } from "@/lib/data/events";
 
-/* ─── Mock Data ──────────────────────────────────────────────────────────── */
-
-const EVENTS = [
-  { id: "e1", titre: "Salon de l'immobilier Suisse 2026", type: "Conférence", date: "2026-05-15", heure: "09:00", duree: "8h", lieu: "Palexpo, Genève", description: "Le plus grand salon immobilier de Suisse romande.", thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop", spots: 500, spotsRemaining: 127, prix: 45, featured: true, intervenant: "Plusieurs experts" },
-  { id: "e2", titre: "Webinaire : Optimiser son rendement locatif", type: "Webinaire", date: "2026-04-20", heure: "18:00", duree: "1h30", lieu: "En ligne", description: "Stratégies pour maximiser la rentabilité de vos biens.", thumbnail: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600&h=400&fit=crop", spots: 200, spotsRemaining: 84, prix: 0, featured: false, intervenant: "Sophie Martin" },
-  { id: "e3", titre: "Atelier : Home staging pratique", type: "Atelier", date: "2026-04-10", heure: "14:00", duree: "3h", lieu: "Lausanne, Centre Flon", description: "Apprenez les techniques de home staging pour vendre plus vite.", thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", spots: 30, spotsRemaining: 8, prix: 89, featured: false, intervenant: "Claire Bernard" },
-  { id: "e4", titre: "Networking investisseurs romands", type: "Networking", date: "2026-04-05", heure: "19:00", duree: "2h", lieu: "Hôtel Royal, Montreux", description: "Rencontrez les investisseurs les plus actifs de la région.", thumbnail: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=400&fit=crop", spots: 80, spotsRemaining: 22, prix: 35, featured: false, intervenant: "Marc Dupont" },
-  { id: "e5", titre: "Formation live : Fiscalité immobilière", type: "Formation live", date: "2026-03-20", heure: "10:00", duree: "4h", lieu: "En ligne", description: "Comprendre la fiscalité liée aux investissements immobiliers.", thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop", spots: 150, spotsRemaining: 0, prix: 120, featured: false, intervenant: "Jean Leroy" },
-  { id: "e6", titre: "Conférence : Marché immobilier 2026", type: "Conférence", date: "2026-03-10", heure: "17:00", duree: "2h", lieu: "EPFL, Lausanne", description: "Analyse et perspectives du marché immobilier suisse.", thumbnail: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=400&fit=crop", spots: 300, spotsRemaining: 0, prix: 0, featured: false, intervenant: "Prof. A. Blanc" },
-];
-
-const TYPE_COLORS: Record<string, string> = {
-  "Webinaire": "bg-blue-500/20 text-blue-400",
-  "Conférence": "bg-purple-500/20 text-purple-400",
-  "Atelier": "bg-green-500/20 text-green-400",
-  "Networking": "bg-amber-500/20 text-amber-400",
-  "Formation live": "bg-rose-500/20 text-rose-400",
-};
+/* Donnees et couleurs de badge : voir '@/lib/data/events' — ce fichier
+   dupliquait le tableau de la page fiche avec des descriptions plus courtes. */
 
 const TABS = ["À venir", "En cours", "Passés"];
 const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];

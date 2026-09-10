@@ -7,27 +7,13 @@ import { useApp } from "@/lib/context";
 import { BackButton } from "@/components/ui/back-button";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
+import { EVENTS, EVENT_TYPE_COLORS as TYPE_COLORS } from "@/lib/data/events";
 
-/* ─── Mock Data (same as evenements list) ──────────────────────────────── */
+/* Donnees et couleurs de badge : voir '@/lib/data/events'.
 
-/* Exporté pour alimenter le catalogue d'annonces de la page /apporteurs
-   (mêmes ids que la route pour que les redirections ?ref= tombent juste). */
-export const EVENTS = [
-  { id: "e1", titre: "Salon de l'immobilier Suisse 2026", type: "Conférence", date: "2026-05-15", heure: "09:00", duree: "8h", lieu: "Palexpo, Genève", description: "Le plus grand salon immobilier de Suisse romande. Retrouvez plus de 200 exposants, des conférences thématiques et des ateliers pratiques pour tous les profils : investisseurs, propriétaires, courtiers et passionnés d'immobilier.", thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop", spots: 500, spotsRemaining: 127, prix: 45, featured: true, intervenant: "Plusieurs experts", programme: ["09:00 — Ouverture des portes", "10:00 — Keynote : Tendances immobilières 2026", "11:30 — Table ronde : Investir en Suisse romande", "14:00 — Ateliers pratiques (3 salles)", "16:00 — Networking & cocktail", "17:00 — Clôture"] },
-  { id: "e2", titre: "Webinaire : Optimiser son rendement locatif", type: "Webinaire", date: "2026-04-20", heure: "18:00", duree: "1h30", lieu: "En ligne", description: "Stratégies concrètes pour maximiser la rentabilité de vos biens locatifs. Calcul du rendement net, optimisation fiscale, gestion des charges et conseils pour réduire la vacance locative.", thumbnail: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600&h=400&fit=crop", spots: 200, spotsRemaining: 84, prix: 0, featured: false, intervenant: "Sophie Martin", programme: ["18:00 — Introduction et objectifs", "18:15 — Calcul du rendement net réel", "18:45 — Optimisation fiscale", "19:15 — Questions / Réponses", "19:30 — Fin"] },
-  { id: "e3", titre: "Atelier : Home staging pratique", type: "Atelier", date: "2026-04-10", heure: "14:00", duree: "3h", lieu: "Lausanne, Centre Flon", description: "Apprenez les techniques de home staging pour vendre plus vite et au meilleur prix. Mise en scène, photographie, dépersonnalisation et conseils de décoration accessibles à tous.", thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", spots: 30, spotsRemaining: 8, prix: 89, featured: false, intervenant: "Claire Bernard", programme: ["14:00 — Accueil", "14:15 — Les bases du home staging", "15:00 — Exercice pratique en binôme", "16:00 — Retours et astuces avancées", "17:00 — Fin"] },
-  { id: "e4", titre: "Networking investisseurs romands", type: "Networking", date: "2026-04-05", heure: "19:00", duree: "2h", lieu: "Hôtel Royal, Montreux", description: "Rencontrez les investisseurs les plus actifs de Suisse romande dans un cadre exclusif. Échangez vos stratégies, partagez vos deals et créez des partenariats durables.", thumbnail: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=400&fit=crop", spots: 80, spotsRemaining: 22, prix: 35, featured: false, intervenant: "Marc Dupont", programme: ["19:00 — Accueil & cocktail", "19:30 — Présentations flash (5 investisseurs)", "20:15 — Networking libre", "21:00 — Fin"] },
-  { id: "e5", titre: "Formation live : Fiscalité immobilière", type: "Formation live", date: "2026-03-20", heure: "10:00", duree: "4h", lieu: "En ligne", description: "Comprendre la fiscalité liée aux investissements immobiliers en Suisse. Impôt sur le revenu locatif, plus-values, déductions et optimisation via les sociétés immobilières.", thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop", spots: 150, spotsRemaining: 0, prix: 120, featured: false, intervenant: "Jean Leroy", programme: ["10:00 — Introduction", "10:30 — Fiscalité des revenus locatifs", "11:30 — Pause", "11:45 — Plus-values et déductions", "13:00 — Questions / Réponses", "14:00 — Fin"] },
-  { id: "e6", titre: "Conférence : Marché immobilier 2026", type: "Conférence", date: "2026-03-10", heure: "17:00", duree: "2h", lieu: "EPFL, Lausanne", description: "Analyse approfondie et perspectives du marché immobilier suisse pour 2026. Données exclusives, tendances régionales et prévisions d'experts reconnus.", thumbnail: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=400&fit=crop", spots: 300, spotsRemaining: 0, prix: 0, featured: false, intervenant: "Prof. A. Blanc", programme: ["17:00 — Ouverture", "17:15 — État des lieux du marché", "18:00 — Prévisions régionales", "18:30 — Débat avec le public", "19:00 — Fin"] },
-];
-
-const TYPE_COLORS: Record<string, string> = {
-  "Webinaire": "bg-blue-500/20 text-blue-400",
-  "Conférence": "bg-purple-500/20 text-purple-400",
-  "Atelier": "bg-green-500/20 text-green-400",
-  "Networking": "bg-amber-500/20 text-amber-400",
-  "Formation live": "bg-rose-500/20 text-rose-400",
-};
+   Ce fichier exportait son propre tableau EVENTS, importe a l envers par
+   /apporteurs. Un second jeu vivait dans la page liste et un troisieme dans
+   mock-data.ts, dont les ids (evt-00N) ne resolvaient sur aucune fiche. */
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 

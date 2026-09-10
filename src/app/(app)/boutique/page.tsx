@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { BlurImage } from "@/components/ui/blur-image";
+import { listProducts, type Condition, type Product } from "@/lib/data/products";
 
 /* ─── Pôle Boutique e-commerce (V1.0) ────────────────────────────────────────
    Refonte style marketplace e-commerce (esprit eBay) :
@@ -39,28 +40,9 @@ import { BlurImage } from "@/components/ui/blur-image";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
-type Condition = "Neuf" | "Reconditionné" | "Occasion";
-
-interface Product {
-  id: string;
-  title: string;
-  category: string;
-  cover: string;
-  price: number;
-  oldPrice?: number;
-  condition: Condition;
-  vendor: string;
-  vendorCity: string;
-  vendorRating: number;
-  vendorReviews: number;
-  topRated?: boolean;
-  shipping: number; // 0 = gratuit
-  shippingDays: string;
-  stock: number;
-  reviews: number;
-  rating: number;
-  sold: number;
-}
+/* `Condition` et `Product` viennent de `@/lib/data/products` — la définition
+   locale dupliquait celle de la fiche produit et n'en couvrait qu'une partie,
+   ce qui a laissé les deux catalogues diverger jusqu'aux 404. */
 
 // ─── Catégories (sidebar tree) ────────────────────────────────────────────
 
@@ -76,26 +58,11 @@ const CATEGORIES: { key: string; label: string; icon: React.ComponentType<{ size
 
 const CONDITIONS: Condition[] = ["Neuf", "Reconditionné", "Occasion"];
 
-// ─── Mocks (produits enrichis) ────────────────────────────────────────────
+// ─── Catalogue produits ──────────────────────────────────────────────────
 
-const PRODUCTS: Product[] = [
-  { id: "b1",  title: "Canapé d'angle modulable lin naturel",           category: "Meubles",         cover: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600", price: 2490,  oldPrice: 2890, condition: "Neuf",           vendor: "Maison Léman",     vendorCity: "Lausanne",   vendorRating: 4.8, vendorReviews: 412, topRated: true,  shipping: 0,   shippingDays: "3-5 j",   stock: 4,  reviews: 142, rating: 4.8, sold: 86 },
-  { id: "b2",  title: "Lampadaire design laiton noir",                  category: "Décoration",      cover: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=600", price: 389,                   condition: "Neuf",           vendor: "Studio Verbier",   vendorCity: "Verbier",    vendorRating: 4.6, vendorReviews: 218,                  shipping: 12,  shippingDays: "2-4 j",   stock: 12, reviews: 67,  rating: 4.6, sold: 132 },
-  { id: "b3",  title: "Parquet chêne massif huilé — 18 m²",              category: "Matériaux",       cover: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=600", price: 1480,                  condition: "Neuf",           vendor: "Bois & Co.",       vendorCity: "Bulle",      vendorRating: 4.9, vendorReviews: 318, topRated: true,  shipping: 89,  shippingDays: "7-10 j",  stock: 22, reviews: 203, rating: 4.9, sold: 56 },
-  { id: "b4",  title: "Cuisine sur mesure noyer + îlot quartz",         category: "Cuisines",        cover: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600", price: 18900,                 condition: "Neuf",           vendor: "Cuisinea Geneva",  vendorCity: "Genève",     vendorRating: 4.7, vendorReviews: 92,                   shipping: 0,   shippingDays: "Sur RDV", stock: 1,  reviews: 38,  rating: 4.7, sold: 12 },
-  { id: "b5",  title: "Robinet mitigeur cuivre brossé",                 category: "Équipements",     cover: "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=600", price: 245,                   condition: "Neuf",           vendor: "Plumbing Pro",     vendorCity: "Zurich",     vendorRating: 4.5, vendorReviews: 156,                  shipping: 9,   shippingDays: "2-3 j",   stock: 35, reviews: 88,  rating: 4.5, sold: 240 },
-  { id: "b6",  title: "Lave-vaisselle encastrable A+++",                category: "Électroménager",  cover: "https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?w=600", price: 1290,  oldPrice: 1490, condition: "Reconditionné",  vendor: "ElectroMax",       vendorCity: "Bâle",       vendorRating: 4.4, vendorReviews: 184,                  shipping: 49,  shippingDays: "5-7 j",   stock: 8,  reviews: 56,  rating: 4.4, sold: 41 },
-  { id: "b7",  title: "Table basse marbre travertin",                   category: "Meubles",         cover: "https://images.unsplash.com/photo-1554995207-c18c203602cb?w=600", price: 690,                   condition: "Neuf",           vendor: "Maison Léman",     vendorCity: "Lausanne",   vendorRating: 4.8, vendorReviews: 412, topRated: true,  shipping: 0,   shippingDays: "3-5 j",   stock: 6,  reviews: 41,  rating: 4.7, sold: 28 },
-  { id: "b8",  title: "Set de 4 chaises bouclette écru",                category: "Meubles",         cover: "https://images.unsplash.com/photo-1592078615290-033ee584e267?w=600", price: 980,                   condition: "Neuf",           vendor: "Deco Studio",      vendorCity: "Neuchâtel",  vendorRating: 4.6, vendorReviews: 134,                  shipping: 0,   shippingDays: "3-5 j",   stock: 14, reviews: 92,  rating: 4.6, sold: 62 },
-  { id: "b9",  title: "Carrelage grès cérame XXL — 24 m²",               category: "Matériaux",       cover: "https://images.unsplash.com/photo-1615875605825-5eb9bb5d52ac?w=600", price: 2160,                  condition: "Neuf",           vendor: "TileMaster",       vendorCity: "Sion",       vendorRating: 4.8, vendorReviews: 286,                  shipping: 120, shippingDays: "7-12 j",  stock: 18, reviews: 117, rating: 4.8, sold: 34 },
-  { id: "b10", title: "Vase grès noir mat — 35 cm",                     category: "Décoration",      cover: "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600", price: 65,                    condition: "Neuf",           vendor: "Atelier Argile",   vendorCity: "Fribourg",   vendorRating: 4.9, vendorReviews: 76,  topRated: true,  shipping: 7,   shippingDays: "2-3 j",   stock: 22, reviews: 31,  rating: 4.9, sold: 88 },
-  { id: "b11", title: "Plaid lin lavé bleu nuit",                       category: "Décoration",      cover: "https://images.unsplash.com/photo-1576020799627-aeac74d58064?w=600", price: 89,                    condition: "Neuf",           vendor: "Linen House",      vendorCity: "Vevey",      vendorRating: 4.7, vendorReviews: 168,                  shipping: 0,   shippingDays: "2-4 j",   stock: 14, reviews: 54,  rating: 4.7, sold: 174 },
-  { id: "b12", title: "Four pyrolyse encastrable 71 L",                 category: "Électroménager",  cover: "https://images.unsplash.com/photo-1574269910231-bc508bcb8e29?w=600", price: 749,   oldPrice: 899,  condition: "Neuf",           vendor: "ElectroMax",       vendorCity: "Bâle",       vendorRating: 4.4, vendorReviews: 184,                  shipping: 35,  shippingDays: "5-7 j",   stock: 11, reviews: 73,  rating: 4.5, sold: 49 },
-  { id: "b13", title: "Plan de travail bois massif chêne",              category: "Cuisines",        cover: "https://images.unsplash.com/photo-1556909114-44e3e9636da7?w=600", price: 540,                   condition: "Neuf",           vendor: "Bois & Co.",       vendorCity: "Bulle",      vendorRating: 4.9, vendorReviews: 318, topRated: true,  shipping: 65,  shippingDays: "5-8 j",   stock: 9,  reviews: 28,  rating: 4.8, sold: 22 },
-  { id: "b14", title: "Perceuse visseuse 18 V (occasion testée)",       category: "Équipements",     cover: "https://images.unsplash.com/photo-1583858175013-d3b7ec3a0f44?w=600", price: 89,    oldPrice: 159,  condition: "Occasion",       vendor: "OutilsRéparés",    vendorCity: "Genève",     vendorRating: 4.3, vendorReviews: 64,                   shipping: 12,  shippingDays: "3-5 j",   stock: 3,  reviews: 14,  rating: 4.2, sold: 17 },
-  { id: "b15", title: "Suspension cuivre artisanale",                   category: "Décoration",      cover: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=600", price: 215,                   condition: "Neuf",           vendor: "Atelier Argile",   vendorCity: "Fribourg",   vendorRating: 4.9, vendorReviews: 76,  topRated: true,  shipping: 15,  shippingDays: "2-3 j",   stock: 8,  reviews: 22,  rating: 4.9, sold: 41 },
-  { id: "b16", title: "Hotte aspirante îlot inox",                      category: "Électroménager",  cover: "https://images.unsplash.com/photo-1556909114-37c9b8aacc7e?w=600", price: 1190,                  condition: "Neuf",           vendor: "ElectroMax",       vendorCity: "Bâle",       vendorRating: 4.4, vendorReviews: 184,                  shipping: 0,   shippingDays: "7-10 j",  stock: 4,  reviews: 19,  rating: 4.4, sold: 12 },
-];
+/* Lu depuis la source unique. Auparavant ce tableau vivait ici en 16 entrées
+   tandis que la fiche produit n'en connaissait que 6 — d'où 10 fiches en 404. */
+const PRODUCTS: Product[] = listProducts();
 
 const SORTS = [
   { key: "popular",   label: "Plus populaires" },

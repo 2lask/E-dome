@@ -4,7 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, MapPin, Crown, CalendarDays, ChevronLeft, ChevronRight, Coins, TrendingUp } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { properties, events } from "@/lib/mock-data";
+import { properties } from "@/lib/mock-data";
+/* Les événements viennent de la couche de données, plus de `mock-data.events`.
+   Ce dernier porte des ids `evt-00N` que la fiche `/evenements/[id]` ne sait
+   pas résoudre : tous les liens événement de ce carrousel menaient donc à
+   « Événement introuvable ». */
+import { listEventsByPriceDesc } from "@/lib/data/events";
 import type { Currency } from "@/lib/types";
 
 /* Carrousel automatique de recommandations en tête du feed.
@@ -57,7 +62,7 @@ export function RecommendedCarousel() {
       .sort((a, b) => toChf(b.price, b.currency) - toChf(a.price, a.currency))
       .slice(0, 5);
 
-    const topEvents = [...events].sort((a, b) => b.price - a.price).slice(0, 2);
+    const topEvents = listEventsByPriceDesc(2);
 
     const propSlide = (p: (typeof topProps)[number]): Slide => ({
       id: `bien-${p.id}`,
@@ -75,11 +80,13 @@ export function RecommendedCarousel() {
       id: `event-${e.id}`,
       href: `/evenements/${e.id}`,
       image: e.thumbnail,
-      badge: e.type.charAt(0).toUpperCase() + e.type.slice(1),
+      /* Les types du module sont déjà capitalisés ("Webinaire"), contrairement
+         à ceux de mock-data ("webinaire") — plus besoin de les recapitaliser. */
+      badge: e.type,
       kind: "evenement",
-      title: e.title,
-      location: e.location,
-      price: e.price > 0 ? formatPrice(e.price, e.currency as Currency) : "Gratuit",
+      title: e.titre,
+      location: e.lieu,
+      price: e.prix > 0 ? formatPrice(e.prix, "CHF" as Currency) : "Gratuit",
       cta: "Réserver ma place",
     });
 

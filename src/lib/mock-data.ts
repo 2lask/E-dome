@@ -1723,6 +1723,16 @@ export const formations: Formation[] = [
 
 // ─── EVENTS (6) ─────────────────────────────────────────────────────────────
 
+/* ⚠️ ORPHELIN — ne plus utiliser. La source des événements est
+   `@/lib/data/events` (ids `e1`→`e6`).
+
+   Ce jeu porte des ids `evt-001`→`evt-006` que la route `/evenements/[id]` ne
+   sait pas résoudre. Son unique consommateur, le carrousel du feed, générait
+   donc des liens qui menaient tous à « Événement introuvable » ; il a été
+   rebranché sur la couche de données. Conservé ici uniquement parce que
+   l'interface `Event` et le champ `speaker: User` peuvent servir de référence
+   au futur schéma Supabase — à supprimer une fois la table `events` écrite. */
+
 export interface Event {
   id: string;
   title: string;
