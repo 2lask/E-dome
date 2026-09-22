@@ -17,7 +17,7 @@ import { timeAgo, formatCount, formatDate } from "@/lib/utils";
 import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/lib/mock-data";
 import { getVideoMetadata } from "@/lib/video-metadata";
 import { buildObjectAffiliate } from "@/lib/referral-links";
-import { estimateEarning } from "@/lib/rewards";
+import { estimateEarning } from "@/lib/pricing";
 import type {
   User, SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData,
   PostAttachment, ReferralLink, Currency,

@@ -1,4 +1,12 @@
 import type { ReferralLink, ReferralTargetKind, TransactionType } from "./types";
+import {
+  APPORTEUR_SHARE_LABEL,
+  HOST_BOUNTY_CHF,
+  LONG_RENTAL_FEES,
+  SALE_FEE_ABOVE,
+  SALE_FEE_BELOW,
+  apporteurShareLabel,
+} from "./pricing";
 
 /* Identifiant apporteur du user courant (mock — un seul apporteur dans la
    démo, cf. page /apporteurs). Partagé pour que les liens générés là-bas
@@ -10,8 +18,8 @@ export const DEFAULT_REFERRAL_LINKS: ReferralLink[] = [
   {
     label: "Amener un hôte",
     url: `edome.world/ref/hote/${REFERRAL_ID}`,
-    description: "Partagez ce lien pour inviter un propriétaire à publier ses biens sur E-Dome. Bounty fixe de 100 CHF dès activation du compte (referral marketing).",
-    commission: "100 CHF / hôte activé",
+    description: `Partagez ce lien pour inviter un propriétaire à publier ses biens sur E-Dome. Prime fixe de ${HOST_BOUNTY_CHF} CHF dès activation du compte (acquisition, pas une commission sur transaction).`,
+    commission: `${HOST_BOUNTY_CHF} CHF / hôte activé`,
     clicks: 8,
     conversions: 2,
     earned: 200,
@@ -20,8 +28,8 @@ export const DEFAULT_REFERRAL_LINKS: ReferralLink[] = [
   {
     label: "Amener un client",
     url: `edome.world/ref/client/${REFERRAL_ID}`,
-    description: "Invitez des locataires ou acheteurs potentiels à rejoindre la plateforme. Sur une location courte ou un achat marketplace, vous touchez une part de la commission marketplace d'E-Dome — jamais ajoutée au prix payé.",
-    commission: "10–30 % de la commission E-Dome",
+    description: `Invitez des locataires ou acheteurs potentiels à rejoindre la plateforme. Sur une location courte ou un achat marketplace, vous touchez ${APPORTEUR_SHARE_LABEL} de la commission marketplace d'E-Dome — jamais ajoutés au prix payé.`,
+    commission: apporteurShareLabel("location-ct"),
     clicks: 12,
     conversions: 5,
     earned: 320,
@@ -30,8 +38,8 @@ export const DEFAULT_REFERRAL_LINKS: ReferralLink[] = [
   {
     label: "Amener un bien",
     url: `edome.world/ref/bien/${REFERRAL_ID}`,
-    description: "Recommandez un bien à la vente entre particuliers ou à la location longue durée. Vous touchez une part du frais fixe de plateforme E-Dome (500 ou 2 500 CHF en vente, 150 / 250 / 400 CHF en location LT) — pas un % du prix.",
-    commission: "10–30 % du frais plateforme",
+    description: `Recommandez un bien à la vente entre particuliers ou à la location longue durée. Vous touchez ${APPORTEUR_SHARE_LABEL} du frais fixe de plateforme E-Dome (${SALE_FEE_BELOW} ou ${SALE_FEE_ABOVE} CHF en vente, ${LONG_RENTAL_FEES.court} / ${LONG_RENTAL_FEES.median} / ${LONG_RENTAL_FEES.long} CHF en location longue durée) — pas un pourcentage du prix.`,
+    commission: apporteurShareLabel("vente"),
     clicks: 3,
     conversions: 1,
     earned: 250,
@@ -60,32 +68,37 @@ export const REFERRAL_ROUTE: Record<ReferralTargetKind, string> = {
   produit: "/boutique",
 };
 
+/* Les libellés viennent de @/lib/pricing : ils disaient auparavant « 20 % du
+   prix de la formation », « 15 % du prix du billet », « 10 % du prix de
+   vente » — trois assiettes inventées, et surtout un pourcentage du PRIX
+   payé par le client, ce que le modèle exclut explicitement. La part de
+   l'apporteur porte toujours sur le revenu d'E-Dome. */
 const AFFILIATE_CONFIG: Record<
   ReferralTargetKind,
   { commission: string; description: (title: string) => string; color: string }
 > = {
   bien: {
-    commission: "10–30 % du frais plateforme",
+    commission: apporteurShareLabel("vente"),
     description: (t) =>
-      `Recommandez « ${t} » via votre lien. Si l'acheteur ou le locataire conclut sur E-Dome, vous touchez une part du frais fixe de plateforme — jamais ajoutée au prix payé.`,
+      `Recommandez « ${t} » via votre lien. Si l'acheteur ou le locataire conclut sur E-Dome, vous touchez ${APPORTEUR_SHARE_LABEL} du frais fixe de plateforme — jamais ajoutés au prix payé.`,
     color: "bg-emerald-500/20 text-emerald-400",
   },
   formation: {
-    commission: "20 % du prix de la formation",
+    commission: apporteurShareLabel("formation"),
     description: (t) =>
-      `Recommandez la formation « ${t} » via votre lien. Vous touchez 20 % du prix pour chaque inscription issue de votre recommandation.`,
+      `Recommandez la formation « ${t} » via votre lien. Vous touchez ${APPORTEUR_SHARE_LABEL} de la commission qu'E-Dome perçoit sur chaque inscription issue de votre recommandation.`,
     color: "bg-orange-500/20 text-orange-400",
   },
   evenement: {
-    commission: "15 % du prix du billet",
+    commission: apporteurShareLabel("evenement"),
     description: (t) =>
-      `Recommandez l'événement « ${t} » via votre lien. Vous touchez 15 % du prix pour chaque billet vendu grâce à votre recommandation.`,
+      `Recommandez l'événement « ${t} » via votre lien. Vous touchez ${APPORTEUR_SHARE_LABEL} de la commission qu'E-Dome perçoit sur chaque billet vendu grâce à votre recommandation.`,
     color: "bg-purple-500/20 text-purple-400",
   },
   produit: {
-    commission: "10 % du prix de vente",
+    commission: apporteurShareLabel("boutique"),
     description: (t) =>
-      `Recommandez le produit « ${t} » via votre lien. Vous touchez 10 % de la commission E-Dome pour chaque vente issue de votre recommandation.`,
+      `Recommandez le produit « ${t} » via votre lien. Vous touchez ${APPORTEUR_SHARE_LABEL} de la commission qu'E-Dome perçoit sur chaque vente issue de votre recommandation.`,
     color: "bg-blue-500/20 text-blue-400",
   },
 };

@@ -6,7 +6,12 @@
 
    E-Dome est multi-revenus (pas qu'Airbnb-like). 7 sources :
    Biens, Formations, Boutique, Lives, Evenements, Services, Apporteurs.
-   Tout le dashboard doit refleter cette diversite. */
+   Tout le dashboard doit refleter cette diversite.
+
+   Les taux et libelles de commission ne sont PAS definis ici : ils viennent
+   de @/lib/pricing, source unique du modele de remuneration. */
+
+import { HOST_BOUNTY_CHF, apporteurShareLabel } from "./pricing";
 
 export type ReservationStatus = "confirmed" | "pending" | "completed" | "cancelled";
 export type ListingStatus = "published" | "draft";
@@ -301,10 +306,14 @@ export interface ReferralChannel {
   conversions: number;
 }
 
+/* « 5% de la réservation » et « 2% de la vente » désignaient un pourcentage
+   du prix payé par le client — l'assiette d'un courtier, pas celle d'E-Dome,
+   et en contradiction directe avec /conditions §5 et /aide. Les libellés
+   viennent désormais de @/lib/pricing. */
 export const referralChannels: ReferralChannel[] = [
-  { id: "host", label: "Amener un hôte", reward: "100 CHF / activation", clicks: 23, conversions: 8 },
-  { id: "client", label: "Amener un client", reward: "5% de la réservation", clicks: 41, conversions: 12 },
-  { id: "property", label: "Amener un bien", reward: "2% de la vente", clicks: 17, conversions: 5 },
+  { id: "host", label: "Amener un hôte", reward: `${HOST_BOUNTY_CHF} CHF / activation`, clicks: 23, conversions: 8 },
+  { id: "client", label: "Amener un client", reward: apporteurShareLabel("location-ct"), clicks: 41, conversions: 12 },
+  { id: "property", label: "Amener un bien", reward: apporteurShareLabel("vente"), clicks: 17, conversions: 5 },
 ];
 
 export interface LeaderboardEntry {

@@ -7,6 +7,7 @@ import {
   Scale, Percent, Building2, Globe, ArrowUpRight, Megaphone, Handshake,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { APPORTEUR_SHARE_LABEL } from "@/lib/pricing";
 
 /* Colonne droite du feed — sous les suggestions de comptes.
    Trois blocs pour donner du relief au feed :
@@ -158,7 +159,7 @@ function SponsoredCard() {
         <p className="text-sm font-bold text-[var(--foreground)] mt-2.5">Devenez apporteur</p>
         <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">
           Recommandez un bien, un service ou une formation et touchez{" "}
-          <b className="text-[var(--primary)]">10 à 30 %</b> du revenu qu&apos;E-Dome
+          <b className="text-[var(--primary)]">{APPORTEUR_SHARE_LABEL}</b> du revenu qu&apos;E-Dome
           perçoit sur la transaction — jamais un pourcentage du prix payé par le
           client.
         </p>

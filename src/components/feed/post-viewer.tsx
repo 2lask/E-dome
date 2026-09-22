@@ -11,7 +11,7 @@ import {
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
 import { timeAgo, formatCount, formatDate } from "@/lib/utils";
-import { estimateEarning } from "@/lib/rewards";
+import { estimateEarning } from "@/lib/pricing";
 import { profileToAuthor } from "@/lib/profile-posts";
 import { roleLabels } from "@/lib/types";
 import type { SocialPost, Comment, ReferralLink, Currency, PostAttachment } from "@/lib/types";

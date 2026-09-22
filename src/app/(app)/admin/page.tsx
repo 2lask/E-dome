@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { TriangleAlert } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { APPORTEUR_SHARE, MARKETPLACE_RATE, SALE_FEE_ABOVE, SALE_FEE_BELOW } from "@/lib/pricing";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -52,9 +53,17 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
   const [biens, setBiens] = useState(MOCK_BIENS);
   const [signalements, setSignalements] = useState(MOCK_SIGNALEMENTS);
-  const [commissionVente, setCommissionVente] = useState("3.5");
-  const [commissionLocation, setCommissionLocation] = useState("8");
-  const [commissionApporteur, setCommissionApporteur] = useState("15");
+  /* Ces champs décrivaient une « commission vente » de 3,5 % du prix du bien,
+     ce qu'E-Dome ne facture pas : la vente entre particuliers est un frais
+     fixe. Les valeurs par défaut viennent de @/lib/pricing. */
+  const [fraisVenteSous, setFraisVenteSous] = useState(String(SALE_FEE_BELOW));
+  const [fraisVenteAu, setFraisVenteAu] = useState(String(SALE_FEE_ABOVE));
+  const [commissionCourteDuree, setCommissionCourteDuree] = useState(
+    String(Math.round(((MARKETPLACE_RATE["location-ct"].min + MARKETPLACE_RATE["location-ct"].max) / 2) * 100)),
+  );
+  const [commissionApporteur, setCommissionApporteur] = useState(
+    String(Math.round(((APPORTEUR_SHARE.min + APPORTEUR_SHARE.max) / 2) * 100)),
+  );
   const [maintenanceMode, setMaintenanceMode] = useState(false);
 
   const filteredUsers = MOCK_USERS.filter(
@@ -303,30 +312,44 @@ export default function AdminPage() {
       {activeTab === "parametres" && (
         <section className="space-y-6 max-w-lg">
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[var(--foreground)]">Taux de commission</h3>
+            <h3 className="text-lg font-semibold text-[var(--foreground)]">Barème de rémunération</h3>
+            <p className="text-xs text-[var(--text-muted)]">
+              Vente et location longue durée : frais fixe, jamais un pourcentage
+              du prix du bien. Les autres pôles : commission marketplace.
+            </p>
             <div className="space-y-3">
               <div className="space-y-1">
-                <label className="text-sm text-[var(--text-secondary)]">Commission vente (%)</label>
+                <label className="text-sm text-[var(--text-secondary)]">Frais fixe vente &lt; 1 M (CHF)</label>
                 <input
                   type="number"
-                  step="0.1"
-                  value={commissionVente}
-                  onChange={(e) => setCommissionVente(e.target.value)}
+                  step="50"
+                  value={fraisVenteSous}
+                  onChange={(e) => setFraisVenteSous(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-sm text-[var(--text-secondary)]">Commission location (%)</label>
+                <label className="text-sm text-[var(--text-secondary)]">Frais fixe vente ≥ 1 M (CHF)</label>
                 <input
                   type="number"
-                  step="0.1"
-                  value={commissionLocation}
-                  onChange={(e) => setCommissionLocation(e.target.value)}
+                  step="50"
+                  value={fraisVenteAu}
+                  onChange={(e) => setFraisVenteAu(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-sm text-[var(--text-secondary)]">Part apporteur (%)</label>
+                <label className="text-sm text-[var(--text-secondary)]">Commission marketplace location courte durée (%)</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  value={commissionCourteDuree}
+                  onChange={(e) => setCommissionCourteDuree(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm text-[var(--text-secondary)]">Part apporteur (% du revenu E-Dome)</label>
                 <input
                   type="number"
                   step="1"

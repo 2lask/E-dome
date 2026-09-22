@@ -4,6 +4,15 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useApp } from "@/lib/context";
 import type { TransactionType, PropertyType } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import {
+  APPORTEUR_SHARE,
+  LONG_RENTAL_FEES,
+  SALE_FEE_ABOVE,
+  SALE_FEE_BELOW,
+  SALE_FEE_THRESHOLD,
+  edomeRevenue as platformRevenue,
+  type Pole,
+} from "@/lib/pricing";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -509,25 +518,19 @@ export default function PublierPage() {
 
                 {/* Simulation adaptative par pôle — fourchette basse/haute */}
                 {(() => {
-                  // base = ce que E-Dome encaisse sur cette transaction.
-                  let edomeRevenue = 0;
-                  let baseLabel = "";
-                  let priceLabel = "Prix";
-                  if (form.transactionType === "vente" && form.prix > 0) {
-                    edomeRevenue = form.prix < 1_000_000 ? 500 : 2500;
-                    baseLabel = "Frais fixe E-Dome (vente particuliers)";
-                    priceLabel = "Prix de vente";
-                  } else if (form.transactionType === "location-ct" && form.prix > 0) {
-                    edomeRevenue = form.prix * 0.08;
-                    baseLabel = "Commission marketplace E-Dome (8 % standard)";
-                    priceLabel = "Loyer par nuit";
-                  } else if (form.transactionType === "location-lt") {
-                    edomeRevenue = 250;
-                    baseLabel = "Frais fixe E-Dome (bail médian, 6–12 mois)";
-                  }
+                  /* Base et part apporteur calculées par @/lib/pricing, comme
+                     sur la fiche du bien et sur le bouton « Recommander ».
+                     La version précédente prenait 8 % d'UNE NUIT en courte
+                     durée, là où la fiche prenait 8 % d'un séjour de 7 nuits. */
+                  if (form.transactionType !== "location-lt" && form.prix <= 0) return null;
+                  const base = platformRevenue(form.transactionType as Pole, form.prix);
+                  const edomeRevenue = (base.min + base.max) / 2;
                   if (edomeRevenue === 0) return null;
-                  const apporteurLow = edomeRevenue * 0.10;
-                  const apporteurHigh = edomeRevenue * 0.30;
+                  const baseLabel = base.label;
+                  const priceLabel =
+                    form.transactionType === "vente" ? "Prix de vente" : "Loyer par nuit";
+                  const apporteurLow = edomeRevenue * APPORTEUR_SHARE.min;
+                  const apporteurHigh = edomeRevenue * APPORTEUR_SHARE.max;
                   return (
                     <div className="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-2.5">
                       <h4 className="text-sm font-semibold text-[var(--foreground)] mb-3">Simulation pour cette annonce</h4>
@@ -601,8 +604,8 @@ export default function PublierPage() {
                     </p>
                     <span className="text-2xl font-bold text-[var(--primary)] tabular-nums">
                       {form.prix > 0
-                        ? formatPrice(form.prix < 1_000_000 ? 500 : 2500)
-                        : formatPrice(500) + " ou " + formatPrice(2500)}
+                        ? formatPrice(form.prix < SALE_FEE_THRESHOLD ? SALE_FEE_BELOW : SALE_FEE_ABOVE)
+                        : formatPrice(SALE_FEE_BELOW) + " ou " + formatPrice(SALE_FEE_ABOVE)}
                     </span>
                   </div>
                   <p className="text-xs text-[var(--text-muted)] leading-relaxed">
@@ -620,15 +623,15 @@ export default function PublierPage() {
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
                       <p className="text-xs text-[var(--text-muted)]">Bail 1–6 mois</p>
-                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(150)}</p>
+                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(LONG_RENTAL_FEES.court)}</p>
                     </div>
                     <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
                       <p className="text-xs text-[var(--text-muted)]">Bail 6–12 mois</p>
-                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(250)}</p>
+                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(LONG_RENTAL_FEES.median)}</p>
                     </div>
                     <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
                       <p className="text-xs text-[var(--text-muted)]">Bail 12 mois +</p>
-                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(400)}</p>
+                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(LONG_RENTAL_FEES.long)}</p>
                     </div>
                   </div>
                   <p className="text-xs text-[var(--text-muted)] leading-relaxed">

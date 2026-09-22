@@ -1,4 +1,5 @@
 import { formatCHF } from "./format";
+import { APPORTEUR_SHARE, MARKETPLACE_RATE } from "./pricing";
 
 /* Modele de donnees pour /dashboard/revenus refondu.
    - 3 sources de biens (cohabite avec dashboard-data.properties)
@@ -78,7 +79,8 @@ const FACTOR: Record<Period, number> = {
   "30j": 1 / 12,
   "7j": 7 / 365,
 };
-const VERSE_TOTAL = 466;
+/* VERSE_TOTAL est dérivé d'APPORTEUR_VERSES, plus bas : le total versé ne
+   peut pas diverger du détail affiché juste à côté. */
 
 const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
 const ramp = (base: number, growth: number) =>
@@ -202,29 +204,40 @@ const SOURCES_META: Record<
   },
 };
 
+/* Part versée à un apporteur sur le chiffre d'affaires qu'il a amené :
+   commission marketplace E-Dome (milieu de fourchette) × part apporteur
+   (milieu de fourchette). Les montants étaient auparavant fixés à 4 % du CA
+   en dur — un multiple de ce que le modèle autorise, et une assiette
+   interdite (le prix payé plutôt que le revenu E-Dome). */
+const mid = (r: { min: number; max: number }) => (r.min + r.max) / 2;
+const apporteurPaid = (ca: number) =>
+  Math.round(ca * mid(MARKETPLACE_RATE["location-ct"]) * mid(APPORTEUR_SHARE));
+
 export const APPORTEUR_VERSES = [
   {
     name: "Agence Léman",
     bien: "Chalet Alpin Premium",
     res: 3,
     ca: 7350,
-    paid: 294,
+    paid: apporteurPaid(7350),
   },
   {
     name: "SwissHome",
     bien: "Appartement Vue Lac",
     res: 2,
     ca: 3600,
-    paid: 144,
+    paid: apporteurPaid(3600),
   },
   {
     name: "Alpine Props",
     bien: "Studio Lausanne",
     res: 1,
     ca: 712,
-    paid: 28,
+    paid: apporteurPaid(712),
   },
 ];
+
+const VERSE_TOTAL = APPORTEUR_VERSES.reduce((total, v) => total + v.paid, 0);
 
 export const SOURCE_OPTIONS: { value: SourceId; label: string }[] = [
   { value: "all", label: "Toutes les sources" },

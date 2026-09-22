@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Link2, Check, Copy, ArrowRight, Coins } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { buildObjectAffiliate } from "@/lib/referral-links";
-import { estimateEarning } from "@/lib/rewards";
+import { estimateEarning } from "@/lib/pricing";
 import type { ReferralTargetKind, TransactionType, Currency } from "@/lib/types";
 
 /* Bouton « Recommander & gagner » posé sur chaque annonce vendable.

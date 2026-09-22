@@ -27,6 +27,7 @@ import type { Review } from "@/lib/mock-data";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
 import { REFERRAL_ID } from "@/lib/referral-links";
+import { APPORTEUR_SHARE_LABEL, apporteurEarning, type Pole } from "@/lib/pricing";
 
 // ─── Paid options (applicable to location-ct) ───────────────────────────────
 
@@ -940,40 +941,25 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               </button>
             </div>
 
-            {/* Rémunération apporteur V1.0 — différencié par pôle.
-                · Vente entre particuliers : base = frais fixe E-Dome
-                  (500 ou 2 500 CHF selon prix).
-                · Location courte durée : base = commission marketplace E-Dome
-                  (8 % indicatif).
-                · Location longue durée : base = frais fixe E-Dome
-                  (250 CHF tarif médian).
-                Part apporteur : 10–30 % de cette base (fourchette V1.0). */}
+            {/* Rémunération apporteur — calculée par @/lib/pricing, le même
+                module que le bouton « Recommander » du feed et de la visionneuse.
+                C'est la condition pour que les deux affichent le même montant :
+                ils affichaient auparavant 48–143 CHF ici et 5 100 CHF là. */}
             <div className="p-4 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20">
               {(() => {
-                let edomeRevenue = 0;
-                let baseLabel = "";
-                if (property.transactionType === "vente") {
-                  edomeRevenue = property.price < 1_000_000 ? 500 : 2500;
-                  baseLabel = property.price < 1_000_000
-                    ? "Frais fixe plateforme : 500 CHF (vente < 1 M)"
-                    : "Frais fixe plateforme : 2 500 CHF (vente ≥ 1 M)";
-                } else if (property.transactionType === "location-ct") {
-                  edomeRevenue = property.price * 7 * 0.08;
-                  baseLabel = "Commission marketplace E-Dome : 8 % d'une réservation 7 nuits";
-                } else {
-                  edomeRevenue = 250;
-                  baseLabel = "Frais fixe plateforme : 250 CHF (bail médian 6–12 mois)";
-                }
-                const apporteurLow = Math.round(edomeRevenue * 0.10);
-                const apporteurHigh = Math.round(edomeRevenue * 0.30);
+                const earning = apporteurEarning(
+                  property.transactionType as Pole,
+                  property.price,
+                  property.currency as Currency,
+                );
                 return (
                   <>
                     <p className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--primary)]">
-                      <Wallet size={14} /> Rémunération apporteur : 10 à 30 % de la part E-Dome
+                      <Wallet size={14} /> Rémunération apporteur : {APPORTEUR_SHARE_LABEL} de la part E-Dome
                     </p>
                     <p className="text-xs text-[var(--text-secondary)] mt-1">
-                      → {baseLabel}<br />
-                      → Soit potentiellement {formatPrice(apporteurLow, property.currency as any)} à {formatPrice(apporteurHigh, property.currency as any)} pour vous
+                      → {earning.baseLabel}<br />
+                      → Soit potentiellement {formatPrice(earning.min, property.currency as any)} à {formatPrice(earning.max, property.currency as any)} pour vous
                     </p>
                     <p className="inline-flex items-start gap-1.5 text-[10px] text-[var(--text-muted)] mt-2">
                       <Info size={11} className="mt-px shrink-0" />
