@@ -3,7 +3,7 @@
 import { cookies, headers } from "next/headers";
 import { form } from "@/content/landing";
 import { generateRefCode, normalizeRefCode } from "./ref-code";
-import { allowSubmission, clientKeyFromHeaders } from "./rate-limit";
+import { allowSubmission, ipFingerprint } from "./rate-limit";
 import { leadSchema } from "./schema";
 import { computeEngagementScore } from "./score";
 import { getLeadStore } from "./store";
@@ -53,8 +53,19 @@ export async function submitInterest(payload: unknown): Promise<SubmitResult> {
     return { ok: false, kind: "error", message: form.errors.generic };
   }
 
+  /* Le compteur d'envois est tenu par le stockage, donc partagé entre les
+     instances. On résout le magasin avant la validation : c'est lui qui porte
+     aussi bien la limite que l'écriture. */
+  let store;
+  try {
+    store = getLeadStore();
+  } catch (error) {
+    console.error("[leads] stockage indisponible", error);
+    return { ok: false, kind: "error", message: form.errors.generic };
+  }
+
   const requestHeaders = await headers();
-  if (!allowSubmission(clientKeyFromHeaders(requestHeaders))) {
+  if (!(await allowSubmission(store, ipFingerprint(requestHeaders)))) {
     return { ok: false, kind: "rate_limited", message: form.errors.rateLimited };
   }
 
@@ -99,7 +110,6 @@ export async function submitInterest(payload: unknown): Promise<SubmitResult> {
   };
 
   try {
-    const store = getLeadStore();
     const { lead, created } = await store.upsert(record);
     return { ok: true, refCode: lead.refCode, created };
   } catch (error) {

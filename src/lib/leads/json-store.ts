@@ -20,6 +20,15 @@ import type { LeadListFilter, LeadRecord, LeadStore, StoredLead } from "./types"
    file de promesses — suffisant pour un usage local. */
 
 const FILE = join(process.cwd(), ".leads.local.json");
+/* Les empreintes d'envoi vivent dans un fichier à part : elles se purgent et
+   se vident sans jamais toucher aux inscriptions elles-mêmes. */
+const SUBMISSIONS_FILE = join(process.cwd(), ".leads-submissions.local.json");
+
+interface SubmissionEntry {
+  /** HMAC salé de l'adresse IP — voir `rate-limit.ts`. Jamais l'adresse. */
+  fingerprint: string;
+  at: string;
+}
 
 let queue: Promise<unknown> = Promise.resolve();
 
@@ -43,10 +52,29 @@ async function readAll(): Promise<StoredLead[]> {
 }
 
 async function writeAll(leads: StoredLead[]): Promise<void> {
-  await mkdir(dirname(FILE), { recursive: true });
-  const tmp = `${FILE}.${process.pid}.tmp`;
-  await writeFile(tmp, `${JSON.stringify(leads, null, 2)}\n`, "utf8");
-  await rename(tmp, FILE);
+  await writeJson(FILE, leads);
+}
+
+async function writeJson(file: string, value: unknown): Promise<void> {
+  await mkdir(dirname(file), { recursive: true });
+  const tmp = `${file}.${process.pid}.tmp`;
+  await writeFile(tmp, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  await rename(tmp, file);
+}
+
+async function readSubmissions(): Promise<SubmissionEntry[]> {
+  try {
+    const raw = await readFile(SUBMISSIONS_FILE, "utf8");
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as SubmissionEntry[]) : [];
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw error;
+  }
+}
+
+async function writeSubmissions(entries: SubmissionEntry[]): Promise<void> {
+  await writeJson(SUBMISSIONS_FILE, entries);
 }
 
 export function createJsonLeadStore(): LeadStore {
@@ -89,6 +117,29 @@ export function createJsonLeadStore(): LeadStore {
         leads.push(lead);
         await writeAll(leads);
         return { lead, created: true };
+      });
+    },
+
+    async countRecentSubmissions(fingerprint: string, since: Date) {
+      const entries = await readSubmissions();
+      const floor = since.getTime();
+      return entries.filter((e) => e.fingerprint === fingerprint && Date.parse(e.at) >= floor)
+        .length;
+    },
+
+    recordSubmission(fingerprint: string) {
+      return serialize(async () => {
+        const entries = await readSubmissions();
+        entries.push({ fingerprint, at: new Date().toISOString() });
+        await writeSubmissions(entries);
+      });
+    },
+
+    purgeSubmissions(before: Date) {
+      return serialize(async () => {
+        const entries = await readSubmissions();
+        const floor = before.getTime();
+        await writeSubmissions(entries.filter((e) => Date.parse(e.at) >= floor));
       });
     },
 

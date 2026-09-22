@@ -61,7 +61,7 @@ const SECTIONS = [
 
 Données collectées : prénom, adresse e-mail, profil déclaré (agence, créateur, prestataire, investisseur, propriétaire, candidature à l'équipe), canton ou pays de résidence, réponses aux questions relatives à votre activité, engagements que vous avez cochés, et horodatage de votre consentement.
 
-Ce que nous ne collectons pas : aucune adresse IP n'est conservée, ni en clair ni sous forme hachée. La limitation du nombre d'envois s'effectue en mémoire, sans conservation.
+Ce que nous ne collectons pas : votre adresse IP n'est jamais enregistrée. Pour limiter le nombre d'envois répétés depuis une même connexion, nous conservons pendant 24 heures une empreinte cryptographique de cette adresse, calculée avec un secret que nous sommes seuls à détenir. Cette empreinte ne permet ni de retrouver l'adresse, ni de vous identifier, et n'est rattachée à aucune inscription.
 
 Finalité : vous recontacter au sujet du projet, comprendre les besoins des premiers utilisateurs et établir l'ordre de priorité des fonctionnalités. Vos réponses ne servent à aucune prospection pour le compte de tiers et ne sont ni vendues ni cédées.
 

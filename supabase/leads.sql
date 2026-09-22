@@ -11,10 +11,9 @@
 -- C'est important ici : la table contient des données personnelles (nom,
 -- adresse e-mail, canton, réponses métier) et un consentement horodaté.
 --
--- Aucune adresse IP n'est stockée, même hachée. La limitation d'envoi se fait
--- en mémoire côté serveur (voir `src/lib/leads/rate-limit.ts`), ce qui évite
--- d'avoir à déclarer une donnée supplémentaire dans la politique de
--- confidentialité.
+-- Aucune adresse IP n'est stockée en clair. La limitation d'envoi s'appuie sur
+-- la table `lead_submissions` définie plus bas, qui ne contient qu'un HMAC
+-- salé de l'adresse (voir `src/lib/leads/rate-limit.ts`).
 
 create extension if not exists "pgcrypto";
 
@@ -111,3 +110,48 @@ alter table public.leads enable row level security;
 -- exposés publiquement par l'API, au cas où une politique serait ajoutée par
 -- inadvertance un jour.
 revoke all on table public.leads from anon, authenticated;
+
+
+-- ─── Limitation des envois ──────────────────────────────────────────────────
+--
+-- Le compteur vivait en mémoire du processus. Sur un hébergement sans état,
+-- deux requêtes successives tombent volontiers sur deux instances
+-- différentes, et une instance froide démarre le compteur à zéro : la limite
+-- ne tenait pas. Elle est ici, donc partagée.
+--
+-- `ip_hash` est un HMAC-SHA256 de l'adresse IP, calculé avec le secret
+-- `LEAD_IP_SALT`. Ce n'est pas un simple condensé, et la distinction compte :
+-- il n'existe que quatre milliards d'adresses IPv4, qu'un condensé nu laisse
+-- retrouver par force brute en quelques minutes. Sans le sel, une empreinte
+-- ne mène à rien, même pour qui lit la table.
+--
+-- Si `LEAD_IP_SALT` n'est pas configuré, l'application n'écrit rien ici et
+-- retombe sur un compteur en mémoire : mieux vaut une limite faible qu'un
+-- condensé réversible en base.
+
+create table if not exists public.lead_submissions (
+  id uuid primary key default gen_random_uuid(),
+  ip_hash text not null,
+  created_at timestamptz not null default now()
+);
+
+-- L'index porte les deux colonnes du filtre : empreinte, puis fenêtre de
+-- temps. Il sert aussi la purge, qui balaie par date.
+create index if not exists lead_submissions_ip_hash_created_at_idx
+  on public.lead_submissions (ip_hash, created_at desc);
+
+comment on table public.lead_submissions is
+  'Compteur d''envois du formulaire. Empreintes HMAC salées, jamais d''adresse IP.';
+
+-- L'application purge les empreintes de plus de 24 h, au hasard d'un envoi
+-- sur vingt. Si vous préférez une purge régulière et indépendante du trafic,
+-- pg_cron fait l'affaire :
+--
+--   select cron.schedule(
+--     'purge-lead-submissions', '0 4 * * *',
+--     $$delete from public.lead_submissions where created_at < now() - interval '24 hours'$$
+--   );
+
+-- Même régime de fermeture que `leads`.
+alter table public.lead_submissions enable row level security;
+revoke all on table public.lead_submissions from anon, authenticated;

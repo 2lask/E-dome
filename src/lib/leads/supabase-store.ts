@@ -15,6 +15,7 @@ import type { LeadListFilter, LeadRecord, LeadStore, StoredLead } from "./types"
    conversion est centralisée dans les deux fonctions de mappage ci-dessous. */
 
 const TABLE = "leads";
+const SUBMISSIONS_TABLE = "lead_submissions";
 
 /** Colonnes lues. Énumérées explicitement plutôt que `*`, pour que l'ajout
     d'une colonne sensible en base ne se retrouve pas exposé par accident. */
@@ -173,6 +174,37 @@ export function createSupabaseLeadStore(client: SupabaseClient): LeadStore {
       const { data, error } = await query.returns<Row[]>();
       if (error) throw new Error(`Lecture des leads impossible : ${error.message}`);
       return (data ?? []).map(toLead);
+    },
+
+    /* ── Limitation des envois ──────────────────────────────────────────────
+
+       Table `lead_submissions` : une empreinte HMAC salée et un horodatage,
+       jamais l'adresse IP. Même régime que `leads` — RLS activée, aucune
+       politique, accès par la seule clé de service. */
+
+    async countRecentSubmissions(fingerprint: string, since: Date) {
+      /* `head: true` : on ne rapatrie aucune ligne, seulement le compte. */
+      const { count, error } = await client
+        .from(SUBMISSIONS_TABLE)
+        .select("id", { count: "exact", head: true })
+        .eq("ip_hash", fingerprint)
+        .gte("created_at", since.toISOString());
+
+      if (error) throw new Error(`Lecture du compteur d'envois impossible : ${error.message}`);
+      return count ?? 0;
+    },
+
+    async recordSubmission(fingerprint: string) {
+      const { error } = await client.from(SUBMISSIONS_TABLE).insert({ ip_hash: fingerprint });
+      if (error) throw new Error(`Enregistrement de l'envoi impossible : ${error.message}`);
+    },
+
+    async purgeSubmissions(before: Date) {
+      const { error } = await client
+        .from(SUBMISSIONS_TABLE)
+        .delete()
+        .lt("created_at", before.toISOString());
+      if (error) throw new Error(`Purge des empreintes impossible : ${error.message}`);
     },
   };
 }

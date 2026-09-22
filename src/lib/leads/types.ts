@@ -64,4 +64,21 @@ export interface LeadStore {
   upsert(record: LeadRecord): Promise<{ lead: StoredLead; created: boolean }>;
   /** Liste filtrée, la plus récente d'abord. */
   list(filter?: LeadListFilter): Promise<StoredLead[]>;
+
+  /* ── Limitation des envois ────────────────────────────────────────────────
+
+     Le compteur est tenu ici plutôt qu'en mémoire du processus : sur un
+     hébergement sans état, deux requêtes successives tombent volontiers sur
+     deux instances différentes, et un compteur local ne limite rien.
+
+     `fingerprint` est un HMAC salé de l'adresse IP, jamais l'adresse. Voir
+     `rate-limit.ts`, qui décide aussi de ne rien écrire du tout quand le sel
+     n'est pas configuré. */
+
+  /** Nombre d'envois enregistrés pour cette empreinte depuis `since`. */
+  countRecentSubmissions(fingerprint: string, since: Date): Promise<number>;
+  /** Enregistre un envoi pour cette empreinte, horodaté maintenant. */
+  recordSubmission(fingerprint: string): Promise<void>;
+  /** Supprime les empreintes antérieures à `before`. */
+  purgeSubmissions(before: Date): Promise<void>;
 }

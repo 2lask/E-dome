@@ -74,6 +74,7 @@ afficher la landing ; elles le deviennent pour enregistrer les inscriptions.
 | `NEXT_PUBLIC_SUPABASE_URL` | Projet Supabase | Repli fichier en développement, **échec en production** |
 | `SUPABASE_SERVICE_ROLE_KEY` | Écriture serveur dans `leads`. **Jamais exposée au client** | Idem |
 | `ADMIN_PASSWORD` | Accès à `/admin/leads` | La page affiche « aucun mot de passe configuré » |
+| `LEAD_IP_SALT` | Sel du hachage des adresses IP pour la limite de débit | Repli sur un compteur en mémoire, non partagé entre instances |
 | `NEXT_PUBLIC_BASE_URL` | URL canonique et liens de parrainage | Déduite des en-têtes de la requête |
 | `NEXT_PUBLIC_BOOKING_URL` | Prise de rendez-vous sur `/merci` | Le bouton n'apparaît pas |
 | `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | Mesure d'audience Plausible | Aucun script chargé, aucun cookie |
@@ -115,6 +116,21 @@ point-virgule et une marque d'ordre des octets, pour s'ouvrir correctement
 dans Excel en français.
 
 Changer `ADMIN_PASSWORD` invalide immédiatement toutes les sessions ouvertes.
+
+### Limite de débit
+
+Cinq envois par heure et par adresse. Le compteur est tenu en base, dans
+`lead_submissions`, donc partagé entre toutes les instances — un compteur en
+mémoire ne limite rien sur un hébergement sans état.
+
+L'adresse IP n'est jamais enregistrée : seule une empreinte HMAC-SHA256 l'est,
+calculée avec `LEAD_IP_SALT`. Le sel n'est pas décoratif — il n'existe que
+quatre milliards d'adresses IPv4, qu'un condensé nu laisse retrouver par force
+brute en quelques minutes.
+
+Sans sel configuré, rien n'est écrit en base et le compteur retombe en
+mémoire, avec une erreur en console. Mieux vaut une limite faible qu'un
+condensé réversible en base.
 
 ### Parrainage et provenance
 
