@@ -773,6 +773,33 @@ export const form = {
   },
 } as const;
 
+/* ── Vues typées du formulaire ───────────────────────────────────────────────
+
+   `form` est déclaré `as const` pour que les textes restent des littéraux,
+   ce qui est confortable à l'usage. Effet de bord : chaque question hérite
+   d'un type ultra-précis qui ne comporte que SES propres clés — une question
+   sans `optional` n'a pas de propriété `optional` du tout, et y accéder est
+   une erreur de compilation.
+
+   Ces deux vues élargissent les types une seule fois, ici, plutôt que de
+   parsemer le code de conversions. Les consommateurs (schéma de validation,
+   calcul du score, formulaire) doivent passer par elles. */
+
+export const PROFILE_QUESTIONS: Record<ProfileId, readonly Field[]> = form.profileQuestions;
+
+export const ENGAGEMENT_SETS: {
+  readonly default: readonly Engagement[];
+  readonly equipe: readonly Engagement[];
+} = {
+  default: form.engagement.default,
+  equipe: form.engagement.equipe,
+};
+
+/** Jeu d'engagements applicable à un profil. */
+export function engagementsFor(profile: ProfileId): readonly Engagement[] {
+  return profile === "equipe" ? ENGAGEMENT_SETS.equipe : ENGAGEMENT_SETS.default;
+}
+
 /* ── FAQ ─────────────────────────────────────────────────────────────────── */
 
 export const faq = {

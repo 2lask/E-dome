@@ -69,3 +69,7 @@ out/
 # Env
 .env*
 !.env.example
+
+# Manifestations d'interet enregistrees en local (developpement sans Supabase).
+# Contient de vraies donnees personnelles des qu'on teste avec son adresse.
+.leads.local.json
