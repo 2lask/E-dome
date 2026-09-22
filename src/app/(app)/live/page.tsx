@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Video, Bell, CalendarPlus, Radio, Check } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { CameraPreview } from "@/components/live/camera-preview";
+import { REPLAYS } from "@/lib/replays";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -14,14 +15,9 @@ const UPCOMING_LIVES = [
   { id: "L3", titre: "Optimiser son annonce immobilière", speaker: "Laura Fischer", role: "Hôte", date: "12 avril 2026 à 10h00", inscrits: 56 },
 ];
 
-const PAST_REPLAYS = [
-  { id: "R1", titre: "Les tendances du marché Q1 2026", speaker: "Jean-Pierre Dumont", date: "20 mars 2026", vues: 1240, duree: "1h12", youtubeId: "FqjDgXlE2nQ" },
-  { id: "R2", titre: "Comment fixer le bon prix de location", speaker: "Nadia Silva", date: "15 mars 2026", vues: 890, duree: "45min", youtubeId: "E0dyHPjiJDo" },
-  { id: "R3", titre: "Fiscalité immobilière en Suisse", speaker: "Patrick Leroy", date: "10 mars 2026", vues: 2100, duree: "1h30", youtubeId: "_DtWLPqqnwU" },
-  { id: "R4", titre: "Home staging : avant/après", speaker: "Amina Koné", date: "5 mars 2026", vues: 670, duree: "38min", youtubeId: "p5Kk_HBASHg" },
-  { id: "R5", titre: "Droit du bail : vos obligations", speaker: "Thomas Roth", date: "28 février 2026", vues: 1560, duree: "55min", youtubeId: "NBjn9FkvpCQ" },
-  { id: "R6", titre: "Photographie immobilière pro", speaker: "Amina Koné", date: "20 février 2026", vues: 780, duree: "42min", youtubeId: "FqjDgXlE2nQ" },
-];
+/* Les replays viennent de @/lib/replays : la fiche /live/replay/[id] lit le
+   même tableau, et le lien porte l'identifiant plutôt que la position. */
+const PAST_REPLAYS = REPLAYS;
 
 const MOCK_CHAT = [
   { user: "Marc D.", message: "Très intéressant, merci pour ces chiffres !", time: "18:02" },
@@ -362,10 +358,10 @@ export default function LivePage() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Replays</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {PAST_REPLAYS.map((replay, idx) => (
+          {PAST_REPLAYS.map((replay) => (
             <Link
               key={replay.id}
-              href={`/live/replay/${idx + 1}`}
+              href={`/live/replay/${replay.id}`}
               className="rounded-xl bg-[var(--card)] border border-[var(--card-border)] overflow-hidden hover:border-[var(--primary)]/40 transition cursor-pointer block"
             >
               <div className="aspect-video bg-gray-800 flex items-center justify-center relative">

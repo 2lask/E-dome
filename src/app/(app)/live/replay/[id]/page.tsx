@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Film } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
+import { REPLAYS, formatVues, getReplayById } from "@/lib/replays";
 
 /* ── SERVER COMPONENT ────────────────────────────────────────────────────────
    Première page du groupe (app) convertie après le découpage du layout.
@@ -17,21 +18,15 @@ import { BackButton } from "@/components/ui/back-button";
      l'application avec Capacitor.
    Modèle à suivre pour /explorer, /formations, /evenements, /boutique. */
 
-/* ─── Replay Data ───────────────────────────────────────────────────────── */
-
-const REPLAYS: Record<string, { title: string; speaker: string; date: string; vues: string; youtubeId: string }> = {
-  "1": { title: "Les tendances du marche Q1 2026", speaker: "Jean-Pierre Dumont", date: "20 mars 2026", vues: "1 240", youtubeId: "FqjDgXlE2nQ" },
-  "2": { title: "Comment fixer le bon prix de location", speaker: "Nadia Silva", date: "15 mars 2026", vues: "890", youtubeId: "E0dyHPjiJDo" },
-  "3": { title: "Fiscalite immobiliere en Suisse", speaker: "Patrick Leroy", date: "10 mars 2026", vues: "2 100", youtubeId: "_DtWLPqqnwU" },
-  "4": { title: "Home staging : avant/apres", speaker: "Amina Kone", date: "5 mars 2026", vues: "670", youtubeId: "p5Kk_HBASHg" },
-  "5": { title: "Droit du bail : vos obligations", speaker: "Thomas Roth", date: "28 fev. 2026", vues: "1 560", youtubeId: "NBjn9FkvpCQ" },
-  "6": { title: "Photographie immobiliere pro", speaker: "Amina Kone", date: "20 fev. 2026", vues: "780", youtubeId: "FqjDgXlE2nQ" },
-};
-
 /* ─── Prérendu & métadonnées ─────────────────────────────────────────────── */
 
+/* Les six replays étaient recopiés ici, indexés « 1 » à « 6 », pendant que
+   /live les identifiait R1 à R6 et liait par position. Les deux copies
+   divergeaient déjà sur les accents. Ils viennent maintenant de
+   @/lib/replays, et l'URL porte le vrai identifiant. */
+
 export function generateStaticParams() {
-  return Object.keys(REPLAYS).map((id) => ({ id }));
+  return REPLAYS.map((r) => ({ id: r.id }));
 }
 
 export async function generateMetadata({
@@ -40,18 +35,18 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const replay = REPLAYS[id];
+  const replay = getReplayById(id);
 
   if (!replay) {
     return { title: "Replay introuvable · E-Dome" };
   }
 
   return {
-    title: `${replay.title} · Replay E-Dome`,
-    description: `Replay du live « ${replay.title} » animé par ${replay.speaker} le ${replay.date}.`,
+    title: `${replay.titre} · Replay E-Dome`,
+    description: `Replay du live « ${replay.titre} » animé par ${replay.speaker} le ${replay.date}.`,
     openGraph: {
-      title: replay.title,
-      description: `Live animé par ${replay.speaker} · ${replay.vues} vues`,
+      title: replay.titre,
+      description: `Live animé par ${replay.speaker} · ${formatVues(replay.vues)} vues`,
       type: "video.other",
     },
   };
@@ -61,7 +56,7 @@ export async function generateMetadata({
 
 export default async function ReplayPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const replay = REPLAYS[id];
+  const replay = getReplayById(id);
 
   if (!replay) {
     return (
@@ -93,19 +88,19 @@ export default async function ReplayPage({ params }: { params: Promise<{ id: str
           src={`https://www.youtube.com/embed/${replay.youtubeId}`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          title={replay.title}
+          title={replay.titre}
         />
       </div>
 
       {/* Info */}
       <div className="space-y-2">
-        <h1 className="text-2xl page-heading text-[var(--foreground)]">{replay.title}</h1>
+        <h1 className="text-2xl page-heading text-[var(--foreground)]">{replay.titre}</h1>
         <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--text-secondary)]">
           <span className="font-medium text-[var(--primary)]">{replay.speaker}</span>
           <span className="text-[var(--text-muted)]">&middot;</span>
           <span>{replay.date}</span>
           <span className="text-[var(--text-muted)]">&middot;</span>
-          <span>{replay.vues} vues</span>
+          <span>{formatVues(replay.vues)} vues</span>
         </div>
       </div>
     </div>

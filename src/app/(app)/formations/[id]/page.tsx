@@ -15,29 +15,20 @@ import type { Formation } from "@/lib/types";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
 
-/* ─── Resolve formation by ID (handles f1, form-001, etc.) ─────────────── */
+/* ─── Résolution d'une formation ────────────────────────────────────────────
+
+   Cette fonction faisait auparavant correspondre « f1 » à « form-001 » par
+   remplissage de zéros, puis par position dans le tableau, puis par simple
+   inclusion de chaîne. Résultat : une carte intitulée « Investissement
+   immobilier : de 0 à expert » ouvrait « Investissement locatif : de zéro à
+   rentier », d'un autre formateur, à un autre prix — et surtout, aucun
+   identifiant inconnu n'échouait jamais vraiment.
+
+   La liste et la fiche partagent maintenant le même catalogue. Un
+   identifiant qui n'existe pas doit donc simplement rester introuvable. */
 
 function resolveFormation(id: string): Formation | undefined {
-  // 1) Direct lookup (e.g. "form-001")
-  let found = getFormationById(id);
-  if (found) return found;
-
-  // 2) Map short IDs like "f1" -> "form-001", "f12" -> "form-012"
-  const shortMatch = id.match(/^f(\d+)$/);
-  if (shortMatch) {
-    const num = parseInt(shortMatch[1], 10);
-    const paddedId = `form-${String(num).padStart(3, "0")}`;
-    found = getFormationById(paddedId);
-    if (found) return found;
-
-    // 3) Fallback: find by index (1-based)
-    if (num >= 1 && num <= allFormations.length) {
-      return allFormations[num - 1];
-    }
-  }
-
-  // 4) Search by partial match
-  return allFormations.find((f) => f.id.includes(id) || id.includes(f.id));
+  return getFormationById(id);
 }
 
 /* ─── Formation reviews (per-formation, not from mock-data property reviews) */

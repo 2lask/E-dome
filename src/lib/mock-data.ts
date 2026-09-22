@@ -797,6 +797,235 @@ export const properties: Property[] = [
     reviewCount: 27,
     featured: false,
   },
+
+  /* 15 a 22 \u2014 Biens presentes dans le feed.
+
+     Le feed definissait ces huit biens chez lui, sous des identifiants
+     prop3, prop4, prop6, prop7, prop8, prop9, prop12 et prop13 deja pris
+     par des biens differents de ce catalogue. Cliquer \u00ab Voir le bien \u00bb
+     ouvrait donc une autre annonce : le penthouse genevois a 4,8 M CHF
+     menait a une villa a Nice, le studio de Dubai a un riad marocain.
+
+     Ils vivent maintenant ici, avec des identifiants a eux, et le feed les
+     lit par identifiant. La carte et la fiche ne peuvent plus diverger. */
+
+  // 15 \u2014 Vente, Appartement, Zurich
+  {
+    id: 'prop15',
+    title: 'Programme Minergie-P \u00e0 Zurich Nord',
+    description:
+      'Appartement neuf de 3.5 pi\u00e8ces dans un programme certifi\u00e9 Minergie-P. Triple vitrage, pompe \u00e0 chaleur, panneaux solaires en toiture. Livraison 2026.',
+    type: 'appartement',
+    transactionType: 'vente',
+    price: 980000,
+    currency: 'CHF',
+    location: { city: 'Zurich', country: 'Suisse', address: 'Affolternstrasse 120', lat: 47.4123, lng: 8.5215 },
+    images: [
+      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[8], // Thomas Muller, architecte
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 110,
+    amenities: ['Minergie-P', 'Pompe \u00e0 chaleur', 'Panneaux solaires', 'Balcon', 'Parking'],
+    rating: 4.7,
+    reviewCount: 12,
+    featured: false,
+    analytics: { rendementBrut: 4.1, rendementNet: 3.2, prixM2: 8909, dpe: 'A', etatGeneral: 'Neuf', anneeConstruction: 2026, potentielPlusValue: 18, roi5ans: 28, roi10ans: 62, tauxOccupation: 95 },
+  },
+
+  // 16 \u2014 Vente, Penthouse, Geneve
+  {
+    id: 'prop16',
+    title: 'Penthouse 360\u00b0 sur la rive droite',
+    description:
+      'Attique de 280 m\u00b2 en dernier \u00e9tage, terrasse filante et vue d\u00e9gag\u00e9e sur la rade et le Jura. Ascenseur priv\u00e9, deux places de parc.',
+    type: 'penthouse',
+    transactionType: 'vente',
+    price: 4800000,
+    currency: 'CHF',
+    location: { city: 'Gen\u00e8ve', country: 'Suisse', address: 'Quai Wilson 37', lat: 46.2230, lng: 6.1520 },
+    images: [
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[2], // Marc Favre, Geneve
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 280,
+    amenities: ['Terrasse', 'Ascenseur priv\u00e9', 'Vue lac', 'Parking double', 'Climatisation'],
+    rating: 4.9,
+    reviewCount: 8,
+    featured: true,
+    analytics: { rendementBrut: 3.8, rendementNet: 2.6, prixM2: 17142, dpe: 'B', etatGeneral: 'Excellent', anneeConstruction: 2019, potentielPlusValue: 22, roi5ans: 35, roi10ans: 78, tauxOccupation: 100 },
+  },
+
+  // 17 \u2014 Vente, Studio, Dubai
+  {
+    id: 'prop17',
+    title: 'Studio Dubai Marina, livraison 2027',
+    description:
+      'Studio de 52 m\u00b2 en VEFA dans une tour de Dubai Marina. Piscine \u00e0 d\u00e9bordement, salle de sport et conciergerie. Paiement \u00e9chelonn\u00e9 jusqu\u2019\u00e0 la livraison.',
+    type: 'studio',
+    transactionType: 'vente',
+    price: 480000,
+    currency: 'AED',
+    location: { city: 'Dubai', country: '\u00c9mirats Arabes Unis', address: 'Dubai Marina', lat: 25.0805, lng: 55.1403 },
+    images: [
+      'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[5], // Yasmin Al Maktoum
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 52,
+    amenities: ['Piscine', 'Salle de sport', 'Conciergerie', 'Parking', 'S\u00e9curit\u00e9 24h'],
+    rating: 4.6,
+    reviewCount: 15,
+    featured: false,
+    analytics: { rendementBrut: 8.2, rendementNet: 6.8, prixM2: 9230, dpe: 'A', etatGeneral: 'Neuf', anneeConstruction: 2027, potentielPlusValue: 30, roi5ans: 42, roi10ans: 95, tauxOccupation: 91 },
+  },
+
+  // 18 \u2014 Vente, Riad, Marrakech
+  {
+    id: 'prop18',
+    title: 'Riad du XVIII\u1d49 si\u00e8cle class\u00e9 patrimoine',
+    description:
+      'Riad de 280 m\u00b2 enti\u00e8rement restaur\u00e9 dans le respect des techniques traditionnelles. Zellige d\u2019origine, cinq chambres autour du patio, terrasse sur les toits.',
+    type: 'riad',
+    transactionType: 'vente',
+    price: 520000,
+    currency: 'EUR',
+    location: { city: 'Marrakech', country: 'Maroc', address: 'Derb Sidi Bouloukate', lat: 31.6258, lng: -7.9891 },
+    images: [
+      'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[12], // Omar Benjelloun, Marrakech
+    bedrooms: 5,
+    bathrooms: 4,
+    area: 280,
+    amenities: ['Patio', 'Terrasse', 'Hammam', 'Zellige d\u2019origine', 'Classement patrimoine'],
+    rating: 4.8,
+    reviewCount: 19,
+    featured: false,
+    analytics: { rendementBrut: 7.8, rendementNet: 5.9, prixM2: 1857, dpe: 'C', etatGeneral: 'Restaur\u00e9', anneeConstruction: 1780, potentielPlusValue: 18, roi5ans: 38, roi10ans: 85, tauxOccupation: 82 },
+  },
+
+  // 19 \u2014 Vente, Chalet, Verbier
+  {
+    id: 'prop19',
+    title: 'Chalet ski-in ski-out \u00e0 Verbier',
+    description:
+      'Chalet de 280 m\u00b2 avec acc\u00e8s direct aux pistes. Cinq chambres, cave \u00e0 vin, ski-room chauff\u00e9e et cheminee centrale.',
+    type: 'chalet',
+    transactionType: 'vente',
+    price: 3200000,
+    currency: 'CHF',
+    location: { city: 'Verbier', country: 'Suisse', address: 'Chemin de la Barmette 8', lat: 46.0960, lng: 7.2270 },
+    images: [
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[1], // Sophie Durand, courtiere
+    bedrooms: 5,
+    bathrooms: 4,
+    area: 280,
+    amenities: ['Ski-in ski-out', 'Chemin\u00e9e', 'Ski-room', 'Cave \u00e0 vin', 'Garage'],
+    rating: 4.9,
+    reviewCount: 11,
+    featured: false,
+    analytics: { rendementBrut: 5.4, rendementNet: 3.9, prixM2: 11428, dpe: 'B', etatGeneral: 'Excellent', anneeConstruction: 2018, potentielPlusValue: 16, roi5ans: 32, roi10ans: 71, tauxOccupation: 78 },
+  },
+
+  // 20 \u2014 Vente, Appartement, Lugano
+  {
+    id: 'prop20',
+    title: 'R\u00e9sidence A+ g\u00e9othermie \u00e0 Lugano',
+    description:
+      'Appartement de 125 m\u00b2 dans une r\u00e9sidence chauff\u00e9e par sondes g\u00e9othermiques. Loggia orient\u00e9e sud, vue sur le lac de Lugano.',
+    type: 'appartement',
+    transactionType: 'vente',
+    price: 1180000,
+    currency: 'CHF',
+    location: { city: 'Lugano', country: 'Suisse', address: 'Via Cantonale 42', lat: 46.0037, lng: 8.9511 },
+    images: [
+      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[8], // Thomas Muller, architecte
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 125,
+    amenities: ['G\u00e9othermie', 'Loggia', 'Vue lac', 'Parking souterrain', 'Cave'],
+    rating: 4.6,
+    reviewCount: 9,
+    featured: false,
+    analytics: { rendementBrut: 4.6, rendementNet: 3.5, prixM2: 9440, dpe: 'A', etatGeneral: 'Neuf', anneeConstruction: 2026, potentielPlusValue: 22, roi5ans: 30, roi10ans: 68, tauxOccupation: 94 },
+  },
+
+  // 21 \u2014 Vente, Appartement, Dubai
+  {
+    id: 'prop21',
+    title: 'Appartement Downtown avec vue sur le Burj',
+    description:
+      'Deux chambres de 98 m\u00b2 au 34\u1d49 \u00e9tage, vue frontale sur le Burj Khalifa et la fontaine. Acc\u00e8s direct au Dubai Mall par passerelle climatis\u00e9e.',
+    type: 'appartement',
+    transactionType: 'vente',
+    price: 2100000,
+    currency: 'AED',
+    location: { city: 'Dubai', country: '\u00c9mirats Arabes Unis', address: 'Downtown Dubai', lat: 25.1972, lng: 55.2744 },
+    images: [
+      'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[5], // Yasmin Al Maktoum
+    bedrooms: 2,
+    bathrooms: 2,
+    area: 98,
+    amenities: ['Vue Burj Khalifa', 'Piscine', 'Salle de sport', 'Conciergerie', 'Parking'],
+    rating: 4.8,
+    reviewCount: 23,
+    featured: false,
+    analytics: { rendementBrut: 7.1, rendementNet: 5.8, prixM2: 21428, dpe: 'A', etatGeneral: 'Excellent', anneeConstruction: 2022, potentielPlusValue: 28, roi5ans: 40, roi10ans: 92, tauxOccupation: 96 },
+  },
+
+  // 22 \u2014 Vente, Chalet, Crans-Montana
+  {
+    id: 'prop22',
+    title: 'Chalet Minergie-P \u00e0 Crans-Montana',
+    description:
+      'Chalet neuf de 165 m\u00b2 certifi\u00e9 Minergie-P, ossature bois locale et triple vitrage. Quatre chambres, terrasse plein sud face aux Alpes valaisannes.',
+    type: 'chalet',
+    transactionType: 'vente',
+    price: 1200000,
+    currency: 'CHF',
+    location: { city: 'Crans-Montana', country: 'Suisse', address: 'Route des M\u00e9l\u00e8zes 14', lat: 46.3140, lng: 7.4800 },
+    images: [
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[8], // Thomas Muller, architecte
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 165,
+    amenities: ['Minergie-P', 'Ossature bois', 'Terrasse sud', 'Garage', 'Ski-room'],
+    rating: 4.7,
+    reviewCount: 6,
+    featured: false,
+    analytics: { rendementBrut: 5.1, rendementNet: 3.7, prixM2: 7272, dpe: 'A', etatGeneral: 'Neuf', anneeConstruction: 2026, potentielPlusValue: 20, roi5ans: 31, roi10ans: 69, tauxOccupation: 81 },
+  },
 ];
 
 // ─── SOCIAL POSTS (10) ──────────────────────────────────────────────────────

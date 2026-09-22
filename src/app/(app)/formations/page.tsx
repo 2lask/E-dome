@@ -6,28 +6,62 @@ import { Star } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 import { PageHeader } from "@/components/ui/page-header";
+import { formations as catalogue } from "@/lib/mock-data";
+import type { User } from "@/lib/types";
 
-/* ─── Mock Data ──────────────────────────────────────────────────────────── */
+/* ─── Catalogue ──────────────────────────────────────────────────────────────
 
-const CATEGORIES = ["Tous", "Immobilier", "Finance", "Marketing", "Juridique", "Design", "Gestion locative", "Investissement"];
+   Cette page listait six formations qui lui étaient propres, identifiées
+   f1 à f6, alors que la fiche de détail lit le catalogue partagé, identifié
+   form-001 et suivants. Une rustine faisait correspondre f1 à form-001 par
+   position : cliquer une carte ouvrait donc une formation au titre, au
+   formateur et au prix différents de ceux affichés sur la carte.
 
-const INSTRUCTORS = [
-  { id: "user-001", name: "Léo Martin", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop", specialty: "Investissement", students: 1240, rating: 4.8 },
-  { id: "user-004", name: "Amina El Idrissi", avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop", specialty: "Location", students: 1200, rating: 4.9 },
-  { id: "u3", name: "Claire Bernard", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop", specialty: "Marketing", students: 670, rating: 4.7 },
-  { id: "u4", name: "Jean Leroy", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop", specialty: "Juridique", students: 530, rating: 4.6 },
-  { id: "u2", name: "Marc Dubois", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop", specialty: "Finance", students: 890, rating: 4.8 },
-  { id: "u1", name: "Sophie Martin", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop", specialty: "Immobilier", students: 1240, rating: 4.9 },
-];
+   La liste et la fiche lisent désormais la même source. Ce qui reste
+   propre à cette page est ce qui ne concerne pas la formation mais
+   l'utilisateur de démonstration : sa progression et ses inscriptions. */
 
-const FORMATIONS = [
-  { id: "f1", title: "Investissement immobilier : de 0 à expert", category: "Immobilier", level: "debutant" as const, instructor: INSTRUCTORS[0], thumbnail: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&h=400&fit=crop", price: 497, rating: 4.9, studentCount: 342, duration: "12h", progress: 65, enrolled: true, featured: true, modules: 5 },
-  { id: "f2", title: "Gestion locative avancée", category: "Gestion locative", level: "avance" as const, instructor: INSTRUCTORS[1], thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop", price: 199, rating: 4.8, studentCount: 890, duration: "8h", progress: 30, enrolled: true, featured: false, modules: 6 },
-  { id: "f3", title: "Marketing digital immobilier", category: "Marketing", level: "intermediaire" as const, instructor: INSTRUCTORS[2], thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop", price: 149, rating: 4.7, studentCount: 670, duration: "6h", progress: 0, enrolled: false, featured: false, modules: 5 },
-  { id: "f4", title: "Droit immobilier suisse", category: "Juridique", level: "intermediaire" as const, instructor: INSTRUCTORS[3], thumbnail: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=400&fit=crop", price: 249, rating: 4.6, studentCount: 530, duration: "10h", progress: 0, enrolled: false, featured: false, modules: 7 },
-  { id: "f5", title: "Analyse financière pour investisseurs", category: "Finance", level: "avance" as const, instructor: INSTRUCTORS[4], thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop", price: 349, rating: 4.9, studentCount: 420, duration: "14h", progress: 0, enrolled: false, featured: false, modules: 10 },
-  { id: "f6", title: "Home staging professionnel", category: "Design", level: "debutant" as const, instructor: INSTRUCTORS[5], thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop", price: 129, rating: 4.5, studentCount: 340, duration: "5h", progress: 0, enrolled: false, featured: false, modules: 4 },
-];
+const ENROLMENTS: Record<string, number> = {
+  "form-001": 65,
+  "form-002": 30,
+};
+
+const FEATURED_ID = "form-001";
+
+/* Le catalogue porte des User (firstName / lastName), pas un champ `name`. */
+const fullName = (u: User) => `${u.firstName} ${u.lastName}`;
+
+const FORMATIONS = catalogue.map((f) => ({
+  ...f,
+  instructorName: fullName(f.instructor),
+  moduleCount: f.modules.length,
+  progress: ENROLMENTS[f.id] ?? 0,
+  enrolled: f.id in ENROLMENTS,
+  featured: f.id === FEATURED_ID,
+}));
+
+const CATEGORIES = ["Tous", ...new Set(catalogue.map((f) => f.category))];
+
+/* Formateurs : dérivés du catalogue, pour qu'un formateur mis en avant ici
+   ait bien des formations à son nom. La spécialité est la catégorie qu'il
+   enseigne le plus, le nombre d'étudiants la somme de ses formations, la
+   note leur moyenne. */
+const INSTRUCTORS = [...new Map(catalogue.map((f) => [f.instructor.id, f.instructor])).values()].map(
+  (person) => {
+    const taught = catalogue.filter((f) => f.instructor.id === person.id);
+    const byCategory = new Map<string, number>();
+    for (const f of taught) byCategory.set(f.category, (byCategory.get(f.category) ?? 0) + 1);
+    const specialty = [...byCategory.entries()].sort((a, b) => b[1] - a[1])[0][0];
+    return {
+      id: person.id,
+      name: fullName(person),
+      avatar: person.avatar,
+      specialty,
+      students: taught.reduce((sum, f) => sum + f.studentCount, 0),
+      rating: taught.reduce((sum, f) => sum + f.rating, 0) / taught.length,
+    };
+  },
+);
 
 const LEVEL_LABELS: Record<string, string> = { debutant: "Débutant", intermediaire: "Intermédiaire", avance: "Avancé" };
 const LEVEL_COLORS: Record<string, string> = { debutant: "badge-level-beginner", intermediaire: "badge-level-intermediate", avance: "badge-level-advanced" };
@@ -58,7 +92,7 @@ export default function FormationsPage() {
 
   const filtered = useMemo(() => {
     return FORMATIONS.filter((f) => {
-      const matchSearch = f.title.toLowerCase().includes(search.toLowerCase()) || f.instructor.name.toLowerCase().includes(search.toLowerCase());
+      const matchSearch = f.title.toLowerCase().includes(search.toLowerCase()) || f.instructorName.toLowerCase().includes(search.toLowerCase());
       const matchCat = category === "Tous" || f.category === category;
       return matchSearch && matchCat;
     });
@@ -102,7 +136,7 @@ export default function FormationsPage() {
                 <img src={f.thumbnail} alt={f.title} className="w-20 h-20 rounded-xl object-cover flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-[var(--foreground)] truncate group-hover:text-[var(--primary)] transition-colors text-sm">{f.title}</h3>
-                  <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">{f.instructor.name}</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">{f.instructorName}</p>
                   <div className="mt-2">
                     <div className="flex items-center justify-between text-[10px] text-[var(--text-secondary)] mb-1">
                       <span>Progression</span>
@@ -127,7 +161,7 @@ export default function FormationsPage() {
               <span className="inline-block px-3 py-1 bg-[var(--primary)] text-white text-xs font-medium rounded-full mb-3">Formation vedette</span>
               <h2 className="text-2xl font-bold text-white mb-1">{featured.title}</h2>
               <div className="flex items-center gap-4 text-white/80 text-sm">
-                <span>{featured.instructor.name}</span>
+                <span>{featured.instructorName}</span>
                 <span>{featured.studentCount} étudiants</span>
                 <Stars rating={featured.rating} />
                 <span className="font-semibold text-[var(--primary)]">{formatPrice(featured.price)}</span>
@@ -184,13 +218,13 @@ export default function FormationsPage() {
                   <span className="text-xs text-[var(--text-muted)]">{f.category}</span>
                   <h3 className="font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors line-clamp-2">{f.title}</h3>
                   <Link href={`/profil/${f.instructor.id}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-2 hover:underline">
-                    <img src={f.instructor.avatar} alt={f.instructor.name} className="w-6 h-6 rounded-full object-cover" />
-                    <span className="text-sm text-[var(--text-secondary)]">{f.instructor.name}</span>
+                    <img src={f.instructor.avatar} alt={f.instructorName} className="w-6 h-6 rounded-full object-cover" />
+                    <span className="text-sm text-[var(--text-secondary)]">{f.instructorName}</span>
                   </Link>
                   <Stars rating={f.rating} />
                   <div className="flex items-center justify-between pt-1">
                     <span className="font-bold text-[var(--primary)]">{formatPrice(f.price)}</span>
-                    <span className="text-xs text-[var(--text-muted)]">{f.duration} &middot; {f.modules} modules</span>
+                    <span className="text-xs text-[var(--text-muted)]">{f.duration} &middot; {f.moduleCount} modules</span>
                   </div>
                 </div>
               </Link>

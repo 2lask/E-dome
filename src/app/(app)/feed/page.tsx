@@ -100,14 +100,51 @@ const mkComments = (postId: string, items: SimpleComment[]): Comment[] =>
     likes: c.likes ?? 0,
   }));
 
-type PropArgs = Pick<Property, "id" | "title" | "type" | "transactionType" | "price" | "currency" | "bedrooms" | "bathrooms" | "area" | "host" | "location" | "images"> & Partial<Property>;
-const mkProp = (p: PropArgs): Property => ({
-  description: p.title,
-  amenities: [],
-  rating: 4.8,
-  reviewCount: 24,
-  ...p,
-});
+/* Bien attaché à un post, lu dans le catalogue partagé.
+
+   Le feed définissait ses propres biens en dur, sous des identifiants déjà
+   pris par des biens différents : la carte « Penthouse 360° · Rive droite
+   Genève » à 4,8 M CHF ouvrait une villa à Nice à 2,85 M EUR. Les huit
+   biens qui n'existaient que dans le feed ont été versés au catalogue
+   (prop15 à prop22) ; les deux autres y figuraient déjà.
+
+   Un identifiant inconnu casse maintenant la compilation, pas la page. */
+const propRef = (id: string): Property => {
+  const found = ALL_PROPERTIES.find((p) => p.id === id);
+  if (!found) throw new Error(`Bien inconnu référencé par le feed : ${id}`);
+  return found;
+};
+
+/* Carte formation d'un post, construite depuis le catalogue partagé.
+
+   Les cartes portaient auparavant des identifiants « f1 » à « f5 » et des
+   titres qui n'existaient nulle part ailleurs : cliquer ouvrait une
+   formation différente de celle annoncée. En lisant le catalogue, la carte
+   et la fiche ne peuvent plus diverger — et un identifiant inconnu casse
+   la compilation plutôt que l'expérience. */
+const mkFormation = (id: string): NonNullable<SocialPost["formation"]> => {
+  const f = ALL_FORMATIONS.find((x) => x.id === id);
+  if (!f) throw new Error(`Formation inconnue référencée par le feed : ${id}`);
+  return {
+    id: f.id,
+    title: f.title,
+    instructor: `${f.instructor.firstName} ${f.instructor.lastName}`,
+    price: f.price,
+    students: f.studentCount,
+    thumbnail: f.thumbnail,
+  };
+};
+
+/* Lien d'affiliation vers une formation. Son `redirect` pointe vers
+   /formations/<id> : il doit donc porter un identifiant du catalogue, sans
+   quoi le lien partagé mène à une page introuvable. */
+const mkFormationAffiliate = (id: string) => {
+  const f = mkFormation(id);
+  return buildObjectAffiliate("formation", f.id, f.title, {
+    price: f.price,
+    image: f.thumbnail,
+  });
+};
 
 // ─── Posts: 27 vidéos ──────────────────────────────────────────────────────
 
@@ -137,14 +174,7 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_MARC, content: "La vue lac est un argument de vente redoutable", h: 4, likes: 18 },
       { author: U_THOMAS, content: "Le standing est superbe. Tu acceptes les visites week-end ?", h: 2, likes: 6 },
     ]),
-    property: mkProp({
-      id: "prop1", title: "Appartement vue lac · Lausanne",
-      type: "appartement", transactionType: "vente", price: 1_450_000, currency: "CHF",
-      bedrooms: 3, bathrooms: 2, area: 135, host: U_SOPHIE,
-      location: { city: "Lausanne", country: "Suisse" },
-      images: ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400"],
-      analytics: { rendementBrut: 5.2, rendementNet: 3.8, prixM2: 10741, dpe: "B", etatGeneral: "Excellent", anneeConstruction: 2020, potentielPlusValue: 15, roi5ans: 30, roi10ans: 68, tauxOccupation: 92 },
-    }),
+    property: propRef("prop1"),
   },
   {
     id: "p3", author: U_AMIRA,
@@ -156,25 +186,18 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_YASMIN, content: "Magnifique. Tu as la fiscalité sur la table ?", h: 4, likes: 14 },
       { author: U_LEO, content: "Le bois de cèdre original, c'est rare. Bravo Amira.", h: 2, likes: 21 },
     ]),
-    property: mkProp({
-      id: "prop11", title: "Riad médina · Marrakech",
-      type: "riad", transactionType: "vente", price: 340_000, currency: "EUR",
-      bedrooms: 4, bathrooms: 3, area: 200, host: U_AMIRA,
-      location: { city: "Marrakech", country: "Maroc" },
-      images: ["https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=400"],
-      analytics: { rendementBrut: 9.5, rendementNet: 7.2, prixM2: 1700, dpe: "C", etatGeneral: "Restauré", anneeConstruction: 1820, potentielPlusValue: 25, roi5ans: 48, roi10ans: 110, tauxOccupation: 88 },
-    }),
+    property: propRef("prop4"),
   },
   {
     id: "p4", author: U_MARC,
-    content: "Le marché suisse romand sur 5 ans : +37 % en moyenne sur les biens premium\n\nMa formation \"Analyse financière pour investisseurs\" passe au crible chaque ratio : rendement brut/net, ROI, TIR, LTV. Inscriptions ouvertes — les places partent vite. #investissement #formation",
+    content: "Le marché suisse romand sur 5 ans : +37 % en moyenne sur les biens premium\n\nLa formation « Investissement locatif : de zéro à rentier » passe au crible chaque ratio : rendement brut/net, ROI, TIR, LTV. Je la recommande à tous ceux qui démarrent. #investissement #formation",
     media: [clip(4)], type: "post", likes: 1240, location: "Genève, Suisse",
     createdAt: hAgo(12),
     comments: mkComments("p4", [
       { author: U_LEO, content: "La meilleure formation de la plateforme. Sérieux et rigoureux.", h: 10, likes: 67 },
       { author: U_SOPHIE, content: "Inscrite à la prochaine session, hâte", h: 8, likes: 12 },
     ]),
-    formation: { id: "f5", title: "Analyse financière pour investisseurs", instructor: "Marc Dubois", price: 349, students: 420, thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop" },
+    formation: mkFormation("form-001"),
   },
   {
     id: "p5", author: U_THOMAS,
@@ -184,14 +207,7 @@ const VIDEO_POSTS: SocialPost[] = [
     comments: mkComments("p5", [
       { author: U_MARC, content: "Minergie-P et Zurich Nord, c'est du gagnant. Demande envoyée.", h: 14, likes: 24 },
     ]),
-    property: mkProp({
-      id: "prop7", title: "Programme Minergie-P · Zurich Nord",
-      type: "appartement", transactionType: "vente", price: 980_000, currency: "CHF",
-      bedrooms: 3, bathrooms: 2, area: 110, host: U_THOMAS,
-      location: { city: "Zurich", country: "Suisse" },
-      images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400"],
-      analytics: { rendementBrut: 4.1, rendementNet: 3.2, prixM2: 8909, dpe: "A", etatGeneral: "Neuf", anneeConstruction: 2026, potentielPlusValue: 18, roi5ans: 28, roi10ans: 62, tauxOccupation: 95 },
-    }),
+    property: propRef("prop15"),
   },
   {
     id: "p6", author: U_YASMIN,
@@ -211,16 +227,13 @@ const VIDEO_POSTS: SocialPost[] = [
     comments: mkComments("p7", [
       { author: U_AMINA, content: "Exact ! Le pricing dynamique fait le reste. Merci pour le shout-out", h: 22, likes: 28 },
     ]),
-    formation: { id: "f2", title: "Gestion locative avancée", instructor: "Amina El Idrissi", price: 199, students: 890, thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop" },
+    formation: mkFormation("form-002"),
     // Sophie recommande la formation d'Amina via son lien d'affiliation.
-    affiliate: buildObjectAffiliate("formation", "f2", "Gestion locative avancée", {
-      price: 199,
-      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
-    }),
+    affiliate: mkFormationAffiliate("form-002"),
   },
   {
     id: "p8", author: U_AMINA,
-    content: "Nouveau module dans \"Gestion locative avancée\"\n\nPricing dynamique avec automatisation Beyond Pricing + PriceLabs. Mes étudiants augmentent leurs revenus de 30 à 40 % en moyenne. Inscriptions sur le profil. #gestionlocative #formation #automatisation",
+    content: "Nouveau module dans \"Maîtriser la location courte durée\"\n\nPricing dynamique avec automatisation Beyond Pricing + PriceLabs. Mes étudiants augmentent leurs revenus de 30 à 40 % en moyenne. Inscriptions sur le profil. #gestionlocative #formation #automatisation",
     media: [clip(8)], type: "post", likes: 1567, location: "Marrakech, Maroc",
     createdAt: hAgo(32),
     comments: mkComments("p8", [
@@ -228,7 +241,7 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_THOMAS, content: "Tu peux automatiser ça aussi sur les long-séjours ?", h: 28, likes: 8 },
       { author: U_AMIRA, content: "Référence dans le métier. Merci Amina.", h: 26, likes: 22 },
     ]),
-    formation: { id: "f2", title: "Gestion locative avancée", instructor: "Amina El Idrissi", price: 199, students: 890, thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop" },
+    formation: mkFormation("form-002"),
   },
   {
     id: "p9", author: U_LEO,
@@ -249,14 +262,7 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_YASMIN, content: "Niveau Dubaï", h: 46, likes: 19 },
       { author: U_LEO, content: "Un de mes clients pourrait être intéressé. Je t'écris.", h: 44, likes: 12 },
     ]),
-    property: mkProp({
-      id: "prop3", title: "Penthouse 360° · Rive droite Genève",
-      type: "penthouse", transactionType: "vente", price: 4_800_000, currency: "CHF",
-      bedrooms: 4, bathrooms: 3, area: 280, host: U_MARC,
-      location: { city: "Genève", country: "Suisse" },
-      images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400"],
-      analytics: { rendementBrut: 3.8, rendementNet: 2.6, prixM2: 17142, dpe: "B", etatGeneral: "Excellent", anneeConstruction: 2019, potentielPlusValue: 22, roi5ans: 35, roi10ans: 78, tauxOccupation: 100 },
-    }),
+    property: propRef("prop16"),
   },
   {
     id: "p11", author: U_AMIRA,
@@ -296,14 +302,7 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_YASMIN, content: "@marc oui, c'est devenu le standard sur les off-plans depuis 2025.", h: 76, likes: 22 },
       { author: U_LEO, content: "Yasmin, tu es ma référence Dubaï. Continue", h: 72, likes: 41 },
     ]),
-    property: mkProp({
-      id: "prop4", title: "Studio Dubai Marina · Off-plan 2027",
-      type: "studio", transactionType: "vente", price: 480_000, currency: "AED",
-      bedrooms: 1, bathrooms: 1, area: 52, host: U_YASMIN,
-      location: { city: "Dubaï", country: "Émirats arabes unis" },
-      images: ["https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400"],
-      analytics: { rendementBrut: 8.2, rendementNet: 6.8, prixM2: 9230, dpe: "A", etatGeneral: "Neuf", anneeConstruction: 2027, potentielPlusValue: 30, roi5ans: 42, roi10ans: 95, tauxOccupation: 91 },
-    }),
+    property: propRef("prop17"),
   },
   {
     id: "p15", author: U_MARC,
@@ -323,18 +322,11 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_SOPHIE, content: "Le plus beau riad que j'ai vu cette année", h: 94, likes: 24 },
       { author: U_LEO, content: "Patrimoine pur. Bravo Amira.", h: 92, likes: 31 },
     ]),
-    property: mkProp({
-      id: "prop12", title: "Riad XVIIIe siècle · Patrimoine",
-      type: "riad", transactionType: "vente", price: 520_000, currency: "EUR",
-      bedrooms: 5, bathrooms: 4, area: 280, host: U_AMIRA,
-      location: { city: "Marrakech", country: "Maroc" },
-      images: ["https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400"],
-      analytics: { rendementBrut: 7.8, rendementNet: 5.9, prixM2: 1857, dpe: "C", etatGeneral: "Restauré", anneeConstruction: 1780, potentielPlusValue: 18, roi5ans: 38, roi10ans: 85, tauxOccupation: 82 },
-    }),
+    property: propRef("prop18"),
   },
   {
     id: "p17", author: U_LEO,
-    content: "Ma formation \"Investissement immobilier : de 0 à expert\" a déjà accompagné 342 personnes\n\nDe la première analyse au closing notarial, tout est cadré. Module 1 gratuit en commentaire si tu débutes. #formation #investissement #zeroaexpert",
+    content: "Ma formation \"Investissement locatif : de zéro à rentier\"\n\nDe la première analyse au closing notarial, tout est cadré. Module 1 gratuit en commentaire si tu débutes. #formation #investissement #zeroaexpert",
     media: [clip(17)], type: "post", likes: 1875, location: "Genève, Suisse",
     createdAt: hAgo(104),
     comments: mkComments("p17", [
@@ -342,7 +334,7 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_MARC, content: "Référence absolue. Je l'envoie à tous mes débutants.", h: 100, likes: 38 },
       { author: U_AMINA, content: "Module 1 svp !", h: 98, likes: 14 },
     ]),
-    formation: { id: "f1", title: "Investissement immobilier : de 0 à expert", instructor: "Léo Martin", price: 497, students: 342, thumbnail: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop" },
+    formation: mkFormation("form-001"),
   },
   {
     id: "p18", author: U_SOPHIE,
@@ -352,14 +344,7 @@ const VIDEO_POSTS: SocialPost[] = [
     comments: mkComments("p18", [
       { author: U_THOMAS, content: "Verbier c'est le saint Graal de la location alpine. Bons revenus en perspective.", h: 110, likes: 17 },
     ]),
-    property: mkProp({
-      id: "prop6", title: "Chalet ski-in · Verbier",
-      type: "chalet", transactionType: "vente", price: 3_200_000, currency: "CHF",
-      bedrooms: 5, bathrooms: 4, area: 280, host: U_SOPHIE,
-      location: { city: "Verbier", country: "Suisse" },
-      images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400"],
-      analytics: { rendementBrut: 5.4, rendementNet: 3.9, prixM2: 11428, dpe: "B", etatGeneral: "Excellent", anneeConstruction: 2018, potentielPlusValue: 16, roi5ans: 32, roi10ans: 71, tauxOccupation: 78 },
-    }),
+    property: propRef("prop19"),
   },
   {
     id: "p19", author: U_THOMAS,
@@ -370,14 +355,7 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_LEO, content: "C'est le futur de la promotion. Bravo Thomas.", h: 118, likes: 28 },
       { author: U_MARC, content: "Brochure disponible ?", h: 116, likes: 9 },
     ]),
-    property: mkProp({
-      id: "prop9", title: "Résidence A+ géothermie · Lugano",
-      type: "appartement", transactionType: "vente", price: 1_180_000, currency: "CHF",
-      bedrooms: 3, bathrooms: 2, area: 125, host: U_THOMAS,
-      location: { city: "Lugano", country: "Suisse" },
-      images: ["https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400"],
-      analytics: { rendementBrut: 4.6, rendementNet: 3.5, prixM2: 9440, dpe: "A", etatGeneral: "Neuf", anneeConstruction: 2026, potentielPlusValue: 22, roi5ans: 30, roi10ans: 68, tauxOccupation: 94 },
-    }),
+    property: propRef("prop20"),
   },
   {
     id: "p20", author: U_AMINA,
@@ -408,14 +386,7 @@ const VIDEO_POSTS: SocialPost[] = [
       { author: U_MARC, content: "+18 % en 9 jours, ça se challenge sérieusement. Bravo.", h: 140, likes: 42 },
       { author: U_AMIRA, content: "Yasmin, on parle Marrakech bientôt ?", h: 138, likes: 19 },
     ]),
-    property: mkProp({
-      id: "prop8", title: "Appartement Downtown · Vue Burj",
-      type: "appartement", transactionType: "vente", price: 2_100_000, currency: "AED",
-      bedrooms: 2, bathrooms: 2, area: 98, host: U_YASMIN,
-      location: { city: "Dubaï", country: "Émirats arabes unis" },
-      images: ["https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400"],
-      analytics: { rendementBrut: 7.1, rendementNet: 5.8, prixM2: 21428, dpe: "A", etatGeneral: "Excellent", anneeConstruction: 2022, potentielPlusValue: 28, roi5ans: 40, roi10ans: 92, tauxOccupation: 96 },
-    }),
+    property: propRef("prop21"),
   },
   {
     id: "p23", author: U_SOPHIE,
@@ -454,25 +425,18 @@ const VIDEO_POSTS: SocialPost[] = [
     comments: mkComments("p26", [
       { author: U_SOPHIE, content: "Crans-Montana en plein boom. Excellent placement.", h: 174, likes: 18 },
     ]),
-    property: mkProp({
-      id: "prop13", title: "Chalet Minergie-P · Crans-Montana",
-      type: "chalet", transactionType: "vente", price: 1_200_000, currency: "CHF",
-      bedrooms: 4, bathrooms: 3, area: 165, host: U_THOMAS,
-      location: { city: "Crans-Montana", country: "Suisse" },
-      images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400"],
-      analytics: { rendementBrut: 5.1, rendementNet: 3.7, prixM2: 7272, dpe: "A", etatGeneral: "Neuf", anneeConstruction: 2026, potentielPlusValue: 20, roi5ans: 31, roi10ans: 69, tauxOccupation: 81 },
-    }),
+    property: propRef("prop22"),
   },
   {
     id: "p27", author: U_AMINA,
-    content: "Nouveau module dans \"Marketing digital immobilier\"\n\nInstagram Reels qui convertissent — les leads ne viennent plus des portails, ils viennent du contenu. Inscriptions ouvertes jusqu'au 30 mai. #marketing #reels #formation",
+    content: "Le module qui m’a le plus servi dans \"Marketing digital pour l’immobilier\"\n\nInstagram Reels qui convertissent — les leads ne viennent plus des portails, ils viennent du contenu. Inscriptions ouvertes jusqu'au 30 mai. #marketing #reels #formation",
     media: [clip(27)], type: "post", likes: 1289, location: "Marrakech, Maroc",
     createdAt: hAgo(184),
     comments: mkComments("p27", [
       { author: U_SOPHIE, content: "Mes reels ont fait x3 depuis cette formation. Incontournable.", h: 182, likes: 47 },
       { author: U_AMIRA, content: "Format imparable 2026, à ne pas rater.", h: 180, likes: 22 },
     ]),
-    formation: { id: "f3", title: "Marketing digital immobilier", instructor: "Claire Bernard", price: 149, students: 670, thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop" },
+    formation: mkFormation("form-006"),
   },
 
   /* ── Posts varies (formats Twitter-like) ──────────────────────────────
@@ -545,14 +509,14 @@ const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p-photo-formation", author: U_MARC,
-    content: "Slide cle de ma nouvelle formation : comprendre le rendement net (apres charges, impots, vacance). C'est LA donnee qui separe les amateurs des serieux. #formation #investissement",
+    content: "Slide cle de la formation \"Investissement locatif : de zero a rentier\" : comprendre le rendement net (apres charges, impots, vacance). C'est LA donnee qui separe les amateurs des serieux. #formation #investissement",
     media: ["https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=900"],
     type: "post", likes: 856, location: "Geneve, Suisse",
     createdAt: hAgo(18),
     comments: mkComments("p-photo-formation", [
       { author: U_SOPHIE, content: "Le passage du brut au net surprend toujours les nouveaux investisseurs.", h: 16, likes: 22 },
     ]),
-    formation: { id: "f5", title: "Analyse financiere pour investisseurs", instructor: "Marc Dubois", price: 349, students: 420, thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop" },
+    formation: mkFormation("form-001"),
   },
 
   /* ── Posts texte seul (facon X / Twitter) ─────────────────────────────
