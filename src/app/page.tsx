@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { form, site } from "@/content/landing";
-import { ANCHORS } from "@/components/landing/anchors";
+import { site } from "@/content/landing";
 import { ProfileSelectionProvider } from "@/components/landing/profile-selection";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { Hero } from "@/components/landing/hero";
@@ -12,7 +11,8 @@ import { DemoSection } from "@/components/landing/demo-section";
 import { FoundingSection } from "@/components/landing/founding-section";
 import { FaqSection } from "@/components/landing/faq-section";
 import { LandingFooter } from "@/components/landing/landing-footer";
-import { Section } from "@/components/landing/section";
+import { InterestForm } from "@/components/landing/interest-form/interest-form";
+import { TrackingCapture } from "@/components/landing/tracking-capture";
 
 /* ── Landing page ────────────────────────────────────────────────────────────
 
@@ -64,6 +64,7 @@ export default function LandingPage() {
         Aller au contenu
       </a>
 
+      <TrackingCapture />
       <LandingHeader />
 
       <main id="contenu">
@@ -75,21 +76,7 @@ export default function LandingPage() {
         <DemoSection />
         <FoundingSection />
 
-        {/* Étape 2 du chantier : remplacé par le formulaire de manifestation
-            d'intérêt. L'ancre est déjà en place pour que les appels à l'action
-            de l'en-tête, du hero et des cartes « C'est moi » soient
-            fonctionnels dès maintenant. */}
-        <Section
-          id={ANCHORS.form}
-          eyebrow={form.eyebrow}
-          title={form.title}
-          intro={form.intro}
-          centered
-        >
-          <p className="mx-auto max-w-md rounded-xl border border-dashed border-[var(--border)] bg-[var(--muted)] p-6 text-center text-sm text-[var(--text-muted)]">
-            Formulaire en cours d&apos;intégration.
-          </p>
-        </Section>
+        <InterestForm />
 
         <FaqSection />
       </main>

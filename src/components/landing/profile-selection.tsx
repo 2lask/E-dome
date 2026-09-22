@@ -1,63 +1,61 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import type { ProfileId } from "@/content/landing";
 import { ANCHORS } from "./anchors";
 
-/* ── Liaison « C'est moi » → formulaire ──────────────────────────────────────
+/* ── Profil choisi : source unique ──────────────────────────────────────────
 
-   Les boutons de la section « Pour qui » doivent descendre au formulaire ET y
-   présélectionner le profil correspondant. Trois approches étaient possibles :
-   un paramètre d'URL, un évènement sur `window`, ou ce contexte.
+   Le profil est piloté à deux endroits — les boutons « C'est moi » de la
+   section « Pour qui » et la liste déroulante du formulaire. Il vit donc ici
+   plutôt que dans le formulaire.
 
-   Le contexte est retenu parce qu'il évite de faire naviguer la page (donc
-   pas de rechargement ni d'historique pollué) et parce qu'un paramètre d'URL
-   lu par `useSearchParams` forcerait tout le sous-arbre du formulaire à sortir
-   du prérendu statique.
+   Première version de ce fichier : le formulaire gardait son propre état et le
+   synchronisait depuis le contexte dans un `useEffect`. Le lint a refusé, à
+   juste titre — appeler `setState` dans le corps d'un effet provoque des
+   rendus en cascade, et c'est précisément la règle que le code existant viole
+   23 fois. Remonter l'état supprime l'effet au lieu de le contourner.
 
-   Le fournisseur reçoit `children` : les sections qui ne sont pas
-   interactives restent donc rendues côté serveur en traversant cette
-   frontière client. Même mécanisme que `AppShell` pour le groupe (app). */
+   `select()` fait défiler et déplace le focus. Ces deux gestes ont lieu dans
+   un gestionnaire d'évènement, pas dans un effet : rien à synchroniser.
+
+   Le fournisseur reçoit `children`, donc les sections non interactives
+   restent rendues côté serveur en traversant cette frontière client — même
+   mécanisme que `AppShell` pour le groupe (app). */
+
+/** Identifiant du titre du formulaire, cible du focus après un « C'est moi ». */
+export const FORM_HEADING_ID = "interest-form-heading";
 
 interface ProfileSelectionValue {
-  /** Profil choisi via un bouton « C'est moi », sinon `null`. */
-  selected: ProfileId | null;
-  /** Sélectionne un profil et fait défiler jusqu'au formulaire. */
+  /** Profil courant, chaîne vide si aucun choix n'a encore été fait. */
+  profile: ProfileId | "";
+  /** Change le profil sans bouger la page (liste déroulante du formulaire). */
+  setProfile: (profile: ProfileId | "") => void;
+  /** Change le profil, descend au formulaire et y place le focus. */
   select: (profile: ProfileId) => void;
-  /**
-   * S'incrémente à chaque `select`. Le formulaire s'en sert pour déplacer le
-   * focus, y compris quand l'utilisateur reclique sur le même profil — un
-   * simple changement de `selected` ne le déclencherait pas.
-   */
-  jumpToken: number;
 }
 
 const ProfileSelectionContext = createContext<ProfileSelectionValue | null>(null);
 
 export function ProfileSelectionProvider({ children }: { children: React.ReactNode }) {
-  const [selected, setSelected] = useState<ProfileId | null>(null);
-  const [jumpToken, setJumpToken] = useState(0);
-  /* Évite de relancer un défilement si l'utilisateur martèle le bouton. */
-  const scrolling = useRef(false);
+  const [profile, setProfile] = useState<ProfileId | "">("");
 
-  const select = useCallback((profile: ProfileId) => {
-    setSelected(profile);
-    setJumpToken((n) => n + 1);
+  const select = useCallback((next: ProfileId) => {
+    setProfile(next);
 
-    if (typeof document === "undefined" || scrolling.current) return;
+    if (typeof document === "undefined") return;
 
     const target = document.getElementById(ANCHORS.form);
-    if (!target) return;
-
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    scrolling.current = true;
-    target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
-    window.setTimeout(() => {
-      scrolling.current = false;
-    }, 600);
+    target?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+
+    /* Le focus suit le défilement : sans cela, la tabulation repartirait du
+       bouton « C'est moi », loin au-dessus du formulaire. Le titre porte
+       `tabIndex={-1}` pour pouvoir le recevoir. */
+    document.getElementById(FORM_HEADING_ID)?.focus({ preventScroll: true });
   }, []);
 
-  const value = useMemo(() => ({ selected, select, jumpToken }), [selected, select, jumpToken]);
+  const value = useMemo(() => ({ profile, setProfile, select }), [profile, select]);
 
   return (
     <ProfileSelectionContext.Provider value={value}>{children}</ProfileSelectionContext.Provider>
