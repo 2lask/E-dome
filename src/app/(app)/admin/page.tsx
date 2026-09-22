@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { TriangleAlert } from "lucide-react";
 import { useApp } from "@/lib/context";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
@@ -119,6 +120,23 @@ export default function AdminPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
       <h1 className="text-3xl page-heading text-[var(--foreground)]">Administration</h1>
+
+      {/* Cette console est atteignable sans compte tant que Supabase n'est pas
+          configuré : le middleware laisse tout passer dans ce cas. Ses chiffres
+          — chiffre d'affaires, utilisateurs, biens — sont inventés et se
+          liraient comme une traction réelle. Le bandeau le dit avant tout le
+          reste. Il ne remplace pas une vraie porte d'entrée : voir TODO.md. */}
+      <p
+        role="status"
+        className="flex items-start gap-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200"
+      >
+        <TriangleAlert size={18} className="shrink-0 mt-px text-amber-600 dark:text-amber-400" aria-hidden />
+        <span>
+          <b>Données d&apos;exemple.</b> Cette console de démonstration affiche des
+          chiffres inventés. Aucun compte, aucun bien et aucun signalement listé
+          ici n&apos;est réel.
+        </span>
+      </p>
 
       {/* KPIs */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

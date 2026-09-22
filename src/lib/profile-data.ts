@@ -39,7 +39,7 @@ export const DEFAULT_PROFILE: Profile = {
       startMonth: 1,
       startYear: 2024,
       description:
-        "Plateforme sociale immobilière sans intermédiaire : marketplace, réseau, apporteurs d'affaires et formations. +4 500 membres en bêta.",
+        "Plateforme sociale immobilière sans intermédiaire : marketplace, réseau, apporteurs d'affaires et formations. Projet en construction.",
     },
     {
       id: "exp-2",

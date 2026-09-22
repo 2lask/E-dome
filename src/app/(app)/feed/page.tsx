@@ -116,7 +116,10 @@ const clip = (n: number) => `/videos/feed/clip-${String(n).padStart(2, "0")}.mp4
 const VIDEO_POSTS: SocialPost[] = [
   {
     id: "p1", author: U_LEO,
-    content: "Bienvenue sur E-Dome\n\nLa plateforme qui réunit hôtes, investisseurs, apporteurs et formateurs autour de l'immobilier — sans intermédiaire. Trois mois de bêta, +4 500 inscrits, on accélère.\n\nMerci à toute la communauté qui construit ça avec nous. #immobilier #suisse #startup",
+    /* Post épinglé : aucun chiffre d'inscrits ni de durée de bêta. Il sert
+       désormais d'avertissement — c'est la première chose que lit un visiteur
+       arrivé depuis la landing, qui annonce un projet en construction. */
+    content: "Bienvenue sur E-Dome\n\nLa plateforme qui réunit hôtes, investisseurs, apporteurs et formateurs autour de l'immobilier — sans intermédiaire.\n\nVous parcourez une maquette de démonstration : les profils, les biens, les montants et les commentaires sont des exemples, pas des données réelles. Elle sert à montrer le produit envisagé et à recueillir vos retours.\n\nDites-nous ce qui vous manque. #immobilier #suisse",
     media: [clip(1)], type: "post", likes: 4521, location: "Genève, Suisse",
     createdAt: hAgo(2),
     comments: mkComments("p1", [

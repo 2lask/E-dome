@@ -3,19 +3,27 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import {
-  Coins, TrendingUp, Home, GraduationCap, KeyRound, Handshake,
-  Scale, Percent, Building2, Globe, ArrowUpRight, Megaphone,
+  TrendingUp, Home, GraduationCap, CalendarDays, Video, Camera,
+  Scale, Percent, Building2, Globe, ArrowUpRight, Megaphone, Handshake,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 /* Colonne droite du feed — sous les suggestions de comptes.
-   Trois blocs pour donner vie à la plateforme (façon Whop / X) :
-   1. « En direct » : fil d'activité qui défile en boucle (commissions
-      gagnées, deals conclus, nouveaux biens, inscriptions…).
-   2. « Actualités & règles » : veille immobilière (taux, Lex Koller,
-      marché, fiscalité).
-   3. Une carte sponsorisée (pub) vers le réseau d'apporteurs.
-   Tout est mock/démo — aucune donnée réelle. */
+   Trois blocs pour donner du relief au feed :
+   1. « Exemple d'activité » : un fil qui défile en boucle.
+   2. « Actualités & règles » : veille immobilière.
+   3. Une carte sponsorisée vers le réseau d'apporteurs.
+
+   Le fil ne contient aucun montant, aucun gain nominatif, aucun « deal
+   conclu » et aucun indice de marché maison. Ce sont des affirmations sur
+   E-Dome elle-même : sur une maquette publique, elles se lisent comme une
+   traction réelle que la plateforme n'a pas encore. Il ne reste que des
+   activités d'exemple non monétaires — publication, événement, formation —
+   sous un libellé explicite.
+
+   Les données d'un utilisateur (ses revenus, ses réservations) restent
+   fictives ailleurs dans la maquette : c'est le rôle d'une démonstration.
+   La distinction porte sur qui est le sujet de l'affirmation. */
 
 // Teintes sémantiques réutilisées (chips + pastilles d'icône).
 const TINT: Record<string, string> = {
@@ -26,20 +34,23 @@ const TINT: Record<string, string> = {
   primary: "bg-[var(--primary)]/12 text-[var(--primary)]",
 };
 
-// ─── Fil « En direct » ──────────────────────────────────────────────────────
+// ─── Fil d'activité d'exemple ───────────────────────────────────────────────
 
 type LiveItem = { icon: LucideIcon; tint: keyof typeof TINT; text: ReactNode; meta: string };
 
+/* Pas d'horodatage relatif (« à l'instant », « il y a 3 min ») : il
+   affirmerait un flux temps réel, ce que le libellé « Exemple d'activité »
+   viendrait contredire. La méta porte le lieu et la nature. */
 const LIVE: LiveItem[] = [
-  { icon: Coins, tint: "emerald", text: <>Yasmin a touché <b>62 332 CHF</b> de commission</>, meta: "Dubaï · à l'instant" },
-  { icon: Handshake, tint: "primary", text: <>Deal conclu · Penthouse Genève <b>4,8 M CHF</b></>, meta: "il y a 3 min" },
-  { icon: Home, tint: "blue", text: <>Nouveau bien · Riad Marrakech <b>340 000 €</b></>, meta: "il y a 6 min" },
-  { icon: GraduationCap, tint: "purple", text: <><b>23</b> inscriptions aujourd'hui · Formation Amina</>, meta: "il y a 12 min" },
-  { icon: TrendingUp, tint: "emerald", text: <>Premium romand · <b>+37 %</b> sur 5 ans</>, meta: "Indice E-Dome" },
-  { icon: Coins, tint: "emerald", text: <>Marc a recommandé un bien · <b>+2 400 CHF</b></>, meta: "il y a 18 min" },
-  { icon: KeyRound, tint: "amber", text: <>Studio Genève loué en <b>48 h</b></>, meta: "il y a 24 min" },
-  { icon: Coins, tint: "emerald", text: <>Sophie a gagné <b>1 180 CHF</b> cette semaine</>, meta: "il y a 31 min" },
-  { icon: Building2, tint: "blue", text: <>Programme Minergie-P Zurich · <b>28</b> lots réservés</>, meta: "il y a 40 min" },
+  { icon: Home, tint: "blue", text: <>Nouveau bien · <b>Appartement vue lac</b></>, meta: "Lausanne · Vente" },
+  { icon: CalendarDays, tint: "amber", text: <>Nouvel événement · <b>Visite de programme neuf</b></>, meta: "Genève · Sur inscription" },
+  { icon: GraduationCap, tint: "purple", text: <>Nouvelle formation · <b>Première acquisition</b></>, meta: "En ligne · 6 modules" },
+  { icon: Home, tint: "blue", text: <>Nouveau bien · <b>Riad médina</b></>, meta: "Marrakech · Vente" },
+  { icon: Video, tint: "primary", text: <>Nouveau live · <b>Questions-réponses fiscalité</b></>, meta: "Suisse romande" },
+  { icon: Camera, tint: "emerald", text: <>Nouveau service · <b>Photographe immobilier</b></>, meta: "Canton de Vaud" },
+  { icon: Home, tint: "blue", text: <>Nouveau bien · <b>Studio centre-ville</b></>, meta: "Genève · Location" },
+  { icon: CalendarDays, tint: "amber", text: <>Nouvel événement · <b>Atelier rendement locatif</b></>, meta: "Neuchâtel · Sur inscription" },
+  { icon: GraduationCap, tint: "purple", text: <>Nouvelle formation · <b>Analyse financière</b></>, meta: "En ligne · 8 modules" },
 ];
 
 function LiveRow({ item }: { item: LiveItem }) {
@@ -62,12 +73,8 @@ function LiveTicker() {
   const duration = `${LIVE.length * 3.6}s`;
   return (
     <div>
-      <h3 className="px-1 pb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-70 animate-ping" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-        </span>
-        En direct
+      <h3 className="px-1 pb-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+        Exemple d&apos;activité
       </h3>
       <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden">
         <div
@@ -146,14 +153,17 @@ function SponsoredCard() {
         className="group block rounded-2xl border border-[var(--primary)]/25 bg-gradient-to-br from-[var(--primary)]/[0.10] to-transparent p-4 hover:border-[var(--primary)]/45 transition-colors"
       >
         <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)]">
-          <Coins size={17} />
+          <Handshake size={17} />
         </span>
-        <p className="text-sm font-bold text-[var(--foreground)] mt-2.5">Gagnez des commissions</p>
+        <p className="text-sm font-bold text-[var(--foreground)] mt-2.5">Devenez apporteur</p>
         <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">
-          Rejoignez le réseau d'apporteurs E-Dome et touchez jusqu'à <b className="text-[var(--primary)]">0,5 %</b> sur chaque vente recommandée.
+          Recommandez un bien, un service ou une formation et touchez{" "}
+          <b className="text-[var(--primary)]">10 à 30 %</b> du revenu qu&apos;E-Dome
+          perçoit sur la transaction — jamais un pourcentage du prix payé par le
+          client.
         </p>
         <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[var(--primary)]">
-          Devenir apporteur
+          Comment ça marche
           <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </span>
       </Link>
