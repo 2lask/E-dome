@@ -2,18 +2,52 @@
 
 import React from "react";
 
+/* ─── Rendu du gras ──────────────────────────────────────────────────────────
+
+   Les textes ci-dessous portent des `**intitulés**`. Ils étaient rendus tels
+   quels, astérisques comprises, parce que le conteneur affiche du texte brut
+   (`whitespace-pre-line`). Cinq passages étaient touchés — les catégories de
+   données, les bases légales, les destinataires, les droits, les cookies.
+
+   Plutôt que de retirer la mise en forme de la source, ce qui rendrait ces
+   listes illisibles à l'édition, on la rend. Le découpage sur une paire
+   d'astérisques suffit : il n'y a pas d'autre balisage dans ce document, et
+   une astérisque isolée reste affichée telle quelle. */
+
+function RichText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
+        /* Les indices impairs sont les captures, donc le contenu à mettre en
+           gras ; les pairs sont le texte qui les entoure. */
+        i % 2 === 1 ? (
+          <strong key={i} className="font-semibold text-[var(--foreground)]">
+            {part}
+          </strong>
+        ) : (
+          <React.Fragment key={i}>{part}</React.Fragment>
+        ),
+      )}
+    </>
+  );
+}
+
 /* ─── Sections ───────────────────────────────────────────────────────────── */
 
 const SECTIONS = [
   {
     id: "introduction",
     title: "1. Introduction",
-    content: `La présente Politique de Confidentialité décrit comment E-Dome Sàrl (ci-après "E-Dome", "nous") collecte, utilise, stocke et protège les données personnelles des utilisateurs de la plateforme E-Dome. Cette politique est conforme à la Loi fédérale suisse sur la protection des données (LPD, entrée en vigueur le 1er septembre 2023) ainsi qu'au Règlement général sur la protection des données (RGPD) de l'Union européenne, applicable aux utilisateurs situés dans l'UE/EEE.`,
+    content: `La présente Politique de Confidentialité décrit comment E-Dome (ci-après « E-Dome », « nous ») collecte, utilise, stocke et protège les données personnelles des utilisateurs de la plateforme E-Dome. Cette politique est conforme à la Loi fédérale suisse sur la protection des données (LPD, entrée en vigueur le 1er septembre 2023) ainsi qu'au Règlement général sur la protection des données (RGPD) de l'Union européenne, applicable aux utilisateurs situés dans l'UE/EEE.`,
   },
   {
     id: "responsable",
     title: "2. Responsable du traitement",
-    content: `Le responsable du traitement des données est :\n\nE-Dome Sàrl\nRue de la Gare 12\n2000 Neuchâtel, Suisse\nEmail : dpo@edome.world\nTéléphone : +41 32 000 00 00\n\nLe Délégué à la Protection des Données (DPO) peut être contacté à l'adresse dpo@edome.world pour toute question relative au traitement de vos données personnelles.`,
+    /* La société n'est pas encore constituée : le responsable du traitement
+       est donc une personne physique, pas une Sàrl avec une adresse et un
+       DPO. Remplacez les deux mentions entre crochets, ici et à la dernière
+       section, par votre nom et votre adresse e-mail. */
+    content: `Le responsable du traitement des données est :\n\n[MON NOM]\n[MON E-MAIL]\nSuisse\n\nE-Dome n'est pas encore constituée en société. En attendant, le responsable du traitement est la personne physique à l'origine du projet, joignable à l'adresse ci-dessus pour toute question relative au traitement de vos données personnelles. Ces mentions seront mises à jour dès la constitution de la société.`,
   },
   {
     id: "collecte",
@@ -37,9 +71,9 @@ Parrainage : si vous arrivez par un lien de parrainage, un cookie conservant le 
 
 Mesure d'audience : par défaut, aucun outil de mesure n'est chargé sur la page d'accueil et aucun cookie de mesure n'est déposé. Si un tel outil est activé à l'avenir, cette politique sera mise à jour avant sa mise en service.
 
-Hébergement des données : [À COMPLÉTER — préciser le prestataire et la région d'hébergement de la base de données, ainsi que le pays d'hébergement de l'application.]
+Hébergement des données : l'application est hébergée par Vercel et les données du formulaire sont enregistrées chez Supabase, dans une région située en Europe. Seul le serveur accède à ces données ; la table est protégée par une sécurité au niveau des lignes qui n'autorise aucune lecture publique.
 
-Durée de conservation : [À COMPLÉTER — proposition : 24 mois à compter du dernier contact, ou jusqu'à votre demande de suppression, la première échéance prévalant.]
+Durée de conservation : 24 mois à compter de notre dernier contact. Vous pouvez demander la suppression de vos données à tout moment, sans motif ; elle est alors effectuée sans attendre ce délai.
 
 Vos droits : vous pouvez demander à consulter, corriger, exporter ou supprimer l'ensemble de ces données en écrivant à l'adresse indiquée à la section « Responsable du traitement ». Nous y répondons dans un délai de 30 jours. La suppression est définitive et entraîne votre retrait de la liste d'attente.`,
   },
@@ -56,7 +90,7 @@ Vos droits : vous pouvez demander à consulter, corriger, exporter ou supprimer 
   {
     id: "partage",
     title: "7. Partage des données",
-    content: `Vos données peuvent être partagées avec :\n- **Autres utilisateurs :** informations de profil public, annonces, avis.\n- **Prestataires de services :** hébergement (serveurs en Suisse), paiement, analyse, support.\n- **Autorités compétentes :** sur requête légale ou judiciaire.\n\nNous ne vendons jamais vos données personnelles à des tiers. Tout transfert de données hors de Suisse ou de l'UE/EEE est encadré par des garanties appropriées (clauses contractuelles types, décisions d'adéquation).`,
+    content: `Vos données peuvent être partagées avec :\n- **Autres utilisateurs :** informations de profil public, annonces, avis.\n- **Prestataires de services :** hébergement de l’application (Vercel) et de la base de données (Supabase, région Europe), paiement, analyse, support.\n- **Autorités compétentes :** sur requête légale ou judiciaire.\n\nNous ne vendons jamais vos données personnelles à des tiers. Tout transfert de données hors de Suisse ou de l'UE/EEE est encadré par des garanties appropriées (clauses contractuelles types, décisions d'adéquation).`,
   },
   {
     id: "conservation",
@@ -66,12 +100,12 @@ Vos droits : vous pouvez demander à consulter, corriger, exporter ou supprimer 
   {
     id: "droits",
     title: "9. Vos droits",
-    content: `Conformément à la LPD et au RGPD, vous disposez des droits suivants :\n- **Droit d'accès :** obtenir une copie de vos données personnelles.\n- **Droit de rectification :** corriger des données inexactes ou incomplètes.\n- **Droit à l'effacement :** demander la suppression de vos données (sous réserve des obligations légales).\n- **Droit à la portabilité :** recevoir vos données dans un format structuré et lisible.\n- **Droit d'opposition :** vous opposer au traitement de vos données pour des motifs légitimes.\n- **Droit de retrait du consentement :** retirer votre consentement à tout moment sans affecter la légalité du traitement antérieur.\n- **Droit de réclamation :** introduire une réclamation auprès du Préposé fédéral à la protection des données (PFPDT) ou de l'autorité de contrôle compétente.\n\nPour exercer vos droits, contactez-nous à dpo@edome.world. Nous répondrons dans un délai de 30 jours.`,
+    content: `Conformément à la LPD et au RGPD, vous disposez des droits suivants :\n- **Droit d'accès :** obtenir une copie de vos données personnelles.\n- **Droit de rectification :** corriger des données inexactes ou incomplètes.\n- **Droit à l'effacement :** demander la suppression de vos données (sous réserve des obligations légales).\n- **Droit à la portabilité :** recevoir vos données dans un format structuré et lisible.\n- **Droit d'opposition :** vous opposer au traitement de vos données pour des motifs légitimes.\n- **Droit de retrait du consentement :** retirer votre consentement à tout moment sans affecter la légalité du traitement antérieur.\n- **Droit de réclamation :** introduire une réclamation auprès du Préposé fédéral à la protection des données (PFPDT) ou de l'autorité de contrôle compétente.\n\nPour exercer vos droits, écrivez à l’adresse indiquée à la section « Responsable du traitement ». Nous répondons dans un délai de 30 jours.`,
   },
   {
     id: "securite",
     title: "10. Sécurité des données",
-    content: `Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données :\n- Chiffrement des données en transit (TLS 1.3) et au repos (AES-256).\n- Authentification à deux facteurs disponible.\n- Accès restreint aux données (principe du moindre privilège).\n- Audits de sécurité réguliers.\n- Hébergement sur des serveurs certifiés ISO 27001 en Suisse.\n- Plan de réponse aux incidents de sécurité.`,
+    content: `Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données :\n- Chiffrement des données en transit (TLS 1.3) et au repos (AES-256).\n- Authentification à deux facteurs disponible.\n- Accès restreint aux données (principe du moindre privilège).\n- Audits de sécurité réguliers.\n- Hébergement chez des prestataires établis, dans une région européenne.\n- Plan de réponse aux incidents de sécurité.`,
   },
   {
     id: "cookies",
@@ -86,7 +120,7 @@ Vos droits : vous pouvez demander à consulter, corriger, exporter ou supprimer 
   {
     id: "modifications",
     title: "13. Modifications de la politique",
-    content: `E-Dome se réserve le droit de modifier la présente Politique de Confidentialité à tout moment. Les modifications significatives seront communiquées par notification sur la Plateforme ou par email. La date de dernière mise à jour est indiquée en haut de cette page. En continuant à utiliser la Plateforme après modification, l'Utilisateur accepte la version mise à jour.\n\nPour toute question concernant la protection de vos données, contactez notre DPO :\nEmail : dpo@edome.world\nCourrier : E-Dome Sàrl, Rue de la Gare 12, 2000 Neuchâtel, Suisse`,
+    content: `E-Dome se réserve le droit de modifier la présente Politique de Confidentialité à tout moment. Les modifications significatives seront communiquées par notification sur la Plateforme ou par email. La date de dernière mise à jour est indiquée en haut de cette page. En continuant à utiliser la Plateforme après modification, l'Utilisateur accepte la version mise à jour.\n\nPour toute question concernant la protection de vos données, écrivez à [MON E-MAIL].`,
   },
 ];
 
@@ -129,7 +163,9 @@ export default function ConfidentialitePage() {
         {SECTIONS.map((s) => (
           <section key={s.id} id={s.id} className="scroll-mt-24 space-y-3">
             <h2 className="text-xl font-semibold text-[var(--foreground)]">{s.title}</h2>
-            <div className="text-[var(--text-secondary)] leading-relaxed whitespace-pre-line">{s.content}</div>
+            <div className="text-[var(--text-secondary)] leading-relaxed whitespace-pre-line">
+              <RichText text={s.content} />
+            </div>
           </section>
         ))}
       </div>
