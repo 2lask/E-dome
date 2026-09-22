@@ -12,7 +12,10 @@ npm run dev        # http://localhost:3002
 npm run lint       # ESLint — strict sur le code neuf, avertissements sur l'existant
 npm run typecheck  # tsc --noEmit
 npm run build
+npm test           # Playwright — parcours d'inscription de bout en bout
 ```
+
+Au premier lancement des tests : `npx playwright install chromium`.
 
 > La maquette (`/feed`, `/explorer`, `/dashboard`, …) fonctionne sur des
 > **données fictives**. Aucun backend n'est branché à ce jour.
@@ -152,6 +155,19 @@ src/app/merci/                      confirmation et partage
 src/app/admin/leads/                administration
 supabase/leads.sql                  schéma de la table
 ```
+
+### Tests de bout en bout
+
+`npm test` couvre le seul parcours de l'application qui écrit vraiment
+quelque part : le formulaire. Quatre épreuves — profil agence, profil
+« Rejoindre l'équipe », arrivée par un lien de parrainage, et refus sans
+consentement. Les assertions portent sur la ligne écrite dans le magasin, pas
+seulement sur ce qui s'affiche : le score et le code de parrainage sont
+recalculés côté serveur et ne doivent jamais venir du client.
+
+Le serveur de test tourne en mode développement, avec le magasin fichier.
+Ce n'est pas un raccourci : `store.ts` refuse délibérément ce magasin en
+production, donc un `next start` sans Supabase ferait échouer chaque envoi.
 
 ### Qualité
 

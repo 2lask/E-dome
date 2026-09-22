@@ -74,3 +74,9 @@ out/
 # Contient de vraies donnees personnelles des qu'on teste avec son adresse.
 .leads.local.json
 .leads-submissions.local.json
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
