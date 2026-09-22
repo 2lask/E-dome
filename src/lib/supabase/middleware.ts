@@ -10,7 +10,34 @@ import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from "./conf
 /* Prefixes publics. Le suffixe "/" est ajoute a la comparaison pour eviter
    qu'une future route "/apidoc" ou "/imagesecretes" soit exemptee par hasard.
    La racine "/" est traitee a part : en prefixe, elle rendrait TOUT public. */
-const PUBLIC_PREFIXES = ["/auth", "/api", "/_next", "/favicon", "/icons", "/images", "/videos", "/manifest"];
+/* Routes accessibles sans session.
+
+   Important pour la landing : /merci est atteinte juste apres l'envoi du
+   formulaire, par quelqu'un qui n'a aucun compte, et /admin/leads porte sa
+   propre porte par mot de passe — une redirection vers /auth/connexion la rendrait
+   inatteignable. /confidentialite est liee depuis le pied de page public, et
+   robots.txt comme sitemap.xml doivent rester lisibles par les moteurs.
+
+   Sans ces entrees, tout cela casserait le jour ou Supabase sera configure,
+   pas avant : le middleware sort immediatement tant qu'il ne l'est pas. */
+const PUBLIC_PREFIXES = [
+  "/auth",
+  "/api",
+  "/merci",
+  /* UNIQUEMENT la page leads : /admin (console de la maquette) doit rester
+     protegee. L'exempter entierement aggraverait un trou deja identifie. */
+  "/admin/leads",
+  "/confidentialite",
+  "/conditions",
+  "/robots.txt",
+  "/sitemap.xml",
+  "/_next",
+  "/favicon",
+  "/icons",
+  "/images",
+  "/videos",
+  "/manifest",
+];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });

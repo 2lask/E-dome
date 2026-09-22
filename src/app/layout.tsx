@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { PWARegister } from "@/components/pwa-register";
+import { AnalyticsScripts } from "@/components/analytics/analytics-scripts";
 
 /* Inter charge via next/font (preload + auto-self-host). Le CSS importe
    aussi Inter via Google Fonts en fallback. */
@@ -64,6 +65,8 @@ export default function RootLayout({
       >
         {children}
         <PWARegister />
+        {/* Ne rend rien tant qu'aucune variable de mesure n'est definie. */}
+        <AnalyticsScripts />
       </body>
     </html>
   );
