@@ -49,43 +49,33 @@ laquelle des deux bouge, ou fusionner les deux jetons.
 
 ---
 
-## Incohérences de données restantes
+## ~~Incohérences de données~~ — traitées à l’étape 2
 
-Toutes constatées, aucune corrigée. Celles qu'un visiteur rencontre en
-cliquant — formations, biens du feed, replays — ont été traitées ; il reste
-celles qui demandent d'arbitrer sur les chiffres eux-mêmes.
+Le journal unique (`src/lib/demo/ledger.ts`) et l’identité unique
+(`src/lib/demo/identity.ts`) ont supprimé, par construction :
 
-### Revenus : facteur 5 entre deux fichiers
+- **le facteur 5 sur les revenus** — les deux moteurs lisent la même table ;
+- **les trois montants de `/dashboard`** — le KPI douze mois, la série et le
+  revenu du mois se déduisent l’un de l’autre, et `npm run test:data` le
+  vérifie ;
+- **les huit identités d’utilisateur courant** — dont le bug du fil, où
+  l’identifiant courant désignait Sophie ;
+- **les biens, formations et produits inexistants** du tableau de bord ;
+- **la collision `prop2`**, qui désignait deux biens différents selon la page ;
+- **les dates incohérentes** — tout dérive de `DEMO_TODAY`.
 
-Les mêmes biens rapportent 24 850 CHF par mois dans
-[src/lib/dashboard-data.ts](src/lib/dashboard-data.ts) et environ 4 800 dans
-[src/lib/revenue-data.ts](src/lib/revenue-data.ts). Le total sur douze mois
-affiche 66 938 d'un côté, 228 100 de l'autre.
-
-À trancher : lequel des deux fichiers fait foi. Le modèle de commission, lui,
-est désormais unifié dans [src/lib/pricing.ts](src/lib/pricing.ts) — c'est le
-patron à suivre.
+Restent ouvertes, parce qu’elles demandent un arbitrage et non un mécanisme :
 
 ### « 16 annonces actives » compte autre chose que des annonces
 
-[src/lib/dashboard-data.ts:346](src/lib/dashboard-data.ts) additionne les
-devis de service et les alertes de stock aux annonces. `/dashboard/annonces`
-en affiche 8, aux titres sans rapport.
+`activeListingsCount` additionne devis de service et alertes de stock aux
+annonces. À trancher : ce que « annonce active » doit désigner.
 
-### Vues : trois comptages contradictoires
+### Vues : deux comptages
 
-5 060 au tableau de bord, 13 322 dans les annonces, 60 720 dans l'audience.
-
-### Cinq identités « utilisateur courant »
-
-`mock-data` (user-001, Neuchâtel), `profile-data` (« me », Lausanne), le feed
-(`u1` = **Sophie** Martin), `messages` (« me ») et `dashboard-data` décrivent
-cinq personnes différentes. C'est la racine de plusieurs incohérences d'auteur
-dans le feed : un post signé Marc renvoie à une formation dont le formateur
-est quelqu'un d'autre.
-
-Chantier à part entière : il faut d'abord choisir qui est l'utilisateur de
-démonstration, puis y ramener les cinq sources.
+5 060 au tableau de bord contre 13 322 dans les annonces. Le tableau de bord
+dérive désormais ses vues des nuits vendues ; `/dashboard/annonces` garde les
+siennes.
 
 ### `/reseau` : l'onglet « Abonnés » affiche tout l'annuaire
 
@@ -96,15 +86,18 @@ démonstration, puis y ramener les cinq sources.
 Pastille « 3 » en dur dans la barre latérale, « Aucune nouvelle notification »
 dans le menu de l'en-tête, 10 éléments dont 5 non lus sur `/notifications`.
 
-### Admin : « 12 signalements ouverts » pour 3 réels
+### Admin : « 12 signalements ouverts » pour 2 réels
 
 [src/app/(app)/admin/page.tsx](src/app/(app)/admin/page.tsx) — le compteur est
-en dur, `MOCK_SIGNALEMENTS` en contient 3 dont 2 ouverts.
+en dur, `MOCK_SIGNALEMENTS` en contient **5 dont 2 ouverts** — le « 3 » de la première
+version de ce fichier était faux.
 
-### Réservations : deux jeux de biens disjoints
+### ~~Réservations : deux jeux de biens disjoints~~ — constat erroné
 
-`/reservations` (vue voyageur) et `/dashboard/reservations` (vue hôte) portent
-sur des biens différents.
+Vérifié : ce sont **les mêmes cinq réservations**, renommées et décalées de
+un à quatre mois. `/dashboard/reservations` dérive maintenant du journal ;
+`/reservations` (vue voyageur) reste à reconstruire, parce que son
+utilisateur y est encore l’hôte de ses propres biens.
 
 ---
 
