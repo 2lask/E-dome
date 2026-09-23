@@ -12,7 +12,8 @@ npm run dev        # http://localhost:3002
 npm run lint       # ESLint — strict sur le code neuf, avertissements sur l'existant
 npm run typecheck  # tsc --noEmit
 npm run build
-npm test           # Playwright — parcours d'inscription de bout en bout
+npm test           # Playwright — parcours d'inscription et routes protegees
+npm run test:data  # 18 assertions d'integrite des donnees, sans dependance
 ```
 
 Au premier lancement des tests : `npx playwright install chromium`.

@@ -1,5 +1,8 @@
 import { formatCHF } from "./format";
 import { APPORTEUR_SHARE, MARKETPLACE_RATE } from "./pricing";
+import * as derive from "./demo/derive";
+import { OWNED_PROPERTY_IDS } from "./demo/identity";
+import { properties as CATALOGUE } from "./mock-data";
 
 /* Modele de donnees pour /dashboard/revenus refondu.
    - 3 sources de biens (cohabite avec dashboard-data.properties)
@@ -17,6 +20,7 @@ export type SourceId =
   | "immobilier"
   | "formations"
   | "evenements"
+  | "services"
   | "boutique"
   | "apporteur";
 export type PropType = "all" | "courte" | "longue" | "vente";
@@ -55,20 +59,11 @@ export interface BienRow {
   delta: number;
 }
 
-const MONTHS = [
-  "Jan",
-  "Fév",
-  "Mar",
-  "Avr",
-  "Mai",
-  "Juin",
-  "Juil",
-  "Août",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Déc",
-];
+/* Les libelles de mois viennent de l horloge de la demonstration : la
+   fenetre se termine au mois courant, elle n est plus figee sur Janvier-
+   Decembre. Sans cela, le dernier point du graphique ne serait pas le mois
+   que le reste de l ecran appelle « ce mois-ci ». */
+const MONTHS = derive.monthly().map((m) => m.label);
 const PL: Record<Period, string> = {
   "12m": "12 mois",
   "30j": "30 jours",
@@ -83,10 +78,8 @@ const FACTOR: Record<Period, number> = {
    peut pas diverger du détail affiché juste à côté. */
 
 const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
-const ramp = (base: number, growth: number) =>
-  Array.from({ length: 12 }, (_, i) =>
-    Math.round(base * (1 + (growth * i) / 11)),
-  );
+/* `ramp` a disparu avec le second moteur de revenus : plus aucune valeur
+   n est engendree ici, elles descendent toutes du journal. */
 
 /* Types d'activite immobiliere — couleurs distinctives chart. */
 export const TYPES = [
@@ -120,87 +113,80 @@ export interface Property {
   monthly: { courte: number[]; longue: number[]; vente: number[] };
 }
 
-/* Aligne avec dashboard-data.properties : meme id, name, city.
-   Ajout : monthly par type (courte/longue/vente) sur 12 mois. */
-export const PROPS: Property[] = [
-  {
-    id: "chalet-alpin",
-    name: "Chalet Alpin Premium",
-    initials: "CA",
-    city: "Verbier",
-    color: "#185FA5",
-    delta: 18,
+/* Les memes biens que dashboard-data, et les memes chiffres.
+
+   Ce fichier portait le SECOND moteur de revenus du depot : douze valeurs par
+   bien et par type, engendrees par une rampe, pour un total d environ 66 900
+   sur douze mois — pendant que dashboard-data en annoncait 228 100 sur la
+   meme periode et 24 850 pour le mois. Les trois chiffres s affichaient sur
+   le meme ecran.
+
+   Les deux fichiers derivent desormais du journal. Ils ne peuvent plus
+   diverger : ils lisent la meme table. */
+const PALETTE = ["#185FA5", "#D85A30", "#D4537E"];
+
+export const PROPS: Property[] = OWNED_PROPERTY_IDS.map((id, i) => {
+  const c = CATALOGUE.find((x) => x.id === id)!;
+  const filter = { source: "biens" as const, subjectId: id };
+  return {
+    id,
+    name: c.title,
+    initials: c.title.split(" ").filter((w) => w.length > 2).slice(0, 2).map((w) => w[0]!.toUpperCase()).join(""),
+    city: c.location.city,
+    color: PALETTE[i % PALETTE.length]!,
+    delta: derive.growth(filter),
     monthly: {
-      courte: ramp(900, 0.5),
+      /* Ces trois biens sont en location de courte duree : le journal ne
+         produit aucune ecriture de bail ni de vente pour eux, et inventer
+         une repartition ferait mentir le graphique. */
+      courte: derive.monthly(filter).map((m) => m.value),
       longue: Array(12).fill(0),
-      vente: [0, 0, 0, 9000, 0, 0, 0, 0, 0, 0, 0, 0],
-    },
-  },
-  {
-    id: "appart-vue-lac",
-    name: "Appartement Vue Lac",
-    initials: "AV",
-    city: "Montreux",
-    color: "#1D9E75",
-    delta: 12,
-    monthly: {
-      courte: ramp(500, 0.3),
-      longue: ramp(700, 0.05),
-      vente: [0, 0, 0, 0, 0, 0, 0, 0, 9000, 0, 0, 0],
-    },
-  },
-  {
-    id: "studio-lausanne",
-    name: "Studio Lausanne",
-    initials: "SL",
-    city: "Lausanne",
-    color: "#7F77DD",
-    delta: -3,
-    monthly: {
-      courte: ramp(200, 0.2),
-      longue: ramp(650, 0.04),
       vente: Array(12).fill(0),
     },
-  },
-];
+  };
+});
 
 const SOURCES_META: Record<
   string,
-  {
-    label: string;
-    color: string;
-    delta: number;
-    count?: number;
-    monthly?: number[];
-  }
+  { label: string; color: string; delta: number; count?: number; monthly?: number[] }
 > = {
-  immobilier: { label: "Immobilier (biens)", color: "#185FA5", delta: 15 },
+  immobilier: { label: "Immobilier (biens)", color: "#185FA5", delta: derive.growth({ source: "biens" }) },
   formations: {
     label: "Formations",
     color: "#D85A30",
-    delta: 26,
-    count: 41,
-    monthly: ramp(300, 0.4),
+    delta: derive.growth({ source: "formations" }),
+    count: derive.entries({ source: "formations" }).length,
+    monthly: derive.monthly({ source: "formations" }).map((m) => m.value),
   },
   evenements: {
-    label: "Événements",
+    label: "Evenements",
     color: "#D4537E",
-    delta: 12,
-    count: 9,
-    monthly: [0, 0, 400, 0, 0, 400, 0, 0, 400, 0, 0, 400],
+    delta: derive.growth({ source: "evenements" }),
+    count: derive.entries({ source: "evenements" }).length,
+    monthly: derive.monthly({ source: "evenements" }).map((m) => m.value),
+  },
+  /* « services » manquait a l appel, et l omission etait mesurable : le total
+     « toutes sources » valait 123 723 quand la serie mensuelle en sommait
+     126 313. L ecart, 2 590, etait exactement le revenu des prestations. */
+  services: {
+    label: "Services",
+    color: "#1D9E75",
+    delta: derive.growth({ source: "services" }),
+    count: derive.entries({ source: "services" }).length,
+    monthly: derive.monthly({ source: "services" }).map((m) => m.value),
   },
   boutique: {
     label: "Boutique",
     color: "#EF9F27",
-    delta: 9,
-    count: 73,
-    monthly: ramp(85, 0.1),
+    delta: derive.growth({ source: "boutique" }),
+    count: derive.entries({ source: "boutique" }).length,
+    monthly: derive.monthly({ source: "boutique" }).map((m) => m.value),
   },
   apporteur: {
     label: "Apporteur",
     color: "#639922",
-    delta: 26,
-    monthly: ramp(150, 0.6),
+    delta: derive.growth({ source: "apporteurs" }),
+    monthly: derive.monthly({ source: "apporteurs" }).map((m) => m.value),
   },
 };
 
@@ -213,29 +199,18 @@ const mid = (r: { min: number; max: number }) => (r.min + r.max) / 2;
 const apporteurPaid = (ca: number) =>
   Math.round(ca * mid(MARKETPLACE_RATE["location-ct"]) * mid(APPORTEUR_SHARE));
 
-export const APPORTEUR_VERSES = [
-  {
-    name: "Agence Léman",
-    bien: "Chalet Alpin Premium",
-    res: 3,
-    ca: 7350,
-    paid: apporteurPaid(7350),
-  },
-  {
-    name: "SwissHome",
-    bien: "Appartement Vue Lac",
-    res: 2,
-    ca: 3600,
-    paid: apporteurPaid(3600),
-  },
-  {
-    name: "Alpine Props",
-    bien: "Studio Lausanne",
-    res: 1,
-    ca: 712,
-    paid: apporteurPaid(712),
-  },
-];
+/* Les biens cites etaient ceux de l ancien jeu invente. Ils viennent du
+   catalogue, comme partout ailleurs. */
+export const APPORTEUR_VERSES = PROPS.map((prop, i) => {
+  const ca = derive.total({ source: "biens", subjectId: prop.id });
+  return {
+    name: ["Agence Leman", "SwissHome", "Alpine Props"][i]!,
+    bien: prop.name,
+    res: derive.stays(prop.id).length,
+    ca,
+    paid: apporteurPaid(ca),
+  };
+});
 
 const VERSE_TOTAL = APPORTEUR_VERSES.reduce((total, v) => total + v.paid, 0);
 
@@ -244,6 +219,7 @@ export const SOURCE_OPTIONS: { value: SourceId; label: string }[] = [
   { value: "immobilier", label: "Immobilier (biens)" },
   { value: "formations", label: "Formations" },
   { value: "evenements", label: "Événements" },
+  { value: "services", label: "Services" },
   { value: "boutique", label: "Boutique" },
   { value: "apporteur", label: "Apporteur" },
 ];
@@ -349,7 +325,7 @@ export function buildView(state: RevenueState): RevenueView {
   }
 
   if (source === "all") {
-    const ids = ["immobilier", "formations", "evenements", "boutique", "apporteur"];
+    const ids = ["immobilier", "formations", "evenements", "services", "boutique", "apporteur"];
     const series = ids.map((id) => ({
       key: id,
       name: SOURCES_META[id].label,
@@ -386,7 +362,7 @@ export function buildView(state: RevenueState): RevenueView {
     const meta = SOURCES_META[source];
     const ser = ws(meta.monthly as number[]);
     const total = sum(ser);
-    const ids = ["immobilier", "formations", "evenements", "boutique", "apporteur"];
+    const ids = ["immobilier", "formations", "evenements", "services", "boutique", "apporteur"];
     const grand = ids.reduce((s, id) => s + wsum(sourceMonthly(id)), 0) || 1;
     const cats = ids
       .map((id) => ({

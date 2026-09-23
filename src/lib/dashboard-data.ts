@@ -12,7 +12,11 @@
    de @/lib/pricing, source unique du modele de remuneration. */
 
 import { HOST_BOUNTY_CHF, apporteurShareLabel } from "./pricing";
-import { CURRENT_USER } from "./demo/identity";
+import { CURRENT_USER, OWNED_FORMATION_IDS, OWNED_PROPERTY_IDS } from "./demo/identity";
+import * as derive from "./demo/derive";
+import "./demo/invariants";
+import { properties as CATALOGUE, formations as CATALOGUE_FORMATIONS } from "./mock-data";
+import { PRODUCTS } from "./data/products";
 import { roleLabels, type Role } from "./types";
 
 export type ReservationStatus = "confirmed" | "pending" | "completed" | "cancelled";
@@ -153,23 +157,66 @@ export const dashboardUser = {
   roles: CURRENT_USER.roles.map((r) => roleLabels[r as Role]),
 };
 
-/* Les 3 memes biens partout. */
-export const properties: Property[] = [
-  { id: "chalet-alpin", name: "Chalet Alpin Premium", initials: "CA", city: "Verbier", weeklyPrice: 2450, monthRevenue: 11200, views: 2840, occupancy: 0.92, rating: 4.9, monthGrowth: "+18%" },
-  { id: "appart-vue-lac", name: "Appartement Vue Lac", initials: "AV", city: "Montreux", weeklyPrice: 1800, monthRevenue: 8400, views: 1240, occupancy: 0.78, rating: 4.6, monthGrowth: "+12%" },
-  { id: "studio-lausanne", name: "Studio Lausanne", initials: "SL", city: "Lausanne", weeklyPrice: 890, monthRevenue: 5250, views: 980, occupancy: 0.74, rating: 4.4, monthGrowth: "+8%" },
-];
+/* Les trois biens du tableau de bord sont ceux du CATALOGUE.
+
+   Ils portaient des identifiants inventés — `chalet-alpin`, `appart-vue-lac`,
+   `studio-lausanne` — qui n'existaient nulle part ailleurs, avec des villes et
+   des tarifs à eux. Le catalogue, lui, n'attribuait qu'un seul bien à cet
+   utilisateur. Cinq écrans répondaient différemment à « combien de biens
+   possède-t-il ? » : 1, 3, 8, 14 et 38.
+
+   Tout ce qui est chiffré descend maintenant du journal : le revenu du mois,
+   le taux d'occupation, la croissance. Le tarif hebdomadaire se calcule depuis
+   le prix de la nuit de la fiche — auparavant, deux des trois biens affichaient
+   un tarif que leur propre fiche contredisait. */
+export const properties: Property[] = OWNED_PROPERTY_IDS.map((id) => {
+  const c = CATALOGUE.find((p) => p.id === id)!;
+  const filter = { source: "biens" as const, subjectId: id };
+  return {
+    id,
+    name: c.title,
+    initials: c.title
+      .split(" ")
+      .filter((w) => w.length > 2)
+      .slice(0, 2)
+      .map((w) => w[0]!.toUpperCase())
+      .join(""),
+    city: c.location.city,
+    weeklyPrice: c.price * 7,
+    monthRevenue: derive.currentMonth(filter),
+    /* Les vues restent déclaratives : aucune écriture du journal ne les
+       produit, et inventer une formule les rendrait fausses avec l'air d'être
+       calculées. Elles sont proportionnées au nombre de nuits vendues. */
+    views: derive.nightsThisMonth(id) * 34,
+    occupancy: derive.occupancy(id),
+    rating: c.rating,
+    monthGrowth: derive.growthLabel(filter),
+  };
+});
 
 export function getProperty(id: string): Property | undefined {
   return properties.find((p) => p.id === id);
 }
 
-/* Formations vendues ce mois. */
-export const formations: DashboardFormation[] = [
-  { id: "form-lcd", title: "Maîtriser la location courte durée", price: 189, studentsThisMonth: 18, studentsTotal: 342, rating: 4.8, completionRate: 0.72, monthRevenue: 3402, monthGrowth: "+24%" },
-  { id: "form-fisc", title: "Fiscalité du loueur en meublé", price: 297, studentsThisMonth: 7, studentsTotal: 124, rating: 4.7, completionRate: 0.68, monthRevenue: 2079, monthGrowth: "+15%" },
-  { id: "form-photo", title: "Photographie immobilière mobile", price: 97, studentsThisMonth: 12, studentsTotal: 88, rating: 4.5, completionRate: 0.81, monthRevenue: 1164, monthGrowth: "+9%" },
-];
+/* Même correction que pour les biens : `form-lcd`, `form-fisc` et
+   `form-photo` n'existaient dans aucun catalogue. Les inscriptions, le revenu
+   et la croissance descendent du journal ; le titre et le prix de la fiche. */
+export const formations: DashboardFormation[] = OWNED_FORMATION_IDS.map((id) => {
+  const c = CATALOGUE_FORMATIONS.find((f) => f.id === id)!;
+  const filter = { source: "formations" as const, subjectId: id };
+  const soldThisMonth = derive.currentMonth(filter) / c.price;
+  return {
+    id,
+    title: c.title,
+    price: c.price,
+    studentsThisMonth: Math.round(soldThisMonth),
+    studentsTotal: Math.round(derive.total(filter) / c.price),
+    rating: c.rating,
+    completionRate: 0.72,
+    monthRevenue: derive.currentMonth(filter),
+    monthGrowth: derive.growthLabel(filter),
+  };
+});
 
 /* Lives et evenements a venir (ordre chronologique). */
 export const upcomingEvents: UpcomingEvent[] = [
@@ -179,13 +226,27 @@ export const upcomingEvents: UpcomingEvent[] = [
   { id: "ev-4", kind: "evenement", title: "Networking investisseurs romands", whenLabel: "Jeu 26 juin · 19h", daysUntil: 17, spotsTaken: 34, spotsTotal: 80, price: 25, forecast: 850 },
 ];
 
-/* Boutique — produits avec stock. Seules les alertes (rupture/faible)
-   atterrissent ici ; les "ok" ne s'affichent que sur /dashboard/annonces. */
-export const boutiqueAlerts: BoutiqueAlert[] = [
-  { id: "p-stage", name: "Kit home-staging « Lin lavé »", stock: 0, level: "rupture", price: 189, soldThisMonth: 14 },
-  { id: "p-plaid", name: "Plaid lin lavé bleu nuit", stock: 3, level: "faible", price: 89, soldThisMonth: 22 },
-  { id: "p-bougie", name: "Bougie parfumée 80h « Forêt »", stock: 4, level: "faible", price: 38, soldThisMonth: 31 },
-];
+/* Boutique.
+
+   Deux des trois alertes désignaient des produits qui n'existent dans aucun
+   catalogue — `p-stage` et `p-bougie`. La troisième existait bien (`b11`),
+   mais avec trois états contradictoires : stock 14 sur sa fiche, stock 3
+   « faible » au tableau de bord, et 14 de nouveau sur la page des annonces.
+
+   Les alertes descendent maintenant du catalogue produits pour le stock et le
+   prix, et du journal pour les ventes du mois. */
+export const boutiqueAlerts: BoutiqueAlert[] = ["b11"].map((id) => {
+  const p = PRODUCTS.find((x) => x.id === id)!;
+  const soldThisMonth = Math.round(derive.currentMonth({ source: "boutique", subjectId: id }) / p.price);
+  return {
+    id,
+    name: p.title,
+    stock: p.stock,
+    level: p.stock === 0 ? "rupture" : p.stock <= 5 ? "faible" : "ok",
+    price: p.price,
+    soldThisMonth,
+  };
+});
 
 /* Pipeline services : devis ouverts + prestations planifiees. */
 export const serviceLeads: ServiceLead[] = [
@@ -194,62 +255,50 @@ export const serviceLeads: ServiceLead[] = [
   { id: "sl-3", service: "Rédaction annonces premium", client: "Cédric Lopez", whenLabel: "Devis envoyé · 9 juin", amount: 240, status: "devis" },
 ];
 
-/* Revenus mensuels (la derniere valeur = total du mois courant). */
-export const monthlyRevenue: { label: string; value: number }[] = [
-  { label: "Jan", value: 13200 },
-  { label: "Fév", value: 14400 },
-  { label: "Mar", value: 15600 },
-  { label: "Avr", value: 14850 },
-  { label: "Mai", value: 17400 },
-  { label: "Juin", value: 18900 },
-  { label: "Juil", value: 20100 },
-  { label: "Août", value: 19200 },
-  { label: "Sep", value: 21900 },
-  { label: "Oct", value: 23400 },
-  { label: "Nov", value: 24300 },
-  { label: "Déc", value: 24850 },
-];
+/* La serie mensuelle descend du journal.
 
-/* Mix revenus du mois — derive de la realite des 7 sources.
-   Locations = somme monthRevenue des biens.
-   Formations = somme monthRevenue des formations.
-   Lives/Evenements = somme forecast des upcomingEvents (proxy demo).
-   Services = somme amount des planifies/termines.
-   Boutique = derive du soldThisMonth × price.
-   Apporteurs = apporteurSummary.earnedThisMonth.
+   Elle etait ecrite en dur, douze valeurs dont la somme faisait 228 100,
+   et dont la derniere — 24 850 — etait en realite le total des BIENS seuls.
+   Le graphique excluait donc cinq des sept sources que la repartition par
+   source, elle, incluait. La contradiction etait interne au fichier. */
+export const monthlyRevenue: { label: string; value: number }[] = derive.monthly();
 
-   Le total monthlyRevenue garde son chiffre historique (24'850) pour
-   coherence chart. Le mix multi-source ci-dessous est l'EXACTE
-   verite des 7 sources et son total est legerement different. */
-const biensRevenue = properties.reduce((s, p) => s + p.monthRevenue, 0);
-const formationsRevenue = formations.reduce((s, f) => s + f.monthRevenue, 0);
-const eventsRevenue = upcomingEvents.reduce((s, e) => s + e.forecast, 0);
-const servicesRevenue = serviceLeads
-  .filter((s) => s.status !== "devis")
-  .reduce((sum, s) => sum + s.amount, 0);
-const boutiqueRevenue = boutiqueAlerts.reduce(
-  (s, p) => s + p.price * p.soldThisMonth,
-  0,
-);
+/* Repartition du mois courant, par source.
 
-export const revenueBySource: { key: RevenueSourceKey; label: string; value: number }[] = [
-  { key: "biens", label: "Biens (locations)", value: biensRevenue },
-  { key: "formations", label: "Formations", value: formationsRevenue },
-  { key: "boutique", label: "Boutique", value: boutiqueRevenue },
-  { key: "evenements", label: "Événements", value: eventsRevenue },
-  { key: "services", label: "Services", value: servicesRevenue },
-  { key: "lives", label: "Lives", value: 0 },
-  { key: "apporteurs", label: "Apporteurs (commissions)", value: 2400 },
-];
+   Sa somme egale, par construction, la derniere valeur de la serie mensuelle :
+   l invariant 6 de demo/invariants le verifie a l import, et next build echoue
+   si les deux divergent. */
+const SOURCE_LABELS: Record<RevenueSourceKey, string> = {
+  biens: "Biens (locations)",
+  formations: "Formations",
+  boutique: "Boutique",
+  evenements: "Evenements",
+  services: "Services",
+  lives: "Lives",
+  apporteurs: "Apporteurs (commissions)",
+};
 
-/* Compat : 3 entrees historiques pour les composants qui restent
-   sur la simplification "Locations / Commissions / Boutique". */
+export const revenueBySource: { key: RevenueSourceKey; label: string; value: number }[] =
+  derive.bySource().map((r) => ({
+    key: r.source as RevenueSourceKey,
+    label: SOURCE_LABELS[r.source as RevenueSourceKey],
+    value: r.value,
+  }));
+
+const bySourceValue = (k: RevenueSourceKey) =>
+  revenueBySource.find((r) => r.key === k)?.value ?? 0;
+
+/* Compat : la simplification en cinq lignes que consomment certains
+   composants. Derivee de la meme source, donc jamais divergente. */
 export const revenueByType: { label: string; value: number }[] = [
-  { label: "Locations", value: biensRevenue },
-  { label: "Formations", value: formationsRevenue },
-  { label: "Commissions apporteur", value: 2400 },
-  { label: "Boutique", value: boutiqueRevenue },
-  { label: "Événements + Services", value: eventsRevenue + servicesRevenue },
+  { label: "Locations", value: bySourceValue("biens") },
+  { label: "Formations", value: bySourceValue("formations") },
+  { label: "Commissions apporteur", value: bySourceValue("apporteurs") },
+  { label: "Boutique", value: bySourceValue("boutique") },
+  {
+    label: "Evenements + Services",
+    value: bySourceValue("evenements") + bySourceValue("services"),
+  },
 ];
 
 export const transactions: Transaction[] = [
@@ -267,17 +316,26 @@ export const transactions: Transaction[] = [
   { id: "t12", label: "Boutique - Plaid lin lavé", sublabel: "Sophie B. · 1× 89 CHF", amount: 89, status: "confirmed", kind: "reservation" },
 ];
 
-export const dashboardReservations: Reservation[] = [
-  { id: "dr1", propertyId: "chalet-alpin", guest: "Sophie Bernard", dateLabel: "10–17 juin · 7 nuits", startDate: "2026-06-10", endDate: "2026-06-17", nights: 7, amount: 2450, status: "confirmed" },
-  { id: "dr2", propertyId: "appart-vue-lac", guest: "Jean Dupont", dateLabel: "15–20 juin · 5 nuits", startDate: "2026-06-15", endDate: "2026-06-20", nights: 5, amount: 900, status: "pending" },
-  { id: "dr3", propertyId: "studio-lausanne", guest: "Marie Leroy", dateLabel: "1–5 juin · 4 nuits", startDate: "2026-06-01", endDate: "2026-06-05", nights: 4, amount: 356, status: "completed" },
-  { id: "dr4", propertyId: "appart-vue-lac", guest: "Sophie Bernard", dateLabel: "10–14 fév · 4 nuits", startDate: "2026-02-10", endDate: "2026-02-14", nights: 4, amount: 720, status: "cancelled" },
-  { id: "dr5", propertyId: "chalet-alpin", guest: "Thomas Roux", dateLabel: "20–25 juin · 5 nuits", startDate: "2026-06-20", endDate: "2026-06-25", nights: 5, amount: 1750, status: "confirmed" },
-  { id: "dr6", propertyId: "studio-lausanne", guest: "Amina Khan", dateLabel: "8–12 juin · 4 nuits", startDate: "2026-06-08", endDate: "2026-06-12", nights: 4, amount: 712, status: "completed" },
-  { id: "dr7", propertyId: "chalet-alpin", guest: "Laura Meier", dateLabel: "2–8 juillet · 6 nuits", startDate: "2026-07-02", endDate: "2026-07-08", nights: 6, amount: 2100, status: "pending" },
-  { id: "dr8", propertyId: "appart-vue-lac", guest: "Nadia Schmid", dateLabel: "3–9 juillet · 6 nuits", startDate: "2026-07-03", endDate: "2026-07-09", nights: 6, amount: 1080, status: "confirmed" },
-  { id: "dr9", propertyId: "studio-lausanne", guest: "Pierre Aubry", dateLabel: "22–28 juin · 6 nuits", startDate: "2026-06-22", endDate: "2026-06-28", nights: 6, amount: 1068, status: "confirmed" },
-];
+/* Les reservations SONT les ecritures « biens » du journal.
+
+   Elles etaient ecrites a la main, et deux des trois biens affichaient un
+   montant qui ne correspondait pas a leur propre tarif — le studio en avait
+   meme deux differents selon la ligne. Le montant vaut desormais
+   nuits x prix de la nuit du catalogue, et l invariant 3 le verifie. */
+export const dashboardReservations: Reservation[] = derive
+  .stays()
+  .map((e) => ({
+    id: e.id,
+    propertyId: e.subject.id,
+    guest: e.counterparty,
+    dateLabel: e.stay!.label,
+    startDate: e.stay!.start,
+    endDate: e.stay!.end,
+    nights: e.stay!.nights,
+    amount: e.gross,
+    status: e.status,
+  }))
+  .slice(0, 12);
 
 /* Avis multi-sources — 7 avis recents (biens + formations + events). */
 export const reviews: Review[] = [
@@ -333,14 +391,20 @@ export const leaderboard: LeaderboardEntry[] = [
   { rank: 4, name: "Nadia S.", commission: 6100 },
 ];
 
+/* Derive du journal. Les trois montants etaient ecrits en dur et ne
+   correspondaient ni au classement de /dashboard/apporteurs ni a celui de
+   /apporteurs, qui divergeaient eux-memes d un facteur 9. */
+const apporteurYear = derive.total({ source: "apporteurs" });
 export const apporteurSummary = {
-  earnedThisMonth: 2400,
-  alreadyPaid: 2050,
-  pending: 350,
+  earnedThisMonth: derive.currentMonth({ source: "apporteurs" }),
+  alreadyPaid: apporteurYear - derive.currentMonth({ source: "apporteurs" }),
+  pending: derive.currentMonth({ source: "apporteurs" }),
 };
 
 /* KPIs derives — JAMAIS codes en dur. */
-const totalRevenue = properties.reduce((sum, p) => sum + p.monthRevenue, 0);
+/* Le revenu du mois, TOUTES sources. Il valait la somme des biens seuls,
+   ce qui le rendait incomparable a la serie mensuelle affichee juste a cote. */
+const totalRevenue = derive.currentMonth();
 const avgOccupancy = properties.reduce((sum, p) => sum + p.occupancy, 0) / properties.length;
 
 /* Note moyenne PONDEREE multi-source : biens (par nb reservations
@@ -393,11 +457,13 @@ export const objectives = {
 
 export const kpis = {
   revenue: totalRevenue,
-  revenueDelta: "+15.3%",
+  /* Les trois evolutions etaient ecrites en dur. Elles descendent du journal,
+     donc elles ne peuvent plus contredire la courbe affichee dessous. */
+  revenueDelta: derive.growthLabel(),
   reservations: dashboardReservations.length,
-  reservationsDelta: "+21%",
+  reservationsDelta: derive.growthLabel({ source: "biens" }),
   commissions: apporteurSummary.earnedThisMonth,
-  commissionsDelta: "+26%",
+  commissionsDelta: derive.growthLabel({ source: "apporteurs" }),
   occupancy: avgOccupancy,
   occupancyDelta: "+4 pts",
   rating: Number(reviewsAvg.toFixed(2)),

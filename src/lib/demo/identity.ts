@@ -80,8 +80,19 @@ export const CURRENT_USER = {
     "et gère moi-même. J'écris de temps en temps sur ce que j'apprends en " +
     "chemin — rendement réel, charges, relation avec les voyageurs. Je " +
     "recommande volontiers les prestataires avec qui ça se passe bien.",
-  /** Rôles au sens de l'ancien jeu. La migration vers `PlatformRole` est à l'étape 4. */
-  roles: ["proprietaire", "hote", "apporteur"] as const,
+  /**
+   * Rôles au sens de l'ancien jeu. La migration vers `PlatformRole` est à
+   * l'étape 4.
+   *
+   * `formateur` s'ajoute aux trois rôles décidés dans `DECISIONS.md` §4.1, et
+   * l'écart mérite d'être justifié : le catalogue fait de cette personne
+   * l'auteur de `form-001`, et le tableau de bord doit démontrer sept sources
+   * de revenu. Retirer la formation appauvrirait la démonstration ; la garder
+   * sans le rôle serait incohérent. Un bailleur qui écrit un cours sur ce
+   * qu'il a appris reste un particulier ordinaire — c'est même ce que dit sa
+   * présentation.
+   */
+  roles: ["proprietaire", "hote", "apporteur", "formateur"] as const,
   stats: {
     followers: 38,
     following: 64,

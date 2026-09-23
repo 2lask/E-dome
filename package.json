@@ -10,7 +10,8 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
     "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "test:data": "node --test --import ./tests/data/resolve-ts.mjs tests/data/integrity.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
