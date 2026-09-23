@@ -14,12 +14,90 @@ npm run typecheck  # tsc --noEmit
 npm run build
 npm test           # Playwright — parcours d'inscription et routes protegees
 npm run test:data  # 18 assertions d'integrite des donnees, sans dependance
+npm run icons      # regenere les icones PNG depuis public/icons/icon.svg
 ```
 
 Au premier lancement des tests : `npx playwright install chromium`.
 
 > La maquette (`/feed`, `/explorer`, `/dashboard`, …) fonctionne sur des
 > **données fictives**. Aucun backend n'est branché à ce jour.
+
+---
+
+## Pourquoi mon build échoue
+
+Si `next build` s'arrête sur un message qui commence par
+`Invariant N des données de démonstration — VIOLÉ`, ce n'est ni un bug ni une
+panne d'outillage : **deux chiffres de la démonstration se contredisent**, et
+la construction refuse de les mettre en ligne.
+
+### Ce qui se passe
+
+Tous les montants affichés dérivent d'un journal unique,
+[`src/lib/demo/ledger.ts`](src/lib/demo/ledger.ts). C'est le seul endroit du
+dépôt où vit un montant ; le revenu du mois, la série sur douze mois, la
+répartition par source et le détail par bien se **calculent** à partir de lui.
+
+[`src/lib/demo/invariants.ts`](src/lib/demo/invariants.ts) vérifie neuf règles
+de cohérence **à l'import**, pas dans un test. Les pages étant prérendues, ce
+module s'exécute pendant `next build`, et une violation fait échouer la
+construction. C'était le seul moyen d'avoir une garantie sans lanceur de tests
+unitaires : il n'y a aucune commande à penser à lancer, donc rien à oublier.
+
+Ce que ces règles rendent impossible : réintroduire un second tableau de
+montants quelque part. C'est exactement ce qui s'était produit entre
+`dashboard-data.ts` et `revenue-data.ts`, avec un facteur 5 entre deux chiffres
+du même écran.
+
+### Le réparer, en une minute
+
+```bash
+npm run test:data      # 0,2 s, 18 assertions, aucune dépendance
+```
+
+Même diagnostic que le build, mais lisible tout de suite au lieu d'être au
+milieu d'un log de construction. Chaque message nomme **le fichier à ouvrir et
+les deux valeurs qui divergent** :
+
+```
+  Invariant 3 des données de démonstration — VIOLÉ
+  Le montant d'un séjour vaut nuits × tarif de la fiche du bien.
+
+      constaté : écriture res-prop5-0-0 : 5140 CHF
+      attendu  : 5100 CHF (6 nuits × 850 CHF, tarif de prop5)
+
+  À corriger dans : src/lib/demo/ledger.ts — le montant se calcule, il ne
+  s'écrit pas. Corriger le nombre de nuits, ou le tarif de la fiche dans
+  src/lib/mock-data.ts.
+```
+
+La règle générale, qui résout la plupart des cas : **un montant ne s'écrit
+pas, il se calcule.** Le journal se décrit en activité — des nuits vendues,
+des places de formation, des ventes — et les montants en découlent par le
+tarif du catalogue. Si vous êtes en train de taper un nombre de francs à la
+main, c'est en général là qu'est l'erreur.
+
+### Si vous devez déployer malgré tout
+
+```bash
+EDOME_INVARIANTS=warn npm run build
+```
+
+Les violations deviennent des avertissements bruyants au lieu d'arrêter la
+construction. Sur Vercel, la variable se pose dans les réglages du projet.
+
+**À n'utiliser que pour livrer un correctif urgent sans rapport pendant qu'une
+incohérence de données est encore ouverte**, et à retirer juste après. Le site
+affiche alors des chiffres qui se contredisent — c'était le défaut n°1 de
+l'audit, pas un détail de présentation.
+
+Ce choix mérite d'être explicité, parce que l'alternative est tentante :
+rendre ces contrôles non bloquants en production « pour ne pas gêner ». Ce
+serait les désactiver en silence le jour où ils servent. Une porte de secours
+explicite vaut mieux qu'une règle affaiblie — elle laisse une trace dans le
+log de construction, et elle ne devient pas la norme sans que quelqu'un l'ait
+décidé. `npm run test:data` échoue de toute façon, donc la porte de secours ne
+masque rien d'une vérification en intégration continue.
 
 ---
 
