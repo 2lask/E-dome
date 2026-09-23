@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
 import type { Reservation, User, Property } from "@/lib/types";
+import { CURRENT_USER as DEMO_USER } from "@/lib/demo/identity";
 import { formatDate } from "@/lib/utils";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import { Calendar as BookingCallout } from "@/components/ui/calendar";
@@ -13,7 +14,7 @@ import { Calendar as BookingCallout } from "@/components/ui/calendar";
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
 const mockHost: User = {
-  id: "me", firstName: "Léo", lastName: "Martin", email: "", avatar: "", city: "Lausanne", country: "Suisse",
+  id: DEMO_USER.id, firstName: DEMO_USER.firstName, lastName: DEMO_USER.lastName, email: DEMO_USER.email, avatar: DEMO_USER.avatar, city: DEMO_USER.city, country: DEMO_USER.country,
   roles: ["hote"], activeRole: "hote", stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 }, bio: "",
 };
 

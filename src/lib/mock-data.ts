@@ -22,31 +22,39 @@ import type {
   Transaction,
   MonthlyRevenue,
 } from './types';
+import { CURRENT_USER, OWNED_PROPERTY_IDS } from "./demo/identity";
 
 // ─── USERS (16) ─────────────────────────────────────────────────────────────
 
+/* Derive de `demo/identity` : l identite n est plus recopiee ici.
+
+   Ce qui change, au-dela du refactor. La ville passe de Neuchatel a Lausanne
+   — les deux fichiers n etaient pas d accord. Les 14 biens deviennent les 3
+   qu il possede reellement au catalogue. Les 2 340 abonnes et les 87 avis
+   s alignent sur le profil, qui en annoncait 56. Et revenue: 485000
+   disparait : ce chiffre n etait lu nulle part, mais il contredisait a lui
+   seul les cinq autres montants de revenus de la maquette. */
 export const currentUser: User = {
-  id: 'user-001',
-  firstName: 'Léo',
-  lastName: 'Martin',
-  email: 'leo.martin@edome.ch',
-  avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-  city: 'Neuchâtel',
-  country: 'Suisse',
-  roles: ['hote', 'formateur', 'apporteur', 'investisseur', 'agence', 'client'] as Role[],
+  id: CURRENT_USER.id,
+  firstName: CURRENT_USER.firstName,
+  lastName: CURRENT_USER.lastName,
+  email: CURRENT_USER.email,
+  avatar: CURRENT_USER.avatar,
+  city: CURRENT_USER.city,
+  country: CURRENT_USER.country,
+  roles: [...CURRENT_USER.roles] as Role[],
   activeRole: 'hote' as Role,
   stats: {
-    followers: 2340,
-    following: 812,
-    properties: 14,
-    reviews: 87,
-    rating: 4.8,
-    transactions: 52,
-    revenue: 485000,
+    followers: CURRENT_USER.stats.followers,
+    following: CURRENT_USER.stats.following,
+    properties: OWNED_PROPERTY_IDS.length,
+    reviews: CURRENT_USER.stats.reviewsCount,
+    rating: CURRENT_USER.stats.rating,
+    transactions: 19,
+    revenue: 0,
   },
-  bio: 'Expert immobilier certifié USPI. Spécialiste des investissements locatifs en Suisse romande et à l\u2019international. Passionné par l\u2019innovation proptech.',
-  languages: ['Français', 'English', 'Arabic'],
-  certifications: ['Expert Immobilier USPI (2024)', 'Courtier Fédéral (2022)'],
+  bio: CURRENT_USER.about,
+  languages: ['Français', 'English'],
   responseTime: '2h',
 };
 
@@ -361,7 +369,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&h=600&fit=crop',
     ],
     videos: [],
-    host: users[2], // Marc
+    host: users[0], // Leo — un des trois biens de l utilisateur courant
     bedrooms: 0,
     bathrooms: 1,
     area: 32,
@@ -609,7 +617,7 @@ export const properties: Property[] = [
       'https://images.unsplash.com/photo-1615571022219-eb45cf7faa36?w=800&h=600&fit=crop',
     ],
     videos: [],
-    host: users[10], // Alexandre
+    host: users[0], // Leo — un des trois biens de l utilisateur courant
     bedrooms: 4,
     bathrooms: 3,
     area: 220,

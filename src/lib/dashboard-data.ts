@@ -12,6 +12,8 @@
    de @/lib/pricing, source unique du modele de remuneration. */
 
 import { HOST_BOUNTY_CHF, apporteurShareLabel } from "./pricing";
+import { CURRENT_USER } from "./demo/identity";
+import { roleLabels, type Role } from "./types";
 
 export type ReservationStatus = "confirmed" | "pending" | "completed" | "cancelled";
 export type ListingStatus = "published" | "draft";
@@ -138,16 +140,17 @@ export interface ServiceLead {
   status: ServiceLeadStatus;
 }
 
-/* Identite utilisateur unique pour TOUT l'espace dashboard ET le
-   profil. Avant : 2 jeux de roles divergents (3 vs 4) — desormais
-   aligne avec /profil. Investisseur retenu car credible vu son
-   activite/bio "passionne immobilier 15 ans". */
+/* Dérivé de `demo/identity`. Les libellés de rôles étaient écrits en
+   capitales d'imprimerie françaises (« Hôte », « Formateur ») là où le reste
+   du dépôt manipule des identifiants (`hote`, `formateur`) : ce n'étaient pas
+   des rôles mais leur affichage, et ils annonçaient quatre rôles quand le
+   profil en déclarait trois. */
 export const dashboardUser = {
-  firstName: "Léo",
-  lastName: "Martin",
-  name: "Léo Martin",
-  initials: "LM",
-  roles: ["Hôte", "Formateur", "Apporteur", "Investisseur"] as const,
+  firstName: CURRENT_USER.firstName,
+  lastName: CURRENT_USER.lastName,
+  name: CURRENT_USER.fullName,
+  initials: CURRENT_USER.initials,
+  roles: CURRENT_USER.roles.map((r) => roleLabels[r as Role]),
 };
 
 /* Les 3 memes biens partout. */

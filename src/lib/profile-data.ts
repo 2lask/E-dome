@@ -1,4 +1,5 @@
 import type { Profile, ProfileVisibility, PersonSummary } from "./profile-types";
+import { CURRENT_USER } from "./demo/identity";
 
 /* ─── Données de profil (démo) ────────────────────────────────────────────
    - DEFAULT_PROFILE : mon profil (Léo), source initiale du contexte, ensuite
@@ -15,32 +16,24 @@ const DEFAULT_VISIBILITY: ProfileVisibility = {
   hiddenSections: [],
 };
 
+/* L identite vient de demo/identity : id, nom, adresse, ville, titre,
+   presentation et roles n y sont plus recopies. L identifiant passe de « me »
+   a « user-001 » pour que l utilisateur courant soit une ligne du meme
+   annuaire que les autres — sans quoi aucune verification ne peut etablir
+   qu il est bien l auteur de ce qu il publie. */
 export const DEFAULT_PROFILE: Profile = {
-  id: "me",
-  firstName: "Léo",
-  lastName: "Martin",
-  email: "leo@e-dome.ch",
-  phone: "+41 79 123 45 67",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=240&h=240&fit=crop",
-  banner: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=400&fit=crop",
-  headline: "Investisseur & formateur immobilier · Fondateur E-Dome",
-  location: { city: "Lausanne", country: "Suisse" },
-  roles: ["hote", "formateur", "apporteur", "investisseur"],
-  about:
-    "Passionné d'immobilier depuis plus de 15 ans. J'accompagne investisseurs et hôtes en Suisse romande et à l'international : acquisition, rendement locatif, gestion et fiscalité. Formateur certifié USPI et apporteur d'affaires, je crois à un immobilier plus direct, transparent et accessible — c'est la mission d'E-Dome.",
+  id: CURRENT_USER.id,
+  firstName: CURRENT_USER.firstName,
+  lastName: CURRENT_USER.lastName,
+  email: CURRENT_USER.email,
+  phone: CURRENT_USER.phone,
+  avatar: CURRENT_USER.avatar,
+  banner: CURRENT_USER.banner,
+  headline: CURRENT_USER.headline,
+  location: { city: CURRENT_USER.city, country: CURRENT_USER.country },
+  roles: [...CURRENT_USER.roles],
+  about: CURRENT_USER.about,
   experiences: [
-    {
-      id: "exp-1",
-      title: "Fondateur & CEO",
-      company: "E-Dome",
-      employmentType: "temps-plein",
-      location: "Lausanne, Suisse",
-      current: true,
-      startMonth: 1,
-      startYear: 2024,
-      description:
-        "Plateforme sociale immobilière sans intermédiaire : marketplace, réseau, apporteurs d'affaires et formations. Projet en construction.",
-    },
     {
       id: "exp-2",
       title: "Investisseur immobilier indépendant",
@@ -106,8 +99,8 @@ export const DEFAULT_PROFILE: Profile = {
     { id: "ln-2", type: "linkedin", url: "https://linkedin.com/in/leomartin", label: "LinkedIn" },
   ],
   visibility: DEFAULT_VISIBILITY,
-  meta: { verified: true, membreFondateur: true, memberSince: "2024-01-15" },
-  stats: { followers: 2340, following: 812, rating: 4.8, reviewsCount: 56 },
+  meta: { verified: true, membreFondateur: false, memberSince: CURRENT_USER.memberSince },
+  stats: { ...CURRENT_USER.stats },
 };
 
 // ─── Profils publics (autres utilisateurs) ───────────────────────────────
@@ -132,18 +125,22 @@ type PublicSeed = {
 };
 
 const PUBLIC_SEEDS: Record<string, PublicSeed> = {
-  "user-001": {
-    firstName: "Léo",
-    lastName: "Martin",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=240",
-    banner: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=400&fit=crop",
-    headline: "Investisseur & formateur immobilier · Fondateur E-Dome",
-    city: "Lausanne",
-    country: "Suisse",
-    roles: ["hote", "formateur", "apporteur", "investisseur"],
+  /* Le profil public de l'utilisateur courant est DÉRIVÉ du sien, il n'en est
+     plus une copie. La copie affichait 87 avis là où le profil en annonçait
+     56, pour la même personne — deux nombres pour un seul fait, à deux clics
+     d'intervalle. Un avatar différent, aussi. */
+  [CURRENT_USER.id]: {
+    firstName: DEFAULT_PROFILE.firstName,
+    lastName: DEFAULT_PROFILE.lastName,
+    avatar: DEFAULT_PROFILE.avatar,
+    banner: DEFAULT_PROFILE.banner,
+    headline: DEFAULT_PROFILE.headline,
+    city: DEFAULT_PROFILE.location.city,
+    country: DEFAULT_PROFILE.location.country,
+    roles: DEFAULT_PROFILE.roles,
     about: DEFAULT_PROFILE.about,
-    stats: { followers: 2340, following: 812, rating: 4.8, reviewsCount: 87 },
-    membreFondateur: true,
+    stats: DEFAULT_PROFILE.stats,
+    membreFondateur: DEFAULT_PROFILE.meta.membreFondateur,
     experiences: DEFAULT_PROFILE.experiences,
     education: DEFAULT_PROFILE.education,
     skills: DEFAULT_PROFILE.skills.map((s) => s.name),

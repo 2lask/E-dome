@@ -12,6 +12,7 @@ import {
 import type { Conversation, Message, User } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import { users as allUsers, currentUser as currentUserMock } from "@/lib/mock-data";
+import { CURRENT_USER as DEMO_USER } from "@/lib/demo/identity";
 import {
   Dialog,
   DialogContent,
@@ -39,7 +40,7 @@ interface ConferenceParticipant {
 }
 
 const CONF_SELF = {
-  id: "me",
+  id: DEMO_USER.id,
   name: "Léo Martin",
   role: "Apporteur",
   avatar:
@@ -85,7 +86,9 @@ const INITIAL_CONF_CHAT: ConferenceChatMessage[] = [
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
-const currentUserId = "me";
+/* Derive de demo/identity : la messagerie utilisait « me » quand le profil
+   utilisait « user-001 ». Deux identifiants pour une seule personne. */
+const currentUserId = DEMO_USER.id;
 
 const mockConversations: Conversation[] = [
   {

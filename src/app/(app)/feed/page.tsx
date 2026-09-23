@@ -15,6 +15,7 @@ import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
 import { timeAgo, formatCount, formatDate } from "@/lib/utils";
 import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/lib/mock-data";
+import { CURRENT_USER as DEMO_USER, OWNED_PROPERTY_IDS } from "@/lib/demo/identity";
 import { getVideoMetadata } from "@/lib/video-metadata";
 import { buildObjectAffiliate } from "@/lib/referral-links";
 import { estimateEarning } from "@/lib/pricing";
@@ -29,12 +30,32 @@ import { PollBlock } from "@/components/feed/poll-block";
 
 // ─── Users ─────────────────────────────────────────────────────────────────
 
+/* L utilisateur courant, derive de demo/identity.
+
+   Il portait ici une troisieme identite : Geneve au lieu de Lausanne,
+   « Co-fondateur E-Dome » au lieu de « Fondateur », 12 400 abonnes, 38 biens
+   et 12,4 millions de francs de revenu cumule. Ces chiffres se lisaient comme
+   une traction de la plateforme, puisque la personne EST la plateforme. */
 const U_LEO: User = {
-  id: "u-leo", firstName: "Léo", lastName: "Martin", email: "leo@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop",
-  city: "Genève", country: "Suisse", roles: ["investisseur", "formateur"], activeRole: "investisseur",
-  stats: { followers: 12400, following: 240, properties: 38, reviews: 156, rating: 4.9, transactions: 220, revenue: 12_400_000 },
-  bio: "Co-fondateur E-Dome — l'immobilier sans intermédiaire.",
+  id: DEMO_USER.id,
+  firstName: DEMO_USER.firstName,
+  lastName: DEMO_USER.lastName,
+  email: DEMO_USER.email,
+  avatar: DEMO_USER.avatar,
+  city: DEMO_USER.city,
+  country: DEMO_USER.country,
+  roles: [...DEMO_USER.roles] as User["roles"],
+  activeRole: "hote",
+  stats: {
+    followers: DEMO_USER.stats.followers,
+    following: DEMO_USER.stats.following,
+    properties: OWNED_PROPERTY_IDS.length,
+    reviews: DEMO_USER.stats.reviewsCount,
+    rating: DEMO_USER.stats.rating,
+    transactions: 19,
+    revenue: 0,
+  },
+  bio: DEMO_USER.about,
 };
 
 const U_SOPHIE: User = {
@@ -655,8 +676,11 @@ const SUGGESTIONS = [U_LEO, U_AMIRA, U_THOMAS, U_YASMIN];
 
 // ─── Misc ──────────────────────────────────────────────────────────────────
 
-const CURRENT_USER_ID = "u1";
-const CURRENT_USER = U_SOPHIE;
+/* Ce n etait pas une variante d identite, c etait un bug : « u1 » designe
+   Sophie Martin. L utilisateur courant du fil etait donc quelqu un d autre
+   que celui du profil, du tableau de bord et de la messagerie. */
+const CURRENT_USER_ID = DEMO_USER.id;
+const CURRENT_USER = U_LEO;
 const formatEventDate = (iso: string) =>
   new Date(iso).toLocaleDateString("fr-CH", { day: "numeric", month: "short", year: "numeric" });
 
