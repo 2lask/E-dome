@@ -89,18 +89,37 @@ réduits à des enveloppes. C'est le but.
 
 ---
 
-## Étape 3 — Découpage de `/feed`, et sa crédibilité
+## Étape 3 — Découpage de `/feed`, et sa crédibilité — FAIT
 
-*Déplacement pur, plus trois corrections qui vivent dans ce fichier.*
+*Déplacement pur, plus les corrections qui vivent dans ce fichier.*
 
-- `/feed` (3 130 lignes) éclaté : identité, posts, composants média, carte de
-  post, composer, sparkline. Il reste ~250 lignes d'état et de composition.
-- `/creer-post` **fusionné**, pas découpé : il redéclare le composer et un
-  troisième catalogue de biens. Ce commit supprime du code.
-- Au passage, parce que c'est le même fichier : le post épinglé perd tout
-  compteur, ses trois faux témoignages deviennent des questions produit, et les
-  brèves de marché deviennent des catégories de veille sans chiffre ni
-  horodatage.
+- `/feed` (3 232 lignes) **éclaté en douze fichiers** : `demo/posts.ts`,
+  `components/feed/media/` (vidéo, image, galerie, formats), `post-card.tsx`,
+  `attach-cards.tsx`, `composer/` (actions, événements, listes), `sparkline.tsx`.
+  Il reste 1 029 lignes d'état et de composition. Imports calculés d'après
+  l'usage réel, pas devinés — un import mort est une erreur de lint ici.
+- `/creer-post` **fusionné**, pas découpé : il redéclarait le composer et un
+  **troisième catalogue de biens**, avec une quatrième collision `prop2`
+  (penthouse à 950 000 CHF contre le studio genevois à 120 CHF). Biens, villes,
+  mentions et mots-dièse dérivent maintenant des données du fil. Ce commit
+  supprime du code.
+- Le **post épinglé** : ni compteur ni faux témoignages, signé par un compte
+  `E-Dome` et non plus par l'utilisateur de démonstration, épinglé pour de bon
+  (le tri par date le reléguait cinquième), et non tronqué (l'avertissement
+  disparaissait derrière « Voir plus »).
+- Les **brèves de marché** deviennent des sujets de veille, sans chiffre ni
+  date. Bloc « Sujets suivis ».
+- **Balayage de traction demandé** : trouvé et corrigé ailleurs — les quatre
+  compteurs de `/admin` (2 847 utilisateurs, 387 500 CHF de CA) et le classement
+  nominatif des apporteurs (4 200 CHF versés). Aucun indice de marché ne
+  subsiste. Ce qui reste (inscrits d'un live, demandes de visite d'une annonce)
+  relève des données d'un utilisateur, que la règle de tri garde.
+
+*Ajouté en chemin, hors plan* : l'icône (option B, PNG 180×180 depuis le SVG,
+`npm run icons`, sans dépendance) ; et le second garde-fou des invariants —
+messages nommant fichier et valeurs, porte de secours `EDOME_INVARIANTS=warn`,
+section README « Pourquoi mon build échoue ». Deux invariants qui s'écrivaient
+`x === x` remplacés par deux qui mordent.
 
 ---
 
