@@ -1,18 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { TriangleAlert } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { APPORTEUR_SHARE, MARKETPLACE_RATE, SALE_FEE_ABOVE, SALE_FEE_BELOW } from "@/lib/pricing";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
-const KPIS = [
-  { label: "Utilisateurs actifs", value: 2847, isCurrency: false },
-  { label: "Biens publies", value: 1253, isCurrency: false },
-  { label: "Chiffre d'affaires", value: 387500, isCurrency: true },
-  { label: "Signalements ouverts", value: 12, isCurrency: false },
-];
 
 const MOCK_USERS = [
   { id: "U001", nom: "Marie Dupont", email: "marie@example.com", role: "hote", date: "2026-01-15", statut: "actif" },
@@ -89,6 +83,47 @@ export default function AdminPage() {
     setSignalements((prev) => prev.filter((s) => s.id !== id));
   };
 
+  /* Les quatre compteurs de cette console affirmaient une traction qu'E-Dome
+     n'a pas : 2 847 utilisateurs actifs, 1 253 biens publiés, et 387 500 CHF
+     de chiffre d'affaires — celui de la plateforme elle-même. Sur une page
+     qui reste atteignable sans compte (cf. TODO.md), c'était la pire
+     occurrence du défaut que la phase A avait traité partout ailleurs.
+
+     Le chiffre d'affaires disparaît : il n'en existe aucune version honnête,
+     puisque toute valeur affirmerait un revenu. Il cède la place au compteur
+     qu'une console d'administration sert réellement à surveiller — la file
+     d'attente de modération.
+
+     Les trois autres ne décrivent plus une plateforme mais **les listes
+     affichées juste en dessous**. Ce ne sont donc plus des affirmations mais
+     des totaux vérifiables à l'écran. Au passage, « 12 signalements ouverts »
+     en annonçait douze pour deux réels.
+
+     Ils se calculent sur l'état, pas sur les constantes : approuver un bien
+     ou résoudre un signalement doit faire bouger le compteur. Dérivés des
+     tableaux figés, ils seraient redevenus faux au premier clic. */
+  const kpis = useMemo(
+    () => [
+      {
+        label: "Utilisateurs actifs",
+        value: MOCK_USERS.filter((u) => u.statut === "actif").length,
+        hint: `sur ${MOCK_USERS.length} listés`,
+      },
+      { label: "Biens listés", value: biens.length, hint: "dans l'onglet Biens" },
+      {
+        label: "En attente de validation",
+        value: biens.filter((b) => b.statut === "en_attente").length,
+        hint: "biens à modérer",
+      },
+      {
+        label: "Signalements ouverts",
+        value: signalements.filter((s) => s.statut === "ouvert").length,
+        hint: `sur ${signalements.length} reçus`,
+      },
+    ],
+    [biens, signalements],
+  );
+
   const tabs: { key: Tab; label: string }[] = [
     { key: "utilisateurs", label: "Utilisateurs" },
     { key: "biens", label: "Biens" },
@@ -130,11 +165,15 @@ export default function AdminPage() {
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
       <h1 className="text-3xl page-heading text-[var(--foreground)]">Administration</h1>
 
-      {/* Cette console est atteignable sans compte tant que Supabase n'est pas
-          configuré : le middleware laisse tout passer dans ce cas. Ses chiffres
-          — chiffre d'affaires, utilisateurs, biens — sont inventés et se
-          liraient comme une traction réelle. Le bandeau le dit avant tout le
-          reste. Il ne remplace pas une vraie porte d'entrée : voir TODO.md. */}
+      {/* Cette console reste atteignable sans compte tant que Supabase n'est
+          pas configuré : le proxy laisse tout passer dans ce cas. Le bandeau
+          ne remplace pas une porte d'entrée — voir TODO.md.
+
+          Il ne porte plus la même charge qu'avant : les trois chiffres qui se
+          lisaient comme une traction d'E-Dome (chiffre d'affaires,
+          utilisateurs actifs, biens publiés) ont été retirés plutôt que
+          désamorcés par un avertissement. Un bandeau n'annule pas un chiffre
+          faux ; il demande au lecteur de s'en souvenir en le lisant. */}
       <p
         role="status"
         className="flex items-start gap-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200"
@@ -149,12 +188,11 @@ export default function AdminPage() {
 
       {/* KPIs */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {KPIS.map((kpi, idx) => (
-          <div key={idx} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
+        {kpis.map((kpi) => (
+          <div key={kpi.label} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
             <p className="text-sm text-[var(--text-muted)]">{kpi.label}</p>
-            <p className="text-2xl font-bold text-[var(--foreground)] mt-1">
-              {kpi.isCurrency ? formatPrice(kpi.value) : kpi.value.toLocaleString("fr-CH")}
-            </p>
+            <p className="text-2xl font-bold text-[var(--foreground)] mt-1">{kpi.value}</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">{kpi.hint}</p>
           </div>
         ))}
       </section>

@@ -136,17 +136,27 @@ const MOCK_VERSEMENTS = [
   { id: "V-002", date: "2026-02-01", montant: 48, methode: "Virement IBAN", statut: "verse" },
 ];
 
+/* Ce classement portait une rémunération en francs pour chaque nom : 4 200,
+   3 380, 3 010 CHF. Ce ne sont pas les données d'un utilisateur sur son
+   propre écran — c'est E-Dome qui affirme avoir versé des milliers de francs
+   à un réseau d'apporteurs actif. La règle de tri de la phase A range cela
+   du côté qui dégage : « montants versés ».
+
+   Le classement reste, sans les montants. Il montre une fonction réelle du
+   produit — où l'apporteur se situe — sans rien affirmer sur ce que la
+   plateforme aurait distribué. L'en-tête dit maintenant que c'est un
+   exemple, comme le fil d'activité de la page d'accueil. */
 const LEADERBOARD = [
-  { rank: 1, nom: "Sarah K.", apports: 52, commissions: 4200 },
-  { rank: 2, nom: "Jean-Pierre D.", apports: 41, commissions: 3380 },
-  { rank: 3, nom: "Laura M.", apports: 39, commissions: 3010 },
+  { rank: 1, nom: "Sarah K.", apports: 52 },
+  { rank: 2, nom: "Jean-Pierre D.", apports: 41 },
+  { rank: 3, nom: "Laura M.", apports: 39 },
   /* Note : nom sans " (Vous)" — le rendu ajoute deja le tag (vous)
      en bleu via isYou. Avoir les deux donnait "Leo M. (Vous) (vous)". */
-  { rank: 4, nom: "Léo M.", apports: 28, commissions: 1034, isYou: true },
-  { rank: 5, nom: "Nadia S.", apports: 25, commissions: 1050 },
-  { rank: 6, nom: "Thomas R.", apports: 22, commissions: 920 },
-  { rank: 7, nom: "Amina K.", apports: 19, commissions: 780 },
-  { rank: 8, nom: "Patrick L.", apports: 15, commissions: 610 },
+  { rank: 4, nom: "Léo M.", apports: 28, isYou: true },
+  { rank: 5, nom: "Nadia S.", apports: 25 },
+  { rank: 6, nom: "Thomas R.", apports: 22 },
+  { rank: 7, nom: "Amina K.", apports: 19 },
+  { rank: 8, nom: "Patrick L.", apports: 15 },
 ];
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
@@ -470,7 +480,6 @@ export default function ApporteursPage() {
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Référence</th>
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Date</th>
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Statut</th>
-                <th className="text-right p-4 text-[var(--text-muted)] font-medium">Rémunération</th>
               </tr>
             </thead>
             <tbody>
@@ -538,7 +547,12 @@ export default function ApporteursPage() {
 
       {/* Leaderboard */}
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">Classement des apporteurs</h2>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">Classement des apporteurs</h2>
+          <span className="rounded-full border border-[var(--card-border)] px-2.5 py-0.5 text-xs text-[var(--text-muted)]">
+            Exemple de classement
+          </span>
+        </div>
 
         {/* Podium */}
         <div className="flex items-end justify-center gap-4 py-6">
@@ -548,7 +562,6 @@ export default function ApporteursPage() {
               <Medal size={28} strokeWidth={2} />
             </div>
             <p className="text-sm font-medium text-[var(--foreground)]">{LEADERBOARD[1].nom}</p>
-            <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[1].commissions)}</p>
             <div className="w-20 h-24 bg-gray-400/10 rounded-t-lg mx-auto" />
           </div>
           {/* 1st */}
@@ -557,7 +570,6 @@ export default function ApporteursPage() {
               <Trophy size={36} strokeWidth={2} />
             </div>
             <p className="text-sm font-bold text-[var(--primary)]">{LEADERBOARD[0].nom}</p>
-            <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[0].commissions)}</p>
             <div className="w-20 h-32 bg-[var(--primary)]/10 rounded-t-lg mx-auto" />
           </div>
           {/* 3rd */}
@@ -566,7 +578,6 @@ export default function ApporteursPage() {
               <Award size={22} strokeWidth={2} />
             </div>
             <p className="text-sm font-medium text-[var(--foreground)]">{LEADERBOARD[2].nom}</p>
-            <p className="text-xs text-[var(--text-muted)]">{formatPrice(LEADERBOARD[2].commissions)}</p>
             <div className="w-20 h-16 bg-amber-700/10 rounded-t-lg mx-auto" />
           </div>
         </div>
@@ -579,7 +590,6 @@ export default function ApporteursPage() {
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">#</th>
                 <th className="text-left p-4 text-[var(--text-muted)] font-medium">Apporteur</th>
                 <th className="text-right p-4 text-[var(--text-muted)] font-medium">Apports</th>
-                <th className="text-right p-4 text-[var(--text-muted)] font-medium">Rémunération</th>
               </tr>
             </thead>
             <tbody>
@@ -595,7 +605,6 @@ export default function ApporteursPage() {
                     {l.nom} {l.isYou && <span className="text-xs text-[var(--primary)]">(vous)</span>}
                   </td>
                   <td className="p-4 text-right text-[var(--text-secondary)]">{l.apports}</td>
-                  <td className="p-4 text-right text-[var(--foreground)] font-medium">{formatPrice(l.commissions)}</td>
                 </tr>
               ))}
             </tbody>
