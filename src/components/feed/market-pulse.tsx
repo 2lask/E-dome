@@ -12,7 +12,7 @@ import { APPORTEUR_SHARE_LABEL } from "@/lib/pricing";
 /* Colonne droite du feed — sous les suggestions de comptes.
    Trois blocs pour donner du relief au feed :
    1. « Exemple d'activité » : un fil qui défile en boucle.
-   2. « Actualités & règles » : veille immobilière.
+   2. « Sujets suivis » : les thèmes de veille, sans dépêche inventée.
    3. Une carte sponsorisée vers le réseau d'apporteurs.
 
    Le fil ne contient aucun montant, aucun gain nominatif, aucun « deal
@@ -100,24 +100,42 @@ function LiveTicker() {
   );
 }
 
-// ─── Actualités & règles ────────────────────────────────────────────────────
+// ─── Sujets suivis ──────────────────────────────────────────────────────────
 
 type NewsItem = { cat: string; tint: keyof typeof TINT; icon: LucideIcon; title: string; meta: string };
 
+/* Ce bloc portait cinq brèves : « Lex Koller : nouvelles conditions dès
+   2026 », « la BNS maintient son taux à 1,5 % », « Genève : le m² dépasse
+   14 500 CHF », datées « 2 h », « 5 h », « 1 j ».
+
+   Elles ne portaient pas sur E-Dome, donc la règle de tri de la phase A les
+   avait laissées. Elles restaient pourtant inventées, crédibles et sans
+   source — un lecteur pouvait repartir en croyant connaître le taux
+   directeur. L'horodatage aggravait le cas : il affirmait une dépêche fraîche
+   là où il n'y a aucune rédaction derrière.
+
+   Elles deviennent ce qu'elles pouvaient être sans mentir : les SUJETS que la
+   veille couvrira. Plus un seul chiffre, plus une seule date. Le jour où de
+   vraies dépêches sourcées arrivent, elles prennent la place des titres sans
+   toucher au composant. */
 const NEWS: NewsItem[] = [
-  { cat: "Règle", tint: "amber", icon: Scale, title: "Lex Koller : nouvelles conditions pour les non-résidents dès 2026", meta: "Confédération · 2 h" },
-  { cat: "Taux", tint: "blue", icon: Percent, title: "La BNS maintient son taux directeur à 1,5 %", meta: "Marché · 5 h" },
-  { cat: "Marché", tint: "emerald", icon: TrendingUp, title: "Genève : le prix au m² dépasse 14 500 CHF au centre", meta: "Immobilier · 1 j" },
-  { cat: "Fiscalité", tint: "purple", icon: Building2, title: "Valeur locative : la réforme entre en vigueur", meta: "Fiscalité · 2 j" },
-  { cat: "International", tint: "primary", icon: Globe, title: "Dubaï lance un visa investisseur immobilier de 10 ans", meta: "Émirats · 3 j" },
+  { cat: "Règle", tint: "amber", icon: Scale, title: "Lex Koller et l'acquisition par des non-résidents", meta: "Veille réglementaire" },
+  { cat: "Taux", tint: "blue", icon: Percent, title: "Taux directeur de la BNS et coût du crédit hypothécaire", meta: "Veille marché" },
+  { cat: "Marché", tint: "emerald", icon: TrendingUp, title: "Prix au mètre carré, par canton et par type de bien", meta: "Veille marché" },
+  { cat: "Fiscalité", tint: "purple", icon: Building2, title: "Valeur locative et imposition du logement", meta: "Veille fiscale" },
+  { cat: "International", tint: "primary", icon: Globe, title: "Régimes d'investissement immobilier hors de Suisse", meta: "Veille internationale" },
 ];
 
 function NewsList() {
   return (
     <div className="mt-6">
       <h3 className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-        Actualités &amp; règles
+        Sujets suivis
       </h3>
+      <p className="px-1 pb-2 text-[11px] leading-snug text-[var(--text-muted)]">
+        Les thèmes que la veille couvrira. Aucune dépêche n&apos;est publiée à ce
+        stade.
+      </p>
       <ul className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] divide-y divide-[var(--card-border)]/60 overflow-hidden">
         {NEWS.map((n) => {
           const Icon = n.icon;

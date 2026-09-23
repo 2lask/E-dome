@@ -77,6 +77,20 @@ annonces. À trancher : ce que « annonce active » doit désigner.
 dérive désormais ses vues des nuits vendues ; `/dashboard/annonces` garde les
 siennes.
 
+### `/apporteurs` : un second tableau de montants, en dur
+
+[src/app/(app)/apporteurs/page.tsx](src/app/(app)/apporteurs/page.tsx) —
+`MOCK_APPORTS` et `MOCK_VERSEMENTS` portent des francs écrits à la main,
+**datés de mars 2026** quand la démonstration est en septembre, et sans lien
+avec `src/lib/demo/ledger.ts`. C'est le défaut qu'a supprimé l'étape 2, à un
+endroit qu'elle n'a pas touché : `apporteurSummary.earnedThisMonth` dérive du
+journal, ces deux tableaux non.
+
+Trouvé pendant le balayage de traction de l'étape 3, et laissé de côté parce
+que ce n'est pas une affirmation sur E-Dome — ce sont les gains propres de
+l'utilisateur, que la règle de tri garde. À reprendre avec le journal : le
+détail des apports se déduit des écritures de source `apporteurs`.
+
 ### `/reseau` : l'onglet « Abonnés » affiche tout l'annuaire
 
 [src/app/(app)/reseau/page.tsx:77](src/app/(app)/reseau/page.tsx)
@@ -86,11 +100,13 @@ siennes.
 Pastille « 3 » en dur dans la barre latérale, « Aucune nouvelle notification »
 dans le menu de l'en-tête, 10 éléments dont 5 non lus sur `/notifications`.
 
-### Admin : « 12 signalements ouverts » pour 2 réels
+### ~~Admin : « 12 signalements ouverts » pour 2 réels~~ — FAIT (étape 3)
 
-[src/app/(app)/admin/page.tsx](src/app/(app)/admin/page.tsx) — le compteur est
-en dur, `MOCK_SIGNALEMENTS` en contient **5 dont 2 ouverts** — le « 3 » de la première
-version de ce fichier était faux.
+[src/app/(app)/admin/page.tsx](src/app/(app)/admin/page.tsx) — les quatre
+compteurs de la console se calculent maintenant **sur l'état**, pas sur les
+constantes : résoudre un signalement fait bouger le chiffre. Au passage, les
+trois qui affirmaient une traction d'E-Dome (2 847 utilisateurs, 1 253 biens,
+387 500 CHF de chiffre d'affaires) ont été retirés.
 
 ### ~~Réservations : deux jeux de biens disjoints~~ — constat erroné
 
@@ -133,20 +149,22 @@ Correction disponible en version 6, majeure et avec ruptures. À planifier.
 
 ## Contenus à réexaminer
 
-### Actualités du feed
+### ~~Compteurs d'engagement du post épinglé~~ — FAIT (étape 3)
 
-[src/components/feed/market-pulse.tsx](src/components/feed/market-pulse.tsx),
-tableau `NEWS` : cinq brèves de marché inventées mais crédibles (« Lex Koller :
-nouvelles conditions dès 2026 », « la BNS maintient son taux à 1,5 % », « le m²
-dépasse 14 500 CHF à Genève »).
+Le post de bienvenue affichait 4 521 « j'aime » et trois témoignages
+fabriqués. Retirés : `likes: 0` et `comments: []` suffisent, parce
+qu'`ActionBtn` n'affiche pas un compteur nul.
 
-Elles ne portent sur E-Dome — la règle de tri appliquée en phase A — et ont
-donc été laissées. Elles restent des affirmations sur le monde réel, présentées
-sans source. À remplacer par de vraies dépêches sourcées, ou à marquer comme
-exemples.
+Trouvé en chemin, et corrigé aussi : le post était **signé par
+l'utilisateur de démonstration**, devenu un propriétaire lausannois à
+l'étape 2. Un avis de la plateforme signé par lui ramenait la confusion que
+l'étape 2 avait retirée du profil. Il vient maintenant d'un compte `E-Dome`,
+et il est épinglé pour de bon : le tri par date le reléguait en cinquième
+position, donc le lecteur croisait les exemples avant l'avertissement.
 
-### Compteurs d'engagement du post épinglé
+### ~~Actualités du feed~~ — FAIT (étape 3)
 
-Le post de bienvenue affiche 4 521 « j'aime ». Le chiffre faisait écho aux
-« +4 500 inscrits » qui ont été retirés. Il ne prétend plus rien en soi, mais
-suggère une audience que le projet n'a pas encore.
+Les cinq brèves inventées (« la BNS maintient son taux à 1,5 % », « le m²
+dépasse 14 500 CHF à Genève ») sont devenues les **sujets** que la veille
+couvrira : plus un chiffre, plus une date. Le bloc s'intitule « Sujets
+suivis » et dit qu'aucune dépêche n'est publiée.

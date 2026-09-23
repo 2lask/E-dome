@@ -9,7 +9,7 @@ import {
   Volume2, VolumeX, Calendar, Search, User as UserIcon,
   Users, Building2, GraduationCap,
   Image as ImageIcon, BarChart3, Film, Paperclip, TrendingUp, TrendingDown, ArrowRight,
-  Link2, Coins, ListChecks, Plus,
+  Link2, Coins, ListChecks, Plus, Pin,
 } from "lucide-react";
 import { roleLabels } from "@/lib/types";
 import { useApp } from "@/lib/context";
@@ -56,6 +56,32 @@ const U_LEO: User = {
     revenue: 0,
   },
   bio: DEMO_USER.about,
+};
+
+/* Compte de la plateforme. Il n'existe que pour le post épinglé d'accueil.
+
+   Ce message était signé par l'utilisateur de démonstration. Après l'étape 2,
+   cet utilisateur est un propriétaire lausannois qui loue en courte durée, pas
+   un porte-parole : un avis de la plateforme signé par lui ramenait dans le
+   fil la confusion que l'étape 2 avait retirée du profil.
+
+   Aucune statistique, et c'est voulu — un compte officiel qui annoncerait des
+   abonnés serait précisément l'affirmation de traction qu'on retire partout
+   ailleurs. Les zéros ne s'affichent pas : `ActionBtn` masque déjà tout
+   compteur nul. L'avatar est l'icône de l'application, celle produite par
+   `npm run icons`. */
+const U_EDOME: User = {
+  id: "edome",
+  firstName: "E-Dome",
+  lastName: "",
+  email: "contact@e-dome.ch",
+  avatar: "/icons/icon-192x192.png",
+  city: "Suisse",
+  country: "Suisse",
+  roles: ["admin"],
+  activeRole: "admin",
+  stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 },
+  bio: "Compte officiel de la plateforme.",
 };
 
 const U_SOPHIE: User = {
@@ -171,20 +197,45 @@ const mkFormationAffiliate = (id: string) => {
 
 const clip = (n: number) => `/videos/feed/clip-${String(n).padStart(2, "0")}.mp4`;
 
+/* Le post d'accueil est ÉPINGLÉ, pas seulement récent.
+
+   Le fil trie par date décroissante. L'avertissement portait `hAgo(2)`,
+   donc tout ce qui était plus récent passait devant : à l'écran il arrivait
+   en cinquième position, après quatre annonces et un sondage. Le lecteur
+   rencontrait les exemples avant d'apprendre que c'en sont — exactement
+   l'inverse de ce que ce post doit faire.
+
+   Le dater à l'instant aurait été fragile : publier depuis le composer crée
+   un post plus récent, qui le repousserait aussitôt. L'épinglage est donc
+   explicite, et il tient sur les deux onglets — un avis de la plateforme
+   n'est pas le contenu d'un compte qu'on suit ou non. */
+const PINNED_POST_ID = "p1";
+
 const VIDEO_POSTS: SocialPost[] = [
   {
-    id: "p1", author: U_LEO,
-    /* Post épinglé : aucun chiffre d'inscrits ni de durée de bêta. Il sert
-       désormais d'avertissement — c'est la première chose que lit un visiteur
-       arrivé depuis la landing, qui annonce un projet en construction. */
-    content: "Bienvenue sur E-Dome\n\nLa plateforme qui réunit hôtes, investisseurs, apporteurs et formateurs autour de l'immobilier — sans intermédiaire.\n\nVous parcourez une maquette de démonstration : les profils, les biens, les montants et les commentaires sont des exemples, pas des données réelles. Elle sert à montrer le produit envisagé et à recueillir vos retours.\n\nDites-nous ce qui vous manque. #immobilier #suisse",
-    media: [clip(1)], type: "post", likes: 4521, location: "Genève, Suisse",
+    id: "p1", author: U_EDOME,
+    /* Post épinglé. C'est la première chose que lit un visiteur arrivé depuis
+       la landing, donc c'est là que la maquette se présente pour ce qu'elle
+       est — avant les biens, les montants et les avis qui suivent.
+
+       Il portait 4 521 « j'aime » et trois commentaires élogieux : « fier de
+       faire partie de l'aventure depuis le jour 1 », « la meilleure
+       plateforme pour les investisseurs sérieux », « bravo, le Maroc te
+       remercie ». Le compteur était le dernier écho des « +4 500 inscrits »
+       retirés en phase A, et les trois commentaires étaient des témoignages
+       fabriqués pour une plateforme qui n'a pas encore d'utilisateurs.
+
+       Aucun compteur, aucun commentaire : `likes: 0` et `comments: []`
+       suffisent, parce qu'`ActionBtn` n'affiche pas un compteur nul. Rien à
+       ajouter au composant — un avertissement qui demande du code spécial
+       finit toujours par être contourné.
+
+       Plus de lieu non plus : un avis de la plateforme n'est pas géolocalisé,
+       et celui-ci annonçait Genève pour un auteur devenu lausannois. */
+    content: "Bienvenue sur E-Dome\n\nVous parcourez une maquette de démonstration. Tout ce qui suit est un exemple : les profils, les biens, les annonces, les montants, les avis et les commentaires. Aucun chiffre affiché ici ne décrit l'activité réelle d'E-Dome, et aucune personne présentée n'est un utilisateur réel.\n\nCe que la maquette montre : réunir sur un même fil les propriétaires, les hôtes, les agences, les prestataires, les formateurs et les apporteurs de l'immobilier.\n\nCe qu'elle ne montre pas : une plateforme en service. Le projet est en construction.\n\nDites-nous ce qui manque, et ce qui vous paraît faux.",
+    media: [clip(1)], type: "post", likes: 0,
     createdAt: hAgo(2),
-    comments: mkComments("p1", [
-      { author: U_SOPHIE, content: "Tellement fier de faire partie de l'aventure depuis le jour 1", h: 1.5, likes: 84 },
-      { author: U_MARC, content: "La meilleure plateforme pour les investisseurs sérieux. On continue.", h: 1, likes: 56 },
-      { author: U_AMIRA, content: "Bravo @léo, le Maroc te remercie", h: 0.5, likes: 42 },
-    ]),
+    comments: [],
   },
   {
     id: "p2", author: U_SOPHIE,
@@ -985,14 +1036,28 @@ function MediaGallery({ media }: { media: string[] }) {
 // quand le texte est tronqué. Détecte le débordement via scrollHeight vs
 // clientHeight (ref-based) après le rendu, recalcule à chaque changement
 // de contenu et au resize.
-function PostCaption({ content, big = false }: { content: string; big?: boolean }) {
+/* `clamp={false}` : le texte est rendu en entier, sans « Voir plus ».
+
+   Ajouté pour l'avis d'accueil. Clampé à trois lignes comme les autres, il
+   s'arrêtait sur « Tout ce qui suit est un exemple : les profils, les
+   biens… » — la phrase qui désamorce la maquette disparaissait derrière un
+   bouton. Un avertissement qu'il faut déplier n'avertit personne. */
+function PostCaption({
+  content,
+  big = false,
+  clamp = true,
+}: {
+  content: string;
+  big?: boolean;
+  clamp?: boolean;
+}) {
   const pRef = useRef<HTMLParagraphElement>(null);
   const [overflowing, setOverflowing] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
   /* Post texte seul (façon X) : texte plus grand, montré en entier jusqu'à
      ~10 lignes, puis « Voir plus ». Sinon : légende compacte clampée à 3. */
-  const clampLines = big ? "line-clamp-[10]" : "line-clamp-3";
+  const clampLines = !clamp ? "" : big ? "line-clamp-[10]" : "line-clamp-3";
   const sizeClass = big
     ? "text-[17px] sm:text-[19px] leading-snug"
     : "text-[14px] leading-relaxed";
@@ -1583,6 +1648,10 @@ function PostCard({
   const cta = CUSTOM_CTA[post.id];
   const event = EVENTS_BY_POST[post.id];
   const isOwn = post.author.id === CURRENT_USER_ID;
+  /* L'avis d'accueil porte « Épinglé » au lieu d'un horodatage : « il y a
+     2 h » sur un avertissement permanent affirme une fraîcheur qui n'a pas
+     de sens, et invite à le lire comme une actualité qu'on peut dépasser. */
+  const isPinned = post.id === PINNED_POST_ID;
   /* Détection vidéo : on consulte mediaTypes (renseigné par le composer
      d'upload) sinon on tombe sur l'heuristique d'extension pour les
      mocks (.mp4). Les blob: URLs du composer ne portent pas d'extension. */
@@ -1626,7 +1695,14 @@ function PostCard({
               </Link>
               <span className="text-[12px] text-[var(--text-muted)] truncate">@{handle}</span>
               <span className="text-[12px] text-[var(--text-muted)]" aria-hidden>·</span>
-              <span className="text-[12px] text-[var(--text-muted)]">{timeAgo(post.createdAt)}</span>
+              {isPinned ? (
+                <span className="inline-flex items-center gap-1 text-[12px] font-medium text-[var(--primary)]">
+                  <Pin className="w-3 h-3" aria-hidden />
+                  Épinglé
+                </span>
+              ) : (
+                <span className="text-[12px] text-[var(--text-muted)]">{timeAgo(post.createdAt)}</span>
+              )}
               {post.location && (
                 <>
                   <span className="text-[12px] text-[var(--text-muted)]" aria-hidden>·</span>
@@ -1679,7 +1755,7 @@ function PostCard({
           {/* Caption — directement sous le header. Texte seul = plus grand (X). */}
           {post.content && (
             <div className={textOnly ? "mt-1.5" : "mt-0.5"}>
-              <PostCaption content={post.content} big={textOnly} />
+              <PostCaption content={post.content} big={textOnly} clamp={!isPinned} />
             </div>
           )}
 
@@ -2012,11 +2088,13 @@ export default function FeedPage() {
     // galeries photo) se melangent naturellement avec les videos selon
     // leur createdAt, plutot que d'apparaitre en bas du tableau.
     const base = activeTab === "suivis"
-      ? posts.filter((p) => isFollowing(p.author.id))
+      ? posts.filter((p) => isFollowing(p.author.id) || p.id === PINNED_POST_ID)
       : posts;
-    return [...base].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    return [...base].sort((a, b) => {
+      if (a.id === PINNED_POST_ID) return -1;
+      if (b.id === PINNED_POST_ID) return 1;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
   }, [posts, activeTab, isFollowing]);
 
   const toggleLike = (postId: string) => {
