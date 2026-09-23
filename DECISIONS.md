@@ -222,6 +222,26 @@ pour une raison propre à ce projet : la maquette doit **démontrer** le modèle
 où E-Dome ne touche rien. Un demi-taux visible vaut mieux qu'un taux nul
 invisible.
 
+**À l'expiration des 24 mois : passage automatique à 10 %, avec préavis.** Pas
+de renégociation individuelle, pour trois raisons. Un tarif négocié au cas par
+cas contredirait la règle « prix identiques pour tous les utilisateurs d'une
+même formule » du §1.1, qui est une **condition juridique** et non une
+commodité. Trente négociations simultanées au même moment consommeraient un
+temps qu'une équipe de cette taille n'a pas. Et un tarif fondateur dont
+l'expiration se discute n'est plus un tarif fondateur : c'est une remise
+permanente qui ne dit pas son nom.
+
+Le mécanisme : la date d'expiration est **écrite sur l'abonnement dès la
+souscription** et visible en permanence sur l'écran du créateur — jamais une
+surprise. Préavis de **30 jours**, cohérent avec celui déjà prévu pour toute
+modification tarifaire (§5.7 des nouvelles conditions). Le créateur qui part à
+ce moment-là garde son contenu et ses acheteurs : aucune clause de sortie, ce
+qui est la contrepartie honnête d'un passage automatique.
+
+Ce que cela n'exclut pas : un **nouveau** tarif promotionnel, ouvert à tous et
+publié, décidé plus tard sur la base des chiffres réels. C'est une décision
+commerciale future, pas une renégociation privée.
+
 S'y ajoutent les exonérations de lancement du marketing, qui restent : six
 premiers mois ou vingt premières transactions offerts à chaque vendeur, trois
 mois offerts sur la formule Mandats.

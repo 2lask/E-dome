@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import type { Role, Currency, ReferralLink } from "./types";
+import { roleLabels } from "./types";
 import type { Profile } from "./profile-types";
 import { DEFAULT_PROFILE } from "./profile-data";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
@@ -94,6 +95,12 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 // ─── Default values ─────────────────────────────────────────────────────────
 
+/* `roleLabels` est un `Record<Role, string>` : ses clés sont exactement les
+   rôles connus, et la garde ne peut donc pas se désynchroniser de l'union. */
+function isKnownRole(value: string): value is Role {
+  return Object.prototype.hasOwnProperty.call(roleLabels, value);
+}
+
 const DEFAULT_ROLE: Role = "client";
 const DEFAULT_ROLES: Role[] = ["client", "hote", "formateur", "apporteur", "investisseur", "agence"];
 const DEFAULT_CURRENCY: Currency = "CHF";
@@ -133,8 +140,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Load from localStorage after mount
   useEffect(() => {
     try {
+      /* Validation, et non `as Role`. Le jeu de rôles change à l'étape 4 :
+         un navigateur qui a mémorisé « courtier » ou « investisseur »
+         rendrait alors un rôle inexistant, et les écrans qui indexent par
+         rôle afficheraient du vide sans lever d'erreur. Une valeur inconnue
+         est ignorée : on retombe sur le défaut, ce qui est réparable par
+         l'utilisateur, là où un rôle fantôme ne l'est pas. */
       const storedRole = localStorage.getItem(`${STORAGE_PREFIX}activeRole`);
-      if (storedRole) setActiveRoleState(storedRole as Role);
+      if (storedRole && isKnownRole(storedRole)) setActiveRoleState(storedRole);
 
       const storedRoles = localStorage.getItem(`${STORAGE_PREFIX}availableRoles`);
       if (storedRoles) setAvailableRoles(JSON.parse(storedRoles));

@@ -93,13 +93,23 @@ function Stars({ rating, size = "sm" }: { rating: number; size?: "sm" | "md" }) 
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
+/* Le composant est coupé en deux, et ce n'est pas cosmétique.
+
+   La version précédente résolvait la formation, sortait en `return` quand elle
+   était introuvable, puis déclarait ses `useState` — donc des hooks appelés
+   conditionnellement. Sur un identifiant inconnu, React changeait de nombre de
+   hooks entre deux rendus : un plantage qui attendait son heure. C'étaient les
+   six avertissements `rules-of-hooks` du dépôt, tous dans ce seul fichier.
+
+   La coupure règle le problème sans acrobatie : le composant externe décide
+   quoi afficher, le composant interne reçoit une formation qui existe, et tous
+   ses hooks sont inconditionnels. */
+
 export default function FormationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { formatPrice } = useApp();
+  const formation = resolveFormation(id);
 
-  const resolvedFormation = resolveFormation(id);
-
-  if (!resolvedFormation) {
+  if (!formation) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <p className="text-[var(--text-muted)]">Formation introuvable.</p>
@@ -107,7 +117,12 @@ export default function FormationDetailPage({ params }: { params: Promise<{ id: 
     );
   }
 
-  const formation = resolvedFormation;
+  return <FormationDetail formation={formation} />;
+}
+
+function FormationDetail({ formation }: { formation: Formation }) {
+  const { formatPrice } = useApp();
+
   const instructor = formation.instructor;
   const reviews = FORMATION_REVIEWS[formation.id] || [];
   const similarFormations = getSimilarFormations(formation);

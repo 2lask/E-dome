@@ -277,7 +277,7 @@ logiciels métier installés depuis quinze ans.
 | **DSA / P2B** | Suspension motivée avec voie de recours ; paramètres de classement publiés | **Articles à vérifier** ; applicable seulement à l'ouverture de l'UE |
 | **DAC7 / DPI** | Déclaration par les plateformes | Confirmation trouvée **seulement** pour les crypto-actifs (CARF, dès 2026). **À vérifier** pour l'immobilier |
 | **Lex Koller (LFAIE)** | Information des acheteurs domiciliés à l'étranger sur les biens résidentiels suisses. Contingents cantonaux pour les logements de vacances | **Base d'article à vérifier** pour les contingents. Ne jamais écrire qu'un bien est « éligible aux acheteurs étrangers » |
-| **Achat intégré iOS** | Ne s'applique pas à une application web installable. S'appliquerait à une application native distribuée par l'App Store vendant du contenu numérique | Décision reportée, **datée** : à rouvrir avant toute publication de `mobile/` |
+| **Achat intégré iOS** | Ne s'applique pas à une application web installable. S'appliquerait à une application native distribuée par l'App Store vendant du contenu numérique | Décision reportée, **datée**. Échéance ferme : le prix différencié web / iOS doit être **prêt avant la première soumission** de `mobile/` à l'App Store, pas après. Une application soumise avec du contenu numérique payant et sans achat intégré est rejetée au titre de la règle 3.1.1 ; la corriger après un rejet coûte un cycle de revue complet |
 
 ---
 
