@@ -18,6 +18,17 @@ export const metadata: Metadata = {
     "La plateforme immobilière tout-en-un pour la gestion, l'investissement et la location de biens.",
   keywords: ["immobilier", "investissement", "location", "plateforme", "E-Dome"],
   manifest: "/manifest.json",
+  /* Aucune clé `icons` ici, et aucune balise écrite à la main dans un `<head>` :
+     c'est volontaire. Next 16 émet lui-même `<link rel="icon">` et
+     `<link rel="apple-touch-icon">`, avec les bons `type` et `sizes`, à partir
+     des fichiers `src/app/icon.svg` et `src/app/apple-icon.png`
+     (`node_modules/next/dist/docs/.../01-metadata/app-icons.md`).
+
+     C'est la leçon d'`appleWebApp`, appliquée : déclarer à la main ce que Next
+     produit déjà donne des doublons dans le HTML. Les icônes du manifeste,
+     elles, restent listées dans `public/manifest.json` — ce fichier est servi
+     tel quel et Next n'y touche pas. Toutes sont produites par
+     `npm run icons` depuis `public/icons/icon.svg`. */
   /* `appleWebApp` est l'API courante de Next 16, pas une dépréciation —
      l'audit s'était trompé sur ce point. L'avertissement « Use appleWebApp
      instead » du build venait d'une TRIPLE déclaration : cet objet, le bloc
@@ -67,16 +78,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <head>
-        {/* TODO — lien cassé, en attente d'arbitrage.
-            `public/icons/` ne contient qu'un seul fichier, littéralement nommé
-            `icon-${size}x${size}.svg` : un gabarit de chaîne écrit sur le
-            disque. Aucune des huit tailles déclarées au manifeste n'existe.
-            Ce lien est donc en 404, comme les onze entrées de manifest.json.
-            Corriger le lien sans corriger le manifeste reviendrait à remplacer
-            un lien cassé par un autre — voir compte rendu. */}
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
-      </head>
       <body
         className={`${inter.variable} bg-[var(--background)] antialiased`}
       >
