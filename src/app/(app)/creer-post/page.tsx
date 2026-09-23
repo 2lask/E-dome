@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import { useApp } from "@/lib/context";
+import { properties as CATALOGUE } from "@/lib/mock-data";
+import { SUGGESTIONS, HASHTAGS } from "@/lib/demo/posts";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -53,52 +56,65 @@ const TEXT_COLORS = [
   "#3b82f6", "#8b5cf6", "#ec4899", "#6b7280", "#0f172a", "#78350f",
 ];
 
-const HASHTAG_SUGGESTIONS = [
-  "#immobilier", "#investissement", "#luxe", "#suisse", "#location",
-  "#villa", "#appartement", "#marché", "#rendement", "#architecture",
-  "#design", "#maison", "#genève", "#lausanne", "#zurich",
-];
+/* Le vocabulaire de mots-dièse : la même liste que le fil, importée de
+   `demo/posts.ts`. Ce fichier en redéclarait quinze de son côté. */
+const HASHTAG_SUGGESTIONS = HASHTAGS;
 
-const USER_SUGGESTIONS = [
-  { name: "Sophie Martin", handle: "sophie.martin" },
-  { name: "Marc Dubois", handle: "marc.dubois" },
-  { name: "Amira El Fassi", handle: "amira.elfassi" },
-  { name: "Thomas Weber", handle: "thomas.weber" },
-  { name: "Julie Blanc", handle: "julie.blanc" },
-];
-
-const CITY_SUGGESTIONS = [
-  "Genève, Suisse", "Lausanne, Suisse", "Zurich, Suisse", "Berne, Suisse",
-  "Montreux, Suisse", "Marrakech, Maroc", "Paris, France", "Lyon, France",
-  "Dubai, EAU", "Londres, Royaume-Uni",
-];
-
-const MOCK_PROPERTIES: AttachedProperty[] = Array.from({ length: 12 }, (_, i) => ({
-  id: `prop${i + 1}`,
-  title: [
-    "Villa Panorama", "Penthouse Royal", "Chalet Alpin", "Loft Urbain",
-    "Mas Provençal", "Riad Medina", "Duplex Standing", "Studio Design",
-    "Maison de Maître", "Appartement Vue Lac", "Villa Bord de Mer", "Cottage Champêtre",
-  ][i],
-  price: `${(800 + i * 150).toLocaleString("fr-CH")} 000 CHF`,
-  image: `https://images.unsplash.com/photo-${
-    ["1600596542815-ffad4c1539a9", "1600585154340-be6161a56a0c", "1613490493576-7fde63acd811",
-     "1512917774080-9991f1c4c750", "1600607687939-ce8a6c25118c", "1560518883-ce09059eeffa",
-     "1600566753190-17f0baa2a6c3", "1600573472550-8090b5e0745e", "1600047509807-ba8f99d2cdde",
-     "1600566753086-7f3e1f5e37d3", "1600585154526-990dced4db0d", "1600566752355-35792bedcfea"][i]
-  }?w=400`,
-  location: ["Genève", "Lausanne", "Zurich", "Montreux", "Berne", "Marrakech",
-    "Genève", "Lausanne", "Zurich", "Montreux", "Berne", "Marrakech"][i],
-  bedrooms: 2 + (i % 5),
-  area: 80 + i * 30,
+/* Suggestions de mention, dérivées des comptes du fil. C'étaient cinq noms
+   écrits ici — « Julie Blanc », un handle « sophie.martin » — qui ne
+   correspondaient à personne du reste de la maquette : mentionner quelqu'un
+   menait à un profil qui n'existait pas. On lit les mêmes personnes que la
+   colonne de suggestions du fil. */
+const USER_SUGGESTIONS = SUGGESTIONS.map((u) => ({
+  name: `${u.firstName} ${u.lastName}`.trim(),
+  handle: u.firstName.toLowerCase(),
 }));
+
+/* Villes de la maquette, tirées du catalogue plutôt qu'inventées : « Paris »,
+   « Londres » et « Berne » n'y hébergent aucun bien. Dédoublonnées, format
+   « Ville, Pays ». */
+const CITY_SUGGESTIONS = Array.from(
+  new Map(
+    CATALOGUE.map((p) => [
+      `${p.location.city}, ${p.location.country}`,
+      `${p.location.city}, ${p.location.country}`,
+    ]),
+  ).values(),
+);
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function CreerPostPage() {
   const router = useRouter();
   const { addToast } = useToast();
+  const { formatPrice } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  /* Les biens attachables, dérivés du catalogue partagé.
+
+     C'était un TROISIÈME catalogue de douze biens écrits à la main —
+     « Penthouse Royal », « Villa Panorama » — dont aucun n'existait ailleurs,
+     et dont l'identifiant `prop2` désignait ici un penthouse à 950 000 CHF
+     quand le catalogue en fait un studio genevois à 120 CHF la nuit. C'est
+     exactement la collision corrigée sur le fil et sur `/profil` aux étapes
+     précédentes, à l'endroit qu'elles n'avaient pas touché.
+
+     On lit `@/lib/mock-data`. L'adaptateur `AttachedProperty` reste, parce
+     que le rendu de cette page attend un prix déjà formaté et une seule
+     image ; il ne fait plus que projeter le catalogue, il n'invente rien. */
+  const attachableProperties = useMemo<AttachedProperty[]>(
+    () =>
+      CATALOGUE.map((p) => ({
+        id: p.id,
+        title: p.title,
+        price: formatPrice(p.price, p.currency),
+        image: p.images[0] ?? "",
+        location: p.location.city,
+        bedrooms: p.bedrooms,
+        area: p.area,
+      })),
+    [formatPrice],
+  );
 
   // Editor state
   const [content, setContent] = useState("");
@@ -477,7 +493,7 @@ export default function CreerPostPage() {
         maxHeight: 240,
         overflowY: "auto",
       }}>
-        {MOCK_PROPERTIES.map((prop) => (
+        {attachableProperties.map((prop) => (
           <button
             key={prop.id}
             onClick={() => {

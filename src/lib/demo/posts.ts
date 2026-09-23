@@ -700,12 +700,20 @@ export const EVENTS_BY_POST: Record<string, EventCTA> = {
   p24: { id: "e6", titre: "Conférence : Marché immobilier 2026", type: "Conférence", date: "2026-03-10", heure: "17:00", lieu: "EPFL, Lausanne", prix: 0, thumbnail: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=300&fit=crop" },
 };
 
-export const TRENDING_HASHTAGS = [
-  { tag: "#immobilier", count: 12400 },
-  { tag: "#investissement", count: 8900 },
-  { tag: "#luxe", count: 7200 },
-  { tag: "#dubai", count: 5800 },
-  { tag: "#marrakech", count: 4300 },
+/* Le vocabulaire de mots-dièse de la maquette. Une seule liste : le fil et
+   `/creer-post` en déclaraient chacun une, de cinq et quinze entrées.
+
+   Elle portait un compte par mot-dièse — #immobilier 12 400, #investissement
+   8 900 — rendu en « 12,4 K » dans la colonne de droite. C'est un volume de
+   publications sur E-Dome, donc une affirmation de traction. Le bloc qui
+   l'affichait était `className="hidden"`, jamais rendu : du code mort qui
+   portait un chiffre faux, ce qui est pire que du code vivant, puisque
+   personne ne le relit et que quelqu'un finira par le démasquer. Le bloc est
+   supprimé, les comptes avec. */
+export const HASHTAGS = [
+  "#immobilier", "#investissement", "#luxe", "#suisse", "#location",
+  "#villa", "#appartement", "#marché", "#rendement", "#architecture",
+  "#design", "#maison", "#genève", "#lausanne", "#zurich",
 ];
 
 export const SUGGESTIONS = [U_LEO, U_AMIRA, U_THOMAS, U_YASMIN];

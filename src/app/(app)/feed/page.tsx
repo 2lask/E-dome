@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useRef, useMemo } from "react";
 import Link from "next/link";
-import { Send, X, Check, Calendar, Search, Users, Building2, GraduationCap, Image as ImageIcon, BarChart3, Film, ListChecks, Plus } from "lucide-react";
+import { Send, X, Check, Calendar, Users, Building2, GraduationCap, Image as ImageIcon, BarChart3, Film, ListChecks, Plus } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { roleLabels } from "@/lib/types";
-import { timeAgo, formatCount } from "@/lib/utils";
+import { timeAgo } from "@/lib/utils";
 import { properties as ALL_PROPERTIES } from "@/lib/mock-data";
 import { buildObjectAffiliate } from "@/lib/referral-links";
 import type { SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData, PostAttachment, ReferralLink } from "@/lib/types";
@@ -12,7 +12,7 @@ import { DiscoverHub } from "@/components/layout/discover-hub";
 import { RecommendedCarousel } from "@/components/feed/recommended-carousel";
 import { MarketPulse } from "@/components/feed/market-pulse";
 import {
-  CURRENT_USER, PINNED_POST_ID, SUGGESTIONS, TRENDING_HASHTAGS, VIDEO_POSTS,
+  CURRENT_USER, PINNED_POST_ID, SUGGESTIONS, VIDEO_POSTS,
 } from "@/lib/demo/posts";
 import { PostCard, renderContent } from "@/components/feed/post-card";
 import { ComposerAction } from "@/components/feed/composer/actions";
@@ -742,43 +742,16 @@ export default function FeedPage() {
         {/* Colonne droite Whop : 280px, UNIQUEMENT suggestions a suivre
             (Search + Tendances masques pour matcher la sidebar simple Whop). */}
         <aside className="hidden lg:block w-[280px] shrink-0 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto">
-          {/* Search — masque (Whop n'a pas de search dans la sidebar droite) */}
-          <form onSubmit={(e) => e.preventDefault()} className="hidden">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-muted)] pointer-events-none" />
-            <input
-              type="search"
-              placeholder="Rechercher sur E-Dome"
-              className="w-full pl-10 pr-3 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-[13px] text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition-colors"
-            />
-          </form>
+          {/* Deux blocs masqués ont été supprimés ici : un formulaire de
+              recherche et un bloc « Tendances », tous deux en
+              `className="hidden"` pour coller à la sidebar de référence.
 
-          {/* Tendances — masque (Whop ne montre pas trending sur la home) */}
-          <div className="hidden">
-            <h3 className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-              Tendances
-            </h3>
-            <ul className="space-y-0.5">
-              {TRENDING_HASHTAGS.slice(0, 3).map((item) => (
-                <li key={item.tag}>
-                  <Link
-                    href={`/recherche?q=${encodeURIComponent(item.tag)}`}
-                    className="flex items-center justify-between gap-2 px-2 py-2 rounded-lg hover:bg-[var(--hover-bg)] transition-colors"
-                  >
-                    <span className="text-sm font-medium text-[var(--foreground)] truncate">{item.tag}</span>
-                    <span className="text-[11px] text-[var(--text-muted)] tabular-nums shrink-0">
-                      {formatCount(item.count)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/recherche"
-              className="block mt-1 px-2 py-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--foreground)] transition-colors"
-            >
-              Voir plus →
-            </Link>
-          </div>
+              Le second portait un compte par mot-dièse — #immobilier 12,4 K —
+              soit un volume de publications sur E-Dome. Du code mort qui
+              affirme une traction est pire que du code vivant : personne ne le
+              relit, et quelqu'un finira par le démasquer. Les mots-dièse
+              survivent comme vocabulaire partagé dans `demo/posts.ts`, sans
+              compteur, où `/creer-post` les propose à la saisie. */}
 
           {/* Suggestions Whop : aucun header de section, liste verticale
               dense, 10 profils, avatar 40px + bouton Suivre pill. */}
