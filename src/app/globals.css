@@ -63,6 +63,13 @@
   --text-secondary: var(--muted-foreground);
   --text-muted: var(--muted-foreground);
   --text: var(--foreground);
+  /* Statuts de fonctionnalité (cf. src/lib/model/feature.ts). Deux gris
+     dédiés, distincts du texte atténué : « Ensuite » plus marqué que
+     « Vision ». Un seul endroit décide la couleur, sinon le gris redevient
+     une décision prise différemment à chaque écran. « Au lancement » n'a pas
+     de jeton — c'est l'emerald, porté par le composant. */
+  --stage-later: #9ca3af;
+  --stage-vision: #d1d5db;
   --bg: var(--background);
   --bg-alt: var(--card);
   --bg-primary: var(--background);
@@ -142,6 +149,10 @@
   --text-primary: var(--foreground);
   --text-secondary: var(--muted-foreground);
   --text-muted: var(--muted-foreground);
+  /* Statuts, versions sombres : plus soutenus pour rester lisibles sur fond
+     noir. Voir le bloc clair pour le pourquoi. */
+  --stage-later: #6b7280;
+  --stage-vision: #4b5563;
   --card-border: var(--border);
   --hover-bg: rgba(255, 255, 255, 0.04);
   --divider: var(--border);
