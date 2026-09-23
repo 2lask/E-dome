@@ -103,6 +103,43 @@ les **valeurs et les pôles** qui changent, plus l'arrivée des abonnements —
 une notion que le module ignore complètement aujourd'hui, puisqu'il ne sait
 raisonner que par transaction.
 
+### Trois contradictions plus graves que le barème lui-même
+
+Découvertes par les agents, et **manquées par la première version de cet
+audit** — qui avait pourtant lu le §5 des conditions en entier.
+
+**1. Le §5 des conditions perçoit un pourcentage sur une vente immobilière.**
+[`conditions/page.tsx:42`](src/app/(app)/conditions/page.tsx#L42) :
+« Partenariat agences (B2B) — revenue share négocié par contrat, ~10 à 15 % **de
+la commission de l'agence** ». C'est un pourcentage conditionné à la conclusion
+d'une vente, encaissé par E-Dome : littéralement ce que la règle 3 interdit,
+écrit dans les conditions générales. Le paragraphe d'introduction (l. 31)
+l'annonce, et [`pricing.ts:88`](src/lib/pricing.ts#L88) en porte la constante
+`AGENCY_REVENUE_SHARE_LABEL = "10 à 15 %"` — **écrite hier**, inutilisée, dans
+le module même dont l'en-tête proclame qu'E-Dome ne touche jamais un
+pourcentage sur la vente d'un bien. Relevé par l'agent juridique.
+
+**2. Le glossaire des conditions définit la commission comme un pourcentage
+sur les transactions réalisées.** `conditions/page.tsx:16` : « *Commission* :
+pourcentage prélevé par la Plateforme sur les transactions réalisées ». La
+règle 3 est donc contredite dans les définitions. Même section, « *Hôte* :
+Utilisateur proposant un bien à la vente ou à la location » confond l'hôte de
+courte durée et le vendeur — la distinction exacte sur laquelle repose tout le
+modèle.
+
+**3. La réservation courte durée facture la commission au voyageur.**
+[`explorer/[id]/page.tsx:1019`](src/app/(app)/explorer/[id]/page.tsx#L1019) :
+`const fraisEdome = Math.round(subtotal * 0.08)` puis
+`total = subtotal + fraisEdome`. Le taux est en dur, hors du module, et il
+**s'ajoute** au prix payé — alors que `/publier`, `/aide` et l'en-tête de
+`pricing.ts` promettent le contraire, et que B.3 désigne l'hôte comme payeur.
+Relevé par l'agent produit.
+
+Ces trois points changent la lecture du §2 : la contradiction n'est pas un
+barème obsolète dans un module, c'est un modèle économique contredit à la fois
+dans le glossaire juridique, dans le tableau tarifaire, dans un écran de
+paiement et dans la source de vérité censée le garder.
+
 ### Textes de référence à réécrire
 
 Trois pages énoncent le barème abandonné, en toutes lettres :
@@ -148,14 +185,27 @@ nettoyage.
 ## 4. Rôles : la moitié du mécanisme est déjà là
 
 `src/lib/context.tsx` porte un `activeRole`, le persiste dans `localStorage`,
-et **huit fichiers le lisent** pour adapter leur affichage :
-`/evenements`, `/explorer/[id]`, `/feed`, `/formations`, `/live`, `/messages`,
-`/reservations`, `post-viewer.tsx`.
+et **quatre pages le lisent** pour adapter leur affichage : `/evenements`
+(l. 45), `/explorer/[id]` (l. 118), `/formations` (l. 87), `/live` (l. 33).
+
+> **Correction.** Une première version de cet audit annonçait huit fichiers.
+> C'était faux : le décompte confondait `context.activeRole`, le rôle de
+> plateforme, avec `User.activeRole`, un champ porté par chaque objet
+> utilisateur de démonstration. Deux choses sans rapport sous le même nom —
+> ce qui est en soi un défaut du modèle de données. Erreur relevée par
+> l'agent produit, revérifiée par recherche ciblée.
 
 Mais `setActiveRole` **n'est appelé nulle part** en dehors du contexte
 lui-même. Vérifié par recherche sur l'ensemble de `src/` : aucune interface ne
-permet de changer de rôle. La valeur reste sur son défaut, ou sur ce qu'un
-ancien passage par `/onboarding` a écrit dans le navigateur.
+permet de changer de rôle. La valeur reste donc figée sur `DEFAULT_ROLE`,
+c'est-à-dire `"client"` (`context.tsx:97`) — et `/onboarding` n'y touche pas :
+il écrit `profile.roles`, un autre champ, que rien ne lit pour adapter un
+comportement.
+
+Conséquence mesurée par l'agent qualité : les pages qui lisent `activeRole`
+rendent en permanence la variante « client », pendant que `/dashboard` traite
+le même utilisateur en hôte, formateur et apporteur. Et `DEFAULT_ROLES` lui
+attribue six rôles, dont `agence`, qu'il possède sans pouvoir les activer.
 
 Bonne nouvelle : le sélecteur « voir la plateforme en tant que… » demandé en
 Partie C n'est pas à construire de zéro. Il faut lui donner une interface, et
@@ -215,6 +265,15 @@ vers des biens différents, replays adressés par position, 10 fiches produit en
 404, liens d'événements morts, `/favoris` décrivant faussement un bien,
 recherche entièrement en erreur.
 
+> **Corrections de l'agent qualité**, après revérification sur pièces des huit
+> points ci-dessous : cinq confirmés, **deux mal énoncés** — les 60 720 vues
+> n'apparaissent que sur l'onglet « 12 mois » de `/audience`, l'écart réel étant
+> 5 060 contre 13 322 ; et `/reservations` et `/dashboard/reservations` ne
+> portent pas sur des biens disjoints mais sur **les mêmes cinq réservations**,
+> renommées et décalées de un à quatre mois — **un faux** : `MOCK_SIGNALEMENTS`
+> contient cinq signalements dont deux ouverts, pas trois, l'écart étant donc
+> 12 → 2.
+
 **Restent ouvertes**, toutes constatées et documentées dans `TODO.md` :
 
 | Incohérence | Portée |
@@ -231,6 +290,51 @@ recherche entièrement en erreur.
 L'identité unique de l'utilisateur courant est explicitement exigée en Partie C.
 C'est aussi la racine de plusieurs incohérences d'auteur dans le feed.
 
+### Et vingt-trois de plus
+
+L'agent qualité, dont c'était le métier, a cherché au-delà de cette liste. Le
+détail est dans `analyse/qualite.md` ; les constats structurants :
+
+- **Le schéma se répète sur quatre pôles** : chacun a un catalogue canonique
+  **et** un jeu parallèle inventé pour le tableau de bord. Biens `prop1…prop22`
+  contre `chalet-alpin`, `appart-vue-lac`, `studio-lausanne` ; formations
+  `form-001…011` contre `form-lcd`, `form-fisc`, `form-photo` ; produits
+  `b1…b16` contre `p-stage`, `p-plaid`, `p-bougie` ; événements `e1…e6` contre
+  `ev-1…ev-4`. Plus un troisième jeu d'annonces, `l1…l8`. **Cinq réponses à la
+  question « combien de biens possède l'utilisateur ? »** : 1 au catalogue,
+  3 au tableau de bord, 8 dans les annonces, 14 sur le profil, 38 dans le feed.
+- **Trois montants de revenus sur le seul écran `/dashboard`** — 66 938 sur
+  douze mois, 24 850 pour le mois, 57 606 sur douze mois en immobilier. À un
+  défilement d'intervalle, et arithmétiquement impossible.
+- **Huit identités d'utilisateur courant**, pas cinq — trois villes, quatre
+  nombres d'abonnés de 0 à 12 400, « Fondateur » contre « Co-fondateur ».
+- **Six identifiants `user-0xx` désignent deux personnes différentes** selon le
+  fichier, et `user-013` à `user-016` sont proposés par le feed alors que leur
+  profil répond « introuvable ».
+- **`profile-posts.ts:66`** référence une formation `f1` absente du catalogue :
+  son lien d'affiliation mène à une page introuvable. Le feed est immunisé
+  depuis hier, ce fichier ne l'est pas.
+- **Le mois courant de la démonstration change selon l'écran** : juin 2026,
+  mars 2026, avril 2026. La date réelle est septembre 2026.
+- **~600 lignes de données orphelines** dans `mock-data.ts`, soit 22 % du
+  fichier, dont un troisième jeu de revenus déjà incohérent avec lui-même.
+- **7 des 14 indicateurs du tableau de bord ne concordent pas** avec leur page
+  de détail. Les 7 qui concordent sont exactement ceux que `dashboard-data.ts`
+  dérive par `reduce` : la preuve que le mécanisme fonctionne dès qu'on
+  l'applique.
+
+### Boutons morts
+
+Consigne A.3 : « aucun bouton mort ». Relevé exhaustif de l'agent qualité :
+**14 boutons sans aucun gestionnaire, sur 12 fichiers**, dont **six des huit
+pages du tableau de bord** et les **quatre boutons « Exporter »**. Une
+trentaine de clics sans effet en instances rendues. Plus trois `alert()`, dont
+un qui annonce « Lien copié » sans rien copier.
+
+À noter, contre l'intuition : **zéro bouton mort sur `/parametres`**, la page
+la mieux câblée de la maquette. Et aucun lien interne ne pointe vers une route
+inexistante — les 52 routes et tous les `href` littéraux ont été vérifiés.
+
 ---
 
 ## 7. Chiffres de traction
@@ -238,9 +342,15 @@ C'est aussi la racine de plusieurs incohérences d'auteur dans le feed.
 La règle de tri de la Partie C — les données d'un utilisateur sur son propre
 tableau de bord sont normales, les affirmations sur E-Dome ne le sont pas — a
 été appliquée hier. Ont été retirés : « +4 500 inscrits » du post épinglé et de
-la biographie de profil, les montants de commission nominatifs et les « deals
-conclus » du fil d'activité, l'« Indice E-Dome », et le « 0,5 % sur chaque
-vente » de l'encart sponsorisé.
+la biographie de profil, les « deals conclus » du fil d'activité, l'« Indice
+E-Dome », et le « 0,5 % sur chaque vente » de l'encart sponsorisé.
+
+> **Correction.** Cet audit affirmait aussi que « les montants de commission
+> nominatifs » avaient été retirés. **Faux** : seuls ceux du fil d'activité
+> l'ont été. Deux classements affichent toujours des gains par personne —
+> « Laura M. · 15 200 CHF » dans `dashboard-data.ts:326` et un second
+> classement dans `apporteurs/page.tsx:139`, qui se contredisent d'un facteur
+> 9 et dont l'un est mal trié. Relevé par l'agent qualité.
 
 **Restent à arbitrer :**
 
@@ -250,7 +360,21 @@ vente » de l'encart sponsorisé.
   règle ne les visait pas — mais ce sont des affirmations sur le monde réel
   présentées comme des dépêches.
 - Le post de bienvenue affiche 4 521 « j'aime », chiffre qui faisait écho aux
-  inscrits retirés.
+  inscrits retirés. **Et ses trois commentaires sont de faux témoignages sur
+  E-Dome** — « La meilleure plateforme pour les investisseurs sérieux »,
+  « Tellement fier de faire partie de l'aventure depuis le jour 1 » — signés
+  d'utilisateurs inventés. C'est la seule pratique que le cahier des charges
+  interdit nommément, elle figure sous notre propre message d'accueil, et cet
+  audit l'avait manquée. Relevé simultanément par les agents marketing et
+  qualité.
+- `explorer/[id]/page.tsx:632` affiche « ROI 5 ans +18,5 % » et « ROI 10 ans
+  +42,0 % » en vert sur **chacun des 22 biens** — une promesse de rendement,
+  que B.6 interdit.
+- Les quatre encarts `BookingCallout` promettent « notre équipe support,
+  lundi-vendredi 9h-18h », « un conseiller E-Dome », « un expert E-Dome », et
+  pointent vers cinq adresses `cal.com/edome/*` inexistantes.
+- `dashboard/annonces/page.tsx:189` invoque un « benchmark E-Dome » qui n'existe
+  pas.
 - `/admin` affiche 387 500 CHF de chiffre d'affaires, 2 847 utilisateurs et
   1 253 biens. Un bandeau « Données d'exemple » a été ajouté, mais la page
   reste **publiquement atteignable** (§8).
@@ -285,8 +409,15 @@ tenir compte.
 ### Reste
 
 - `maplibre-gl` : faille XSS connue, correction en version 6, majeure.
-- Dépréciation `middleware` → `proxy` (Next 16), avertie à chaque build.
-- Dépréciation `appleWebApp` dans les métadonnées du layout racine.
+- Dépréciation `middleware` → `proxy` (Next 16), avertie à chaque build. Un
+  codemod existe. Contrainte vérifiée par l'agent architecture : `proxy` ne
+  supporte pas le runtime `edge`, et le fichier va en `src/proxy.ts`.
+- `appleWebApp` : **cet audit se trompait en parlant de dépréciation.** C'est
+  l'API courante de Next 16 (`generate-metadata.md:779`). L'avertissement du
+  build vient d'une **triple déclaration** dans `layout.tsx` — `metadata.appleWebApp`
+  (l. 21), `metadata.other` (l. 26) et quatre `<meta>` écrits à la main
+  (l. 58-61) émettent deux fois les mêmes balises. Le correctif est de
+  supprimer le bloc manuel. Relevé par l'agent architecture.
 - ~250 lignes de CSS orphelin dans `globals.css` : accent teal `--ed-accent`,
   classes `.ed-cta-*` et `.holo-*`, zéro usage.
 - `--text-secondary` et `--text-muted` ont la même valeur : la hiérarchie
