@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, use } from "react";
+import { properties as CATALOGUE } from "@/lib/mock-data";
 import { useRouter } from "next/navigation";
 import { getMockProfile } from "@/lib/profile-data";
 import { ProfileView } from "@/components/profile/profile-view";
@@ -13,10 +14,19 @@ import type { Role } from "@/lib/types";
    sections LinkedIn) vient de getMockProfile ; la vitrine (biens/formations…)
    est générée selon le rôle principal. Lecture seule (isOwn=false). */
 
-const BIENS = [
-  { id: "prop1", title: "Chalet Verbier", cover: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=600", price: 350, currency: "CHF", unit: "/nuit", location: "Verbier, Suisse" },
-  { id: "prop2", title: "Appartement Vue Lac", cover: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600", price: 1_250_000, currency: "CHF", unit: "", location: "Montreux, Suisse" },
-];
+/* Meme collision que sur /profil : « prop2 » designait ici un appartement a
+   1 250 000 CHF a Montreux, quand le catalogue en fait un studio a 120 CHF la
+   nuit a Geneve. Les deux premieres fiches du catalogue servent de vitrine
+   generique pour un profil consulte. */
+const BIENS = CATALOGUE.slice(0, 2).map((c) => ({
+  id: c.id,
+  title: c.title,
+  cover: c.images[0]!,
+  price: c.price,
+  currency: c.currency,
+  unit: c.transactionType === "vente" ? "" : "/nuit",
+  location: `${c.location.city}, ${c.location.country}`,
+}));
 const PRODUITS = [
   { id: "prod1", title: "Plaid lin lavé", cover: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600", price: 89, currency: "CHF", stock: 14 },
 ];

@@ -301,20 +301,23 @@ export const revenueByType: { label: string; value: number }[] = [
   },
 ];
 
-export const transactions: Transaction[] = [
-  { id: "t1", label: "Chalet Alpin Premium", sublabel: "Sophie Bernard · 10-17 juin", amount: 2450, status: "confirmed", kind: "reservation" },
-  { id: "t2", label: "Studio Lausanne", sublabel: "Pierre Aubry · 22-28 juin", amount: 1068, status: "confirmed", kind: "reservation" },
-  { id: "t3", label: "Appartement Vue Lac", sublabel: "Jean Dupont · 15-20 juin", amount: 900, status: "pending", kind: "reservation" },
-  { id: "t4", label: "Virement mensuel", sublabel: "Versé le 5 juin · IBAN ****8124", amount: 3500, status: "completed", kind: "payout" },
-  { id: "t5", label: "Versement Stripe", sublabel: "Versé le 1 juin · Frais 2.9%", amount: 1830, status: "completed", kind: "payout" },
-  { id: "t6", label: "Commission Agence Léman", sublabel: "Chalet Alpin · 3 résa apportées", amount: 294, status: "completed", kind: "commission" },
-  { id: "t7", label: "Commission SwissHome", sublabel: "Appartement Vue Lac · 2 résa", amount: 144, status: "pending", kind: "commission" },
-  { id: "t8", label: "Commission Alpine Props", sublabel: "Studio Lausanne · 1 résa", amount: 28, status: "pending", kind: "commission" },
-  { id: "t9", label: "Appartement Vue Lac", sublabel: "Sophie Bernard · Annulation", amount: -720, status: "cancelled", kind: "refund" },
-  { id: "t10", label: "Formation LCD", sublabel: "Cédric Lopez · Rétractation 14j", amount: -189, status: "cancelled", kind: "refund" },
-  { id: "t11", label: "Maîtriser la LCD", sublabel: "Anne Schmid · Vente formation", amount: 189, status: "confirmed", kind: "reservation" },
-  { id: "t12", label: "Boutique - Plaid lin lavé", sublabel: "Sophie B. · 1× 89 CHF", amount: 89, status: "confirmed", kind: "reservation" },
-];
+/* Les transactions descendent du journal.
+
+   Elles citaient les anciens biens inventes — « Chalet Alpin Premium »,
+   « Studio Lausanne » — avec des montants a eux, et c etait le dernier
+   endroit du tableau de bord ou ces noms survivaient. */
+export const transactions: Transaction[] = derive
+  .entries()
+  .slice(-10)
+  .reverse()
+  .map((e) => ({
+    id: e.id,
+    label: e.label,
+    sublabel: e.stay ? `${e.counterparty} · ${e.stay.label}` : e.counterparty,
+    amount: e.gross,
+    status: e.status,
+    kind: e.source === "apporteurs" ? ("commission" as const) : ("reservation" as const),
+  }));
 
 /* Les reservations SONT les ecritures « biens » du journal.
 
@@ -337,26 +340,54 @@ export const dashboardReservations: Reservation[] = derive
   }))
   .slice(0, 12);
 
-/* Avis multi-sources — 7 avis recents (biens + formations + events). */
+/* Avis recus. Le texte reste ecrit a la main — c est du contenu — mais
+   l objet vise et son nom viennent du catalogue. Quatre avis citaient les
+   anciens biens inventes, et leur `sourceId` ne correspondait a rien.
+
+   `NAMED` associe chaque avis au bien dont il parle reellement : le chalet
+   pour la cheminee, le studio genevois pour la proximite de la gare, la
+   villa de Phuket pour la vue. */
+const REVIEW_TARGETS = {
+  chalet: OWNED_PROPERTY_IDS[0],
+  studio: OWNED_PROPERTY_IDS[1],
+  villa: OWNED_PROPERTY_IDS[2],
+} as const;
+
+const propName = (id: string) => CATALOGUE.find((p) => p.id === id)!.title;
+
 export const reviews: Review[] = [
-  { id: "rv1", source: "bien", sourceId: "chalet-alpin", sourceName: "Chalet Alpin Premium", guest: "Sophie Bernard", rating: 5, title: "Vue à couper le souffle", body: "Séjour parfait. Chalet impeccable, accueil chaleureux. Les enfants ont adoré la cheminée. Code accès reçu en avance.", postedAt: "2026-06-04", channel: "edome", response: "Merci Sophie ! On vous attend pour la saison de ski avec plaisir." },
-  { id: "rv2", source: "bien", sourceId: "appart-vue-lac", sourceName: "Appartement Vue Lac", guest: "Jean Dupont", rating: 3, title: "Bien mais bruyant le matin", body: "Bel appartement avec vue, mais le marché en bas du bâtiment est très bruyant dès 6h le samedi.", postedAt: "2026-06-02", channel: "airbnb" },
-  { id: "rv3", source: "formation", sourceId: "form-lcd", sourceName: "Maîtriser la location courte durée", guest: "Cédric Lopez", rating: 5, title: "Pile ce que je cherchais", body: "Modules très clairs, exemples concrets, j'ai augmenté mon taux d'occupation de 22% en 2 mois.", postedAt: "2026-05-30", channel: "edome", response: "Merci pour le retour Cédric, content que ça t'aide concrètement !" },
-  { id: "rv4", source: "bien", sourceId: "studio-lausanne", sourceName: "Studio Lausanne", guest: "Marie Leroy", rating: 4, title: "Petit mais bien situé", body: "Studio propre, proche gare. Manque juste un peu de rangement.", postedAt: "2026-06-05", channel: "edome" },
-  { id: "rv5", source: "formation", sourceId: "form-fisc", sourceName: "Fiscalité du loueur en meublé", guest: "Anne Schmid", rating: 5, title: "Indispensable", body: "J'ai économisé 4'200 CHF d'impôts cette année grâce aux astuces du module 3.", postedAt: "2026-05-28", channel: "edome" },
-  { id: "rv6", source: "evenement", sourceId: "ev-2", sourceName: "Visite groupée Chalet Verbier", guest: "Thomas Roux", rating: 5, title: "Très instructif", body: "L'agent connaissait parfaitement le bien, prix, marché. Recommande !", postedAt: "2026-05-25", channel: "edome" },
-  { id: "rv7", source: "bien", sourceId: "appart-vue-lac", sourceName: "Appartement Vue Lac", guest: "Amina Khan", rating: 2, title: "Wi-Fi instable", body: "Très belle vue mais wi-fi qui coupe régulièrement, problématique en télétravail.", postedAt: "2026-06-08", channel: "booking" },
+  { id: "rv1", source: "bien", sourceId: REVIEW_TARGETS.chalet, sourceName: propName(REVIEW_TARGETS.chalet), guest: "Sophie Bernard", rating: 5, title: "Vue a couper le souffle", body: "Sejour parfait. Chalet impeccable, accueil chaleureux. Les enfants ont adore la cheminee. Code acces recu en avance.", postedAt: "2026-09-04", channel: "edome", response: "Merci Sophie ! On vous attend pour la saison de ski avec plaisir." },
+  { id: "rv2", source: "bien", sourceId: REVIEW_TARGETS.studio, sourceName: propName(REVIEW_TARGETS.studio), guest: "Jean Dupont", rating: 3, title: "Bien situe mais bruyant le matin", body: "Studio agreable et central, mais le marche en bas du batiment est tres bruyant des 6h le samedi.", postedAt: "2026-09-02", channel: "airbnb" },
+  { id: "rv3", source: "formation", sourceId: OWNED_FORMATION_IDS[0], sourceName: CATALOGUE_FORMATIONS.find((f) => f.id === OWNED_FORMATION_IDS[0])!.title, guest: "Cedric Lopez", rating: 5, title: "Pile ce que je cherchais", body: "Modules tres clairs, exemples concrets, j ai augmente mon taux d occupation de 22 % en 2 mois.", postedAt: "2026-08-30", channel: "edome", response: "Merci pour le retour Cedric, content que ca t aide concretement !" },
+  { id: "rv4", source: "bien", sourceId: REVIEW_TARGETS.studio, sourceName: propName(REVIEW_TARGETS.studio), guest: "Marie Leroy", rating: 4, title: "Petit mais bien place", body: "Studio propre, proche de la gare. Manque juste un peu de rangement.", postedAt: "2026-09-05", channel: "edome" },
+  { id: "rv5", source: "formation", sourceId: OWNED_FORMATION_IDS[0], sourceName: CATALOGUE_FORMATIONS.find((f) => f.id === OWNED_FORMATION_IDS[0])!.title, guest: "Anne Schmid", rating: 5, title: "Indispensable", body: "Le module sur les charges m a fait revoir tout mon decompte annuel.", postedAt: "2026-08-28", channel: "edome" },
+  { id: "rv6", source: "bien", sourceId: REVIEW_TARGETS.villa, sourceName: propName(REVIEW_TARGETS.villa), guest: "Thomas Roux", rating: 5, title: "Cadre exceptionnel", body: "La piscine et le jardin valent a eux seuls le deplacement. Communication parfaite avant l arrivee.", postedAt: "2026-08-25", channel: "edome" },
+  { id: "rv7", source: "bien", sourceId: REVIEW_TARGETS.villa, sourceName: propName(REVIEW_TARGETS.villa), guest: "Amina Khan", rating: 2, title: "Wi-Fi instable", body: "Tres belle vue mais wi-fi qui coupe regulierement, problematique en teletravail.", postedAt: "2026-09-08", channel: "booking" },
 ];
 
-/* Threads messagerie guest — etat actuel boite reception. */
-export const messageThreads: MessageThread[] = [
-  { id: "mt1", contactName: "Sophie Bernard", contactInitials: "SB", context: "Chalet Alpin · 10-17 juin", lastMessage: "Bonjour, à quelle heure peut-on arriver ?", lastAt: "Il y a 8 min", unread: 2, channel: "edome" },
-  { id: "mt2", contactName: "Jean Dupont", contactInitials: "JD", context: "Appartement Vue Lac · 15-20 juin", lastMessage: "Parfait, merci pour la confirmation !", lastAt: "Il y a 1 h", unread: 0, channel: "airbnb" },
-  { id: "mt3", contactName: "Laura Meier", contactInitials: "LM", context: "Chalet Alpin · 2-8 juillet", lastMessage: "Le chalet est-il accessible avec une berline ?", lastAt: "Il y a 3 h", unread: 1, channel: "edome" },
-  { id: "mt4", contactName: "Cédric Lopez", contactInitials: "CL", context: "Formation LCD · Module 4", lastMessage: "Vidéo 3 ne se charge pas chez moi", lastAt: "Hier", unread: 1, channel: "edome" },
-  { id: "mt5", contactName: "Pierre Aubry", contactInitials: "PA", context: "Studio Lausanne · 22-28 juin", lastMessage: "Voici mon numéro Twint pour la caution", lastAt: "Hier", unread: 0, channel: "whatsapp" },
-  { id: "mt6", contactName: "Nadia Schmid", contactInitials: "NS", context: "Appartement Vue Lac · 3-9 juillet", lastMessage: "Confirmation du parking ?", lastAt: "Avant-hier", unread: 0, channel: "edome" },
+/* Messagerie. Le contexte de chaque fil — le bien et les dates — descend des
+   reservations, donc du journal. Il citait les anciens biens et des dates de
+   juin qui ne correspondaient plus a rien. */
+const THREAD_SEEDS = [
+  { initials: "SB", message: "Bonjour, a quelle heure peut-on arriver ?", lastAt: "Il y a 8 min", unread: 2, channel: "edome" as const },
+  { initials: "JD", message: "Parfait, merci pour la confirmation !", lastAt: "Il y a 1 h", unread: 0, channel: "airbnb" as const },
+  { initials: "LM", message: "Le logement est-il accessible avec une berline ?", lastAt: "Il y a 3 h", unread: 1, channel: "edome" as const },
+  { initials: "PA", message: "Voici mon numero Twint pour la caution", lastAt: "Hier", unread: 0, channel: "whatsapp" as const },
 ];
+
+export const messageThreads: MessageThread[] = THREAD_SEEDS.map((seed, i) => {
+  const r = dashboardReservations[i]!;
+  return {
+    id: `mt${i + 1}`,
+    contactName: r.guest,
+    contactInitials: r.guest.split(" ").map((w) => w[0]!).join("").slice(0, 2).toUpperCase(),
+    context: `${CATALOGUE.find((p) => p.id === r.propertyId)!.title} · ${r.dateLabel}`,
+    lastMessage: seed.message,
+    lastAt: seed.lastAt,
+    unread: seed.unread,
+    channel: seed.channel,
+  };
+});
 
 /* Apporteurs (referrals). */
 export interface ReferralChannel {

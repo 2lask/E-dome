@@ -1,5 +1,9 @@
 # À faire
 
+> Mis à jour pendant la reprise `feat/plateforme-v2`. Les entrées barrées sont
+> faites ; elles restent visibles avec ce qui a été trouvé en chemin, parce que
+> plusieurs diagnostics de ce fichier se sont révélés faux.
+
 Ce qui a été volontairement laissé de côté, avec de quoi le reprendre sans
 refaire l'enquête. Chaque entrée porte le chemin du fichier et ce qui a été
 vérifié.
@@ -8,7 +12,7 @@ vérifié.
 
 ## Dette technique
 
-### Migration `middleware` → `proxy` (Next 16)
+### ~~Migration `middleware` → `proxy`~~ — FAIT (étape 1)
 
 `next build` et `next dev` affichent l'avertissement à chaque lancement :
 
@@ -24,7 +28,7 @@ liste des routes publiques) : à faire dans sa propre branche, avec une
 vérification que `/admin` reste protégé et que `/merci`, `/admin/leads`,
 `/confidentialite` restent atteignables sans session.
 
-### `appleWebApp` déprécié
+### ~~`appleWebApp`~~ — FAIT (étape 1), et le diagnostic était faux
 
 Second avertissement à chaque build : « Use appleWebApp instead ». Vient des
 métadonnées du layout racine. Correctif court, à grouper avec la migration

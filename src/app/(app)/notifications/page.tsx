@@ -1,6 +1,12 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
+import { properties as CATALOGUE } from "@/lib/mock-data";
+import { OWNED_PROPERTY_IDS } from "@/lib/demo/identity";
+
+/* Le nom du bien vient du catalogue : la notification citait « Studio
+   Lausanne », qui n existe plus, et un montant sans rapport avec le journal. */
+const OWNED_PROPERTY_NAME = CATALOGUE.find((p) => p.id === OWNED_PROPERTY_IDS[1])!.title;
 import { useRouter } from "next/navigation";
 import {
   BellOff,
@@ -27,7 +33,7 @@ const initialNotifications: Notification[] = [
   { id: "n6", type: "reservation", title: "Réservation confirmée", message: "Votre réservation #R-2026-018 a été confirmée par l'hôte.", read: true, createdAt: "2026-04-01T14:00:00", href: "/reservations" },
   { id: "n7", type: "system", title: "Mise à jour plateforme", message: "Nouvelle fonctionnalité : export CSV disponible dans le dashboard.", read: true, createdAt: "2026-04-01T09:00:00", href: "/dashboard" },
   { id: "n8", type: "message", title: "Nouveau message", message: "Claire Richard vous a envoyé un message concernant le Penthouse Zurich.", read: true, createdAt: "2026-03-31T16:00:00", href: "/messages" },
-  { id: "n9", type: "payment", title: "Paiement reçu", message: "Vous avez reçu un paiement de 1'200 CHF pour la location du Studio Lausanne.", read: true, createdAt: "2026-03-31T10:00:00", href: "/dashboard" },
+  { id: "n9", type: "payment", title: "Paiement reçu", message: `Vous avez reçu un paiement pour la location du ${OWNED_PROPERTY_NAME}.`, read: true, createdAt: "2026-03-31T10:00:00", href: "/dashboard" },
   { id: "n10", type: "system", title: "Vérification d'identité validée", message: "Votre pièce d'identité a été vérifiée avec succès. Votre profil est désormais certifié.", read: true, createdAt: "2026-03-30T11:00:00", href: "/profil" },
 ];
 

@@ -2,6 +2,8 @@
 
 import { useMemo } from "react";
 import { useApp } from "@/lib/context";
+import { properties as CATALOGUE } from "@/lib/mock-data";
+import { OWNED_PROPERTY_IDS } from "@/lib/demo/identity";
 import { ProfileView } from "@/components/profile/profile-view";
 import type { ProfileData } from "@/components/profile/profile-showcase";
 import { getMyPosts, profileToAuthor } from "@/lib/profile-posts";
@@ -11,12 +13,25 @@ import { getMyPosts, profileToAuthor } from "@/lib/profile-posts";
    du feed ; la vitrine (biens/formations/avis…) reste en données de démo. */
 
 const SHOWCASE: Omit<ProfileData, "posts"> = {
-  biens: [
-    { id: "prop1", title: "Chalet Alpin Premium", cover: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=600", price: 350, currency: "CHF", unit: "/nuit", location: "Verbier, Suisse" },
-    { id: "prop2", title: "Appartement Vue Lac", cover: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600", price: 1_250_000, currency: "CHF", unit: "", location: "Montreux, Suisse" },
-    { id: "prop3", title: "Villa Prestige", cover: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600", price: 3_200_000, currency: "CHF", unit: "", location: "Lausanne, Suisse" },
-    { id: "prop4", title: "Studio Zurich Centre", cover: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600", price: 180, currency: "CHF", unit: "/nuit", location: "Zurich, Suisse" },
-  ],
+  /* La vitrine montre les biens du CATALOGUE que possede l utilisateur.
+
+     Elle portait un TROISIEME jeu de biens, et pire qu un doublon : une
+     collision d identifiants. « prop2 » y designait un appartement a
+     1 250 000 CHF a Montreux, quand le catalogue en fait un studio a 120 CHF
+     la nuit a Geneve. Cliquer la carte ouvrait donc autre chose que ce
+     qu elle annoncait — exactement le defaut corrige sur le fil. */
+  biens: OWNED_PROPERTY_IDS.map((id) => {
+    const c = CATALOGUE.find((p) => p.id === id)!;
+    return {
+      id,
+      title: c.title,
+      cover: c.images[0]!,
+      price: c.price,
+      currency: c.currency,
+      unit: c.transactionType === "vente" ? "" : "/nuit",
+      location: `${c.location.city}, ${c.location.country}`,
+    };
+  }),
   produits: [
     { id: "prod1", title: "Plaid lin lavé bleu nuit", cover: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600", price: 89, currency: "CHF", stock: 14 },
     { id: "prod2", title: "Lampe céramique nordique", cover: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=600", price: 145, currency: "CHF", stock: 6 },
