@@ -3,6 +3,15 @@
 Six agents ont rendu leur note dans `analyse/`. Ce document tranche. Chaque
 décision porte les options envisagées, la raison du choix, et ce qu'on perd.
 
+> **Révision 2** — après relecture du fondateur. Cinq changements :
+> une **réserve fondée sur D1** (les règles 1 et 2 avaient disparu du document,
+> §1.0) · les **taux de créateurs ramenés à 10 %** et le motif iOS écarté pour
+> le lancement, avec un tarif fondateur et une révision datée (§1.3) ·
+> l'arbitrage **frais directs / frais destinataires retiré** et rendu à
+> l'avocat, règle 4 reformulée exactement (§6.1) · **`investisseur` conservé
+> comme centre d'intérêt** (§3.1) · l'**art. 20a LTVA** promu motif principal de
+> la boutique en affiliation (§1.8).
+
 Les désaccords sont au §7. Ils sont réels : les agents juridique et comptable
 se sont opposés sur la plus grosse source de revenu imaginable, et l'agent
 juridique a démontré que la règle 3 — présentée comme inviolable — est mal
@@ -19,14 +28,54 @@ cahier des charges. Elles méritent votre lecture avant les autres.
 | --- | --- | --- | --- |
 | **D1** | Règle 3 : « jamais un pourcentage sur la vente ou la location longue durée » | **Reformulée** : jamais une rémunération dont le montant **ou l'exigibilité** dépend de la conclusion d'une vente ou d'un bail | §1.1 |
 | **D2** | §5 des CGU : revenue share B2B ~10 à 15 % de la commission de l'agence | **Supprimé sans remplacement** | §1.2 |
-| **D3** | Taux indicatifs : 8 / 7 / 6 / 10 / 10 / 6 % | **Relevés** : 12 / 10-5 / 5 %+1 CHF / 15 / 15-5 / 0 % | §1.3 |
+| **D3** | Taux indicatifs : 8 / 7 / 6 / 10 / 10 / 6 % | **Révisés** : 12 / 10-5 / 5 %+1 CHF / **10** / **10-5** / 0 %, plus un tarif fondateur créateur | §1.3 |
 | **D4** | Espace agence : « une formule ou plusieurs ? » | **Quatre paliers, dont trois au lancement** | §1.4 |
 | **D5** | Abonnement Propriétaire : particulier, ~10 CHF | **Bailleur, 19 CHF, renommé Patrimoine** | §1.5 |
-| **D6** | Onze rôles, dont `investisseur` ; `courtier` dans le code | **Onze rôles sans `investisseur` ni `courtier`** ; les métiers sortent des rôles | §3.1 |
+| **D6** | Onze rôles, dont `investisseur` ; `courtier` dans le code | **Onze rôles sans `investisseur` ni `courtier`** ; les métiers sortent des rôles, `investisseur` devient un **centre d'intérêt** | §3.1 |
 
 ---
 
 ## 1. Le modèle économique
+
+### 1.0 Les quatre règles, et leur rang
+
+**Correction apportée après relecture du fondateur.** La première version de ce
+document consacrait une section entière à la règle 3 et **ne mentionnait nulle
+part les règles 1 et 2**. En pratique, la règle 3 reformulée absorbait toute la
+protection — ce qui est une erreur de raisonnement, et la même que celle
+reprochée à B.2.
+
+La reformulation de D1 porte sur la **rémunération** : son montant, son
+exigibilité. C'est le versant de l'art. 413 CO. Mais l'art. 412 CO définit le
+courtage par l'**activité** — indiquer une occasion de conclure, ou servir
+d'intermédiaire pour la négociation. **Un forfait non conditionné versé à
+quelqu'un qui sert d'intermédiaire reste du courtage.** La règle 3, seule, ne
+protège donc de rien.
+
+Ce qui porte le critère de l'activité, ce sont les règles 1 et 2. Elles ne sont
+pas des corollaires de la règle 3 : elles sont l'autre moitié du dispositif, et
+la moitié la plus déterminante.
+
+| Règle | Ce qu'elle interdit | Article | Rang |
+| --- | --- | --- | --- |
+| **1. Aucun mandat** | Agir **pour le compte** d'une partie | art. 412 CO — l'activité | Égal |
+| **2. Aucune négociation** | Servir d'**intermédiaire** dans la négociation, indiquer une occasion de conclure | art. 412 CO — l'activité | Égal |
+| **3. Aucune rémunération conditionnée** | Un prix dont le montant ou l'exigibilité dépend de la conclusion | art. 413 CO — le salaire | Égal |
+| **4. Jamais dépositaire des fonds** | Détenir les fonds des utilisateurs | hors courtage — voir §6.1 | Égal |
+
+**Conséquence tenue dans tout le chantier.** Les quatre règles apparaissent
+**ensemble**, dans cet ordre, partout où l'une d'elles apparaît : §2 des
+nouvelles conditions générales, pied de `/vendre`, panneau de flux d'argent,
+`/demo`, page de tarifs. Aucun écran ne cite la règle 3 seule. Et aucune
+formulation ne laisse entendre que la gratuité ou l'absence de commission
+suffirait à écarter le courtage : ce qui l'écarte, c'est de ne signer aucun
+mandat et de ne négocier aucun prix.
+
+**Effet pratique le plus visible.** Sur `/vendre`, route « accompagné », la
+phrase n'est pas seulement « E-Dome ne touche rien sur cette commission » —
+elle est « E-Dome ne signe aucun mandat, ne négocie aucun prix, et ne touche
+rien sur cette commission ». C'est la formulation exacte ; la version courte
+était trompeuse par omission.
 
 ### 1.1 La règle 3 est reformulée — D1
 
@@ -53,11 +102,16 @@ et dans le discours :
 > commerciaux. Ses prix sont fixés à l'avance, dus indépendamment du résultat,
 > et identiques pour tous les utilisateurs d'une même formule.
 
-**Pourquoi c'est la décision la plus importante du document.** Elle est à la
-fois plus protectrice et plus permissive que la règle d'origine. Et elle rend
-défendable, par ricochet, le mot « gratuit » sans astérisque que réclame
-l'agent marketing : la gratuité du particulier devient inconditionnelle *de
-construction*, pas par bonne volonté.
+**Portée exacte, après la réserve du fondateur.** Cette reformulation est plus
+protectrice et plus permissive que la règle d'origine **sur le versant de la
+rémunération uniquement**. Elle ne dit rien de l'activité, et elle ne remplace
+donc ni la règle 1 ni la règle 2 — voir §1.0. Présentée seule, elle donnerait
+un faux sentiment de sécurité : un forfait parfaitement inconditionnel versé
+pour avoir mis deux parties en relation resterait du courtage.
+
+Elle rend en revanche défendable, par ricochet, le mot « gratuit » sans
+astérisque que réclame l'agent marketing : la gratuité du particulier devient
+inconditionnelle *de construction*, pas par bonne volonté.
 
 **Ce qu'on perd.** Le produit « vous ne payez que si ça marche », meilleur
 argument commercial du marché immobilier. L'agent marketing le voudra ; c'est
@@ -89,48 +143,130 @@ l'agence demeure, sans prélèvement. E-Dome n'affiche aucun barème, ne calcule
 rien, ne garantit rien, n'encaisse rien : l'outil enregistre ce que l'agence
 déclare.
 
-### 1.3 Les taux — D3
+### 1.3 Les taux — D3, amendé
 
-**Options.** (a) Les hypothèses de B.3. (b) Les taux du comptable. (c) Les
-taux du comptable avec les exonérations de lancement du marketing.
+**Amendement du fondateur : les taux à 15 % sont refusés en l'état, et le motif
+iOS est écarté pour le lancement.** Il a raison sur les deux points.
 
-**Décidé : (c).** Les hypothèses de B.3 ont été posées **avant** d'avoir retiré
-les ~3,15 % du prestataire de paiement, qu'E-Dome absorbe sur sa propre part
-pour pouvoir annoncer un taux unique. Un taux publié ne se relève pas ; une
-exonération datée expire.
+L'achat intégré d'Apple s'applique aux **biens numériques vendus dans une
+application iOS native distribuée par l'App Store**. Le MVP est une application
+web installable : elle n'est pas distribuée par l'App Store, et l'achat intégré
+ne s'y applique pas. J'avais importé cette contrainte du comptable sans
+vérifier qu'elle concernait le produit d'aujourd'hui. **Elle est reportée, pas
+fausse** — et l'artefact qui la déclencherait existe déjà dans le dépôt :
+`mobile/`, un conteneur Expo natif qui charge la maquette dans une vue web.
+Publier ce conteneur avec du contenu payant à l'intérieur fait entrer Apple
+dans l'équation.
 
-| Pôle | B.3 | Retenu | Comparable vérifié |
-| --- | --- | --- | --- |
-| Courte durée | ≈8 % | **12 %** hôte, tout compris | Airbnb 15,5 % hôte seul |
-| Services | ≈7 % | **10 %** 1ʳᵉ mission, **5 %** ensuite | — |
-| Événements | ≈6 % | **5 % + 1.00 CHF** par billet payant | Eventbrite ≈10,2 % effectifs |
-| Lives | ≈10 % | **15 %** | YouTube 30 % ; Patreon 8-12 % |
-| Formations | ≈10 % | **15 %** acheteur E-Dome / **5 %** acheteur créateur | Udemy 63 % / 3 % |
-| Boutique | ≈6 % | **0 %** — affiliation seule | Etsy 6,5 % ; Amazon 15 % |
-| — | — | **Plancher 3.00 CHF** par transaction | — |
+**Décidé : les taux du comptable, ramenés à 10 % sur les deux pôles de
+créateurs, avec un tarif fondateur et une révision datée.**
 
-Plus les exonérations de lancement : commission nulle pendant six mois ou sur
-les vingt premières transactions de chaque vendeur, trois mois offerts sur la
-formule Mandats.
+| Pôle | B.3 | Comptable | **Retenu** | Comparable vérifié |
+| --- | --- | --- | --- | --- |
+| Courte durée | ≈8 % | 12 % | **12 %** hôte, tout compris | Airbnb **15,5 %** hôte seul |
+| Services | ≈7 % | 10 / 5 % | **10 %** 1ʳᵉ mission, **5 %** ensuite | — |
+| Événements | ≈6 % | 5 % + 1 CHF | **5 % + 1.00 CHF** par billet payant | Eventbrite **≈10,2 %** effectifs |
+| **Lives** | ≈10 % | ~~15 %~~ | **10 %** | Patreon 8–12 % *[à vérifier]* ; YouTube 30 % |
+| **Formations** | ≈10 % | ~~15 / 5 %~~ | **10 %** acheteur E-Dome / **5 %** acheteur créateur | Udemy **63 % / 3 %** ; Teachable 0–3 % |
+| Boutique | ≈6 % | 0 % | **0 %** — affiliation seule | Etsy 6,5 % ; Amazon 15 % |
+| — | — | 3 CHF | **Plancher 3.00 CHF** par transaction | — |
 
-**Deux trouvailles du comptable qui changent des décisions produit.**
+#### Comparaison par catégorie, puisque c'est là que se joue l'acquisition
 
-1. **L'achat intégré iOS rend une commission de 10 % sur les lives
-   déficitaire.** Apple prélève 15 à 30 % du brut avant E-Dome ; à 10 % de
-   commission et 90 % dus au créateur, chaque vente perd de l'argent. Règle
-   produit qui en découle : **le contenu payant ne se vend pas dans
-   l'application iOS**, elle renvoie vers le web.
-2. **L'art. 20a LTVA** réputerait E-Dome fournisseur des biens de la boutique
+**Hébergement.** Airbnb applique **15,5 %** à l'hôte seul, modèle généralisé en
+Suisse et dans l'EEE au 13.10.2026 ; Booking prend 10 à 25 %, ~15 % en moyenne.
+Nos **12 %** sont 23 % moins chers que le seul modèle réellement en vigueur.
+Riposte imposée en démonstration : comparer au 15,5 %, jamais aux 3 % de
+l'ancien modèle partagé, qui n'existe plus.
+
+**Billetterie.** Eventbrite facture 3,7 % + 1.79 USD **plus** 2,9 % de
+traitement, soit **≈10,2 % effectifs** sur un billet à 50 USD et **13,8 %** à
+25 USD. Notre structure donne **7,9 %** effectifs à 35 CHF et **5,7 %** à
+150 CHF : moins cher qu'Eventbrite à tous les niveaux de prix. La part fixe
+d'1 CHF n'est pas une gourmandise — un pourcentage pur sur un billet à 35 CHF
+laisse 0.78 CHF après le prestataire de paiement.
+
+**Formation.** C'est le marché le plus dur, et le plus favorable à notre
+argument. Udemy garde **63 %** sur une vente issue de sa propre recherche et
+**3 %** sur une vente amenée par le formateur ; Teachable prend 0 à 3 % mais
+facture un abonnement mensuel **avant la première vente**. Nos **10 % / 5 %**
+reprennent la logique d'Udemy — on facture l'audience qu'on fournit
+réellement — à une fraction du prix, et **sans rien facturer avant la première
+vente**. C'est la phrase qui doit être dite à un créateur : *zéro avant votre
+première vente, 5 % si vous amenez votre audience.*
+
+**Lives et coaching.** Patreon se situe autour de 8 à 12 % *[à vérifier]*,
+YouTube prend 30 % sur les Super Chats. À 10 % nous sommes dans le bas de la
+fourchette du comparable le plus proche. Le comptable défendait 15 % pour
+couvrir le support d'un pôle à risque opérationnel ; c'est vrai, et c'est
+précisément ce que la révision datée ci-dessous rattrapera si nécessaire.
+
+#### Tarif fondateur créateur
+
+**Les 30 premiers créateurs : 5 % sur tous les pôles de contenu — formations,
+lives, événements — pendant 24 mois**, puis le taux standard. Le badge
+Fondateur reste acquis définitivement.
+
+**Pourquoi 24 mois, et pas 12.** Un créateur doit d'abord produire son contenu.
+Entre l'inscription et la première vente, il s'écoule des mois ; un tarif de
+12 mois expirerait à peu près au moment où son catalogue commence à produire,
+ce qui se lit comme un appât. Vingt-quatre mois couvrent deux cycles annuels
+complets et laissent le temps d'un verdict honnête. **C'est délibérément plus
+long que les 12 mois du tarif fondateur agence** : une agence juge E-Dome sur
+le flux de demandes, mesurable en un trimestre ; un créateur juge sur des
+ventes qui n'existent pas encore au moment où il signe.
+
+**Écarté : 0 % pendant 12 mois.** Plus spectaculaire, et défendable. Rejeté
+pour une raison propre à ce projet : la maquette doit **démontrer** le modèle
+économique, et un pôle créateur à 0 % afficherait un panneau de flux d'argent
+où E-Dome ne touche rien. Un demi-taux visible vaut mieux qu'un taux nul
+invisible.
+
+S'y ajoutent les exonérations de lancement du marketing, qui restent : six
+premiers mois ou vingt premières transactions offerts à chaque vendeur, trois
+mois offerts sur la formule Mandats.
+
+#### Révision à la sortie de l'application native
+
+**À rouvrir le jour où `mobile/` est publié sur l'App Store avec du contenu
+payant accessible à l'intérieur.** Apple prélève alors 15 à 30 % du brut, avant
+nous. L'arithmétique, pour préserver à la fois le net du créateur et notre
+marge :
+
+| Taux Apple | Hausse du prix affiché dans l'application |
+| --- | --- |
+| 15 % (petites entreprises) | **+20 %** |
+| 30 % (standard) | **+50 %** |
+
+**Position recommandée : prix différencié, net créateur identique.** Le prix
+affiché dans l'application native est supérieur au prix web, et l'écran dit
+pourquoi. Ce qui ne doit **jamais** varier, c'est ce que touche le créateur :
+un créateur ne doit pas être pénalisé parce que son acheteur a utilisé un
+téléphone. L'alternative — absorber la ponction — rend le pôle déficitaire à
+10 %, ce qui était l'argument initial du comptable et le redeviendra à ce
+moment-là.
+
+Ce point est reporté dans `JURIDIQUE-A-VALIDER.md` et dans le plan : il ne se
+décide pas maintenant, il se décide avec une date.
+
+**Deux trouvailles du comptable qui restent, et qui changent des décisions.**
+
+1. **L'art. 20a LTVA** réputerait E-Dome fournisseur des biens de la boutique
    dès qu'elle facilite une livraison au point que vendeur et acheteur y
    concluent le contrat. E-Dome devrait alors facturer le prix entier avec TVA
-   et en répondre — ce qui ruine l'économie du pôle **et** la promesse « E-Dome
-   ne détient jamais les fonds ». Motif fiscal, et non seulement stratégique,
-   de rester en affiliation.
+   et en répondre — ce qui ruine l'économie du pôle **et** la règle 4. C'est le
+   **motif principal** de garder la boutique en affiliation ; voir §1.8.
+2. **Le plancher de 3.00 CHF** n'est pas cosmétique : sous ~25 CHF de panier,
+   le prestataire de paiement prend plus de 4,9 %. Conséquence à assumer et à
+   afficher : sur une micro-formation à 40 CHF au tarif fondateur, le taux
+   effectif n'est pas 5 % mais 7,5 %. Le panneau de flux d'argent l'affichera
+   tel quel — c'est exactement ce à quoi il sert.
 
-**Ce qu'on perd.** Une courbe d'inscription plus lente, et un concurrent qui
-comparera nos 12 % aux 3 % de l'ancien modèle partagé d'Airbnb. Riposte
-imposée : comparer toujours au 15,5 % hôte seul, seul modèle réellement en
-vigueur.
+**Ce qu'on perd en descendant à 10 %.** Environ un tiers de la marge unitaire
+sur les deux pôles de créateurs, et le coussin que le comptable réservait au
+support. Contrepartie assumée, et c'est l'arbitrage du fondateur : les
+créateurs sont le segment à acquérir en premier, et un taux est une raison de
+venir avant d'être une ligne de revenu.
 
 ### 1.4 L'Espace agence : quatre paliers, trois au lancement — D4
 
@@ -255,9 +391,25 @@ compte.
 ### 1.8 La boutique perd son statut de pôle
 
 **Décidé.** La tuile reste, visible et grise ; le pôle disparaît ; affiliation
-seule, aucun stock, aucun envoi, aucun fonds détenu. Les trois agents
-concernés convergent, et le motif fiscal de l'art. 20a LTVA (§1.3) tranche
-définitivement.
+seule, aucun stock, aucun envoi, aucun fonds détenu.
+
+**Motif principal — fiscal, et non stratégique.** Depuis le 1ᵉʳ janvier 2025,
+l'**art. 20a LTVA** répute l'exploitant d'une plateforme **fournisseur de la
+prestation** dès lors qu'il facilite une **livraison de biens** au point que
+vendeur et acheteur concluent le contrat sur la plateforme. E-Dome devrait
+alors facturer le prix entier avec la TVA, en répondre, et assumer les
+obligations d'un vendeur — ce qui détruit l'économie du pôle **et** contredit
+la règle 4. Les services, l'hébergement et les formations ne sont pas visés,
+l'article ciblant les biens ; ce point figure dans `JURIDIQUE-A-VALIDER.md`.
+
+En affiliation, E-Dome ne facilite aucune livraison, ne conclut aucun contrat
+de vente de biens et n'encaisse rien : l'article ne s'applique pas.
+
+**Motifs secondaires**, qui convergent sans être décisifs : c'est le seul pôle
+dont l'objet n'est ni un bien immobilier, ni une personne, ni une compétence ;
+il importerait la logistique, les retours, la garantie et le droit de la
+consommation ; et à ~6 % sur du mobilier, il ne paierait pas sa propre
+modération.
 
 **Ce qu'on perd.** Un pôle sur l'organigramme, et la marge d'une marketplace
 propre si le volume la justifiait un jour. Le clic sur la tuile l'explique :
@@ -417,10 +569,41 @@ architecture, qui en faisait un `ProviderTrade` : **`courtage` ne figure pas non
 plus dans les métiers**, et le mot « courtier » n'apparaît nulle part dans
 l'interface.
 
-`investisseur` disparaît aussi : un espace « investisseur » est le chemin le
-plus court vers la promesse de rendement, que B.6 interdit. (La route
-`/investisseurs`, qui s'adresse aux investisseurs d'E-Dome et non à un rôle
-d'utilisateur, subsiste.)
+**`investisseur` quitte les rôles mais devient un centre d'intérêt — amendement
+du fondateur, retenu.** Ma version initiale le supprimait purement et
+simplement ; c'était une erreur de périmètre. Ce qui est dangereux, c'est un
+**espace** « investisseur » avec ses droits et son tableau de bord, chemin le
+plus court vers la promesse de rendement que B.6 interdit. Ce qui est utile, et
+sans risque, c'est de savoir qu'une personne **s'intéresse** à l'investissement,
+pour le ciblage du fil, la segmentation et le formulaire de la landing.
+
+D'où un **quatrième axe**, distinct des trois autres :
+
+```ts
+/** Centre d'intérêt déclaré. Ne confère AUCUN droit, ne change aucun écran,
+    ne crée aucun tableau de bord : sert au ciblage du fil, à la segmentation
+    et au formulaire de manifestation d'intérêt. */
+export type ProfileInterest =
+  | "investisseur" | "vendeur" | "bailleur" | "acheteur" | "locataire"
+  | "voyageur" | "formation" | "evenements";
+```
+
+La règle qui le rend sûr : **un centre d'intérêt n'ouvre jamais un écran.** Si
+un jour « investisseur » doit donner accès à quelque chose, c'est qu'il est
+redevenu un rôle, et il repasse par cette décision.
+
+**Même traitement pour tout public retiré des rôles mais qui reste une cible de
+contenu** — c'est la généralisation demandée par le fondateur, et elle a une
+conséquence heureuse que je n'avais pas vue : elle **protège la couche leads**.
+Le `ProfileId` de `src/content/landing.ts` porte les six profils du formulaire,
+dont `investisseur`, et il est importé par `leads/types.ts`, `schema.ts`,
+`score.ts` et `supabase-store.ts`. Le renommer casserait la console
+`/admin/leads` **et** la correspondance des colonnes Supabase, comme l'avait
+signalé l'agent architecture. En faisant des profils de la landing des centres
+d'intérêt plutôt que des rôles, les deux systèmes cessent d'être en tension.
+
+(La route `/investisseurs`, qui s'adresse aux investisseurs d'E-Dome et non à un
+rôle d'utilisateur, subsiste sans changement.)
 
 `notaire`, `architecte`, `photographe`, `promoteur` deviennent
 `prestataire` + métier + métier vérifié. Un badge « Notaire » non vérifié contre
@@ -638,23 +821,71 @@ alors que la date réelle est septembre 2026.
 
 ## 6. Ce que je n'ai pas tranché
 
-Trois dépendances restent ouvertes. Je les nomme plutôt que de les masquer.
+Ces points ne sont pas tranchés ici. Ils sont nommés, documentés, et repris un
+par un dans [`JURIDIQUE-A-VALIDER.md`](JURIDIQUE-A-VALIDER.md) avec ce qui
+change si ma position tombe.
 
-**1. Frais destinataires ou frais directs chez le prestataire de paiement.**
-L'agent comptable la qualifie de bloquante, et il a raison : si les frais sont
-directs, le prestataire débite le vendeur et la promesse « taux tout compris »
-tombe, soit ~3,15 points de taux perçu sur chaque pôle. **J'arbitre en faveur
-des frais destinataires** avec `on_behalf_of` le vendeur : les fonds transitent
-quelques secondes par le solde de la plateforme sans qu'elle ait le droit d'en
-disposer, et l'agent juridique fixe la ligne rouge au chiffre — aucun intérêt,
-exécution sous 60 jours. C'est ma décision, pas la sienne : **à faire confirmer
-par un avocat avant toute mise en production.**
+### 6.1 Frais directs ou frais destinataires — arbitrage réservé à l'avocat
 
-**2. Le régime d'autorisation du courtage à Genève et Vaud.** L'agent juridique
+**Amendement du fondateur, retenu.** Ma première version tranchait en faveur des
+frais destinataires et renvoyait la confirmation à un avocat. C'était traiter
+comme une formalité un choix qui **touche la règle 4 elle-même**. Avec les frais
+destinataires, les fonds transitent par le compte de plateforme et E-Dome
+devient **vendeur apparent** : cela fragilise la règle 4 et rapproche du
+traitement de plateforme réputée fournisseur — le même mécanisme que celui qui
+condamne le pôle boutique au §1.8. Je retire mon arbitrage.
+
+Les deux options, avec leurs conséquences :
+
+| | **Frais directs** | **Frais destinataires** |
+| --- | --- | --- |
+| **Flux** | L'acheteur paie le vendeur ; E-Dome prélève sa commission | L'acheteur paie E-Dome, qui reverse au vendeur |
+| **Règle 4** | **Respectée au sens strict** : les fonds ne touchent jamais un compte E-Dome | **Fragilisée** : transit par le solde de plateforme, même bref |
+| **Vendeur apparent** | Le vendeur | **E-Dome**, ce qui est le critère qui déclenche l'art. 20a LTVA sur les biens |
+| **TVA** | Chacun facture sa part | Risque de devoir facturer le prix entier et d'en répondre |
+| **Responsabilité** | Litige entre acheteur et vendeur | E-Dome plus exposée, y compris sur la conformité de la prestation |
+| **Frais du prestataire** | **Débités au vendeur** | Absorbés par E-Dome sur sa part |
+| **Promesse « tout compris »** | **Tombe** — le vendeur voit deux prélèvements | Tenable — un taux unique annoncé |
+| **Effet sur les taux** | Il faut retirer ~3,15 points du taux perçu, ou les afficher séparément | Taux du §1.3 tels quels |
+
+**Ce que cela change si l'avocat impose les frais directs** : la ligne « frais
+de paiement » apparaît séparément sur chaque écran de transaction et dans le
+panneau de flux d'argent — ce que le panneau sait déjà faire, puisqu'il porte
+une ligne `psp` dédiée. Le discours change : non plus « 12 %, tout compris »
+mais « 12 % pour E-Dome, plus les frais de votre prestataire de paiement ».
+C'est moins élégant et plus honnête.
+
+**Position de travail en attendant** : **frais directs par défaut**, parce que
+c'est l'option qui respecte la règle 4 au sens strict et que le modèle de
+données sait représenter les deux — `MoneyFlow` porte déjà `psp` comme ligne
+distincte. Passer aux frais destinataires plus tard ne coûte qu'un changement
+de configuration ; l'inverse exigerait de réécrire les écrans de prix.
+
+**Formulation exacte de la règle 4**, en remplacement de la version catégorique.
+« E-Dome ne détient jamais les fonds » est faux ou vrai selon le schéma retenu,
+et le dire catégoriquement avant l'arbitrage est précisément ce que le fondateur
+reproche :
+
+> **Règle 4.** E-Dome n'est jamais dépositaire des fonds de ses utilisateurs.
+> Les paiements sont exécutés par un prestataire agréé. E-Dome ne dispose
+> librement d'aucune somme appartenant à un utilisateur, ne verse aucun intérêt
+> et ne conserve aucun solde : tout montant destiné à un tiers lui est reversé
+> sans délai.
+
+Cette formulation est vraie dans les deux schémas, et elle porte la ligne rouge
+au chiffre que fixe l'agent juridique — aucun intérêt, exécution sous 60 jours,
+faute de quoi ce sont des dépôts du public au sens de l'ordonnance sur les
+banques.
+
+### 6.2 Le régime d'autorisation du courtage à Genève et Vaud
+
+L'agent juridique
 n'a identifié avec certitude que le Tessin. Consigne stricte : **ne pas écrire
 dans les conditions qu'une autorisation est requise à Genève ou Vaud.**
 
-**3. Le seuil de bascule entre hébergement de courte durée et bail.** Il décide
+### 6.3 Le seuil de bascule entre hébergement de courte durée et bail
+
+Il décide
 si une location de plusieurs mois reste commissionnable. Le champ est prévu au
 modèle, la valeur est à confirmer.
 

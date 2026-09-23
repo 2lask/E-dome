@@ -1,7 +1,16 @@
-# PLAN DE TRAVAIL — en attente de validation
+# PLAN DE TRAVAIL — en attente de feu vert
 
 Branche `feat/plateforme-v2`. Un commit par étape. Après chaque étape : `lint`,
 `typecheck`, `build`, et les épreuves existantes — verts, sans exception.
+
+> **Révision 2**, après les amendements du fondateur. Ce qui change dans le
+> plan : les **quatre règles** deviennent un objet du modèle, affichées
+> ensemble et jamais séparément (étapes 1, 5, 7) · les **frais directs** sont
+> le défaut, la ligne « frais de paiement » devient visible partout (étapes 1
+> et 5) · un quatrième axe `ProfileInterest` entre au modèle (étape 1) · le
+> **glossaire** des conditions est corrigé au même titre que le §5 (étape 7) ·
+> `JURIDIQUE-A-VALIDER.md` est tenu à jour à chaque étape qui touche un point
+> ouvert.
 
 Les quatre routes protégées par la consigne A.3 — `/`, `/merci`,
 `/confidentialite`, `/admin/leads` — sont couvertes par un test de fumée dès
@@ -19,17 +28,29 @@ soit après trois commits.
 
 *Aucun changement visible. Tout le reste en dépend.*
 
-- `src/lib/model/` : `PlatformRole` (11 valeurs), `ProviderTrade`, `RoleGrant`
-  avec portée, `Account`, `Agency` / `AgencyMember` / `Mandate` / `VisitSlot` /
-  `DocumentRef`, `Subscription`, `FeatureStage`, et les champs de conformité.
-  `types.ts` survit en coquille de ré-exports, sinon l'étape casse tout le dépôt
-  d'un coup.
+- `src/lib/model/` : `PlatformRole` (11 valeurs), `ProviderTrade`,
+  **`ProfileInterest`** (quatrième axe — un centre d'intérêt n'ouvre jamais un
+  écran), `RoleGrant` avec portée, `Account`, `Agency` / `AgencyMember` /
+  `Mandate` / `VisitSlot` / `DocumentRef`, `Subscription`, `FeatureStage`, et
+  les champs de conformité. `types.ts` survit en coquille de ré-exports, sinon
+  l'étape casse tout le dépôt d'un coup.
+- **Les quatre règles deviennent un objet du modèle**, pas une phrase recopiée :
+  un `PLATFORM_RULES` typé, avec pour chacune son libellé et sa base. Un seul
+  composant les affiche, et il les affiche **toutes les quatre** — il n'existe
+  aucun moyen d'en montrer une seule. C'est la traduction exécutable de la
+  réserve sur D1.
 - `src/lib/pricing/` : `Charge` (abonnement · commission · forfait · CPM ·
   prime), `quote()`, `MoneyFlow` avec son invariant vérifié dans la fonction,
-  `PLANS` / `RATES` / `ONE_OFFS` en **données**. `CommissionPole` exclut `vente`
-  et `location-lt` : la règle 3 devient une erreur de compilation. Enveloppes
-  dépréciées pour que les dix importateurs compilent inchangés.
-- Suppression de `AGENCY_REVENUE_SHARE_LABEL`.
+  `PLANS` / `RATES` / `ONE_OFFS` en **données** — tarif fondateur créateur
+  compris, comme une ligne datée et non comme un cas particulier de code.
+  `CommissionPole` exclut `vente` et `location-lt` : la règle 3 devient une
+  erreur de compilation. Enveloppes dépréciées pour que les dix importateurs
+  compilent inchangés.
+- **`MoneyFlow` porte `psp` comme ligne distincte et visible**, pas comme un
+  détail replié : c'est ce qui permet de basculer entre frais directs et frais
+  destinataires sans réécrire un écran. Défaut retenu : **frais directs**.
+- Suppression de `AGENCY_REVENUE_SHARE_LABEL`, et réécriture de l'en-tête de
+  `pricing.ts`, dont l'affirmation sur l'assiette du courtage est fausse.
 - `middleware` → `proxy` par le codemod, **et matcher restreint à `/admin` et
   `/dashboard`** — sans quoi le jour où la clé anonyme Supabase apparaît, toute
   la maquette redirige vers l'écran de connexion.
@@ -113,9 +134,15 @@ réduits à des enveloppes. C'est le but.
   formule officielle du loyer initial, autorisation du propriétaire, numéro
   d'enregistrement, information Lex Koller.
 - **Panneau de flux d'argent**, composant unique, sur `/vendre`, `/publier`,
-  `/explorer/[id]`, `/paiement`, les fiches marchandes et `/apporteurs`.
+  `/explorer/[id]`, `/paiement`, les fiches marchandes et `/apporteurs` — avec
+  sa ligne « frais de paiement » toujours visible, conséquence du défaut « frais
+  directs ».
 - Correction de la réservation courte durée : la commission cesse d'être
   **ajoutée** au prix payé par le voyageur.
+- Pied de `/vendre` : **les quatre règles ensemble**, jamais la seule règle 3.
+  Route « accompagné », la formulation exacte est « E-Dome ne signe aucun
+  mandat, ne négocie aucun prix, et ne touche rien sur cette commission » — la
+  version courte était trompeuse par omission.
 - `/vendre/accompagnement` et son écran de comparaison des propositions.
 
 ---
@@ -137,13 +164,22 @@ sur cette brique.*
 
 ## Étape 7 — Les textes juridiques
 
-- `/conditions` réécrites en **13 sections**, les quatre règles avant les prix.
-  Six des dix sections actuelles posent problème, pas seulement le §5.
+- `/conditions` réécrites en **13 sections**, les quatre règles avant les prix,
+  **en §2 et en toutes lettres**. Six des dix sections actuelles posent
+  problème, pas seulement le §5.
+- **Le glossaire du §2 actuel est corrigé au même titre que le tableau du §5** :
+  il définit « Commission » comme « pourcentage prélevé par la Plateforme sur
+  les transactions réalisées » — la règle 3 contredite dans les définitions — et
+  confond l'hôte de courte durée avec le vendeur, c'est-à-dire la distinction
+  sur laquelle repose tout le modèle.
+- La **règle 4 dans sa formulation exacte**, vraie quel que soit le schéma
+  d'encaissement retenu, et non dans sa version catégorique.
 - `/aide` : la réponse unique sur le barème éclate en trois questions, générées
   depuis le module.
 - Les quatre mentions visibles sans interaction, aux trois emplacements
   autorisés.
 - Les formulations de l'apporteur, et la restriction `pays × type d'apport`.
+- Mise à jour de `JURIDIQUE-A-VALIDER.md` avec ce que la rédaction aura révélé.
 
 ---
 
@@ -169,13 +205,15 @@ n'achète rien.
 
 ---
 
-## Ce qui reste à décider par vous
+## Ce qui reste ouvert
 
-1. **Les six décisions du §0 de `DECISIONS.md`** modifient la Partie B. La plus
-   structurante est **D1**, la reformulation de la règle 3 : elle touche une
-   règle que vous avez qualifiée d'inviolable.
-2. **`feat/landing` n'est ni fusionnée ni validée.** La préproduction attend vos
-   variables d'environnement et votre test. Ce chantier est bâti dessus.
-3. **Le périmètre.** Huit étapes, c'est une reprise complète. Si vous voulez
+1. **Les questions de `JURIDIQUE-A-VALIDER.md`.** Aucune ne bloque les étapes 1
+   à 6 : le modèle représente les deux schémas d'encaissement, et les textes
+   juridiques n'arrivent qu'à l'étape 7. La seule qui presse est le **numéro
+   d'enregistrement UE pour la courte durée**, exigible depuis mai 2026 — le
+   champ est posé dès l'étape 1.
+2. **Le périmètre.** Huit étapes, c'est une reprise complète. Si vous voulez
    voir quelque chose plus tôt, l'ordre des étapes 5 et 6 peut s'inverser —
    mais pas celui des étapes 1 à 4.
+3. **`feat/landing`.** Ce chantier part de cette branche et peut avancer sans
+   attendre sa fusion. Le détail est dans la réponse jointe.
