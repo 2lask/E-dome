@@ -29,19 +29,17 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "E-Dome",
   },
-  /* `mobile-web-app-capable` (sans préfixe `apple-`) est la balise standard,
-     distincte de celle qu'émet `appleWebApp` : elle n'est pas un doublon et
-     reste ici.
+  /* Le bloc `other` a disparu entièrement, et ses deux clés pour des raisons
+     différentes — vérifiées dans les sources de Next plutôt que supposées.
 
-     `apple-touch-fullscreen` a été retirée, et c'est ELLE qui déclenchait
-     l'avertissement « Use appleWebApp instead » à chaque build — vérifié dans
-     `node_modules/next/dist/esm/lib/metadata/resolve-metadata.js`, qui teste
-     nommément cette clé dans `metadata.other`. La balise est obsolète :
-     `apple-mobile-web-app-capable`, qu'émet déjà `appleWebApp.capable`, suffit
-     à obtenir le plein écran sur iOS. */
-  other: {
-    "mobile-web-app-capable": "yes",
-  },
+     `apple-touch-fullscreen` déclenchait l'avertissement « Use appleWebApp
+     instead » à chaque build : `resolve-metadata.js` teste nommément cette clé
+     dans `metadata.other`. Elle est obsolète.
+
+     `mobile-web-app-capable` était un doublon exact. `metadata.js` ligne 561
+     montre que c'est précisément cette balise — sans préfixe `apple-` — que
+     Next émet à partir de `appleWebApp.capable`. La déclarer aussi dans
+     `other` la produisait deux fois dans le HTML. */
   formatDetection: { telephone: false },
 };
 
