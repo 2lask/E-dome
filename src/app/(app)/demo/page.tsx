@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   Home, Wrench, Handshake, GraduationCap, CalendarDays, Radio, ShoppingBag,
-  Building2, Rss, LayoutDashboard, ArrowRight, type LucideIcon,
+  Building2, Rss, LayoutDashboard, ArrowRight, HelpCircle, X, type LucideIcon,
 } from "lucide-react";
-import { STAGE_DOT, STAGE_TEXT } from "@/lib/model/stage-ui";
+import { STAGE_DOT, STAGE_TEXT, STAGE_LABEL } from "@/lib/model/stage-ui";
+import { useApp } from "@/lib/context";
 import { demoScreen } from "@/content/demo";
+import { POLE_EXPLAIN, explainMode as explainCopy } from "@/content/explain";
 
 /* ── `/demo` — la porte d'entrée ────────────────────────────────────────────
 
@@ -28,6 +31,12 @@ const ICONS: Record<string, LucideIcon> = {
 
 export default function DemoPage() {
   const d = demoScreen;
+  const { explainMode } = useApp();
+  /* Un seul pôle expliqué à la fois — la contrainte « une seule bulle
+     ouverte » du mode explicatif. */
+  const [openPole, setOpenPole] = useState<string | null>(null);
+  const explained = openPole ? POLE_EXPLAIN[openPole] : undefined;
+  const openStage = openPole ? d.poles.find((p) => p.id === openPole)?.stage : undefined;
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-4 sm:py-8">
@@ -64,20 +73,47 @@ export default function DemoPage() {
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
           {d.poles.map((p) => {
             const Icon = ICONS[p.icon] ?? Home;
+            const canExplain = explainMode && !!POLE_EXPLAIN[p.id];
+            const isOpen = openPole === p.id;
+            /* En mode explicatif, un pôle est un bouton qui ouvre son panneau ;
+               sinon c'est une carte inerte. On ne rend pas un bouton quand il
+               n'y a rien à ouvrir — un affordance qui ne fait rien ment. */
+            const Tag = canExplain ? "button" : "li";
             return (
-              <li
+              <Tag
                 key={p.id}
-                className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-2.5 sm:p-3"
+                {...(canExplain
+                  ? {
+                      type: "button" as const,
+                      onClick: () => setOpenPole(isOpen ? null : p.id),
+                      "aria-expanded": isOpen,
+                    }
+                  : {})}
+                className={
+                  "rounded-xl border bg-[var(--card)] p-2.5 text-left transition-colors sm:p-3 " +
+                  (isOpen
+                    ? "border-[var(--primary)]/50"
+                    : "border-[var(--card-border)]") +
+                  (canExplain ? " hover:border-[var(--primary)]/40" : "")
+                }
               >
                 <div className="flex items-center gap-2">
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--primary)]/10 text-[var(--primary)]">
                     <Icon size={15} />
                   </span>
                   <span className={`text-[13px] font-medium sm:text-sm ${STAGE_TEXT[p.stage]}`}>{p.label}</span>
-                  <span
-                    className={`ml-auto h-2 w-2 shrink-0 rounded-full ${STAGE_DOT[p.stage]}`}
-                    aria-hidden
-                  />
+                  {canExplain ? (
+                    <HelpCircle
+                      size={13}
+                      className="ml-auto shrink-0 text-[var(--text-muted)]"
+                      aria-hidden
+                    />
+                  ) : (
+                    <span
+                      className={`ml-auto h-2 w-2 shrink-0 rounded-full ${STAGE_DOT[p.stage]}`}
+                      aria-hidden
+                    />
+                  )}
                 </div>
                 {/* La ligne d'explication coûte quatre rangées de haut sur
                     téléphone : masquée sous `sm`, où l'icône et le libellé
@@ -85,10 +121,51 @@ export default function DemoPage() {
                 <p className="mt-1.5 hidden text-[11.5px] leading-snug text-[var(--text-muted)] sm:block">
                   {p.line}
                 </p>
-              </li>
+              </Tag>
             );
           })}
         </ul>
+
+        {/* Panneau d'explication au clic. Les quatre questions de la Partie C,
+            dans l'ordre ; la dernière — le revenu — est celle qui intéresse un
+            investisseur. Ferme sur clic du bouton ou d'un autre pôle. */}
+        {explained && openStage && (
+          <div className="mt-2 rounded-xl border border-[var(--primary)]/30 bg-[var(--primary)]/[0.04] p-3">
+            <div className="mb-2 flex items-center gap-2">
+              <span className={`h-2 w-2 rounded-full ${STAGE_DOT[openStage]}`} aria-hidden />
+              <span className="text-[11px] font-medium uppercase tracking-wide text-[var(--text-muted)]">
+                {STAGE_LABEL[openStage]}
+              </span>
+              <button
+                type="button"
+                onClick={() => setOpenPole(null)}
+                aria-label="Fermer l'explication"
+                className="ml-auto rounded-md p-0.5 text-[var(--text-muted)] hover:text-[var(--foreground)]"
+              >
+                <X size={15} />
+              </button>
+            </div>
+            <dl className="grid gap-2 sm:grid-cols-2">
+              {(["what", "who", "revenue", "when"] as const).map((k) => (
+                <div key={k}>
+                  <dt className="text-[11px] font-semibold text-[var(--foreground)]">
+                    {explainCopy.fields[k]}
+                  </dt>
+                  <dd className="text-[12px] leading-snug text-[var(--text-muted)]">{explained[k]}</dd>
+                </div>
+              ))}
+            </dl>
+            {explained.insteadHref && explained.insteadLabel && (
+              <Link
+                href={explained.insteadHref}
+                className="mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-[var(--primary)] hover:underline"
+              >
+                {explained.insteadLabel}
+                <ArrowRight size={13} aria-hidden />
+              </Link>
+            )}
+          </div>
+        )}
       </section>
 
       {/* ── Bloc 2 : qui paie quoi, AVANT les portes ──────────────────────── */}

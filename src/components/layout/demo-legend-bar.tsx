@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { FlaskConical } from "lucide-react";
+import { FlaskConical, HelpCircle } from "lucide-react";
 import { STAGE_DOT, STAGE_LABEL, STAGE_HINT, STAGE_ORDER } from "@/lib/model/stage-ui";
 import { demoBar } from "@/content/common";
+import { explainMode as explainCopy } from "@/content/explain";
+import { useApp } from "@/lib/context";
 import { RoleSwitcher } from "@/components/layout/role-switcher";
 
 /* ── Bandeau-légende permanent ──────────────────────────────────────────────
@@ -24,6 +26,7 @@ import { RoleSwitcher } from "@/components/layout/role-switcher";
    `/demo`. Le composant n'écrit aucun statut en dur. */
 
 export function DemoLegendBar() {
+  const { explainMode, setExplainMode } = useApp();
   return (
     <div className="w-full border-b border-[var(--primary)]/15 bg-[var(--primary)]/5">
       <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-x-4 gap-y-1.5 px-3 py-1.5">
@@ -44,8 +47,27 @@ export function DemoLegendBar() {
           ))}
         </ul>
 
-        {/* À droite : le lien d'explication et le sélecteur de rôle */}
+        {/* À droite : le mode explicatif, le lien d'explication, le sélecteur */}
         <div className="ml-auto flex items-center gap-2">
+          {/* Interrupteur du mode explicatif. Aria-pressed le rend lisible aux
+              lecteurs d'écran ; le « ? » qu'il commande apparaît sur les
+              éléments qui savent s'expliquer. */}
+          <button
+            type="button"
+            onClick={() => setExplainMode(!explainMode)}
+            aria-pressed={explainMode}
+            title={explainCopy.toggleHint}
+            className={
+              "flex items-center gap-1 rounded-lg border px-2 py-1 text-[12px] transition-colors " +
+              (explainMode
+                ? "border-[var(--primary)]/40 bg-[var(--primary)]/10 text-[var(--primary)]"
+                : "border-[var(--card-border)] bg-[var(--card)] text-[var(--text-muted)] hover:text-[var(--foreground)]")
+            }
+          >
+            <HelpCircle size={13} aria-hidden />
+            <span className="hidden sm:inline">{explainCopy.toggleLabel}</span>
+          </button>
+
           <Link
             href={demoBar.learnMoreHref}
             className="text-[12px] text-[var(--primary)] underline underline-offset-2 hover:opacity-80"

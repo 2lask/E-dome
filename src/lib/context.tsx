@@ -56,6 +56,11 @@ interface AppContextValue {
      que les consommateurs migrent. */
   viewingAs: PlatformRole;
   setViewingAs: (role: PlatformRole) => void;
+  /* Le mode explicatif : les affordances « ? » qui expliquent un élément.
+     Actif par défaut — une démonstration se lit mieux commentée — mais on peut
+     l'éteindre pour voir la maquette nue. */
+  explainMode: boolean;
+  setExplainMode: (on: boolean) => void;
   favorites: Set<string>;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
@@ -139,6 +144,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [activeRole, setActiveRoleState] = useState<Role>(DEFAULT_ROLE);
   const [availableRoles, setAvailableRoles] = useState<Role[]>(DEFAULT_ROLES);
   const [viewingAs, setViewingAsState] = useState<PlatformRole>(DEFAULT_VIEWING_AS);
+  const [explainMode, setExplainModeState] = useState<boolean>(true);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(DEFAULT_FAVORITES));
   const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
@@ -164,6 +170,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
          on retombe sur le défaut. `PlatformRole` peut évoluer. */
       const storedViewingAs = localStorage.getItem(`${STORAGE_PREFIX}viewingAs`);
       if (storedViewingAs && isPlatformRole(storedViewingAs)) setViewingAsState(storedViewingAs);
+
+      const storedExplain = localStorage.getItem(`${STORAGE_PREFIX}explainMode`);
+      if (storedExplain === "0") setExplainModeState(false);
 
       const storedRoles = localStorage.getItem(`${STORAGE_PREFIX}availableRoles`);
       if (storedRoles) setAvailableRoles(JSON.parse(storedRoles));
@@ -227,6 +236,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!mounted) return;
+    persist("explainMode", explainMode ? "1" : "0");
+  }, [explainMode, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
     persist("availableRoles", JSON.stringify(availableRoles));
   }, [availableRoles, mounted]);
 
@@ -287,6 +301,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const bridged = tourFor(role)?.legacyRole;
     if (bridged) setActiveRoleState(bridged);
   }, []);
+
+  const setExplainMode = useCallback((on: boolean) => setExplainModeState(on), []);
 
   const toggleAvailableRole = useCallback((role: Role) => {
     setAvailableRoles((prev) => {
@@ -433,6 +449,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setActiveRole,
       viewingAs,
       setViewingAs,
+      explainMode,
+      setExplainMode,
       availableRoles,
       toggleAvailableRole,
       favorites,
@@ -468,6 +486,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setActiveRole,
       viewingAs,
       setViewingAs,
+      explainMode,
+      setExplainMode,
       availableRoles,
       toggleAvailableRole,
       favorites,
