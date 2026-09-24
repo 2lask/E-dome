@@ -13,6 +13,8 @@ import {
   Handshake, QrCode, Wallet, Info, Sparkles,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { MoneyFlow } from "@/components/pricing/money-flow";
+import { chf } from "@/lib/model/billing";
 import { useToast } from "@/components/ui/toast";
 import { timeAgo, formatDate } from "@/lib/utils";
 import { roleBadgeColors, roleLabels } from "@/lib/types";
@@ -760,6 +762,22 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             </div>
           )}
 
+          {/* Flux d'argent d'une nuit — l'hôte voit exactement ce que la
+              commission de 12 % lui coûte, et que le voyageur ne la paie pas.
+              En CHF seulement : le panneau raisonne dans la devise du modèle.
+              La commission courte durée EST PRÉLEVÉE SUR L'HÔTE, jamais ajoutée
+              au prix affiché — la phrase générée par `quote()` le dit. */}
+          {property.transactionType === "location-ct" && property.currency === "CHF" && (
+            <div className="mb-8">
+              <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">Ce que rapporte une nuit</h2>
+              <MoneyFlow
+                charge={{ kind: "commission", pole: "location-ct", gross: chf(property.price) }}
+                grossLabel="Ce que paie le voyageur (par nuit)"
+                beneficiaryLabel="Vous (hôte), par nuit"
+              />
+            </div>
+          )}
+
           {/* Calendar for location-ct */}
           {property.transactionType === "location-ct" && (
             <div className="mb-8">
@@ -1016,8 +1034,12 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               ? Math.max(0, Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)))
               : 0;
             const subtotal = nights * property.price;
-            const fraisEdome = Math.round(subtotal * 0.08);
-            const total = subtotal + fraisEdome + optionsTotal;
+            /* Le voyageur paie les nuits et ses options, RIEN de plus. La
+               commission de 12 % est prélevée sur l'hôte, jamais ajoutée au
+               prix payé (règle du modèle, et phrase générée par `quote()`).
+               Cet écran ajoutait auparavant 8 % de « Frais E-Dome » au total
+               du voyageur — la commission facturée au mauvais côté. */
+            const total = subtotal + optionsTotal;
             return (
               <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 lg:sticky lg:top-20">
                 <p className="text-2xl font-bold text-[var(--primary)] mb-1">
@@ -1069,10 +1091,6 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     <div className="flex justify-between text-sm text-[var(--text-secondary)]">
                       <span>{nights} nuit{nights > 1 ? "s" : ""} x {formatPrice(property.price, property.currency)}</span>
                       <span>{formatPrice(subtotal, property.currency)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-[var(--text-secondary)]">
-                      <span>Frais E-Dome</span>
-                      <span>{formatPrice(fraisEdome, property.currency)}</span>
                     </div>
                     {optionsTotal > 0 && (
                       <div className="flex justify-between text-sm text-[var(--text-secondary)]">

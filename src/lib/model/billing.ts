@@ -47,6 +47,15 @@ export function shareOf(amount: Money, rate: number): Money {
 
 export const isZero = (m: Money): boolean => m.cents === 0;
 
+/** Formate un montant pour l'affichage : « 1 234.50 CHF », séparateur suisse. */
+export function formatMoney(m: Money): string {
+  const value = (m.cents / 100).toLocaleString("fr-CH", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `${value} ${m.currency}`;
+}
+
 function assertSameCurrency(a: Money, b: Money): void {
   if (a.currency !== b.currency) {
     throw new Error(`Devises incompatibles : ${a.currency} et ${b.currency}`);
