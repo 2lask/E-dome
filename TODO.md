@@ -141,6 +141,14 @@ Le correctif existe maintenant à côté : la table `lead_submissions` et
 `allowSubmission` dans [src/lib/leads/rate-limit.ts](src/lib/leads/rate-limit.ts)
 se généralisent sans peine.
 
+### Panneau de flux d'argent : poser sur les autres écrans de transaction
+
+Le composant `src/components/pricing/money-flow.tsx` est posé sur
+`/explorer/[id]` (location courte durée). Le plan (étape 5) le veut aussi sur
+`/paiement`, les fiches marchandes de la boutique, et `/apporteurs`. Chaque
+pose demande un `Charge` adapté au contexte de l'écran ; le composant, lui, est
+prêt et générique.
+
 ### `maplibre-gl` : faille XSS connue
 
 Correction disponible en version 6, majeure et avec ruptures. À planifier.
