@@ -9,15 +9,15 @@ Branche `feat/plateforme-v2`. Un commit par étape. Après chaque étape : `lint
 
 > Pour qui ouvre le dépôt sans contexte. Lisez ce bloc, puis l'étape en cours.
 
-**Où on en est.** Étapes 1, 2, 3, 4, **5 faites**. L'étape 4 a livré : `/demo`
+**Où on en est.** Étapes 1, 2, 3, 4, 5, **6 faites**. L'étape 4 a livré : `/demo`
 (premier écran neuf), les liens landing + mobile qui y mènent, le sélecteur de
 rôle (visite en cinq minutes, 8 rôles), le bandeau-légende permanent, le mode
 explicatif avec panneau au clic sur les statuts, le nettoyage du CSS orphelin
 (−250 lignes) et de la collision `--text-secondary` / `--text-muted`.
 
-**Ce qui vient après.** Étape 6 (**en cours**), puis 7 → 8, **sans pause de
-validation** (feu vert donné). Prochaine tâche concrète : l'Espace agence et
-les quatre formules d'abonnement.
+**Ce qui vient après.** Étape 7 (**en cours**), puis 8, **sans pause de
+validation** (feu vert donné). Prochaine tâche concrète : /conditions réécrites
+en 13 sections, les quatre règles en §2 et avant les prix.
 
 **Consignes fondateur en vigueur, à ne pas perdre :**
 - **La règle de tri** (phase A) : les données *d'un utilisateur* restent
@@ -48,7 +48,7 @@ l'import — un chiffre incohérent fait échouer `next build` ; voir README,
 
 **Attribution des commits** : `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`.
 
-**Dernier commit au moment d'écrire** : `e2a0bcb` (publier obligations — étape 5 terminée).
+**Dernier commit au moment d'écrire** : `c33eef8` (Espace agence — étape 6 terminée).
 
 ---
 
@@ -221,7 +221,7 @@ section README « Pourquoi mon build échoue ». Deux invariants qui s'écrivaie
 
 ---
 
-## Étape 6 — L'Espace agence et les abonnements
+## Étape 6 — L'Espace agence et les abonnements — FAIT
 
 *La principale source de revenu. Elle se construit pour de vrai — pas de gris
 sur cette brique.*
