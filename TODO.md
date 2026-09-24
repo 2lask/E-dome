@@ -119,6 +119,26 @@ utilisateur y est encore l’hôte de ses propres biens.
 
 ## Sécurité
 
+### Étape 8 : ce qui reste après la première salve
+
+Faits : les ROI de la fiche de bien passés en indicatif (couleur neutre,
+libellé « indicatif »), les deux boutons réellement morts réveillés
+(« Exporter » des avis → toast, « Télécharger PDF » du certificat →
+`window.print`), le garde-fou `no-traction-claims.spec.ts` (4 épreuves), et la
+visite guidée.
+
+Restent, pour aller au bout de l'étape 8 :
+- **Les autres boutons sans gestionnaire.** Le plan en comptait ~14 ; sur les
+  quatre « Exporter/Télécharger » suspectés, deux avaient déjà un gestionnaire.
+  Un balayage complet des `<button>` sans `onClick` reste à faire, hors des
+  quatre déjà traités.
+- **Les encarts vers des adresses inexistantes** (cinq, d'après l'audit) : à
+  recenser et à corriger ou retirer.
+- **Deux épreuves Playwright** encore à écrire : `no-dead-buttons` et la
+  cohérence du panneau de flux d'argent.
+- **`/admin` protégé** : voir l'entrée Sécurité ci-dessous — c'est le même
+  correctif.
+
 ### `/admin` reste atteignable sans compte
 
 Le middleware laisse tout passer tant que Supabase n'est pas configuré, ce qui

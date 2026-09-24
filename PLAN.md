@@ -9,15 +9,14 @@ Branche `feat/plateforme-v2`. Un commit par étape. Après chaque étape : `lint
 
 > Pour qui ouvre le dépôt sans contexte. Lisez ce bloc, puis l'étape en cours.
 
-**Où on en est.** Étapes 1, 2, 3, 4, 5, 6, **7 faites**. L'étape 4 a livré : `/demo`
+**Où on en est.** Étapes 1 à 7 faites ; **étape 8 en grande partie faite** (ROI indicatifs, boutons morts réels réveillés, garde-fou anti-traction, visite guidée). Reste : balayage complet des boutons morts, encarts vers adresses inexistantes, deux épreuves Playwright, protection de /admin — voir TODO. L'étape 4 a livré : `/demo`
 (premier écran neuf), les liens landing + mobile qui y mènent, le sélecteur de
 rôle (visite en cinq minutes, 8 rôles), le bandeau-légende permanent, le mode
 explicatif avec panneau au clic sur les statuts, le nettoyage du CSS orphelin
 (−250 lignes) et de la collision `--text-secondary` / `--text-muted`.
 
-**Ce qui vient après.** Étape 8 (**en cours**, la dernière), **sans pause de
-validation** (feu vert donné). Boutons morts, ROI indicatifs, épreuves
-Playwright de non-régression, et la visite guidée en dernier.
+**Ce qui vient après.** Finir le reliquat de l'étape 8 (cf. TODO), puis les
+livrables de la Partie D : CHANGELOG-V2.md et le rapport final.
 
 **Consignes fondateur en vigueur, à ne pas perdre :**
 - **La règle de tri** (phase A) : les données *d'un utilisateur* restent
@@ -48,7 +47,7 @@ l'import — un chiffre incohérent fait échouer `next build` ; voir README,
 
 **Attribution des commits** : `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`.
 
-**Dernier commit au moment d'écrire** : `96b7041` (CGU 13 sections — étape 7 terminée).
+**Dernier commit au moment d'écrire** : `a179a17` (visite guidée — étape 8 en grande partie faite).
 
 ---
 
@@ -257,7 +256,7 @@ sur cette brique.*
 
 ---
 
-## Étape 8 — Boutons morts, épreuves, visite guidée
+## Étape 8 — Boutons morts, épreuves, visite guidée — EN GRANDE PARTIE FAIT (cf. TODO)
 
 - Les 14 boutons sans gestionnaire, en priorité les quatre « Exporter ».
 - Les ROI en vert sur les 22 biens deviennent indicatifs, ou disparaissent.
