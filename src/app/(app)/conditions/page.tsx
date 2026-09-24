@@ -1,76 +1,12 @@
 "use client";
 
 import React from "react";
+import { SECTIONS, conditionsMeta } from "@/content/conditions";
 
-/* ─── Sections ───────────────────────────────────────────────────────────── */
+/* ── /conditions ────────────────────────────────────────────────────────────
 
-const SECTIONS = [
-  {
-    id: "objet",
-    title: "1. Objet",
-    content: `Les présentes Conditions Générales d'Utilisation (ci-après "CGU") régissent l'accès et l'utilisation de la plateforme E-Dome (ci-après "la Plateforme"), éditée par E-Dome Sàrl, dont le siège social se situe en Suisse. En accédant à la Plateforme, l'Utilisateur accepte sans réserve l'intégralité des présentes CGU. Si l'Utilisateur n'accepte pas ces conditions, il doit cesser toute utilisation de la Plateforme.`,
-  },
-  {
-    id: "definitions",
-    title: "2. Définitions",
-    content: `- "Plateforme" : le site web et l'application mobile E-Dome.\n- "Utilisateur" : toute personne physique ou morale inscrite sur la Plateforme.\n- "Hôte" : Utilisateur proposant un bien immobilier à la vente ou à la location.\n- "Client" : Utilisateur recherchant un bien immobilier.\n- "Apporteur d'affaires" : Utilisateur recommandant des prospects via les liens de parrainage.\n- "Contenu" : tout texte, image, vidéo, annonce ou information publiée sur la Plateforme.\n- "Commission" : pourcentage prélevé par la Plateforme sur les transactions réalisées.`,
-  },
-  {
-    id: "inscription",
-    title: "3. Inscription et compte",
-    content: `L'inscription sur la Plateforme est gratuite et ouverte à toute personne majeure ou entité juridique valablement constituée. L'Utilisateur s'engage à fournir des informations exactes, complètes et à jour lors de son inscription. Chaque Utilisateur ne peut détenir qu'un seul compte. E-Dome se réserve le droit de suspendre ou supprimer tout compte en cas de violation des présentes CGU, sans préavis ni indemnité.`,
-  },
-  {
-    id: "services",
-    title: "4. Services proposés",
-    content: `La Plateforme permet :\n- La publication et la consultation d'annonces immobilières (vente, location courte et longue durée).\n- La mise en relation entre hôtes et clients.\n- La réservation et la gestion de biens immobiliers.\n- L'accès à des formations en ligne.\n- La participation à des événements en direct (lives).\n- Le programme d'apporteurs d'affaires.\n- L'accès à des outils de statistiques et de gestion.\n\nE-Dome agit en qualité d'intermédiaire et n'est pas partie aux contrats conclus entre Utilisateurs.`,
-  },
-  {
-    id: "commissions",
-    title: "5. Frais de plateforme et tarification",
-    content: `Le modèle de rémunération d'E-Dome est différencié par pôle. Les ventes entre particuliers et les locations longue durée sont facturées via des frais fixes de plateforme — jamais un pourcentage du prix —, tandis que les pôles marketplace (services, événements, lives, formations, e-commerce, location courte durée) appliquent une commission marketplace. Les partenariats agences sont régis par un revenue share B2B distinct, négocié par contrat. Le barème indicatif est le suivant :`,
-    table: [
-      ["Type de transaction", "Rémunération E-Dome", "Part apporteur (si activée)"],
-      ["Vente entre particuliers", "Frais fixe 500 CHF (< 1 M) ou 2 500 CHF (≥ 1 M)", "10 à 30 % du frais E-Dome"],
-      ["Location courte durée", "Commission marketplace 5 à 10 % de la réservation", "10 à 30 % de la commission E-Dome"],
-      ["Location longue durée", "Frais fixe 150 / 250 / 400 CHF selon la durée du bail", "10 à 30 % du frais E-Dome"],
-      ["Services & prestataires", "Commission marketplace 5 à 8 %", "10 à 30 % de la commission E-Dome"],
-      ["Événements / billetterie", "Commission marketplace 5 à 8 % par billet", "10 à 30 % de la commission E-Dome"],
-      ["Lives & coaching", "Commission marketplace 8 à 12 % par session payante", "10 à 30 % de la commission E-Dome"],
-      ["Formations & contenus", "Commission marketplace 8 à 12 % par contenu vendu", "10 à 30 % de la commission E-Dome"],
-      ["E-commerce / boutique", "Commission marketplace 4 à 8 % par vente", "10 à 30 % de la commission E-Dome"],
-      ["Partenariat agences (B2B)", "Revenue share B2B négocié par contrat (~10 à 15 % au lancement de la commission de l'agence)", "—"],
-    ],
-    contentAfter: `La part de l'apporteur d'affaires (le cas échéant) est exclusivement prélevée sur les revenus de plateforme d'E-Dome. En aucun cas elle ne constitue un coût supplémentaire pour l'hôte, le client, l'acheteur, le locataire ou le voyageur. Tous les outils de la Plateforme sont disponibles gratuitement ; E-Dome ne perçoit aucun abonnement mensuel imposé. Les tarifs peuvent être modifiés avec un préavis de 30 jours et seront adaptés selon les marchés.`,
-  },
-  {
-    id: "obligations",
-    title: "6. Obligations des Utilisateurs",
-    content: `L'Utilisateur s'engage à :\n- Utiliser la Plateforme conformément à sa destination et aux lois en vigueur.\n- Ne publier aucun contenu illicite, trompeur, diffamatoire ou portant atteinte aux droits de tiers.\n- Respecter les droits de propriété intellectuelle.\n- Ne pas tenter de contourner les mécanismes de la Plateforme (scraping, spam, etc.).\n- Maintenir la confidentialité de ses identifiants de connexion.\n- Signaler tout contenu ou comportement inapproprié.`,
-  },
-  {
-    id: "propriete",
-    title: "7. Propriété intellectuelle",
-    content: `L'ensemble des éléments composant la Plateforme (design, textes, logos, algorithmes, code source) sont la propriété exclusive d'E-Dome ou de ses partenaires. Toute reproduction, représentation ou exploitation, même partielle, est interdite sans autorisation préalable écrite. Les Utilisateurs conservent la propriété de leurs contenus mais accordent à E-Dome une licence non exclusive, mondiale et gratuite pour leur affichage sur la Plateforme.`,
-  },
-  {
-    id: "responsabilite",
-    title: "8. Limitation de responsabilité",
-    content: `E-Dome met tout en œuvre pour assurer la disponibilité et la sécurité de la Plateforme, mais ne saurait être tenue responsable :\n- Des interruptions temporaires de service pour maintenance ou mise à jour.\n- Des contenus publiés par les Utilisateurs.\n- Des litiges entre Utilisateurs.\n- Des pertes financières liées à l'utilisation de la Plateforme.\n- De l'exactitude des informations fournies par les Utilisateurs.\n\nLa responsabilité d'E-Dome est en tout état de cause limitée au montant des commissions perçues au cours des 12 derniers mois.`,
-  },
-  {
-    id: "donnees",
-    title: "9. Protection des données",
-    content: `Le traitement des données personnelles est régi par notre Politique de Confidentialité, accessible depuis la page dédiée. E-Dome s'engage à respecter la Loi fédérale sur la protection des données (LPD) ainsi que le Règlement général sur la protection des données (RGPD) pour les Utilisateurs situés dans l'Union européenne.`,
-  },
-  {
-    id: "juridiction",
-    title: "10. Droit applicable et juridiction",
-    content: `Les présentes CGU sont soumises au droit suisse. En cas de litige, les parties s'engagent à rechercher une solution amiable. À défaut, les tribunaux compétents du canton de Neuchâtel, Suisse, seront seuls compétents.\n\nLes présentes CGU sont entrées en vigueur le 1er janvier 2026 et peuvent être modifiées à tout moment par E-Dome. Les modifications prennent effet dès leur publication sur la Plateforme. L'Utilisateur est invité à consulter régulièrement les CGU.`,
-  },
-];
-
-/* ─── Page ───────────────────────────────────────────────────────────────── */
+   Le contenu — treize sections, les quatre règles en §2, le barème généré —
+   vit dans `src/content/conditions.ts`. Cette page ne fait que le disposer. */
 
 export default function ConditionsPage() {
   const scrollTo = (id: string) => {
@@ -82,17 +18,17 @@ export default function ConditionsPage() {
       {/* Demo disclaimer */}
       <div className="p-4 rounded-xl border border-[var(--primary)]/40 bg-[var(--primary)]/5 text-xs text-[var(--text-secondary)] leading-relaxed">
         <span className="mr-1">&#9888;&#65039;</span>
-        Ce document est fourni à titre indicatif dans le cadre de la maquette de démonstration E-Dome. Il ne constitue pas un document légal contraignant.
+        {conditionsMeta.disclaimer}
       </div>
 
       <div className="text-center space-y-2">
-        <h1 className="text-3xl page-heading text-[var(--foreground)]">Conditions Générales d&apos;Utilisation</h1>
-        <p className="text-[var(--text-secondary)]">Dernière mise à jour : 1er janvier 2026</p>
+        <h1 className="text-3xl page-heading text-[var(--foreground)]">{conditionsMeta.title}</h1>
+        <p className="text-[var(--text-secondary)]">{conditionsMeta.updated}</p>
       </div>
 
       {/* Table of contents */}
       <nav className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-2">
-        <h2 className="font-semibold text-[var(--foreground)] mb-3">Table des matières</h2>
+        <h2 className="font-semibold text-[var(--foreground)] mb-3">{conditionsMeta.tocTitle}</h2>
         {SECTIONS.map((s) => (
           <button
             key={s.id}

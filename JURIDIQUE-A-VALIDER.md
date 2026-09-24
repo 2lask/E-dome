@@ -279,6 +279,17 @@ logiciels métier installés depuis quinze ans.
 | **Lex Koller (LFAIE)** | Information des acheteurs domiciliés à l'étranger sur les biens résidentiels suisses. Contingents cantonaux pour les logements de vacances | **Base d'article à vérifier** pour les contingents. Ne jamais écrire qu'un bien est « éligible aux acheteurs étrangers » |
 | **Achat intégré iOS** | Ne s'applique pas à une application web installable. S'appliquerait à une application native distribuée par l'App Store vendant du contenu numérique | Décision reportée, **datée**. Échéance ferme : le prix différencié web / iOS doit être **prêt avant la première soumission** de `mobile/` à l'App Store, pas après. Une application soumise avec du contenu numérique payant et sans achat intégré est rejetée au titre de la règle 3.1.1 ; la corriger après un rejet coûte un cycle de revue complet |
 
+> **Les conditions générales réécrites (étape 7).** `/conditions` passe de dix
+> à treize sections, et les **quatre règles sont en §2, avant toute clause
+> tarifaire, en toutes lettres** — composées depuis `PLATFORM_RULES`, donc
+> impossibles à faire diverger de l'interface. Deux corrections de fond
+> révélées à la rédaction : l'ancien glossaire définissait « Commission » comme
+> « pourcentage prélevé par la Plateforme sur les transactions réalisées »
+> (la règle 3 contredite dans les définitions), et confondait l'hôte de courte
+> durée avec le vendeur. Le barème du §6 est **généré depuis `RATES`**. Tout
+> ceci reste soumis à votre relecture — c'est un texte de maquette, pas un
+> document validé.
+
 > **Où ces points apparaissent dans la maquette (étape 5).** L'étape finale de
 > `/publier` n'affiche plus de frais pour la vente et la location longue durée :
 > c'est un **écran d'obligations** (`src/content/publier-obligations.ts`) qui

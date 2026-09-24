@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Calendar as BookingCallout } from "@/components/ui/calendar";
+import { RATES } from "@/lib/pricing/catalog";
 
 /* ─── FAQ Data ───────────────────────────────────────────────────────────── */
 
@@ -10,6 +11,12 @@ interface FAQ {
   answer: string;
   category: string;
 }
+
+/* La réponse unique sur le barème éclatait en trois questions, générées depuis
+   le module (`RATES`) — elles ne peuvent donc pas répéter un ancien tarif. Le
+   pct/range lit le catalogue ; le texte n'écrit aucun chiffre en dur. */
+const pct = (r: number) => `${(r * 100).toLocaleString("fr-CH")} %`;
+const range = (min: number, max: number) => (min === max ? pct(max) : `${pct(min)} à ${pct(max)}`);
 
 const FAQS: FAQ[] = [
   // Compte
@@ -27,10 +34,12 @@ const FAQS: FAQ[] = [
   // Paiement
   { category: "Paiement", question: "Quels modes de paiement acceptez-vous ?", answer: "Nous acceptons les cartes de crédit (Visa, Mastercard), TWINT, les virements bancaires IBAN, et PayPal. Tous les paiements sont sécurisés et chiffrés." },
   { category: "Paiement", question: "Quand reçois-je mon paiement en tant qu'hôte ?", answer: "Le paiement est versé dans les 48 heures suivant le check-in du client, après déduction de la commission plateforme. Les versements sont effectués sur votre compte bancaire enregistré." },
-  { category: "Paiement", question: "Comment fonctionnent les frais de plateforme ?", answer: "Le modèle E-Dome est différencié par pôle. Ventes entre particuliers : frais fixe de 500 CHF (bien < 1 M) ou 2 500 CHF (≥ 1 M). Location longue durée : frais fixe de 150 / 250 / 400 CHF selon la durée du bail. Location courte durée : commission marketplace 5 à 10 % de la réservation. Services, événements, lives, formations, e-commerce : commission marketplace 4 à 12 % selon le pôle. La part éventuelle des apporteurs est prélevée sur ce qu'E-Dome encaisse — jamais ajoutée au prix payé par l'hôte, l'acheteur, le locataire ou le client." },
+  { category: "Paiement", question: "Combien coûte la vente ou la location longue durée d'un bien ?", answer: "Rien à E-Dome. Publier un bien à la vente ou en location longue durée est gratuit, et aucune somme due à E-Dome ne dépend de la conclusion de la vente ou du bail. E-Dome gagne sa vie du côté professionnel, par les abonnements des agences — pas sur la transaction d'un particulier." },
+  { category: "Paiement", question: "Combien coûte un pôle de la marketplace ?", answer: `Une commission sur ce qui se vend via la plateforme, prélevée sur le prestataire ou l'hôte, jamais ajoutée au prix payé par le client. Location courte durée : ${range(RATES["location-ct"].min, RATES["location-ct"].max)} de la réservation, à la charge de l'hôte. Services : ${range(RATES.service.min, RATES.service.max)}. Formations : ${range(RATES.formation.min, RATES.formation.max)}. Lives : ${range(RATES.live.min, RATES.live.max)}. Événements : ${range(RATES.evenement.min, RATES.evenement.max)} plus une part fixe par billet. Boutique : aucune commission, elle fonctionne en affiliation.` },
+  { category: "Paiement", question: "Qui paie la part de l'apporteur ?", answer: "Personne en plus. La part de l'apporteur (10 à 30 %) est prélevée sur ce qu'E-Dome encaisse déjà, jamais ajoutée au prix payé par l'hôte, l'acheteur, le locataire ou le client. C'est un partage de la marge d'E-Dome, pas un supplément." },
   // Apporteurs
   { category: "Apporteurs", question: "Comment devenir apporteur d'affaires ?", answer: "Activez le rôle 'Apporteur' dans vos paramètres. Vous aurez accès à vos liens de parrainage personnalisés que vous pouvez partager pour amener des hôtes, clients ou biens sur la plateforme." },
-  { category: "Apporteurs", question: "Comment est calculée ma rémunération ?", answer: "Votre rémunération est une part fixée par E-Dome sur sa propre rémunération de plateforme — entre 10 et 30 % selon le pôle (vente, location, services, formations, e-commerce, etc.). Le vendeur n'a aucun pouvoir sur ce taux : il active simplement le programme apporteur sur son annonce ou non. La rémunération est calculée automatiquement à chaque conversion et versée mensuellement sur votre compte bancaire. Elle n'est jamais ajoutée au prix payé par l'acheteur ou le client." },
+  { category: "Apporteurs", question: "Comment est calculée ma rémunération ?", answer: "Votre rémunération est une part de ce qu'E-Dome perçoit sur la conversion — entre 10 et 30 % selon le pôle de la marketplace (courte durée, services, formations, événements, lives) — ou une prime fixe, par exemple lorsque vous amenez un hôte. Sur une vente ou une location longue durée, E-Dome ne perçoit rien, donc il n'y a pas de pourcentage à partager : ces apports se rémunèrent par une prime fixe quand elle existe. Votre part est calculée automatiquement à chaque conversion et n'est jamais ajoutée au prix payé par le client." },
   { category: "Apporteurs", question: "Combien de temps dure le tracking d'un lien ?", answer: "Le cookie de tracking est valide pendant 90 jours après le clic. Si le prospect s'inscrit et réalise une transaction dans ce délai, la conversion vous est attribuée." },
   // Technique
   { category: "Technique", question: "L'application est-elle disponible sur mobile ?", answer: "E-Dome est une application web responsive accessible depuis tout navigateur mobile. Une application native iOS et Android est en cours de développement et sera disponible courant 2026." },
