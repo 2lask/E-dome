@@ -279,6 +279,15 @@ logiciels métier installés depuis quinze ans.
 | **Lex Koller (LFAIE)** | Information des acheteurs domiciliés à l'étranger sur les biens résidentiels suisses. Contingents cantonaux pour les logements de vacances | **Base d'article à vérifier** pour les contingents. Ne jamais écrire qu'un bien est « éligible aux acheteurs étrangers » |
 | **Achat intégré iOS** | Ne s'applique pas à une application web installable. S'appliquerait à une application native distribuée par l'App Store vendant du contenu numérique | Décision reportée, **datée**. Échéance ferme : le prix différencié web / iOS doit être **prêt avant la première soumission** de `mobile/` à l'App Store, pas après. Une application soumise avec du contenu numérique payant et sans achat intégré est rejetée au titre de la règle 3.1.1 ; la corriger après un rejet coûte un cycle de revue complet |
 
+> **Où ces points apparaissent dans la maquette (étape 5).** L'étape finale de
+> `/publier` n'affiche plus de frais pour la vente et la location longue durée :
+> c'est un **écran d'obligations** (`src/content/publier-obligations.ts`) qui
+> rappelle au vendeur ou au bailleur la formule officielle du loyer initial, le
+> droit de vendre/louer, la garantie de loyer, l'information Lex Koller, et —
+> pour la courte durée — le numéro d'enregistrement. **Ces textes sont
+> indicatifs et attendent votre relecture** ; ils ne prétendent pas être
+> exhaustifs ni juridiquement définitifs.
+
 ---
 
 ## 7. Ce que nous nous interdisons déjà

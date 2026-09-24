@@ -6,13 +6,10 @@ import type { TransactionType, PropertyType } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import {
   APPORTEUR_SHARE,
-  LONG_RENTAL_FEES,
-  SALE_FEE_ABOVE,
-  SALE_FEE_BELOW,
-  SALE_FEE_THRESHOLD,
   edomeRevenue as platformRevenue,
   type Pole,
 } from "@/lib/pricing";
+import { publierObligations } from "@/content/publier-obligations";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -582,77 +579,37 @@ export default function PublierPage() {
         {/* ── Final Step: Frais de publication + Options + Preview + Publish ────── */}
         {step === totalSteps && (
           <div className="space-y-6 animate-fade-in">
-            {/* Bloc « Frais de publication » — V1.0 : adapte au type de transaction.
-                - Vente : frais fixe 500 CHF (< 1 M) ou 2 500 CHF (≥ 1 M), dû à
-                  la publication, indépendant du prix de vente, jamais un %.
-                - Location LT : 150 / 250 / 400 CHF selon la durée du bail
-                  (tarifs affichés à titre indicatif — la durée est précisée
-                  au moment du contrat).
-                - Location CT : publication gratuite, commission marketplace
-                  5-10 % prélevée sur chaque réservation. */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Frais de publication</h2>
-              {form.transactionType === "vente" && (
-                <div className="p-5 rounded-2xl border border-[var(--primary)]/30 bg-[var(--primary)]/5 space-y-3">
-                  <div className="flex items-baseline justify-between">
-                    <p className="text-sm text-[var(--text-secondary)]">
-                      {form.prix > 0 && form.prix < 1_000_000
-                        ? "Bien inférieur à 1 000 000 CHF"
-                        : form.prix >= 1_000_000
-                        ? "Bien supérieur ou égal à 1 000 000 CHF"
-                        : "Selon le prix renseigné à l'étape 2"}
-                    </p>
-                    <span className="text-2xl font-bold text-[var(--primary)] tabular-nums">
-                      {form.prix > 0
-                        ? formatPrice(form.prix < SALE_FEE_THRESHOLD ? SALE_FEE_BELOW : SALE_FEE_ABOVE)
-                        : formatPrice(SALE_FEE_BELOW) + " ou " + formatPrice(SALE_FEE_ABOVE)}
+            {/* Ecran d'OBLIGATIONS — l'etape de frais a disparu pour la vente
+                et la location longue duree : plus aucun frais de 500 / 2 500
+                CHF, publier un bien de particulier est gratuit. A la place, ce
+                que la loi impose. Contenu dans content/publier-obligations.ts. */}
+            {(() => {
+              const tt = form.transactionType;
+              if (tt !== "vente" && tt !== "location-lt" && tt !== "location-ct") return null;
+              const block = publierObligations[tt];
+              const isCt = tt === "location-ct";
+              return (
+                <div>
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <h2 className="text-xl font-semibold">{block.title}</h2>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                      {publierObligations.freeBadge}
                     </span>
                   </div>
-                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                    Frais fixe de plateforme, dû à la publication — indépendant du résultat de la vente.
-                    Couvre la publication premium, les outils de gestion, la messagerie et la diffusion sur E-Dome.
-                    <strong className="text-[var(--text-secondary)]"> Ce n&apos;est pas un pourcentage du prix.</strong>
-                  </p>
+                  {!isCt && (
+                    <p className="mb-3 text-sm text-[var(--text-muted)]">{publierObligations.freeNote}</p>
+                  )}
+                  <ul className="space-y-2.5">
+                    {block.obligations.map((o) => (
+                      <li key={o.label} className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-3.5">
+                        <p className="text-[13.5px] font-semibold text-[var(--foreground)]">{o.label}</p>
+                        <p className="mt-1 text-[12.5px] leading-snug text-[var(--text-muted)]">{o.body}</p>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-              {form.transactionType === "location-lt" && (
-                <div className="p-5 rounded-2xl border border-[var(--primary)]/30 bg-[var(--primary)]/5 space-y-3">
-                  <p className="text-sm text-[var(--text-secondary)] mb-2">
-                    Frais fixe de mise en ligne, selon la durée du bail :
-                  </p>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-                      <p className="text-xs text-[var(--text-muted)]">Bail 1–6 mois</p>
-                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(LONG_RENTAL_FEES.court)}</p>
-                    </div>
-                    <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-                      <p className="text-xs text-[var(--text-muted)]">Bail 6–12 mois</p>
-                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(LONG_RENTAL_FEES.median)}</p>
-                    </div>
-                    <div className="p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-                      <p className="text-xs text-[var(--text-muted)]">Bail 12 mois +</p>
-                      <p className="text-lg font-bold text-[var(--primary)] tabular-nums">{formatPrice(LONG_RENTAL_FEES.long)}</p>
-                    </div>
-                  </div>
-                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                    Frais fixe — la durée du bail définitif est précisée lors de la signature.
-                    <strong className="text-[var(--text-secondary)]"> Ce n&apos;est pas un pourcentage du loyer.</strong>
-                  </p>
-                </div>
-              )}
-              {form.transactionType === "location-ct" && (
-                <div className="p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
-                  <div className="flex items-baseline justify-between">
-                    <p className="text-sm text-[var(--text-secondary)]">Publication</p>
-                    <span className="text-2xl font-bold text-emerald-400">Gratuite</span>
-                  </div>
-                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                    Publication gratuite. E-Dome prélève une <strong className="text-[var(--text-secondary)]">commission marketplace
-                    de 5 à 10 %</strong> sur chaque réservation réalisée via la plateforme — jamais ajoutée au prix payé par le voyageur.
-                  </p>
-                </div>
-              )}
-            </div>
+              );
+            })()}
 
             {/* Options de visibilité (facultatives) — anciennement « Options payantes ». */}
             <div>
