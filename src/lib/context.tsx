@@ -3,9 +3,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import type { Role, Currency, ReferralLink } from "./types";
 import { roleLabels } from "./types";
+import type { PlatformRole } from "./model/identity";
+import { isPlatformRole } from "./model/identity";
 import type { Profile } from "./profile-types";
 import { DEFAULT_PROFILE } from "./profile-data";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
+import { DEFAULT_VIEWING_AS, tourFor } from "./../content/roles";
 
 // ─── Exchange rates (base CHF = 1) ──────────────────────────────────────────
 
@@ -46,6 +49,13 @@ interface AppContextValue {
   setActiveRole: (role: Role) => void;
   availableRoles: Role[];
   toggleAvailableRole: (role: Role) => void;
+  /* Le rôle qu'on VISITE, découplé des droits. C'est l'axe `PlatformRole` du
+     modèle, pas la valeur `Role` héritée : le sélecteur de rôle le pilote pour
+     montrer la plateforme de chaque point de vue. Le régler met aussi à jour
+     `activeRole` (valeur héritée) via le pont de `content/roles.ts`, le temps
+     que les consommateurs migrent. */
+  viewingAs: PlatformRole;
+  setViewingAs: (role: PlatformRole) => void;
   favorites: Set<string>;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
@@ -128,6 +138,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [activeRole, setActiveRoleState] = useState<Role>(DEFAULT_ROLE);
   const [availableRoles, setAvailableRoles] = useState<Role[]>(DEFAULT_ROLES);
+  const [viewingAs, setViewingAsState] = useState<PlatformRole>(DEFAULT_VIEWING_AS);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(DEFAULT_FAVORITES));
   const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
@@ -148,6 +159,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
          l'utilisateur, là où un rôle fantôme ne l'est pas. */
       const storedRole = localStorage.getItem(`${STORAGE_PREFIX}activeRole`);
       if (storedRole && isKnownRole(storedRole)) setActiveRoleState(storedRole);
+
+      /* Même prudence que pour `activeRole` : une valeur inconnue est ignorée,
+         on retombe sur le défaut. `PlatformRole` peut évoluer. */
+      const storedViewingAs = localStorage.getItem(`${STORAGE_PREFIX}viewingAs`);
+      if (storedViewingAs && isPlatformRole(storedViewingAs)) setViewingAsState(storedViewingAs);
 
       const storedRoles = localStorage.getItem(`${STORAGE_PREFIX}availableRoles`);
       if (storedRoles) setAvailableRoles(JSON.parse(storedRoles));
@@ -206,6 +222,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!mounted) return;
+    persist("viewingAs", viewingAs);
+  }, [viewingAs, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
     persist("availableRoles", JSON.stringify(availableRoles));
   }, [availableRoles, mounted]);
 
@@ -253,6 +274,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setActiveRole = useCallback((role: Role) => {
     setActiveRoleState(role);
+  }, []);
+
+  /* Régler le rôle de visite met aussi à jour `activeRole` (valeur héritée),
+     via le pont `legacyRole` de `content/roles.ts`. Ainsi les consommateurs
+     qui lisent encore `activeRole` suivent le changement sans connaître
+     `viewingAs`. Un rôle du modèle sans entrée de visite (visiteur, agent,
+     annonceur) laisse `activeRole` tel quel : il n'a pas d'équivalent hérité
+     évident, et forcer une correspondance mentirait. */
+  const setViewingAs = useCallback((role: PlatformRole) => {
+    setViewingAsState(role);
+    const bridged = tourFor(role)?.legacyRole;
+    if (bridged) setActiveRoleState(bridged);
   }, []);
 
   const toggleAvailableRole = useCallback((role: Role) => {
@@ -398,6 +431,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     () => ({
       activeRole,
       setActiveRole,
+      viewingAs,
+      setViewingAs,
       availableRoles,
       toggleAvailableRole,
       favorites,
@@ -431,6 +466,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [
       activeRole,
       setActiveRole,
+      viewingAs,
+      setViewingAs,
       availableRoles,
       toggleAvailableRole,
       favorites,

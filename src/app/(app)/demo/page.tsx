@@ -5,7 +5,7 @@ import {
   Home, Wrench, Handshake, GraduationCap, CalendarDays, Radio, ShoppingBag,
   Building2, Rss, LayoutDashboard, ArrowRight, type LucideIcon,
 } from "lucide-react";
-import type { FeatureStage } from "@/lib/model/feature";
+import { STAGE_DOT, STAGE_TEXT } from "@/lib/model/stage-ui";
 import { demoScreen } from "@/content/demo";
 
 /* ── `/demo` — la porte d'entrée ────────────────────────────────────────────
@@ -23,20 +23,8 @@ const ICONS: Record<string, LucideIcon> = {
   Building2, Rss, LayoutDashboard,
 };
 
-/* La couleur d'un statut. Un seul endroit la décide, pour que le gris ne
-   redevienne pas une décision prise différemment à chaque écran — c'est la
-   raison d'être du jeton `--stage-later`, distinct du texte atténué ordinaire. */
-const STAGE_DOT: Record<FeatureStage, string> = {
-  launch: "bg-emerald-500",
-  later: "bg-[var(--stage-later)]",
-  vision: "bg-[var(--stage-vision)]",
-};
-
-const STAGE_TEXT: Record<FeatureStage, string> = {
-  launch: "text-[var(--foreground)]",
-  later: "text-[var(--text-muted)]",
-  vision: "text-[var(--text-muted)]",
-};
+/* Les couleurs de statut viennent de `@/lib/model/stage-ui` : un seul endroit
+   les décide, partagé avec le bandeau-légende global. */
 
 export default function DemoPage() {
   const d = demoScreen;

@@ -152,7 +152,10 @@ export function SidebarWhop() {
         </NavSection>
       </div>
 
-      {/* Footer utilisateur — p-3 + avatar h-8 (Whop dimensions) */}
+      {/* Footer utilisateur — p-3 + avatar h-8 (Whop dimensions).
+          Le sélecteur de rôle n'est pas ici mais dans le bandeau-légende
+          global : c'est le seul emplacement présent sur toutes les routes,
+          tableau de bord compris, dont la chrome n'a pas cette sidebar. */}
       <div className="shrink-0 border-t border-border p-3">
         <Link
           href="/profil"

@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { AppProvider } from "@/lib/context";
 import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/components/ui/toast";
-import { Wrench } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { SidebarWhop } from "@/components/layout/sidebar-whop";
+import { DemoLegendBar } from "@/components/layout/demo-legend-bar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ExplorerTabs } from "@/components/layout/explorer-tabs";
@@ -148,20 +148,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 isDashboardRoute ? "" : "md:ml-[220px]"
               }`}
             >
-              {/* Banniere demo : compacte (Whop n'a pas de banniere). */}
-              <div className="w-full px-4 py-1 bg-[var(--primary)]/5 border-b border-[var(--primary)]/10 text-center text-[10px] text-[var(--primary)] flex items-center justify-center gap-1">
-                <Wrench size={10} strokeWidth={2} />
-                <span>
-                  Maquette de démonstration — Données fictives ·{" "}
-                  <a
-                    href="/demo"
-                    className="underline hover:opacity-80"
-                    title="Comprendre E-Dome en un écran : les pôles, qui paie quoi, par où commencer"
-                  >
-                    En savoir plus
-                  </a>
-                </span>
-              </div>
+              {/* Bandeau-légende permanent : mention « données d'exemple »,
+                  légende des statuts, et sélecteur de rôle. Ici plutôt que dans
+                  une sidebar parce que c'est le seul emplacement présent sur
+                  toutes les routes, tableau de bord compris. */}
+              <DemoLegendBar />
 
               {/* Header global : masque sur /dashboard/* et sur /feed (Whop). */}
               {!isDashboardRoute && !isFeedRoute && (
