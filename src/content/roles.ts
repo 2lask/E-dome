@@ -76,9 +76,9 @@ export const roleTour = {
       legacyRole: "agence",
       label: "Agence",
       tagline: "Mandats, équipe, vitrine et abonnement.",
-      href: "/dashboard",
+      href: "/agence",
       icon: "Building2",
-      see: ["Le tableau de bord professionnel", "Les formules d'abonnement", "L'espace agence (à venir)"],
+      see: ["Les demandes de votre secteur", "Les quatre formules d'abonnement", "La page publique de l'agence"],
     },
     {
       role: "prestataire",
