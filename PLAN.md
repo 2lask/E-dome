@@ -1,7 +1,56 @@
-# PLAN DE TRAVAIL — en attente de feu vert
+# PLAN DE TRAVAIL
 
 Branche `feat/plateforme-v2`. Un commit par étape. Après chaque étape : `lint`,
 `typecheck`, `build`, et les épreuves existantes — verts, sans exception.
+
+---
+
+## ▶ POINT DE REPRISE — mis à jour à chaque commit
+
+> Pour qui ouvre le dépôt sans contexte. Lisez ce bloc, puis l'étape en cours.
+
+**Où on en est.** Étapes 1, 2, 3 **faites**. Étape 4 **entamée** : l'écran
+d'entrée `/demo` est livré (premier écran neuf), les liens de la landing et du
+conteneur mobile y mènent, les jetons de statut `--stage-later` / `--stage-vision`
+existent. **Reste de l'étape 4** à faire : sélecteur de rôle, mode explicatif,
+bandeau-légende permanent, nettoyage du CSS orphelin et de la collision
+`--text-secondary` / `--text-muted`.
+
+**Ce qui vient après.** Étapes 5 → 8, **sans pause de validation** (feu vert
+donné). L'ordre et le contenu sont détaillés plus bas.
+
+**Consignes fondateur en vigueur, à ne pas perdre :**
+- **La règle de tri** (phase A) : les données *d'un utilisateur* restent
+  fictives (ses revenus, ses réservations) ; toute affirmation sur *E-Dome
+  elle-même* (inscrits, montants versés, indice de marché, deals) dégage.
+- **Les quatre règles ensemble** : rien n'affiche la seule règle 3. Elles sont
+  un objet du modèle (`src/lib/model/rules.ts`), affichées toutes les quatre.
+- **Frais directs** par défaut ; la ligne « frais de paiement » du flux d'argent
+  reste visible partout — c'est un arbitrage encore ouvert chez l'avocat, voir
+  `JURIDIQUE-A-VALIDER.md`.
+- **Direction visuelle de `/demo`** comme référence pour tout écran neuf, pour
+  que l'ensemble se ressemble.
+- **Le sélecteur de rôle doit montrer toute la plateforme en cinq minutes** :
+  ce parcours se teste soi-même avant de déclarer l'étape finie.
+- **La landing reste par ailleurs gelée** (`/`, `/merci`, `/confidentialite`,
+  `/admin/leads`, la couche leads, `src/content/landing.ts`) : les liens `demo`
+  ont été la seule exception autorisée. Toute autre nécessité de la toucher →
+  s'arrêter et demander.
+- **Pousser après chaque commit** sur `origin/feat/plateforme-v2`, et donner
+  l'URL de préproduction avec ce qu'il faut y regarder.
+
+**Portes de qualité** (toutes vertes au dernier commit) :
+`npm run typecheck` · `npm run lint` (0 erreur ; les warnings sont de la dette
+existante documentée) · `npm run build` · `npm test` (Playwright 9/9) ·
+`npm run test:data` (18/18). Les invariants de démonstration sont levés à
+l'import — un chiffre incohérent fait échouer `next build` ; voir README,
+« Pourquoi mon build échoue ».
+
+**Attribution des commits** : `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`.
+
+**Dernier commit au moment d'écrire** : `2223d8f` (liens landing → /demo).
+
+---
 
 > **Révision 2**, après les amendements du fondateur. Ce qui change dans le
 > plan : les **quatre règles** deviennent un objet du modèle, affichées
@@ -123,24 +172,30 @@ section README « Pourquoi mon build échoue ». Deux invariants qui s'écrivaie
 
 ---
 
-## Étape 4 — Ce qui se voit enfin
+## Étape 4 — Ce qui se voit enfin — EN COURS
 
 *Premier écran neuf. Le critère des trente secondes devient atteignable.*
 
-- `src/content/` : `common`, `demo`, `explain`, `roles`, `offer` — textes
-  **neufs**, écrits d'emblée. Les extractions de routes existantes suivent au
-  fil des étapes, jamais en passe dédiée.
-- **Sélecteur de rôle**, branché sur le `setActiveRole` qui existe déjà et que
-  personne n'appelle. `viewingAs` découplé des droits.
-- **Statuts** portés par la donnée, jeton de gris dédié, panneau d'explication
-  au clic, **bandeau-légende permanent** fusionné avec la mention « données
-  fictives » — qui passe de 10 px à une hauteur lisible.
-- **`/demo`** : la porte d'entrée. `demo.href` de la landing y pointe, et l'URL
-  du conteneur mobile suit.
-- **Mode explicatif** : actif par défaut mais replié, une seule bulle ouverte,
-  plafond de six puces par écran.
-- Au passage : CSS orphelin supprimé, collision `--text-secondary` /
-  `--text-muted` levée — une ligne par thème, zéro site d'appel.
+- **FAIT** — `src/content/demo.ts` : le texte de `/demo`, écrit d'emblée. Les
+  autres fichiers de contenu (`common`, `explain`, `roles`, `offer`) se créent
+  quand l'écran qui les consomme arrive, pas en passe dédiée.
+- **FAIT** — **`/demo`**, la porte d'entrée : trois blocs (les sept pôles avec
+  statut · qui paie quoi, avant les portes · trois portes). `demo.href` de la
+  landing, le lien de pied, le bandeau « En savoir plus » et l'URL du conteneur
+  mobile y pointent (commit `2223d8f`).
+- **FAIT** — Jetons de statut `--stage-later` / `--stage-vision`, un par thème,
+  décidés à un seul endroit.
+- **À FAIRE** — **Sélecteur de rôle**, branché sur le `setActiveRole` qui existe
+  déjà et que personne n'appelle. `viewingAs` découplé des droits. *Doit montrer
+  toute la plateforme en cinq minutes — parcours à tester soi-même.*
+- **À FAIRE** — **Statuts** portés par la donnée, panneau d'explication au clic,
+  **bandeau-légende permanent** fusionné avec la mention « données fictives » —
+  qui passe de 10 px à une hauteur lisible. (Le jeton de gris est déjà là.)
+- **À FAIRE** — **Mode explicatif** : actif par défaut mais replié, une seule
+  bulle ouverte, plafond de six puces par écran.
+- **À FAIRE** — Au passage : CSS orphelin supprimé, collision
+  `--text-secondary` / `--text-muted` levée — une ligne par thème, zéro site
+  d'appel.
 
 ---
 
