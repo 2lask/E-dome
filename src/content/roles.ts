@@ -58,12 +58,9 @@ export const roleTour = {
       legacyRole: "proprietaire",
       label: "Propriétaire",
       tagline: "Vendre ou louer son bien — 0 CHF à E-Dome.",
-      /* Porte vers `/publier` pour l'instant. L'étape 5 crée `/vendre`, la page
-         qui présente les deux façons de vendre ; la porte y basculera alors.
-         Une porte ne doit jamais mener sur un 404 : la maquette se visite. */
-      href: "/publier",
+      href: "/vendre",
       icon: "KeyRound",
-      see: ["La publication d'un bien", "L'écran d'obligations (à venir)", "0 CHF à E-Dome sur la vente"],
+      see: ["Les deux façons de vendre", "Ce que coûte chaque option", "0 CHF à E-Dome, des deux côtés"],
     },
     {
       role: "hote",
