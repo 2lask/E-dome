@@ -624,15 +624,19 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               </div>
               <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  {/* Rendement et ROI en couleur NEUTRE, pas en vert : un vert
+                      « +X % » se lit comme un gain garanti. Ce sont des
+                      projections déclarées par le vendeur (label ci-dessus),
+                      pas une promesse d'E-Dome — leur libellé porte « indicatif ». */}
                   {[
-                    { label: "Rendement brut", value: `${property.analytics.rendementBrut.toFixed(1)}%`, color: "text-green-400" },
-                    { label: "Rendement net", value: `${property.analytics.rendementNet.toFixed(1)}%`, color: "text-green-400" },
+                    { label: "Rendement brut (indicatif)", value: `${property.analytics.rendementBrut.toFixed(1)}%`, color: "text-[var(--foreground)]" },
+                    { label: "Rendement net (indicatif)", value: `${property.analytics.rendementNet.toFixed(1)}%`, color: "text-[var(--foreground)]" },
                     { label: "Prix/m²", value: formatPrice(property.analytics.prixM2, property.currency), color: "text-[var(--primary)]" },
                     { label: "DPE", value: property.analytics.dpe, color: "text-blue-400" },
                     { label: "État", value: property.analytics.etatGeneral, color: "text-[var(--foreground)]" },
                     { label: "Construction", value: `${property.analytics.anneeConstruction}`, color: "text-[var(--foreground)]" },
-                    { label: "ROI 5 ans", value: `+${property.analytics.roi5ans}%`, color: "text-green-400" },
-                    { label: "ROI 10 ans", value: `+${property.analytics.roi10ans}%`, color: "text-green-400" },
+                    { label: "ROI 5 ans (indicatif)", value: `${property.analytics.roi5ans}%`, color: "text-[var(--foreground)]" },
+                    { label: "ROI 10 ans (indicatif)", value: `${property.analytics.roi10ans}%`, color: "text-[var(--foreground)]" },
                   ].map(({ label, value, color }) => (
                     <div key={label} className="text-center">
                       <p className={`text-lg font-bold ${color}`}>{value}</p>

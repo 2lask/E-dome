@@ -430,7 +430,10 @@ function FormationDetail({ formation }: { formation: Formation }) {
               <button onClick={() => setShowCertificate(false)} className="flex-1 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
                 Fermer
               </button>
-              <button className="flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">
+              <button
+                onClick={() => window.print()}
+                className="flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors"
+              >
                 Télécharger PDF
               </button>
             </div>

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Download, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 import { FilterChip } from "@/components/ui/filter-chip";
 import {
   KpiCardPremium,
@@ -24,6 +25,7 @@ const FILTERS: { value: ReviewSource | "all"; label: string }[] = [
 ];
 
 export default function AvisPage() {
+  const { addToast } = useToast();
   const [filter, setFilter] = useState<ReviewSource | "all">("all");
   const [showLowOnly, setShowLowOnly] = useState(false);
 
@@ -56,7 +58,11 @@ export default function AvisPage() {
         title="Avis & notations"
         description="Avis reçus sur vos biens, formations et événements"
         actions={
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => addToast("Export des avis : fonctionnalité de démonstration, non disponible dans la maquette.", "info")}
+          >
             <Download className="mr-2 h-4 w-4" />
             Exporter
           </Button>
