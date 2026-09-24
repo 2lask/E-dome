@@ -154,9 +154,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span>
                   Maquette de démonstration — Données fictives ·{" "}
                   <a
-                    href="/"
+                    href="/demo"
                     className="underline hover:opacity-80"
-                    title="Retour à la page d'accueil de la maquette E-Dome"
+                    title="Comprendre E-Dome en un écran : les pôles, qui paie quoi, par où commencer"
                   >
                     En savoir plus
                   </a>

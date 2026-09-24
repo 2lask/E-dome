@@ -349,8 +349,11 @@ export const demo = {
   warning:
     "Toutes les données affichées sont fictives, y compris les biens, les prix, les profils et les chiffres. Rien n'y est réel.",
   cta: "Explorer la démo",
-  /** Destination de la démo. */
-  href: "/feed",
+  /** Destination de la démo : l'écran d'entrée `/demo`, qui présente les sept
+      pôles, le modèle « qui paie quoi » et trois portes. Menait auparavant
+      droit à `/feed`, où un visiteur sans contexte n'avait aucune des trois
+      réponses du critère des trente secondes. */
+  href: "/demo",
   visualCaption: "Le fil E-Dome dans la maquette",
 } as const;
 
@@ -854,7 +857,7 @@ export const footer = {
   note: "Projet en cours de constitution. Les données de la maquette sont fictives.",
   links: [
     { label: "Politique de confidentialité", href: "/confidentialite" },
-    { label: "Explorer la démo", href: "/feed" },
+    { label: "Explorer la démo", href: "/demo" },
   ],
   /** Le composant ajoute l'année en cours. */
   copyright: "E-Dome",

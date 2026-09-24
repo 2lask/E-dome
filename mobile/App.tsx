@@ -12,10 +12,13 @@ import type WebViewType from "react-native-webview";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-/* URL de la maquette déployée. On pointe direct sur /feed pour éviter
-   la landing + le formulaire d'accès — l'app sert à montrer la
-   maquette en lui-même, pas le funnel d'inscription. */
-const DEMO_URL = "https://edome-demo.vercel.app/feed";
+/* URL de la maquette déployée. On pointe sur /demo — l'écran d'entrée qui
+   présente E-Dome en un écran — pour éviter la landing et son formulaire
+   d'accès : l'app sert à montrer la maquette, pas le funnel d'inscription.
+   Menait auparavant droit à /feed, où le conteneur ouvrait un fil social
+   sans aucun contexte. L'URL suit désormais la même porte d'entrée que la
+   landing. */
+const DEMO_URL = "https://edome-demo.vercel.app/demo";
 
 export default function App() {
   const webRef = useRef<WebViewType>(null);
