@@ -11,10 +11,10 @@ import {
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
 import { timeAgo, formatCount, formatDate } from "@/lib/utils";
-import { estimateEarning } from "@/lib/pricing";
+import { referralEarning } from "@/lib/referral-links";
 import { profileToAuthor } from "@/lib/profile-posts";
 import { roleLabels } from "@/lib/types";
-import type { SocialPost, Comment, ReferralLink, Currency, PostAttachment } from "@/lib/types";
+import type { SocialPost, Comment, ReferralLink, PostAttachment } from "@/lib/types";
 import { ReportModal } from "./report-modal";
 import { PollBlock } from "./poll-block";
 
@@ -129,8 +129,8 @@ function AttachedFormation({ formation }: { formation: NonNullable<SocialPost["f
 function AffiliateBadge({ link }: { link: ReferralLink }) {
   const { formatPrice } = useApp();
   const t = link.target;
-  const earn = t?.price != null ? estimateEarning(t.kind, t.price, { transactionType: t.transactionType, currency: t.currency as Currency | undefined }) : null;
-  const has = !!earn && earn.max > 0;
+  const earn = referralEarning(t);
+  const has = !!earn;
   const cls = "group/aff relative flex items-center gap-2.5 px-3 py-2 rounded-xl overflow-hidden bg-gradient-to-r from-[var(--primary)]/[0.12] via-[var(--primary)]/[0.05] to-transparent border border-[var(--primary)]/25 hover:border-[var(--primary)]/45 transition-colors";
   const inner = (
     <>
@@ -139,7 +139,7 @@ function AffiliateBadge({ link }: { link: ReferralLink }) {
       <div className="min-w-0 flex-1">
         <p className="text-[9px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Recommandez &amp; gagnez</p>
         {has ? (
-          <p className="text-[13px] leading-tight text-[var(--foreground)] truncate">Jusqu&apos;à <span className="font-extrabold text-[var(--primary)]">{formatPrice(earn.max, earn.currency)}</span> de commission</p>
+          <p className="text-[13px] leading-tight text-[var(--foreground)] truncate">Jusqu&apos;à <span className="font-extrabold text-[var(--primary)]">{formatPrice(earn.amount.cents / 100, earn.amount.currency)}</span> de commission</p>
         ) : (
           <p className="text-[13px] leading-tight text-[var(--foreground)] truncate">Commission <span className="font-bold text-[var(--primary)]">{link.commission}</span></p>
         )}

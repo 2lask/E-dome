@@ -1,5 +1,5 @@
 import type { PlanId } from "@/lib/model/billing";
-import type { Money } from "@/lib/model/billing";
+import type { Money, PrimeMoney } from "@/lib/model/billing";
 
 /* ── Ce qu'on facture ───────────────────────────────────────────────────────
 
@@ -45,6 +45,20 @@ export const COMMISSION_POLES: readonly CommissionPole[] = [
 ];
 
 /**
+ * Miroir exact de `CommissionPole`, dans l'autre sens.
+ *
+ * `CommissionPole` **exclut** `vente` et `location-lt` (l'assiette du courtage).
+ * `BienIntroPole` ne contient **que** ces deux-là. Le double verrou tient dans
+ * les deux unions : une commission en % ne peut jamais viser un bien (déjà
+ * vrai), et une prime bien ne peut jamais viser un pôle marketplace
+ * (`{ kind: "bien-introduction", pole: "formation" }` ne compile pas). Voir
+ * `analyse2/architecture-modele.md` §C, verrou 3.
+ */
+export type BienIntroPole = "vente" | "location-lt";
+
+export const BIEN_INTRO_POLES: readonly BienIntroPole[] = ["vente", "location-lt"];
+
+/**
  * Qui a amené l'acheteur.
  *
  * Décide du taux sur les formations : 10 % quand E-Dome fournit l'audience,
@@ -65,10 +79,29 @@ export type Charge =
       units?: number;
       /** Tarif fondateur créateur : 5 % pendant 24 mois. */
       foundingRate?: boolean;
+      /**
+       * MÉCANIQUE MARKETPLACE (D14). Optionnel : absent = pas d'affilié sur
+       * cette vente. `rate` s'applique au PRIX (`gross`), jamais à la commission
+       * d'E-Dome ; la part affilié sort de la MARGE du vendeur, borné par pôle
+       * (`AFFILIATION_RATES`, validé dans `quote()`). Ce champ n'existe QUE sur
+       * `commission` : `bien-introduction` ne l'a pas (verrou par type).
+       */
+      affiliation?: { rate: number };
     }
   | { kind: "oneOff"; productId: OneOffId; quantity?: number }
   | { kind: "cpm"; campaignId: string; impressions: number }
-  | { kind: "bounty"; event: "host-activated" | "user-activated" };
+  | { kind: "bounty"; event: "host-activated" | "user-activated" }
+  | {
+      /**
+       * MÉCANIQUE BIENS (D14) : prime fixe en francs, jamais un pourcentage.
+       * `prime` est un `PrimeMoney` (fabriqué par `primeChf()` seul) — un `Money`
+       * ordinaire, tel `shareOf(prix, taux)`, n'y est pas assignable. Pas de champ
+       * `affiliation` ici : les deux mécaniques ne se mélangent jamais.
+       */
+      kind: "bien-introduction";
+      pole: BienIntroPole;
+      prime: PrimeMoney;
+    };
 
 export interface Rate {
   readonly min: number;

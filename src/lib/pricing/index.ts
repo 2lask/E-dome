@@ -23,8 +23,3 @@
 export * from "./charge";
 export * from "./catalog";
 export * from "./quote";
-
-/* Ancienne interface, encore consommée par dix fichiers. Supprimée à l'étape 5
-   avec la réécriture de `/publier`. Voir `./legacy.ts` pour le détail des deux
-   dettes qu'elle porte. */
-export * from "./legacy";

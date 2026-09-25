@@ -3,8 +3,8 @@ import Link from "next/link";
 import { MapPin, X, Calendar, GraduationCap, BarChart3, TrendingUp, TrendingDown, ArrowRight, Link2, Coins } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { formatCount, formatDate } from "@/lib/utils";
-import { estimateEarning } from "@/lib/pricing";
-import type { Property, AnalyticsMetric, AnalyticsCardData, ReferralLink, Currency } from "@/lib/types";
+import { referralEarning } from "@/lib/referral-links";
+import type { Property, AnalyticsMetric, AnalyticsCardData, ReferralLink } from "@/lib/types";
 import type { ComposerEvent } from "./composer/events";
 import { Sparkline } from "./sparkline";
 
@@ -274,14 +274,8 @@ export function AffiliateToggle({
 }) {
   const { formatPrice } = useApp();
   const t = link?.target;
-  const earn =
-    t?.price != null
-      ? estimateEarning(t.kind, t.price, {
-          transactionType: t.transactionType,
-          currency: t.currency as Currency | undefined,
-        })
-      : null;
-  const earnLabel = earn && earn.max > 0 ? formatPrice(earn.max, earn.currency) : null;
+  const earn = referralEarning(t);
+  const earnLabel = earn ? formatPrice(earn.amount.cents / 100, earn.amount.currency) : null;
 
   return (
     <button
@@ -337,14 +331,8 @@ export function AffiliatePostBadge({ link }: { link: ReferralLink }) {
   // jusqu'à X CHF » calculée depuis la cible (prix + type de transaction).
   // Repli sur le % si le prix n'est pas connu (anciens liens génériques).
   const t = link.target;
-  const earn =
-    t?.price != null
-      ? estimateEarning(t.kind, t.price, {
-          transactionType: t.transactionType,
-          currency: t.currency as Currency | undefined,
-        })
-      : null;
-  const hasAmount = !!earn && earn.max > 0;
+  const earn = referralEarning(t);
+  const hasAmount = !!earn;
 
   const cls =
     "group/aff relative flex items-center gap-3 px-3 py-2.5 rounded-xl overflow-hidden " +
@@ -370,7 +358,7 @@ export function AffiliatePostBadge({ link }: { link: ReferralLink }) {
         {hasAmount ? (
           <p className="text-[15px] leading-tight text-[var(--foreground)] truncate">
             Jusqu&apos;à{" "}
-            <span className="font-extrabold text-[var(--primary)]">{formatPrice(earn.max, earn.currency)}</span>
+            <span className="font-extrabold text-[var(--primary)]">{formatPrice(earn.amount.cents / 100, earn.amount.currency)}</span>
             <span className="text-[var(--text-muted)]"> de commission</span>
           </p>
         ) : (

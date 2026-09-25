@@ -11,7 +11,7 @@
    Les taux et libelles de commission ne sont PAS definis ici : ils viennent
    de @/lib/pricing, source unique du modele de remuneration. */
 
-import { HOST_BOUNTY_CHF, apporteurShareLabel } from "./pricing";
+import { HOST_BOUNTY_CHF, affiliationLabel, PRIME_RANGE_LABEL } from "./pricing";
 import { CURRENT_USER, OWNED_FORMATION_IDS, OWNED_PROPERTY_IDS } from "./demo/identity";
 import * as derive from "./demo/derive";
 import "./demo/invariants";
@@ -398,14 +398,14 @@ export interface ReferralChannel {
   conversions: number;
 }
 
-/* « 5% de la réservation » et « 2% de la vente » désignaient un pourcentage
-   du prix payé par le client — l'assiette d'un courtier, pas celle d'E-Dome,
-   et en contradiction directe avec /conditions §5 et /aide. Les libellés
-   viennent désormais de @/lib/pricing. */
+/* Deux mécaniques (D14) : la marketplace (client, courte durée) rémunère un
+   pourcentage du prix prélevé sur la marge du vendeur ; les biens rémunèrent une
+   prime fixe en francs, jamais un pourcentage du prix. Les libellés viennent de
+   @/lib/pricing. */
 export const referralChannels: ReferralChannel[] = [
   { id: "host", label: "Amener un hôte", reward: `${HOST_BOUNTY_CHF} CHF / activation`, clicks: 23, conversions: 8 },
-  { id: "client", label: "Amener un client", reward: apporteurShareLabel("location-ct"), clicks: 41, conversions: 12 },
-  { id: "property", label: "Amener un bien", reward: apporteurShareLabel("vente"), clicks: 17, conversions: 5 },
+  { id: "client", label: "Amener un client", reward: affiliationLabel("location-ct"), clicks: 41, conversions: 12 },
+  { id: "property", label: "Amener un bien", reward: `Prime fixe (${PRIME_RANGE_LABEL})`, clicks: 17, conversions: 5 },
 ];
 
 export interface LeaderboardEntry {

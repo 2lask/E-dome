@@ -4,9 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Link2, Check, Copy, ArrowRight, Coins } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { buildObjectAffiliate } from "@/lib/referral-links";
-import { estimateEarning } from "@/lib/pricing";
-import type { ReferralTargetKind, TransactionType, Currency } from "@/lib/types";
+import { buildObjectAffiliate, referralEarning } from "@/lib/referral-links";
+import type { ReferralTargetKind, TransactionType } from "@/lib/types";
 
 /* Bouton « Recommander & gagner » posé sur chaque annonce vendable.
    Au clic : génère (ou retrouve) le lien d'affiliation rattaché à
@@ -38,9 +37,7 @@ export function RecommendButton({
   const [existed, setExisted] = useState(false);
 
   const link = buildObjectAffiliate(kind, id, title, { image, price, currency, transactionType });
-  const earning = price != null
-    ? estimateEarning(kind, price, { transactionType, currency: currency as Currency | undefined })
-    : null;
+  const earning = referralEarning({ kind, price, currency });
 
   const handleClick = () => {
     setExisted(hasReferralLinkFor(kind, id));
@@ -72,13 +69,14 @@ export function RecommendButton({
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden />
           <div className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl p-3 animate-scale-in">
-            {/* Gain potentiel — accroche lucrative */}
-            {earning && earning.max > 0 && (
+            {/* Gain potentiel — accroche lucrative (marketplace ; les biens
+                affichent la prime via le libellé de commission ci-dessous). */}
+            {earning && (
               <div className="flex items-center gap-2 rounded-lg bg-[var(--primary)]/[0.07] border border-[var(--primary)]/20 px-3 py-2 mb-2.5">
                 <Coins className="w-4 h-4 text-[var(--primary)] shrink-0" />
                 <p className="text-sm text-[var(--foreground)]">
                   Gagnez jusqu&apos;à{" "}
-                  <span className="font-bold text-[var(--primary)]">{formatPrice(earning.max, earning.currency)}</span>
+                  <span className="font-bold text-[var(--primary)]">{formatPrice(earning.amount.cents / 100, earning.amount.currency)}</span>
                 </p>
               </div>
             )}

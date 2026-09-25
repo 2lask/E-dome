@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { TriangleAlert } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { APPORTEUR_SHARE, MARKETPLACE_RATE, SALE_FEE_ABOVE, SALE_FEE_BELOW } from "@/lib/pricing";
+import { RATES, EDOME_PRIME_SHARE } from "@/lib/pricing";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -47,17 +47,14 @@ export function AdminConsole() {
   const [search, setSearch] = useState("");
   const [biens, setBiens] = useState(MOCK_BIENS);
   const [signalements, setSignalements] = useState(MOCK_SIGNALEMENTS);
-  /* Ces champs décrivaient une « commission vente » de 3,5 % du prix du bien,
-     ce qu'E-Dome ne facture pas : la vente entre particuliers est un frais
-     fixe. Les valeurs par défaut viennent de @/lib/pricing. */
-  const [fraisVenteSous, setFraisVenteSous] = useState(String(SALE_FEE_BELOW));
-  const [fraisVenteAu, setFraisVenteAu] = useState(String(SALE_FEE_ABOVE));
+  /* Deux mécaniques (D14) : la vente et la location longue durée n'ont AUCUN
+     frais fixe (publication gratuite) — l'apporteur y touche une prime en
+     francs, dont E-Dome retient une part paramétrable. Les autres pôles :
+     commission marketplace. Valeurs par défaut depuis @/lib/pricing. */
   const [commissionCourteDuree, setCommissionCourteDuree] = useState(
-    String(Math.round(((MARKETPLACE_RATE["location-ct"].min + MARKETPLACE_RATE["location-ct"].max) / 2) * 100)),
+    String(Math.round(((RATES["location-ct"].min + RATES["location-ct"].max) / 2) * 100)),
   );
-  const [commissionApporteur, setCommissionApporteur] = useState(
-    String(Math.round(((APPORTEUR_SHARE.min + APPORTEUR_SHARE.max) / 2) * 100)),
-  );
+  const [partEdomePrime, setPartEdomePrime] = useState(String(Math.round(EDOME_PRIME_SHARE * 100)));
   const [maintenanceMode, setMaintenanceMode] = useState(false);
 
   const filteredUsers = MOCK_USERS.filter(
@@ -352,30 +349,12 @@ export function AdminConsole() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[var(--foreground)]">Barème de rémunération</h3>
             <p className="text-xs text-[var(--text-muted)]">
-              Vente et location longue durée : frais fixe, jamais un pourcentage
-              du prix du bien. Les autres pôles : commission marketplace.
+              Vente et location longue durée : publication gratuite, aucun frais
+              fixe. L&apos;apporteur d&apos;un bien touche une prime fixe en francs
+              (50 à 3 000 CHF), définie par le vendeur — jamais un pourcentage du
+              prix. Les autres pôles : commission marketplace.
             </p>
             <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-sm text-[var(--text-secondary)]">Frais fixe vente &lt; 1 M (CHF)</label>
-                <input
-                  type="number"
-                  step="50"
-                  value={fraisVenteSous}
-                  onChange={(e) => setFraisVenteSous(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm text-[var(--text-secondary)]">Frais fixe vente ≥ 1 M (CHF)</label>
-                <input
-                  type="number"
-                  step="50"
-                  value={fraisVenteAu}
-                  onChange={(e) => setFraisVenteAu(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition"
-                />
-              </div>
               <div className="space-y-1">
                 <label className="text-sm text-[var(--text-secondary)]">Commission marketplace location courte durée (%)</label>
                 <input
@@ -387,12 +366,12 @@ export function AdminConsole() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-sm text-[var(--text-secondary)]">Part apporteur (% du revenu E-Dome)</label>
+                <label className="text-sm text-[var(--text-secondary)]">Part E-Dome sur la prime de mise en relation (%)</label>
                 <input
                   type="number"
                   step="1"
-                  value={commissionApporteur}
-                  onChange={(e) => setCommissionApporteur(e.target.value)}
+                  value={partEdomePrime}
+                  onChange={(e) => setPartEdomePrime(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition"
                 />
               </div>

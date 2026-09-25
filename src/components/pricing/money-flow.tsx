@@ -53,6 +53,11 @@ export function MoneyFlow({
   if (!isZero(f.apporteur)) {
     rows.push({ label: "dont apporteur", value: formatMoney(f.apporteur), tone: "muted" });
   }
+  /* Affiliation marketplace : prélevée sur la marge du vendeur, distincte de la
+     commission E-Dome — d'où une ligne propre, pas « dont apporteur ». */
+  if (!isZero(f.affiliate)) {
+    rows.push({ label: "Affilié (part sur la marge vendeur)", value: formatMoney(f.affiliate), tone: "muted" });
+  }
   /* Toujours affichée, même à zéro : c'est le point du choix « frais directs ». */
   rows.push({
     label: `Frais de paiement${f.pspBornBy === "seller" ? " (à votre charge)" : " (pris par E-Dome)"}`,

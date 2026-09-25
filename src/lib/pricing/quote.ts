@@ -1,6 +1,7 @@
 import {
   ZERO,
   addMoney,
+  formatMoney,
   money,
   shareOf,
   subtractMoney,
@@ -9,17 +10,20 @@ import {
 import type { PlatformRole } from "@/lib/model/identity";
 import type { Charge, CommissionPole } from "./charge";
 import {
-  APPORTEUR_SHARES,
+  APPORTEUR_SUBSCRIPTION_SHARES,
   BOUNTIES,
   CREATOR_FOUNDING,
+  EDOME_PRIME_SHARE,
   MIN_COMMISSION,
   ONE_OFFS,
   PER_UNIT_FEE,
   PLANS,
   PLATFORM_SOURCED_RATE,
+  PRIME_FLOOR,
   PSP,
   RATES,
   SELLER_SOURCED_RATE,
+  assertAffiliationRate,
 } from "./catalog";
 
 /* ── Le point d'entrée unique ───────────────────────────────────────────────
@@ -41,8 +45,18 @@ export interface MoneyFlow {
   pspBornBy: "seller" | "platform";
   /** Part E-Dome avant reversement à l'apporteur. */
   edomeGross: Money;
-  /** Prélevée SUR la part E-Dome, jamais ajoutée au prix payé. */
+  /**
+   * Prélevée SUR la part E-Dome (abonnement, prime bien), jamais ajoutée au
+   * prix payé. Sémantique OPPOSÉE à `affiliate` — ne pas les confondre.
+   */
   apporteur: Money;
+  /**
+   * MÉCANIQUE MARKETPLACE : prélevée SUR LA MARGE DU VENDEUR, distincte de la
+   * commission d'E-Dome (qui ne bouge pas). Non nulle uniquement sur une
+   * commission avec `affiliation`. Les mélanger recréerait le facteur-5 de
+   * l'audit — d'où deux champs, deux invariants, deux phrases.
+   */
+  affiliate: Money;
   edomeNet: Money;
   /** Vendeur, hôte, créateur, organisateur. */
   beneficiary: Money;
@@ -90,9 +104,10 @@ export function commissionRate(
 /**
  * Calcule un devis, son flux d'argent et sa phrase d'explication.
  *
- * L'invariant `gross === beneficiary + edomeGross + psp` est vérifié ici et
- * non dans un test : une somme fausse dans un panneau de flux d'argent montré
- * à un investisseur coûte plus cher qu'un plantage au développement.
+ * L'invariant `gross === beneficiary + edomeGross + affiliate (+ psp si à charge
+ * vendeur)` est vérifié ici et non dans un test : une somme fausse dans un
+ * panneau de flux d'argent montré à un investisseur coûte plus cher qu'un
+ * plantage au développement.
  */
 export function quote(charge: Charge, ctx?: QuoteContext): Quote {
   const q = build(charge, ctx);
@@ -107,11 +122,13 @@ function build(charge: Charge, ctx?: QuoteContext): Quote {
     case "commission":
       return quoteCommission(charge, ctx);
     case "oneOff":
-      return quoteOneOff(charge, ctx);
+      return quoteOneOff(charge);
     case "cpm":
-      return quoteCpm(charge, ctx);
+      return quoteCpm(charge);
     case "bounty":
       return quoteBounty(charge);
+    case "bien-introduction":
+      return quoteBienIntroduction(charge);
   }
 }
 
@@ -131,8 +148,11 @@ function quoteSubscription(
      Les frais du prestataire sont donc les siens dans les deux schémas. */
   const psp = pspFee(gross);
   const edomeGross = gross;
+  /* Barème apporteur PAR FORMULE (D14) : 15 % Patrimoine, 25 % Vitrine/Mandats,
+     30 % Régie. C'est le seul cas où l'apporteur se prélève encore sur la part
+     E-Dome — les biens passent par la prime, la marketplace par l'affiliation. */
   const apporteur = ctx?.hasApporteur
-    ? shareOf(subtractMoney(edomeGross, psp), APPORTEUR_SHARES.subscription)
+    ? shareOf(subtractMoney(edomeGross, psp), APPORTEUR_SUBSCRIPTION_SHARES[charge.planId] ?? 0)
     : ZERO;
 
   return {
@@ -145,6 +165,7 @@ function quoteSubscription(
       pspBornBy: "platform",
       edomeGross,
       apporteur,
+      affiliate: ZERO,
       edomeNet: subtractMoney(subtractMoney(edomeGross, psp), apporteur),
       beneficiary: ZERO,
     },
@@ -178,24 +199,29 @@ function quoteCommission(
         ? MIN_COMMISSION
         : raw;
 
+  /* MÉCANIQUE MARKETPLACE (D14) : la part affilié sort de la MARGE du vendeur,
+     appliquée au PRIX (`gross`), bornée par pôle. La commission d'E-Dome
+     (`edomeGross`) n'en est PAS diminuée — c'est le cœur du mandat. L'ancien
+     « apporteur 10–30 % sur la part E-Dome » ne s'applique plus aux commissions,
+     d'où `apporteur: ZERO` ici. */
+  let affiliate: Money = ZERO;
+  if (charge.affiliation) {
+    assertAffiliationRate(charge.pole, charge.affiliation.rate);
+    affiliate = shareOf(charge.gross, charge.affiliation.rate);
+  }
+
   const psp = pspFee(charge.gross);
-  const apporteur = ctx?.hasApporteur
-    ? shareOf(subtractMoney(edomeGross, PSP.bornBy === "platform" ? psp : ZERO), APPORTEUR_SHARES.commission)
-    : ZERO;
 
   /* Frais directs : le prestataire débite le vendeur, donc le bénéficiaire
-     reçoit le brut moins la commission moins les frais. Frais destinataires :
-     E-Dome les absorbe sur sa part. La ligne `psp` existe dans les deux cas —
-     c'est ce qui rend le basculement gratuit. */
+     reçoit le brut moins la commission, moins l'affilié, moins les frais. Frais
+     destinataires : E-Dome les absorbe sur sa part. La ligne `psp` existe dans
+     les deux cas — c'est ce qui rend le basculement gratuit. */
   const beneficiary =
     PSP.bornBy === "seller"
-      ? subtractMoney(subtractMoney(charge.gross, edomeGross), psp)
-      : subtractMoney(charge.gross, edomeGross);
+      ? subtractMoney(subtractMoney(subtractMoney(charge.gross, edomeGross), affiliate), psp)
+      : subtractMoney(subtractMoney(charge.gross, edomeGross), affiliate);
 
-  const edomeNet =
-    PSP.bornBy === "platform"
-      ? subtractMoney(subtractMoney(edomeGross, psp), apporteur)
-      : subtractMoney(edomeGross, apporteur);
+  const edomeNet = PSP.bornBy === "platform" ? subtractMoney(edomeGross, psp) : edomeGross;
 
   return {
     payer: "client",
@@ -209,15 +235,31 @@ function quoteCommission(
       psp,
       pspBornBy: PSP.bornBy,
       edomeGross,
-      apporteur,
+      apporteur: ZERO,
+      affiliate,
       edomeNet,
       beneficiary,
     },
-    explanation: explainCommission(charge.pole, rate, founding, charge.attribution),
+    explanation: explainCommission(charge.pole, rate, founding, charge.attribution, charge.affiliation?.rate),
   };
 }
 
 function explainCommission(
+  pole: CommissionPole,
+  rate: number,
+  founding?: boolean,
+  attribution?: "platform" | "seller",
+  affiliationRate?: number,
+): string {
+  const base = commissionBase(pole, rate, founding, attribution);
+  if (affiliationRate && affiliationRate > 0) {
+    const aff = `${(affiliationRate * 100).toLocaleString("fr-CH")} %`;
+    return `${base} Un affilié reçoit ${aff} du prix, prélevés sur votre marge — la commission d'E-Dome ne change pas.`;
+  }
+  return base;
+}
+
+function commissionBase(
   pole: CommissionPole,
   rate: number,
   founding?: boolean,
@@ -239,15 +281,12 @@ function explainCommission(
 
 // ─── Forfait, publicité, prime ───────────────────────────────────────────────
 
-function quoteOneOff(charge: Extract<Charge, { kind: "oneOff" }>, ctx?: QuoteContext): Quote {
+function quoteOneOff(charge: Extract<Charge, { kind: "oneOff" }>): Quote {
   const product = ONE_OFFS.find((o) => o.id === charge.productId);
   if (!product) throw new Error(`Forfait inconnu : ${charge.productId}`);
 
   const gross = money(product.price.cents * (charge.quantity ?? 1), product.price.currency);
   const psp = pspFee(gross);
-  const apporteur = ctx?.hasApporteur
-    ? shareOf(subtractMoney(gross, psp), APPORTEUR_SHARES.oneOff)
-    : ZERO;
 
   return {
     payer: "client",
@@ -258,8 +297,9 @@ function quoteOneOff(charge: Extract<Charge, { kind: "oneOff" }>, ctx?: QuoteCon
       psp,
       pspBornBy: "platform",
       edomeGross: gross,
-      apporteur,
-      edomeNet: subtractMoney(subtractMoney(gross, psp), apporteur),
+      apporteur: ZERO,
+      affiliate: ZERO,
+      edomeNet: subtractMoney(gross, psp),
       beneficiary: ZERO,
     },
     explanation:
@@ -267,14 +307,11 @@ function quoteOneOff(charge: Extract<Charge, { kind: "oneOff" }>, ctx?: QuoteCon
   };
 }
 
-function quoteCpm(charge: Extract<Charge, { kind: "cpm" }>, ctx?: QuoteContext): Quote {
+function quoteCpm(charge: Extract<Charge, { kind: "cpm" }>): Quote {
   /* La publicité suppose une audience qu'E-Dome n'a pas : statut « Ensuite ».
      Le calcul existe pour que le panneau de flux sache l'afficher le jour venu. */
   const gross = money(Math.round((charge.impressions / 1000) * 3500));
   const psp = pspFee(gross);
-  const apporteur = ctx?.hasApporteur
-    ? shareOf(subtractMoney(gross, psp), APPORTEUR_SHARES.oneOff)
-    : ZERO;
 
   return {
     payer: "annonceur",
@@ -285,8 +322,9 @@ function quoteCpm(charge: Extract<Charge, { kind: "cpm" }>, ctx?: QuoteContext):
       psp,
       pspBornBy: "platform",
       edomeGross: gross,
-      apporteur,
-      edomeNet: subtractMoney(subtractMoney(gross, psp), apporteur),
+      apporteur: ZERO,
+      affiliate: ZERO,
+      edomeNet: subtractMoney(gross, psp),
       beneficiary: ZERO,
     },
     explanation: "Campagne facturée au mille impressions. Tout contenu payant est étiqueté.",
@@ -305,10 +343,63 @@ function quoteBounty(charge: Extract<Charge, { kind: "bounty" }>): Quote {
       pspBornBy: "platform",
       edomeGross: ZERO,
       apporteur: bounty.amount,
+      affiliate: ZERO,
       edomeNet: money(-bounty.amount.cents),
       beneficiary: ZERO,
     },
     explanation: `Prime versée après ${bounty.condition}. Jamais avant que le revenu existe.`,
+  };
+}
+
+// ─── Prime de mise en relation biens (D14) ────────────────────────────────────
+
+/**
+ * Le flux se comporte comme un abonnement : E-Dome encaisse le brut (la prime),
+ * puis reverse à l'apporteur. `gross = prime`, `pspBornBy = "platform"` (E-Dome
+ * absorbe les frais de paiement sur sa part). La part E-Dome est
+ * `max(shareOf(prime, EDOME_PRIME_SHARE), PRIME_FLOOR)` ; l'apporteur touche le
+ * reste, NET (aucun PSP déduit de lui). Sur une prime de 100 CHF : apporteur 88,
+ * part brute E-Dome 12, PSP ~3.45 absorbé par E-Dome, net E-Dome ~8.55.
+ *
+ * `beneficiary = ZERO` : le vendeur/bailleur est le PAYEUR, pas un bénéficiaire.
+ * L'invariant `beneficiary + edomeGross + affiliate === gross` (branche
+ * plateforme) tient : `0 + prime + 0 = prime`. C'est une sous-répartition
+ * INTERNE à `edomeGross`, exactement comme un abonnement avec apporteur — d'où
+ * l'écart avec la formule prose de la consigne, résolu en faveur du code de
+ * `analyse2/architecture-modele.md` §B.2 (subscription-consistant, sans
+ * double-compte bénéficiaire/apporteur, chiffres identiques).
+ */
+function quoteBienIntroduction(charge: Extract<Charge, { kind: "bien-introduction" }>): Quote {
+  const prime = charge.prime;
+  const edomeShare = money(
+    Math.max(Math.round(prime.cents * EDOME_PRIME_SHARE), PRIME_FLOOR.cents),
+    prime.currency,
+  );
+  const apporteur = subtractMoney(prime, edomeShare);
+  const psp = pspFee(prime);
+
+  return {
+    payer: "proprietaire",
+    payerTotal: prime,
+    lines: [
+      { labelKey: `bienIntro.${charge.pole}`, amount: prime },
+      { labelKey: "primeApporteur", amount: apporteur },
+    ],
+    flow: {
+      gross: prime,
+      psp,
+      pspBornBy: "platform",
+      edomeGross: prime,
+      apporteur,
+      affiliate: ZERO,
+      edomeNet: subtractMoney(subtractMoney(prime, psp), apporteur),
+      beneficiary: ZERO,
+    },
+    explanation:
+      `Prime de mise en relation de ${formatMoney(prime)}, fixée par le vendeur et due à ` +
+      `l'acceptation du contact — jamais un pourcentage du prix du bien, jamais conditionnée ` +
+      `à la vente. E-Dome retient ${formatMoney(edomeShare)} ` +
+      `(${(EDOME_PRIME_SHARE * 100).toLocaleString("fr-CH")} %), l'apporteur reçoit ${formatMoney(apporteur)}.`,
   };
 }
 
@@ -330,10 +421,14 @@ function pspFee(gross: Money): Money {
 function assertFlowBalances(flow: MoneyFlow): void {
   if (flow.gross.cents === 0) return;
 
+  /* Quatre composantes depuis D14 : la part affilié (marge vendeur) est une
+     ligne du brut à part entière, au même titre que le bénéficiaire, la part
+     E-Dome et les frais de paiement. `apporteur` n'y figure pas : c'est une
+     sous-répartition INTERNE à `edomeGross`, pas une part du brut. */
   const parts =
     flow.pspBornBy === "seller"
-      ? flow.beneficiary.cents + flow.edomeGross.cents + flow.psp.cents
-      : flow.beneficiary.cents + flow.edomeGross.cents;
+      ? flow.beneficiary.cents + flow.edomeGross.cents + flow.affiliate.cents + flow.psp.cents
+      : flow.beneficiary.cents + flow.edomeGross.cents + flow.affiliate.cents;
 
   if (parts !== flow.gross.cents) {
     throw new Error(

@@ -23,7 +23,19 @@
    d'afficher une règle sans les trois autres. `PLATFORM_RULES` est un tuple
    figé, et le composant qui le rend les rend toutes.
 
-   Voir `DECISIONS.md` §1.0 et §1.1, et `JURIDIQUE-A-VALIDER.md` §1. */
+   PRIME DE MISE EN RELATION vs COMMISSION (D14). Le garde-fou de la règle 3
+   — « E-Dome ne perçoit aucune rémunération conditionnée à la conclusion » —
+   vise la **commission de succès d'une agence** sur une vente ou un bail
+   immobilier. Il ne vise **pas** la prime de mise en relation biens : fixe, en
+   francs, due à l'acceptation du contact et **indépendante de la conclusion**,
+   elle ne dépend d'aucune vente ni d'aucun bail, donc **n'est pas une
+   commission**. Qu'E-Dome en retienne une part (un service facturé à un
+   apporteur — activité libre en Suisse) ne la fait pas entrer dans le champ de
+   la règle 3. Les deux ne doivent jamais être confondues : c'est l'objet de la
+   distinction rendue explicite ici, dans les CGU et le glossaire.
+
+   Voir `DECISIONS.md` §1.0 et §1.1, `DECISIONS-2.md` §D14, et
+   `JURIDIQUE-A-VALIDER.md` §1. */
 
 export type PlatformRuleId = "mandat" | "negociation" | "remuneration" | "fonds";
 
@@ -81,7 +93,11 @@ export const PLATFORM_RULES: readonly [PlatformRule, PlatformRule, PlatformRule,
     basis: "art. 413 CO — le droit au salaire du courtier naît de la conclusion",
     why:
       "Un honoraire de succès trahit l'intérêt au résultat. La formulation couvre " +
-      "aussi le forfait conditionné, que la version « jamais un pourcentage » laissait passer.",
+      "aussi le forfait conditionné, que la version « jamais un pourcentage » laissait passer. " +
+      "À l'inverse, une prime de mise en relation — fixe, en francs, due à l'acceptation du " +
+      "contact et indépendante de la conclusion — n'est pas une commission : elle ne dépend " +
+      "d'aucune vente ni d'aucun bail. Ce garde-fou vise la commission de succès d'une agence " +
+      "sur une transaction immobilière, jamais cette prime.",
   },
   {
     id: "fonds",

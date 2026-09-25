@@ -4,11 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useApp } from "@/lib/context";
 import type { TransactionType, PropertyType } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
-import {
-  APPORTEUR_SHARE,
-  edomeRevenue as platformRevenue,
-  type Pole,
-} from "@/lib/pricing";
+import { PRIME_RANGE_LABEL } from "@/lib/pricing";
 import { publierObligations } from "@/content/publier-obligations";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
@@ -495,65 +491,22 @@ export default function PublierPage() {
                 - le tracking. Pas de slider, pas d'input. */}
             {form.autoriserApporteurs && (
               <div className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-5">
-                {/* Bandeau lecture seule */}
+                {/* Bloc lecture seule — deux mécaniques (D14), jamais
+                    confondues. Biens (vente / location longue durée) : une prime
+                    fixe en francs, définie par le vendeur, rien prélevé à
+                    l'activation. Courte durée : affiliation marketplace. */}
                 <div className="p-4 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm font-medium text-[var(--foreground)]">
-                      Taux apporteur fixé par la plateforme
-                    </span>
-                    <span
-                      className="text-sm font-semibold tabular-nums px-2.5 py-1 rounded-full"
-                      style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}
-                    >
-                      10 – 30 %
-                    </span>
-                  </div>
+                  <span className="text-sm font-medium text-[var(--foreground)]">
+                    {form.transactionType === "location-ct"
+                      ? "Affiliation marketplace"
+                      : "Prime de mise en relation"}
+                  </span>
                   <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
-                    Si activé, E-Dome reverse une part fixe de <strong>sa propre rémunération</strong> aux apporteurs — jamais ajoutée à ton prix, jamais payée par toi. Le taux (10 – 30 % selon le pôle) est défini par E-Dome, pas par le vendeur.
+                    {form.transactionType === "location-ct"
+                      ? "En courte durée, un affilié touche un pourcentage du prix, prélevé sur votre marge — jamais ajouté au prix payé par le voyageur, et sans diminuer la commission d'E-Dome."
+                      : `Vous fixez une prime fixe en francs (${PRIME_RANGE_LABEL}), due seulement lorsque vous acceptez une mise en relation. Jamais un pourcentage du prix, jamais conditionnée à la vente. Rien n'est prélevé à l'activation.`}
                   </p>
                 </div>
-
-                {/* Simulation adaptative par pôle — fourchette basse/haute */}
-                {(() => {
-                  /* Base et part apporteur calculées par @/lib/pricing, comme
-                     sur la fiche du bien et sur le bouton « Recommander ».
-                     La version précédente prenait 8 % d'UNE NUIT en courte
-                     durée, là où la fiche prenait 8 % d'un séjour de 7 nuits. */
-                  if (form.transactionType !== "location-lt" && form.prix <= 0) return null;
-                  const base = platformRevenue(form.transactionType as Pole, form.prix);
-                  const edomeRevenue = (base.min + base.max) / 2;
-                  if (edomeRevenue === 0) return null;
-                  const baseLabel = base.label;
-                  const priceLabel =
-                    form.transactionType === "vente" ? "Prix de vente" : "Loyer par nuit";
-                  const apporteurLow = edomeRevenue * APPORTEUR_SHARE.min;
-                  const apporteurHigh = edomeRevenue * APPORTEUR_SHARE.max;
-                  return (
-                    <div className="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-2.5">
-                      <h4 className="text-sm font-semibold text-[var(--foreground)] mb-3">Simulation pour cette annonce</h4>
-                      {form.prix > 0 && form.transactionType !== "location-lt" && (
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-[var(--text-secondary)]">{priceLabel}</span>
-                          <span className="font-medium text-[var(--foreground)]">{formatPrice(form.prix)}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-[var(--text-secondary)]">{baseLabel}</span>
-                        <span className="font-medium text-[var(--foreground)]">{formatPrice(edomeRevenue)}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-[var(--text-secondary)]">Part apporteur (10 – 30 % de la rémunération E-Dome)</span>
-                        <span className="font-medium text-[var(--primary)] tabular-nums">
-                          {formatPrice(apporteurLow)} – {formatPrice(apporteurHigh)}
-                        </span>
-                      </div>
-                      <div className="h-px bg-[var(--card-border)] my-1" />
-                      <p className="text-xs italic text-[var(--text-muted)]">
-                        Votre revenu reste identique avec ou sans apporteur — la part est prélevée sur ce qu&apos;E-Dome encaisse, jamais ajoutée à ce que paie l&apos;acheteur, le locataire ou le voyageur.
-                      </p>
-                    </div>
-                  );
-                })()}
 
                 {/* Tracking details */}
                 <div className="grid grid-cols-2 gap-3">

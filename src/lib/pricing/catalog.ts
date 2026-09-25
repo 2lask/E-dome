@@ -1,4 +1,4 @@
-import { chf, type Money, type PlanId } from "@/lib/model/billing";
+import { chf, type Money, type PlanId, type PrimeMoney } from "@/lib/model/billing";
 import type { FeatureStage } from "@/lib/model/feature";
 import type { CommissionPole, OneOffId, Rate } from "./charge";
 
@@ -51,6 +51,56 @@ export const PLATFORM_SOURCED_RATE: Partial<Record<CommissionPole, number>> = {
   service: 0.1,
 };
 
+// ─── Affiliation marketplace (D14) ───────────────────────────────────────────
+
+/**
+ * Fourchettes du TAUX d'affiliation marketplace, en fraction du prix brut du
+ * produit. Deuxième mécanique du modèle à deux mécaniques (D14) : le vendeur
+ * ouvre son produit à l'affiliation et fixe un taux **sortant de sa marge** ;
+ * la commission d'E-Dome ne bouge pas. Borné **par pôle** pour qu'un vendeur ne
+ * puisse pas vider sa propre marge en promettant 100 % à un affilié.
+ *
+ * La boutique en est absente à dessein : elle est déjà en affiliation pure,
+ * rémunérée par le marchand (`RATES.boutique = 0`, art. 20a LTVA), pas par un
+ * pourcentage sortant d'une marge tenue sur E-Dome.
+ */
+export const AFFILIATION_RATES: Partial<Record<CommissionPole, Rate>> = {
+  formation: { min: 0.2, max: 0.5 },
+  live: { min: 0.2, max: 0.5 },
+  evenement: { min: 0.1, max: 0.25 },
+  service: { min: 0.05, max: 0.15 },
+  "location-ct": { min: 0.03, max: 0.1 },
+};
+
+/**
+ * Valide un taux d'affiliation contre la fourchette de son pôle.
+ *
+ * Lève au développement plutôt que d'afficher un flux faux : un taux hors
+ * bornes, ou un pôle qui n'ouvre pas l'affiliation, est une erreur de
+ * construction du `Charge`, pas une donnée à afficher.
+ */
+export function assertAffiliationRate(pole: CommissionPole, rate: number): void {
+  const range = AFFILIATION_RATES[pole];
+  if (!range) {
+    throw new Error(`L'affiliation n'est pas ouverte sur le pôle « ${pole} ».`);
+  }
+  if (rate < range.min || rate > range.max) {
+    throw new Error(
+      `Taux d'affiliation hors bornes pour « ${pole} » : ` +
+        `${(rate * 100).toLocaleString("fr-CH")} % ` +
+        `(attendu ${(range.min * 100).toLocaleString("fr-CH")}–${(range.max * 100).toLocaleString("fr-CH")} %).`,
+    );
+  }
+}
+
+/** Libellé court « X à Y % » du taux d'affiliation d'un pôle marketplace. */
+export function affiliationLabel(pole: CommissionPole): string {
+  const r = AFFILIATION_RATES[pole];
+  if (!r) return "affiliation payée par le marchand";
+  const pct = (n: number) => `${(n * 100).toLocaleString("fr-CH")} %`;
+  return r.min === r.max ? pct(r.max) : `${pct(r.min)} à ${pct(r.max)}`;
+}
+
 /**
  * Part fixe par unité vendue.
  *
@@ -72,6 +122,51 @@ export const PER_UNIT_FEE: Partial<Record<CommissionPole, Money>> = {
  * d'argent l'affiche tel quel — c'est à cela qu'il sert.
  */
 export const MIN_COMMISSION: Money = chf(3);
+
+// ─── Prime de mise en relation biens (D14) ───────────────────────────────────
+
+/**
+ * La PRIME BIENS : une somme fixe en francs, jamais un pourcentage du prix, que
+ * le vendeur ou le bailleur fixe et paie quand il accepte une mise en relation.
+ * E-Dome prélève `EDOME_PRIME_SHARE` **à l'intérieur** de la prime (jamais en
+ * plus), plancher `PRIME_FLOOR`. Voir `DECISIONS-2.md` §D14.
+ *
+ * `EDOME_PRIME_SHARE` reste une constante paramétrable : passer à 0 % (ou toute
+ * autre valeur) si l'avocat tranche autrement ne demande aucune refonte.
+ */
+export const PRIME_MIN: Money = chf(50);
+export const PRIME_MAX: Money = chf(3000);
+export const PRIME_FLOOR: Money = chf(3);
+export const EDOME_PRIME_SHARE = 0.12;
+
+/* Groupé à l'apostrophe suisse, SANS `toLocaleString` : le séparateur de
+   milliers de « fr-CH » varie selon l'ICU (Node côté serveur vs navigateur côté
+   client), ce qui cassait l'hydratation partout où ce libellé est rendu
+   (`/apporteurs`). Un groupage manuel est identique des deux côtés. */
+const groupChf = (n: number): string => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "’");
+
+/** Fourchette de la prime biens, en toutes lettres — pour la copie d'interface. */
+export const PRIME_RANGE_LABEL = `${groupChf(PRIME_MIN.cents / 100)} à ${groupChf(PRIME_MAX.cents / 100)} CHF`;
+
+/**
+ * Seule fabrique d'un `PrimeMoney`. Valide les bornes 50–3 000 CHF à la
+ * construction (sinon `throw`). Un `Money` ordinaire n'étant pas assignable à
+ * `PrimeMoney`, c'est le seul chemin possible : « prime en % du prix » ne
+ * compile pas, et une prime hors bornes lève dès la construction du `Charge`,
+ * pas au premier rendu. Ni le brand ni cette borne n'empêchent un `number`
+ * dérivé d'un prix (`primeChf(price * 0.03)`) — mais 3 % d'un bien romand
+ * dépasse largement 3 000 CHF, donc `primeChf()` lève aussitôt.
+ */
+export function primeChf(amountChf: number): PrimeMoney {
+  const m = chf(amountChf);
+  if (m.cents < PRIME_MIN.cents || m.cents > PRIME_MAX.cents) {
+    throw new Error(
+      `Prime hors bornes : ${amountChf} CHF (attendu ${PRIME_MIN.cents / 100}–${PRIME_MAX.cents / 100} CHF). ` +
+        `Une prime de mise en relation est un montant fixe, jamais un pourcentage du prix du bien.`,
+    );
+  }
+  return m as PrimeMoney;
+}
 
 // ─── Tarif fondateur créateur ────────────────────────────────────────────────
 
@@ -102,19 +197,22 @@ export const AGENCY_FOUNDING_MONTHS = 12;
 // ─── Part apporteur ──────────────────────────────────────────────────────────
 
 /**
- * Part de l'apporteur, en fraction du revenu **net** d'E-Dome.
+ * Part de l'apporteur d'un ABONNEMENT, **par formule**, en fraction du revenu
+ * net d'E-Dome (hors TVA, après frais de paiement).
  *
- * Net, et non brut : hors TVA et après frais de paiement. Sinon la part peut
- * dépasser la marge, et l'on expose indirectement le prix payé par le client.
+ * Le générique « apporteur = 10 à 30 % du revenu E-Dome sur tous les pôles » est
+ * **aboli** (D14) : il ne vaut plus que pour l'abonnement, et par barème de
+ * formule. Les biens passent par la PRIME (`bien-introduction`, `primeChf`), la
+ * marketplace par l'AFFILIATION (`AFFILIATION_RATES`) — jamais par cette table.
  */
-export const APPORTEUR_SHARES = {
-  /** Abonnements, douze premiers mois. */
-  subscription: 0.25,
-  /** Commissions, douze premiers mois. */
-  commission: 0.15,
-  /** Forfaits ponctuels. */
-  oneOff: 0.15,
-} as const;
+export const APPORTEUR_SUBSCRIPTION_SHARES: Record<PlanId, number> = {
+  patrimoine: 0.15,
+  vitrine: 0.25,
+  mandats: 0.25,
+  regie: 0.3,
+  /** Formule gratuite : aucun revenu E-Dome, donc aucune part. */
+  presence: 0,
+};
 
 /**
  * Plafond de la fenêtre de rémunération, en mois.
@@ -124,8 +222,6 @@ export const APPORTEUR_SHARES = {
  * 842 CHF pour une valeur vie estimée à ~10 100 CHF sur trois ans.
  */
 export const APPORTEUR_WINDOW_MONTHS = 12;
-
-export const APPORTEUR_SHARE_LABEL = "10 à 30 %";
 
 /**
  * Primes d'acquisition.
@@ -138,6 +234,9 @@ export const BOUNTIES = {
   "host-activated": { amount: chf(60), condition: "premier encaissement de l'hôte" },
   "user-activated": { amount: chf(15), condition: "compte vérifié et actif 30 jours" },
 } as const;
+
+/** Prime « hôte activé » en CHF, dérivée de `BOUNTIES` (acquisition, pas une commission). */
+export const HOST_BOUNTY_CHF = BOUNTIES["host-activated"].amount.cents / 100;
 
 // ─── Formules ────────────────────────────────────────────────────────────────
 

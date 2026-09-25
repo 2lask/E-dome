@@ -1,5 +1,5 @@
 import { formatCHF } from "./format";
-import { APPORTEUR_SHARE, MARKETPLACE_RATE } from "./pricing";
+import { AFFILIATION_RATES } from "./pricing";
 import * as derive from "./demo/derive";
 import { OWNED_PROPERTY_IDS } from "./demo/identity";
 import { properties as CATALOGUE } from "./mock-data";
@@ -190,14 +190,12 @@ const SOURCES_META: Record<
   },
 };
 
-/* Part versée à un apporteur sur le chiffre d'affaires qu'il a amené :
-   commission marketplace E-Dome (milieu de fourchette) × part apporteur
-   (milieu de fourchette). Les montants étaient auparavant fixés à 4 % du CA
-   en dur — un multiple de ce que le modèle autorise, et une assiette
-   interdite (le prix payé plutôt que le revenu E-Dome). */
+/* Part versée à un affilié sur le chiffre d'affaires qu'il a amené, en courte
+   durée : le TAUX d'affiliation marketplace (milieu de fourchette), appliqué au
+   prix, prélevé sur la marge de l'hôte — la mécanique marketplace de D14, pas
+   l'ancien pourcentage du revenu E-Dome. */
 const mid = (r: { min: number; max: number }) => (r.min + r.max) / 2;
-const apporteurPaid = (ca: number) =>
-  Math.round(ca * mid(MARKETPLACE_RATE["location-ct"]) * mid(APPORTEUR_SHARE));
+const apporteurPaid = (ca: number) => Math.round(ca * mid(AFFILIATION_RATES["location-ct"]!));
 
 /* Les biens cites etaient ceux de l ancien jeu invente. Ils viennent du
    catalogue, comme partout ailleurs. */

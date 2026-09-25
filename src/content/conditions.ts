@@ -82,8 +82,9 @@ export const SECTIONS: Section[] = [
       `- « Hôte » : Utilisateur qui propose un bien en location de courte durée. À la différence du vendeur, l'hôte réalise ses réservations sur la Plateforme, et une commission est prélevée sur lui à ce titre — jamais ajoutée au prix payé par le voyageur.\n` +
       `- « Client », « Voyageur » : Utilisateur qui achète, loue ou réserve.\n` +
       `- « Prestataire », « Créateur » : Utilisateur qui vend un service, une formation, un événement ou un live.\n` +
-      `- « Apporteur » : Utilisateur qui recommande par un lien traçable et perçoit une part de la rémunération d'E-Dome, jamais un supplément payé par le client.\n` +
-      `- « Prix » et « Commission » : les sommes dues à E-Dome sont fixées à l'avance et dues indépendamment de la conclusion d'une vente ou d'un bail (règle 3). Le mot « commission » désigne, pour les seuls pôles de la marketplace, une part de ce que perçoit le prestataire ou l'hôte au titre d'une prestation vendue via la Plateforme — jamais un pourcentage du prix d'une vente ou d'un loyer immobilier.`,
+      `- « Apporteur » : Utilisateur qui recommande par un lien traçable. Sa rémunération suit deux mécaniques, jamais confondues : une prime fixe en francs sur les biens (vente, location longue durée), ou un pourcentage du prix sur les pôles de la marketplace, prélevé sur la marge du vendeur — jamais un supplément ajouté au prix payé par le client.\n` +
+      `- « Prime de mise en relation » : somme fixe, en francs, qu'un Vendeur ou un Bailleur fixe librement et verse à l'Apporteur lorsqu'il accepte une mise en relation. Elle est indépendante de la conclusion d'une vente ou d'un bail, n'en est jamais un pourcentage, et n'est donc pas une commission au sens de la règle 3. E-Dome en retient une part paramétrable au titre du service rendu à l'Apporteur ; ce prélèvement porte sur la prime, jamais sur une commission d'agence sur une vente.\n` +
+      `- « Prix » et « Commission » : les sommes dues à E-Dome sont fixées à l'avance et dues indépendamment de la conclusion d'une vente ou d'un bail (règle 3). Le mot « commission » désigne, pour les seuls pôles de la marketplace, une part de ce que perçoit le prestataire ou l'hôte au titre d'une prestation vendue via la Plateforme — jamais un pourcentage du prix d'une vente ou d'un loyer immobilier, et à distinguer de la prime de mise en relation ci-dessus.`,
   },
   {
     id: "inscription",
@@ -104,7 +105,7 @@ export const SECTIONS: Section[] = [
       `E-Dome gagne sa vie du côté professionnel. Publier, chercher et vendre son propre bien est gratuit : il n'existe aucun frais de publication, et aucune somme due à E-Dome ne dépend de la conclusion d'une vente ou d'un bail. Les professionnels s'abonnent aux outils ; les pôles de la marketplace appliquent une commission sur la prestation vendue. Le barème ci-dessous reflète le catalogue en vigueur :`,
     table: rateRows,
     contentAfter:
-      `Les abonnements des agences et des propriétaires sont facturés au mois ou à l'année, sans engagement. Il n'existe pas de « revenue share » négocié de gré à gré : tous les Utilisateurs d'une même formule paient le même prix (règle 3).`,
+      `Les abonnements des agences et des propriétaires sont facturés au mois ou à l'année, sans engagement. Il n'existe pas de « revenue share » négocié de gré à gré : tous les Utilisateurs d'une même formule paient le même prix (règle 3). Sur les biens, un Vendeur peut offrir à un Apporteur une prime de mise en relation — une somme fixe en francs, indépendante de la conclusion : ce n'est pas une commission (la règle 3 vise la commission de succès d'une agence sur une transaction immobilière, pas cette prime), et E-Dome en retient une part paramétrable au titre du service rendu à l'Apporteur, jamais un prélèvement sur une commission d'agence.`,
   },
   {
     id: "apporteurs",

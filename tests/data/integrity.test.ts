@@ -21,6 +21,8 @@ import {
   apporteurSummary,
 } from "@/lib/dashboard-data";
 import { PROPS, buildView } from "@/lib/revenue-data";
+import { quote, primeChf, AFFILIATION_RATES, EDOME_PRIME_SHARE } from "@/lib/pricing";
+import { chf } from "@/lib/model/billing";
 
 /* ── Assertions d'intégrité des données de démonstration ────────────────────
 
@@ -189,4 +191,77 @@ test("18 — le montant de chaque réservation affichée est vérifiable", () =>
     assert.ok(c, `bien ${r.propertyId} de la réservation ${r.id}`);
     assert.equal(r.amount, r.nights * c.price, `réservation ${r.id}`);
   }
+});
+
+/* ── Le moteur de pricing à deux mécaniques (D14, étape 1.5) ─────────────── */
+
+test("19 — mécanique BIENS : la prime se répartit apporteur + part E-Dome", () => {
+  /* Prime de 100 CHF : E-Dome retient 12 % (12 CHF), l'apporteur touche 88 CHF
+     NET (aucun PSP déduit de lui), PSP absorbé par E-Dome. */
+  const q = quote({ kind: "bien-introduction", pole: "vente", prime: primeChf(100) });
+  const f = q.flow;
+  assert.equal(f.gross.cents, 10000);
+  assert.equal(f.apporteur.cents, 8800, "apporteur = prime − part E-Dome");
+  assert.equal(f.edomeGross.cents - f.apporteur.cents, 1200, "part brute E-Dome = 12 %");
+  assert.equal(f.affiliate.cents, 0, "pas d'affiliation sur un bien");
+  assert.equal(f.beneficiary.cents, 0, "le vendeur est le payeur, pas un bénéficiaire");
+  assert.equal(f.pspBornBy, "platform");
+  assert.ok(f.psp.cents > 0, "un PSP existe, absorbé par E-Dome");
+  assert.equal(
+    f.edomeNet.cents,
+    f.edomeGross.cents - f.apporteur.cents - f.psp.cents,
+    "E-Dome net = brut − apporteur − PSP",
+  );
+  /* Invariant de flux (branche plateforme) : brut = bénéficiaire + E-Dome + affilié. */
+  assert.equal(f.beneficiary.cents + f.edomeGross.cents + f.affiliate.cents, f.gross.cents);
+});
+
+test("20 — la prime est verrouillée : bornée en francs, jamais un % du prix", () => {
+  assert.equal(primeChf(100).cents, 10000);
+  assert.equal(primeChf(50).cents, 5000, "borne basse acceptée");
+  assert.equal(primeChf(3000).cents, 300000, "borne haute acceptée");
+  assert.throws(() => primeChf(40), /hors bornes/, "sous 50 CHF");
+  assert.throws(() => primeChf(3001), /hors bornes/, "au-dessus de 3 000 CHF");
+  /* Le cas que le verrou vise : une « prime » dérivée d'un % du prix d'un bien.
+     3 % d'un bien romand à 1,25 M dépasse largement le plafond → lève aussitôt. */
+  assert.throws(() => primeChf(Math.round(1_250_000 * 0.03)), /hors bornes/);
+  assert.ok(EDOME_PRIME_SHARE > 0 && EDOME_PRIME_SHARE < 1);
+});
+
+test("21 — mécanique MARKETPLACE : l'affilié sort de la marge, commission E-Dome inchangée", () => {
+  const gross = chf(200);
+  const rate = AFFILIATION_RATES.formation!.max; // 0.50
+  const withAff = quote({ kind: "commission", pole: "formation", gross, affiliation: { rate } });
+  const without = quote({ kind: "commission", pole: "formation", gross });
+  assert.equal(withAff.flow.affiliate.cents, Math.round(gross.cents * rate), "affilié = % du prix");
+  assert.equal(
+    withAff.flow.edomeGross.cents,
+    without.flow.edomeGross.cents,
+    "la commission d'E-Dome ne bouge pas avec l'affiliation",
+  );
+  assert.ok(
+    withAff.flow.beneficiary.cents < without.flow.beneficiary.cents,
+    "l'affilié est prélevé sur la marge du vendeur",
+  );
+  /* Taux hors de la fourchette du pôle → lève. */
+  assert.throws(() => quote({ kind: "commission", pole: "formation", gross, affiliation: { rate: 0.6 } }), /hors bornes/);
+  assert.throws(() => quote({ kind: "commission", pole: "formation", gross, affiliation: { rate: 0.1 } }), /hors bornes/);
+});
+
+test("22 — l'invariant de flux tombe juste sur les deux mécaniques", () => {
+  const prime = quote({ kind: "bien-introduction", pole: "location-lt", prime: primeChf(500) }).flow;
+  const partsPrime = prime.beneficiary.cents + prime.edomeGross.cents + prime.affiliate.cents;
+  assert.equal(partsPrime, prime.gross.cents, "prime : brut = bénéficiaire + E-Dome + affilié");
+
+  const market = quote({
+    kind: "commission",
+    pole: "evenement",
+    gross: chf(300),
+    affiliation: { rate: AFFILIATION_RATES.evenement!.min },
+  }).flow;
+  const partsMarket =
+    market.pspBornBy === "seller"
+      ? market.beneficiary.cents + market.edomeGross.cents + market.affiliate.cents + market.psp.cents
+      : market.beneficiary.cents + market.edomeGross.cents + market.affiliate.cents;
+  assert.equal(partsMarket, market.gross.cents, "marketplace : brut = bénéficiaire + E-Dome + affilié (+ PSP)");
 });

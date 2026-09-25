@@ -1,12 +1,13 @@
-import type { ReferralLink, ReferralTargetKind, TransactionType } from "./types";
+import type { Currency, ReferralLink, ReferralTargetKind, TransactionType } from "./types";
 import {
-  APPORTEUR_SHARE_LABEL,
+  AFFILIATION_RATES,
   HOST_BOUNTY_CHF,
-  LONG_RENTAL_FEES,
-  SALE_FEE_ABOVE,
-  SALE_FEE_BELOW,
-  apporteurShareLabel,
+  PRIME_RANGE_LABEL,
+  affiliationLabel,
+  quote,
+  type CommissionPole,
 } from "./pricing";
+import { money, type Money } from "./model/billing";
 
 /* Identifiant apporteur du user courant (mock — un seul apporteur dans la
    démo, cf. page /apporteurs). Partagé pour que les liens générés là-bas
@@ -28,8 +29,8 @@ export const DEFAULT_REFERRAL_LINKS: ReferralLink[] = [
   {
     label: "Amener un client",
     url: `edome.world/ref/client/${REFERRAL_ID}`,
-    description: `Invitez des locataires ou acheteurs potentiels à rejoindre la plateforme. Sur une location courte ou un achat marketplace, vous touchez ${APPORTEUR_SHARE_LABEL} de la commission marketplace d'E-Dome — jamais ajoutés au prix payé.`,
-    commission: apporteurShareLabel("location-ct"),
+    description: `Invitez des locataires ou acheteurs potentiels à rejoindre la plateforme. Sur une location courte ou un achat marketplace, l'affilié touche un pourcentage du prix (${affiliationLabel("location-ct")} en courte durée), prélevé sur la marge du vendeur — jamais ajouté au prix payé, et sans diminuer la commission d'E-Dome.`,
+    commission: affiliationLabel("location-ct"),
     clicks: 12,
     conversions: 5,
     earned: 320,
@@ -38,8 +39,8 @@ export const DEFAULT_REFERRAL_LINKS: ReferralLink[] = [
   {
     label: "Amener un bien",
     url: `edome.world/ref/bien/${REFERRAL_ID}`,
-    description: `Recommandez un bien à la vente entre particuliers ou à la location longue durée. Vous touchez ${APPORTEUR_SHARE_LABEL} du frais fixe de plateforme E-Dome (${SALE_FEE_BELOW} ou ${SALE_FEE_ABOVE} CHF en vente, ${LONG_RENTAL_FEES.court} / ${LONG_RENTAL_FEES.median} / ${LONG_RENTAL_FEES.long} CHF en location longue durée) — pas un pourcentage du prix.`,
-    commission: apporteurShareLabel("vente"),
+    description: `Recommandez un bien à la vente entre particuliers ou à la location longue durée. L'apporteur touche une prime fixe en francs (${PRIME_RANGE_LABEL}), définie par le vendeur et due à l'acceptation du contact — jamais un pourcentage du prix, jamais conditionnée à la vente.`,
+    commission: `Prime fixe (${PRIME_RANGE_LABEL})`,
     clicks: 3,
     conversions: 1,
     earned: 250,
@@ -68,37 +69,37 @@ export const REFERRAL_ROUTE: Record<ReferralTargetKind, string> = {
   produit: "/boutique",
 };
 
-/* Les libellés viennent de @/lib/pricing : ils disaient auparavant « 20 % du
-   prix de la formation », « 15 % du prix du billet », « 10 % du prix de
-   vente » — trois assiettes inventées, et surtout un pourcentage du PRIX
-   payé par le client, ce que le modèle exclut explicitement. La part de
-   l'apporteur porte toujours sur le revenu d'E-Dome. */
+/* Deux mécaniques (D14), jamais confondues. BIENS : une prime fixe en francs,
+   définie par le vendeur (jamais un pourcentage du prix). MARKETPLACE : un
+   pourcentage du prix, prélevé sur la marge du vendeur, la commission d'E-Dome
+   inchangée. L'ancien « % du prix payé par le client » et « 10 à 30 % du frais
+   fixe » sont abolis. */
 const AFFILIATE_CONFIG: Record<
   ReferralTargetKind,
   { commission: string; description: (title: string) => string; color: string }
 > = {
   bien: {
-    commission: apporteurShareLabel("vente"),
+    commission: `Prime fixe (${PRIME_RANGE_LABEL})`,
     description: (t) =>
-      `Recommandez « ${t} » via votre lien. Si l'acheteur ou le locataire conclut sur E-Dome, vous touchez ${APPORTEUR_SHARE_LABEL} du frais fixe de plateforme — jamais ajoutés au prix payé.`,
+      `Recommandez « ${t} » via votre lien. L'apporteur touche une prime fixe en francs (${PRIME_RANGE_LABEL}), définie par le vendeur et due à l'acceptation du contact — jamais un pourcentage du prix, jamais ajoutée au prix payé.`,
     color: "bg-emerald-500/20 text-emerald-400",
   },
   formation: {
-    commission: apporteurShareLabel("formation"),
+    commission: affiliationLabel("formation"),
     description: (t) =>
-      `Recommandez la formation « ${t} » via votre lien. Vous touchez ${APPORTEUR_SHARE_LABEL} de la commission qu'E-Dome perçoit sur chaque inscription issue de votre recommandation.`,
+      `Recommandez la formation « ${t} » via votre lien. Vous touchez ${affiliationLabel("formation")} du prix de chaque inscription issue de votre recommandation, prélevés sur la marge du créateur — la commission d'E-Dome ne change pas.`,
     color: "bg-orange-500/20 text-orange-400",
   },
   evenement: {
-    commission: apporteurShareLabel("evenement"),
+    commission: affiliationLabel("evenement"),
     description: (t) =>
-      `Recommandez l'événement « ${t} » via votre lien. Vous touchez ${APPORTEUR_SHARE_LABEL} de la commission qu'E-Dome perçoit sur chaque billet vendu grâce à votre recommandation.`,
+      `Recommandez l'événement « ${t} » via votre lien. Vous touchez ${affiliationLabel("evenement")} du prix de chaque billet vendu grâce à votre recommandation, prélevés sur la marge de l'organisateur — la commission d'E-Dome ne change pas.`,
     color: "bg-purple-500/20 text-purple-400",
   },
   produit: {
-    commission: apporteurShareLabel("boutique"),
+    commission: "Affiliation payée par le marchand",
     description: (t) =>
-      `Recommandez le produit « ${t} » via votre lien. Vous touchez ${APPORTEUR_SHARE_LABEL} de la commission qu'E-Dome perçoit sur chaque vente issue de votre recommandation.`,
+      `Recommandez le produit « ${t} » via votre lien. La boutique fonctionne en affiliation : le marchand rémunère la recommandation, jamais un supplément ajouté au prix payé par l'acheteur.`,
     color: "bg-blue-500/20 text-blue-400",
   },
 };
@@ -137,4 +138,42 @@ export function buildObjectAffiliate(
       transactionType: extra?.transactionType,
     },
   };
+}
+
+/* Pôle marketplace d'une cible affiliable. « bien » en est absent : un bien
+   relève de la PRIME (montant fixe fixé par le vendeur), pas d'un pourcentage
+   dérivable d'un prix. « produit » → boutique, sans taux d'affiliation propre
+   (rémunérée par le marchand). */
+const REFERRAL_MARKETPLACE_POLE: Partial<Record<ReferralTargetKind, CommissionPole>> = {
+  formation: "formation",
+  evenement: "evenement",
+  produit: "boutique",
+};
+
+/**
+ * Gain affilié estimé pour une cible marketplace, calculé par `quote()` — le
+ * seul moteur du modèle. Remplace l'ancien `estimateEarning()` du barème aboli.
+ *
+ * Renvoie `null` pour un bien (prime en francs, non dérivable d'un prix), une
+ * cible sans prix, ou un pôle sans taux d'affiliation (boutique) : l'appelant
+ * retombe alors sur le libellé `commission` du lien, jamais sur un montant à 0
+ * silencieux.
+ */
+export function referralEarning(target?: {
+  kind: ReferralTargetKind;
+  price?: number;
+  currency?: string;
+}): { amount: Money } | null {
+  if (!target || target.price == null) return null;
+  const pole = REFERRAL_MARKETPLACE_POLE[target.kind];
+  const range = pole ? AFFILIATION_RATES[pole] : undefined;
+  if (!pole || !range) return null;
+  const gross = money(Math.round(target.price * 100), (target.currency as Currency) ?? "CHF");
+  const affiliate = quote({
+    kind: "commission",
+    pole,
+    gross,
+    affiliation: { rate: range.max },
+  }).flow.affiliate;
+  return affiliate.cents > 0 ? { amount: affiliate } : null;
 }

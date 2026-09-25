@@ -18,7 +18,7 @@ import { chf } from "@/lib/model/billing";
 import { useToast } from "@/components/ui/toast";
 import { timeAgo, formatDate } from "@/lib/utils";
 import { roleBadgeColors, roleLabels } from "@/lib/types";
-import type { Property, PropertyAnalytics, User, Currency } from "@/lib/types";
+import type { Property, PropertyAnalytics, User } from "@/lib/types";
 import {
   properties as allProperties,
   getPropertyById,
@@ -29,7 +29,6 @@ import type { Review } from "@/lib/mock-data";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
 import { REFERRAL_ID } from "@/lib/referral-links";
-import { APPORTEUR_SHARE_LABEL, apporteurEarning, type Pole } from "@/lib/pricing";
 
 // ─── Paid options (applicable to location-ct) ───────────────────────────────
 
@@ -963,33 +962,23 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               </button>
             </div>
 
-            {/* Rémunération apporteur — calculée par @/lib/pricing, le même
-                module que le bouton « Recommander » du feed et de la visionneuse.
-                C'est la condition pour que les deux affichent le même montant :
-                ils affichaient auparavant 48–143 CHF ici et 5 100 CHF là. */}
+            {/* Rémunération apporteur — deux mécaniques (D14), jamais un
+                pourcentage du prix du bien. Le montant exact d'une prime est
+                fixé par le vendeur à l'activation ; il n'est pas dérivable du
+                prix affiché ici. */}
             <div className="p-4 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20">
-              {(() => {
-                const earning = apporteurEarning(
-                  property.transactionType as Pole,
-                  property.price,
-                  property.currency as Currency,
-                );
-                return (
-                  <>
-                    <p className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--primary)]">
-                      <Wallet size={14} /> Rémunération apporteur : {APPORTEUR_SHARE_LABEL} de la part E-Dome
-                    </p>
-                    <p className="text-xs text-[var(--text-secondary)] mt-1">
-                      → {earning.baseLabel}<br />
-                      → Soit potentiellement {formatPrice(earning.min, property.currency as any)} à {formatPrice(earning.max, property.currency as any)} pour vous
-                    </p>
-                    <p className="inline-flex items-start gap-1.5 text-[10px] text-[var(--text-muted)] mt-2">
-                      <Info size={11} className="mt-px shrink-0" />
-                      <span>La part de l&apos;apporteur est prélevée sur les revenus de plateforme d&apos;E-Dome — frais fixe pour les ventes et la location longue durée, commission marketplace pour la location courte. Jamais ajoutée au prix payé par l&apos;hôte ou le client. Vous ne représentez aucune partie et n&apos;êtes ni agent ni courtier.</span>
-                    </p>
-                  </>
-                );
-              })()}
+              <p className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--primary)]">
+                <Wallet size={14} /> Rémunération apporteur
+              </p>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">
+                {property.transactionType === "location-ct"
+                  ? "Location courte durée : affiliation marketplace — un pourcentage du prix, prélevé sur la marge de l'hôte, jamais ajouté au prix payé."
+                  : "Vente et location longue durée : une prime fixe en francs, définie par le vendeur et due à l'acceptation du contact — jamais un pourcentage du prix du bien, jamais conditionnée à la vente."}
+              </p>
+              <p className="inline-flex items-start gap-1.5 text-[10px] text-[var(--text-muted)] mt-2">
+                <Info size={11} className="mt-px shrink-0" />
+                <span>Jamais ajoutée au prix payé par l&apos;hôte ou le client. Vous ne représentez aucune partie et n&apos;êtes ni agent ni courtier.</span>
+              </p>
             </div>
 
             <a href="/apporteurs" className="text-xs text-[var(--primary)] hover:underline">

@@ -20,6 +20,19 @@ export interface Money {
   readonly currency: Currency;
 }
 
+/**
+ * Prime de mise en relation, en francs — jamais un pourcentage du prix.
+ *
+ * Type nominal (brand) : aucun `Money` ordinaire n'est assignable à
+ * `PrimeMoney`, y compris le résultat de `shareOf(prix, taux)`. La seule
+ * fabrique autorisée est `primeChf()` (`@/lib/pricing/catalog`), qui valide les
+ * bornes 50–3 000 CHF à la construction. Conséquence au compilateur : passer
+ * `shareOf(property.price, 0.03)` comme `prime` d'une charge `bien-introduction`
+ * ne compile pas — « prime en % du prix du bien » est structurellement
+ * impossible. Voir `analyse2/architecture-modele.md` §C et `DECISIONS-2.md` §D14.
+ */
+export type PrimeMoney = Money & { readonly __brand: "prime" };
+
 export const money = (cents: number, currency: Currency = "CHF"): Money => ({
   cents: Math.round(cents),
   currency,
