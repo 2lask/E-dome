@@ -4,7 +4,7 @@ import { test } from "node:test";
 import "@/lib/demo/invariants";
 import * as derive from "@/lib/demo/derive";
 import { LEDGER } from "@/lib/demo/ledger";
-import { CURRENT_USER, OWNED_PROPERTY_IDS } from "@/lib/demo/identity";
+import { CURRENT_USER, CURRENT_USER_ID, OWNED_PROPERTY_IDS, PROFILES } from "@/lib/demo/identity";
 import { DEMO_TODAY } from "@/lib/demo/clock";
 import { properties as CATALOGUE, formations as CATALOGUE_FORMATIONS, currentUser } from "@/lib/mock-data";
 import { PRODUCTS } from "@/lib/data/products";
@@ -264,4 +264,73 @@ test("22 — l'invariant de flux tombe juste sur les deux mécaniques", () => {
       ? market.beneficiary.cents + market.edomeGross.cents + market.affiliate.cents + market.psp.cents
       : market.beneficiary.cents + market.edomeGross.cents + market.affiliate.cents;
   assert.equal(partsMarket, market.gross.cents, "marketplace : brut = bénéficiaire + E-Dome + affilié (+ PSP)");
+});
+
+/* ── L'argent par profil (D4, étape 2) ──────────────────────────────────── */
+
+test("23 — toute écriture porte un ownerId connu de PROFILES", () => {
+  const known = new Set<string>(PROFILES.map((p) => p.ownerId));
+  for (const e of LEDGER) {
+    assert.ok(e.ownerId && known.has(e.ownerId), `écriture ${e.id} : ownerId « ${e.ownerId} » inconnu`);
+  }
+});
+
+test("24 — les invariants d'argent tiennent PAR propriétaire", () => {
+  const today = DEMO_TODAY.toISOString().slice(0, 10);
+  for (const p of PROFILES) {
+    /* Répartition par source == revenu du mois, pour CE profil. */
+    const parts = derive.bySource(p.ownerId);
+    assert.equal(
+      sum(parts.map((r) => r.value)),
+      derive.currentMonth({ ownerId: p.ownerId }),
+      `bySource ≠ currentMonth pour ${p.ownerId}`,
+    );
+    /* Série == somme des écritures passées, pour CE profil. */
+    const serie = sum(derive.monthly({ ownerId: p.ownerId }).map((m) => m.value));
+    const passees = derive
+      .entries({ ownerId: p.ownerId })
+      .filter((e) => e.date <= today)
+      .reduce((s, e) => s + e.gross, 0);
+    assert.equal(serie, Math.round(passees), `série ≠ écritures passées pour ${p.ownerId}`);
+  }
+});
+
+test("25 — pas de fuite entre profils : les totaux par profil somment au journal", () => {
+  /* Somme des totaux par propriétaire == somme des bruts commissionnables du
+     journal (les GMV non commissionnables et les annulées exclus des deux
+     côtés). Un montant qui fuit d'un profil à l'autre casserait l'égalité. */
+  const perOwner = sum(PROFILES.map((p) => derive.total({ ownerId: p.ownerId })));
+  const journal = LEDGER.filter(
+    (e) => e.commissionable !== false && e.status !== "cancelled",
+  ).reduce((s, e) => s + e.gross, 0);
+  assert.equal(perOwner, Math.round(journal));
+
+  /* Aucune écriture d'un profil n'apparaît dans le total d'un autre. */
+  const owners = PROFILES.map((p) => p.ownerId);
+  for (const p of PROFILES) {
+    const others = owners.filter((o) => o !== p.ownerId);
+    for (const o of others) {
+      const shared = derive
+        .entries({ ownerId: p.ownerId })
+        .some((e) => derive.entries({ ownerId: o }).some((x) => x.id === e.id));
+      assert.ok(!shared, `des écritures fuient entre ${p.ownerId} et ${o}`);
+    }
+  }
+});
+
+test("26 — GMV agence : volume jamais compté dans le revenu", () => {
+  /* Toute écriture « vente » est non commissionnable (garde structurel). */
+  for (const e of LEDGER) {
+    if (e.source === "vente") {
+      assert.equal(e.commissionable, false, `écriture ${e.id} : vente doit être non commissionnable`);
+    }
+  }
+  /* Le volume GMV est séparé du revenu : aucune écriture non commissionnable
+     n'entre dans total()/entries(). */
+  const revenueEntries = derive.entries({ ownerId: CURRENT_USER_ID });
+  assert.ok(
+    revenueEntries.every((e) => e.commissionable !== false),
+    "une écriture GMV a fuité dans le revenu",
+  );
+  assert.equal(typeof derive.gmvVolume(CURRENT_USER_ID), "number");
 });

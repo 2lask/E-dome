@@ -1,6 +1,6 @@
 import { properties as CATALOGUE, formations as FORMATIONS } from "@/lib/mock-data";
 import { DEMO_TODAY, iso, last12Months, stayLabel } from "./clock";
-import { CURRENT_USER, OWNED_PROPERTY_IDS, OWNED_FORMATION_IDS } from "./identity";
+import { CURRENT_USER, CURRENT_USER_ID, PROFILES } from "./identity";
 
 /* ── Le journal : le seul endroit où vit un montant ─────────────────────────
 
@@ -45,7 +45,16 @@ export type LedgerSource =
   | "services"
   | "boutique"
   | "lives"
-  | "apporteurs";
+  | "apporteurs"
+  /**
+   * VOLUME D'AFFAIRES D'AGENCE (GMV), non commissionnable. La vente immobilière
+   * classique est déjà exclue de `CommissionPole` (`charge.ts`) : E-Dome ne la
+   * facture pas. Une écriture `vente` porte donc TOUJOURS `commissionable:
+   * false` (invariant), et `derive.ts` la garde HORS du revenu — affichée
+   * seulement comme volume (« 3,5 M de biens vendus »), jamais sommée dans le
+   * CA d'E-Dome. Absente d'`ALL_SOURCES` pour cette raison.
+   */
+  | "vente";
 
 export type SubjectKind =
   | "property"
@@ -57,6 +66,13 @@ export type SubjectKind =
 
 export interface Entry {
   id: string;
+  /**
+   * À qui revient ce montant. Chaque écriture est attribuée à la personne qui
+   * gagne/paie — c'est ce qui permet à 15 profils de porter chacun des montants
+   * cohérents sans les mélanger dans un journal géant invérifiable. `derive.ts`
+   * filtre dessus, et les invariants bouclent par `ownerId`.
+   */
+  ownerId: string;
   /** ISO `YYYY-MM-DD`. Borne les fenêtres 7 jours / 30 jours / 12 mois. */
   date: string;
   source: LedgerSource;
@@ -67,6 +83,12 @@ export interface Entry {
   status: "confirmed" | "pending" | "completed" | "cancelled";
   label: string;
   counterparty: string;
+  /**
+   * Absent ou `true` = flux qu'E-Dome commissionne (compte dans le revenu).
+   * `false` = volume d'affaires d'agence (GMV, ventes à des millions) : affiché
+   * comme volume, JAMAIS sommé dans le revenu d'E-Dome. Voir `LedgerSource`.
+   */
+  commissionable?: boolean;
   /** Renseigné pour une écriture de séjour. */
   stay?: { start: string; end: string; nights: number; label: string };
 }
@@ -191,70 +213,82 @@ function build(): Entry[] {
   const out: Entry[] = [];
   const rand = mulberry32(20260930);
 
-  /* Biens — un séjour se découpe en réservations de 2 à 7 nuits, jusqu'à
-     épuisement du nombre de nuits vendues dans le mois. */
-  for (const propertyId of OWNED_PROPERTY_IDS) {
-    const price = nightlyPrice(propertyId);
-    const name = propertyName(propertyId);
-    const plan = NIGHTS_BY_PROPERTY[propertyId];
-    if (!plan) throw new Error(`Journal : aucun plan d'occupation pour ${propertyId}`);
+  /* On boucle sur la TABLE des profils, pas sur des constantes globales : chaque
+     écriture est taguée de l'`ownerId` du profil qui la produit. Aujourd'hui un
+     seul profil (l'utilisateur courant) ; l'étape 3 en ajoutera d'autres sans
+     toucher à cette boucle. */
+  for (const profile of PROFILES) {
+    /* Biens — un séjour se découpe en réservations de 2 à 7 nuits, jusqu'à
+       épuisement du nombre de nuits vendues dans le mois. */
+    for (const propertyId of profile.ownedPropertyIds) {
+      const price = nightlyPrice(propertyId);
+      const name = propertyName(propertyId);
+      const plan = NIGHTS_BY_PROPERTY[propertyId];
+      if (!plan) throw new Error(`Journal : aucun plan d'occupation pour ${propertyId}`);
 
-    months.forEach((m, mi) => {
-      let remaining = plan[mi]!;
-      let day = 2;
-      let seq = 0;
+      months.forEach((m, mi) => {
+        let remaining = plan[mi]!;
+        let day = 2;
+        let seq = 0;
 
-      while (remaining > 0) {
-        const nights = Math.min(remaining, 2 + Math.floor(rand() * 6));
-        const start = new Date(Date.UTC(m.year, m.month, day));
-        const end = new Date(Date.UTC(m.year, m.month, day + nights));
-        const isFuture = start.getTime() > DEMO_TODAY.getTime();
-        const isPast = end.getTime() <= DEMO_TODAY.getTime();
+        while (remaining > 0) {
+          const nights = Math.min(remaining, 2 + Math.floor(rand() * 6));
+          const start = new Date(Date.UTC(m.year, m.month, day));
+          const end = new Date(Date.UTC(m.year, m.month, day + nights));
+          const isFuture = start.getTime() > DEMO_TODAY.getTime();
+          const isPast = end.getTime() <= DEMO_TODAY.getTime();
 
-        out.push({
-          id: `res-${propertyId}-${mi}-${seq}`,
-          date: iso(start),
-          source: "biens",
-          subject: { kind: "property", id: propertyId },
-          gross: nights * price,
-          status: isFuture ? "pending" : isPast ? "completed" : "confirmed",
-          label: name,
-          counterparty: pick(rand, GUESTS),
-          stay: { start: iso(start), end: iso(end), nights, label: stayLabel(start, end) },
-        });
+          out.push({
+            id: `res-${propertyId}-${mi}-${seq}`,
+            ownerId: profile.ownerId,
+            date: iso(start),
+            source: "biens",
+            subject: { kind: "property", id: propertyId },
+            gross: nights * price,
+            status: isFuture ? "pending" : isPast ? "completed" : "confirmed",
+            label: name,
+            counterparty: pick(rand, GUESTS),
+            stay: { start: iso(start), end: iso(end), nights, label: stayLabel(start, end) },
+          });
 
-        remaining -= nights;
-        day += nights + 1 + Math.floor(rand() * 3);
-        seq++;
-        /* Garde-fou : on ne déborde pas du mois. */
-        if (day > 26) break;
-      }
-    });
+          remaining -= nights;
+          day += nights + 1 + Math.floor(rand() * 3);
+          seq++;
+          /* Garde-fou : on ne déborde pas du mois. */
+          if (day > 26) break;
+        }
+      });
+    }
+
+    /* Formations — une écriture par inscription, au prix du catalogue. */
+    for (const formationId of profile.ownedFormationIds) {
+      const price = formationPrice(formationId);
+      months.forEach((m, mi) => {
+        for (let i = 0; i < FORMATION_SALES[mi]!; i++) {
+          out.push({
+            id: `form-${formationId}-${mi}-${i}`,
+            ownerId: profile.ownerId,
+            date: iso(new Date(Date.UTC(m.year, m.month, 3 + i * 4))),
+            source: "formations",
+            subject: { kind: "formation", id: formationId },
+            gross: price,
+            status: "completed",
+            label: FORMATIONS.find((f) => f.id === formationId)!.title,
+            counterparty: pick(rand, GUESTS),
+          });
+        }
+      });
+    }
   }
 
-  /* Formations — une écriture par inscription, au prix du catalogue. */
-  for (const formationId of OWNED_FORMATION_IDS) {
-    const price = formationPrice(formationId);
-    months.forEach((m, mi) => {
-      for (let i = 0; i < FORMATION_SALES[mi]!; i++) {
-        out.push({
-          id: `form-${formationId}-${mi}-${i}`,
-          date: iso(new Date(Date.UTC(m.year, m.month, 3 + i * 4))),
-          source: "formations",
-          subject: { kind: "formation", id: formationId },
-          gross: price,
-          status: "completed",
-          label: FORMATIONS.find((f) => f.id === formationId)!.title,
-          counterparty: pick(rand, GUESTS),
-        });
-      }
-    });
-  }
-
+  /* Événements, services, boutique et apports : l'activité de l'utilisateur
+     courant (les autres profils recevront la leur à l'étape 3). Chaque écriture
+     porte son `ownerId`. */
   for (const e of EVENTS) {
     const m = months[e.monthIndex]!;
     out.push({
       id: e.id,
+      ownerId: CURRENT_USER_ID,
       date: iso(new Date(Date.UTC(m.year, m.month, 12))),
       source: "evenements",
       subject: { kind: "event", id: e.id },
@@ -269,6 +303,7 @@ function build(): Entry[] {
     const m = months[s.monthIndex]!;
     out.push({
       id: s.id,
+      ownerId: CURRENT_USER_ID,
       date: iso(new Date(Date.UTC(m.year, m.month, 8))),
       source: "services",
       subject: { kind: "service", id: s.id },
@@ -283,6 +318,7 @@ function build(): Entry[] {
     const m = months[p.monthIndex]!;
     out.push({
       id: `prod-${p.id}-${p.monthIndex}`,
+      ownerId: CURRENT_USER_ID,
       date: iso(new Date(Date.UTC(m.year, m.month, 17))),
       source: "boutique",
       subject: { kind: "product", id: p.id },
@@ -297,6 +333,7 @@ function build(): Entry[] {
     const m = months[r.monthIndex]!;
     out.push({
       id: r.id,
+      ownerId: CURRENT_USER_ID,
       date: iso(new Date(Date.UTC(m.year, m.month, 21))),
       source: "apporteurs",
       subject: { kind: "referral", id: r.id },

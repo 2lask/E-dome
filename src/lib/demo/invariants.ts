@@ -8,7 +8,7 @@ import {
 import { DEMO_TODAY, MONTH_LABELS, last12Months } from "./clock";
 import { bySource, currentMonth, entries, monthly } from "./derive";
 import { LEDGER } from "./ledger";
-import { OWNED_PROPERTY_IDS } from "./identity";
+import { PROFILES } from "./identity";
 import { PLATFORM_ACCOUNT_ID } from "./directory";
 import { VIDEO_POSTS, SUGGESTIONS } from "./posts";
 import { PUBLIC_SEED_IDS } from "@/lib/profile-data";
@@ -173,24 +173,28 @@ for (const e of LEDGER) {
    Les vraies vérifications de ce croisement sont dans `tests/data/`, où elles
    traversent les enveloppes `dashboard-data.ts` et `revenue-data.ts` — c'est
    ce passage-là qui peut diverger, pas le calcul. */
+/* Bouclé PAR PROPRIÉTAIRE : une passe globale masquerait un montant qui fuit
+   d'un profil vers un autre (la série d'un profil compenserait le trou d'un
+   autre). Chaque profil doit balancer seul. */
 {
-  const serie = monthly().reduce((s, m) => s + m.value, 0);
   const today = DEMO_TODAY.toISOString().slice(0, 10);
-  const passees = entries().filter((e) => e.date <= today);
-  const attendu = Math.round(passees.reduce((s, e) => s + e.gross, 0));
-  const orphelines = passees.filter(
-    (e) => !monthKeys.has(e.date.slice(0, 7)),
-  );
+  for (const profile of PROFILES) {
+    const owner = profile.ownerId;
+    const serie = monthly({ ownerId: owner }).reduce((s, m) => s + m.value, 0);
+    const passees = entries({ ownerId: owner }).filter((e) => e.date <= today);
+    const attendu = Math.round(passees.reduce((s, e) => s + e.gross, 0));
+    const orphelines = passees.filter((e) => !monthKeys.has(e.date.slice(0, 7)));
 
-  assert(serie === attendu, 4, {
-    rule: "Toute écriture passée est comptée dans la série des douze mois.",
-    found: `série = ${serie} CHF`,
-    expected: `${attendu} CHF — somme des ${passees.length} écritures datées jusqu'au ${today}`,
-    fix:
-      orphelines.length > 0
-        ? `${LEDGER_FILE} — ${orphelines.length} écriture(s) hors de la fenêtre, donc ignorée(s) : ${orphelines.map((e) => `${e.id} (${e.date})`).join(", ")}`
-        : `${DERIVE_FILE} — l'écart ne vient pas des dates ; vérifier l'arrondi de monthly().`,
-  });
+    assert(serie === attendu, 4, {
+      rule: "Toute écriture passée est comptée dans la série des douze mois (par propriétaire).",
+      found: `profil ${owner} : série = ${serie} CHF`,
+      expected: `${attendu} CHF — somme des ${passees.length} écritures de ${owner} jusqu'au ${today}`,
+      fix:
+        orphelines.length > 0
+          ? `${LEDGER_FILE} — ${orphelines.length} écriture(s) de ${owner} hors de la fenêtre, donc ignorée(s) : ${orphelines.map((e) => `${e.id} (${e.date})`).join(", ")}`
+          : `${DERIVE_FILE} — l'écart ne vient pas des dates ; vérifier l'arrondi de monthly().`,
+    });
+  }
 }
 
 /* 5 — La série couvre bien douze mois et se termine sur le mois courant, qui
@@ -209,35 +213,46 @@ for (const e of LEDGER) {
     fix: `src/lib/demo/clock.ts — last12Months() a dérivé de DEMO_TODAY.`,
   });
 
-  assert(currentMonth() > 0, 5, {
-    rule: "Le mois courant n'est pas vide.",
-    found: `${last.label} = 0 CHF`,
-    expected: "un revenu strictement positif",
-    fix: `${LEDGER_FILE} — aucune écriture sur le mois courant ; l'écran afficherait 0 sous un badge de croissance.`,
-  });
+  /* Le mois courant non vide, PAR PROFIL : un profil vide afficherait « 0 CHF »
+     sous un badge de croissance. Une passe globale le masquerait derrière le
+     revenu des autres profils. */
+  for (const profile of PROFILES) {
+    assert(currentMonth({ ownerId: profile.ownerId }) > 0, 5, {
+      rule: "Le mois courant n'est pas vide (par propriétaire).",
+      found: `profil ${profile.ownerId} : ${last.label} = 0 CHF`,
+      expected: "un revenu strictement positif",
+      fix: `${LEDGER_FILE} — le profil ${profile.ownerId} n'a aucune écriture sur le mois courant ; son écran afficherait 0 sous un badge de croissance.`,
+    });
+  }
 }
 
-/* 6 — La répartition par source somme au revenu du mois. */
-{
-  const parts = bySource();
+/* 6 — La répartition par source somme au revenu du mois, PAR PROPRIÉTAIRE. */
+for (const profile of PROFILES) {
+  const owner = profile.ownerId;
+  const parts = bySource(owner);
   const sum = parts.reduce((s, r) => s + r.value, 0);
-  assert(sum === currentMonth(), 6, {
-    rule: "La répartition par source somme au revenu du mois.",
-    found: `${sum} CHF réparti sur ${parts.length} sources (${parts.map((p) => `${p.source} ${p.value}`).join(", ")})`,
-    expected: `${currentMonth()} CHF`,
+  const mois = currentMonth({ ownerId: owner });
+  assert(sum === mois, 6, {
+    rule: "La répartition par source somme au revenu du mois (par propriétaire).",
+    found: `profil ${owner} : ${sum} CHF réparti sur ${parts.length} sources (${parts.map((p) => `${p.source} ${p.value}`).join(", ")})`,
+    expected: `${mois} CHF`,
     fix: `${DERIVE_FILE} — un écart signale une source absente de la liste de répartition. C'est ce qui masquait 2 590 CHF de « services ».`,
   });
 }
 
-/* 7 — Chaque bien possédé a une activité. Un bien au tableau de bord sans
-   aucune écriture afficherait un revenu nul sous un badge de croissance. */
-for (const id of OWNED_PROPERTY_IDS) {
-  assert(LEDGER.some((e) => e.subject.id === id), 7, {
-    rule: "Chaque bien déclaré possédé a au moins une écriture au journal.",
-    found: `le bien ${id} n'a aucune écriture`,
-    expected: "au moins une écriture",
-    fix: `${LEDGER_FILE} — lui donner de l'activité, ou le retirer de OWNED_PROPERTY_IDS dans src/lib/demo/identity.ts.`,
-  });
+/* 7 — Chaque bien possédé a une activité ATTRIBUÉE À SON PROPRIÉTAIRE. Un bien
+   au tableau de bord sans aucune écriture afficherait un revenu nul sous un
+   badge de croissance ; une écriture au mauvais propriétaire ferait fuir son
+   revenu vers un autre profil. */
+for (const profile of PROFILES) {
+  for (const id of profile.ownedPropertyIds) {
+    assert(LEDGER.some((e) => e.subject.id === id && e.ownerId === profile.ownerId), 7, {
+      rule: "Chaque bien déclaré possédé a au moins une écriture au journal, à son propriétaire.",
+      found: `le bien ${id} n'a aucune écriture attribuée à ${profile.ownerId}`,
+      expected: "au moins une écriture du bon propriétaire",
+      fix: `${LEDGER_FILE} — lui donner de l'activité (taguée du bon ownerId), ou le retirer de PROFILES dans src/lib/demo/identity.ts.`,
+    });
+  }
 }
 
 /* 8 — Aucune date hors de la fenêtre des douze mois qui précèdent le
@@ -356,6 +371,44 @@ for (const id of PUBLIC_SEED_IDS) {
     found: `l'enrichissement « ${id} » ne correspond à aucune personne`,
     expected: `un id parmi l'annuaire (${PEOPLE.length} personnes)`,
     fix: "src/lib/profile-data.ts — aligner la clé de PUBLIC_SEEDS sur un vrai id de users[].",
+  });
+}
+
+/* ── L'ARGENT PAR PROFIL (Mission 2, étape 2) ───────────────────────────────
+
+   Le pendant, pour l'argent, de l'annuaire unique : un montant ne peut plus
+   flotter sans propriétaire connu, ni glisser d'un profil à l'autre. */
+
+const PROFILE_IDS = new Set<string>(PROFILES.map((p) => p.ownerId));
+
+/* 13 — Aucune écriture n'est attribuée à un propriétaire inconnu de PROFILES.
+   Sans ça, une écriture au mauvais `ownerId` disparaîtrait de tous les totaux
+   (aucun profil ne la revendique) sans que rien ne le signale — exactement le
+   type de montant fantôme que le journal doit rendre impossible. */
+{
+  const orphelines = LEDGER.filter((e) => !PROFILE_IDS.has(e.ownerId));
+  assert(orphelines.length === 0, 13, {
+    rule: "Toute écriture est attribuée à un propriétaire connu de PROFILES.",
+    found:
+      orphelines.length > 0
+        ? `${orphelines.length} écriture(s) orpheline(s) : ${orphelines.map((e) => `${e.id} (ownerId « ${e.ownerId} »)`).join(", ")}`
+        : "aucune",
+    expected: `un ownerId parmi PROFILES (${[...PROFILE_IDS].join(", ")})`,
+    fix: `${LEDGER_FILE} — tagger l'écriture d'un ownerId de PROFILES, ou ajouter le profil dans src/lib/demo/identity.ts.`,
+  });
+}
+
+/* 14 — Le volume d'agence (source « vente ») n'est JAMAIS commissionnable.
+   C'est ce qui garantit qu'un futur écran ne pourra pas sommer par erreur ces
+   millions dans le revenu d'E-Dome : `derive.ts` exclut `commissionable:
+   false`, et cette règle lie la source à ce drapeau. */
+for (const e of LEDGER) {
+  if (e.source !== "vente") continue;
+  assert(e.commissionable === false, 14, {
+    rule: "Une écriture « vente » (GMV agence) porte toujours commissionable: false.",
+    found: `écriture ${e.id} : source « vente », commissionable = ${String(e.commissionable)}`,
+    expected: "commissionable: false — la vente immobilière n'est pas facturée par E-Dome",
+    fix: `${LEDGER_FILE} — marquer l'écriture commissionable: false, ou changer sa source.`,
   });
 }
 

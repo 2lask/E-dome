@@ -27,10 +27,10 @@ import { PageHeader } from "@/components/ui/page-header";
 const initialNotifications: Notification[] = [
   { id: "n1", type: "review", title: "Sophie Martin a aimé votre post", message: "Sophie Martin a aimé votre publication sur le Chalet Verbier.", read: false, createdAt: "2026-04-02T09:30:00", href: "/profil" },
   { id: "n2", type: "message", title: "Marc Dubois a commenté votre publication", message: "Marc Dubois : \"Superbe bien, je suis intéressé !\"", read: false, createdAt: "2026-04-02T09:00:00", href: "/messages" },
-  { id: "n3", type: "reservation", title: "Nouvelle demande de réservation", message: "Nouvelle demande de réservation de Jean-Marc D. pour l'Appartement Montreux du 15 au 22 juillet.", read: false, createdAt: "2026-04-02T08:00:00", href: "/reservations" },
+  { id: "n3", type: "reservation", title: "Nouvelle demande de réservation", message: "Nouvelle demande de réservation de Jean-Marc D. pour l'Appartement Montreux du 15 au 22 juillet.", read: false, createdAt: "2026-04-02T08:00:00", href: "/dashboard/reservations" },
   { id: "n4", type: "payment", title: "Commission reçue : 84 CHF", message: "Vous avez reçu une commission de 84 CHF suite à la réservation générée via votre lien apporteur.", read: false, createdAt: "2026-04-02T07:00:00", href: "/dashboard" },
   { id: "n5", type: "follow", title: "Thomas Weber vous suit maintenant", message: "Thomas Weber a commencé à vous suivre.", read: false, createdAt: "2026-04-02T05:00:00", href: "/profil" },
-  { id: "n6", type: "reservation", title: "Réservation confirmée", message: "Votre réservation #R-2026-018 a été confirmée par l'hôte.", read: true, createdAt: "2026-04-01T14:00:00", href: "/reservations" },
+  { id: "n6", type: "reservation", title: "Réservation confirmée", message: "Votre réservation #R-2026-018 a été confirmée par l'hôte.", read: true, createdAt: "2026-04-01T14:00:00", href: "/dashboard/reservations" },
   { id: "n7", type: "system", title: "Mise à jour plateforme", message: "Nouvelle fonctionnalité : export CSV disponible dans le dashboard.", read: true, createdAt: "2026-04-01T09:00:00", href: "/dashboard" },
   { id: "n8", type: "message", title: "Nouveau message", message: "Claire Richard vous a envoyé un message concernant le Penthouse Zurich.", read: true, createdAt: "2026-03-31T16:00:00", href: "/messages" },
   { id: "n9", type: "payment", title: "Paiement reçu", message: `Vous avez reçu un paiement pour la location du ${OWNED_PROPERTY_NAME}.`, read: true, createdAt: "2026-03-31T10:00:00", href: "/dashboard" },

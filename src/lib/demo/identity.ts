@@ -35,22 +35,53 @@ export const DEMO_CITY = "Lausanne";
 export const DEMO_COUNTRY = "Suisse";
 export const DEMO_EMAIL_DOMAIN = "e-dome.ch";
 
-/**
- * Les biens que possède l'utilisateur courant.
- *
- * Ce sont des identifiants du **catalogue**, pas un quatrième jeu inventé pour
- * le tableau de bord. Le tableau de bord pilotait jusqu'ici trois biens
- * (`chalet-alpin`, `appart-vue-lac`, `studio-lausanne`) qui n'existaient nulle
- * part ailleurs, pendant que le catalogue ne lui en attribuait qu'un seul.
- *
- * Les trois sont en location de courte durée et en francs : c'est le seul pôle
- * où E-Dome perçoit une commission sur un logement, donc celui qui rend la
- * démonstration du modèle économique lisible.
- */
-export const OWNED_PROPERTY_IDS = ["prop5", "prop2", "prop9"] as const;
+/* ── La table des profils porteurs de montants (Mission 2, étape 2) ──────────
 
-/** Formations dont l'utilisateur courant est l'auteur. */
-export const OWNED_FORMATION_IDS = ["form-001"] as const;
+   Le journal (`ledger.ts`) était scellé à UNE personne : `build()` bouclait sur
+   deux constantes globales décrivant Léo seul. Pour que 15 profils puissent
+   chacun porter des montants cohérents sans recréer le « facteur 5 » (l'audit a
+   retrouvé ~×50 sur l'écran apporteurs), la possession devient une TABLE :
+   `build()` boucle dessus et tague chaque écriture de l'`ownerId` du profil.
+
+   Pour l'instant une seule entrée — l'utilisateur courant. L'étape 3 en ajoutera
+   trois autres : la table est conçue pour ça, un profil n'est plus un cas
+   spécial mais une ligne. `OWNED_PROPERTY_IDS`/`OWNED_FORMATION_IDS` restent
+   exportés (les vues du tableau de bord restent celles de l'utilisateur
+   courant), mais ils DÉRIVENT désormais de la table : une seule source. */
+
+export interface Profile {
+  /** La personne à qui reviennent les montants. Un id de l'annuaire. */
+  readonly ownerId: string;
+  /**
+   * Biens du **catalogue** que ce profil possède — pas un jeu inventé pour le
+   * tableau de bord. En location de courte durée et en francs pour l'utilisateur
+   * courant : c'est le seul pôle où E-Dome perçoit une commission sur un
+   * logement, donc celui qui rend le modèle économique lisible.
+   */
+  readonly ownedPropertyIds: readonly string[];
+  /** Formations dont ce profil est l'auteur. */
+  readonly ownedFormationIds: readonly string[];
+}
+
+export const PROFILES = [
+  {
+    ownerId: CURRENT_USER_ID,
+    ownedPropertyIds: ["prop5", "prop2", "prop9"],
+    ownedFormationIds: ["form-001"],
+  },
+] as const satisfies readonly Profile[];
+
+/** Les identifiants de tous les profils porteurs de montants. */
+export const PROFILE_OWNER_IDS: readonly string[] = PROFILES.map((p) => p.ownerId);
+
+/** L'entrée de l'utilisateur courant dans la table. */
+export const CURRENT_PROFILE = PROFILES.find((p) => p.ownerId === CURRENT_USER_ID)!;
+
+/** Compat : les biens de l'utilisateur courant, dérivés de la table. */
+export const OWNED_PROPERTY_IDS = CURRENT_PROFILE.ownedPropertyIds;
+
+/** Compat : les formations de l'utilisateur courant, dérivées de la table. */
+export const OWNED_FORMATION_IDS = CURRENT_PROFILE.ownedFormationIds;
 
 /**
  * Les faits d'identité, et rien d'autre.

@@ -262,10 +262,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
     else setCalMonth(calMonth + 1);
   };
 
-  // Mortgage calculation
-  const loanAmount = property.price - simApport;
-  const monthlyRate = simTaux / 100 / 12;
-  const numPayments = simDuree * 12;
+  /* Simulateur hypothécaire — valeurs bornées AVANT le calcul (l'audit :
+     durée 0 → « Infinity / NaN », apport > prix → montants négatifs). Les
+     inputs portent aussi min/max ; ces bornes-ci garantissent qu'aucun NaN,
+     Infinity ni montant négatif ne s'affiche, quelle que soit la saisie. */
+  const simApportClamped = Math.min(property.price, Math.max(0, simApport || 0));
+  const simDureeClamped = Math.max(1, Math.min(50, Math.round(simDuree) || 1));
+  const simTauxClamped = Math.max(0, Math.min(20, simTaux || 0));
+  const loanAmount = property.price - simApportClamped; // ≥ 0 (apport ≤ prix)
+  const monthlyRate = simTauxClamped / 100 / 12;
+  const numPayments = simDureeClamped * 12; // ≥ 12, jamais de division par zéro
   const monthlyPayment = monthlyRate > 0
     ? (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1)
     : loanAmount / numPayments;
@@ -655,8 +661,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                       <label className="block text-xs text-[var(--text-muted)] mb-1">Apport</label>
                       <input
                         type="number"
+                        min={0}
+                        max={property.price}
                         value={simApport}
-                        onChange={(e) => setSimApport(Number(e.target.value))}
+                        onChange={(e) => setSimApport(Math.min(property.price, Math.max(0, Math.round(Number(e.target.value) || 0))))}
                         className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                       />
                     </div>
@@ -664,8 +672,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                       <label className="block text-xs text-[var(--text-muted)] mb-1">Durée (ans)</label>
                       <input
                         type="number"
+                        min={1}
+                        max={50}
                         value={simDuree}
-                        onChange={(e) => setSimDuree(Number(e.target.value))}
+                        onChange={(e) => setSimDuree(Math.max(1, Math.min(50, Math.round(Number(e.target.value) || 1))))}
                         className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                       />
                     </div>
@@ -674,8 +684,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                       <input
                         type="number"
                         step="0.1"
+                        min={0}
+                        max={20}
                         value={simTaux}
-                        onChange={(e) => setSimTaux(Number(e.target.value))}
+                        onChange={(e) => setSimTaux(Math.max(0, Math.min(20, Number(e.target.value) || 0)))}
                         className="w-full px-3 py-2 rounded-lg bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
                       />
                     </div>
@@ -1099,8 +1111,18 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 )}
                 <button
                   onClick={() => {
-                    if (!checkIn || !checkOut) { addToast("Veuillez sélectionner les dates.", "warning"); return; }
-                    router.push("/paiement");
+                    if (!checkIn || !checkOut || nights <= 0) { addToast("Veuillez sélectionner les dates.", "warning"); return; }
+                    const params = new URLSearchParams({
+                      propertyId: property.id,
+                      checkIn,
+                      checkOut,
+                      nights: String(nights),
+                      guests: String(guests),
+                      options: Array.from(selectedOptions).join(","),
+                      optionsTotal: String(optionsTotal),
+                      total: String(total),
+                    });
+                    router.push(`/paiement?${params.toString()}`);
                   }}
                   className="w-full mt-4 py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
                 >
@@ -1456,7 +1478,20 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           <button
             onClick={() => {
               if (!checkIn || !checkOut) { addToast("Sélectionnez vos dates.", "warning"); return; }
-              router.push("/paiement");
+              const n = Math.max(0, Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)));
+              if (n <= 0) { addToast("Sélectionnez vos dates.", "warning"); return; }
+              const t = n * property.price + optionsTotal;
+              const params = new URLSearchParams({
+                propertyId: property.id,
+                checkIn,
+                checkOut,
+                nights: String(n),
+                guests: String(guests),
+                options: Array.from(selectedOptions).join(","),
+                optionsTotal: String(optionsTotal),
+                total: String(t),
+              });
+              router.push(`/paiement?${params.toString()}`);
             }}
             className="px-6 py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
           >

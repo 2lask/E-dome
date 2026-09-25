@@ -1,35 +1,115 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { Suspense, useState, useMemo } from "react";
 import { AlertTriangle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useApp } from "@/lib/context";
+import type { Currency } from "@/lib/types";
+import { getPropertyById } from "@/lib/mock-data";
+import { DEMO_TODAY, iso } from "@/lib/demo/clock";
+import { chf } from "@/lib/model/billing";
+import { MoneyFlow } from "@/components/pricing/money-flow";
 
-/* ─── Mock Data ──────────────────────────────────────────────────────────── */
+/* ─── La vraie commande, pas un ORDER codé en dur ────────────────────────────
 
-const ORDER = {
-  propertyTitle: "Appartement vue lac - Montreux",
-  propertyImage: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=250&fit=crop",
-  nights: 5,
-  pricePerNight: 180,
-  cleaningFee: 50,
-  serviceFee: 45,
-  checkIn: "2026-05-10",
-  checkOut: "2026-05-15",
-};
+   Cette page affichait un `ORDER` figé (« Appartement vue lac », 180 × 5),
+   déconnecté de ce qu'on venait de réserver : on réservait le chalet à 850/nuit
+   et on payait 995 CHF d'un autre bien. La commande vient désormais du CTA
+   « Réserver » d'`explorer/[id]`, par query params (propertyId, checkIn,
+   checkOut, nights, options, total), et un panneau `MoneyFlow` montre le flux
+   réel : commission `location-ct` de 12 %, PRÉLEVÉE SUR L'HÔTE, jamais ajoutée
+   au prix payé par le voyageur. Sans param, un exemple par défaut cohérent —
+   pas de plantage. */
 
-const HISTORY = [
-  { id: "p1", description: "Reservation - Villa Lausanne", amount: 1250, date: "2026-03-15", status: "completed" as const },
-  { id: "p2", description: "Formation - Investissement immobilier", amount: 299, date: "2026-02-20", status: "completed" as const },
-  { id: "p3", description: "Service - Photographie immobiliere", amount: 350, date: "2026-01-10", status: "completed" as const },
-  { id: "p4", description: "Reservation - Studio Geneve", amount: 480, date: "2025-12-05", status: "completed" as const },
-];
+interface Order {
+  propertyId: string;
+  propertyTitle: string;
+  propertyImage: string;
+  currency: Currency;
+  pricePerNight: number;
+  nights: number;
+  checkIn: string;
+  checkOut: string;
+  optionsCount: number;
+  optionsTotal: number;
+  total: number;
+}
+
+function defaultOrder(): Order {
+  /* Dérivé de DEMO_TODAY (constante) — jamais de `new Date()` en plein rendu. */
+  const start = new Date(DEMO_TODAY);
+  start.setUTCDate(start.getUTCDate() + 20);
+  const end = new Date(start);
+  end.setUTCDate(end.getUTCDate() + 5);
+  const p = getPropertyById("prop5");
+  const pricePerNight = p?.price ?? 350;
+  const nights = 5;
+  return {
+    propertyId: p?.id ?? "prop5",
+    propertyTitle: p?.title ?? "Chalet de luxe · Verbier",
+    propertyImage: p?.images?.[0] ?? "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=250&fit=crop",
+    currency: p?.currency ?? "CHF",
+    pricePerNight,
+    nights,
+    checkIn: iso(start),
+    checkOut: iso(end),
+    optionsCount: 0,
+    optionsTotal: 0,
+    total: pricePerNight * nights,
+  };
+}
+
+function orderFromParams(params: URLSearchParams): Order {
+  const propertyId = params.get("propertyId");
+  if (!propertyId) return defaultOrder();
+  const p = getPropertyById(propertyId);
+  if (!p) return defaultOrder();
+
+  const nights = Math.max(1, Math.round(Number(params.get("nights")) || 1));
+  const optionsTotal = Math.max(0, Math.round(Number(params.get("optionsTotal")) || 0));
+  const optionsCount = (params.get("options") ?? "").split(",").filter(Boolean).length;
+  const subtotal = p.price * nights;
+  const total = Math.max(0, Math.round(Number(params.get("total")) || subtotal + optionsTotal));
+  const fallback = defaultOrder();
+
+  return {
+    propertyId: p.id,
+    propertyTitle: p.title,
+    propertyImage: p.images?.[0] ?? fallback.propertyImage,
+    currency: p.currency,
+    pricePerNight: p.price,
+    nights,
+    checkIn: params.get("checkIn") || fallback.checkIn,
+    checkOut: params.get("checkOut") || fallback.checkOut,
+    optionsCount,
+    optionsTotal,
+    total,
+  };
+}
 
 const COUPON_CODES: Record<string, number> = { EDOME10: 10, BIENVENUE: 15, VIP20: 20 };
 
-/* ─── Page ───────────────────────────────────────────────────────────────── */
+/* ─── Page (avec bornes Suspense pour useSearchParams) ───────────────────── */
 
 export default function PaiementPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center">
+          <p className="text-[var(--text-muted)]">Chargement...</p>
+        </div>
+      }
+    >
+      <PaiementInner />
+    </Suspense>
+  );
+}
+
+function PaiementInner() {
   const { formatPrice } = useApp();
+  const searchParams = useSearchParams();
+
+  const order = useMemo(() => orderFromParams(searchParams), [searchParams]);
 
   // Payment method
   const [method, setMethod] = useState<"carte" | "twint" | "virement">("carte");
@@ -84,10 +164,17 @@ export default function PaiementPage() {
 
   /* ── Price calculations ─────────────────────────────────────────────── */
 
-  const subtotal = ORDER.pricePerNight * ORDER.nights;
-  const totalBeforeDiscount = subtotal + ORDER.cleaningFee + ORDER.serviceFee;
+  const subtotal = order.pricePerNight * order.nights;
+  const totalBeforeDiscount = order.total;
   const discountAmount = appliedCoupon ? Math.round(totalBeforeDiscount * appliedCoupon.discount / 100) : 0;
   const total = totalBeforeDiscount - discountAmount;
+
+  /* Référence de virement STABLE (pas de Math.random() en plein rendu, qui
+     casserait l'hydratation) : dérivée de la commande. */
+  const virementRef = useMemo(
+    () => `ED-${order.propertyId}-${order.checkIn.replace(/-/g, "")}`.toUpperCase(),
+    [order.propertyId, order.checkIn],
+  );
 
   /* ── Coupon ─────────────────────────────────────────────────────────── */
 
@@ -148,9 +235,9 @@ export default function PaiementPage() {
             <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
           <h1 className="text-2xl page-heading mb-2">Paiement reussi !</h1>
-          <p className="text-[var(--text-secondary)] mb-2">Montant : <strong className="text-[var(--primary)]">{formatPrice(total)}</strong></p>
+          <p className="text-[var(--text-secondary)] mb-2">Montant : <strong className="text-[var(--primary)]">{formatPrice(total, order.currency)}</strong></p>
           <p className="text-sm text-[var(--text-muted)] mb-6">Un email de confirmation a été envoyé.</p>
-          <a href="/reservations" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
+          <a href="/dashboard/reservations" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
             Voir mes reservations
           </a>
         </div>
@@ -233,7 +320,7 @@ export default function PaiementPage() {
                   <span className="text-white font-bold text-lg">T</span>
                 </div>
                 <h3 className="font-semibold mb-2">Payer avec Twint</h3>
-                <p className="text-sm text-[var(--text-secondary)]">Vous serez redirige vers l&apos;application Twint pour confirmer le paiement de <strong className="text-[var(--primary)]">{formatPrice(total)}</strong>.</p>
+                <p className="text-sm text-[var(--text-secondary)]">Vous serez redirige vers l&apos;application Twint pour confirmer le paiement de <strong className="text-[var(--primary)]">{formatPrice(total, order.currency)}</strong>.</p>
               </div>
             )}
 
@@ -245,8 +332,8 @@ export default function PaiementPage() {
                   <div className="flex justify-between"><span className="text-[var(--text-muted)]">IBAN</span><span className="text-[var(--foreground)] font-mono">CH93 0076 2011 6238 5295 7</span></div>
                   <div className="flex justify-between"><span className="text-[var(--text-muted)]">BIC/SWIFT</span><span className="text-[var(--foreground)] font-mono">UBSWCHZH80A</span></div>
                   <div className="flex justify-between"><span className="text-[var(--text-muted)]">Beneficiaire</span><span className="text-[var(--foreground)]">E-Dome SA</span></div>
-                  <div className="flex justify-between"><span className="text-[var(--text-muted)]">Montant</span><span className="text-[var(--primary)] font-bold">{formatPrice(total)}</span></div>
-                  <div className="flex justify-between"><span className="text-[var(--text-muted)]">Reference</span><span className="text-[var(--foreground)] font-mono">ED-2026-{Math.random().toString(36).slice(2, 8).toUpperCase()}</span></div>
+                  <div className="flex justify-between"><span className="text-[var(--text-muted)]">Montant</span><span className="text-[var(--primary)] font-bold">{formatPrice(total, order.currency)}</span></div>
+                  <div className="flex justify-between"><span className="text-[var(--text-muted)]">Reference</span><span className="text-[var(--foreground)] font-mono">{virementRef}</span></div>
                 </div>
                 <p className="text-xs text-[var(--text-muted)] pt-2">La reservation sera confirmee apres reception du virement (1-3 jours ouvrables).</p>
               </div>
@@ -277,7 +364,7 @@ export default function PaiementPage() {
                   Traitement en cours...
                 </span>
               ) : (
-                `Payer ${formatPrice(total)}`
+                `Payer ${formatPrice(total, order.currency)}`
               )}
             </button>
           </div>
@@ -286,52 +373,45 @@ export default function PaiementPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="sticky top-4 p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl space-y-4">
               <h2 className="font-semibold">Resume de la commande</h2>
-              <img src={ORDER.propertyImage} alt={ORDER.propertyTitle} className="w-full h-36 object-cover rounded-xl" />
-              <h3 className="font-medium">{ORDER.propertyTitle}</h3>
+              <img src={order.propertyImage} alt={order.propertyTitle} className="w-full h-36 object-cover rounded-xl" />
+              <h3 className="font-medium">{order.propertyTitle}</h3>
               <div className="text-sm text-[var(--text-secondary)] space-y-1">
-                <div className="flex justify-between"><span>Du {new Date(ORDER.checkIn).toLocaleDateString("fr-CH")}</span><span>au {new Date(ORDER.checkOut).toLocaleDateString("fr-CH")}</span></div>
+                <div className="flex justify-between"><span>Du {new Date(order.checkIn).toLocaleDateString("fr-CH")}</span><span>au {new Date(order.checkOut).toLocaleDateString("fr-CH")}</span></div>
               </div>
               <div className="border-t border-[var(--card-border)] pt-3 space-y-2 text-sm">
                 <div className="flex justify-between text-[var(--text-secondary)]">
-                  <span>{formatPrice(ORDER.pricePerNight)} x {ORDER.nights} nuits</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span>{formatPrice(order.pricePerNight, order.currency)} x {order.nights} nuit{order.nights > 1 ? "s" : ""}</span>
+                  <span>{formatPrice(subtotal, order.currency)}</span>
                 </div>
-                <div className="flex justify-between text-[var(--text-secondary)]">
-                  <span>Frais de menage</span>
-                  <span>{formatPrice(ORDER.cleaningFee)}</span>
-                </div>
-                <div className="flex justify-between text-[var(--text-secondary)]">
-                  <span>Frais de service</span>
-                  <span>{formatPrice(ORDER.serviceFee)}</span>
-                </div>
+                {order.optionsTotal > 0 && (
+                  <div className="flex justify-between text-[var(--text-secondary)]">
+                    <span>Options{order.optionsCount > 0 ? ` (${order.optionsCount})` : ""}</span>
+                    <span>{formatPrice(order.optionsTotal, order.currency)}</span>
+                  </div>
+                )}
                 {appliedCoupon && (
                   <div className="flex justify-between text-green-400">
                     <span>Reduction ({appliedCoupon.code})</span>
-                    <span>-{formatPrice(discountAmount)}</span>
+                    <span>-{formatPrice(discountAmount, order.currency)}</span>
                   </div>
                 )}
                 <div className="flex justify-between font-bold text-[var(--foreground)] pt-2 border-t border-[var(--card-border)]">
                   <span>Total</span>
-                  <span className="text-[var(--primary)]">{formatPrice(total)}</span>
+                  <span className="text-[var(--primary)]">{formatPrice(total, order.currency)}</span>
                 </div>
               </div>
             </div>
 
-            {/* Payment history */}
-            <div className="p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl">
-              <h2 className="font-semibold mb-4">Historique des paiements</h2>
-              <div className="space-y-3">
-                {HISTORY.map((h) => (
-                  <div key={h.id} className="flex items-center justify-between text-sm">
-                    <div>
-                      <p className="text-[var(--foreground)]">{h.description}</p>
-                      <p className="text-xs text-[var(--text-muted)]">{new Date(h.date).toLocaleDateString("fr-CH")}</p>
-                    </div>
-                    <span className="font-medium text-[var(--foreground)]">{formatPrice(h.amount)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Flux d'argent : la commission location-ct (12 %) est PRÉLEVÉE SUR
+                L'HÔTE, jamais ajoutée au prix payé par le voyageur — la phrase
+                générée par `quote()` le dit. En CHF, la devise du modèle. */}
+            {order.currency === "CHF" && total > 0 && (
+              <MoneyFlow
+                charge={{ kind: "commission", pole: "location-ct", gross: chf(total) }}
+                grossLabel="Ce que vous payez (voyageur)"
+                beneficiaryLabel="L'hôte reçoit"
+              />
+            )}
           </div>
         </div>
       </div>
