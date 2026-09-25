@@ -6,7 +6,7 @@ import * as derive from "@/lib/demo/derive";
 import { LEDGER } from "@/lib/demo/ledger";
 import { CURRENT_USER, CURRENT_USER_ID, OWNED_PROPERTY_IDS, PROFILES } from "@/lib/demo/identity";
 import { DEMO_TODAY } from "@/lib/demo/clock";
-import { properties as CATALOGUE, formations as CATALOGUE_FORMATIONS, currentUser } from "@/lib/mock-data";
+import { properties as CATALOGUE, formations as CATALOGUE_FORMATIONS, currentUser, users, mockReviews } from "@/lib/mock-data";
 import { PRODUCTS } from "@/lib/data/products";
 import { DEFAULT_PROFILE, getMockProfile } from "@/lib/profile-data";
 import {
@@ -333,4 +333,52 @@ test("26 — GMV agence : volume jamais compté dans le revenu", () => {
     "une écriture GMV a fuité dans le revenu",
   );
   assert.equal(typeof derive.gmvVolume(CURRENT_USER_ID), "number");
+});
+
+/* ── Les trois premiers profils complets (B.1, étape 3) ──────────────────── */
+
+test("27 — les stats des 3 profils concordent avec le journal et les avis", () => {
+  const round1 = (n: number) => Math.round(n * 10) / 10;
+  const focus = PROFILES.filter((p) => p.ownerId !== CURRENT_USER_ID);
+  /* Les trois premiers profils complets sont bien présents. */
+  assert.deepEqual(
+    focus.map((p) => p.ownerId).sort(),
+    ["user-002", "user-003", "user-015"],
+  );
+
+  for (const profile of focus) {
+    const person = users.find((u) => u.id === profile.ownerId);
+    assert.ok(person, `profil ${profile.ownerId} absent de users[]`);
+
+    const hostCount = CATALOGUE.filter((p) => p.host.id === profile.ownerId).length;
+    const activity = LEDGER.filter((e) => e.ownerId === profile.ownerId && e.status !== "cancelled").length;
+    const revenue = Math.round(derive.total({ ownerId: profile.ownerId }));
+    const hosted = new Set(CATALOGUE.filter((p) => p.host.id === profile.ownerId).map((p) => p.id));
+    const revs = mockReviews.filter((r) => hosted.has(r.propertyId));
+    const rating = revs.length ? round1(revs.reduce((s, r) => s + r.rating, 0) / revs.length) : 0;
+
+    assert.equal(person.stats.properties, hostCount, `${profile.ownerId} : properties`);
+    assert.equal(person.stats.transactions, activity, `${profile.ownerId} : transactions`);
+    assert.equal(person.stats.revenue, revenue, `${profile.ownerId} : revenue commissionnable`);
+    assert.equal(person.stats.reviews, revs.length, `${profile.ownerId} : reviews`);
+    assert.equal(person.stats.rating, rating, `${profile.ownerId} : rating`);
+
+    /* Chaque profil a une activité ce mois-ci (dashboard non vide). */
+    assert.ok(derive.currentMonth({ ownerId: profile.ownerId }) > 0, `${profile.ownerId} : mois courant vide`);
+  }
+});
+
+test("28 — le volume de mandats de vente (GMV) reste hors du revenu", () => {
+  /* Sophie et Jean-Luc portent un volume de mandats ; Marc n'en a aucun. */
+  assert.ok(derive.gmvVolume("user-002") > 0, "Sophie doit porter un volume de mandats");
+  assert.ok(derive.gmvVolume("user-015") > 0, "Jean-Luc doit porter un volume de mandats");
+  assert.equal(derive.gmvVolume("user-003"), 0, "Marc (investisseur) n'a aucun mandat de vente");
+  /* Ce volume n'entre jamais dans le revenu dérivé. */
+  for (const owner of ["user-002", "user-015"]) {
+    const revenueEntries = derive.entries({ ownerId: owner });
+    assert.ok(
+      revenueEntries.every((e) => e.commissionable !== false),
+      `un GMV a fuité dans le revenu de ${owner}`,
+    );
+  }
 });

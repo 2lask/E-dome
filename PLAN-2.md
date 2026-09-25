@@ -6,7 +6,8 @@
 
 ## POINT DE REPRISE (pour une session neuve)
 
-- **Où on en est.** Audit fait (`AUDIT-2.md`, 18 notes dans `analyse2/`), arbitrages faits (`DECISIONS-2.md`), **go du fondateur reçu** (2026-09-25) avec géographie et cadence tranchées. **Changement de modèle intégré** : affiliation à deux mécaniques (D14) + freemium (D15), challengé par 4 agents (`analyse2/*-modele.md`), reflété ici et dans `JURIDIQUE-A-VALIDER.md §0`. **Il reste à montrer au fondateur le diff de ce PLAN avant l'étape 0** (et deux questions ouvertes : part E-Dome sur la prime biens 0 %/12 %, frontière freemium).
+- **Où on en est (maj 2026-09-25).** Étapes **0, 1, 1.5, 2, 3 FAITES** et poussées. **⛔ ARRÊT DE VALIDATION après l'étape 3** : en attente du feu vert du fondateur sur les 3 premiers profils (Sophie user-002, Marc user-003, Jean-Luc user-015) avant de construire les 12 autres. Suite prévue sans autre arrêt : 4 (profils+fil) → 5 (tutoriel+être-un-profil) → 6 (affiliation+freemium+boutique) → 7 (pôles) → 8 (design/mobile/tests).
+- **Historique.** Audit fait (`AUDIT-2.md`, 18 notes dans `analyse2/`), arbitrages faits (`DECISIONS-2.md`), **go du fondateur reçu** (2026-09-25) avec géographie et cadence tranchées. **Changement de modèle intégré** : affiliation à deux mécaniques (D14) + freemium (D15), challengé par 4 agents (`analyse2/*-modele.md`), reflété ici et dans `JURIDIQUE-A-VALIDER.md §0`. **Il reste à montrer au fondateur le diff de ce PLAN avant l'étape 0** (et deux questions ouvertes : part E-Dome sur la prime biens 0 %/12 %, frontière freemium).
 - **Branche.** `feat/plateforme-v2`, rien de fusionné, landing figée.
 - **Serveur de dev** sur `:3002` (`npm run dev`). Gates : `npm run typecheck` / `lint` / `build` / `test` (Playwright) / `test:data`.
 - **Prochaine action concrète :** étape 0 (sécurité `/admin` + nettoyages), puis étape 1 (annuaire unique), puis étape 1.5 (moteur pricing).

@@ -6,9 +6,9 @@ import {
   mockReviews,
 } from "@/lib/mock-data";
 import { DEMO_TODAY, MONTH_LABELS, last12Months } from "./clock";
-import { bySource, currentMonth, entries, monthly } from "./derive";
+import { bySource, currentMonth, entries, monthly, total, gmvVolume } from "./derive";
 import { LEDGER } from "./ledger";
-import { PROFILES } from "./identity";
+import { PROFILES, CURRENT_USER_ID } from "./identity";
 import { PLATFORM_ACCOUNT_ID } from "./directory";
 import { VIDEO_POSTS, SUGGESTIONS } from "./posts";
 import { PUBLIC_SEED_IDS } from "@/lib/profile-data";
@@ -253,6 +253,20 @@ for (const profile of PROFILES) {
       fix: `${LEDGER_FILE} — lui donner de l'activité (taguée du bon ownerId), ou le retirer de PROFILES dans src/lib/demo/identity.ts.`,
     });
   }
+  /* Même garde pour les mandats de vente : un mandat déclaré sans écriture GMV
+     afficherait un volume d'affaires vide. */
+  for (const id of profile.agencySalePropertyIds ?? []) {
+    assert(
+      LEDGER.some((e) => e.subject.id === id && e.ownerId === profile.ownerId && e.source === "vente"),
+      7,
+      {
+        rule: "Chaque mandat de vente déclaré a au moins une écriture GMV, à son propriétaire.",
+        found: `le mandat ${id} n'a aucune écriture « vente » attribuée à ${profile.ownerId}`,
+        expected: "au moins une écriture GMV du bon propriétaire",
+        fix: `${LEDGER_FILE} — générer son écriture « vente », ou le retirer d'agencySalePropertyIds dans src/lib/demo/identity.ts.`,
+      },
+    );
+  }
 }
 
 /* 8 — Aucune date hors de la fenêtre des douze mois qui précèdent le
@@ -410,6 +424,69 @@ for (const e of LEDGER) {
     expected: "commissionable: false — la vente immobilière n'est pas facturée par E-Dome",
     fix: `${LEDGER_FILE} — marquer l'écriture commissionable: false, ou changer sa source.`,
   });
+}
+
+/* 15 — Les stats d'un profil concordent avec le journal et les avis.
+
+   Le cœur de l'audit — « aucun nombre divergent » — appliqué aux personnes : les
+   statistiques affichées d'un profil (`users[]`) ne peuvent plus contredire ce
+   que le journal et les avis produisent. `revenue` est le revenu COMMISSIONNABLE
+   (total du journal) ; le volume de mandats de vente (GMV) reste un volume,
+   jamais un revenu (D4, invariant 14). L'utilisateur courant est exempté : son
+   `revenue` est délibérément neutralisé à 0 (son tableau de bord affiche le
+   revenu dérivé), garde-fou déjà couvert par tests/data (« 16 »). */
+{
+  const round1 = (n: number) => Math.round(n * 10) / 10;
+  for (const profile of PROFILES) {
+    if (profile.ownerId === CURRENT_USER_ID) continue;
+    const person = PEOPLE.find((p) => p.id === profile.ownerId);
+    assert(!!person, 15, {
+      rule: "Tout profil porteur de montants a une ligne d'annuaire.",
+      found: `le profil ${profile.ownerId} n'existe pas dans users[]`,
+      expected: "une personne de l'annuaire",
+      fix: `${DIRECTORY_FILE} — ajouter la personne, ou retirer le profil de PROFILES.`,
+    });
+    if (!person) continue;
+
+    const hostCount = CATALOGUE.filter((p) => p.host.id === profile.ownerId).length;
+    const activity = LEDGER.filter((e) => e.ownerId === profile.ownerId && e.status !== "cancelled").length;
+    const revenue = Math.round(total({ ownerId: profile.ownerId }));
+    const hosted = new Set(CATALOGUE.filter((p) => p.host.id === profile.ownerId).map((p) => p.id));
+    const revs = mockReviews.filter((r) => hosted.has(r.propertyId));
+    const reviewCount = revs.length;
+    const rating = revs.length ? round1(revs.reduce((s, r) => s + r.rating, 0) / revs.length) : 0;
+
+    assert(person.stats.properties === hostCount, 15, {
+      rule: "Le nombre de biens annoncé égale les biens hébergés au catalogue.",
+      found: `${profile.ownerId} : stats.properties = ${person.stats.properties}`,
+      expected: `${hostCount} bien(s) hébergé(s) au catalogue`,
+      fix: `${DIRECTORY_FILE} — aligner stats.properties, ou l'attribution host des biens.`,
+    });
+    assert(person.stats.transactions === activity, 15, {
+      rule: "Le nombre de transactions annoncé égale les écritures non annulées du journal.",
+      found: `${profile.ownerId} : stats.transactions = ${person.stats.transactions}`,
+      expected: `${activity} écriture(s) au journal`,
+      fix: `${DIRECTORY_FILE} — aligner stats.transactions sur le journal (écritures non annulées de l'owner).`,
+    });
+    assert(person.stats.revenue === revenue, 15, {
+      rule: "Le revenu annoncé égale le revenu commissionnable du journal (le GMV reste un volume).",
+      found: `${profile.ownerId} : stats.revenue = ${person.stats.revenue}`,
+      expected: `${revenue} CHF (total commissionnable ; GMV = ${Math.round(gmvVolume(profile.ownerId))} CHF, hors revenu)`,
+      fix: `${DIRECTORY_FILE} — aligner stats.revenue sur derive.total({ ownerId }).`,
+    });
+    assert(person.stats.reviews === reviewCount, 15, {
+      rule: "Le nombre d'avis annoncé égale les avis reçus sur ses biens.",
+      found: `${profile.ownerId} : stats.reviews = ${person.stats.reviews}`,
+      expected: `${reviewCount} avis sur ses biens`,
+      fix: `${DIRECTORY_FILE} — aligner stats.reviews, ou ajouter/retirer des avis dans mockReviews.`,
+    });
+    assert(person.stats.rating === rating, 15, {
+      rule: "La note annoncée égale la moyenne des avis reçus (arrondie au dixième).",
+      found: `${profile.ownerId} : stats.rating = ${person.stats.rating}`,
+      expected: `${rating} (moyenne de ${reviewCount} avis)`,
+      fix: `${DIRECTORY_FILE} — aligner stats.rating sur la moyenne des avis reçus.`,
+    });
+  }
 }
 
 if (WARN_ONLY && violations > 0) {

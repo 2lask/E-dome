@@ -123,9 +123,16 @@ export const DEFAULT_PROFILE: Profile = {
    décrivaient des personnes DIFFÉRENTES de celles de `users[]` (Camille Rochat
    sur l'id de Pierre Gonçalves, etc.) : c'était le bug racine (« un id, deux
    identités »), pas un enrichissement — ils sont supprimés, et ces profils
-   dérivent proprement de l'annuaire. Les seeds Marc (user-003) et Lucas
-   (user-005) sont également retirés : leur titre annonçait un rôle
-   (« Courtier », « Promoteur ») que l'annuaire ne leur donne pas. */
+   dérivent proprement de l'annuaire.
+
+   Étape 3 — les trois premiers profils complets sont enrichis en profondeur
+   (expériences, formations, compétences, langues, liens), en accord strict
+   avec leurs rôles d'annuaire : Sophie Durand (user-002, courtière), Marc Favre
+   (user-003, investisseur — son seed revient, cette fois avec un titre
+   « Investisseur » que l'annuaire lui donne bien, plus aucun « Courtier »
+   fantôme) et Jean-Luc Hartmann (user-015, agence). Le seed Lucas (user-005)
+   reste retiré : son titre annonçait « Promoteur » que l'annuaire ne lui donne
+   pas. */
 type PublicSeed = {
   headline?: string;
   about?: string;
@@ -141,10 +148,137 @@ type PublicSeed = {
 const PUBLIC_SEEDS: Record<string, PublicSeed> = {
   "user-002": {
     banner: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=400&fit=crop",
-    headline: "Courtière Brevet Fédéral · Immobilier de standing",
+    headline: "Courtière indépendante · Brevet fédéral · Biens de caractère",
     about:
-      "Courtière Brevet Fédéral spécialisée dans l'immobilier de standing en Suisse romande. J'accompagne vendeurs et acquéreurs sur des biens d'exception avec discrétion et rigueur.",
-    skills: ["Courtage", "Estimation", "Home staging", "Négociation", "Immobilier de luxe"],
+      "Courtière indépendante au bénéfice du brevet fédéral, installée à Lausanne. Douze ans sur l'arc lémanique, avec une spécialité assumée : les biens de caractère du Lavaux et de Lausanne — appartements de standing, propriétés vigneronnes, attiques avec vue lac. Une agence d'une personne, où chaque vendeur et chaque acquéreur est suivi de la première visite à la signature notariale. Rigueur du dossier, chaleur du contact.",
+    experiences: [
+      {
+        id: "exp-so-1",
+        title: "Courtière indépendante",
+        company: "Sophie Durand Immobilier",
+        employmentType: "independant",
+        location: "Lausanne, Suisse",
+        current: true,
+        startMonth: 3,
+        startYear: 2019,
+        description:
+          "Courtage de biens de caractère sur l'arc lémanique (Lausanne, Lavaux). Estimation, mise en valeur, accompagnement vendeurs et acquéreurs jusqu'à la signature notariale.",
+      },
+      {
+        id: "exp-so-2",
+        title: "Conseillère en vente immobilière",
+        company: "Régie de la Riviera",
+        employmentType: "temps-plein",
+        location: "Montreux, Suisse",
+        current: false,
+        startMonth: 9,
+        startYear: 2014,
+        endMonth: 2,
+        endYear: 2019,
+        description: "Vente de résidences principales et secondaires sur la Riviera vaudoise.",
+      },
+      {
+        id: "exp-so-3",
+        title: "Négociatrice junior",
+        company: "Agence lémanique",
+        employmentType: "temps-plein",
+        location: "Lausanne, Suisse",
+        current: false,
+        startMonth: 6,
+        startYear: 2013,
+        endMonth: 8,
+        endYear: 2014,
+        description: "Premiers mandats de vente, prospection et visites.",
+      },
+    ],
+    education: [
+      {
+        id: "edu-so-1",
+        school: "USPI Formation",
+        degree: "Brevet fédéral de courtier en immeubles",
+        field: "Courtage immobilier",
+        startYear: 2017,
+        endYear: 2019,
+      },
+      {
+        id: "edu-so-2",
+        school: "HEG Genève",
+        degree: "Bachelor en économie d'entreprise",
+        field: "Immobilier & finance",
+        startYear: 2009,
+        endYear: 2012,
+      },
+    ],
+    skills: ["Courtage", "Biens de caractère", "Estimation", "Home staging", "Négociation", "Vente de standing"],
+    languages: [
+      { id: "lg-so-1", name: "Français", level: "natif" },
+      { id: "lg-so-2", name: "Allemand", level: "courant" },
+      { id: "lg-so-3", name: "Anglais", level: "courant" },
+    ],
+    links: [
+      { id: "ln-so-1", type: "website", url: "https://e-dome.ch/sophie-durand", label: "Ma vitrine E-Dome" },
+      { id: "ln-so-2", type: "linkedin", url: "https://linkedin.com/in/sophiedurand", label: "LinkedIn" },
+    ],
+  },
+  "user-003": {
+    banner: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=400&fit=crop",
+    headline: "Investisseur immobilier · Rendement locatif net",
+    about:
+      "Investisseur immobilier basé à Genève, actif depuis 2010. Je construis un portefeuille locatif diversifié sur l'arc lémanique, piloté au rendement net (5-8 % visés). Analyse froide et chiffrée : rendement brut/net, ROI, TIR, LTV — les chiffres avant l'émotion. Je partage volontiers mes lectures de marché avec la communauté.",
+    experiences: [
+      {
+        id: "exp-ma-1",
+        title: "Investisseur immobilier indépendant",
+        company: "Favre Patrimoine",
+        employmentType: "independant",
+        location: "Genève, Suisse",
+        current: true,
+        startMonth: 1,
+        startYear: 2010,
+        description:
+          "Constitution et gestion d'un portefeuille locatif (courte durée, bureaux) sur l'arc lémanique. Sélection des biens au rendement net, pilotage des travaux et de la gestion.",
+      },
+      {
+        id: "exp-ma-2",
+        title: "Analyste financier",
+        company: "Banque privée genevoise",
+        employmentType: "temps-plein",
+        location: "Genève, Suisse",
+        current: false,
+        startMonth: 9,
+        startYear: 2006,
+        endMonth: 12,
+        endYear: 2009,
+        description: "Analyse d'actifs et structuration de portefeuilles pour une clientèle privée.",
+      },
+    ],
+    education: [
+      {
+        id: "edu-ma-1",
+        school: "CFA Institute",
+        degree: "CFA Level II",
+        field: "Analyse financière",
+        startYear: 2016,
+        endYear: 2018,
+      },
+      {
+        id: "edu-ma-2",
+        school: "Université de Genève",
+        degree: "Master en finance",
+        field: "Finance & investissement",
+        startYear: 2004,
+        endYear: 2006,
+      },
+    ],
+    skills: ["Rendement locatif", "Analyse de rendement", "Fiscalité immobilière", "Financement hypothécaire", "Négociation"],
+    languages: [
+      { id: "lg-ma-1", name: "Français", level: "natif" },
+      { id: "lg-ma-2", name: "Anglais", level: "courant" },
+      { id: "lg-ma-3", name: "Portugais", level: "intermediaire" },
+    ],
+    links: [
+      { id: "ln-ma-1", type: "linkedin", url: "https://linkedin.com/in/marcfavre", label: "LinkedIn" },
+    ],
   },
   "user-004": {
     banner: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=1200&h=400&fit=crop",
@@ -161,10 +295,65 @@ const PUBLIC_SEEDS: Record<string, PublicSeed> = {
     skills: ["Immobilier de luxe", "Off-market", "Investissement international"],
   },
   "user-015": {
-    headline: "Agence familiale · Vente & gestion locative depuis 1992",
+    banner: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=400&fit=crop",
+    headline: "Directeur · Hartmann Immobilier SA · Neuchâtel",
     about:
-      "Agence familiale en Suisse romande. Vente et gestion locative depuis 1992, avec un service de proximité et une parfaite connaissance du marché local.",
-    skills: ["Vente", "Gestion locative", "Estimation", "Conseil"],
+      "Directeur de Hartmann Immobilier SA, à Neuchâtel. Vingt ans dans l'immobilier neuchâtelois, membre USPI et SVIT. L'agence couvre la vente, le courtage et la gestion locative, avec une équipe et un service de proximité — une parfaite connaissance du marché local, du littoral aux vignobles. Approche posée, institutionnelle, au service de propriétaires exigeants.",
+    experiences: [
+      {
+        id: "exp-jl-1",
+        title: "Directeur",
+        company: "Hartmann Immobilier SA",
+        employmentType: "temps-plein",
+        location: "Neuchâtel, Suisse",
+        current: true,
+        startMonth: 1,
+        startYear: 2006,
+        description:
+          "Direction d'une agence immobilière neuchâteloise : vente, courtage et gestion locative. Encadrement de l'équipe, mandats de vente et relation avec les propriétaires institutionnels.",
+      },
+      {
+        id: "exp-jl-2",
+        title: "Courtier",
+        company: "Régie du Littoral",
+        employmentType: "temps-plein",
+        location: "Neuchâtel, Suisse",
+        current: false,
+        startMonth: 4,
+        startYear: 2001,
+        endMonth: 12,
+        endYear: 2005,
+        description: "Vente et estimation de biens résidentiels sur le littoral neuchâtelois.",
+      },
+    ],
+    education: [
+      {
+        id: "edu-jl-1",
+        school: "USPI Suisse",
+        degree: "Brevet fédéral de courtier en immeubles",
+        field: "Courtage immobilier",
+        startYear: 2010,
+        endYear: 2012,
+      },
+      {
+        id: "edu-jl-2",
+        school: "SVIT School",
+        degree: "Expert en gestion immobilière",
+        field: "Gestion & administration de biens",
+        startYear: 2016,
+        endYear: 2018,
+      },
+    ],
+    skills: ["Vente", "Courtage", "Gestion locative", "Estimation", "Direction d'agence", "Conseil"],
+    languages: [
+      { id: "lg-jl-1", name: "Français", level: "natif" },
+      { id: "lg-jl-2", name: "Allemand", level: "courant" },
+      { id: "lg-jl-3", name: "Anglais", level: "intermediaire" },
+    ],
+    links: [
+      { id: "ln-jl-1", type: "website", url: "https://e-dome.ch/hartmann-immobilier", label: "Hartmann Immobilier SA" },
+      { id: "ln-jl-2", type: "linkedin", url: "https://linkedin.com/in/jeanluchartmann", label: "LinkedIn" },
+    ],
   },
 };
 

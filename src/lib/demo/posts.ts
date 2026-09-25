@@ -78,19 +78,21 @@ export const U_EDOME: User = {
    post menait à « Profil introuvable ». Chacune résout maintenant vers une
    personne existante de `users[]`, par id — choisie par prénom, rôle et ville :
 
-     U_SOPHIE → user-002  Sophie Durand      (Lausanne, hôte/courtière)
-     U_MARC   → user-003  Marc Favre         (Genève, investisseur/apporteur)
-     U_AMIRA  → user-013  Omar Benjelloun    (Marrakech, promoteur/hôte)
-     U_THOMAS → user-009  Thomas Müller       (Lausanne, architecte, Minergie)
-     U_YASMIN → user-006  Yasmin Al Maktoum  (Dubaï, agence, off-market luxe)
-     U_AMINA  → user-004  Amina El Idrissi   (Marrakech, hôte/formatrice)
+     U_SOPHIE  → user-002  Sophie Durand      (Lausanne, courtière/hôte)
+     U_MARC    → user-003  Marc Favre         (Genève, investisseur/apporteur)
+     U_JEANLUC → user-015  Jean-Luc Hartmann  (Neuchâtel, agence)
+     U_AMIRA   → user-013  Omar Benjelloun    (Marrakech, promoteur/hôte)
+     U_THOMAS  → user-009  Thomas Müller       (Lausanne, architecte, Minergie)
+     U_YASMIN  → user-006  Yasmin Al Maktoum  (Dubaï, agence, off-market luxe)
+     U_AMINA   → user-004  Amina El Idrissi   (Marrakech, hôte/formatrice)
 
-   Les six ids sont distincts. Le TEXTE de certains commentaires nomme encore
+   Les sept ids sont distincts. Le TEXTE de certains commentaires nomme encore
    l'ancienne identité inventée (« Bravo Amira ») : c'est cosmétique et sera
    repris à l'étape 4. `requirePerson` échoue à la compilation si un de ces ids
    disparaissait de l'annuaire. */
 export const U_SOPHIE = requirePerson("user-002");
 export const U_MARC = requirePerson("user-003");
+export const U_JEANLUC = requirePerson("user-015");
 export const U_AMIRA = requirePerson("user-013");
 export const U_THOMAS = requirePerson("user-009");
 export const U_AMINA = requirePerson("user-004");
@@ -204,6 +206,31 @@ export const VIDEO_POSTS: SocialPost[] = [
     createdAt: hAgo(2),
     comments: [],
   },
+  /* ── Jean-Luc Hartmann (user-015) — patron d'agence à Neuchâtel ──────────
+     Ses deux posts de l'étape 3 : un mandat conclu (avec son bien réel prop27)
+     et une lecture du marché neuchâtelois. Commentaires croisés avec Sophie et
+     Marc — le point « communauté » : les trois profils se répondent. */
+  {
+    id: "p-jl-1", author: U_JEANLUC,
+    content: "Mandat conclu — villa individuelle à Hauterive vendue en six semaines\n\nVue lac, jardin arboré, 210 m². Estimation juste dès le départ, deux visites ciblées, signature sereine chez le notaire. C'est le métier qu'on aime chez Hartmann Immobilier depuis 20 ans. #neuchâtel #vente #mandat",
+    media: [clip(24)], type: "post", likes: 176, location: "Neuchâtel, Suisse",
+    createdAt: hAgo(4),
+    comments: mkComments("p-jl-1", [
+      { author: U_SOPHIE, content: "Bravo Jean-Luc ! Six semaines sur ce segment, c'est du beau travail.", h: 3, likes: 14 },
+      { author: U_MARC, content: "Belle rotation. Le littoral neuchâtelois reste sous-coté à mon sens.", h: 2, likes: 9 },
+    ]),
+    property: propRef("prop27"),
+  },
+  {
+    id: "p-jl-2", author: U_JEANLUC,
+    content: "Le marché neuchâtelois en 2026 : les prix se stabilisent après trois ans de hausse\n\nBonne nouvelle pour les primo-accédants, et un retour à des délais de vente raisonnables. Notre analyse complète, du littoral au Val-de-Ruz. #neuchâtel #marché #immobilier",
+    media: [], type: "post", likes: 243, location: "Neuchâtel, Suisse",
+    createdAt: hAgo(20),
+    comments: mkComments("p-jl-2", [
+      { author: U_MARC, content: "Analyse posée et utile. La stabilisation crée des points d'entrée intéressants.", h: 18, likes: 21 },
+      { author: U_SOPHIE, content: "Même tendance sur l'arc lémanique haut de gamme. Merci pour le partage.", h: 16, likes: 12 },
+    ]),
+  },
   {
     id: "p2", author: U_SOPHIE,
     content: "Visite express de mon appart 135 m² avec vue sur le Léman\n\nBelle luminosité, parquet d'origine, cuisine refaite l'an dernier. Disponible à la vente — DM si intéressé. #lausanne #appartement #vente",
@@ -212,8 +239,22 @@ export const VIDEO_POSTS: SocialPost[] = [
     comments: mkComments("p2", [
       { author: U_MARC, content: "La vue lac est un argument de vente redoutable", h: 4, likes: 18 },
       { author: U_THOMAS, content: "Le standing est superbe. Tu acceptes les visites week-end ?", h: 2, likes: 6 },
+      { author: U_JEANLUC, content: "Belle mise en valeur, Sophie. Ce segment de standing part vite en ce moment.", h: 1, likes: 8 },
     ]),
     property: propRef("prop1"),
+  },
+  /* Deuxième post de Sophie (étape 3) : une observation de marché lémanique,
+     à côté de sa mise en vente (p2). Ton de courtière : factuel, pas
+     auto-promotionnel. Commentaires croisés avec Marc et Jean-Luc. */
+  {
+    id: "p-so-mkt", author: U_SOPHIE,
+    content: "Ce que je vois sur l'arc lémanique ce trimestre\n\nLes biens de caractère bien estimés partent en moins de 30 jours ; les autres stagnent. À Lausanne et dans le Lavaux, la vue lac et le cachet d'origine restent les deux critères qui font vraiment la différence à la vente. #lausanne #lavaux #marché",
+    media: [], type: "post", likes: 388, location: "Lausanne, Suisse",
+    createdAt: hAgo(7),
+    comments: mkComments("p-so-mkt", [
+      { author: U_MARC, content: "Confirmé côté investisseur : l'écart de délai entre un bien bien estimé et un bien surévalué n'a jamais été aussi net.", h: 6, likes: 24 },
+      { author: U_JEANLUC, content: "Idem sur Neuchâtel. L'estimation juste vaut tous les argumentaires.", h: 5, likes: 17 },
+    ]),
   },
   {
     id: "p3", author: U_AMIRA,
@@ -235,6 +276,7 @@ export const VIDEO_POSTS: SocialPost[] = [
     comments: mkComments("p4", [
       { author: U_LEO, content: "La meilleure formation de la plateforme. Sérieux et rigoureux.", h: 10, likes: 67 },
       { author: U_SOPHIE, content: "Inscrite à la prochaine session, hâte", h: 8, likes: 12 },
+      { author: U_JEANLUC, content: "+37 % sur cinq ans, ça correspond à ce qu'on observe sur le haut de gamme lémanique. Chiffres solides.", h: 6, likes: 15 },
     ]),
     formation: mkFormation("form-001"),
   },

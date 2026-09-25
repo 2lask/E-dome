@@ -144,6 +144,17 @@ const NIGHTS_BY_PROPERTY: Record<string, readonly number[]> = {
   prop2: [14, 13, 15, 16, 14, 12, 10, 11, 15, 17, 16, 15],
   // Phuket — haute saison en hiver européen.
   prop9: [11, 9, 7, 5, 4, 4, 6, 8, 10, 12, 10, 11],
+  /* Étape 3 — les trois premiers profils. Chaque plan finit sur un mois courant
+     (dernière valeur) strictement positif : sans ça, le tableau de bord du
+     profil afficherait « 0 CHF » sous un badge de croissance (invariant 5). */
+  // Sophie — pied-à-terre meublé à Lausanne (Ouchy), demande estivale au lac.
+  prop23: [6, 5, 4, 3, 4, 5, 7, 8, 9, 7, 6, 7],
+  // Marc — studio de rendement à Montreux, régulier toute l'année.
+  prop24: [8, 7, 6, 5, 6, 7, 9, 10, 11, 9, 8, 9],
+  // Marc — 2 pièces meublé à Nyon, entre Genève et Lausanne.
+  prop25: [5, 5, 6, 4, 5, 6, 7, 8, 7, 6, 7, 6],
+  // Jean-Luc — meublé géré au centre de Neuchâtel (gestion locative agence).
+  prop26: [4, 4, 3, 3, 4, 5, 6, 7, 6, 5, 5, 6],
 };
 
 /** Inscriptions vendues par mois sur la formation de l'utilisateur. */
@@ -279,6 +290,29 @@ function build(): Entry[] {
         }
       });
     }
+
+    /* Mandats de vente d'agence — VOLUME D'AFFAIRES, jamais du revenu.
+       Une écriture par mandat conclu : `source: "vente"`, `commissionable:
+       false` (invariant 14). Le montant est le prix du bien au catalogue —
+       c'est un volume, sommé par `gmvVolume()`, exclu de tout calcul de revenu
+       par `derive.keep()`. Réparti sur l'année et daté dans la fenêtre. */
+    (profile.agencySalePropertyIds ?? []).forEach((propertyId, idx) => {
+      const p = CATALOGUE.find((x) => x.id === propertyId);
+      if (!p) throw new Error(`Journal : mandat inconnu au catalogue — ${propertyId}`);
+      const m = months[(idx * 4 + 3) % 12]!;
+      out.push({
+        id: `gmv-${propertyId}`,
+        ownerId: profile.ownerId,
+        date: iso(new Date(Date.UTC(m.year, m.month, 15))),
+        source: "vente",
+        subject: { kind: "property", id: propertyId },
+        gross: p.price,
+        status: "completed",
+        label: `Mandat de vente conclu · ${p.title}`,
+        counterparty: pick(rand, GUESTS),
+        commissionable: false,
+      });
+    });
   }
 
   /* Événements, services, boutique et apports : l'activité de l'utilisateur

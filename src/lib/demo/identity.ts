@@ -53,23 +53,67 @@ export interface Profile {
   /** La personne à qui reviennent les montants. Un id de l'annuaire. */
   readonly ownerId: string;
   /**
-   * Biens du **catalogue** que ce profil possède — pas un jeu inventé pour le
-   * tableau de bord. En location de courte durée et en francs pour l'utilisateur
-   * courant : c'est le seul pôle où E-Dome perçoit une commission sur un
-   * logement, donc celui qui rend le modèle économique lisible.
+   * Biens du **catalogue** que ce profil possède et exploite en location de
+   * COURTE DURÉE — pas un jeu inventé pour le tableau de bord. C'est le seul pôle
+   * où E-Dome perçoit une commission sur un logement (`location-ct`, source
+   * `biens`), donc le seul qui produise un revenu COMMISSIONNABLE dérivé.
    */
   readonly ownedPropertyIds: readonly string[];
   /** Formations dont ce profil est l'auteur. */
   readonly ownedFormationIds: readonly string[];
+  /**
+   * Mandats de VENTE portés par ce profil (agence, courtier). Ils entrent au
+   * journal comme VOLUME D'AFFAIRES (`source: "vente"`, `commissionable: false`),
+   * jamais dans le revenu d'E-Dome — la vente immobilière n'est pas facturée
+   * (D4, invariant 14). Affiché comme volume via `gmvVolume()`. Absent pour un
+   * profil qui ne vend pas (l'utilisateur courant, un investisseur locatif).
+   */
+  readonly agencySalePropertyIds?: readonly string[];
 }
 
-export const PROFILES = [
+/* L'étape 3 fait passer la table d'un profil à quatre : l'utilisateur courant
+   plus les trois premiers profils complets (Sophie, Marc, Jean-Luc), tous en
+   Suisse romande (D7). L'utilisateur courant reste EN TÊTE : le générateur
+   déterministe (`ledger.ts`) tire ses réservations en premier, si bien que ses
+   chiffres restent inchangés au bit près quand on ajoute des profils à la
+   suite. Chaque profil est une ligne, jamais un cas spécial. */
+export const PROFILES: readonly Profile[] = [
   {
     ownerId: CURRENT_USER_ID,
     ownedPropertyIds: ["prop5", "prop2", "prop9"],
     ownedFormationIds: ["form-001"],
   },
-] as const satisfies readonly Profile[];
+  /* Sophie Durand — courtière indépendante à Lausanne, spécialité biens de
+     caractère (Lavaux, Lausanne). Elle PORTE deux mandats de vente de standing
+     (prop1 Lausanne, prop19 chalet de Verbier) → volume d'affaires ; et garde
+     un pied-à-terre meublé qu'elle loue en courte durée (prop23) → son seul
+     revenu commissionnable. */
+  {
+    ownerId: "user-002",
+    ownedPropertyIds: ["prop23"],
+    ownedFormationIds: [],
+    agencySalePropertyIds: ["prop1", "prop19"],
+  },
+  /* Marc Favre — investisseur à Genève, portefeuille locatif de rendement en
+     Suisse romande. Deux biens de rendement en courte durée (Montreux, Nyon) :
+     son revenu locatif dérive du journal. Il ne courtise pas de vente, donc
+     aucun volume GMV. */
+  {
+    ownerId: "user-003",
+    ownedPropertyIds: ["prop24", "prop25"],
+    ownedFormationIds: [],
+  },
+  /* Jean-Luc Hartmann — patron de Hartmann Immobilier SA à Neuchâtel. L'agence
+     porte des mandats de vente (prop27, prop28) → volume d'affaires non
+     commissionnable ; et gère un meublé en courte durée (prop26) → son revenu
+     commissionnable de gestion locative. */
+  {
+    ownerId: "user-015",
+    ownedPropertyIds: ["prop26"],
+    ownedFormationIds: [],
+    agencySalePropertyIds: ["prop27", "prop28"],
+  },
+];
 
 /** Les identifiants de tous les profils porteurs de montants. */
 export const PROFILE_OWNER_IDS: readonly string[] = PROFILES.map((p) => p.ownerId);

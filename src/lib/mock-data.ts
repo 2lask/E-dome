@@ -67,10 +67,16 @@ export const users: User[] = [
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face',
     city: 'Lausanne',
     country: 'Suisse',
-    roles: ['hote', 'courtier'] as Role[],
-    activeRole: 'hote' as Role,
-    stats: { followers: 3100, following: 520, properties: 22, reviews: 134, rating: 4.9, transactions: 78, revenue: 920000 },
-    bio: 'Courti\u00e8re immobili\u00e8re ind\u00e9pendante. 12 ans d\u2019exp\u00e9rience sur l\u2019arc l\u00e9manique. Sp\u00e9cialit\u00e9 : biens de luxe et attiques.',
+    roles: ['courtier', 'hote'] as Role[],
+    activeRole: 'courtier' as Role,
+    /* Stats CONCORDANTES avec le journal et les avis (\u00e9tape 3, invariant 27) :
+       properties = biens h\u00e9berg\u00e9s au catalogue (prop1, prop19, prop23) ;
+       transactions = \u00e9critures non annul\u00e9es de son journal ; revenue = revenu
+       COMMISSIONNABLE (location courte dur\u00e9e de prop23) \u2014 son volume de mandats
+       de vente (4,65 M) est un GMV, jamais du revenu (D4) ; reviews/rating =
+       avis re\u00e7us sur ses biens. */
+    stats: { followers: 3100, following: 520, properties: 3, reviews: 7, rating: 4.7, transactions: 25, revenue: 12780 },
+    bio: 'Courti\u00e8re ind\u00e9pendante au b\u00e9n\u00e9fice du brevet f\u00e9d\u00e9ral. 12 ans sur l\u2019arc l\u00e9manique, sp\u00e9cialit\u00e9 biens de caract\u00e8re \u00e0 Lausanne et dans le Lavaux.',
     languages: ['Fran\u00e7ais', 'Deutsch', 'English'],
     certifications: ['Courti\u00e8re Brevet F\u00e9d\u00e9ral (2019)'],
     responseTime: '1h',
@@ -85,8 +91,12 @@ export const users: User[] = [
     country: 'Suisse',
     roles: ['investisseur', 'apporteur'] as Role[],
     activeRole: 'investisseur' as Role,
-    stats: { followers: 5620, following: 340, properties: 8, reviews: 42, rating: 4.7, transactions: 31, revenue: 1250000 },
-    bio: 'Investisseur immobilier depuis 2010. Portfolio diversifi\u00e9 entre la Suisse, la France et le Portugal. Rendements vis\u00e9s : 5-8% net.',
+    /* Stats CONCORDANTES (\u00e9tape 3, invariant 27) : properties = biens h\u00e9berg\u00e9s
+       (prop11, prop16, prop24, prop25) ; transactions = \u00e9critures non annul\u00e9es ;
+       revenue = revenu locatif COMMISSIONNABLE d\u00e9riv\u00e9 (courte dur\u00e9e Montreux +
+       Nyon). Pas de mandat de vente, donc aucun GMV. */
+    stats: { followers: 5620, following: 340, properties: 4, reviews: 6, rating: 4.7, transactions: 52, revenue: 24820 },
+    bio: 'Investisseur immobilier depuis 2010, bas\u00e9 \u00e0 Gen\u00e8ve. Portefeuille locatif diversifi\u00e9 sur l\u2019arc l\u00e9manique. Analyse froide, rendement net vis\u00e9 5-8 %.',
     languages: ['Fran\u00e7ais', 'English', 'Portugu\u00eas'],
     certifications: ['CFA Level II (2018)'],
     responseTime: '4h',
@@ -277,8 +287,13 @@ export const users: User[] = [
     country: 'Suisse',
     roles: ['agence', 'courtier'] as Role[],
     activeRole: 'agence' as Role,
-    stats: { followers: 4100, following: 250, properties: 28, reviews: 178, rating: 4.8, transactions: 110, revenue: 1450000 },
-    bio: 'Directeur Hartmann Immobilier SA. 20 ans dans l\u2019immobilier neuch\u00e2telois. Membre USPI et SVIT.',
+    /* Stats CONCORDANTES (\u00e9tape 3, invariant 27) : properties = biens h\u00e9berg\u00e9s
+       (prop7, prop14 en gestion, prop26 courte dur\u00e9e, prop27/prop28 mandats de
+       vente) ; transactions = \u00e9critures non annul\u00e9es ; revenue = revenu
+       COMMISSIONNABLE (gestion courte dur\u00e9e) \u2014 le volume de mandats de vente
+       (2,27 M) est un GMV d'agence, jamais du revenu d'E-Dome (D4). */
+    stats: { followers: 4100, following: 250, properties: 5, reviews: 7, rating: 4.6, transactions: 22, revenue: 8700 },
+    bio: 'Directeur de Hartmann Immobilier SA \u00e0 Neuch\u00e2tel. 20 ans dans l\u2019immobilier neuch\u00e2telois, membre USPI et SVIT. Vente, courtage et gestion locative avec une \u00e9quipe de proximit\u00e9.',
     languages: ['Fran\u00e7ais', 'Deutsch', 'English'],
     certifications: ['Courtier Brevet F\u00e9d\u00e9ral (2012)', 'Expert USPI (2018)'],
     responseTime: '1h',
@@ -1032,6 +1047,181 @@ export const properties: Property[] = [
     reviewCount: 6,
     featured: false,
     analytics: { rendementBrut: 5.1, rendementNet: 3.7, prixM2: 7272, dpe: 'A', etatGeneral: 'Neuf', anneeConstruction: 2026, potentielPlusValue: 20, roi5ans: 31, roi10ans: 69, tauxOccupation: 81 },
+  },
+
+  /* 23 a 28 — Les biens des trois premiers profils complets (etape 3).
+     Tous en Suisse romande (D7). Chaque bien est hote par la vraie personne
+     de l'annuaire, et son id sert de sujet aux ecritures du journal
+     (`demo/ledger.ts`) : le revenu et le volume derivent de la, jamais d'un
+     nombre ecrit ailleurs. */
+
+  // 23 — Location-ct, Studio, Lausanne (Sophie Durand)
+  {
+    id: 'prop23',
+    title: 'Pied-à-terre meublé à Ouchy, vue lac',
+    description:
+      'Studio de standing de 38 m² sur les quais d’Ouchy, meublé avec goût. Balcon face au Léman, à deux pas du métro et des Bains. Idéal pour un séjour courte durée à Lausanne.',
+    type: 'studio',
+    transactionType: 'location-ct',
+    price: 180,
+    currency: 'CHF',
+    location: { city: 'Lausanne', country: 'Suisse', address: 'Place du Port 3', lat: 46.5066, lng: 6.6266 },
+    images: [
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[1], // Sophie Durand
+    bedrooms: 0,
+    bathrooms: 1,
+    area: 38,
+    floor: 3,
+    amenities: ['WiFi', 'Meublé', 'Balcon', 'Vue lac', 'Cuisine équipée', 'Ascenseur'],
+    rating: 4.9,
+    reviewCount: 2,
+    featured: false,
+  },
+
+  // 24 — Location-ct, Studio, Montreux (Marc Favre)
+  {
+    id: 'prop24',
+    title: 'Studio de rendement à Montreux',
+    description:
+      'Studio meublé de 34 m² sur la Riviera, à cinq minutes du marché couvert et du bord du lac. Louer en courte durée toute l’année grâce aux festivals et au tourisme d’affaires. Rendement régulier.',
+    type: 'studio',
+    transactionType: 'location-ct',
+    price: 140,
+    currency: 'CHF',
+    location: { city: 'Montreux', country: 'Suisse', address: 'Avenue du Casino 32', lat: 46.4312, lng: 6.9107 },
+    images: [
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[2], // Marc Favre
+    bedrooms: 0,
+    bathrooms: 1,
+    area: 34,
+    floor: 2,
+    amenities: ['WiFi', 'Meublé', 'Cuisine équipée', 'Machine à laver', 'Proche gare'],
+    rating: 4.7,
+    reviewCount: 1,
+    featured: false,
+  },
+
+  // 25 — Location-ct, Appartement, Nyon (Marc Favre)
+  {
+    id: 'prop25',
+    title: '2 pièces meublé à Nyon, entre Genève et Lausanne',
+    description:
+      'Appartement meublé de 52 m² au cœur de la vieille ville de Nyon, idéalement placé entre Genève et Lausanne. Parfait pour cadres en mission et voyageurs d’affaires. Gare CFF à 300 m.',
+    type: 'appartement',
+    transactionType: 'location-ct',
+    price: 160,
+    currency: 'CHF',
+    location: { city: 'Nyon', country: 'Suisse', address: 'Rue de la Gare 12', lat: 46.3833, lng: 6.2394 },
+    images: [
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[2], // Marc Favre
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 52,
+    floor: 1,
+    amenities: ['WiFi', 'Meublé', 'Cuisine équipée', 'Proche gare', 'Cave'],
+    rating: 4.6,
+    reviewCount: 1,
+    featured: false,
+  },
+
+  // 26 — Location-ct, Appartement, Neuchâtel (Jean-Luc Hartmann / gestion agence)
+  {
+    id: 'prop26',
+    title: 'Meublé géré au centre de Neuchâtel',
+    description:
+      'Appartement meublé de 46 m² en zone piétonne, géré par Hartmann Immobilier SA en location courte durée. Check-in autonome, ménage professionnel, à deux pas du château et du lac.',
+    type: 'appartement',
+    transactionType: 'location-ct',
+    price: 150,
+    currency: 'CHF',
+    location: { city: 'Neuchâtel', country: 'Suisse', address: 'Rue du Château 9', lat: 46.9896, lng: 6.9293 },
+    images: [
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[14], // Jean-Luc Hartmann
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 46,
+    floor: 2,
+    amenities: ['WiFi', 'Meublé', 'Check-in autonome', 'Ménage inclus', 'Centre-ville'],
+    rating: 4.8,
+    reviewCount: 1,
+    featured: false,
+  },
+
+  // 27 — Vente, Villa, Hauterive (Jean-Luc Hartmann / mandat agence)
+  {
+    id: 'prop27',
+    title: 'Villa individuelle avec vue lac à Hauterive',
+    description:
+      'Villa familiale de 210 m² sur 900 m² de terrain, vue dégagée sur le lac de Neuchâtel et les Alpes. Cinq pièces, jardin arboré, double garage. Mandat exclusif Hartmann Immobilier SA.',
+    type: 'villa',
+    transactionType: 'vente',
+    price: 1350000,
+    currency: 'CHF',
+    location: { city: 'Hauterive', country: 'Suisse', address: 'Chemin des Roulières 5', lat: 47.0122, lng: 6.9756 },
+    images: [
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[14], // Jean-Luc Hartmann
+    bedrooms: 4,
+    bathrooms: 2,
+    area: 210,
+    amenities: ['Jardin', 'Garage', 'Vue lac', 'Cheminée', 'Cave'],
+    rating: 4.8,
+    reviewCount: 1,
+    featured: false,
+    analytics: { rendementBrut: 3.4, rendementNet: 2.5, prixM2: 6428, dpe: 'C', etatGeneral: 'Très bon', anneeConstruction: 2004, potentielPlusValue: 12, roi5ans: 16, roi10ans: 38, tauxOccupation: 0 },
+  },
+
+  // 28 — Vente, Appartement, Neuchâtel (Jean-Luc Hartmann / mandat agence)
+  {
+    id: 'prop28',
+    title: '4.5 pièces rénové aux Beaux-Arts, Neuchâtel',
+    description:
+      'Appartement de 118 m² dans un immeuble de maître du quartier des Beaux-Arts, entièrement rénové. Parquet d’origine, hauts plafonds, balcon. Mandat Hartmann Immobilier SA.',
+    type: 'appartement',
+    transactionType: 'vente',
+    price: 920000,
+    currency: 'CHF',
+    location: { city: 'Neuchâtel', country: 'Suisse', address: 'Avenue du 1er-Mars 20', lat: 46.9959, lng: 6.9403 },
+    images: [
+      'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&h=600&fit=crop',
+    ],
+    videos: [],
+    host: users[14], // Jean-Luc Hartmann
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 118,
+    floor: 2,
+    amenities: ['Balcon', 'Parquet', 'Cave', 'Ascenseur', 'Proche centre'],
+    rating: 4.7,
+    reviewCount: 1,
+    featured: false,
+    analytics: { rendementBrut: 3.9, rendementNet: 2.9, prixM2: 7796, dpe: 'B', etatGeneral: 'Rénové', anneeConstruction: 1928, potentielPlusValue: 14, roi5ans: 18, roi10ans: 41, tauxOccupation: 0 },
   },
 ];
 
@@ -2357,7 +2547,7 @@ export const mockReviews: Review[] = [
     propertyId: 'prop1',
     author: users[2],
     rating: 5,
-    comment: 'Emplacement idéal, proche du centre. Le balcon vue lac est magique. Finitions haut de gamme, on sent la qualité.',
+    comment: 'J\'ai acquis cet appartement via Sophie Durand : de la première visite à la signature chez le notaire, un accompagnement limpide et des conseils précis sur le rendement. Emplacement idéal, finitions haut de gamme, vue lac magique.',
     createdAt: '2026-02-28T14:00:00Z',
   },
   {
@@ -2529,21 +2719,21 @@ export const mockReviews: Review[] = [
     comment: 'Bel appartement dans un quartier en plein développement. Bon potentiel d\'investissement. Les espaces communs sont soignés.',
     createdAt: '2026-03-02T10:00:00Z',
   },
-  // ─── prop14 (appartement, location-lt, Lisbonne) ──────────────────────
+  // ─── prop14 (appartement, location-lt, Neuchâtel — géré par Jean-Luc) ──
   {
     id: 'rev-023',
     propertyId: 'prop14',
-    author: users[13],
+    author: users[11],
     rating: 5,
-    comment: 'Appartement charmant dans le quartier de l\'Alfama. Pierre est un hôte formidable, toujours disponible et de bon conseil.',
+    comment: 'Studio meublé parfait pour mes études à l\'Université de Neuchâtel. À dix minutes à pied des cours, calme et bien équipé. L\'agence Hartmann a été réactive du premier jour.',
     createdAt: '2026-03-18T11:00:00Z',
   },
   {
     id: 'rev-024',
     propertyId: 'prop14',
-    author: users[9],
+    author: users[7],
     rating: 4,
-    comment: 'Très bon appartement, bien rénové avec goût. Quartier vivant et authentique. Transports à proximité.',
+    comment: 'Bon rapport qualité-prix pour un meublé proche de l\'université. Charges comprises, gestion locative sérieuse. Manque juste un peu de rangement.',
     createdAt: '2026-02-05T08:00:00Z',
   },
   // ─── prop11 (bureau, vente, Genève) ─────────────────────────────────
@@ -2570,6 +2760,100 @@ export const mockReviews: Review[] = [
     rating: 4,
     comment: 'Très beaux bureaux dans un immeuble récent. Proche de la gare des Eaux-Vives, idéal pour les collaborateurs. Seul bémol : le parking est un peu limité.',
     createdAt: '2026-01-18T09:00:00Z',
+  },
+  /* ─── Étape 3 : avis des trois premiers profils complets ─────────────────
+     Sophie Durand (prop1, prop19, prop23), Marc Favre (prop16, prop24, prop25),
+     Jean-Luc Hartmann (prop26, prop27, prop28). Ces avis alimentent les
+     « avis reçus » de chaque profil (dérivés des biens qu'il héberge), et
+     concordent avec la note et le nombre d'avis annoncés dans users[]
+     (invariant 27). */
+  // ─── prop19 (chalet, vente, Verbier — Sophie) ─────────────────────────
+  {
+    id: 'rev-028',
+    propertyId: 'prop19',
+    author: users[8],
+    rating: 5,
+    comment: 'Sophie connaît le marché alpin sur le bout des doigts. Visite privée impeccable, dossier de vente complet. Un chalet ski-in ski-out d\'un standing rare.',
+    createdAt: '2026-03-14T10:00:00Z',
+  },
+  {
+    id: 'rev-029',
+    propertyId: 'prop19',
+    author: users[11],
+    rating: 4,
+    comment: 'Très beau chalet, emplacement idéal au pied des pistes. Accompagnement sérieux de la courtière. Le prix reste élevé mais justifié par la vue.',
+    createdAt: '2026-02-09T15:00:00Z',
+  },
+  // ─── prop23 (studio, location-ct, Lausanne — Sophie) ──────────────────
+  {
+    id: 'rev-030',
+    propertyId: 'prop23',
+    author: users[3],
+    rating: 5,
+    comment: 'Studio adorable à Ouchy, vue lac au réveil. Sophie répond en quelques minutes et pense à tout. Je recommande sans réserve pour un séjour à Lausanne.',
+    createdAt: '2026-08-22T09:00:00Z',
+  },
+  {
+    id: 'rev-031',
+    propertyId: 'prop23',
+    author: users[0],
+    rating: 5,
+    comment: 'Emplacement parfait sur les quais, décoration soignée. Check-in fluide, communication au top. Un pied-à-terre idéal pour découvrir la région.',
+    createdAt: '2026-07-30T14:00:00Z',
+  },
+  // ─── prop16 (penthouse, vente, Genève — Marc) ─────────────────────────
+  {
+    id: 'rev-032',
+    propertyId: 'prop16',
+    author: users[5],
+    rating: 5,
+    comment: 'Attique d\'exception avec une vue à 360° sur la rade. Marc maîtrise ses chiffres et négocie avec rigueur. Transaction menée de main de maître.',
+    createdAt: '2026-03-19T11:00:00Z',
+  },
+  // ─── prop24 (studio, location-ct, Montreux — Marc) ────────────────────
+  {
+    id: 'rev-033',
+    propertyId: 'prop24',
+    author: users[13],
+    rating: 5,
+    comment: 'Studio nickel à Montreux, parfait pendant le festival. Tout fonctionne, arrivée autonome sans accroc. Excellent rapport qualité-prix.',
+    createdAt: '2026-08-18T16:00:00Z',
+  },
+  // ─── prop25 (appartement, location-ct, Nyon — Marc) ───────────────────
+  {
+    id: 'rev-034',
+    propertyId: 'prop25',
+    author: users[9],
+    rating: 4,
+    comment: 'Bien situé entre Genève et Lausanne, pratique pour mes déplacements pro. Appartement propre et fonctionnel. Petit manque de luminosité au rez.',
+    createdAt: '2026-09-06T08:00:00Z',
+  },
+  // ─── prop26 (appartement, location-ct, Neuchâtel — Jean-Luc / agence) ──
+  {
+    id: 'rev-035',
+    propertyId: 'prop26',
+    author: users[7],
+    rating: 5,
+    comment: 'Meublé impeccable au centre de Neuchâtel, géré par Hartmann Immobilier. Ménage professionnel, check-in autonome parfait. Je reviendrai.',
+    createdAt: '2026-08-27T10:00:00Z',
+  },
+  // ─── prop27 (villa, vente, Hauterive — Jean-Luc / agence) ─────────────
+  {
+    id: 'rev-036',
+    propertyId: 'prop27',
+    author: users[11],
+    rating: 5,
+    comment: 'Nous avons acheté notre villa via l\'agence de Jean-Luc Hartmann. Vingt ans de métier, ça se sent : estimation juste, visites bien organisées, signature sereine. Un service de proximité irréprochable.',
+    createdAt: '2026-06-20T14:00:00Z',
+  },
+  // ─── prop28 (appartement, vente, Neuchâtel — Jean-Luc / agence) ───────
+  {
+    id: 'rev-037',
+    propertyId: 'prop28',
+    author: users[8],
+    rating: 4,
+    comment: 'Bel appartement de maître rénové avec goût. L\'équipe Hartmann est réactive et transparente sur les charges. Quartier des Beaux-Arts très agréable.',
+    createdAt: '2026-05-16T09:00:00Z',
   },
 ];
 

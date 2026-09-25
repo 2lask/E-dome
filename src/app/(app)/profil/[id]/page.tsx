@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, use } from "react";
-import { properties as CATALOGUE } from "@/lib/mock-data";
+import { properties as CATALOGUE, mockReviews } from "@/lib/mock-data";
 import { useRouter } from "next/navigation";
 import { getMockProfile } from "@/lib/profile-data";
 import { ProfileView } from "@/components/profile/profile-view";
-import type { ProfileData } from "@/components/profile/profile-showcase";
+import type { ProfileData, ProfileBien, ProfileAvis } from "@/components/profile/profile-showcase";
 import { getPublicPosts, profileToAuthor } from "@/lib/profile-posts";
 import { BackButton } from "@/components/ui/back-button";
 import type { Role } from "@/lib/types";
@@ -51,6 +51,57 @@ const RATING_BREAKDOWN = [
   { stars: 2, count: 0 },
   { stars: 1, count: 0 },
 ];
+
+/* Vitrine RÉELLE d'une personne, dérivée de l'annuaire — pas un jeu générique.
+   Les biens sont ceux qu'elle héberge au catalogue (host = son id) ; les avis
+   reçus sont les avis de ces biens. C'est ce qui rend le profil cohérent :
+   /profil/user-002 montre les vrais biens de Sophie et les vrais avis reçus,
+   dont celui de Marc sur l'appartement qu'il lui a acheté. Un profil qui
+   n'héberge rien retombe sur la vitrine générique (voir merge plus bas). */
+const MONTHS_FR_SHORT = [
+  "janv.", "févr.", "mars", "avr.", "mai", "juin",
+  "juil.", "août", "sept.", "oct.", "nov.", "déc.",
+];
+
+/* Date « 15 mars 2026 » — construite à la main, JAMAIS via toLocaleDateString :
+   le mois localisé et le séparateur varient entre l'ICU du serveur et celui du
+   navigateur, ce qui casse l'hydratation. */
+function frDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getUTCDate()} ${MONTHS_FR_SHORT[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+function biensForHost(id: string): ProfileBien[] {
+  return CATALOGUE.filter((c) => c.host.id === id).map((c) => ({
+    id: c.id,
+    title: c.title,
+    cover: c.images[0]!,
+    price: c.price,
+    currency: c.currency,
+    unit: c.transactionType === "vente" ? "" : c.transactionType === "location-lt" ? "/mois" : "/nuit",
+    location: `${c.location.city}, ${c.location.country}`,
+  }));
+}
+
+function avisForHost(id: string): { avis: ProfileAvis[]; ratingBreakdown: { stars: number; count: number }[] } {
+  const hosted = new Set(CATALOGUE.filter((c) => c.host.id === id).map((c) => c.id));
+  const revs = mockReviews
+    .filter((r) => hosted.has(r.propertyId))
+    .slice()
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const avis: ProfileAvis[] = revs.map((r) => ({
+    id: r.id,
+    author: `${r.author.firstName} ${r.author.lastName}`.trim(),
+    rating: r.rating,
+    text: r.comment,
+    date: frDate(r.createdAt),
+  }));
+  const ratingBreakdown = [5, 4, 3, 2, 1].map((stars) => ({
+    stars,
+    count: revs.filter((r) => r.rating === stars).length,
+  }));
+  return { avis, ratingBreakdown };
+}
 
 /* Vitrine adaptée au rôle principal : une agence/courtier/promoteur affiche
    surtout des biens, un formateur surtout des formations, etc. */
@@ -120,8 +171,18 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
     );
   }
 
+  /* Vitrine : le squelette dépend du rôle (générique), mais les biens et les
+     avis sont RÉELS quand la personne en a — dérivés de l'annuaire, pas inventés.
+     Fallback sur le générique uniquement pour une personne qui n'héberge aucun
+     bien / n'a reçu aucun avis, pour ne pas afficher une vitrine vide. */
+  const base = showcaseForRole(profile.roles[0] ?? "client");
+  const realBiens = biensForHost(profile.id);
+  const { avis, ratingBreakdown } = avisForHost(profile.id);
   const showcase: ProfileData = {
-    ...showcaseForRole(profile.roles[0] ?? "client"),
+    ...base,
+    biens: realBiens.length > 0 ? realBiens : base.biens,
+    avis: avis.length > 0 ? avis : base.avis,
+    ratingBreakdown: avis.length > 0 ? ratingBreakdown : base.ratingBreakdown,
     posts: getPublicPosts(profileToAuthor(profile)),
   };
 

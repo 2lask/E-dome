@@ -1,6 +1,7 @@
 import type { User, SocialPost, Comment } from "./types";
 import type { Profile } from "./profile-types";
 import { properties } from "./mock-data";
+import { requirePerson } from "./demo/directory";
 import { buildObjectAffiliate } from "./referral-links";
 
 /* Posts affichés dans l'onglet « Publications » du profil : les vraies
@@ -35,25 +36,15 @@ export function profileToAuthor(p: Profile): User {
   };
 }
 
-// Quelques commentateurs (mock) pour peupler les fils.
-const C_SOPHIE: User = {
-  id: "user-002", firstName: "Sophie", lastName: "Durand", email: "sophie@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100",
-  city: "Lausanne", country: "Suisse", roles: ["courtier"], activeRole: "courtier",
-  stats: { followers: 890, following: 210, properties: 0, reviews: 42, rating: 4.8, transactions: 0, revenue: 0 }, bio: "",
-};
-const C_MARC: User = {
-  id: "user-003", firstName: "Marc", lastName: "Favre", email: "marc@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1519345182560-cabd3c3338a3?w=100",
-  city: "Genève", country: "Suisse", roles: ["courtier"], activeRole: "courtier",
-  stats: { followers: 640, following: 340, properties: 0, reviews: 42, rating: 4.7, transactions: 0, revenue: 0 }, bio: "",
-};
-const C_AMINA: User = {
-  id: "user-004", firstName: "Amina", lastName: "El Idrissi", email: "amina@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100",
-  city: "Marrakech", country: "Maroc", roles: ["formateur"], activeRole: "formateur",
-  stats: { followers: 1200, following: 610, properties: 0, reviews: 98, rating: 4.9, transactions: 0, revenue: 0 }, bio: "",
-};
+/* Commentateurs des fils de profil — de VRAIES personnes de l'annuaire, par id.
+   Ils portaient jadis des identités parallèles (Sophie à 890 abonnés ici et
+   3 100 dans l'annuaire, un autre avatar, un rôle « courtier » pour Marc que
+   l'annuaire ne lui donne pas) : c'était le bug racine « un id, deux identités ».
+   `requirePerson` garantit le même nom, le même avatar et les mêmes stats que
+   partout ailleurs, et casse la compilation si l'id disparaît. */
+const C_SOPHIE: User = requirePerson("user-002");
+const C_MARC: User = requirePerson("user-003");
+const C_AMINA: User = requirePerson("user-004");
 
 const mkComments = (postId: string, items: { author: User; content: string; h: number; likes?: number }[]): Comment[] =>
   items.map((c, i) => ({ id: `c-${postId}-${i}`, author: c.author, content: c.content, createdAt: hAgo(c.h), likes: c.likes ?? 0 }));
