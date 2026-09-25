@@ -1,5 +1,7 @@
 import type { Profile, ProfileVisibility, PersonSummary } from "./profile-types";
 import { CURRENT_USER } from "./demo/identity";
+import { DIRECTORY, personById } from "./demo/directory";
+import { roleLabels } from "./types";
 
 /* ─── Données de profil (démo) ────────────────────────────────────────────
    - DEFAULT_PROFILE : mon profil (Léo), source initiale du contexte, ensuite
@@ -105,17 +107,29 @@ export const DEFAULT_PROFILE: Profile = {
 
 // ─── Profils publics (autres utilisateurs) ───────────────────────────────
 
+/* Un profil public dérive maintenant de l'ANNUAIRE (demo/directory), pas d'un
+   second annuaire concurrent. L'identité et les statistiques — prénom, nom,
+   avatar, ville, pays, rôles, abonnés, avis, note — viennent de la vraie
+   personne de `users[]`. `/profil/user-002` affiche donc la MÊME Sophie que le
+   fil, la messagerie et le tableau de bord.
+
+   `PUBLIC_SEEDS` ne garde QUE les ENRICHISSEMENTS « façon LinkedIn » qui n'ont
+   pas de conflit d'identité : titre, présentation longue, bannière, compétences,
+   expériences, formations, langues, liens. Tout le reste est retiré et pris à
+   l'annuaire.
+
+   Les seeds retenus sont uniquement ceux dont le contenu s'accorde avec la
+   personne de l'annuaire (nom ET rôles). Les six seeds « user-007 … user-012 »
+   décrivaient des personnes DIFFÉRENTES de celles de `users[]` (Camille Rochat
+   sur l'id de Pierre Gonçalves, etc.) : c'était le bug racine (« un id, deux
+   identités »), pas un enrichissement — ils sont supprimés, et ces profils
+   dérivent proprement de l'annuaire. Les seeds Marc (user-003) et Lucas
+   (user-005) sont également retirés : leur titre annonçait un rôle
+   (« Courtier », « Promoteur ») que l'annuaire ne leur donne pas. */
 type PublicSeed = {
-  firstName: string;
-  lastName: string;
-  avatar: string;
+  headline?: string;
+  about?: string;
   banner?: string;
-  headline: string;
-  city: string;
-  country: string;
-  roles: Profile["roles"];
-  about: string;
-  stats: Profile["stats"];
   membreFondateur?: boolean;
   experiences?: Profile["experiences"];
   education?: Profile["education"];
@@ -125,230 +139,100 @@ type PublicSeed = {
 };
 
 const PUBLIC_SEEDS: Record<string, PublicSeed> = {
-  /* Le profil public de l'utilisateur courant est DÉRIVÉ du sien, il n'en est
-     plus une copie. La copie affichait 87 avis là où le profil en annonçait
-     56, pour la même personne — deux nombres pour un seul fait, à deux clics
-     d'intervalle. Un avatar différent, aussi. */
-  [CURRENT_USER.id]: {
-    firstName: DEFAULT_PROFILE.firstName,
-    lastName: DEFAULT_PROFILE.lastName,
-    avatar: DEFAULT_PROFILE.avatar,
-    banner: DEFAULT_PROFILE.banner,
-    headline: DEFAULT_PROFILE.headline,
-    city: DEFAULT_PROFILE.location.city,
-    country: DEFAULT_PROFILE.location.country,
-    roles: DEFAULT_PROFILE.roles,
-    about: DEFAULT_PROFILE.about,
-    stats: DEFAULT_PROFILE.stats,
-    membreFondateur: DEFAULT_PROFILE.meta.membreFondateur,
-    experiences: DEFAULT_PROFILE.experiences,
-    education: DEFAULT_PROFILE.education,
-    skills: DEFAULT_PROFILE.skills.map((s) => s.name),
-    languages: DEFAULT_PROFILE.languages,
-    links: DEFAULT_PROFILE.links,
-  },
   "user-002": {
-    firstName: "Sophie",
-    lastName: "Durand",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=240",
     banner: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=400&fit=crop",
     headline: "Courtière Brevet Fédéral · Immobilier de standing",
-    city: "Lausanne",
-    country: "Suisse",
-    roles: ["courtier", "hote"],
     about:
       "Courtière Brevet Fédéral spécialisée dans l'immobilier de standing en Suisse romande. J'accompagne vendeurs et acquéreurs sur des biens d'exception avec discrétion et rigueur.",
-    stats: { followers: 890, following: 210, rating: 4.8, reviewsCount: 42 },
     skills: ["Courtage", "Estimation", "Home staging", "Négociation", "Immobilier de luxe"],
   },
-  "user-003": {
-    firstName: "Marc",
-    lastName: "Favre",
-    avatar: "https://images.unsplash.com/photo-1519345182560-cabd3c3338a3?w=240",
-    headline: "Courtier & hôte · Location courte durée à Genève",
-    city: "Genève",
-    country: "Suisse",
-    roles: ["courtier", "hote"],
-    about:
-      "Agent immobilier et hôte actif à Genève. Spécialiste de la location courte durée et de la valorisation de biens résidentiels.",
-    stats: { followers: 640, following: 340, rating: 4.7, reviewsCount: 42 },
-    skills: ["Courtage", "Location courte durée", "Estimation", "Relation client"],
-  },
   "user-004": {
-    firstName: "Amina",
-    lastName: "El Idrissi",
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=240",
     banner: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=1200&h=400&fit=crop",
     headline: "Formatrice & hôte · Gestion locative et pricing dynamique",
-    city: "Marrakech",
-    country: "Maroc",
-    roles: ["formateur", "hote"],
     about:
       "Formatrice et hôte au Maroc. Experte en investissement locatif dans les marchés émergents et en optimisation des revenus courte durée.",
-    stats: { followers: 1200, following: 610, rating: 4.9, reviewsCount: 98 },
     skills: ["Gestion locative", "Pricing dynamique", "Airbnb", "Marketing immobilier"],
   },
-  "user-005": {
-    firstName: "Lucas",
-    lastName: "Renaud",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=240",
-    headline: "Promoteur immobilier · Villas de prestige Côte d'Azur",
-    city: "Nice",
-    country: "France",
-    roles: ["promoteur"],
-    about:
-      "Promoteur immobilier sur la Côte d'Azur. Spécialiste des villas de prestige et des programmes neufs haut de gamme.",
-    stats: { followers: 520, following: 430, rating: 4.6, reviewsCount: 56 },
-    skills: ["Promotion immobilière", "Développement foncier", "Immobilier de luxe"],
-  },
   "user-006": {
-    firstName: "Yasmin",
-    lastName: "Al Maktoum",
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=240",
     banner: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200&h=400&fit=crop",
     headline: "Agence premium · Résidences de luxe à Dubaï",
-    city: "Dubaï",
-    country: "EAU",
-    roles: ["agence", "apporteur"],
     about:
       "Agence immobilière premium à Dubaï. Spécialiste des résidences de luxe et des opportunités off-market pour investisseurs internationaux.",
-    stats: { followers: 3500, following: 480, rating: 4.8, reviewsCount: 64 },
     skills: ["Immobilier de luxe", "Off-market", "Investissement international"],
   },
   "user-015": {
-    firstName: "Jean-Luc",
-    lastName: "Hartmann",
-    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=240",
     headline: "Agence familiale · Vente & gestion locative depuis 1992",
-    city: "Neuchâtel",
-    country: "Suisse",
-    roles: ["agence"],
     about:
       "Agence familiale en Suisse romande. Vente et gestion locative depuis 1992, avec un service de proximité et une parfaite connaissance du marché local.",
-    stats: { followers: 280, following: 150, rating: 4.5, reviewsCount: 22 },
     skills: ["Vente", "Gestion locative", "Estimation", "Conseil"],
-  },
-  "user-007": {
-    firstName: "Camille",
-    lastName: "Rochat",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=240",
-    headline: "Investisseuse · Rendement locatif en Suisse romande",
-    city: "Fribourg",
-    country: "Suisse",
-    roles: ["investisseur"],
-    about: "Investisseuse immobilière axée rendement et diversification. Adepte du locatif longue durée et de la colocation premium.",
-    stats: { followers: 410, following: 190, rating: 4.7, reviewsCount: 18 },
-    skills: ["Investissement locatif", "Colocation", "Financement"],
-  },
-  "user-008": {
-    firstName: "Nicolas",
-    lastName: "Berger",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240",
-    headline: "Promoteur · Programmes neufs certifiés Minergie",
-    city: "Zurich",
-    country: "Suisse",
-    roles: ["promoteur"],
-    about: "Promoteur spécialisé dans les programmes résidentiels neufs à haute performance énergétique.",
-    stats: { followers: 1500, following: 220, rating: 4.6, reviewsCount: 31 },
-    skills: ["Promotion immobilière", "Minergie", "Développement foncier"],
-  },
-  "user-009": {
-    firstName: "Fatima",
-    lastName: "Zahra",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240",
-    headline: "Agence · Immobilier résidentiel à Casablanca",
-    city: "Casablanca",
-    country: "Maroc",
-    roles: ["agence"],
-    about: "Directrice d'agence à Casablanca. Vente et location de biens résidentiels et bureaux.",
-    stats: { followers: 2100, following: 340, rating: 4.8, reviewsCount: 76 },
-    skills: ["Vente", "Location", "Bureaux"],
-  },
-  "user-010": {
-    firstName: "David",
-    lastName: "Meier",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=240",
-    headline: "Courtier · Financement hypothécaire & fiscalité",
-    city: "Zoug",
-    country: "Suisse",
-    roles: ["courtier"],
-    about: "Courtier en financement. J'optimise le montage hypothécaire et la fiscalité de vos acquisitions.",
-    stats: { followers: 720, following: 160, rating: 4.9, reviewsCount: 44 },
-    skills: ["Hypothèque", "Fiscalité", "Négociation"],
-  },
-  "user-011": {
-    firstName: "Elena",
-    lastName: "Rossi",
-    avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=240",
-    headline: "Formatrice · Home staging & valorisation",
-    city: "Lugano",
-    country: "Suisse",
-    roles: ["formateur"],
-    about: "Formatrice en home staging et valorisation de biens pour accélérer la vente.",
-    stats: { followers: 980, following: 280, rating: 4.8, reviewsCount: 52 },
-    skills: ["Home staging", "Décoration", "Photographie"],
-  },
-  "user-012": {
-    firstName: "Omar",
-    lastName: "Haddad",
-    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=240",
-    headline: "Apporteur d'affaires · Off-market Émirats",
-    city: "Dubaï",
-    country: "EAU",
-    roles: ["apporteur"],
-    about: "Apporteur d'affaires spécialisé off-market à Dubaï et Abu Dhabi pour investisseurs internationaux.",
-    stats: { followers: 3400, following: 410, rating: 4.9, reviewsCount: 61 },
-    skills: ["Off-market", "Investissement international", "Négociation"],
   },
 };
 
+/** Les ids qui portent un enrichissement de profil. Chacun DOIT exister à
+    l'annuaire (garde-fou dans demo/invariants.ts). */
+export const PUBLIC_SEED_IDS = Object.keys(PUBLIC_SEEDS);
+
 const GENERIC_BANNER = "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1200&h=400&fit=crop";
 
-/* Construit un profil public. Si l'id n'a pas de seed dédié, on renvoie null
-   (la page affichera "profil introuvable"). */
+/* Construit le profil public d'une personne de l'annuaire. Renvoie null
+   uniquement si l'id n'existe PAS à l'annuaire (la page affiche alors
+   « profil introuvable »). Tout id réel de `users[]` résout donc — plus aucun
+   auteur du fil ni interlocuteur ne mène à un cul-de-sac. */
 export function getMockProfile(id: string): Profile | null {
+  /* Le profil public de l'utilisateur courant EST son profil canonique, pas
+     une copie : c'est ce qui garantit qu'il n'affiche pas 87 avis là où son
+     profil en annonce 12. */
+  if (id === CURRENT_USER.id) return DEFAULT_PROFILE;
+
+  const person = personById(id);
+  if (!person) return null;
   const seed = PUBLIC_SEEDS[id];
-  if (!seed) return null;
 
   return {
-    id,
-    firstName: seed.firstName,
-    lastName: seed.lastName,
-    email: `${seed.firstName.toLowerCase()}@e-dome.ch`,
-    avatar: seed.avatar,
-    banner: seed.banner ?? GENERIC_BANNER,
-    headline: seed.headline,
-    location: { city: seed.city, country: seed.country },
-    roles: seed.roles,
-    about: seed.about,
-    experiences: seed.experiences ?? [],
-    education: seed.education ?? [],
-    skills: (seed.skills ?? []).map((name, i) => ({ id: `sk-${id}-${i}`, name })),
-    languages: seed.languages ?? [],
+    id: person.id,
+    firstName: person.firstName,
+    lastName: person.lastName,
+    email: person.email,
+    avatar: person.avatar,
+    banner: seed?.banner ?? GENERIC_BANNER,
+    headline: seed?.headline ?? `${roleLabels[person.activeRole]} · ${person.city}`,
+    location: { city: person.city, country: person.country },
+    roles: person.roles,
+    about: seed?.about ?? person.bio,
+    experiences: seed?.experiences ?? [],
+    education: seed?.education ?? [],
+    skills: (seed?.skills ?? []).map((name, i) => ({ id: `sk-${id}-${i}`, name })),
+    languages:
+      seed?.languages ??
+      (person.languages ?? []).map((name, i) => ({ id: `lg-${id}-${i}`, name, level: "courant" as const })),
     certifications: [],
-    links: seed.links ?? [],
+    links: seed?.links ?? [],
     visibility: DEFAULT_VISIBILITY,
-    meta: { verified: true, membreFondateur: !!seed.membreFondateur, memberSince: "2024-06-01" },
-    stats: seed.stats,
+    meta: { verified: true, membreFondateur: !!seed?.membreFondateur, memberSince: "2024-06-01" },
+    stats: {
+      followers: person.stats.followers,
+      following: person.stats.following,
+      rating: person.stats.rating,
+      reviewsCount: person.stats.reviews,
+    },
   };
 }
 
-export const PUBLIC_PROFILE_IDS = Object.keys(PUBLIC_SEEDS);
+/** Tous les identifiants de profil public : l'annuaire entier. */
+export const PUBLIC_PROFILE_IDS = DIRECTORY.map((p) => p.id);
 
 /* Liste des personnes (hors moi) pour les pages réseau / contacts. Source
-   unique : dérivée des seeds publics, donc chaque personne ouvre une vraie
-   fiche /profil/[id]. */
+   unique : l'annuaire. Chaque personne ouvre une vraie fiche /profil/[id],
+   puisque getMockProfile résout tout id de l'annuaire. */
 export function listPeople(): PersonSummary[] {
-  return Object.entries(PUBLIC_SEEDS)
-    .filter(([id]) => id !== "user-001")
-    .map(([id, s]) => ({
-      id,
-      firstName: s.firstName,
-      lastName: s.lastName,
-      avatar: s.avatar,
-      headline: s.headline,
-      city: s.city,
-      country: s.country,
-      roles: s.roles,
-    }));
+  return DIRECTORY.filter((p) => p.id !== CURRENT_USER.id).map((p) => ({
+    id: p.id,
+    firstName: p.firstName,
+    lastName: p.lastName,
+    avatar: p.avatar,
+    headline: PUBLIC_SEEDS[p.id]?.headline ?? `${roleLabels[p.activeRole]} · ${p.city}`,
+    city: p.city,
+    country: p.country,
+    roles: p.roles,
+  }));
 }

@@ -13,6 +13,7 @@ import type { Conversation, Message, User } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import { users as allUsers, currentUser as currentUserMock } from "@/lib/mock-data";
 import { CURRENT_USER as DEMO_USER } from "@/lib/demo/identity";
+import { requirePerson } from "@/lib/demo/directory";
 import {
   Dialog,
   DialogContent,
@@ -90,21 +91,34 @@ const INITIAL_CONF_CHAT: ConferenceChatMessage[] = [
    utilisait « user-001 ». Deux identifiants pour une seule personne. */
 const currentUserId = DEMO_USER.id;
 
+/* Les interlocuteurs sont de VRAIES personnes de l'annuaire (demo/directory),
+   plus des identités inventées sous des ids « u1 »…« u5 » qui n'existaient
+   nulle part. Le deep-link `/messages?to=<id>` depuis /reseau ou /profil/[id]
+   résout donc, et l'interlocuteur d'une conversation est la même personne que
+   sa fiche publique. `requirePerson` échoue à la compilation si un id sortait
+   de l'annuaire.
+
+   NOTE de périmètre : la persistance « un contact crée une conversation » (la
+   modale « Nouvelle conversation », les invités de la visio) reste à l'étape 4.
+   Ces conversations vivant dans un composant de page, l'invariant d'annuaire
+   (import-time, dans demo/invariants.ts) ne peut pas les énumérer ; les ids
+   ci-dessous sont donc garantis par `requirePerson` au chargement du module. */
+const P_SOPHIE = requirePerson("user-002"); // hôte/courtière, Lausanne
+const P_CLEMENCE = requirePerson("user-012"); // cliente/investisseuse, Lausanne
+const P_JEANLUC = requirePerson("user-015"); // agence, Neuchâtel
+const P_AMINA = requirePerson("user-004"); // hôte/formatrice, Marrakech
+const P_PIERRE = requirePerson("user-007"); // hôte/apporteur, Lisbonne
+
 const mockConversations: Conversation[] = [
   {
     id: "c1",
-    participant: {
-      id: "u1", firstName: "Sophie", lastName: "Martin", email: "s@e.ch", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-      city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote",
-      stats: { followers: 120, following: 45, properties: 3, reviews: 28, rating: 4.8, transactions: 15, revenue: 24000 },
-      bio: "",
-    },
+    participant: P_SOPHIE,
     messages: [
-      { id: "m1", senderId: "u1", content: "Bonjour Léo ! Je suis intéressée par le Chalet Alpin.", timestamp: "2026-03-31T10:00:00", read: true },
+      { id: "m1", senderId: P_SOPHIE.id, content: "Bonjour Léo ! Je suis intéressée par le Chalet Alpin.", timestamp: "2026-03-31T10:00:00", read: true },
       { id: "m2", senderId: currentUserId, content: "Bonjour Sophie ! Merci pour votre intérêt. Le chalet est disponible dès le 15 avril.", timestamp: "2026-03-31T10:05:00", read: true },
-      { id: "m3", senderId: "u1", content: "Parfait ! Quel est le tarif pour une semaine ?", timestamp: "2026-03-31T10:10:00", read: true },
+      { id: "m3", senderId: P_SOPHIE.id, content: "Parfait ! Quel est le tarif pour une semaine ?", timestamp: "2026-03-31T10:10:00", read: true },
       { id: "m4", senderId: currentUserId, content: "Le tarif est de 1 800 CHF la semaine, petit-déjeuner inclus.", timestamp: "2026-03-31T10:15:00", read: true },
-      { id: "m5", senderId: "u1", content: "Super, je voudrais réserver du 15 au 22 avril pour 4 personnes.", timestamp: "2026-04-01T08:30:00", read: false },
+      { id: "m5", senderId: P_SOPHIE.id, content: "Super, je voudrais réserver du 15 au 22 avril pour 4 personnes.", timestamp: "2026-04-01T08:30:00", read: false },
     ],
     unreadCount: 1,
     lastMessage: "Super, je voudrais réserver du 15 au 22 avril pour 4 personnes.",
@@ -112,16 +126,11 @@ const mockConversations: Conversation[] = [
   },
   {
     id: "c2",
-    participant: {
-      id: "u2", firstName: "Jean", lastName: "Dupont", email: "j@e.ch", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-      city: "Genève", country: "Suisse", roles: ["client"], activeRole: "client",
-      stats: { followers: 30, following: 60, properties: 0, reviews: 5, rating: 4.2, transactions: 3, revenue: 0 },
-      bio: "",
-    },
+    participant: P_CLEMENCE,
     messages: [
-      { id: "m6", senderId: "u2", content: "Bonjour, je cherche une villa avec piscine à Montreux.", timestamp: "2026-03-30T14:00:00", read: true },
-      { id: "m7", senderId: currentUserId, content: "Bonjour Jean ! Je suis disponible pour organiser une visite. Quel créneau vous convient ?", timestamp: "2026-03-30T14:30:00", read: true },
-      { id: "m8", senderId: "u2", content: "Samedi matin serait idéal, vers 10h.", timestamp: "2026-03-30T15:00:00", read: true },
+      { id: "m6", senderId: P_CLEMENCE.id, content: "Bonjour, je cherche une villa avec piscine à Montreux.", timestamp: "2026-03-30T14:00:00", read: true },
+      { id: "m7", senderId: currentUserId, content: "Bonjour Clémence ! Je suis disponible pour organiser une visite. Quel créneau vous convient ?", timestamp: "2026-03-30T14:30:00", read: true },
+      { id: "m8", senderId: P_CLEMENCE.id, content: "Samedi matin serait idéal, vers 10h.", timestamp: "2026-03-30T15:00:00", read: true },
       { id: "m9", senderId: currentUserId, content: "C'est noté ! Je vous envoie la confirmation par email.", timestamp: "2026-03-30T15:10:00", read: true },
     ],
     unreadCount: 0,
@@ -130,16 +139,11 @@ const mockConversations: Conversation[] = [
   },
   {
     id: "c3",
-    participant: {
-      id: "u3", firstName: "Marie", lastName: "Leroy", email: "m@e.ch", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-      city: "Zürich", country: "Suisse", roles: ["agence"], activeRole: "agence",
-      stats: { followers: 250, following: 80, properties: 12, reviews: 45, rating: 4.9, transactions: 30, revenue: 85000 },
-      bio: "",
-    },
+    participant: P_JEANLUC,
     messages: [
-      { id: "m10", senderId: "u3", content: "Bonjour Léo, je cherche un appartement pour 3 mois à Lausanne.", timestamp: "2026-03-29T09:00:00", read: true },
-      { id: "m11", senderId: currentUserId, content: "Bonjour Marie ! J'ai plusieurs biens disponibles en location moyenne durée.", timestamp: "2026-03-29T09:15:00", read: true },
-      { id: "m12", senderId: "u3", content: "Idéal, pouvez-vous m'envoyer les détails ?", timestamp: "2026-03-29T09:20:00", read: true },
+      { id: "m10", senderId: P_JEANLUC.id, content: "Bonjour Léo, je cherche un appartement pour 3 mois à Lausanne.", timestamp: "2026-03-29T09:00:00", read: true },
+      { id: "m11", senderId: currentUserId, content: "Bonjour Jean-Luc ! J'ai plusieurs biens disponibles en location moyenne durée.", timestamp: "2026-03-29T09:15:00", read: true },
+      { id: "m12", senderId: P_JEANLUC.id, content: "Idéal, pouvez-vous m'envoyer les détails ?", timestamp: "2026-03-29T09:20:00", read: true },
       { id: "m13", senderId: currentUserId, content: "Bien sûr ! Je vous prépare une sélection personnalisée.", timestamp: "2026-03-29T09:25:00", read: true },
     ],
     unreadCount: 0,
@@ -148,16 +152,11 @@ const mockConversations: Conversation[] = [
   },
   {
     id: "c4",
-    participant: {
-      id: "u4", firstName: "Amira", lastName: "El Fassi", email: "a@e.ch", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
-      city: "Marrakech", country: "Maroc", roles: ["hote"], activeRole: "hote",
-      stats: { followers: 180, following: 90, properties: 5, reviews: 32, rating: 4.7, transactions: 12, revenue: 42000 },
-      bio: "",
-    },
+    participant: P_AMINA,
     messages: [
-      { id: "m14", senderId: "u4", content: "Bonjour Léo ! Je cherche un apporteur pour un riad à Marrakech.", timestamp: "2026-04-02T11:00:00", read: true },
-      { id: "m15", senderId: currentUserId, content: "Bonjour Amira ! Je suis très intéressé. Quelles sont les conditions ?", timestamp: "2026-04-02T11:10:00", read: true },
-      { id: "m16", senderId: "u4", content: "Commission 12%, tracking 30j. Bien à 480 000 CHF.", timestamp: "2026-04-02T11:15:00", read: false },
+      { id: "m14", senderId: P_AMINA.id, content: "Bonjour Léo ! Je cherche un apporteur pour un riad à Marrakech.", timestamp: "2026-04-02T11:00:00", read: true },
+      { id: "m15", senderId: currentUserId, content: "Bonjour Amina ! Je suis très intéressé. Quelles sont les conditions ?", timestamp: "2026-04-02T11:10:00", read: true },
+      { id: "m16", senderId: P_AMINA.id, content: "Commission 12%, tracking 30j. Bien à 480 000 CHF.", timestamp: "2026-04-02T11:15:00", read: false },
       { id: "m17", senderId: currentUserId, content: "Parfait, j'active mon lien dès maintenant.", timestamp: "2026-04-02T11:20:00", read: true },
     ],
     unreadCount: 1,
@@ -174,41 +173,13 @@ const mockConversations: Conversation[] = [
     name: "Hôtes Verbier 2026",
     groupAvatar:
       "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=200&h=200&fit=crop",
-    participant: {
-      id: "u1", firstName: "Sophie", lastName: "Martin", email: "s@e.ch",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-      city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote",
-      stats: { followers: 120, following: 45, properties: 3, reviews: 28, rating: 4.8, transactions: 15, revenue: 24000 },
-      bio: "",
-    },
-    members: [
-      {
-        id: "u1", firstName: "Sophie", lastName: "Martin", email: "s@e.ch",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-        city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote",
-        stats: { followers: 120, following: 45, properties: 3, reviews: 28, rating: 4.8, transactions: 15, revenue: 24000 },
-        bio: "",
-      },
-      {
-        id: "u3", firstName: "Marie", lastName: "Leroy", email: "m@e.ch",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-        city: "Zürich", country: "Suisse", roles: ["agence"], activeRole: "agence",
-        stats: { followers: 250, following: 80, properties: 12, reviews: 45, rating: 4.9, transactions: 30, revenue: 85000 },
-        bio: "",
-      },
-      {
-        id: "u5", firstName: "Pierre", lastName: "Fournier", email: "p@e.ch",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
-        city: "Verbier", country: "Suisse", roles: ["hote"], activeRole: "hote",
-        stats: { followers: 90, following: 30, properties: 2, reviews: 18, rating: 4.6, transactions: 8, revenue: 18000 },
-        bio: "",
-      },
-    ],
+    participant: P_SOPHIE,
+    members: [P_SOPHIE, P_JEANLUC, P_PIERRE],
     messages: [
-      { id: "gm1", senderId: "u3", content: "Bonjour à tous ! Je propose qu'on se synchronise sur les disponibilités fin avril.", timestamp: "2026-04-03T09:00:00", read: true },
-      { id: "gm2", senderId: "u5", content: "Mon chalet est libre du 18 au 25.", timestamp: "2026-04-03T09:15:00", read: true },
+      { id: "gm1", senderId: P_JEANLUC.id, content: "Bonjour à tous ! Je propose qu'on se synchronise sur les disponibilités fin avril.", timestamp: "2026-04-03T09:00:00", read: true },
+      { id: "gm2", senderId: P_PIERRE.id, content: "Mon chalet est libre du 18 au 25.", timestamp: "2026-04-03T09:15:00", read: true },
       { id: "gm3", senderId: currentUserId, content: "Idem chez moi. Je peux héberger un overflow si besoin.", timestamp: "2026-04-03T09:20:00", read: true },
-      { id: "gm4", senderId: "u1", content: "Super, on prépare un tableau partagé ?", timestamp: "2026-04-03T09:30:00", read: false },
+      { id: "gm4", senderId: P_SOPHIE.id, content: "Super, on prépare un tableau partagé ?", timestamp: "2026-04-03T09:30:00", read: false },
     ],
     unreadCount: 1,
     lastMessage: "Sophie: Super, on prépare un tableau partagé ?",
@@ -220,31 +191,10 @@ const mockConversations: Conversation[] = [
     name: "Investisseurs Suisse Romande",
     groupAvatar:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=200&fit=crop",
-    participant: {
-      id: "u2", firstName: "Jean", lastName: "Dupont", email: "j@e.ch",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-      city: "Genève", country: "Suisse", roles: ["client"], activeRole: "client",
-      stats: { followers: 30, following: 60, properties: 0, reviews: 5, rating: 4.2, transactions: 3, revenue: 0 },
-      bio: "",
-    },
-    members: [
-      {
-        id: "u2", firstName: "Jean", lastName: "Dupont", email: "j@e.ch",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-        city: "Genève", country: "Suisse", roles: ["client"], activeRole: "client",
-        stats: { followers: 30, following: 60, properties: 0, reviews: 5, rating: 4.2, transactions: 3, revenue: 0 },
-        bio: "",
-      },
-      {
-        id: "u4", firstName: "Amira", lastName: "El Fassi", email: "a@e.ch",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
-        city: "Marrakech", country: "Maroc", roles: ["hote"], activeRole: "hote",
-        stats: { followers: 180, following: 90, properties: 5, reviews: 32, rating: 4.7, transactions: 12, revenue: 42000 },
-        bio: "",
-      },
-    ],
+    participant: P_CLEMENCE,
+    members: [P_CLEMENCE, P_AMINA],
     messages: [
-      { id: "gm10", senderId: "u2", content: "On se voit ce vendredi pour l'AG annuelle ?", timestamp: "2026-04-02T17:00:00", read: true },
+      { id: "gm10", senderId: P_CLEMENCE.id, content: "On se voit ce vendredi pour l'AG annuelle ?", timestamp: "2026-04-02T17:00:00", read: true },
       { id: "gm11", senderId: currentUserId, content: "Présent. J'apporte les chiffres du Q1.", timestamp: "2026-04-02T17:05:00", read: true },
     ],
     unreadCount: 0,
@@ -309,7 +259,7 @@ function MessagesPageInner() {
   });
 
   /* Auto-sélection de conversation depuis une query string :
-     - /messages?to=u1            → ouvre la conv avec u1
+     - /messages?to=user-002      → ouvre la conv avec cette personne
      - /messages?product=b3&...   → ouvre la 1ère conv et pré-remplit
        le message avec une référence au produit (UX deeplink depuis
        boutique/[id] "Contacter" / "Poser une question").

@@ -1,8 +1,17 @@
-import { properties as CATALOGUE, formations as FORMATIONS } from "@/lib/mock-data";
+import {
+  properties as CATALOGUE,
+  formations as FORMATIONS,
+  users as PEOPLE,
+  conversations,
+  mockReviews,
+} from "@/lib/mock-data";
 import { DEMO_TODAY, MONTH_LABELS, last12Months } from "./clock";
 import { bySource, currentMonth, entries, monthly } from "./derive";
 import { LEDGER } from "./ledger";
 import { OWNED_PROPERTY_IDS } from "./identity";
+import { PLATFORM_ACCOUNT_ID } from "./directory";
+import { VIDEO_POSTS, SUGGESTIONS } from "./posts";
+import { PUBLIC_SEED_IDS } from "@/lib/profile-data";
 
 /* ── Les invariants, levés à l'import ───────────────────────────────────────
 
@@ -261,6 +270,92 @@ for (const e of LEDGER) {
     found: `écriture ${e.id} : ${e.gross} CHF`,
     expected: "un montant > 0",
     fix: `${LEDGER_FILE} — supprimer l'écriture, ou lui donner un montant.`,
+  });
+}
+
+/* ── L'ANNUAIRE UNIQUE DES PERSONNES (Mission 2, étape 1) ────────────────────
+
+   Le même garde-fou que pour l'argent et les biens, appliqué aux personnes :
+   un seul enregistrement par id, et tout id référencé dans la donnée de démo
+   résout à l'annuaire. C'est ce qui rend littéralement impossible d'écrire à
+   nouveau « user-007 = deux personnes différentes selon l'écran ». */
+
+const DIRECTORY_FILE = "src/lib/mock-data.ts";
+const directoryIds = new Set(PEOPLE.map((p) => p.id));
+
+/** Un id référencé est valide s'il est à l'annuaire, ou s'il s'agit du compte
+    officiel de la plateforme (qui n'est pas une personne réelle). */
+function resolves(id: string): boolean {
+  return id === PLATFORM_ACCOUNT_ID || directoryIds.has(id);
+}
+
+/* 10 — Aucun id dupliqué dans l'annuaire. Le doublon « user-007 » à deux
+   identités devient impossible à écrire, pas seulement découragé. */
+{
+  const ids = PEOPLE.map((p) => p.id);
+  const dupes = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
+  assert(dupes.length === 0, 10, {
+    rule: "Chaque personne de l'annuaire porte un identifiant unique.",
+    found: `${dupes.length} identifiant(s) en double : ${dupes.join(", ")}`,
+    expected: "aucun doublon",
+    fix: `${DIRECTORY_FILE} — deux entrées de users[] partagent un id.`,
+  });
+}
+
+/* 11 — Tout id de personne référencé dans la donnée de démo résout à
+   l'annuaire (auteurs et commentateurs du fil, suggestions « qui suivre »,
+   participants et membres de conversation, auteurs d'avis). Le compte « edome »
+   est exempté. Un id fantôme comme « u1 » — qui menait à « Profil introuvable »
+   depuis le fil — casse désormais le build.
+
+   PÉRIMÈTRE : ne sont énumérées que les données importables à l'import (le fil
+   `demo/posts`, et `conversations`/`mockReviews` de `mock-data`). Les
+   conversations LOCALES de la page /messages vivent dans un composant et ne
+   sont pas énumérables ici ; leurs ids sont garantis par `requirePerson` au
+   chargement de ce module-là (voir src/app/(app)/messages/page.tsx). */
+{
+  type Ref = { id: string; where: string };
+  const refs: Ref[] = [];
+
+  for (const post of VIDEO_POSTS) {
+    refs.push({ id: post.author.id, where: `auteur du post ${post.id}` });
+    for (const c of post.comments) {
+      refs.push({ id: c.author.id, where: `commentaire ${c.id}` });
+    }
+  }
+  for (const s of SUGGESTIONS) {
+    refs.push({ id: s.id, where: "suggestion « qui suivre »" });
+  }
+  for (const conv of conversations) {
+    refs.push({ id: conv.participant.id, where: `participant de ${conv.id}` });
+    for (const m of conv.members ?? []) {
+      refs.push({ id: m.id, where: `membre de ${conv.id}` });
+    }
+  }
+  for (const r of mockReviews) {
+    refs.push({ id: r.author.id, where: `auteur de l'avis ${r.id}` });
+  }
+
+  const orphans = refs.filter((r) => !resolves(r.id));
+  assert(orphans.length === 0, 11, {
+    rule: "Tout id de personne référencé résout à l'annuaire (ou est « edome »).",
+    found:
+      orphans.length > 0
+        ? `${orphans.length} référence(s) fantôme(s) : ${orphans.map((o) => `${o.id} (${o.where})`).join(", ")}`
+        : "aucune",
+    expected: `un id parmi l'annuaire (${PEOPLE.length} personnes) ou « ${PLATFORM_ACCOUNT_ID} »`,
+    fix: `src/lib/demo/posts.ts / ${DIRECTORY_FILE} — remplacer l'id inventé par un vrai id de users[] (requirePerson).`,
+  });
+}
+
+/* 12 — Toute clé d'enrichissement de profil-data existe à l'annuaire : un seed
+   ne peut pas décrire quelqu'un qui n'a pas de ligne d'annuaire. */
+for (const id of PUBLIC_SEED_IDS) {
+  assert(resolves(id), 12, {
+    rule: "Tout enrichissement de profil porte sur une personne de l'annuaire.",
+    found: `l'enrichissement « ${id} » ne correspond à aucune personne`,
+    expected: `un id parmi l'annuaire (${PEOPLE.length} personnes)`,
+    fix: "src/lib/profile-data.ts — aligner la clé de PUBLIC_SEEDS sur un vrai id de users[].",
   });
 }
 

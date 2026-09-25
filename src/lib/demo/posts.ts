@@ -1,5 +1,6 @@
 import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/lib/mock-data";
 import { CURRENT_USER as DEMO_USER, OWNED_PROPERTY_IDS } from "@/lib/demo/identity";
+import { requirePerson } from "@/lib/demo/directory";
 import { DEMO_TODAY } from "@/lib/demo/clock";
 import { buildObjectAffiliate } from "@/lib/referral-links";
 import type { User, SocialPost, Comment, Property } from "@/lib/types";
@@ -70,53 +71,30 @@ export const U_EDOME: User = {
   bio: "Compte officiel de la plateforme.",
 };
 
-export const U_SOPHIE: User = {
-  id: "u1", firstName: "Sophie", lastName: "Martin", email: "sophie@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-  city: "Lausanne", country: "Suisse", roles: ["hote"], activeRole: "hote",
-  stats: { followers: 1240, following: 380, properties: 12, reviews: 89, rating: 4.8, transactions: 45, revenue: 125000 },
-  bio: "Hôte passionnée — Riviera lémanique.", responseTime: "< 1h",
-};
+/* Les auteurs du fil sont désormais de VRAIES personnes de l'annuaire.
 
-export const U_MARC: User = {
-  id: "u2", firstName: "Marc", lastName: "Dubois", email: "marc@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100",
-  city: "Genève", country: "Suisse", roles: ["investisseur"], activeRole: "investisseur",
-  stats: { followers: 3200, following: 150, properties: 24, reviews: 56, rating: 4.9, transactions: 120, revenue: 890000 },
-  bio: "Investisseur immobilier — luxe & rendement.",
-};
+   Ces six constantes portaient jadis des identités inventées, avec des ids
+   (`u1`…`u-yasmin`) qui n'existaient nulle part : cliquer sur l'auteur d'un
+   post menait à « Profil introuvable ». Chacune résout maintenant vers une
+   personne existante de `users[]`, par id — choisie par prénom, rôle et ville :
 
-export const U_AMIRA: User = {
-  id: "u3", firstName: "Amira", lastName: "El Fassi", email: "amira@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100",
-  city: "Marrakech", country: "Maroc", roles: ["agence"], activeRole: "agence",
-  stats: { followers: 5600, following: 420, properties: 85, reviews: 230, rating: 4.7, transactions: 300, revenue: 2400000 },
-  bio: "Directrice Agence Fassi — Médina & palmeraie.",
-};
+     U_SOPHIE → user-002  Sophie Durand      (Lausanne, hôte/courtière)
+     U_MARC   → user-003  Marc Favre         (Genève, investisseur/apporteur)
+     U_AMIRA  → user-013  Omar Benjelloun    (Marrakech, promoteur/hôte)
+     U_THOMAS → user-009  Thomas Müller       (Lausanne, architecte, Minergie)
+     U_YASMIN → user-006  Yasmin Al Maktoum  (Dubaï, agence, off-market luxe)
+     U_AMINA  → user-004  Amina El Idrissi   (Marrakech, hôte/formatrice)
 
-export const U_THOMAS: User = {
-  id: "u4", firstName: "Thomas", lastName: "Weber", email: "thomas@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100",
-  city: "Zurich", country: "Suisse", roles: ["promoteur"], activeRole: "promoteur",
-  stats: { followers: 2100, following: 90, properties: 6, reviews: 34, rating: 4.6, transactions: 18, revenue: 5_600_000 },
-  bio: "Promoteur — projets Minergie haut de gamme.",
-};
-
-export const U_AMINA: User = {
-  id: "user-004", firstName: "Amina", lastName: "El Idrissi", email: "amina@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100",
-  city: "Marrakech", country: "Maroc", roles: ["formateur"], activeRole: "formateur",
-  stats: { followers: 8900, following: 310, properties: 0, reviews: 412, rating: 4.9, transactions: 0, revenue: 0 },
-  bio: "Formatrice — Gestion locative & pricing dynamique.",
-};
-
-export const U_YASMIN: User = {
-  id: "u-yasmin", firstName: "Yasmin", lastName: "Al Falasi", email: "yasmin@e-dome.ch",
-  avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100",
-  city: "Dubaï", country: "Émirats arabes unis", roles: ["apporteur"], activeRole: "apporteur",
-  stats: { followers: 6800, following: 180, properties: 0, reviews: 145, rating: 4.9, transactions: 92, revenue: 4_800_000 },
-  bio: "Apporteuse d'affaires — off-market Dubaï & Émirats.",
-};
+   Les six ids sont distincts. Le TEXTE de certains commentaires nomme encore
+   l'ancienne identité inventée (« Bravo Amira ») : c'est cosmétique et sera
+   repris à l'étape 4. `requirePerson` échoue à la compilation si un de ces ids
+   disparaissait de l'annuaire. */
+export const U_SOPHIE = requirePerson("user-002");
+export const U_MARC = requirePerson("user-003");
+export const U_AMIRA = requirePerson("user-013");
+export const U_THOMAS = requirePerson("user-009");
+export const U_AMINA = requirePerson("user-004");
+export const U_YASMIN = requirePerson("user-006");
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -689,7 +667,7 @@ export type CustomCTA = { href: string; title: string; subtitle: string; icon: "
 export const CUSTOM_CTA: Record<string, CustomCTA> = {
   p6: { href: "/apporteurs", title: "Rejoindre le réseau d'apporteurs", subtitle: "Accès aux deals off-market", icon: "users" },
   p11: { href: "/recherche?q=marrakech", title: "Explorer Marrakech", subtitle: "Biens disponibles dans la médina", icon: "search" },
-  p23: { href: "/profil/u1", title: "Voir le profil de Sophie", subtitle: "Hôte Lausanne · 4.8/5 · 89 avis", icon: "user" },
+  p23: { href: "/profil/user-002", title: "Voir le profil de Sophie", subtitle: "Hôte & courtière à Lausanne", icon: "user" },
   p25: { href: "/recherche?q=marrakech", title: "Découvrir le Maroc", subtitle: "Riads & investissements patrimoine", icon: "search" },
 };
 
@@ -720,7 +698,10 @@ export const HASHTAGS = [
   "#design", "#maison", "#genève", "#lausanne", "#zurich",
 ];
 
-export const SUGGESTIONS = [U_LEO, U_AMIRA, U_THOMAS, U_YASMIN];
+/* « Qui suivre » : jamais l'utilisateur courant. U_LEO figurait ici, si bien
+   qu'un visiteur se voyait proposé de se suivre lui-même. Remplacé par une
+   autre personne réelle de l'annuaire (Sophie). */
+export const SUGGESTIONS = [U_SOPHIE, U_AMIRA, U_THOMAS, U_YASMIN];
 
 // ─── Misc ──────────────────────────────────────────────────────────────────
 
