@@ -22,6 +22,90 @@ règles fondent le modèle :
 
 ---
 
+## 0. LE NOUVEAU MODÈLE D'AFFILIATION — priorité absolue de relecture (Mission 2)
+
+*Ajouté à la demande du fondateur, en tête, parce que l'analyse interne (agent
+juridique, `analyse2/juridique-modele.md`) conclut que la mécanique « prime sur
+les biens » n'est pas une extension mineure du programme apporteurs mais un
+**changement de nature de risque**.*
+
+**Le mécanisme.** Le vendeur d'un bien (vente ou location longue durée) fixe une
+**prime en francs** (fourchette de travail 50–3 000 CHF, cf. §0.4), payée
+lorsqu'il **accepte** une mise en relation amenée par un apporteur (une demande
+de visite acceptée). Le paiement **ne dépend jamais** de la conclusion de la
+vente. E-Dome prélève une part **à l'intérieur** de cette prime (hypothèse de
+travail 12 %, plancher 3 CHF).
+
+### 0.1 — La mise en relation acceptée est-elle distincte du courtage ? [LE POINT CENTRAL]
+
+**Position de travail, à confirmer.** Pour **E-Dome**, les règles 1 et 2 (aucun
+mandat, aucune négociation) restent tenues : elle n'indique pas elle-même
+l'occasion de conclure. **Pour l'apporteur, en revanche, l'analyse interne
+penche vers un risque réel** : amener une visite acceptée, c'est *indiquer une
+occasion de conclure* (art. 412 CO), et déconnecter le paiement de la vente
+n'écarte que **l'exigibilité conditionnée** (art. 413 CO), pas la
+**qualification** — c'est exactement le principe déjà retenu dans `rules.ts`
+(« un forfait non conditionné versé à un intermédiaire reste du courtage »).
+
+> **Ce qui change si ça tombe.** L'apporteur immobilier serait un courtier de
+> fait, soumis aux régimes d'autorisation là où ils existent. À trancher :
+> l'apporteur agit-il à titre non professionnel/occasionnel (souvent hors champ)
+> ou peut-il en faire une activité ?
+
+### 0.2 — E-Dome prélève 12 % de la prime : cela inverse-t-il le garde-fou ? [SENSIBLE]
+
+Aujourd'hui, ce qui rend le programme apporteurs défendable est qu'« **sur une
+commission d'agence, E-Dome ne prélève rien** ». En prélevant une part de la
+prime d'apport immobilier, **E-Dome tire une rémunération d'une activité
+d'indication** — l'analyse interne signale que cela **inverse ce garde-fou**.
+**Décision à prendre (fondateur + avocat) :** E-Dome doit-elle prélever **0 %**
+sur la prime « biens » (préservant le garde-fou, la prime allant entièrement à
+l'apporteur, E-Dome se rémunérant ailleurs), ou un taux réduit assumé ?
+
+### 0.3 — Le risque « 1 % » : deux risques distincts
+
+Si les vendeurs fixent spontanément leur prime autour de 1 % du prix, le système
+**ressemble** à une commission de vente. À distinguer : **(a) la qualification**
+(indépendante du montant — le design ne la corrige pas) et **(b) la
+simulation/preuve** (art. 18 CO — le design peut l'écarter). **Verrous retenus :**
+prime en CHF **jamais** indexée ni suggérée depuis le prix ; **plafond
+recalibré à 3 000 CHF** (10 000 CHF ≈ 1 % d'un bien à 1 M, donc contre-productif) ;
+une seule prime par annonce, fixée à la publication ; aucun affichage en % nulle
+part ; aucun complément conditionné à la vente.
+
+### 0.4 — Angles morts signalés
+
+- **Contournement du déclencheur** : « visite acceptée » est robuste contre la
+  conditionnalité, pas contre la visite-prétexte sur un deal déjà conclu ni la
+  répétition sur le même acheteur → événement daté et vérifiable requis.
+- **Collusion vendeur/apporteur** (comptes liés) : le seuil unique de 1 000 CHF
+  est un faux sentiment de sécurité → détection **par paire de comptes** et
+  **par cumul**, pas seulement par montant.
+- **KYC transfrontière** (UAE, Maroc) : base de transfert nLPD à confirmer.
+- **Trois mécaniques sous un seul mot « apporteur »** (abonnement / prime biens /
+  affiliation marketplace) : elles portent des risques différents et devraient
+  avoir **trois traitements distincts** dans les CGU.
+
+### 0.5 — Dans quels pays le mécanisme « prime biens » est-il praticable ?
+
+| Pays | Volet BIENS (prime CHF) | Volet MARKETPLACE (%) |
+| --- | --- | --- |
+| **Suisse** | À adapter (verrous ci-dessus + mise en garde apporteur) | OK |
+| **France** | **EXCLU** — loi Hoguet, carte T (plus exposé que le cas déjà écarté) | OK |
+| **Allemagne** | **EXCLU** — §34c GewO + régime résidentiel | OK |
+| **Portugal** | **EXCLU** — licence AMI/IMPIC | OK |
+| **Royaume-Uni** | À adapter — Estate Agents Act 1979 + AML | OK |
+| **UAE** | À adapter — voie RERA International Broker à activer | OK |
+| **Maroc** | À adapter — régime en évolution, à vérifier | OK |
+
+Le volet **marketplace (%)** est confirmé **hors** courtage immobilier (art. 417
+CO et les régimes de courtage visent l'immeuble, pas les formations/services) :
+OK dans les sept pays, réserves seulement fiscales/déclaratives (DAC7). **Les
+profils étrangers de la démo doivent refléter ces restrictions** (un profil
+France/Allemagne/Portugal ne touche jamais de prime immobilière).
+
+---
+
 ## 1. La reformulation de la règle 3 — et le rang des règles 1 et 2
 
 **Question.** La formulation suivante protège-t-elle effectivement du

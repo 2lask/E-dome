@@ -6,10 +6,10 @@
 
 ## POINT DE REPRISE (pour une session neuve)
 
-- **Où on en est.** Audit fait (`AUDIT-2.md`, 18 notes dans `analyse2/`), arbitrages faits (`DECISIONS-2.md`). **En attente du feu vert du fondateur** avant toute construction (Partie D, étape 2 : « Arrêt, j'valide »). Deux questions ouvertes pour lui : géographie des profils (D7) et cadence (une seule pause après l'étape 3, ou davantage).
+- **Où on en est.** Audit fait (`AUDIT-2.md`, 18 notes dans `analyse2/`), arbitrages faits (`DECISIONS-2.md`), **go du fondateur reçu** (2026-09-25) avec géographie et cadence tranchées. **Changement de modèle intégré** : affiliation à deux mécaniques (D14) + freemium (D15), challengé par 4 agents (`analyse2/*-modele.md`), reflété ici et dans `JURIDIQUE-A-VALIDER.md §0`. **Il reste à montrer au fondateur le diff de ce PLAN avant l'étape 0** (et deux questions ouvertes : part E-Dome sur la prime biens 0 %/12 %, frontière freemium).
 - **Branche.** `feat/plateforme-v2`, rien de fusionné, landing figée.
 - **Serveur de dev** sur `:3002` (`npm run dev`). Gates : `npm run typecheck` / `lint` / `build` / `test` (Playwright) / `test:data`.
-- **Prochaine action concrète une fois validé :** étape 0 (sécurité + nettoyages), puis étape 1 (l'annuaire unique).
+- **Prochaine action concrète :** étape 0 (sécurité `/admin` + nettoyages), puis étape 1 (annuaire unique), puis étape 1.5 (moteur pricing).
 
 ---
 
@@ -21,10 +21,9 @@ Aucune donnée contradictoire · aucun bouton mort · états vides/chargement/er
 
 ## Étape 0 — Sécurité et nettoyages qui débloquent [indépendant, en premier]
 
-*Petits, sûrs, sans dépendance ; ils retirent le poison avant qu'on construise dessus.*
+*Petits, sûrs, sans dépendance ; ils retirent le poison avant qu'on construise dessus. (Le retrait du barème aboli passe à l'étape 1.5, avec la refonte pricing qui touche les mêmes fichiers — reco architecture.)*
 
 - **Protéger `/admin`** par mot de passe serveur (comme `/admin/leads`) — B.7 #1 (D9). Corriger `DECISIONS.md §4.2`.
-- **Retirer le barème aboli** 500/2 500 CHF : neutraliser `pricing/legacy.ts` et ses appelants (`recommend-button`, `attach-cards`, `post-viewer`, `/publier`) — D4.
 - **Supprimer** le moteur mort `monthlyRevenue` (`mock-data.ts:2315-2328`).
 - **Corriger les deux erreurs d'hydratation** : `Date.now()` en rendu (`poll-block.tsx`, `demo/posts.ts` → dater sur `DEMO_TODAY`), `<Link>` imbriqué sur `/formations`.
 - **`BlurImage` : fallback `onError`** (fin des skeletons figés en Boutique).
@@ -42,6 +41,19 @@ Aucune donnée contradictoire · aucun bouton mort · états vides/chargement/er
 - **Invariant** : tout id référencé existe au `DIRECTORY`, aucun id à deux identités (build casse sinon).
 
 **Livrable :** 1-2 commits. Gate : `test:data` étendu, plus aucune « Profil introuvable » depuis le fil/la messagerie.
+
+## Étape 1.5 — LE MOTEUR DE PRICING À DEUX MÉCANIQUES [D14, D4] — NOUVELLE
+
+*Prérequis de l'étape 2 : l'argent par owner (D4) a besoin de `quote().flow` pour générer les écritures d'affiliation. On refond le pricing et on retire le barème aboli d'un seul geste (mêmes fichiers).*
+
+- **Retirer le barème aboli** 500/2 500 CHF : supprimer `pricing/legacy.ts` et remplacer `estimateEarning()` chez ses 4 appelants (`recommend-button`, `attach-cards`, `post-viewer`, `/publier`) par `quote()`.
+- **Mécanique BIENS** : nouveau `Charge.kind = "bien-introduction"` avec `PrimeMoney` de marque (via `primeChf()`, borné **50–3 000 CHF**), verrouillé au type — « prime en % du prix » ne compile pas. Part E-Dome **0 % (défaut, D14) ou 12 %**, plancher 3 CHF, prélevée **à l'intérieur** de la prime. Déclencheur = mise en relation acceptée.
+- **Mécanique MARKETPLACE** : champ `affiliation?: { rate }` sur les charges marketplace (refusé sur biens), taux borné aux fourchettes (formations/lives 20–50 %, événements 10–25 %, services 5–15 %, courte durée 3–10 %), prélevé **sur la marge vendeur**, commission E-Dome inchangée.
+- **`MoneyFlow`** gagne `affiliate` (distinct de `apporteur`) ; `quote()` garde son invariant vérifié (brut = bénéficiaire + affilié + part E-Dome + PSP).
+- **Apporteur abonnement** : barème par formule (15 % Patrimoine / 25 % Vitrine & Mandats / 30 % Régie), fin du label générique « 10–30 % ».
+- **Constantes** dans `catalog.ts` : `EDOME_PRIME_SHARE`, `PRIME_FLOOR`, `PRIME_MIN=50`, `PRIME_MAX=3000`, fourchettes marketplace, `APPORTEUR_SHARE` réservé à `subscription`.
+
+**Livrable :** 1-2 commits. Gate : `test:data` couvre les deux mécaniques ; « 0 CHF à E-Dome » redevient vrai partout pour les biens ; aucun `estimateEarning`.
 
 ## Étape 2 — L'ARGENT PAR PROFIL [D4, D10]
 
@@ -75,10 +87,17 @@ Trois personnes **complètes et cohérentes partout** (page profil, posts du fil
 - **Spotlight** : portail + `getBoundingClientRect` + masque assombri + action attendue + « étape n/N » + « Passer » + reprise + **parcours multiples** (découverte + par rôle) + auto-lancement 1re visite + relance permanente **visible sur mobile**. Textes dans un fichier unique.
 - **Sélecteur → « être un profil »** : on entre dans la peau de Sophie/Marc/… (compte, biens, messages, dashboard, identité feed/messagerie réels). Le « mode explicatif » annotations redescend en glossaire.
 
-## Étape 6 — BOUTIQUE EN AFFILIATION + PERSISTANCE DES CRÉATIONS [B.6 / D5, D6]
+## Étape 6 — L'AFFILIATION, LE FREEMIUM ET LA BOUTIQUE [B.6 / D5, D6, D14, D15]
 
-- Boutique : référencement + redirection marchand (« vous quittez E-Dome »), fin du checkout/garantie/modération-vendeur E-Dome, rémunération d'affiliation conforme au modèle, avis avec `transactionId`.
-- Parcours de création (bien, service, formation, live, offre) **persistent en session** et apparaissent ensuite là où ils doivent ; validation des formulaires ; « Voir l'annonce » mène à la fiche.
+*La grosse étape du changement de modèle. Plusieurs commits. Dépend du moteur (1.5) et des profils (3-4).*
+
+- **Activation biens sur `/publier`** : bloc « faites-vous amener des acheteurs » — carte enregistrée + budget, **rien prélevé à l'activation**, prime en CHF (50–3 000), modifiable/retirable/désactivable sans frais ; prime plus élevée = meilleur classement.
+- **`/apporteurs` refondu** : un **commutateur Biens / Marketplace** en tête (jamais les deux mécaniques dans la même grille — c'est le bug actuel). Biens = toujours une **prime en CHF** ; marketplace = toujours résolu au **net en CHF** affiché à l'apporteur (le % n'explique que). Suivi visible des deux côtés (le vendeur voit ce qu'il a payé, l'apporteur ce qu'il a amené). Fin du funnel mort et des 3 chiffres contradictoires (audit thème 4/apporteur).
+- **Marketplace** : ouverture à l'affiliation **par produit**, taux borné, **aperçu chiffré avant activation** (prix, part affilié, commission E-Dome, ce que le vendeur garde), anti-cold-start (taux pré-rempli, mise en avant des produits affiliés, taux minimum pour figurer).
+- **Protection & anti-fraude biens** : « ce contact n'était pas sérieux » sous 48 h (remboursement plafonné), apporteur trop contesté perd l'accès ; paliers KYC (<1 000 auto, au-delà vérification renforcée + validation manuelle) ; détection de collusion **par paire de comptes et par cumul** (pas le seul seuil de 1 000).
+- **Boutique en affiliation** (D5) : référencement + redirection marchand (« vous quittez E-Dome »), fin du checkout/garantie/modération-vendeur E-Dome, avis avec `transactionId`.
+- **Freemium** (D15) : `/tarifs` régénéré avec le découpage gratuit/payant **par rôle** ; gating par rôle (plafonds d'inventaire généreux, fonctions de réussite payantes, quota gratuit sur les demandes d'accompagnement) ; **CGU (`conditions`), `/aide` et toute la copie** réécrits pour les **deux mécaniques** + le freemium — correction partout de l'ancien « apporteur 10–30 % sur tous les pôles » (désormais abonnements seulement).
+- **Persistance de session** (D6) : créations (bien, service, formation, live, offre) et contacts **persistent** et apparaissent là où ils doivent ; validation des formulaires ; « Voir l'annonce » mène à la fiche.
 
 ## Étape 7 — REPRISE PÔLE PAR PÔLE [B.6]
 
@@ -104,12 +123,14 @@ Pour chaque pôle, la question « donne envie / clair / complet / sonne vrai » 
 
 ```
 Étape 0 (sécurité/nettoyage) ─┐
-                              ├─► Étape 1 (annuaire) ─► Étape 2 (argent/profil) ─► Étape 3 (3 profils) ⛔VALIDATION
-                              │                                                          │
-                              └──────────────────────────────────────────────────────────┘
-Étape 3 validée ─► Étape 4 (profils+fil) ─► Étape 5 (tutoriel+être-un-profil)
-                                          ─► Étape 6 (boutique+persistance)
+                              ├─► Étape 1 (annuaire) ─► Étape 1.5 (moteur pricing 2 mécaniques)
+                              │                              │
+                              │                              ▼
+                              │                        Étape 2 (argent/owner) ─► Étape 3 (3 profils) ⛔VALIDATION
+                              └───────────────────────────────────────────────────────┘
+Étape 3 validée ─► Étape 4 (profils+fil) ─► Étape 5 (tutoriel + être-un-profil)
+                                          ─► Étape 6 (affiliation + freemium + boutique)
                                           ─► Étape 7 (pôles) ─► Étape 8 (design/mobile/tests)
 ```
 
-Les étapes 5-8 dépendent surtout de l'annuaire (1) et de l'argent (2) ; elles peuvent s'enchaîner après la validation de l'étape 3, dans cet ordre, sans autre arrêt si la cadence est confirmée (D7 / question 2).
+L'étape 1.5 (moteur de pricing à deux mécaniques) s'intercale entre l'annuaire (1) et l'argent par owner (2) : D4 a besoin de `quote().flow` pour générer les écritures d'affiliation. Cadence confirmée par le fondateur : **un seul arrêt, après l'étape 3**, puis tout s'enchaîne sans autre pause.

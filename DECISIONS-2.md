@@ -48,11 +48,15 @@
 
 **Écarté :** *un vrai backend* (hors périmètre, gelé) ; *laisser les culs-de-sac* (échoue « vivant » et « chaque clic mène quelque part »).
 
-## D7 — Géographie des profils **[À VALIDER par le fondateur]**
+## D7 — Géographie des profils [TRANCHÉ par le fondateur]
 
-**Recommandation du CEO :** **majorité Suisse romande** (Lausanne, Genève, Fribourg, Neuchâtel, Nyon, Vevey, Sion, Montreux) pour la crédibilité « plateforme suisse », **plus deux profils à portée internationale explicitement assumée** (réseau Maroc / Golfe), affichés comme tels, pas découverts par hasard. Cela garde un peu du glamour international sans l'incohérence actuelle (casting à moitié étranger sous une bannière suisse).
-
-**Alternatives que le fondateur peut choisir :** (a) **100 % Suisse romand** (cohérence maximale, zéro portée internationale affichée) ; (b) **garder une vraie portée mondiale** (Marrakech/Dubaï/Lisbonne conservés), mais alors **l'assumer dans le contenu**. **C'est le désaccord #1 de l'audit — je ne le tranche pas seul.**
+**Décision (fondateur, 2026-09-25) :** **majorité Suisse romande, plus quelques
+profils internationaux assumés dans le contenu.** Contrainte ajoutée par le
+fondateur : **les profils étrangers doivent refléter les restrictions locales du
+programme apporteurs** — un profil France/Allemagne/Portugal ne touche jamais de
+prime immobilière (volet biens exclu dans ces pays, cf. `JURIDIQUE-A-VALIDER.md`
+§0.5), seulement de l'affiliation marketplace. La cohérence géographique et la
+cohérence juridique se rejoignent ici.
 
 ## D8 — `/reservations` : un seul écran, dérivé du journal [RETENU]
 
@@ -74,13 +78,111 @@
 
 **Décision.** On continue sur **`feat/plateforme-v2`** (URL de préproduction stable, rien de fusionné). Un commit par étape, poussé après chaque commit. La landing et ses annexes restent **figées**.
 
+## D14 — Le nouveau modèle d'affiliation à DEUX mécaniques [RETENU, chiffres révisés]
+
+*Changement de modèle introduit par le fondateur le 2026-09-25, pressenti puis
+challengé par les agents juridique, comptable, marketing et architecture
+(`analyse2/*-modele.md`). Le principe transverse : E-Dome et l'apporteur se
+servent **à l'intérieur** de ce que le vendeur annonce, jamais en plus, et
+l'apporteur voit toujours son **gain net** avant de recommander.*
+
+**Deux mécaniques, verrouillées par le type, jamais confondues :**
+
+- **BIENS (vente + location longue durée) — une PRIME EN FRANCS.** Le vendeur
+  fixe une prime en CHF, payée quand il **accepte** une mise en relation
+  (demande de visite acceptée). **Jamais** un % du prix, **jamais** indexée
+  dessus, **jamais** conditionnée à la vente. Type-safe : nouveau
+  `Charge.kind = "bien-introduction"` avec un `PrimeMoney` de marque (construit
+  seulement via `primeChf()`, borné) — « prime en % du prix du bien » ne
+  compile pas (architecture, `analyse2/architecture-modele.md`).
+- **MARKETPLACE (formations, lives, événements, services, courte durée,
+  boutique) — un POURCENTAGE.** Le vendeur ouvre son produit à l'affiliation par
+  produit et fixe un taux **sortant de sa marge** ; la commission d'E-Dome reste
+  inchangée ; déclencheur = **vente** du produit. Un champ `affiliation?` sur les
+  charges marketplace, **refusé** sur les charges biens.
+- **ABONNEMENTS — inchangé.** Apporter une agence/un propriétaire abonné = une
+  part de ce qu'E-Dome encaisse sur 12 mois.
+
+**⚠️ Ceci REMPLACE l'ancien « apporteur = 10–30 % du revenu E-Dome sur tous les
+pôles ».** Cette règle ne vaut plus **que pour les abonnements**. À corriger
+partout : `pricing/`, CGU, `/tarifs`, `/aide`, `/apporteurs`, et toute la copie
+d'interface (aujourd'hui fausse pour les biens — l'apporteur touche désormais la
+**majorité** de la prime, pas 10–30 %).
+
+**Chiffres — révisés après challenge du comptable (`analyse2/comptable-modele.md`),
+valeurs de travail à confirmer :**
+
+| Hypothèse fondateur | Retenu (comptable) | Raison |
+| --- | --- | --- |
+| E-Dome 15 % de la prime | **12 %** | Aligné sur `location-ct` (déjà défendu) ; 15 % serait le taux le plus élevé du catalogue sur le pôle le plus risqué |
+| Plancher 3 CHF | **3 CHF** (inchangé) | = `MIN_COMMISSION` existant |
+| Prime min 1 CHF | **min pratique 50 CHF** (net apporteur ≈42) | En dessous de ~30 CHF, le plancher de 3 CHF dépasse la prime ; à 1 CHF le net devient négatif |
+| Plage 1–10 000 CHF | **50–3 000 CHF** | 10 000 ≈ 1–2 % d'un bien romand → indiscernable d'une commission déguisée (rejoint le risque « 1 % » juridique) |
+| Affiliation marketplace 20–50 / 10–25 / 5–15 / 3–10 % | **mêmes fourchettes, bornées dans l'UI**, appliquées au prix brut, commission E-Dome non diluée | Sans plafond, le taux peut vider la marge vendeur |
+| Apporteur abonnement « 10–30 % » (générique) | **barème par formule : 15 % Patrimoine / 25 % Vitrine & Mandats / 30 % Régie** | Le label générique ne correspond à rien de réel dans le code aujourd'hui |
+
+`MoneyFlow` gagne un champ **`affiliate`** distinct de `apporteur` (sémantiques
+opposées : `apporteur` se prélève sur la part E-Dome, `affiliate` sur la marge
+vendeur) — les mélanger recréerait le facteur-5 (thème 4 de l'audit). Un seul
+moteur `quote()`, un seul flux vérifié.
+
+**[À VALIDER — fondateur + avocat] :** E-Dome prélève-t-elle **0 %** ou **12 %**
+sur la prime biens ? L'analyse juridique (`JURIDIQUE-A-VALIDER.md §0.2`) signale
+que prélever une part **inverse le garde-fou** qui rend le programme actuel
+défendable (« sur une commission, E-Dome ne prélève rien »). Ma reco : **partir
+à 0 % sur la prime biens** dans la maquette (préserve le garde-fou, l'apporteur
+touche 100 % de la prime, E-Dome se rémunère sur les abonnements et la
+marketplace) ; le 12 % reste une option à assumer si l'avocat la valide.
+
+## D15 — Le virage FREEMIUM [RETENU en principe, frontière **[À VALIDER]**]
+
+**Décision de principe (fondateur) :** l'abonnement n'est plus un droit d'entrée.
+Tout le monde — particuliers, propriétaires, agents **et agences** — peut
+utiliser la plateforme gratuitement et **vraiment travailler**. Le payant, c'est
+« aller plus loin » : volume, visibilité, équipe, statistiques avancées, mise en
+avant, automatisations. La bonne limite **gêne quand on réussit**, pas au
+démarrage.
+
+**Désaccord d'experts à trancher par le fondateur** (les deux notes sont dans
+`analyse2/`) :
+- **Marketing** (`marketing-modele.md`) : élargir le gratuit — Présence de 3 à
+  **10 biens** (à 3, on exclut 42 % des agences suisses), et **demandes
+  d'accompagnement gratuites et illimitées pour tous** (c'est le canal
+  d'acquisition de mandats d'une agence gratuite).
+- **Comptable** (`comptable-modele.md`) : **ne pas** élargir le plafond de biens
+  (3 couvre déjà les agences à ≤5 biens = 42 % du marché) et **garder payantes**
+  les quatre lignes qui justifient Vitrine (accompagnement, mise-en-avant,
+  badge-vérifié, statistiques). Sinon le tunnel exige une conversion irréaliste
+  (46 % à >100 % du marché suisse en comptes gratuits actifs) pour atteindre les
+  161 agences payantes visées (`DECISIONS.md §8`).
+
+**Ma synthèse de CEO (recommandation, à confirmer) :** on découple deux choses.
+(1) **Les plafonds d'inventaire peuvent être généreux** (une agence gratuite
+publie plusieurs biens) — c'est l'acquisition, et ça sert le mot d'ordre. (2)
+**Les fonctions « de réussite » restent payantes** (2e utilisateur/équipe,
+sous-domaine, mise en avant, stats avancées, automatisations, volume illimité) —
+c'est la limite qui gêne quand on grandit. (3) **Point délicat — les demandes
+d'accompagnement :** ni tout gratuit (comptable) ni tout payant (statu quo), mais
+**un quota gratuit** (p. ex. un petit nombre de candidatures actives à la fois)
+et **illimité en payant** — une agence gratuite peut décrocher un mandat (preuve
+de valeur → conversion), l'usage intensif se paie. **C'est ta directive et tes
+deux experts divergent : confirme la frontière** (élargie façon marketing,
+prudente façon comptable, ou mon quota intermédiaire).
+
 ## D13 — Garde-fous permanents (juridique) [RETENU]
 
 Le bandeau « données fictives » reste partout ; **aucune** affirmation de traction sur E-Dome ; **aucun** profil ne se présente comme courtier mandaté par E-Dome ; tout avis est rattaché à une transaction (`ReviewCompliance`) et déclare `incentivized` ; la restriction apporteur `pays × type d'apport` (12 CH / 3 FR / 3 UAE, jamais de commission immobilière touchée depuis FR/UAE) est respectée ; vigilance **droit à l'image** sur les avatars des 15 profils (photos libres de droits, pas de personnes réelles identifiables).
 
 ---
 
-## Les deux questions qui attendent ta validation
+## État des questions ouvertes
 
-1. **D7 — géographie des profils** : ma reco = majorité suisse romande + 2 profils internationaux assumés. Tu peux préférer 100 % suisse, ou garder une portée mondiale explicite.
-2. **Cadence de la construction** : Partie D prévoit un **arrêt après les trois premiers profils complets** pour que tu valides la direction avant que j'en fasse quinze. Je le respecte. Confirme-moi juste que le reste (persistance de session, refonte boutique, nouvelle visite guidée) peut avancer **sans autre arrêt** une fois la direction des profils validée, comme en Mission 1 — ou dis-moi où tu veux d'autres points de contrôle.
+**Tranchées par le fondateur le 2026-09-25 :**
+- **D7 géographie** → majorité suisse romande + quelques profils internationaux assumés, reflétant les restrictions apporteurs par pays.
+- **Cadence** → un seul arrêt, après les trois premiers profils complets ; ensuite je vais au bout sans autre pause.
+
+**Nouvelles questions ouvertes, nées du changement de modèle (à trancher avant de câbler le pricing, étape 1.5) :**
+1. **D14 — E-Dome prélève 0 % ou 12 % sur la prime « biens » ?** Ma reco : **0 %** dans la maquette (préserve le garde-fou juridique du §0.2), 12 % en option si l'avocat valide.
+2. **D15 — la frontière du freemium.** Mes deux experts divergent (marketing = large, comptable = prudent). Ma reco : plafonds d'inventaire généreux + fonctions de réussite payantes + **quota gratuit** sur les demandes d'accompagnement. Confirme la frontière.
+
+*Ces deux points sont des hypothèses de travail dans `PLAN-2.md` ; je peux avancer avec mes recommandations par défaut et tu ajustes, ou tu tranches maintenant.*
