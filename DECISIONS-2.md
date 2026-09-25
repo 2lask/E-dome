@@ -58,6 +58,12 @@ prime immobilière (volet biens exclu dans ces pays, cf. `JURIDIQUE-A-VALIDER.md
 §0.5), seulement de l'affiliation marketplace. La cohérence géographique et la
 cohérence juridique se rejoignent ici.
 
+**Précision (fondateur) :** la restriction doit être **visible dans
+l'interface**, pas seulement dans la donnée — en regardant un profil étranger,
+on comprend *pourquoi* il ne touche rien sur le pôle biens (mention explicite sur
+la fiche et dans son espace apporteur, du type « affiliation biens indisponible
+dans son pays »).
+
 ## D8 — `/reservations` : un seul écran, dérivé du journal [RETENU]
 
 **Décision.** On supprime la page `/reservations` autonome (prix inventés, 8 %) et on garde **un seul** écran de réservations, dérivé de `dashboard-data.ts`/journal. **Aligne le désaccord #8.**
@@ -126,13 +132,28 @@ opposées : `apporteur` se prélève sur la part E-Dome, `affiliate` sur la marg
 vendeur) — les mélanger recréerait le facteur-5 (thème 4 de l'audit). Un seul
 moteur `quote()`, un seul flux vérifié.
 
-**[À VALIDER — fondateur + avocat] :** E-Dome prélève-t-elle **0 %** ou **12 %**
-sur la prime biens ? L'analyse juridique (`JURIDIQUE-A-VALIDER.md §0.2`) signale
-que prélever une part **inverse le garde-fou** qui rend le programme actuel
-défendable (« sur une commission, E-Dome ne prélève rien »). Ma reco : **partir
-à 0 % sur la prime biens** dans la maquette (préserve le garde-fou, l'apporteur
-touche 100 % de la prime, E-Dome se rémunère sur les abonnements et la
-marketplace) ; le 12 % reste une option à assumer si l'avocat la valide.
+**[TRANCHÉ — fondateur, 2026-09-25] : E-Dome prélève 12 % sur la prime biens.**
+Le raisonnement du fondateur, retenu : le risque de qualification en courtage
+(art. 412) pèse sur **l'apporteur**, pas sur E-Dome ; or en Suisse **le courtage
+est une activité libre**, donc facturer un service à quelqu'un qui exerce une
+activité légale n'expose pas E-Dome. Passer à 0 % reviendrait à renoncer à un
+revenu pour couvrir un risque qui n'est pas le nôtre, et à montrer un pôle sans
+modèle économique.
+
+Sur la contradiction avec le garde-fou « sur une commission, E-Dome ne prélève
+rien » : on **précise** le garde-fou, on n'abandonne pas le revenu. Ce garde-fou
+vise la **commission d'une agence sur une vente immobilière** ; une **prime de
+mise en relation, fixe et indépendante de la conclusion, n'est pas une
+commission**. Cette distinction est à rendre explicite dans `rules.ts`, les CGU
+et le glossaire, pour qu'on ne puisse plus les confondre (travail intégré à
+l'étape 1.5 de `PLAN-2.md`).
+
+**Paramétrable :** `EDOME_PRIME_SHARE = 0.12` reste une constante du catalogue —
+passer à 0 % (ou toute autre valeur) si l'avocat tranche autrement ne demande
+aucune refonte. L'analyse complète reste en `JURIDIQUE-A-VALIDER.md §0`, avec la
+question ajoutée par le fondateur : *le fait que l'apporteur puisse être qualifié
+de courtier expose-t-il E-Dome, en Suisse, à un titre quelconque — complicité,
+organisation d'une activité soumise à autorisation, ou autre ?*
 
 ## D15 — Le virage FREEMIUM [RETENU en principe, frontière **[À VALIDER]**]
 
@@ -156,18 +177,30 @@ démarrage.
   (46 % à >100 % du marché suisse en comptes gratuits actifs) pour atteindre les
   161 agences payantes visées (`DECISIONS.md §8`).
 
-**Ma synthèse de CEO (recommandation, à confirmer) :** on découple deux choses.
-(1) **Les plafonds d'inventaire peuvent être généreux** (une agence gratuite
-publie plusieurs biens) — c'est l'acquisition, et ça sert le mot d'ordre. (2)
-**Les fonctions « de réussite » restent payantes** (2e utilisateur/équipe,
-sous-domaine, mise en avant, stats avancées, automatisations, volume illimité) —
-c'est la limite qui gêne quand on grandit. (3) **Point délicat — les demandes
-d'accompagnement :** ni tout gratuit (comptable) ni tout payant (statu quo), mais
-**un quota gratuit** (p. ex. un petit nombre de candidatures actives à la fois)
-et **illimité en payant** — une agence gratuite peut décrocher un mandat (preuve
-de valeur → conversion), l'usage intensif se paie. **C'est ta directive et tes
-deux experts divergent : confirme la frontière** (élargie façon marketing,
-prudente façon comptable, ou mon quota intermédiaire).
+**Synthèse de CEO — VALIDÉE par le fondateur (2026-09-25).** On découple deux
+choses. (1) **Les plafonds d'inventaire peuvent être généreux** (une agence
+gratuite publie plusieurs biens) — c'est l'acquisition, et ça sert le mot
+d'ordre. (2) **Les fonctions « de réussite » restent payantes** (2e
+utilisateur/équipe, sous-domaine, mise en avant, stats avancées, automatisations,
+volume illimité) — la limite qui gêne quand on grandit. (3) **Les demandes
+d'accompagnement : un quota gratuit** (petit nombre de candidatures actives à la
+fois) et **illimité en payant**.
+
+**Précisions du fondateur :**
+- **Tous les plafonds gratuits et le quota d'accompagnement sont des valeurs du
+  catalogue** (`pricing/catalog.ts`), modifiables sans toucher au code — le
+  fondateur veut les ajuster après ses entretiens avec les agences.
+- **Ce que chaque expert perd dans ce compromis, et l'indicateur qui dirait
+  qu'on s'est trompé de côté :**
+  - *Le marketing perd* l'accompagnement gratuit et illimité (son levier
+    d'acquisition le plus fort). **Indicateur qu'on a serré de trop :** peu de
+    créations de comptes agence / peu de premières candidatures d'accompagnement,
+    ou un taux d'abandon élevé au moment où le quota gratuit se ferme.
+  - *Le comptable perd* la protection stricte des quatre lignes qui justifient
+    Vitrine ; un quota gratuit ouvre une brèche vers l'accompagnement.
+    **Indicateur qu'on a ouvert de trop :** des agences décrochent des mandats
+    via le quota gratuit et **restent gratuites** (conversion vers Vitrine trop
+    basse) — le tunnel de `DECISIONS.md §8` ne se referme pas.
 
 ## D13 — Garde-fous permanents (juridique) [RETENU]
 
@@ -181,8 +214,8 @@ Le bandeau « données fictives » reste partout ; **aucune** affirmation de tra
 - **D7 géographie** → majorité suisse romande + quelques profils internationaux assumés, reflétant les restrictions apporteurs par pays.
 - **Cadence** → un seul arrêt, après les trois premiers profils complets ; ensuite je vais au bout sans autre pause.
 
-**Nouvelles questions ouvertes, nées du changement de modèle (à trancher avant de câbler le pricing, étape 1.5) :**
-1. **D14 — E-Dome prélève 0 % ou 12 % sur la prime « biens » ?** Ma reco : **0 %** dans la maquette (préserve le garde-fou juridique du §0.2), 12 % en option si l'avocat valide.
-2. **D15 — la frontière du freemium.** Mes deux experts divergent (marketing = large, comptable = prudent). Ma reco : plafonds d'inventaire généreux + fonctions de réussite payantes + **quota gratuit** sur les demandes d'accompagnement. Confirme la frontière.
+**Tranchées par le fondateur le 2026-09-25 (2e tour) :**
+1. **D14 — part E-Dome sur la prime biens → 12 %** (paramétrable, cf. D14), avec reformulation du garde-fou dans `rules.ts`/CGU/glossaire, et une question ajoutée en `JURIDIQUE-A-VALIDER.md §0.2` (l'apporteur-courtier expose-t-il E-Dome ?).
+2. **D15 — freemium → la synthèse de CEO** (plafonds généreux + fonctions de réussite payantes + quota gratuit d'accompagnement), plafonds et quota **en valeurs de catalogue**, avec le « ce que chaque expert perd + l'indicateur d'erreur » documenté en D15.
 
-*Ces deux points sont des hypothèses de travail dans `PLAN-2.md` ; je peux avancer avec mes recommandations par défaut et tu ajustes, ou tu tranches maintenant.*
+**Toutes les questions du chantier sont tranchées.** Prochaine action : construction, étape 0 → 1 → 1.5 → 2 → 3, **arrêt après les 3 profils**.

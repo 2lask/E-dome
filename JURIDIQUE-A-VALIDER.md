@@ -52,15 +52,28 @@ n'écarte que **l'exigibilité conditionnée** (art. 413 CO), pas la
 > l'apporteur agit-il à titre non professionnel/occasionnel (souvent hors champ)
 > ou peut-il en faire une activité ?
 
-### 0.2 — E-Dome prélève 12 % de la prime : cela inverse-t-il le garde-fou ? [SENSIBLE]
+### 0.2 — E-Dome prélève 12 % de la prime : le garde-fou, précisé [DÉCISION FONDATEUR + QUESTION AVOCAT]
 
-Aujourd'hui, ce qui rend le programme apporteurs défendable est qu'« **sur une
-commission d'agence, E-Dome ne prélève rien** ». En prélevant une part de la
-prime d'apport immobilier, **E-Dome tire une rémunération d'une activité
-d'indication** — l'analyse interne signale que cela **inverse ce garde-fou**.
-**Décision à prendre (fondateur + avocat) :** E-Dome doit-elle prélever **0 %**
-sur la prime « biens » (préservant le garde-fou, la prime allant entièrement à
-l'apporteur, E-Dome se rémunérant ailleurs), ou un taux réduit assumé ?
+**Décision du fondateur (2026-09-25) : E-Dome prélève 12 %** (paramétrable).
+Motif : le risque de qualification en courtage (art. 412) pèse sur
+**l'apporteur**, pas sur E-Dome ; **en Suisse le courtage est une activité
+libre**, donc facturer un service à quelqu'un qui exerce une activité légale
+n'expose pas E-Dome. Renoncer au revenu couvrirait un risque qui n'est pas le
+nôtre et laisserait un pôle sans modèle économique.
+
+**Le garde-fou est précisé, pas abandonné.** L'ancienne formule « sur une
+commission, E-Dome ne prélève rien » visait la **commission d'une AGENCE sur une
+vente immobilière**. Une **prime de mise en relation — fixe, en francs,
+indépendante de la conclusion — n'est pas une commission.** Cette distinction
+doit être rendue explicite dans `rules.ts`, les CGU et le glossaire, pour qu'on
+ne puisse plus les confondre.
+
+> **Question ajoutée par le fondateur, à confirmer par l'avocat.** Le fait que
+> l'apporteur puisse être qualifié de **courtier** (art. 412) expose-t-il
+> **E-Dome**, en Suisse, à un titre quelconque — **complicité**, **organisation
+> d'une activité soumise à autorisation**, responsabilité de plateforme, ou
+> autre ? La position de travail est que non (courtage = activité libre ; E-Dome
+> fournit un outil et facture un service), mais le point doit être validé.
 
 ### 0.3 — Le risque « 1 % » : deux risques distincts
 
