@@ -201,10 +201,16 @@ export default function FormationsPage() {
         <section>
           <h2 className="text-xl font-semibold mb-4">Toutes les formations</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {/* Patron « lien étiré » : un <Link> ne peut pas en contenir un
+                autre (HTML invalide → erreur d'hydratation, audit Mission 2).
+                La carte est un conteneur ; un lien-overlay couvre toute la
+                carte vers la formation, et le lien vers le formateur passe
+                AU-DESSUS (z-10). */}
             {filtered.map((f) => (
-              <Link key={f.id} href={`/formations/${f.id}`} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[var(--primary)]/40 transition-colors group">
+              <article key={f.id} className="relative bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[var(--primary)]/40 transition-colors group">
+                <Link href={`/formations/${f.id}`} className="absolute inset-0 z-10" aria-label={f.title} />
                 <div className="relative">
-                  <img src={f.thumbnail} alt={f.title} className="w-full h-44 object-cover" />
+                  <img src={f.thumbnail} alt="" className="w-full h-44 object-cover" />
                   <span className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${LEVEL_COLORS[f.level]}`}>
                     {LEVEL_LABELS[f.level]}
                   </span>
@@ -217,8 +223,8 @@ export default function FormationsPage() {
                 <div className="p-4 space-y-2">
                   <span className="text-xs text-[var(--text-muted)]">{f.category}</span>
                   <h3 className="font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors line-clamp-2">{f.title}</h3>
-                  <Link href={`/profil/${f.instructor.id}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-2 hover:underline">
-                    <img src={f.instructor.avatar} alt={f.instructorName} className="w-6 h-6 rounded-full object-cover" />
+                  <Link href={`/profil/${f.instructor.id}`} className="relative z-20 inline-flex items-center gap-2 hover:underline">
+                    <img src={f.instructor.avatar} alt="" className="w-6 h-6 rounded-full object-cover" />
                     <span className="text-sm text-[var(--text-secondary)]">{f.instructorName}</span>
                   </Link>
                   <Stars rating={f.rating} />
@@ -227,7 +233,7 @@ export default function FormationsPage() {
                     <span className="text-xs text-[var(--text-muted)]">{f.duration} &middot; {f.moduleCount} modules</span>
                   </div>
                 </div>
-              </Link>
+              </article>
             ))}
           </div>
           {filtered.length === 0 && (

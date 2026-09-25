@@ -20,7 +20,6 @@ import type {
   Notification,
   DashboardStats,
   Transaction,
-  MonthlyRevenue,
 } from './types';
 import { CURRENT_USER, OWNED_PROPERTY_IDS } from "./demo/identity";
 
@@ -2312,20 +2311,10 @@ export const transactions: Transaction[] = [
   },
 ];
 
-export const monthlyRevenue: MonthlyRevenue[] = [
-  { month: 'Avr 2025', revenue: 28500, bookings: 8, occupancy: 72 },
-  { month: 'Mai 2025', revenue: 32000, bookings: 10, occupancy: 78 },
-  { month: 'Juin 2025', revenue: 45000, bookings: 14, occupancy: 92 },
-  { month: 'Juil 2025', revenue: 52000, bookings: 16, occupancy: 96 },
-  { month: 'Ao\u00fbt 2025', revenue: 48000, bookings: 15, occupancy: 94 },
-  { month: 'Sep 2025', revenue: 38000, bookings: 12, occupancy: 82 },
-  { month: 'Oct 2025', revenue: 31000, bookings: 9, occupancy: 74 },
-  { month: 'Nov 2025', revenue: 26000, bookings: 7, occupancy: 65 },
-  { month: 'D\u00e9c 2025', revenue: 42000, bookings: 13, occupancy: 88 },
-  { month: 'Jan 2026', revenue: 44000, bookings: 13, occupancy: 90 },
-  { month: 'F\u00e9v 2026', revenue: 46000, bookings: 14, occupancy: 91 },
-  { month: 'Mar 2026', revenue: 42500, bookings: 12, occupancy: 87 },
-];
+/* `monthlyRevenue` (un second moteur de revenus, fig\u00e9 et arr\u00eat\u00e9 \u00e0 mars 2026)
+   a \u00e9t\u00e9 retir\u00e9 ici : personne ne l'importait, et il contredisait la s\u00e9rie
+   d\u00e9riv\u00e9e du journal unique (`dashboard-data.ts`, `derive.monthly()`). Retrait
+   d\u00e9cid\u00e9 \u00e0 l'audit Mission 2 (th\u00e8me 4, comptable). */
 
 export interface MonthlyReferralEarnings {
   month: string;

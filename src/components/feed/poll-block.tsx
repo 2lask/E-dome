@@ -2,7 +2,13 @@
 
 import { Check } from "lucide-react";
 import { formatCount } from "@/lib/utils";
+import { DEMO_TODAY } from "@/lib/demo/clock";
 import type { Poll } from "@/lib/types";
+
+/* Le « maintenant » de référence est l'horloge figée de la démo, pas `Date.now()` :
+   un temps réel calculé en plein rendu diffère entre le serveur et le client et
+   provoquait une erreur d'hydratation (audit Mission 2, thèmes 9). */
+const NOW = DEMO_TODAY.getTime();
 
 /* Bloc de sondage interactif (façon X), partagé entre le feed et le
    visualiseur de profil. Avant vote → options cliquables ; après vote (ou
@@ -10,7 +16,7 @@ import type { Poll } from "@/lib/types";
    total des votes + temps restant. */
 
 export function pollTimeLeft(endsAt: string): string {
-  const ms = new Date(endsAt).getTime() - Date.now();
+  const ms = new Date(endsAt).getTime() - NOW;
   if (ms <= 0) return "Sondage terminé";
   const h = Math.floor(ms / 3600_000);
   if (h >= 24) return `${Math.floor(h / 24)} j restants`;
@@ -19,7 +25,7 @@ export function pollTimeLeft(endsAt: string): string {
 }
 
 export function PollBlock({ poll, onVote }: { poll: Poll; onVote: (optionId: string) => void }) {
-  const ended = poll.endsAt ? new Date(poll.endsAt).getTime() < Date.now() : false;
+  const ended = poll.endsAt ? new Date(poll.endsAt).getTime() < NOW : false;
   const locked = !!poll.userVote || ended;
   const total = poll.totalVotes || 0;
 

@@ -1,5 +1,6 @@
 import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/lib/mock-data";
 import { CURRENT_USER as DEMO_USER, OWNED_PROPERTY_IDS } from "@/lib/demo/identity";
+import { DEMO_TODAY } from "@/lib/demo/clock";
 import { buildObjectAffiliate } from "@/lib/referral-links";
 import type { User, SocialPost, Comment, Property } from "@/lib/types";
 
@@ -119,7 +120,10 @@ export const U_YASMIN: User = {
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
-export const hAgo = (h: number) => new Date(Date.now() - h * 3600_000).toISOString();
+/* Daté sur l'horloge FIGÉE de la démo, pas `Date.now()` : un timestamp calculé
+   au chargement du module diffère entre le serveur et le client, ce qui
+   provoquait une erreur d'hydratation dans le fil (audit Mission 2). */
+export const hAgo = (h: number) => new Date(DEMO_TODAY.getTime() - h * 3600_000).toISOString();
 
 export type SimpleComment = { author: User; content: string; h?: number; likes?: number };
 
