@@ -8,7 +8,8 @@ import { listProperties } from "@/lib/data/properties";
 import { listEvents } from "@/lib/data/events";
 import { formations as ALL_FORMATIONS } from "@/lib/mock-data";
 import { listPeople } from "@/lib/profile-data";
-import { roleLabels, type Formation } from "@/lib/types";
+import type { Formation } from "@/lib/types";
+import { roleLabel } from "@/lib/model/role-labels";
 
 /* Cle localStorage partagee avec le header (composants/layout/header.tsx)
    pour que recherches recentes soient unifiees entre la barre du header
@@ -59,7 +60,7 @@ const ALL_RESULTS = {
   utilisateurs: listPeople().map((u) => ({
     id: u.id,
     nom: `${u.firstName} ${u.lastName}`,
-    role: roleLabels[u.roles[0] ?? "client"],
+    role: roleLabel(u.roles[0] ?? "particulier", u.trades),
     ville: u.city,
   })),
   evenements: listEvents().map((e) => ({

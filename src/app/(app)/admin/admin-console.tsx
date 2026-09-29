@@ -4,21 +4,23 @@ import React, { useMemo, useState } from "react";
 import { TriangleAlert } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { RATES, EDOME_PRIME_SHARE } from "@/lib/pricing";
+import type { PlatformRole } from "@/lib/model/identity";
+import { PLATFORM_ROLE_LABELS } from "@/lib/model/role-labels";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
 
-const MOCK_USERS = [
+const MOCK_USERS: { id: string; nom: string; email: string; role: PlatformRole; date: string; statut: string }[] = [
   { id: "U001", nom: "Marie Dupont", email: "marie@example.com", role: "hote", date: "2026-01-15", statut: "actif" },
-  { id: "U002", nom: "Jean Martin", email: "jean@example.com", role: "client", date: "2026-01-20", statut: "actif" },
+  { id: "U002", nom: "Jean Martin", email: "jean@example.com", role: "particulier", date: "2026-01-20", statut: "actif" },
   { id: "U003", nom: "Sophie Meier", email: "sophie@example.com", role: "agence", date: "2026-02-01", statut: "actif" },
   { id: "U004", nom: "Bruno Chappuis", email: "bruno@example.com", role: "apporteur", date: "2026-02-10", statut: "suspendu" },
-  { id: "U005", nom: "Laura Fischer", email: "laura@example.com", role: "investisseur", date: "2026-02-15", statut: "actif" },
-  { id: "U006", nom: "Thomas Roth", email: "thomas@example.com", role: "formateur", date: "2026-02-20", statut: "actif" },
-  { id: "U007", nom: "Nadia Silva", email: "nadia@example.com", role: "courtier", date: "2026-03-01", statut: "actif" },
+  { id: "U005", nom: "Laura Fischer", email: "laura@example.com", role: "particulier", date: "2026-02-15", statut: "actif" },
+  { id: "U006", nom: "Thomas Roth", email: "thomas@example.com", role: "createur", date: "2026-02-20", statut: "actif" },
+  { id: "U007", nom: "Nadia Silva", email: "nadia@example.com", role: "agence", date: "2026-03-01", statut: "actif" },
   { id: "U008", nom: "Patrick Leroy", email: "patrick@example.com", role: "proprietaire", date: "2026-03-05", statut: "inactif" },
-  { id: "U009", nom: "Amina Kone", email: "amina@example.com", role: "photographe", date: "2026-03-10", statut: "actif" },
-  { id: "U010", nom: "David Mueller", email: "david@example.com", role: "client", date: "2026-03-15", statut: "actif" },
+  { id: "U009", nom: "Amina Kone", email: "amina@example.com", role: "prestataire", date: "2026-03-10", statut: "actif" },
+  { id: "U010", nom: "David Mueller", email: "david@example.com", role: "particulier", date: "2026-03-15", statut: "actif" },
 ];
 
 const MOCK_BIENS = [
@@ -61,7 +63,7 @@ export function AdminConsole() {
     (u) =>
       u.nom.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase()) ||
-      u.role.toLowerCase().includes(search.toLowerCase())
+      PLATFORM_ROLE_LABELS[u.role].toLowerCase().includes(search.toLowerCase())
   );
 
   const handleApproveBien = (id: string) => {
@@ -239,7 +241,7 @@ export function AdminConsole() {
                     <td className="p-4 text-[var(--foreground)] font-mono text-xs">{u.id}</td>
                     <td className="p-4 text-[var(--foreground)] font-medium">{u.nom}</td>
                     <td className="p-4 text-[var(--text-secondary)]">{u.email}</td>
-                    <td className="p-4 text-[var(--text-secondary)] capitalize">{u.role}</td>
+                    <td className="p-4 text-[var(--text-secondary)]">{PLATFORM_ROLE_LABELS[u.role]}</td>
                     <td className="p-4 text-[var(--text-secondary)]">{u.date}</td>
                     <td className="p-4">
                       <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${userStatusStyle[u.statut]}`}>

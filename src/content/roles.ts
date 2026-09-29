@@ -1,5 +1,4 @@
 import type { PlatformRole } from "@/lib/model/identity";
-import type { Role } from "@/lib/types";
 
 /* ── Le parcours par rôle ───────────────────────────────────────────────────
 
@@ -12,13 +11,9 @@ import type { Role } from "@/lib/types";
    qu'on aurait le droit de faire (un `RoleGrant`, cf. `model/identity.ts`).
    Dans une démonstration, on regarde tous les rôles sans en détenir aucun.
 
-   Deux axes se croisent ici :
-
-   · `role` est un `PlatformRole` — la vérité du modèle, « ce qu'on peut
-     faire », onze valeurs. C'est ce que porte `viewingAs`.
-   · `legacyRole` est la valeur `Role` héritée que comprend `setActiveRole`.
-     Le pont existe le temps que les consommateurs migrent ; il vit ici, à un
-     seul endroit, plutôt que dispersé dans les composants.
+   `role` est un `PlatformRole` — la vérité du modèle, « ce qu'on peut
+   faire », onze valeurs. C'est ce que porte `viewingAs` (et, depuis
+   l'étape 4a, `activeRole` aussi : plus de pont vers l'ancien `Role`).
 
    La visite est CURÉE, pas exhaustive : huit portes qui, ensemble, couvrent
    toute la plateforme sans se répéter. `visiteur`, `agent` et `annonceur` du
@@ -27,7 +22,6 @@ import type { Role } from "@/lib/types";
 
 export interface RoleTour {
   role: PlatformRole;
-  legacyRole: Role;
   label: string;
   /** Une ligne : ce que ce rôle vient faire sur E-Dome. */
   tagline: string;
@@ -46,7 +40,6 @@ export const roleTour = {
   roles: [
     {
       role: "particulier",
-      legacyRole: "client",
       label: "Particulier",
       tagline: "Acheter, louer ou réserver un bien.",
       href: "/explorer",
@@ -55,7 +48,6 @@ export const roleTour = {
     },
     {
       role: "proprietaire",
-      legacyRole: "proprietaire",
       label: "Propriétaire",
       tagline: "Vendre ou louer son bien — 0 CHF à E-Dome.",
       href: "/vendre",
@@ -64,7 +56,6 @@ export const roleTour = {
     },
     {
       role: "hote",
-      legacyRole: "hote",
       label: "Hôte",
       tagline: "Louer en courte durée et suivre ses revenus.",
       href: "/dashboard",
@@ -73,7 +64,6 @@ export const roleTour = {
     },
     {
       role: "agence",
-      legacyRole: "agence",
       label: "Agence",
       tagline: "Mandats, équipe, vitrine et abonnement.",
       href: "/agence",
@@ -82,7 +72,6 @@ export const roleTour = {
     },
     {
       role: "prestataire",
-      legacyRole: "photographe",
       label: "Prestataire",
       tagline: "Proposer un service, recevoir des demandes de devis.",
       href: "/services",
@@ -91,7 +80,6 @@ export const roleTour = {
     },
     {
       role: "createur",
-      legacyRole: "formateur",
       label: "Créateur",
       tagline: "Publier des formations, animer des lives.",
       href: "/formations",
@@ -100,7 +88,6 @@ export const roleTour = {
     },
     {
       role: "apporteur",
-      legacyRole: "apporteur",
       label: "Apporteur",
       tagline: "Recommander par un lien traçable, être rémunéré.",
       href: "/apporteurs",
@@ -109,7 +96,6 @@ export const roleTour = {
     },
     {
       role: "admin",
-      legacyRole: "admin",
       label: "Administration",
       tagline: "Modérer la plateforme.",
       href: "/admin",

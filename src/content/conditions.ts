@@ -111,7 +111,7 @@ export const SECTIONS: Section[] = [
     id: "apporteurs",
     title: "7. Programme d'apporteurs",
     content:
-      `L'apporteur recommande un bien, une prestation ou la Plateforme par un lien traçable. Sa rémunération est une part de ce que perçoit E-Dome sur la conversion (10 à 30 % selon le pôle), ou une prime fixe — jamais un supplément ajouté au prix payé par le client. L'apporteur ne représente aucune partie, ne négocie aucun prix, n'est ni agent ni courtier. Le programme peut être restreint par couple pays × type d'apport là où la réglementation locale l'exige.`,
+      `L'apporteur recommande un bien, une prestation ou la Plateforme par un lien traçable. Sa rémunération est une part de ce que perçoit E-Dome sur la conversion (10 à 30 % selon le pôle), ou une prime fixe — jamais un supplément ajouté au prix payé par le client. L'apporteur ne représente aucune partie, ne négocie aucun prix et n'exerce aucune activité de courtage au sens des art. 412 ss CO. Le programme peut être restreint par couple pays × type d'apport là où la réglementation locale l'exige.`,
   },
   {
     id: "paiements",

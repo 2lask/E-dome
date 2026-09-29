@@ -1,7 +1,7 @@
 import type { Profile, ProfileVisibility, PersonSummary } from "./profile-types";
 import { CURRENT_USER } from "./demo/identity";
 import { DIRECTORY, personById } from "./demo/directory";
-import { roleLabels } from "./types";
+import { roleLabel } from "./model/role-labels";
 
 /* ─── Données de profil (démo) ────────────────────────────────────────────
    - DEFAULT_PROFILE : mon profil (Léo), source initiale du contexte, ensuite
@@ -127,10 +127,10 @@ export const DEFAULT_PROFILE: Profile = {
 
    Étape 3 — les trois premiers profils complets sont enrichis en profondeur
    (expériences, formations, compétences, langues, liens), en accord strict
-   avec leurs rôles d'annuaire : Sophie Durand (user-002, courtière), Marc Favre
-   (user-003, investisseur — son seed revient, cette fois avec un titre
-   « Investisseur » que l'annuaire lui donne bien, plus aucun « Courtier »
-   fantôme) et Jean-Luc Hartmann (user-015, agence). Le seed Lucas (user-005)
+   avec leurs rôles d'annuaire : Sophie Durand (user-002, agence d'une
+   personne), Marc Favre (user-003, particulier qui investit — son seed
+   revient, avec un titre « Investisseur » qui correspond à l'intérêt que
+   l'annuaire lui donne, et plus aucun rôle fantôme) et Jean-Luc Hartmann (user-015, agence). Le seed Lucas (user-005)
    reste retiré : son titre annonçait « Promoteur » que l'annuaire ne lui donne
    pas. */
 type PublicSeed = {
@@ -148,13 +148,13 @@ type PublicSeed = {
 const PUBLIC_SEEDS: Record<string, PublicSeed> = {
   "user-002": {
     banner: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=400&fit=crop",
-    headline: "Courtière indépendante · Brevet fédéral · Biens de caractère",
+    headline: "Agente immobilière indépendante · Brevet fédéral · Biens de caractère",
     about:
-      "Courtière indépendante au bénéfice du brevet fédéral, installée à Lausanne. Douze ans sur l'arc lémanique, avec une spécialité assumée : les biens de caractère du Lavaux et de Lausanne — appartements de standing, propriétés vigneronnes, attiques avec vue lac. Une agence d'une personne, où chaque vendeur et chaque acquéreur est suivi de la première visite à la signature notariale. Rigueur du dossier, chaleur du contact.",
+      "Agente immobilière indépendante, titulaire du brevet fédéral, installée à Lausanne. Douze ans sur l'arc lémanique, avec une spécialité assumée : les biens de caractère du Lavaux et de Lausanne — appartements de standing, propriétés vigneronnes, attiques avec vue lac. Une agence d'une personne, où chaque vendeur et chaque acquéreur est suivi de la première visite à la signature notariale. Rigueur du dossier, chaleur du contact.",
     experiences: [
       {
         id: "exp-so-1",
-        title: "Courtière indépendante",
+        title: "Agente immobilière indépendante",
         company: "Sophie Durand Immobilier",
         employmentType: "independant",
         location: "Lausanne, Suisse",
@@ -162,7 +162,7 @@ const PUBLIC_SEEDS: Record<string, PublicSeed> = {
         startMonth: 3,
         startYear: 2019,
         description:
-          "Courtage de biens de caractère sur l'arc lémanique (Lausanne, Lavaux). Estimation, mise en valeur, accompagnement vendeurs et acquéreurs jusqu'à la signature notariale.",
+          "Vente de biens de caractère sur l'arc lémanique (Lausanne, Lavaux). Estimation, mise en valeur, accompagnement vendeurs et acquéreurs jusqu'à la signature notariale.",
       },
       {
         id: "exp-so-2",
@@ -195,8 +195,8 @@ const PUBLIC_SEEDS: Record<string, PublicSeed> = {
       {
         id: "edu-so-1",
         school: "USPI Formation",
-        degree: "Brevet fédéral de courtier en immeubles",
-        field: "Courtage immobilier",
+        degree: "Brevet fédéral d'agente immobilière",
+        field: "Transaction immobilière",
         startYear: 2017,
         endYear: 2019,
       },
@@ -209,7 +209,7 @@ const PUBLIC_SEEDS: Record<string, PublicSeed> = {
         endYear: 2012,
       },
     ],
-    skills: ["Courtage", "Biens de caractère", "Estimation", "Home staging", "Négociation", "Vente de standing"],
+    skills: ["Transaction immobilière", "Biens de caractère", "Estimation", "Home staging", "Négociation", "Vente de standing"],
     languages: [
       { id: "lg-so-1", name: "Français", level: "natif" },
       { id: "lg-so-2", name: "Allemand", level: "courant" },
@@ -298,7 +298,7 @@ const PUBLIC_SEEDS: Record<string, PublicSeed> = {
     banner: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=400&fit=crop",
     headline: "Directeur · Hartmann Immobilier SA · Neuchâtel",
     about:
-      "Directeur de Hartmann Immobilier SA, à Neuchâtel. Vingt ans dans l'immobilier neuchâtelois, membre USPI et SVIT. L'agence couvre la vente, le courtage et la gestion locative, avec une équipe et un service de proximité — une parfaite connaissance du marché local, du littoral aux vignobles. Approche posée, institutionnelle, au service de propriétaires exigeants.",
+      "Directeur de Hartmann Immobilier SA, à Neuchâtel. Vingt ans dans l'immobilier neuchâtelois, membre USPI et SVIT. L'agence couvre la vente, l'estimation et la gestion locative, avec une équipe et un service de proximité — une parfaite connaissance du marché local, du littoral aux vignobles. Approche posée, institutionnelle, au service de propriétaires exigeants.",
     experiences: [
       {
         id: "exp-jl-1",
@@ -310,11 +310,11 @@ const PUBLIC_SEEDS: Record<string, PublicSeed> = {
         startMonth: 1,
         startYear: 2006,
         description:
-          "Direction d'une agence immobilière neuchâteloise : vente, courtage et gestion locative. Encadrement de l'équipe, mandats de vente et relation avec les propriétaires institutionnels.",
+          "Direction d'une agence immobilière neuchâteloise : vente, estimation et gestion locative. Encadrement de l'équipe, mandats de vente et relation avec les propriétaires institutionnels.",
       },
       {
         id: "exp-jl-2",
-        title: "Courtier",
+        title: "Agent immobilier",
         company: "Régie du Littoral",
         employmentType: "temps-plein",
         location: "Neuchâtel, Suisse",
@@ -330,8 +330,8 @@ const PUBLIC_SEEDS: Record<string, PublicSeed> = {
       {
         id: "edu-jl-1",
         school: "USPI Suisse",
-        degree: "Brevet fédéral de courtier en immeubles",
-        field: "Courtage immobilier",
+        degree: "Brevet fédéral de gérant d'immeubles",
+        field: "Gestion et transaction immobilière",
         startYear: 2010,
         endYear: 2012,
       },
@@ -344,7 +344,7 @@ const PUBLIC_SEEDS: Record<string, PublicSeed> = {
         endYear: 2018,
       },
     ],
-    skills: ["Vente", "Courtage", "Gestion locative", "Estimation", "Direction d'agence", "Conseil"],
+    skills: ["Vente", "Transaction immobilière", "Gestion locative", "Estimation", "Direction d'agence", "Conseil"],
     languages: [
       { id: "lg-jl-1", name: "Français", level: "natif" },
       { id: "lg-jl-2", name: "Allemand", level: "courant" },
@@ -384,9 +384,11 @@ export function getMockProfile(id: string): Profile | null {
     email: person.email,
     avatar: person.avatar,
     banner: seed?.banner ?? GENERIC_BANNER,
-    headline: seed?.headline ?? `${roleLabels[person.activeRole]} · ${person.city}`,
+    headline: seed?.headline ?? `${roleLabel(person.activeRole, person.trades)} · ${person.city}`,
     location: { city: person.city, country: person.country },
     roles: person.roles,
+    trades: person.trades,
+    interests: person.interests,
     about: seed?.about ?? person.bio,
     experiences: seed?.experiences ?? [],
     education: seed?.education ?? [],
@@ -419,9 +421,10 @@ export function listPeople(): PersonSummary[] {
     firstName: p.firstName,
     lastName: p.lastName,
     avatar: p.avatar,
-    headline: PUBLIC_SEEDS[p.id]?.headline ?? `${roleLabels[p.activeRole]} · ${p.city}`,
+    headline: PUBLIC_SEEDS[p.id]?.headline ?? `${roleLabel(p.activeRole, p.trades)} · ${p.city}`,
     city: p.city,
     country: p.country,
     roles: p.roles,
+    trades: p.trades,
   }));
 }

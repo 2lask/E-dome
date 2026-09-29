@@ -43,7 +43,7 @@ function copyLink(id: string) {
 
 export default function EvenementsPage() {
   const { formatPrice, activeRole } = useApp();
-  const canCreateEvent = ["hote", "agence", "promoteur", "formateur"].includes(activeRole);
+  const canCreateEvent = (["hote", "agence", "agent", "prestataire", "createur"] as const).some((r) => r === activeRole);
   const [activeTab, setActiveTab] = useState("À venir");
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [calendarMonth, setCalendarMonth] = useState(() => { const d = new Date(); return { month: d.getMonth(), year: d.getFullYear() }; });

@@ -65,7 +65,7 @@ export const guidedTour = {
     {
       route: "/conditions",
       title: "Ce qu'E-Dome ne fait jamais",
-      body: "Quatre règles qui gardent E-Dome hors du courtage, énoncées avant les prix.",
+      body: "Quatre règles qui tiennent E-Dome à l'écart de toute intermédiation immobilière, énoncées avant les prix.",
       look: "Le §2 : les quatre règles ensemble, jamais la seule règle 3.",
     },
   ] satisfies TourStop[],

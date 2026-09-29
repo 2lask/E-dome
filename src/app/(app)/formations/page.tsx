@@ -110,7 +110,7 @@ export default function FormationsPage() {
           description="Développez vos compétences immobilières"
           variant="serif"
           actions={
-            activeRole === "formateur" ? (
+            activeRole === "createur" ? (
               <Link
                 href="/formations/creer"
                 className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-xl font-medium transition-colors"

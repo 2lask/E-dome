@@ -22,7 +22,9 @@ export function profileToAuthor(p: Profile): User {
     city: p.location.city,
     country: p.location.country,
     roles: p.roles,
-    activeRole: p.roles[0] ?? "client",
+    activeRole: p.roles[0] ?? "particulier",
+    trades: p.trades,
+    interests: p.interests,
     stats: {
       followers: p.stats.followers,
       following: p.stats.following,
@@ -38,8 +40,8 @@ export function profileToAuthor(p: Profile): User {
 
 /* Commentateurs des fils de profil — de VRAIES personnes de l'annuaire, par id.
    Ils portaient jadis des identités parallèles (Sophie à 890 abonnés ici et
-   3 100 dans l'annuaire, un autre avatar, un rôle « courtier » pour Marc que
-   l'annuaire ne lui donne pas) : c'était le bug racine « un id, deux identités ».
+   3 100 dans l'annuaire, un autre avatar, un rôle d'intermédiaire pour Marc
+   que l'annuaire ne lui donne pas) : c'était le bug racine « un id, deux identités ».
    `requirePerson` garantit le même nom, le même avatar et les mêmes stats que
    partout ailleurs, et casse la compilation si l'id disparaît. */
 const C_SOPHIE: User = requirePerson("user-002");

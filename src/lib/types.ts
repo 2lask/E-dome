@@ -1,5 +1,15 @@
-// ─── Roles ───────────────────────────────────────────────────────────────────
+import type { PlatformRole, ProviderTrade, ProfileInterest } from "./model/identity";
 
+// ─── Rôles hérités ───────────────────────────────────────────────────────────
+
+/**
+ * @deprecated Ancien jeu de treize rôles, où cohabitaient capacités et
+ * métiers. Les personnes de la démonstration portent désormais des
+ * `PlatformRole` (+ `ProviderTrade`, `ProfileInterest`) — cf.
+ * `model/identity.ts`. Ce type ne subsiste que comme CLÉ des tables de
+ * passage `LEGACY_ROLE_TO_*`, pour relire une donnée ancienne. Aucun écran ne
+ * doit l'afficher : il n'a plus de table de libellés.
+ */
 export type Role =
   | "client"
   | "hote"
@@ -14,38 +24,6 @@ export type Role =
   | "architecte"
   | "notaire"
   | "admin";
-
-export const roleBadgeColors: Record<Role, string> = {
-  client: "bg-gray-500/20 text-gray-400",
-  hote: "bg-amber-500/20 text-amber-400",
-  agence: "bg-blue-500/20 text-blue-400",
-  promoteur: "bg-purple-500/20 text-purple-400",
-  apporteur: "bg-emerald-500/20 text-emerald-400",
-  investisseur: "bg-cyan-500/20 text-cyan-400",
-  formateur: "bg-orange-500/20 text-orange-400",
-  proprietaire: "bg-rose-500/20 text-rose-400",
-  photographe: "bg-pink-500/20 text-pink-400",
-  courtier: "bg-indigo-500/20 text-indigo-400",
-  architecte: "bg-teal-500/20 text-teal-400",
-  notaire: "bg-slate-500/20 text-slate-400",
-  admin: "bg-red-500/20 text-red-400",
-};
-
-export const roleLabels: Record<Role, string> = {
-  client: "Client",
-  hote: "Hôte",
-  agence: "Agence",
-  promoteur: "Promoteur",
-  apporteur: "Apporteur d'affaires",
-  investisseur: "Investisseur",
-  formateur: "Formateur",
-  proprietaire: "Propriétaire",
-  photographe: "Photographe",
-  courtier: "Courtier",
-  architecte: "Architecte",
-  notaire: "Notaire",
-  admin: "Administrateur",
-};
 
 // ─── Currency ────────────────────────────────────────────────────────────────
 
@@ -119,8 +97,14 @@ export interface User {
   avatar: string;
   city: string;
   country: string;
-  roles: Role[];
-  activeRole: Role;
+  /** Capacités sur la plateforme (`PlatformRole`), cumulables. */
+  roles: PlatformRole[];
+  /** Rôle sous lequel la personne se présente (badge principal). */
+  activeRole: PlatformRole;
+  /** Métier(s) d'un `prestataire` — ce qu'il vend. Pas un rôle. */
+  trades?: ProviderTrade[];
+  /** Centres d'intérêt déclarés. Aucun droit, aucun écran. */
+  interests?: ProfileInterest[];
   stats: {
     followers: number;
     following: number;

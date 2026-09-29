@@ -8,7 +8,9 @@ import { ProfileView } from "@/components/profile/profile-view";
 import type { ProfileData, ProfileBien, ProfileAvis } from "@/components/profile/profile-showcase";
 import { getPublicPosts, profileToAuthor } from "@/lib/profile-posts";
 import { BackButton } from "@/components/ui/back-button";
-import type { Role } from "@/lib/types";
+import type { Profile } from "@/lib/profile-types";
+import { gmvVolume } from "@/lib/demo/derive";
+import { DEMO_TODAY } from "@/lib/demo/clock";
 
 /* /profil/[id] — profil public d'un autre utilisateur. Le profil (identité +
    sections LinkedIn) vient de getMockProfile ; la vitrine (biens/formations…)
@@ -51,6 +53,19 @@ const RATING_BREAKDOWN = [
   { stars: 2, count: 0 },
   { stars: 1, count: 0 },
 ];
+
+/* Volume de transactions (D16.1) — l'année civile de `DEMO_TODAY`, jamais
+   `new Date()` au rendu. Affiché seulement pour un agent ou une agence qui en
+   a un : c'est le GMV non commissionnable du journal, la somme des biens
+   vendus par son intermédiaire. Ce n'est PAS un revenu — ni le sien, ni celui
+   d'E-Dome — et le libellé le dit. */
+const VOLUME_YEAR = DEMO_TODAY.getUTCFullYear();
+
+function transactionVolumeFor(profile: Profile): { year: number; amountChf: number } | undefined {
+  if (!profile.roles.some((r) => r === "agent" || r === "agence")) return undefined;
+  const amountChf = gmvVolume(profile.id, VOLUME_YEAR);
+  return amountChf > 0 ? { year: VOLUME_YEAR, amountChf } : undefined;
+}
 
 /* Vitrine RÉELLE d'une personne, dérivée de l'annuaire — pas un jeu générique.
    Les biens sont ceux qu'elle héberge au catalogue (host = son id) ; les avis
@@ -103,10 +118,15 @@ function avisForHost(id: string): { avis: ProfileAvis[]; ratingBreakdown: { star
   return { avis, ratingBreakdown };
 }
 
-/* Vitrine adaptée au rôle principal : une agence/courtier/promoteur affiche
-   surtout des biens, un formateur surtout des formations, etc. */
-function showcaseForRole(primary: Role): Omit<ProfileData, "posts"> {
-  if (primary === "agence" || primary === "courtier" || primary === "promoteur") {
+/* Vitrine adaptée au rôle principal : une agence, un agent ou un promoteur
+   affiche surtout des biens, un créateur surtout des formations, etc. */
+function showcaseForRole(profile: Profile): Omit<ProfileData, "posts"> {
+  const primary = profile.roles[0] ?? "particulier";
+  const sellsProperties =
+    primary === "agence" ||
+    primary === "agent" ||
+    (primary === "prestataire" && (profile.trades ?? []).includes("promoteur"));
+  if (sellsProperties) {
     return {
       biens: [
         ...BIENS,
@@ -121,7 +141,7 @@ function showcaseForRole(primary: Role): Omit<ProfileData, "posts"> {
       ratingBreakdown: RATING_BREAKDOWN,
     };
   }
-  if (primary === "formateur") {
+  if (primary === "createur") {
     return {
       biens: BIENS.slice(0, 1),
       produits: [],
@@ -175,7 +195,7 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
      avis sont RÉELS quand la personne en a — dérivés de l'annuaire, pas inventés.
      Fallback sur le générique uniquement pour une personne qui n'héberge aucun
      bien / n'a reçu aucun avis, pour ne pas afficher une vitrine vide. */
-  const base = showcaseForRole(profile.roles[0] ?? "client");
+  const base = showcaseForRole(profile);
   const realBiens = biensForHost(profile.id);
   const { avis, ratingBreakdown } = avisForHost(profile.id);
   const showcase: ProfileData = {
@@ -195,6 +215,7 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
         profile={profile}
         isOwn={false}
         showcase={showcase}
+        transactionVolume={transactionVolumeFor(profile)}
         isFollowing={isFollowing}
         onToggleFollow={() => setIsFollowing((v) => !v)}
         onMessage={() => router.push(`/messages?to=${profile.id}`)}

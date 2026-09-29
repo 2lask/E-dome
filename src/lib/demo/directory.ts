@@ -1,5 +1,5 @@
 import { users, getUserById } from "@/lib/mock-data";
-import { roleLabels } from "@/lib/types";
+import { roleLabel } from "@/lib/model/role-labels";
 import type { User } from "@/lib/types";
 
 /* ── L'ANNUAIRE UNIQUE DES PERSONNES ────────────────────────────────────────
@@ -57,6 +57,6 @@ export function personSummary(id: string): {
     id: p.id,
     name: `${p.firstName} ${p.lastName}`.trim(),
     avatar: p.avatar,
-    role: roleLabels[p.activeRole],
+    role: roleLabel(p.activeRole, p.trades),
   };
 }

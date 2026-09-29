@@ -14,6 +14,7 @@ import { LottiePlayer } from "@/components/ui/lottie-player";
 import { users as allUsers, currentUser as currentUserMock } from "@/lib/mock-data";
 import { CURRENT_USER as DEMO_USER } from "@/lib/demo/identity";
 import { requirePerson } from "@/lib/demo/directory";
+import { roleLabel } from "@/lib/model/role-labels";
 import {
   Dialog,
   DialogContent,
@@ -25,8 +26,8 @@ import {
 
 /* ─── Conférence privée (visio Zoom-style) ────────────────────────────────
    Modèle volontairement multi-participants : on ouvre une "salle" à 4 — soi,
-   l'interlocuteur courant + 2 invités tiers mockés (un investisseur et un
-   courtier, deux profils typiques d'un deal immobilier). Chaque participant
+   l'interlocuteur courant + 2 invités tiers mockés (un investisseur et une
+   agente immobilière, deux profils typiques d'un deal immobilier). Chaque participant
    a un état audio/vidéo/main levée indépendant. */
 interface ConferenceParticipant {
   id: string;
@@ -63,7 +64,7 @@ const CONF_EXTRA_GUESTS: Omit<ConferenceParticipant, "isSelf">[] = [
   {
     id: "p-yasmin",
     name: "Yasmin Al Falasi",
-    role: "Courtier",
+    role: "Agent immobilier",
     avatar:
       "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=160&h=160&fit=crop",
     isHost: false,
@@ -103,7 +104,7 @@ const currentUserId = DEMO_USER.id;
    Ces conversations vivant dans un composant de page, l'invariant d'annuaire
    (import-time, dans demo/invariants.ts) ne peut pas les énumérer ; les ids
    ci-dessous sont donc garantis par `requirePerson` au chargement du module. */
-const P_SOPHIE = requirePerson("user-002"); // hôte/courtière, Lausanne
+const P_SOPHIE = requirePerson("user-002"); // agente immobilière/hôte, Lausanne
 const P_CLEMENCE = requirePerson("user-012"); // cliente/investisseuse, Lausanne
 const P_JEANLUC = requirePerson("user-015"); // agence, Neuchâtel
 const P_AMINA = requirePerson("user-004"); // hôte/formatrice, Marrakech
@@ -334,7 +335,7 @@ function MessagesPageInner() {
   const startConference = useCallback(() => {
     if (!activeConv) return;
     const partRole =
-      (activeConv.participant.activeRole as string) || "client";
+      roleLabel(activeConv.participant.activeRole, activeConv.participant.trades);
     setParticipants([
       {
         id: CONF_SELF.id,
@@ -510,7 +511,7 @@ function MessagesPageInner() {
               </p>
               {!search && (
                 <p className="text-xs mt-1">
-                  Vos discussions avec les hôtes, courtiers et prestataires apparaîtront ici.
+                  Vos discussions avec les hôtes, agences et prestataires apparaîtront ici.
                 </p>
               )}
             </div>
@@ -816,7 +817,7 @@ function MessagesPageInner() {
                           id: user.id, firstName: user.firstName, lastName: user.lastName,
                           email: `${user.firstName.toLowerCase()}@e-dome.ch`,
                           avatar: user.avatar, city: user.city, country: "Suisse",
-                          roles: ["client"], activeRole: "client",
+                          roles: ["particulier"], activeRole: "particulier",
                           stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 },
                           bio: "",
                         },

@@ -398,6 +398,19 @@ logiciels métier installés depuis quinze ans.
 
 ---
 
+> **Photos de profil de la démonstration (Mission 2, D16).** Les portraits
+> Unsplash utilisés jusqu'ici représentaient des personnes **réelles** (des
+> modèles photographiés), présentées comme des utilisateurs fictifs — un point
+> de droit à l'image signalé par l'analyse juridique. Ils sont remplacés par des
+> **visages synthétiques** (StyleGAN, via thispersondoesnotexist.com), qui ne
+> représentent aucune personne existante, servis depuis `public/avatars/`.
+> **À vérifier :** la licence du modèle StyleGAN2 (NVIDIA) est non commerciale.
+> Acceptable pour une maquette de démonstration ; avant tout usage commercial ou
+> promotionnel de ces images, confirmer le régime des images générées ou les
+> remplacer par une source sous licence commerciale explicite.
+
+---
+
 ## 7. Ce que nous nous interdisons déjà
 
 Liste tenue à jour dans `analyse/juridique.md` §10. Les points les plus

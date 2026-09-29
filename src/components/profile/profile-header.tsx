@@ -6,7 +6,8 @@ import {
   Award, BadgeCheck, MapPin, Camera, Mail, Share2, MoreHorizontal,
   Settings, HelpCircle, LogOut, Flag, UserMinus, Copy as CopyIcon, Pencil,
 } from "lucide-react";
-import { roleLabels } from "@/lib/types";
+import { roleLabel } from "@/lib/model/role-labels";
+import { formatVolumeChf } from "@/lib/utils";
 import { formatCount } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
 import type { Profile } from "@/lib/profile-types";
@@ -19,6 +20,7 @@ export function ProfileHeader({
   profile,
   isOwn,
   open,
+  transactionVolume,
   isFollowing = false,
   onToggleFollow,
   onMessage,
@@ -26,6 +28,8 @@ export function ProfileHeader({
   profile: Profile;
   isOwn: boolean;
   open: OpenEditor;
+  /** Volume de transactions d'un agent / d'une agence (D16.1). */
+  transactionVolume?: { year: number; amountChf: number };
   isFollowing?: boolean;
   onToggleFollow?: () => void;
   onMessage?: () => void;
@@ -230,7 +234,7 @@ export function ProfileHeader({
                       : { background: "var(--hover-bg)", color: "var(--text-secondary)" }
                   }
                 >
-                  {roleLabels[r]}
+                  {roleLabel(r, profile.trades)}
                 </span>
               ))}
             </div>
@@ -246,6 +250,24 @@ export function ProfileHeader({
                 <span className="font-semibold text-[var(--foreground)] tabular-nums">{profile.stats.rating}</span>
                 <span>({profile.stats.reviewsCount} avis)</span>
               </div>
+            </div>
+          )}
+
+          {/* Volume de transactions (D16.1) — un VOLUME, jamais un revenu. */}
+          {showStats && transactionVolume && (
+            <div
+              className="mt-3 inline-flex flex-col rounded-xl border border-[var(--card-border)] px-3 py-2"
+              title="Somme des biens vendus par son intermédiaire — pas un revenu."
+            >
+              <span className="text-sm text-[var(--text-secondary)]">
+                <span className="font-semibold text-[var(--foreground)] tabular-nums">
+                  {formatVolumeChf(transactionVolume.amountChf)}
+                </span>{" "}
+                · Volume de transactions {transactionVolume.year}
+              </span>
+              <span className="text-[11px] text-[var(--text-muted)]">
+                Somme des biens vendus par son intermédiaire — pas un revenu.
+              </span>
             </div>
           )}
         </div>

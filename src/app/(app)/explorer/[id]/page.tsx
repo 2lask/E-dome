@@ -17,7 +17,7 @@ import { MoneyFlow } from "@/components/pricing/money-flow";
 import { chf } from "@/lib/model/billing";
 import { useToast } from "@/components/ui/toast";
 import { timeAgo, formatDate } from "@/lib/utils";
-import { roleBadgeColors, roleLabels } from "@/lib/types";
+import { roleBadgeColor, roleLabel } from "@/lib/model/role-labels";
 import type { Property, PropertyAnalytics, User } from "@/lib/types";
 import {
   properties as allProperties,
@@ -506,7 +506,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             >
               <Sparkles className="w-4 h-4 text-[var(--primary)]" /> Analyser avec l&apos;IA
             </button>
-            {(activeRole === "hote" || activeRole === "agence" || activeRole === "promoteur") && (
+            {(activeRole === "hote" || activeRole === "agence" || activeRole === "agent" || activeRole === "proprietaire") && (
               <button
                 onClick={() => setShowBoostModal(true)}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-colors"
@@ -989,7 +989,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               </p>
               <p className="inline-flex items-start gap-1.5 text-[10px] text-[var(--text-muted)] mt-2">
                 <Info size={11} className="mt-px shrink-0" />
-                <span>Jamais ajoutée au prix payé par l&apos;hôte ou le client. Vous ne représentez aucune partie et n&apos;êtes ni agent ni courtier.</span>
+                <span>Jamais ajoutée au prix payé par l&apos;hôte ou le client. Vous ne représentez aucune partie et n&apos;êtes pas un intermédiaire immobilier.</span>
               </p>
             </div>
 
@@ -1178,8 +1178,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 <Link href={`/profil/${property.host.id}`} className="font-semibold text-[var(--foreground)] hover:underline">
                   {property.host.firstName} {property.host.lastName}
                 </Link>
-                <span className={`block text-xs mt-0.5 px-2 py-0.5 rounded-full w-fit ${roleBadgeColors[property.host.activeRole]}`}>
-                  {roleLabels[property.host.activeRole]}
+                <span className={`block text-xs mt-0.5 px-2 py-0.5 rounded-full w-fit ${roleBadgeColor(property.host.activeRole)}`}>
+                  {roleLabel(property.host.activeRole, property.host.trades)}
                 </span>
               </div>
             </div>

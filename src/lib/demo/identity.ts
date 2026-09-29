@@ -62,7 +62,7 @@ export interface Profile {
   /** Formations dont ce profil est l'auteur. */
   readonly ownedFormationIds: readonly string[];
   /**
-   * Mandats de VENTE portés par ce profil (agence, courtier). Ils entrent au
+   * Mandats de VENTE portés par ce profil (agence, agent immobilier). Ils entrent au
    * journal comme VOLUME D'AFFAIRES (`source: "vente"`, `commissionable: false`),
    * jamais dans le revenu d'E-Dome — la vente immobilière n'est pas facturée
    * (D4, invariant 14). Affiché comme volume via `gmvVolume()`. Absent pour un
@@ -83,7 +83,8 @@ export const PROFILES: readonly Profile[] = [
     ownedPropertyIds: ["prop5", "prop2", "prop9"],
     ownedFormationIds: ["form-001"],
   },
-  /* Sophie Durand — courtière indépendante à Lausanne, spécialité biens de
+  /* Sophie Durand — agente immobilière indépendante à Lausanne (agence d'une
+     personne), spécialité biens de
      caractère (Lavaux, Lausanne). Elle PORTE deux mandats de vente de standing
      (prop1 Lausanne, prop19 chalet de Verbier) → volume d'affaires ; et garde
      un pied-à-terre meublé qu'elle loue en courte durée (prop23) → son seul
@@ -156,10 +157,9 @@ export const CURRENT_USER = {
     "chemin — rendement réel, charges, relation avec les voyageurs. Je " +
     "recommande volontiers les prestataires avec qui ça se passe bien.",
   /**
-   * Rôles au sens de l'ancien jeu. La migration vers `PlatformRole` est à
-   * l'étape 4.
+   * Rôles de plateforme (`PlatformRole`, étape 4a).
    *
-   * `formateur` s'ajoute aux trois rôles décidés dans `DECISIONS.md` §4.1, et
+   * `createur` s'ajoute aux trois rôles décidés dans `DECISIONS.md` §4.1, et
    * l'écart mérite d'être justifié : le catalogue fait de cette personne
    * l'auteur de `form-001`, et le tableau de bord doit démontrer sept sources
    * de revenu. Retirer la formation appauvrirait la démonstration ; la garder
@@ -167,7 +167,7 @@ export const CURRENT_USER = {
    * qu'il a appris reste un particulier ordinaire — c'est même ce que dit sa
    * présentation.
    */
-  roles: ["proprietaire", "hote", "apporteur", "formateur"] as const,
+  roles: ["proprietaire", "hote", "apporteur", "createur"] as const,
   stats: {
     followers: 38,
     following: 64,

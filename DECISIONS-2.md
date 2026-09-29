@@ -202,6 +202,51 @@ fois) et **illimité en payant**.
     via le quota gratuit et **restent gratuites** (conversion vers Vitrine trop
     basse) — le tunnel de `DECISIONS.md §8` ne se referme pas.
 
+## D16 — Validation des trois premiers profils (fondateur, 2026-09-29) [TRANCHÉ]
+
+La direction est validée. Trois précisions, qui s'appliquent aux douze suivants
+et à toute la suite :
+
+1. **Volume de transactions affiché.** Un professionnel met en avant son volume
+   de transactions, pas son revenu. On l'affiche sur la fiche des agents et des
+   agences, avec un libellé sans ambiguïté — « volume de transactions 2026 » —
+   jamais « chiffre d'affaires » ni « revenus ». Rien sur la fiche publique ne
+   doit laisser croire que ce montant est un revenu, ni du professionnel ni
+   d'E-Dome. Techniquement : c'est le GMV non commissionnable du journal
+   (`commissionable: false`), qui reste hors de tout revenu.
+
+2. **« Courtier » disparaît de l'interface.** Remplacé par **Agent / Agence**,
+   dans les deux sens : plus aucune occurrence de « courtier » ou « courtière »
+   dans l'interface, les CGU, l'aide, les descriptions de rôle ou les textes de
+   profil — sauf quand on parle explicitement du **cadre juridique du
+   courtage** (art. 412 CO, règles, JURIDIQUE-A-VALIDER). Vérifié par une
+   recherche exhaustive, pas seulement sur les badges. Accompagne la migration
+   `Role` → `PlatformRole` (D11).
+
+3. **Noms, ton, variété humaine.**
+   - Garder la discipline des **registres distincts** sur les douze suivants.
+   - Ajouter de la **variété humaine** : quelqu'un qui écrit court et mal,
+     quelqu'un qui pose des questions de débutant, quelqu'un qui doute. Une
+     communauté où tout le monde est expert et s'exprime bien ne ressemble à
+     rien de réel.
+   - **Noms à revoir** : « Sophie Durand » et « Marc Favre » font génériques
+     (Durand est plus français que romand). Sur les quinze profils : la
+     diversité réelle de la Suisse romande — noms **romands, alémaniques,
+     italiens, portugais, balkaniques, français** — et des **générations
+     différentes**, pas seulement des trentenaires. Sophie et Marc peuvent être
+     renommés.
+
+**À surveiller pendant les étapes suivantes :**
+- **Photos de profil** cohérentes avec les personnes décrites (âge, registre) et
+  ne représentant **personne de réel** → remplacement des portraits Unsplash
+  (des personnes réelles) par des visages synthétiques, servis localement.
+- **Villes et quartiers** qui existent et correspondent à des **réalités de
+  marché plausibles** (loyers, prix au m², nuitées).
+
+**Cadence :** go pour la suite **sans autre arrêt** — profils + fil (4),
+tutoriel + « être un profil » (5), affiliation / freemium / boutique (6),
+reprise des pôles (7), design et mobile (8) — puis rapport final.
+
 ## D13 — Garde-fous permanents (juridique) [RETENU]
 
 Le bandeau « données fictives » reste partout ; **aucune** affirmation de traction sur E-Dome ; **aucun** profil ne se présente comme courtier mandaté par E-Dome ; tout avis est rattaché à une transaction (`ReviewCompliance`) et déclare `incentivized` ; la restriction apporteur `pays × type d'apport` (12 CH / 3 FR / 3 UAE, jamais de commission immobilière touchée depuis FR/UAE) est respectée ; vigilance **droit à l'image** sur les avatars des 15 profils (photos libres de droits, pas de personnes réelles identifiables).

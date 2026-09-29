@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Search, Mail, UserPlus, Check, Users } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { listPeople } from "@/lib/profile-data";
-import { roleLabels } from "@/lib/types";
+import { roleLabel } from "@/lib/model/role-labels";
 import type { PersonSummary } from "@/lib/profile-types";
 import { BackButton } from "@/components/ui/back-button";
 
@@ -37,7 +37,7 @@ function PersonCard({ person }: { person: PersonSummary }) {
         </Link>
         <p className="text-xs text-[var(--text-secondary)] truncate mt-0.5">{person.headline}</p>
         <p className="text-[11px] text-[var(--text-muted)] truncate mt-0.5">
-          {person.city}, {person.country} · {roleLabels[person.roles[0]]}
+          {person.city}, {person.country} · {roleLabel(person.roles[0] ?? "particulier", person.trades)}
         </p>
       </div>
       <div className="flex flex-col sm:flex-row items-stretch gap-1.5 shrink-0">

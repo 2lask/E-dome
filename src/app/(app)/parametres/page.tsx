@@ -4,8 +4,8 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { X, Camera, ArrowRight } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { roleLabels } from "@/lib/types";
-import type { Role } from "@/lib/types";
+import type { PlatformRole } from "@/lib/model/identity";
+import { PLATFORM_ROLE_LABELS } from "@/lib/model/role-labels";
 import type { ProfileVisibility, ToggleableSection } from "@/lib/profile-types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -42,10 +42,11 @@ const SECTIONS: { key: Section; label: string }[] = [
   { key: "roles", label: "Rôles" },
 ];
 
-const ALL_ROLES: Role[] = [
-  "client", "hote", "agence", "promoteur", "apporteur",
-  "investisseur", "formateur", "proprietaire", "photographe",
-  "courtier", "architecte", "notaire",
+/* Les rôles qu'une personne peut activer : tous les `PlatformRole` sauf
+   `visiteur` (l'état par défaut) et `admin` (jamais auto-attribué). */
+const ALL_ROLES: PlatformRole[] = [
+  "particulier", "proprietaire", "hote", "agent", "agence",
+  "prestataire", "createur", "apporteur", "annonceur",
 ];
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -730,12 +731,12 @@ export default function ParametresPage() {
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-[var(--foreground)]">
-                          {roleLabels[role]}
+                          {PLATFORM_ROLE_LABELS[role]}
                         </span>
                         <button
                           onClick={() => {
                             toggleAvailableRole(role);
-                            showToast(`${roleLabels[role]} ${active ? "désactivé" : "activé"}`);
+                            showToast(`${PLATFORM_ROLE_LABELS[role]} ${active ? "désactivé" : "activé"}`);
                           }}
                           className={`w-10 h-5 rounded-full transition-colors relative ${
                             active ? "bg-[var(--primary)]" : "bg-[var(--input-bg)]"

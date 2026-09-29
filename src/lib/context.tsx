@@ -1,14 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
-import type { Role, Currency, ReferralLink } from "./types";
-import { roleLabels } from "./types";
+import type { Currency, ReferralLink } from "./types";
 import type { PlatformRole } from "./model/identity";
-import { isPlatformRole } from "./model/identity";
+import { isPlatformRole, migrateLegacyRoles } from "./model/identity";
 import type { Profile } from "./profile-types";
 import { DEFAULT_PROFILE } from "./profile-data";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
-import { DEFAULT_VIEWING_AS, tourFor } from "./../content/roles";
+import { DEFAULT_VIEWING_AS } from "./../content/roles";
 
 // ─── Exchange rates (base CHF = 1) ──────────────────────────────────────────
 
@@ -45,15 +44,15 @@ export interface CartItem {
 }
 
 interface AppContextValue {
-  activeRole: Role;
-  setActiveRole: (role: Role) => void;
-  availableRoles: Role[];
-  toggleAvailableRole: (role: Role) => void;
-  /* Le rôle qu'on VISITE, découplé des droits. C'est l'axe `PlatformRole` du
-     modèle, pas la valeur `Role` héritée : le sélecteur de rôle le pilote pour
-     montrer la plateforme de chaque point de vue. Le régler met aussi à jour
-     `activeRole` (valeur héritée) via le pont de `content/roles.ts`, le temps
-     que les consommateurs migrent. */
+  /* Le rôle sous lequel l'interface se présente (garde-fous « Créer »,
+     tableau de bord). Un `PlatformRole`, comme `viewingAs`, qui le pilote. */
+  activeRole: PlatformRole;
+  setActiveRole: (role: PlatformRole) => void;
+  availableRoles: PlatformRole[];
+  toggleAvailableRole: (role: PlatformRole) => void;
+  /* Le rôle qu'on VISITE, découplé des droits : le sélecteur de rôle le
+     pilote pour montrer la plateforme de chaque point de vue. Le régler met
+     aussi à jour `activeRole`. */
   viewingAs: PlatformRole;
   setViewingAs: (role: PlatformRole) => void;
   /* Le mode explicatif : les affordances « ? » qui expliquent un élément.
@@ -110,14 +109,8 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 // ─── Default values ─────────────────────────────────────────────────────────
 
-/* `roleLabels` est un `Record<Role, string>` : ses clés sont exactement les
-   rôles connus, et la garde ne peut donc pas se désynchroniser de l'union. */
-function isKnownRole(value: string): value is Role {
-  return Object.prototype.hasOwnProperty.call(roleLabels, value);
-}
-
-const DEFAULT_ROLE: Role = "client";
-const DEFAULT_ROLES: Role[] = ["client", "hote", "formateur", "apporteur", "investisseur", "agence"];
+const DEFAULT_ROLE: PlatformRole = "particulier";
+const DEFAULT_ROLES: PlatformRole[] = ["particulier", "hote", "createur", "apporteur", "agence"];
 const DEFAULT_CURRENCY: Currency = "CHF";
 const DEFAULT_FAVORITES: string[] = ["prop2", "prop5", "prop3", "prop9"];
 const STORAGE_PREFIX = "edome_";
@@ -141,8 +134,8 @@ function persist(key: string, value: string) {
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
-  const [activeRole, setActiveRoleState] = useState<Role>(DEFAULT_ROLE);
-  const [availableRoles, setAvailableRoles] = useState<Role[]>(DEFAULT_ROLES);
+  const [activeRole, setActiveRoleState] = useState<PlatformRole>(DEFAULT_ROLE);
+  const [availableRoles, setAvailableRoles] = useState<PlatformRole[]>(DEFAULT_ROLES);
   const [viewingAs, setViewingAsState] = useState<PlatformRole>(DEFAULT_VIEWING_AS);
   const [explainMode, setExplainModeState] = useState<boolean>(true);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(DEFAULT_FAVORITES));
@@ -157,14 +150,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Load from localStorage after mount
   useEffect(() => {
     try {
-      /* Validation, et non `as Role`. Le jeu de rôles change à l'étape 4 :
-         un navigateur qui a mémorisé « courtier » ou « investisseur »
-         rendrait alors un rôle inexistant, et les écrans qui indexent par
-         rôle afficheraient du vide sans lever d'erreur. Une valeur inconnue
-         est ignorée : on retombe sur le défaut, ce qui est réparable par
-         l'utilisateur, là où un rôle fantôme ne l'est pas. */
+      /* Validation, et non un transtypage. Le jeu de rôles a changé à
+         l'étape 4a : un navigateur peut avoir mémorisé un ancien rôle
+         (« formateur », « client »…). On le convertit par la table de passage
+         (`migrateLegacyRoles`) ; une valeur inconnue est ignorée et l'on
+         retombe sur le défaut — réparable, là où un rôle fantôme ne l'est pas. */
       const storedRole = localStorage.getItem(`${STORAGE_PREFIX}activeRole`);
-      if (storedRole && isKnownRole(storedRole)) setActiveRoleState(storedRole);
+      if (storedRole) {
+        const migrated = migrateLegacyRoles([storedRole]).roles[0];
+        if (migrated) setActiveRoleState(migrated);
+      }
 
       /* Même prudence que pour `activeRole` : une valeur inconnue est ignorée,
          on retombe sur le défaut. `PlatformRole` peut évoluer. */
@@ -175,7 +170,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (storedExplain === "0") setExplainModeState(false);
 
       const storedRoles = localStorage.getItem(`${STORAGE_PREFIX}availableRoles`);
-      if (storedRoles) setAvailableRoles(JSON.parse(storedRoles));
+      if (storedRoles) {
+        const parsed: unknown = JSON.parse(storedRoles);
+        if (Array.isArray(parsed)) {
+          const migrated = migrateLegacyRoles(parsed).roles;
+          if (migrated.length > 0) setAvailableRoles(migrated);
+        }
+      }
 
       const storedFavs = localStorage.getItem(`${STORAGE_PREFIX}favorites`);
       if (storedFavs) setFavorites(new Set(JSON.parse(storedFavs)));
@@ -201,11 +202,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const storedProfile = localStorage.getItem(`${STORAGE_PREFIX}profile`);
       if (storedProfile) {
         const parsed = JSON.parse(storedProfile) as Partial<Profile>;
+        /* Rôles relus par la table de passage : un profil stocké avant
+           l'étape 4a porte d'anciens rôles (« formateur »…). */
+        const migratedRoles = Array.isArray(parsed.roles) ? migrateLegacyRoles(parsed.roles) : null;
         /* Merge sur DEFAULT_PROFILE pour tolérer l'évolution du schéma :
            un profil stocké avant l'ajout d'un champ reste valide. */
         setProfile({
           ...DEFAULT_PROFILE,
           ...parsed,
+          roles: migratedRoles && migratedRoles.roles.length > 0 ? migratedRoles.roles : DEFAULT_PROFILE.roles,
+          trades: parsed.trades ?? (migratedRoles?.trades.length ? migratedRoles.trades : DEFAULT_PROFILE.trades),
+          interests: parsed.interests ?? (migratedRoles?.interests.length ? migratedRoles.interests : DEFAULT_PROFILE.interests),
           location: { ...DEFAULT_PROFILE.location, ...(parsed.location ?? {}) },
           visibility: { ...DEFAULT_PROFILE.visibility, ...(parsed.visibility ?? {}) },
           meta: { ...DEFAULT_PROFILE.meta, ...(parsed.meta ?? {}) },
@@ -286,25 +293,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // ── Actions ─────────────────────────────────────────────────────────────
 
-  const setActiveRole = useCallback((role: Role) => {
+  const setActiveRole = useCallback((role: PlatformRole) => {
     setActiveRoleState(role);
   }, []);
 
-  /* Régler le rôle de visite met aussi à jour `activeRole` (valeur héritée),
-     via le pont `legacyRole` de `content/roles.ts`. Ainsi les consommateurs
-     qui lisent encore `activeRole` suivent le changement sans connaître
-     `viewingAs`. Un rôle du modèle sans entrée de visite (visiteur, agent,
-     annonceur) laisse `activeRole` tel quel : il n'a pas d'équivalent hérité
-     évident, et forcer une correspondance mentirait. */
+  /* Régler le rôle de visite met aussi à jour `activeRole` : les deux
+     parlent désormais le même `PlatformRole`, il n'y a plus de pont. */
   const setViewingAs = useCallback((role: PlatformRole) => {
     setViewingAsState(role);
-    const bridged = tourFor(role)?.legacyRole;
-    if (bridged) setActiveRoleState(bridged);
+    setActiveRoleState(role);
   }, []);
 
   const setExplainMode = useCallback((on: boolean) => setExplainModeState(on), []);
 
-  const toggleAvailableRole = useCallback((role: Role) => {
+  const toggleAvailableRole = useCallback((role: PlatformRole) => {
     setAvailableRoles((prev) => {
       if (prev.includes(role)) {
         return prev.length > 1 ? prev.filter((r) => r !== role) : prev;

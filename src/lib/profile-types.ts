@@ -1,4 +1,4 @@
-import type { Role } from "./types";
+import type { PlatformRole, ProviderTrade, ProfileInterest } from "./model/identity";
 
 /* ─── Modèle de profil enrichi (inspiration LinkedIn) ─────────────────────
    Source de vérité unique du profil, partagée entre /profil, l'onboarding
@@ -146,7 +146,11 @@ export interface Profile {
   banner?: string; // image de couverture (URL ou data URI)
   headline: string; // titre professionnel
   location: { city: string; country: string };
-  roles: Role[];
+  roles: PlatformRole[];
+  /** Métier(s) d'un prestataire — enrichit le badge « Prestataire · … ». */
+  trades?: ProviderTrade[];
+  /** Centres d'intérêt déclarés. Aucun droit, aucun écran. */
+  interests?: ProfileInterest[];
   about: string; // résumé long
   experiences: Experience[];
   education: Education[];
@@ -178,7 +182,8 @@ export interface PersonSummary {
   headline: string;
   city: string;
   country: string;
-  roles: Role[];
+  roles: PlatformRole[];
+  trades?: ProviderTrade[];
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────

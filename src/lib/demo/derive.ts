@@ -93,10 +93,17 @@ export function bySourceYear(ownerId: string = CURRENT_USER_ID): { source: Ledge
  * non commissionnables. C'est un VOLUME affiché, jamais un revenu — il n'entre
  * dans aucune fonction de revenu ci-dessus (`keep()` les exclut). Zéro tant
  * qu'aucun profil n'enregistre de vente d'agence.
+ *
+ * `year` restreint aux ventes datées de cette année civile — c'est ce que
+ * lit la fiche publique (« Volume de transactions 2026 »).
  */
-export function gmvVolume(ownerId: string = CURRENT_USER_ID): number {
+export function gmvVolume(ownerId: string = CURRENT_USER_ID, year?: number): number {
   return LEDGER.filter(
-    (e) => e.ownerId === ownerId && e.commissionable === false && e.status !== "cancelled",
+    (e) =>
+      e.ownerId === ownerId &&
+      e.commissionable === false &&
+      e.status !== "cancelled" &&
+      (year === undefined || e.date.startsWith(`${year}-`)),
   ).reduce((s, e) => s + e.gross, 0);
 }
 

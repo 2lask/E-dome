@@ -31,7 +31,7 @@ export const U_LEO: User = {
   avatar: DEMO_USER.avatar,
   city: DEMO_USER.city,
   country: DEMO_USER.country,
-  roles: [...DEMO_USER.roles] as User["roles"],
+  roles: [...DEMO_USER.roles],
   activeRole: "hote",
   stats: {
     followers: DEMO_USER.stats.followers,
@@ -78,8 +78,8 @@ export const U_EDOME: User = {
    post menait à « Profil introuvable ». Chacune résout maintenant vers une
    personne existante de `users[]`, par id — choisie par prénom, rôle et ville :
 
-     U_SOPHIE  → user-002  Sophie Durand      (Lausanne, courtière/hôte)
-     U_MARC    → user-003  Marc Favre         (Genève, investisseur/apporteur)
+     U_SOPHIE  → user-002  Sophie Durand      (Lausanne, agence/hôte)
+     U_MARC    → user-003  Marc Favre         (Genève, particulier investisseur/apporteur)
      U_JEANLUC → user-015  Jean-Luc Hartmann  (Neuchâtel, agence)
      U_AMIRA   → user-013  Omar Benjelloun    (Marrakech, promoteur/hôte)
      U_THOMAS  → user-009  Thomas Müller       (Lausanne, architecte, Minergie)
@@ -244,7 +244,7 @@ export const VIDEO_POSTS: SocialPost[] = [
     property: propRef("prop1"),
   },
   /* Deuxième post de Sophie (étape 3) : une observation de marché lémanique,
-     à côté de sa mise en vente (p2). Ton de courtière : factuel, pas
+     à côté de sa mise en vente (p2). Ton d'agente immobilière : factuel, pas
      auto-promotionnel. Commentaires croisés avec Marc et Jean-Luc. */
   {
     id: "p-so-mkt", author: U_SOPHIE,
@@ -709,7 +709,7 @@ export type CustomCTA = { href: string; title: string; subtitle: string; icon: "
 export const CUSTOM_CTA: Record<string, CustomCTA> = {
   p6: { href: "/apporteurs", title: "Rejoindre le réseau d'apporteurs", subtitle: "Accès aux deals off-market", icon: "users" },
   p11: { href: "/recherche?q=marrakech", title: "Explorer Marrakech", subtitle: "Biens disponibles dans la médina", icon: "search" },
-  p23: { href: "/profil/user-002", title: "Voir le profil de Sophie", subtitle: "Hôte & courtière à Lausanne", icon: "user" },
+  p23: { href: "/profil/user-002", title: "Voir le profil de Sophie", subtitle: "Agente immobilière & hôte à Lausanne", icon: "user" },
   p25: { href: "/recherche?q=marrakech", title: "Découvrir le Maroc", subtitle: "Riads & investissements patrimoine", icon: "search" },
 };
 

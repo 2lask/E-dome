@@ -17,7 +17,7 @@ import * as derive from "./demo/derive";
 import "./demo/invariants";
 import { properties as CATALOGUE, formations as CATALOGUE_FORMATIONS } from "./mock-data";
 import { PRODUCTS } from "./data/products";
-import { roleLabels, type Role } from "./types";
+import { roleLabel } from "./model/role-labels";
 
 export type ReservationStatus = "confirmed" | "pending" | "completed" | "cancelled";
 export type ListingStatus = "published" | "draft";
@@ -154,7 +154,7 @@ export const dashboardUser = {
   lastName: CURRENT_USER.lastName,
   name: CURRENT_USER.fullName,
   initials: CURRENT_USER.initials,
-  roles: CURRENT_USER.roles.map((r) => roleLabels[r as Role]),
+  roles: CURRENT_USER.roles.map((r) => roleLabel(r)),
 };
 
 /* Les trois biens du tableau de bord sont ceux du CATALOGUE.

@@ -30,6 +30,7 @@ export function ProfileView({
   profile,
   isOwn,
   showcase,
+  transactionVolume,
   isFollowing,
   onToggleFollow,
   onMessage,
@@ -37,6 +38,8 @@ export function ProfileView({
   profile: Profile;
   isOwn: boolean;
   showcase: ProfileData;
+  /** Volume de transactions (agent / agence) — un volume, jamais un revenu. */
+  transactionVolume?: { year: number; amountChf: number };
   isFollowing?: boolean;
   onToggleFollow?: () => void;
   onMessage?: () => void;
@@ -75,6 +78,7 @@ export function ProfileView({
         profile={profile}
         isOwn={isOwn}
         open={open}
+        transactionVolume={transactionVolume}
         isFollowing={isFollowing}
         onToggleFollow={onToggleFollow}
         onMessage={onMessage}

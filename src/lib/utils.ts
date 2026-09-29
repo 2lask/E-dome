@@ -27,6 +27,21 @@ export function formatCount(n: number): string {
   return n.toString();
 }
 
+/**
+ * Montant de volume lisible, SANS `toLocaleString` (le séparateur de milliers
+ * diffère entre l'ICU du serveur et celui du navigateur — piège
+ * d'hydratation). Au-delà du million : « 4,65 M CHF » ; en dessous, groupé à
+ * l'apostrophe suisse : « 850'000 CHF ».
+ */
+export function formatVolumeChf(amount: number): string {
+  const n = Math.round(amount);
+  if (n >= 1_000_000) {
+    const m = (n / 1_000_000).toFixed(2).replace(/\.?0+$/, "").replace(".", ",");
+    return `${m} M CHF`;
+  }
+  return `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "'")} CHF`;
+}
+
 export function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("fr-CH", {
     day: "numeric",

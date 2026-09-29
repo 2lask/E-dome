@@ -102,5 +102,5 @@ export const sellPage = {
 
   rulesTitle: "Ce qu'E-Dome ne fait jamais",
   rulesIntro:
-    "Ces quatre règles tiennent ensemble : c'est ce qui garde E-Dome hors du courtage. Sur la route accompagnée, la formulation exacte est qu'E-Dome ne signe aucun mandat, ne négocie aucun prix, et ne touche rien sur la commission de l'agence.",
+    "Ces quatre règles tiennent ensemble : c'est ce qui tient E-Dome à l'écart de toute intermédiation immobilière. Sur la route accompagnée, la formulation exacte est qu'E-Dome ne signe aucun mandat, ne négocie aucun prix, et ne touche rien sur la commission de l'agence.",
 } as const;

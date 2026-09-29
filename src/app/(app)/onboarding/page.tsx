@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import {
   ArrowRight, Camera, User, MapPin, Globe,
   Home, Building2, TrendingUp, Handshake, Briefcase, GraduationCap,
-  Scale, PenTool, Shield,
+  KeyRound,
   Search, BookOpen, Plus, Sparkles, MessageCircle, ShoppingBag, Zap,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { computeProfileCompletion } from "@/lib/profile-schema";
-import type { Role } from "@/lib/types";
+import type { PlatformRole } from "@/lib/model/identity";
+import { PLATFORM_ROLE_LABELS } from "@/lib/model/role-labels";
 
 /* Onboarding progressif branché sur le profil (contexte, persisté). Chaque
    étape écrit dans le profil : photo, titre, à propos, localisation, rôles.
@@ -23,18 +24,16 @@ const WELCOME_FEATURES = [
   { icon: GraduationCap, title: "Formations certifiantes", desc: "Apprenez et obtenez des certifications reconnues." },
 ];
 
-const ROLES: { id: Role; label: string; icon: React.ComponentType<{ className?: string }>; desc: string }[] = [
-  { id: "client", label: "Client", icon: User, desc: "Rechercher et louer un bien" },
-  { id: "hote", label: "Hôte", icon: Home, desc: "Mettre en location ses biens" },
-  { id: "agence", label: "Agence", icon: Building2, desc: "Gérer un portefeuille" },
-  { id: "promoteur", label: "Promoteur", icon: TrendingUp, desc: "Développer des projets" },
-  { id: "apporteur", label: "Apporteur", icon: Handshake, desc: "Référer et gagner" },
-  { id: "investisseur", label: "Investisseur", icon: Briefcase, desc: "Investir dans l'immobilier" },
-  { id: "formateur", label: "Formateur", icon: GraduationCap, desc: "Créer des formations" },
-  { id: "photographe", label: "Photographe", icon: Camera, desc: "Services photo" },
-  { id: "courtier", label: "Courtier", icon: Scale, desc: "Accompagner les transactions" },
-  { id: "architecte", label: "Architecte", icon: PenTool, desc: "Concevoir des espaces" },
-  { id: "notaire", label: "Notaire", icon: Shield, desc: "Sécuriser les actes" },
+const ROLES: { id: PlatformRole; icon: React.ComponentType<{ className?: string }>; desc: string }[] = [
+  { id: "particulier", icon: User, desc: "Rechercher, acheter ou louer un bien" },
+  { id: "proprietaire", icon: KeyRound, desc: "Vendre ou louer son bien" },
+  { id: "hote", icon: Home, desc: "Louer en courte durée" },
+  { id: "agent", icon: Briefcase, desc: "Accompagner vendeurs et acquéreurs" },
+  { id: "agence", icon: Building2, desc: "Gérer mandats, équipe et vitrine" },
+  { id: "prestataire", icon: Camera, desc: "Photographe, architecte, notaire…" },
+  { id: "createur", icon: GraduationCap, desc: "Publier des formations et des lives" },
+  { id: "apporteur", icon: Handshake, desc: "Recommander par un lien traçable" },
+  { id: "annonceur", icon: TrendingUp, desc: "Promouvoir une offre" },
 ];
 
 export default function OnboardingPage() {
@@ -49,10 +48,10 @@ export default function OnboardingPage() {
   const [about, setAbout] = useState(profile.about);
   const [city, setCity] = useState(profile.location.city);
   const [country, setCountry] = useState(profile.location.country);
-  const [selectedRoles, setSelectedRoles] = useState<Role[]>(profile.roles.length ? profile.roles : ["client"]);
+  const [selectedRoles, setSelectedRoles] = useState<PlatformRole[]>(profile.roles.length ? profile.roles : ["particulier"]);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const toggleRole = (id: Role) =>
+  const toggleRole = (id: PlatformRole) =>
     setSelectedRoles((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]));
 
   const onPhoto = (file?: File) => {
@@ -72,21 +71,21 @@ export default function OnboardingPage() {
 
   const next = () => {
     if (step === 2) commitProfileStep();
-    if (step === 3) updateProfile({ roles: selectedRoles.length ? selectedRoles : ["client"] });
+    if (step === 3) updateProfile({ roles: selectedRoles.length ? selectedRoles : ["particulier"] });
     setStep((s) => s + 1);
   };
 
   const finish = () => {
     commitProfileStep();
-    updateProfile({ roles: selectedRoles.length ? selectedRoles : ["client"] });
+    updateProfile({ roles: selectedRoles.length ? selectedRoles : ["particulier"] });
     router.push("/feed");
   };
 
   const getSuggestions = () => {
     const s: { icon: React.ComponentType<{ className?: string }>; label: string; href: string }[] = [];
-    if (selectedRoles.includes("client") || selectedRoles.includes("investisseur")) s.push({ icon: Search, label: "Explorer les biens", href: "/explorer" });
-    if (selectedRoles.includes("hote") || selectedRoles.includes("agence") || selectedRoles.includes("promoteur")) s.push({ icon: Plus, label: "Publier un bien", href: "/publier" });
-    if (selectedRoles.includes("formateur")) s.push({ icon: BookOpen, label: "Créer une formation", href: "/formations/creer" });
+    if (selectedRoles.includes("particulier")) s.push({ icon: Search, label: "Explorer les biens", href: "/explorer" });
+    if (selectedRoles.includes("hote") || selectedRoles.includes("agence") || selectedRoles.includes("agent") || selectedRoles.includes("proprietaire")) s.push({ icon: Plus, label: "Publier un bien", href: "/publier" });
+    if (selectedRoles.includes("createur")) s.push({ icon: BookOpen, label: "Créer une formation", href: "/formations/creer" });
     if (selectedRoles.includes("apporteur")) s.push({ icon: Handshake, label: "Espace apporteurs", href: "/apporteurs" });
     s.push({ icon: MessageCircle, label: "Voir le feed", href: "/feed" });
     if (s.length < 4) s.push({ icon: GraduationCap, label: "Trouver une formation", href: "/formations" });
@@ -213,7 +212,8 @@ export default function OnboardingPage() {
               <h2 className="text-2xl font-bold mb-2">Activez vos rôles</h2>
               <p className="text-[var(--text-secondary)] mb-6">Sélectionnez les rôles qui correspondent à votre activité. Vous pourrez les modifier à tout moment.</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {ROLES.map(({ id, label, icon: Icon, desc }) => {
+                {ROLES.map(({ id, icon: Icon, desc }) => {
+                  const label = PLATFORM_ROLE_LABELS[id];
                   const on = selectedRoles.includes(id);
                   return (
                     <button

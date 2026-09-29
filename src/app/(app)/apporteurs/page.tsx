@@ -260,7 +260,7 @@ export default function ApporteursPage() {
           Programme Apporteurs d&apos;Affaires
         </h1>
         <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-          Générez des revenus en recommandant E-Dome à votre réseau. Chaque conversion vous reverse une part des revenus de plateforme d&apos;E-Dome (10 à 30 %) ou un bounty fixe selon le pôle, jamais ajoutée au prix payé par le client. L&apos;apporteur fait du referral marketing digital : il ne négocie aucun prix, ne représente aucune partie, n&apos;est jamais payé directement par le vendeur ou l&apos;acheteur, et n&apos;est ni agent immobilier ni courtier.
+          Générez des revenus en recommandant E-Dome à votre réseau. Chaque conversion vous reverse une part des revenus de plateforme d&apos;E-Dome (10 à 30 %) ou un bounty fixe selon le pôle, jamais ajoutée au prix payé par le client. L&apos;apporteur fait du referral marketing digital : il ne négocie aucun prix, ne représente aucune partie, n&apos;est jamais payé directement par le vendeur ou l&apos;acheteur, et n&apos;est pas un intermédiaire immobilier.
         </p>
       </section>
 
@@ -287,7 +287,7 @@ export default function ApporteursPage() {
           </li>
           <li className="flex gap-2">
             <span className="text-[var(--primary)] mt-0.5">·</span>
-            <span><strong className="text-[var(--foreground)]">Pas de courtage.</strong> Vous ne négociez aucun prix, ne signez aucun mandat, ne représentez aucune partie. Vous faites du referral marketing digital — vous n&apos;êtes ni agent immobilier ni courtier.</span>
+            <span><strong className="text-[var(--foreground)]">Aucune intermédiation.</strong> Vous ne négociez aucun prix, ne signez aucun mandat, ne représentez aucune partie. Vous faites du referral marketing digital — vous n&apos;êtes pas un intermédiaire immobilier.</span>
           </li>
         </ul>
       </section>

@@ -13,7 +13,7 @@ import { useToast } from "@/components/ui/toast";
 import { timeAgo, formatCount, formatDate } from "@/lib/utils";
 import { referralEarning } from "@/lib/referral-links";
 import { profileToAuthor } from "@/lib/profile-posts";
-import { roleLabels } from "@/lib/types";
+import { roleLabel } from "@/lib/model/role-labels";
 import type { SocialPost, Comment, ReferralLink, PostAttachment } from "@/lib/types";
 import { ReportModal } from "./report-modal";
 import { PollBlock } from "./poll-block";
@@ -431,7 +431,7 @@ export function PostViewer({
                   <Link href={`/profil/${author.id}`} className="text-sm font-semibold text-[var(--foreground)] hover:underline">{author.firstName} {author.lastName}</Link>
                   {isOwn && isPinned(id) && <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--primary)]"><Pin size={11} /> Épinglé</span>}
                 </span>
-                <p className="text-[11px] text-[var(--text-muted)] truncate">{roleLabels[author.activeRole]}{post.location ? ` · ${post.location}` : ""}</p>
+                <p className="text-[11px] text-[var(--text-muted)] truncate">{roleLabel(author.activeRole, author.trades)}{post.location ? ` · ${post.location}` : ""}</p>
               </div>
               {moreMenu}
             </div>

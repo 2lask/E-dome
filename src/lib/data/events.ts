@@ -81,7 +81,7 @@ const EVENT_SEEDS: EventSeed[] = [
     duree: "8h",
     lieu: "Palexpo, Genève",
     description:
-      "Le plus grand salon immobilier de Suisse romande. Retrouvez plus de 200 exposants, des conférences thématiques et des ateliers pratiques pour tous les profils : investisseurs, propriétaires, courtiers et passionnés d'immobilier.",
+      "Le plus grand salon immobilier de Suisse romande. Retrouvez plus de 200 exposants, des conférences thématiques et des ateliers pratiques pour tous les profils : investisseurs, propriétaires, agents immobiliers et passionnés d'immobilier.",
     resume: "Le plus grand salon immobilier de Suisse romande.",
     thumbnail: `${U}1540575467063-178a50c2df87?w=600&h=400&fit=crop`,
     spots: 500,

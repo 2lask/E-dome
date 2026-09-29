@@ -20,10 +20,11 @@ import type { AgencyId } from "./agency";
                        qu'au sein d'une agence.
    · ProfileInterest — ce à quoi on S'INTÉRESSE. Aucun droit, aucun écran.
 
-   Ce module ne remplace pas encore `Role` : la migration des pages se fait à
-   l'étape 4, quand le sélecteur de rôle arrive et que ces pages changent de
-   toute façon. `LEGACY_ROLE_TO_PLATFORM` ci-dessous rend cette migration
-   mécanique plutôt que interprétative. */
+   Étape 4a : les personnes de la démonstration portent désormais des
+   `PlatformRole` (+ `trades`, `interests`). L'ancien `Role` ne subsiste que
+   comme clé de `LEGACY_ROLE_TO_*`, qui sert encore à relire une valeur
+   ancienne (un navigateur qui a mémorisé « formateur ») via
+   `migrateLegacyRoles()`. */
 
 export type AccountId = string;
 
@@ -228,6 +229,41 @@ export const LEGACY_ROLE_TO_TRADE: Readonly<Partial<Record<Role, ProviderTrade>>
 export const LEGACY_ROLE_TO_INTEREST: Readonly<Partial<Record<Role, ProfileInterest>>> = {
   investisseur: "investisseur",
 };
+
+/**
+ * Convertit une liste de rôles quelconque (anciens `Role` ou `PlatformRole`)
+ * vers le modèle : rôles de plateforme dédoublonnés, métiers et intérêts
+ * extraits. Une valeur inconnue est ignorée. Sert à relire une donnée
+ * persistée avant la migration (localStorage).
+ */
+export function migrateLegacyRoles(values: readonly unknown[]): {
+  roles: PlatformRole[];
+  trades: ProviderTrade[];
+  interests: ProfileInterest[];
+} {
+  const roles: PlatformRole[] = [];
+  const trades: ProviderTrade[] = [];
+  const interests: ProfileInterest[] = [];
+  const push = <T>(list: T[], v: T | undefined) => {
+    if (v !== undefined && !list.includes(v)) list.push(v);
+  };
+  for (const v of values) {
+    if (isPlatformRole(v)) {
+      push(roles, v);
+      continue;
+    }
+    if (typeof v !== "string" || !Object.prototype.hasOwnProperty.call(LEGACY_ROLE_TO_PLATFORM, v)) continue;
+    const legacy = v as Role;
+    const interest = LEGACY_ROLE_TO_INTEREST[legacy];
+    push(interests, interest);
+    push(trades, LEGACY_ROLE_TO_TRADE[legacy]);
+    /* Un intérêt n'est pas un rôle : « investisseur » ne rajoute
+       « particulier » que s'il n'y a rien d'autre (ajouté plus bas). */
+    if (!interest) push(roles, LEGACY_ROLE_TO_PLATFORM[legacy]);
+  }
+  if (roles.length === 0 && interests.length > 0) roles.push("particulier");
+  return { roles, trades, interests };
+}
 
 /** `true` si la chaîne est un rôle de plateforme connu. */
 export function isPlatformRole(value: unknown): value is PlatformRole {

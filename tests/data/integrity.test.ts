@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { readFileSync, readdirSync } from "node:fs";
+import { join, sep } from "node:path";
 
 import "@/lib/demo/invariants";
 import * as derive from "@/lib/demo/derive";
@@ -23,6 +25,9 @@ import {
 import { PROPS, buildView } from "@/lib/revenue-data";
 import { quote, primeChf, AFFILIATION_RATES, EDOME_PRIME_SHARE } from "@/lib/pricing";
 import { chf } from "@/lib/model/billing";
+import { isPlatformRole, migrateLegacyRoles } from "@/lib/model/identity";
+import { PLATFORM_ROLE_LABELS, roleLabel } from "@/lib/model/role-labels";
+import { formatVolumeChf } from "@/lib/utils";
 
 /* ── Assertions d'intégrité des données de démonstration ────────────────────
 
@@ -381,4 +386,99 @@ test("28 — le volume de mandats de vente (GMV) reste hors du revenu", () => {
       `un GMV a fuité dans le revenu de ${owner}`,
     );
   }
+});
+
+/* ── Étape 4a — rôles de plateforme et purge de « courtier » (D11, D16.2) ── */
+
+test("29 — les personnes de la démo ne portent que des PlatformRole", () => {
+  for (const u of users) {
+    assert.ok(u.roles.length > 0, `${u.id} : aucun rôle`);
+    for (const r of u.roles) assert.ok(isPlatformRole(r), `${u.id} : rôle hérité « ${r} »`);
+    assert.ok(isPlatformRole(u.activeRole), `${u.id} : activeRole hérité « ${u.activeRole} »`);
+    assert.ok(u.roles.includes(u.activeRole), `${u.id} : activeRole hors de ses rôles`);
+    /* Un métier n'a de sens que pour un prestataire. */
+    if (u.trades?.length) assert.ok(u.roles.includes("prestataire"), `${u.id} : métier sans rôle prestataire`);
+  }
+  for (const r of DEFAULT_PROFILE.roles) assert.ok(isPlatformRole(r), `profil courant : rôle hérité « ${r} »`);
+  /* Une seule table de libellés, et aucun ne nomme le rôle retiré. */
+  for (const label of Object.values(PLATFORM_ROLE_LABELS)) {
+    assert.doesNotMatch(label, COURTIER_RE, `libellé de rôle interdit : ${label}`);
+  }
+  assert.equal(roleLabel("prestataire", ["photographe"]), "Prestataire · Photographe");
+  /* La passerelle relit un ancien jeu de rôles sans rien perdre. */
+  const migrated = migrateLegacyRoles(["courtier", "investisseur", "formateur", "photographe"]);
+  assert.deepEqual(migrated.roles, ["agence", "createur", "prestataire"]);
+  assert.deepEqual(migrated.trades, ["photographe"]);
+  assert.deepEqual(migrated.interests, ["investisseur"]);
+});
+
+/* Le mot « courtier » ne revient jamais par accident (D16.2).
+
+   Parcourt TOUT `src/`. Deux exceptions seulement, explicites :
+   · la landing et ses annexes, GELÉES (D12) — on n'y touche pas ;
+   · les fichiers qui parlent du CADRE JURIDIQUE du courtage, chacun avec un
+     nombre MAXIMAL d'occurrences : une occurrence de plus dans l'un d'eux
+     échoue aussi. Toute autre occurrence, n'importe où, fait échouer. */
+const COURTIER_RE = /courti(?:e|è|\u00e8)r/i;
+
+const FROZEN_PREFIXES = [
+  "src/content/landing.ts",
+  "src/lib/leads/",
+  "src/app/merci/",
+  "src/app/admin/leads/",
+  "src/app/(app)/confidentialite/",
+];
+
+const LEGAL_ALLOWLIST: Record<string, number> = {
+  /* art. 412/413 CO — la définition du courtage et le salaire du courtier. */
+  "src/lib/model/rules.ts": 2,
+  /* Justification, en commentaire, de l'absence du rôle et de la table de
+     passage `courtier → agence` (clé héritée). */
+  "src/lib/model/identity.ts": 8,
+  /* Clé héritée de l'ancien type `Role`, relue par la passerelle. */
+  "src/lib/types.ts": 1,
+  /* Commentaire : ce qui distingue un apporteur d'un courtier (compliance). */
+  "src/lib/model/compliance.ts": 1,
+  /* CGU, section des règles : « E-Dome n'est pas un courtier ». */
+  "src/content/conditions.ts": 1,
+};
+
+function listSourceFiles(dir: string): string[] {
+  const out: string[] = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...listSourceFiles(full));
+    else out.push(full.split(sep).join("/"));
+  }
+  return out;
+}
+
+test("30 — aucun « courtier » dans src/ hors cadre juridique (garde-fou D16.2)", () => {
+  const offenders: string[] = [];
+  for (const file of listSourceFiles("src")) {
+    if (FROZEN_PREFIXES.some((p) => file.startsWith(p))) continue;
+    if (!/\.(tsx?|jsx?|mjs|json|css|md|html|txt)$/.test(file)) continue;
+    const text = readFileSync(file, "utf8");
+    const count = (text.match(new RegExp(COURTIER_RE.source, "gi")) ?? []).length;
+    const allowed = LEGAL_ALLOWLIST[file] ?? 0;
+    if (count > allowed) offenders.push(`${file} : ${count} occurrence(s), ${allowed} autorisée(s)`);
+  }
+  assert.deepEqual(offenders, [], `« courtier » réapparaît :\n${offenders.join("\n")}`);
+});
+
+test("31 — la fiche publique affiche un volume, jamais un revenu (D16.1)", () => {
+  const year = DEMO_TODAY.getUTCFullYear();
+  /* Les agences de la démo portent un volume de l'année ; un particulier non. */
+  assert.ok(derive.gmvVolume("user-002", year) > 0, "Sophie : volume de l'année attendu");
+  assert.ok(derive.gmvVolume("user-015", year) > 0, "Jean-Luc : volume de l'année attendu");
+  assert.equal(derive.gmvVolume("user-003", year), 0);
+  /* Formatage déterministe, sans toLocaleString. */
+  assert.equal(formatVolumeChf(4_650_000), "4,65 M CHF");
+  assert.equal(formatVolumeChf(2_000_000), "2 M CHF");
+  assert.equal(formatVolumeChf(850_000), "850'000 CHF");
+  /* Le libellé exact vit dans l'en-tête de profil, sans mot de revenu. */
+  const header = readFileSync("src/components/profile/profile-header.tsx", "utf8");
+  assert.match(header, /Volume de transactions \{transactionVolume\.year\}/);
+  assert.match(header, /pas un revenu/);
+  assert.doesNotMatch(header, /chiffre d.affaires|revenus|gains/i);
 });

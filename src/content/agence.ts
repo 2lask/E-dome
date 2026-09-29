@@ -69,8 +69,8 @@ export const agencePage = {
 /* Équipe de démonstration, pour `/agence/equipe`. */
 export const agencyTeam = [
   { id: "m1", name: "Claire Rochat", role: "Directrice", permissions: "Tous droits", mandates: 5 },
-  { id: "m2", name: "Julien Favre", role: "Courtier", permissions: "Mandats, visites", mandates: 4 },
-  { id: "m3", name: "Sofia Marchetti", role: "Courtière", permissions: "Mandats, visites", mandates: 3 },
+  { id: "m2", name: "Julien Favre", role: "Agent immobilier", permissions: "Mandats, visites", mandates: 4 },
+  { id: "m3", name: "Sofia Marchetti", role: "Agente immobilière", permissions: "Mandats, visites", mandates: 3 },
   { id: "m4", name: "Dylan Perret", role: "Assistant", permissions: "Lecture, agenda", mandates: 0 },
   { id: "m5", name: "Nadia Berger", role: "Gérance", permissions: "Baux, décomptes", mandates: 2 },
   { id: "m6", name: "Marc Aubert", role: "Photographe interne", permissions: "Médias", mandates: 0 },

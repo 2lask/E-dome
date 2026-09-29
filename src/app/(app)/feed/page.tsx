@@ -3,7 +3,7 @@ import React, { useState, useRef, useMemo } from "react";
 import Link from "next/link";
 import { Send, X, Check, Calendar, Users, Building2, GraduationCap, Image as ImageIcon, BarChart3, Film, ListChecks, Plus } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { roleLabels } from "@/lib/types";
+import { roleLabel } from "@/lib/model/role-labels";
 import { timeAgo } from "@/lib/utils";
 import { properties as ALL_PROPERTIES } from "@/lib/mock-data";
 import { buildObjectAffiliate } from "@/lib/referral-links";
@@ -774,7 +774,7 @@ export default function FeedPage() {
                       {user.firstName} {user.lastName}
                     </Link>
                     <p className="text-[11px] text-[var(--text-muted)] truncate">
-                      {roleLabels[user.activeRole]}
+                      {roleLabel(user.activeRole, user.trades)}
                     </p>
                   </div>
                   <button
