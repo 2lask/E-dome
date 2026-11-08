@@ -4,6 +4,33 @@
 
 ---
 
+## ⭐ PLAN D'EXÉCUTION PRIORISÉ (2026-11-08) — remplace l'ordre des étapes 4→8
+
+*Décision de reprise (fondateur : « d'abord ce qui est le plus important, le
+gros du travail, et les détails à la fin »). Les étapes ci-dessous gardent
+leur contenu ; c'est l'ORDRE qui change, réglé sur l'impact pour la plateforme
+et sur les dépendances. Fait : 0, 1, 1.5, 2, 3, 4a.*
+
+**Critère qui trie tout :** quelqu'un ouvre la plateforme seul, ne tombe sur rien
+de cassé, et comprend E-Dome en dix minutes. Ce qui compte d'abord, ce sont
+les SYSTÈMES dont tout le reste dépend, pas les écrans un par un.
+
+| Ordre | Chantier | Pourquoi à ce rang | Ancienne étape |
+|---|---|---|---|
+| **P0** | Remise en ordre : noms vérifiés (fait), avatars validés un à un, scripts temporaires retirés | Préalable, rapide | 4 |
+| **P1** | **Le casting des 16** : personnes, photos, catalogue réaligné sur des lieux réels, graphe d'abonnés réel, avis réciproques, agence Hartmann avec une vraie équipe | Fondation de tout ce qui est visible ; 12 profils incohérents aujourd'hui | 4c |
+| **P2** | **Le moteur d'interactions** : mémoire de session unique (publier, contacter, devis, postuler, réserver, offrir, favoris) + messagerie qui relie + notifications dérivées des événements (un seul compteur) | Un seul système supprime ~10 culs-de-sac « succès sans effet » — le plus fort levier de « chaque clic mène quelque part » | 4e + 6 (persistance) |
+| **P2bis** (en parallèle de P2) | **Le fil vivant** : 16 voix, rythme, variété, désaccords, contenus services/particuliers | Première impression du visiteur ; fichiers distincts de P2 | 4d |
+| **P3** | **« Être un profil »** : toute la plateforme vue depuis la personne incarnée (nav, tableau de bord, messages, notifications) | La démonstration humaine voulue en B.5 ; repose sur P1 + P2 | 5 (partie) |
+| **P4** | **Le modèle économique visible** : affiliation (activation de la prime sur /publier, espace apporteur Biens/Marketplace, suivi des deux côtés), freemium (valeurs de catalogue, /tarifs par rôle), **boutique en affiliation** (priorité juridique), CGU et aide alignées | Ce qui fait comprendre « qui paie quoi » ; point juridique ouvert | 6 |
+| **P5** | **Le tutoriel guidé** : spotlight, plusieurs parcours (découverte + par rôle), auto à la 1re visite, mobile | Il traverse les écrans : il vient quand ils existent | 5 (partie) |
+| **P6** | **Complétude des pôles** : services (fiche, devis→paiement→avis), formations (leçons, vidéos, certificat), agence (upgrade, garde-fous de formule, postuler), investisseurs, location longue durée, événements/lives, recherche, admin aligné | Profondeur, une fois les systèmes en place | 7 |
+| **P7** | **Les détails** : design (titres, vides, filigrane), mobile 360 px, accessibilité, boutons morts, liens fictifs, tests neufs, Playwright complet, rapport final | Finitions | 8 |
+
+**Exécution :** un commit par chantier, revu par le CEO avant d'être poussé
+(portes de qualité + vérification à l'écran) ; au plus 4 agents à la fois ;
+P2 et P2bis en parallèle avec des frontières de fichiers explicites.
+
 ## POINT DE REPRISE (pour une session neuve)
 
 - **Où on en est (maj 2026-09-25).** Étapes **0, 1, 1.5, 2, 3 FAITES** et poussées. **⛔ ARRÊT DE VALIDATION après l'étape 3** : en attente du feu vert du fondateur sur les 3 premiers profils (Sophie user-002, Marc user-003, Jean-Luc user-015) avant de construire les 12 autres. Suite prévue sans autre arrêt : 4 (profils+fil) → 5 (tutoriel+être-un-profil) → 6 (affiliation+freemium+boutique) → 7 (pôles) → 8 (design/mobile/tests).

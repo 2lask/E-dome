@@ -32,17 +32,17 @@ existants, on n'en crée pas, pour que tous les liens restent valides.*
 |---|---|---|---|---|---|
 | user-001 | **Léo Martin** (garde) | 41 | Lausanne (Sous-Gare) | propriétaire bailleur, hôte courte durée, apporteur, auteur d'une formation | réfléchi, partage ce qu'il apprend |
 | user-002 | **Céline Bovard** (ex-Sophie Durand) | 46 | Lutry (Lavaux) | agente immobilière indépendante | chaleureuse, précise, parle des biens comme des lieux de vie |
-| user-003 | **Paolo Bernasconi** (ex-Marc Favre) | 61 | Genève (Champel) | investisseur, ancien banquier privé | froid, chiffré, phrases courtes, aucune émotion |
+| user-003 | **Ennio Bordoni** (ex-Marc Favre) | 61 | Genève (Champel) | investisseur, ancien banquier privé | froid, chiffré, phrases courtes, aucune émotion |
 | user-015 | **Jean-Luc Hartmann** (garde) | 58 | Neuchâtel | directeur, Hartmann Immobilier SA | institutionnel, posé |
 | user-004 | **Aline Tschanz** | 33 | Neuchâtel | agente salariée chez Hartmann Immobilier SA | jeune pro dynamique, organisée |
-| user-005 | **Nikola Jović** | 29 | Yverdon-les-Bains | prestataire — photographe immobilier (drone, visite 3D) | **écrit court et mal** : pas d'accents, abréviations (« dispo sam pr shooting, msg moi ») |
+| user-005 | **Nikola Ristić** | 29 | Yverdon-les-Bains | prestataire — photographe immobilier (drone, visite 3D) | **écrit court et mal** : pas d'accents, abréviations (« dispo sam pr shooting, msg moi ») |
 | user-006 | **Ana Ferreira** | 34 | Renens | particulière, cherche à louer (famille, deux enfants) | **débutante** : questions simples, polie (« c'est normal qu'on demande 3 mois de garantie ? ») |
 | user-007 | **Bernard Chappuis** | 72 | Pully | particulier, vend seul la maison familiale | peu à l'aise avec le numérique, formules un peu datées, quelques fautes |
 | user-008 | **Clémence Jaquet** | 27 | Morges | particulière, premier achat | **doute** : pèse le pour et le contre, demande l'avis des autres (« est-ce vraiment le moment ? ») |
-| user-009 | **Reto Aebischer** | 49 | Fribourg | prestataire — architecte (rénovation, Minergie, CECB) | technique, précis, bilingue |
+| user-009 | **Reto Jungo** | 49 | Fribourg | prestataire — architecte (rénovation, Minergie, CECB) | technique, précis, bilingue |
 | user-010 | **Elena Currat** | 38 | Vevey | prestataire — home staging | enthousiaste, visuelle, sobre |
 | user-011 | **Sandrine Monnier** | 53 | Neuchâtel | créatrice de formations (fiscalité immobilière, ex-fiduciaire) | pédagogue, structurée |
-| user-012 | **Yves Sottas** | 67 | Bulle (La Gruyère) | apporteur (retraité, connaît toute la région) | formel, à l'ancienne, signe « Meilleures salutations, Y. Sottas » |
+| user-012 | **Yves Mottiez** | 67 | Bulle (La Gruyère) | apporteur (retraité, connaît toute la région) | formel, à l'ancienne, signe « Meilleures salutations, Y. Mottiez » |
 | user-013 | **Mirjana Kovač** | 45 | Montreux | hôte courte durée (deux appartements) | pragmatique, parle taux d'occupation et saison |
 | user-014 | **Hélène Marchal** | 52 | Évian-les-Bains (France) | apporteuse — marketplace uniquement (formations, événements) | commerciale, réseau transfrontalier |
 | user-016 | **Amina El Idrissi** | 44 | Marrakech (Guéliz), Maroc | créatrice de formations (gestion locative touristique, pricing dynamique) | bienveillante, concrète |
@@ -52,14 +52,14 @@ premier achat (Clémence), agent indépendant (Céline), agent salarié (Aline),
 patron d'agence (Jean-Luc), prestataires (Nikola, Reto, Elena), créateurs
 (Sandrine, Amina, Léo), hôtes courte durée (Mirjana, Léo), apporteurs (Yves
 en Suisse — prime biens autorisée ; Hélène en France — marketplace seulement),
-investisseur (Paolo), bailleur (Léo). International assumé : Hélène (France),
+investisseur (Ennio), bailleur (Léo). International assumé : Hélène (France),
 Amina (Maroc).
 
 ## Relations (réciproques, visibles)
 
 - **Hartmann Immobilier SA** = Jean-Luc (directeur) + Aline (agente) : l'équipe
   de l'agence, ce sont de vraies personnes de l'annuaire.
-- **Céline ↔ Paolo** : Paolo a acheté un appartement via Céline ; il lui a
+- **Céline ↔ Ennio** : Ennio a acheté un appartement via Céline ; il lui a
   laissé un avis (sec, factuel), elle l'a remercié.
 - **Céline + Nikola + Elena** : ils travaillent ensemble sur ses mises en vente
   (photos de Nikola, home staging d'Elena) — avis croisés.
@@ -67,7 +67,7 @@ Amina (Maroc).
   a proposé son aide en commentaire (il hésite).
 - **Ana** cherche à Renens ; elle est candidate pour l'appartement que **Léo**
   loue en longue durée (formule officielle du loyer initial, Vaud).
-- **Clémence** doute en public ; Paolo répond avec des chiffres, Sandrine avec
+- **Clémence** doute en public ; Ennio répond avec des chiffres, Sandrine avec
   pédagogie, Céline propose un café — trois registres dans un même fil.
 - **Reto ↔ Jean-Luc** : un projet de rénovation énergétique d'un immeuble
   neuchâtelois.
@@ -77,6 +77,28 @@ Amina (Maroc).
   Suisse) ; **Hélène** recommande la formation de **Sandrine** (affiliation
   marketplace — la seule qui lui est ouverte).
 - **Léo** a suivi la formation fiscalité de **Sandrine**.
+
+## Noms vérifiés contre des personnes réelles (2026-11-08)
+
+Règle appliquée : aucun nom complet identique à celui d'une personne **publique**,
+ni d'un **professionnel du même domaine dans la même région**. Les homonymes
+ordinaires d'un nom courant sont inévitables et acceptés.
+
+| Écarté | Pourquoi | Retenu |
+|---|---|---|
+| Paolo Bernasconi | avocat et ancien magistrat luganais, figure publique (droit pénal économique) | **Ennio Bordoni** |
+| Reto Aebischer | enseignant à l'école d'architecture de la BFH (Bienne) — même domaine, même région | **Reto Jungo** (Spicher et Brülhart écartés : bureaux d'architectes fribourgeois réels) |
+| Nikola Jović | joueur NBA connu | **Nikola Ristić** |
+| Yves Sottas | Sottas SA, grande entreprise de construction de Bulle | **Yves Mottiez** (Overney, Ruffieux, Bugnon écartés : expert immobilier, élu local, entreprise de construction de la région) |
+
+Vérifiés sans collision gênante : Céline Bovard, Aline Tschanz (homonyme
+chercheuse en biologie, autre domaine), Sandrine Monnier, Elena Currat, Amina
+El Idrissi (homonyme athlète marocaine, autre domaine). **Jean-Luc Hartmann** :
+un homonyme existe dans l'immobilier en France (SCI, sans notoriété) — gardé car
+validé par le fondateur, signalé. **Hartmann Immobilier SA** : aucune agence de
+ce nom à Neuchâtel. Non vérifiés (particuliers, noms courants, risque faible) :
+Léo Martin, Ana Ferreira, Bernard Chappuis, Clémence Jaquet, Mirjana Kovač,
+Hélène Marchal.
 
 ## Repères de marché (réalistes, 2026)
 
