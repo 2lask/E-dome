@@ -585,3 +585,99 @@ test("36 — aucun portrait réel dans src/ : tout visage vient de /avatars", ()
   }
   assert.deepEqual(offenders, [], `portraits réels :\n${offenders.join("\n")}`);
 });
+
+test("37 — le fil vivant : compteurs réels, seize voix, trois semaines (P2bis, B.3)", async () => {
+  const { VIDEO_POSTS, POLL_VOTERS, PINNED_POST_ID, SUGGESTIONS, CUSTOM_CTA } = await import("@/lib/demo/posts");
+  const { DIRECTORY, DIRECTORY_IDS, PLATFORM_ACCOUNT_ID } = await import("@/lib/demo/directory");
+  const { getPublicPosts } = await import("@/lib/profile-posts");
+  const inDirectory = (id: string) => DIRECTORY_IDS.includes(id);
+  const now = DEMO_TODAY.getTime();
+  const floor = now - 22 * 86_400_000;
+  const days = new Set<string>();
+
+  assert.ok(VIDEO_POSTS.length >= 35 && VIDEO_POSTS.length <= 46, `${VIDEO_POSTS.length} publications`);
+  assert.equal(new Set(VIDEO_POSTS.map((p) => p.id)).size, VIDEO_POSTS.length, "id de post en double");
+
+  for (const p of VIDEO_POSTS) {
+    const isPlatform = p.author.id === PLATFORM_ACCOUNT_ID;
+    assert.ok(isPlatform || inDirectory(p.author.id), `${p.id} : auteur ${p.author.id} hors annuaire`);
+    if (isPlatform) assert.equal(p.id, PINNED_POST_ID, "seul l'avis épinglé est signé E-Dome");
+
+    /* « J'aime » : une liste de personnes réelles, le compteur en dérive. */
+    assert.ok(Array.isArray(p.likedBy), `${p.id} : likedBy manquant`);
+    assert.equal(p.likes, p.likedBy.length, `${p.id} : compteur non dérivé`);
+    assert.ok(p.likes <= DIRECTORY.length, `${p.id} : ${p.likes} j'aime pour ${DIRECTORY.length} personnes`);
+    assert.equal(new Set(p.likedBy).size, p.likedBy.length, `${p.id} : likeur en double`);
+    for (const id of p.likedBy) {
+      assert.ok(inDirectory(id), `${p.id} : likeur ${id} hors annuaire`);
+      assert.notEqual(id, p.author.id, `${p.id} : l'auteur s'aime lui-même`);
+    }
+
+    /* Dates : sur l'horloge de la démo, étalées sur trois semaines. */
+    const t = new Date(p.createdAt).getTime();
+    assert.ok(t <= now, `${p.id} daté dans le futur`);
+    if (!isPlatform) {
+      assert.ok(t >= floor, `${p.id} hors de la fenêtre de trois semaines`);
+      days.add(p.createdAt.slice(0, 10));
+    }
+
+    /* Commentaires : des personnes réelles, après le post, avant aujourd'hui. */
+    for (const c of p.comments) {
+      assert.ok(inDirectory(c.author.id), `${c.id} : commentateur ${c.author.id} hors annuaire`);
+      const ct = new Date(c.createdAt).getTime();
+      assert.ok(ct > t && ct <= now, `${c.id} : daté hors de [post, aujourd'hui]`);
+      const likers = (c as { likedBy?: string[] }).likedBy ?? [];
+      assert.equal(c.likes, likers.length, `${c.id} : compteur de commentaire non dérivé`);
+      for (const id of likers) {
+        assert.ok(inDirectory(id), `${c.id} : likeur ${id} hors annuaire`);
+        assert.notEqual(id, c.author.id, `${c.id} : le commentateur s'aime lui-même`);
+      }
+    }
+
+    /* Sondages : chaque vote est une personne réelle, une seule fois. */
+    if (p.poll) {
+      const voters = POLL_VOTERS[p.id];
+      assert.ok(voters, `${p.id} : votants inconnus`);
+      const flat = voters.flat();
+      assert.equal(new Set(flat).size, flat.length, `${p.id} : quelqu'un a voté deux fois`);
+      for (const id of flat) assert.ok(inDirectory(id), `${p.id} : votant ${id} hors annuaire`);
+      assert.equal(p.poll.totalVotes, flat.length);
+      assert.deepEqual(p.poll.options.map((o) => o.votes), voters.map((v) => v.length));
+    }
+
+    /* Un bien joint appartient à l'auteur du post. */
+    if (p.property) assert.equal(p.property.host.id, p.author.id, `${p.id} : bien d'un autre hôte`);
+    if (typeof p.views === "number") assert.ok(p.views < 1000, `${p.id} : ${p.views} vues`);
+    for (const m of p.media) assert.ok(!m.includes("clip-01"), `${p.id} : clip filigrané « surjo.aep »`);
+  }
+
+  assert.ok(days.size >= 15, `publications concentrées sur ${days.size} jours`);
+
+  /* Les seize publient, chacun au moins une fois ; les pros plus que les
+     particuliers. */
+  const count = (id: string) => VIDEO_POSTS.filter((p) => p.author.id === id).length;
+  for (const id of DIRECTORY_IDS) assert.ok(count(id) >= 1, `${id} ne publie rien`);
+  for (const particulier of ["user-006", "user-007", "user-008"]) assert.ok(count(particulier) <= 2);
+
+  /* CTA : vers des profils de l'annuaire. */
+  for (const [postId, cta] of Object.entries(CUSTOM_CTA)) {
+    assert.ok(VIDEO_POSTS.some((p) => p.id === postId), `CTA orphelin ${postId}`);
+    const m = cta.href.match(/^\/profil\/(.+)$/);
+    if (m) assert.ok(inDirectory(m[1]), `CTA ${postId} : profil ${m[1]} inconnu`);
+  }
+
+  /* « Qui suivre » : jamais soi-même, jamais quelqu'un qu'on suit déjà. */
+  const followed = followingOf(CURRENT_USER_ID);
+  for (const s of SUGGESTIONS) {
+    assert.notEqual(s.id, CURRENT_USER_ID);
+    assert.ok(!followed.includes(s.id), `${s.id} déjà suivi`);
+  }
+  assert.equal(SUGGESTIONS.length, DIRECTORY.length - 1 - followed.length);
+
+  /* L'onglet Publications d'un profil = ses posts du fil, rien d'autre. */
+  for (const u of DIRECTORY) {
+    const mine = getPublicPosts(u).map((p) => p.id).sort();
+    const inFeed = VIDEO_POSTS.filter((p) => p.author.id === u.id).map((p) => p.id).sort();
+    assert.deepEqual(mine, inFeed, `${u.id} : profil et fil divergent`);
+  }
+});

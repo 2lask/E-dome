@@ -6,11 +6,12 @@ import {
   Heart, MessageCircle, Send, Bookmark, Share2, X, ChevronLeft, ChevronRight,
   Volume2, VolumeX, Play, MapPin, Building2, GraduationCap, Coins, ArrowRight,
   MoreHorizontal, Pin, PinOff, Trash2, Copy, Flag, Calendar, BarChart3, TrendingUp, TrendingDown,
-  Repeat2, Eye,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { useToast } from "@/components/ui/toast";
-import { timeAgo, formatCount, formatDate } from "@/lib/utils";
+import { formatCount, formatDate } from "@/lib/utils";
+import { feedTimeAgo, likedByMe, viewsOf } from "@/lib/demo/posts";
+import { DEMO_TODAY } from "@/lib/demo/clock";
 import { referralEarning } from "@/lib/referral-links";
 import { profileToAuthor } from "@/lib/profile-posts";
 import { roleLabel } from "@/lib/model/role-labels";
@@ -194,7 +195,7 @@ function CommentRow({ c }: { c: Comment }) {
           <Link href={`/profil/${c.author.id}`} className="font-semibold hover:underline">{c.author.firstName} {c.author.lastName}</Link>{" "}
           <span className="text-[var(--text-secondary)]">{c.content}</span>
         </p>
-        <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{timeAgo(c.createdAt)}{c.likes ? ` · ${formatCount(c.likes)} j'aime` : ""}</p>
+        <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{feedTimeAgo(c.createdAt)}{c.likes ? ` · ${formatCount(c.likes)} j'aime` : ""}</p>
       </div>
     </div>
   );
@@ -255,10 +256,15 @@ export function PostViewer({
     onClose();
   };
 
-  const liked = !!likedMap[id];
+  /* Les « j'aime » sont des personnes réelles (`likedBy`) : si l'utilisateur
+     courant en fait déjà partie, le cœur part rempli et le compteur ne le
+     compte pas deux fois. */
+  const likedInData = likedByMe(post);
+  const liked = likedMap[id] ?? likedInData;
   const saved = !!savedMap[id];
   const comments = [...(extra[id] ?? []), ...post.comments];
-  const likeCount = post.likes + (liked ? 1 : 0);
+  const likeCount = post.likes - (likedInData ? 1 : 0) + (liked ? 1 : 0);
+  const views = viewsOf(post);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -272,7 +278,7 @@ export function PostViewer({
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
   }, [onClose, onNav]);
 
-  const toggleLike = () => setLikedMap((m) => ({ ...m, [id]: !m[id] }));
+  const toggleLike = () => setLikedMap((m) => ({ ...m, [id]: !(m[id] ?? likedInData) }));
   const toggleSave = () => setSavedMap((m) => ({ ...m, [id]: !m[id] }));
   const doubleLike = () => {
     setLikedMap((m) => ({ ...m, [id]: true }));
@@ -282,7 +288,7 @@ export function PostViewer({
   const submitComment = () => {
     const text = draft.trim();
     if (!text) return;
-    const c: Comment = { id: `c-new-${Date.now()}`, author: profileToAuthor(profile), content: text, createdAt: new Date().toISOString(), likes: 0 };
+    const c: Comment = { id: `c-new-${Date.now()}`, author: profileToAuthor(profile), content: text, createdAt: DEMO_TODAY.toISOString(), likes: 0 };
     setExtra((e) => ({ ...e, [id]: [c, ...(e[id] ?? [])] }));
     setDraft("");
   };
@@ -465,8 +471,11 @@ export function PostViewer({
                   <Bookmark size={21} fill={saved ? "currentColor" : "none"} />
                 </button>
               </div>
-              <p className="text-sm font-semibold text-[var(--foreground)] mt-1">{formatCount(likeCount)} j'aime</p>
-              <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide mt-0.5">{timeAgo(post.createdAt)}</p>
+              <p className="text-sm font-semibold text-[var(--foreground)] mt-1">
+                {formatCount(likeCount)} j'aime
+                {views !== null && <span className="font-normal text-[var(--text-muted)]"> · {formatCount(views)} vues</span>}
+              </p>
+              <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide mt-0.5">{feedTimeAgo(post.createdAt)}</p>
               <div className="mt-2.5">{commentInput}</div>
             </div>
           </div>
@@ -483,7 +492,7 @@ export function PostViewer({
                   <Link href={`/profil/${author.id}`} className="text-[15px] font-bold text-[var(--foreground)] hover:underline">{author.firstName} {author.lastName}</Link>
                   {isOwn && isPinned(id) && <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--primary)]"><Pin size={11} /> Épinglé</span>}
                 </div>
-                <p className="text-[13px] text-[var(--text-muted)] truncate">@{handle} · {timeAgo(post.createdAt)}{post.location ? ` · ${post.location}` : ""}</p>
+                <p className="text-[13px] text-[var(--text-muted)] truncate">@{handle} · {feedTimeAgo(post.createdAt)}{post.location ? ` · ${post.location}` : ""}</p>
               </div>
               {moreMenu}
             </div>
@@ -496,20 +505,15 @@ export function PostViewer({
             {/* Pièces jointes (sondage / événement / analytics / bien / formation) */}
             <div className="mt-3 space-y-3">{attachments}</div>
 
-            {/* Barre d'actions X : réponses · reposts · j'aime · vues · enregistrer · partager */}
+            {/* Barre d'actions X : réponses · j'aime · enregistrer · partager. Plus de
+                reposts ni de vues inventés (likes / 8, likes × 25) : règle B.3. */}
             <div className="mt-3 pt-2 border-t border-[var(--card-border)] flex items-center justify-between max-w-md text-[var(--text-muted)]">
               <button onClick={() => inputRef.current?.focus()} className="inline-flex items-center gap-1.5 text-sm hover:text-[var(--primary)] transition-colors">
                 <MessageCircle size={18} /> <span className="tabular-nums">{formatCount(comments.length)}</span>
               </button>
-              <span className="inline-flex items-center gap-1.5 text-sm">
-                <Repeat2 size={18} /> <span className="tabular-nums">{formatCount(Math.round(post.likes / 8))}</span>
-              </span>
               <button onClick={toggleLike} className="inline-flex items-center gap-1.5 text-sm transition-colors" style={{ color: liked ? "var(--destructive)" : undefined }}>
                 <Heart size={18} fill={liked ? "currentColor" : "none"} /> <span className="tabular-nums">{formatCount(likeCount)}</span>
               </button>
-              <span className="inline-flex items-center gap-1.5 text-sm">
-                <Eye size={18} /> <span className="tabular-nums">{formatCount(post.likes * 25 + comments.length * 50)}</span>
-              </span>
               <button onClick={toggleSave} aria-label="Enregistrer" className="transition-colors" style={{ color: saved ? "var(--primary)" : undefined }}>
                 <Bookmark size={18} fill={saved ? "currentColor" : "none"} />
               </button>

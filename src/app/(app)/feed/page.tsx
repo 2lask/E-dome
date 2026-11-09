@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Send, X, Check, Calendar, Users, Building2, GraduationCap, Image as ImageIcon, BarChart3, Film, ListChecks, Plus } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { roleLabel } from "@/lib/model/role-labels";
-import { timeAgo } from "@/lib/utils";
+import { DEMO_TODAY } from "@/lib/demo/clock";
 import { properties as ALL_PROPERTIES } from "@/lib/mock-data";
 import { buildObjectAffiliate } from "@/lib/referral-links";
 import type { SocialPost, Comment, Property, AnalyticsMetric, AnalyticsCardData, PostAttachment, ReferralLink } from "@/lib/types";
@@ -12,7 +12,7 @@ import { DiscoverHub } from "@/components/layout/discover-hub";
 import { RecommendedCarousel } from "@/components/feed/recommended-carousel";
 import { MarketPulse } from "@/components/feed/market-pulse";
 import {
-  CURRENT_USER, PINNED_POST_ID, SUGGESTIONS, VIDEO_POSTS,
+  CURRENT_USER, PINNED_POST_ID, SUGGESTIONS, VIDEO_POSTS, feedTimeAgo, likedByMe,
 } from "@/lib/demo/posts";
 import { PostCard, renderContent } from "@/components/feed/post-card";
 import { ComposerAction } from "@/components/feed/composer/actions";
@@ -87,7 +87,12 @@ export default function FeedPage() {
   // Persiste l'état mute entre les posts (le user ne doit pas le réajuster à chaque card).
   const [muted, setMuted] = useState(true);
 
-  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  /* Les « j'aime » sont des personnes réelles (`likedBy`) : si l'utilisateur
+     courant figure déjà parmi elles, le cœur part rempli, et le retirer
+     décompte bien une personne. */
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(
+    () => new Set(VIDEO_POSTS.filter(likedByMe).map((p) => p.id)),
+  );
   const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set());
   const [repostedPosts, setRepostedPosts] = useState<Set<string>>(new Set());
   const [shareMenuPost, setShareMenuPost] = useState<string | null>(null);
@@ -168,7 +173,8 @@ export default function FeedPage() {
       id: `c-new-${Date.now()}`,
       author: CURRENT_USER,
       content: replyTo ? `@${replyTo} ${text}` : text,
-      createdAt: new Date().toISOString(),
+      /* Horloge de la démo : le fil entier est daté sur DEMO_TODAY. */
+      createdAt: DEMO_TODAY.toISOString(),
       likes: 0,
     };
     setPosts((prev) =>
@@ -322,7 +328,7 @@ export default function FeedPage() {
       type: "post",
       likes: 0,
       comments: [],
-      createdAt: new Date().toISOString(),
+      createdAt: DEMO_TODAY.toISOString(),
     };
 
     if (composerAttachment?.kind === "property") {
@@ -348,7 +354,7 @@ export default function FeedPage() {
       newPost.poll = {
         options: pollFilled.map((label, i) => ({ id: `o${i}`, label, votes: 0 })),
         totalVotes: 0,
-        endsAt: new Date(Date.now() + 24 * 3600_000).toISOString(),
+        endsAt: new Date(DEMO_TODAY.getTime() + 24 * 3600_000).toISOString(),
       };
     }
 
@@ -838,7 +844,7 @@ export default function FeedPage() {
                       <Link href={`/profil/${c.author.id}`} className="text-sm font-semibold text-[var(--foreground)] hover:underline">
                         {c.author.firstName}
                       </Link>
-                      <span className="text-xs text-[var(--text-muted)]">{timeAgo(c.createdAt)}</span>
+                      <span className="text-xs text-[var(--text-muted)]">{feedTimeAgo(c.createdAt)}</span>
                     </div>
                     <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                       {renderContent(c.content)}

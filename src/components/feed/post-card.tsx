@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send, Repeat2, Eye, MapPin, ChevronRight, Edit3, Trash2, Flag, EyeOff, Copy, Calendar, Search, User as UserIcon, Users, Building2, GraduationCap, Pin } from "lucide-react";
+import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send, Repeat2, MapPin, ChevronRight, Edit3, Trash2, Flag, EyeOff, Copy, Calendar, Search, User as UserIcon, Users, Building2, GraduationCap, Pin } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { timeAgo, formatCount } from "@/lib/utils";
+import { formatCount } from "@/lib/utils";
 import type { SocialPost } from "@/lib/types";
-import { CURRENT_USER_ID, CUSTOM_CTA, EVENTS_BY_POST, PINNED_POST_ID, formatEventDate } from "@/lib/demo/posts";
+import { CURRENT_USER_ID, CUSTOM_CTA, PINNED_POST_ID, feedTimeAgo } from "@/lib/demo/posts";
 import { PollBlock } from "./poll-block";
 import { MediaGallery } from "./media/gallery";
 import { VideoPlayer } from "./media/video-player";
@@ -127,7 +127,6 @@ export function PostCard({
 }: PostCardProps) {
   const { formatPrice } = useApp();
   const cta = CUSTOM_CTA[post.id];
-  const event = EVENTS_BY_POST[post.id];
   const isOwn = post.author.id === CURRENT_USER_ID;
   /* L'avis d'accueil porte « Épinglé » au lieu d'un horodatage : « il y a
      2 h » sur un avertissement permanent affirme une fraîcheur qui n'a pas
@@ -144,7 +143,7 @@ export function PostCard({
   /* Post « texte seul » (façon X) : aucun média ni objet attaché → on met le
      texte en avant, plus grand. */
   const textOnly =
-    post.media.length === 0 && !post.property && !post.formation && !post.attachment && !post.poll && !cta && !event;
+    post.media.length === 0 && !post.property && !post.formation && !post.attachment && !post.poll && !cta;
 
   return (
     <article
@@ -182,7 +181,7 @@ export function PostCard({
                   Épinglé
                 </span>
               ) : (
-                <span className="text-[12px] text-[var(--text-muted)]">{timeAgo(post.createdAt)}</span>
+                <span className="text-[12px] text-[var(--text-muted)]">{feedTimeAgo(post.createdAt)}</span>
               )}
               {post.location && (
                 <>
@@ -304,28 +303,6 @@ export function PostCard({
             </Link>
           )}
 
-          {/* Event CTA (ancien format via EVENTS_BY_POST map) */}
-          {event && (
-            <Link
-              href={`/evenements/${event.id}`}
-              onClick={(e) => e.stopPropagation()}
-              className="mt-2 flex gap-2.5 p-2 rounded-xl border border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors"
-            >
-              <img src={event.thumbnail} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <Calendar className="w-3 h-3 text-violet-400" />
-                  <span className="text-[10px] uppercase tracking-wider text-violet-400 font-semibold">Événement · {event.type}</span>
-                </div>
-                <p className="text-[13px] font-medium text-[var(--foreground)] truncate leading-tight">{event.titre}</p>
-                <p className="text-[12px] text-[var(--text-muted)] mt-0.5 truncate">
-                  {formatEventDate(event.date)} · {event.heure} · {event.lieu} · {event.prix === 0 ? "Gratuit" : formatPrice(event.prix)}
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-[var(--text-muted)] self-center shrink-0" />
-            </Link>
-          )}
-
           {/* Nouveau format : post.attachment (event ou analytics) */}
           {post.attachment?.type === "event" && (
             <div className="mt-2" onClick={(e) => e.stopPropagation()}>
@@ -383,7 +360,9 @@ export function PostCard({
               hoverColor="emerald"
               label={reposted ? "Annuler le repost" : "Reposter"}
               active={reposted}
-              count={Math.round(post.likes / 8) + (reposted ? 1 : 0)}
+              /* Aucun compteur de partages inventé (règle B.3) : il valait
+                 likes / 8. Seul le repost de la session se compte. */
+              count={reposted ? 1 : 0}
             >
               <Repeat2 className={`w-[16px] h-[16px] ${reposted ? "animate-pop" : ""}`} />
             </ActionBtn>
@@ -398,10 +377,6 @@ export function PostCard({
               <Heart className={`w-[16px] h-[16px] ${liked ? "fill-rose-500 text-rose-500 animate-pop" : ""}`} />
             </ActionBtn>
 
-            <div className="hidden items-center gap-1 px-2 py-1 text-[12px] text-[var(--text-muted)]">
-              <Eye className="w-[16px] h-[16px]" />
-              <span className="tabular-nums">{formatCount(post.likes * 25 + post.comments.length * 50)}</span>
-            </div>
 
             <button
               onClick={(e) => { e.stopPropagation(); onToggleSave(); }}

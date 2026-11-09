@@ -4,9 +4,15 @@
    pour que le container ait le bon aspect-ratio des le 1er render
    (evite le flash 16:9 -> 9:16 visible avec onLoadedMetadata).
 
-   Sur 27 clips :
-   - 24 PORTRAIT 9:16 (720x1280 ou 360x640) — ratio 0.5625
+   Sur 26 clips :
+   - 23 PORTRAIT 9:16 (720x1280 ou 360x640) — ratio 0.5625
    - 3 LANDSCAPE 16:9 (~1276x720) — ratio ~1.7722
+
+   clip-01 est RETIRÉ (fichier supprimé) : c'était un gabarit « Before /
+   After » portant, incrusté dans l'image, le filigrane « surjo.aep » — le nom
+   du projet After Effects d'un modèle tiers (audit Mission 2). Le fil n'utilise
+   plus que des clips sans texte ni filigrane ni visage de présentateur
+   (voir `src/lib/demo/posts.ts`).
 */
 
 export type VideoMeta = {
@@ -20,7 +26,6 @@ export type VideoMeta = {
    au format genere par `clip(n)` dans feed/page.tsx :
    `/videos/feed/clip-${nn}.mp4` avec nn zero-padded. */
 export const VIDEO_RATIOS: Record<string, VideoMeta> = {
-  "/videos/feed/clip-01.mp4": { width: 720, height: 1280, ratio: 720 / 1280 },
   "/videos/feed/clip-02.mp4": { width: 720, height: 1280, ratio: 720 / 1280 },
   "/videos/feed/clip-03.mp4": { width: 720, height: 1280, ratio: 720 / 1280 },
   "/videos/feed/clip-04.mp4": { width: 720, height: 1280, ratio: 720 / 1280 },
