@@ -10,6 +10,8 @@ import { bySource, currentMonth, entries, monthly, total, gmvVolume } from "./de
 import { LEDGER } from "./ledger";
 import { PROFILES, CURRENT_USER_ID } from "./identity";
 import { PLATFORM_ACCOUNT_ID } from "./directory";
+import { FOLLOWS, followersOf, followingOf } from "./social";
+import { AGENCY_MEMBERS, MANDATE_TRACKING, agencyProperties } from "./agency";
 import { VIDEO_POSTS, SUGGESTIONS } from "./posts";
 import { PUBLIC_SEED_IDS } from "@/lib/profile-data";
 
@@ -215,8 +217,11 @@ for (const e of LEDGER) {
 
   /* Le mois courant non vide, PAR PROFIL : un profil vide afficherait « 0 CHF »
      sous un badge de croissance. Une passe globale le masquerait derrière le
-     revenu des autres profils. */
+     revenu des autres profils. S'applique aux profils à activité RÉCURRENTE
+     (biens en courte durée, formations) : un photographe qui n'a pas facturé
+     ce mois-ci n'a pas de tableau de revenus mensuel à remplir. */
   for (const profile of PROFILES) {
+    if (profile.ownedPropertyIds.length === 0 && profile.ownedFormationIds.length === 0) continue;
     assert(currentMonth({ ownerId: profile.ownerId }) > 0, 5, {
       rule: "Le mois courant n'est pas vide (par propriétaire).",
       found: `profil ${profile.ownerId} : ${last.label} = 0 CHF`,
@@ -363,6 +368,28 @@ function resolves(id: string): boolean {
   }
   for (const r of mockReviews) {
     refs.push({ id: r.author.id, where: `auteur de l'avis ${r.id}` });
+    refs.push({ id: r.recipientId, where: `destinataire de l'avis ${r.id}` });
+  }
+  for (const m of AGENCY_MEMBERS) {
+    refs.push({ id: m.accountId, where: "membre de l'agence de démonstration" });
+  }
+  for (const p of CATALOGUE) {
+    refs.push({ id: p.host.id, where: `hôte du bien ${p.id}` });
+    if (p.soldTo) refs.push({ id: p.soldTo, where: `acheteur du bien ${p.id}` });
+  }
+  for (const prof of PROFILES) {
+    for (const s of prof.serviceSales ?? []) refs.push({ id: s.clientId, where: `client de la prestation ${s.id}` });
+  }
+  /* Le suivi des mandats de l'agence désigne exactement ses biens en vente. */
+  {
+    const saleIds = agencyProperties().filter((p) => p.transactionType === "vente").map((p) => p.id).sort();
+    const tracked = Object.keys(MANDATE_TRACKING).sort();
+    assert(saleIds.join(",") === tracked.join(","), 11, {
+      rule: "Le suivi des mandats de l'agence porte exactement sur ses biens en vente.",
+      found: `suivi : ${tracked.join(", ")}`,
+      expected: `biens en vente de l'agence : ${saleIds.join(", ")}`,
+      fix: "src/lib/demo/agency.ts — aligner MANDATE_TRACKING sur les biens en vente des membres.",
+    });
   }
 
   const orphans = refs.filter((r) => !resolves(r.id));
@@ -426,67 +453,273 @@ for (const e of LEDGER) {
   });
 }
 
-/* 15 — Les stats d'un profil concordent avec le journal et les avis.
+/* 15 — Les stats des SEIZE personnes concordent avec le journal et les avis.
 
-   Le cœur de l'audit — « aucun nombre divergent » — appliqué aux personnes : les
-   statistiques affichées d'un profil (`users[]`) ne peuvent plus contredire ce
-   que le journal et les avis produisent. `revenue` est le revenu COMMISSIONNABLE
-   (total du journal) ; le volume de mandats de vente (GMV) reste un volume,
-   jamais un revenu (D4, invariant 14). L'utilisateur courant est exempté : son
-   `revenue` est délibérément neutralisé à 0 (son tableau de bord affiche le
-   revenu dérivé), garde-fou déjà couvert par tests/data (« 16 »). */
+   Le cœur de l'audit — « aucun nombre divergent » — appliqué à TOUTE
+   l'annuaire, plus seulement aux trois premiers profils :
+     · biens        = biens hébergés au catalogue ;
+     · avis / note  = avis réellement reçus (`recipientId`), note arrondie au
+                      dixième ;
+     · transactions = écritures non annulées du journal (0 pour une personne
+                      absente de PROFILES : elle n'a rien vendu) ;
+     · revenu       = revenu COMMISSIONNABLE du journal. Le volume de mandats
+                      de vente (GMV) reste un volume, jamais un revenu (D4).
+   L'utilisateur courant garde un `revenue` neutralisé à 0 (son tableau de
+   bord affiche le revenu dérivé) — garde-fou couvert par tests/data (« 16 »). */
 {
   const round1 = (n: number) => Math.round(n * 10) / 10;
   for (const profile of PROFILES) {
-    if (profile.ownerId === CURRENT_USER_ID) continue;
-    const person = PEOPLE.find((p) => p.id === profile.ownerId);
-    assert(!!person, 15, {
+    assert(PEOPLE.some((p) => p.id === profile.ownerId), 15, {
       rule: "Tout profil porteur de montants a une ligne d'annuaire.",
       found: `le profil ${profile.ownerId} n'existe pas dans users[]`,
       expected: "une personne de l'annuaire",
       fix: `${DIRECTORY_FILE} — ajouter la personne, ou retirer le profil de PROFILES.`,
     });
-    if (!person) continue;
-
-    const hostCount = CATALOGUE.filter((p) => p.host.id === profile.ownerId).length;
-    const activity = LEDGER.filter((e) => e.ownerId === profile.ownerId && e.status !== "cancelled").length;
-    const revenue = Math.round(total({ ownerId: profile.ownerId }));
-    const hosted = new Set(CATALOGUE.filter((p) => p.host.id === profile.ownerId).map((p) => p.id));
-    const revs = mockReviews.filter((r) => hosted.has(r.propertyId));
-    const reviewCount = revs.length;
+  }
+  for (const person of PEOPLE) {
+    const id = person.id;
+    const hostCount = CATALOGUE.filter((p) => p.host.id === id).length;
+    const activity = LEDGER.filter((e) => e.ownerId === id && e.status !== "cancelled").length;
+    const revenue = id === CURRENT_USER_ID ? 0 : Math.round(total({ ownerId: id }));
+    const revs = mockReviews.filter((r) => r.recipientId === id);
     const rating = revs.length ? round1(revs.reduce((s, r) => s + r.rating, 0) / revs.length) : 0;
 
     assert(person.stats.properties === hostCount, 15, {
       rule: "Le nombre de biens annoncé égale les biens hébergés au catalogue.",
-      found: `${profile.ownerId} : stats.properties = ${person.stats.properties}`,
+      found: `${id} : stats.properties = ${person.stats.properties}`,
       expected: `${hostCount} bien(s) hébergé(s) au catalogue`,
-      fix: `${DIRECTORY_FILE} — aligner stats.properties, ou l'attribution host des biens.`,
+      fix: `${DIRECTORY_FILE} — stats.properties est dérivé par stampDerivedStats() ; vérifier l'attribution host des biens.`,
     });
     assert(person.stats.transactions === activity, 15, {
       rule: "Le nombre de transactions annoncé égale les écritures non annulées du journal.",
-      found: `${profile.ownerId} : stats.transactions = ${person.stats.transactions}`,
+      found: `${id} : stats.transactions = ${person.stats.transactions}`,
       expected: `${activity} écriture(s) au journal`,
       fix: `${DIRECTORY_FILE} — aligner stats.transactions sur le journal (écritures non annulées de l'owner).`,
     });
     assert(person.stats.revenue === revenue, 15, {
       rule: "Le revenu annoncé égale le revenu commissionnable du journal (le GMV reste un volume).",
-      found: `${profile.ownerId} : stats.revenue = ${person.stats.revenue}`,
-      expected: `${revenue} CHF (total commissionnable ; GMV = ${Math.round(gmvVolume(profile.ownerId))} CHF, hors revenu)`,
+      found: `${id} : stats.revenue = ${person.stats.revenue}`,
+      expected: `${revenue} CHF (total commissionnable ; GMV = ${Math.round(gmvVolume(id))} CHF, hors revenu)`,
       fix: `${DIRECTORY_FILE} — aligner stats.revenue sur derive.total({ ownerId }).`,
     });
-    assert(person.stats.reviews === reviewCount, 15, {
-      rule: "Le nombre d'avis annoncé égale les avis reçus sur ses biens.",
-      found: `${profile.ownerId} : stats.reviews = ${person.stats.reviews}`,
-      expected: `${reviewCount} avis sur ses biens`,
-      fix: `${DIRECTORY_FILE} — aligner stats.reviews, ou ajouter/retirer des avis dans mockReviews.`,
+    assert(person.stats.reviews === revs.length, 15, {
+      rule: "Le nombre d'avis annoncé égale les avis réellement reçus.",
+      found: `${id} : stats.reviews = ${person.stats.reviews}`,
+      expected: `${revs.length} avis reçus`,
+      fix: `${DIRECTORY_FILE} — stats.reviews est dérivé de mockReviews (recipientId).`,
     });
     assert(person.stats.rating === rating, 15, {
       rule: "La note annoncée égale la moyenne des avis reçus (arrondie au dixième).",
-      found: `${profile.ownerId} : stats.rating = ${person.stats.rating}`,
-      expected: `${rating} (moyenne de ${reviewCount} avis)`,
-      fix: `${DIRECTORY_FILE} — aligner stats.rating sur la moyenne des avis reçus.`,
+      found: `${id} : stats.rating = ${person.stats.rating}`,
+      expected: `${rating} (moyenne de ${revs.length} avis)`,
+      fix: `${DIRECTORY_FILE} — stats.rating est dérivé de mockReviews (recipientId).`,
     });
   }
+}
+
+/* 16 — Abonnés et suivis concordent avec le graphe FOLLOWS.
+
+   « Abonnés » affichait l'annuaire entier, et chaque fiche portait un nombre
+   écrit à la main (3 100, 5 620, 8 900). Désormais : abonnés = relations
+   entrantes, suivis = relations sortantes, pour les seize — et le graphe ne
+   contient que des personnes de l'annuaire, sans doublon ni auto-suivi. */
+{
+  const SOCIAL_FILE = "src/lib/demo/social.ts";
+  const seen = new Set<string>();
+  for (const e of FOLLOWS) {
+    const key = `${e.from}→${e.to}`;
+    assert(directoryIds.has(e.from) && directoryIds.has(e.to), 16, {
+      rule: "Toute relation de suivi relie deux personnes de l'annuaire.",
+      found: `relation ${key}`,
+      expected: "deux ids de users[]",
+      fix: `${SOCIAL_FILE} — remplacer l'id inconnu.`,
+    });
+    assert(e.from !== e.to, 16, {
+      rule: "Personne ne se suit soi-même.",
+      found: `relation ${key}`,
+      expected: "deux personnes distinctes",
+      fix: `${SOCIAL_FILE} — retirer la relation.`,
+    });
+    assert(!seen.has(key), 16, {
+      rule: "Une relation de suivi n'apparaît qu'une fois.",
+      found: `relation ${key} en double`,
+      expected: "aucun doublon",
+      fix: `${SOCIAL_FILE} — retirer le doublon.`,
+    });
+    seen.add(key);
+  }
+  for (const person of PEOPLE) {
+    const followers = followersOf(person.id).length;
+    const following = followingOf(person.id).length;
+    assert(person.stats.followers === followers && person.stats.following === following, 16, {
+      rule: "Abonnés et suivis égalent les relations entrantes et sortantes du graphe FOLLOWS.",
+      found: `${person.id} : ${person.stats.followers} abonné(s), ${person.stats.following} suivi(s)`,
+      expected: `${followers} abonné(s), ${following} suivi(s) d'après ${SOCIAL_FILE}`,
+      fix: `${DIRECTORY_FILE} — les compteurs se dérivent du graphe (stampDerivedStats) ; ne pas les écrire.`,
+    });
+    /* Un réseau qui se lance : quelques abonnés, une quinzaine au plus. */
+    assert(followers <= 15, 16, {
+      rule: "Un réseau qui se lance : une quinzaine d'abonnés au plus.",
+      found: `${person.id} : ${followers} abonnés`,
+      expected: "≤ 15",
+      fix: `${SOCIAL_FILE} — retirer des relations entrantes.`,
+    });
+  }
+}
+
+/* 17 — Chaque bien est exploité selon ce qu'il est, par la bonne personne.
+
+   · un bien en courte durée est exploité par son hôte (`ownedPropertyIds`),
+     sans quoi il n'aurait aucune écriture et son hôte un revenu faux ;
+   · un bien en longue durée d'un profil est déclaré `longTermPropertyIds` ;
+   · un mandat conclu (`agencySalePropertyIds`) est un bien EN VENTE, VENDU
+     (`soldTo`, une personne de l'annuaire), et réciproquement : un bien vendu
+     est le mandat conclu de son hôte. Un bien vendu ne peut donc plus
+     s'afficher « à vendre » sans écriture de volume, ni l'inverse. */
+{
+  const ownerOf = new Map(PROFILES.map((p) => [p.ownerId, p]));
+  for (const p of CATALOGUE) {
+    const prof = ownerOf.get(p.host.id);
+    if (p.transactionType === "location-ct") {
+      assert(!!prof && prof.ownedPropertyIds.includes(p.id), 17, {
+        rule: "Un bien en courte durée est exploité par son hôte (ownedPropertyIds).",
+        found: `${p.id} (courte durée, hôte ${p.host.id}) absent des biens exploités de son hôte`,
+        expected: `${p.id} dans PROFILES[${p.host.id}].ownedPropertyIds`,
+        fix: "src/lib/demo/identity.ts — déclarer le bien dans ownedPropertyIds de son hôte (et un plan d'occupation dans ledger.ts).",
+      });
+    }
+    if (p.soldTo) {
+      assert(directoryIds.has(p.soldTo) && p.soldTo !== p.host.id && p.transactionType === "vente", 17, {
+        rule: "Un bien vendu est un bien en vente, acheté par une autre personne de l'annuaire.",
+        found: `${p.id} : soldTo « ${p.soldTo} », hôte ${p.host.id}, ${p.transactionType}`,
+        expected: "un acheteur de l'annuaire, distinct de l'hôte, sur un bien en vente",
+        fix: `${DIRECTORY_FILE} — corriger soldTo.`,
+      });
+      assert(!!prof && (prof.agencySalePropertyIds ?? []).includes(p.id), 17, {
+        rule: "Un bien vendu est le mandat conclu de son hôte (écriture de volume au journal).",
+        found: `${p.id} vendu, absent de agencySalePropertyIds de ${p.host.id}`,
+        expected: `${p.id} dans PROFILES[${p.host.id}].agencySalePropertyIds`,
+        fix: "src/lib/demo/identity.ts — déclarer le mandat conclu.",
+      });
+    }
+  }
+  for (const prof of PROFILES) {
+    for (const id of prof.ownedPropertyIds) {
+      const p = CATALOGUE.find((x) => x.id === id);
+      assert(!!p && p.host.id === prof.ownerId && p.transactionType === "location-ct", 17, {
+        rule: "Un bien exploité en courte durée est hébergé par son exploitant et loué à la nuit.",
+        found: `${prof.ownerId} exploite ${id} (${p ? `hôte ${p.host.id}, ${p.transactionType}` : "absent du catalogue"})`,
+        expected: "hôte = exploitant, location-ct",
+        fix: "src/lib/demo/identity.ts / src/lib/mock-data.ts — aligner host et transactionType.",
+      });
+    }
+    for (const id of prof.longTermPropertyIds ?? []) {
+      const p = CATALOGUE.find((x) => x.id === id);
+      assert(!!p && p.host.id === prof.ownerId && p.transactionType === "location-lt", 17, {
+        rule: "Un bien loué en longue durée est hébergé par son bailleur et loué au mois.",
+        found: `${prof.ownerId} loue ${id} (${p ? `hôte ${p.host.id}, ${p.transactionType}` : "absent du catalogue"})`,
+        expected: "hôte = bailleur, location-lt",
+        fix: "src/lib/demo/identity.ts / src/lib/mock-data.ts — aligner host et transactionType.",
+      });
+    }
+    for (const id of prof.agencySalePropertyIds ?? []) {
+      const p = CATALOGUE.find((x) => x.id === id);
+      assert(!!p && p.host.id === prof.ownerId && !!p.soldTo, 17, {
+        rule: "Un mandat conclu est un bien de son hôte, marqué vendu (soldTo).",
+        found: `${prof.ownerId} : mandat ${id} (${p ? `hôte ${p.host.id}, soldTo ${String(p.soldTo)}` : "absent du catalogue"})`,
+        expected: "hôte = mandataire, soldTo renseigné",
+        fix: `${DIRECTORY_FILE} — renseigner soldTo sur le bien.`,
+      });
+    }
+  }
+}
+
+/* 18 — Chaque avis se rattache à ce que son auteur a réellement acheté.
+
+   Un avis de séjour exige un séjour à son nom au journal ; un avis d'achat,
+   que l'auteur soit l'acheteur (`soldTo`) ; un avis de formation, une
+   inscription à son nom ; un avis de prestation, une prestation dont il est
+   le client (ou, dans l'autre sens, le prestataire). Toujours AVANT la date de
+   l'avis, et jamais sur soi-même. */
+{
+  const REVIEWS_FILE = "src/lib/mock-data.ts (mockReviews)";
+  const nameOf = (id: string) => {
+    const p = PEOPLE.find((u) => u.id === id);
+    return p ? `${p.firstName} ${p.lastName}` : `?${id}`;
+  };
+  const saleOf = new Map(PROFILES.flatMap((p) => (p.serviceSales ?? []).map((s) => [s.id, { ...s, providerId: p.ownerId }] as const)));
+  for (const r of mockReviews) {
+    const day = r.createdAt.slice(0, 10);
+    const author = r.author.id;
+    assert(directoryIds.has(r.recipientId) && author !== r.recipientId, 18, {
+      rule: "Un avis est reçu par une personne de l'annuaire, distincte de son auteur.",
+      found: `avis ${r.id} : ${author} → ${r.recipientId}`,
+      expected: "deux personnes distinctes de l'annuaire",
+      fix: `${REVIEWS_FILE} — corriger l'avis.`,
+    });
+    let anchored = false;
+    let expected = "";
+    if (r.subject.kind === "property") {
+      const p = CATALOGUE.find((x) => x.id === r.subject.id);
+      if (p?.soldTo) {
+        const gmv = LEDGER.find((e) => e.source === "vente" && e.subject.id === p.id);
+        anchored = p.soldTo === author && !!gmv && gmv.date <= day && r.recipientId === p.host.id;
+        expected = `l'acheteur ${p.soldTo}, après la vente (${gmv?.date ?? "sans écriture"})`;
+      } else if (p && p.transactionType === "location-ct") {
+        anchored =
+          r.recipientId === p.host.id &&
+          LEDGER.some((e) => e.subject.id === p.id && !!e.stay && e.counterparty === nameOf(author) && e.date <= day);
+        expected = `un séjour au nom de ${nameOf(author)} sur ${p.id}, avant le ${day}`;
+      } else {
+        expected = "un bien en courte durée ou vendu";
+      }
+    } else if (r.subject.kind === "formation") {
+      const f = FORMATIONS.find((x) => x.id === r.subject.id);
+      anchored =
+        !!f &&
+        f.instructor.id === r.recipientId &&
+        LEDGER.some((e) => e.source === "formations" && e.subject.id === f.id && e.counterparty === nameOf(author) && e.date <= day);
+      expected = `une inscription au nom de ${nameOf(author)} à ${r.subject.id}, avant le ${day}`;
+    } else {
+      const sale = saleOf.get(r.subject.id);
+      const entry = LEDGER.find((e) => e.id === r.subject.id && e.source === "services");
+      anchored =
+        !!sale &&
+        !!entry &&
+        entry.date <= day &&
+        ((author === sale.clientId && r.recipientId === sale.providerId) ||
+          (author === sale.providerId && r.recipientId === sale.clientId));
+      expected = sale
+        ? `client ${sale.clientId} ↔ prestataire ${sale.providerId}, après le ${entry?.date ?? "?"}`
+        : `une prestation « ${r.subject.id} » au journal`;
+    }
+    assert(anchored, 18, {
+      rule: "Tout avis se rattache à un achat, un séjour, une inscription ou une prestation réels, antérieurs à l'avis.",
+      found: `avis ${r.id} de ${author} sur ${r.subject.kind} ${r.subject.id}`,
+      expected,
+      fix: `${REVIEWS_FILE} / ${LEDGER_FILE} — rattacher l'avis à une écriture réelle (NAMED_GUESTS, NAMED_STUDENTS, serviceSales), ou le retirer.`,
+    });
+  }
+}
+
+/* 19 — Une formation est vendue par son formateur, et son nombre d'élèves
+   égale ses inscriptions au journal. Le catalogue annonçait 342 élèves pour
+   une formation qui en vendait quarante. */
+for (const f of FORMATIONS) {
+  const owner = PROFILES.find((p) => p.ownedFormationIds.includes(f.id));
+  assert(!!owner && owner.ownerId === f.instructor.id, 19, {
+    rule: "Une formation est déclarée par son formateur dans PROFILES.",
+    found: `${f.id} : formateur ${f.instructor.id}, déclarée par ${owner?.ownerId ?? "personne"}`,
+    expected: `${f.id} dans PROFILES[${f.instructor.id}].ownedFormationIds`,
+    fix: "src/lib/demo/identity.ts — déclarer la formation chez son formateur.",
+  });
+  const sales = LEDGER.filter((e) => e.source === "formations" && e.subject.id === f.id && e.status !== "cancelled").length;
+  assert(f.studentCount === sales, 19, {
+    rule: "Le nombre d'élèves d'une formation égale ses inscriptions au journal.",
+    found: `${f.id} : studentCount = ${f.studentCount}`,
+    expected: `${sales} inscription(s) au journal`,
+    fix: `${DIRECTORY_FILE} — aligner studentCount sur le plan d'inscriptions (FORMATION_SALES, ${LEDGER_FILE}).`,
+  });
 }
 
 if (WARN_ONLY && violations > 0) {

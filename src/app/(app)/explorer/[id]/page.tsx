@@ -26,6 +26,7 @@ import {
   getReviewsForProperty,
 } from "@/lib/mock-data";
 import type { Review } from "@/lib/mock-data";
+import { CURRENT_USER } from "@/lib/demo/identity";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
 import { REFERRAL_ID } from "@/lib/referral-links";
@@ -95,7 +96,9 @@ function resolveProperty(id: string): Property | undefined {
 
 interface DisplayReview {
   id: string;
-  author: { name: string; avatar: string };
+  author: { name: string; avatar: string; id?: string };
+  /** Réponse publique de l'hôte. */
+  reply?: { content: string; date: string };
   rating: number;
   content: string;
   date: string;
@@ -107,7 +110,9 @@ function mapMockReviewToDisplay(r: Review): DisplayReview {
     author: {
       name: `${r.author.firstName} ${r.author.lastName.charAt(0)}.`,
       avatar: r.author.avatar,
+      id: r.author.id,
     },
+    reply: r.reply ? { content: r.reply.content, date: r.reply.createdAt.split("T")[0]! } : undefined,
     rating: r.rating,
     content: r.comment,
     date: r.createdAt.split("T")[0],
@@ -406,7 +411,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 </span>
                 <span className="flex items-center gap-1 text-amber-400">
                   <Star className="w-4 h-4 fill-amber-400" />
-                  {property.rating} ({reviews.length > 0 ? reviews.length : property.reviewCount} avis)
+                  {reviews.length > 0 ? `${averageRating} (${reviews.length} avis)` : "Nouveau · aucun avis"}
                 </span>
               </div>
             </div>
@@ -414,6 +419,9 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <p className="text-2xl md:text-3xl font-bold text-[var(--primary)]">
                 {formatPrice(property.price, property.currency)}
               </p>
+              {property.soldTo && (
+                <span className="inline-block rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">Vendu</span>
+              )}
               {property.transactionType === "location-ct" && (
                 <span className="text-sm text-[var(--text-muted)]">par nuit</span>
               )}
@@ -903,7 +911,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 onClick={() => {
                   const newReview = {
                     id: `r-new-${Date.now()}`,
-                    author: { name: "Vous", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80" },
+                    author: { name: "Vous", avatar: CURRENT_USER.avatar, id: CURRENT_USER.id },
                     rating: reviewRating,
                     content: reviewText,
                     date: new Date().toISOString().split("T")[0],
@@ -927,7 +935,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   <div className="flex items-center gap-3 mb-3">
                     <img src={review.author.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
                     <div>
-                      <p className="text-sm font-medium text-[var(--foreground)]">{review.author.name}</p>
+                      {review.author.id ? (
+                        <Link href={`/profil/${review.author.id}`} className="text-sm font-medium text-[var(--foreground)] hover:underline">{review.author.name}</Link>
+                      ) : (
+                        <p className="text-sm font-medium text-[var(--foreground)]">{review.author.name}</p>
+                      )}
                       <div className="flex items-center gap-2">
                         <div className="flex">
                           {Array.from({ length: 5 }, (_, i) => (
@@ -939,6 +951,12 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     </div>
                   </div>
                   <p className="text-sm text-[var(--text-secondary)]">{review.content}</p>
+                  {review.reply && (
+                    <div className="mt-3 rounded-lg border-l-2 border-[var(--primary)] bg-[var(--hover-bg)] px-3 py-2">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">Réponse de {property.host.firstName} {property.host.lastName}</p>
+                      <p className="mt-0.5 text-sm text-[var(--text-secondary)]">{review.reply.content}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

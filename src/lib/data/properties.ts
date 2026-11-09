@@ -43,8 +43,9 @@ export const PROPERTIES: Property[] = CANONICAL_PROPERTIES;
 
 /* ── Accesseurs ──────────────────────────────────────────────────────────── */
 
+/** Les biens proposés : un bien vendu (`soldTo`) n'est plus listé. */
 export function listProperties(): Property[] {
-  return PROPERTIES;
+  return PROPERTIES.filter((p) => !p.soldTo);
 }
 
 export function getPropertyById(id: string): Property | undefined {
@@ -74,11 +75,11 @@ export function getPropertiesByIds(ids: Iterable<string>): Property[] {
 }
 
 export function listPropertiesByTransaction(t: TransactionType): Property[] {
-  return PROPERTIES.filter((p) => p.transactionType === t);
+  return PROPERTIES.filter((p) => p.transactionType === t && !p.soldTo);
 }
 
 export function listFeaturedProperties(): Property[] {
-  return PROPERTIES.filter((p) => p.featured);
+  return PROPERTIES.filter((p) => p.featured && !p.soldTo);
 }
 
 /**

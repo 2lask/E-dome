@@ -1,37 +1,43 @@
 // ============================================================
 // E-Dome Platform — Mock Data
-// All text in French. Realistic Swiss/French/International data.
+// Le casting des seize personnes (analyse2/casting.md) et ce qui
+// s'y rattache : biens, formations, conversations, avis.
 // ============================================================
 
-import type {
-  User,
-  Property,
-  PropertyType,
-  TransactionType,
-  PropertyAnalytics,
-  SocialPost,
-  Comment,
-  Conversation,
-  Message,
-  Reservation,
-  Formation,
-  FormationModule,
-  Notification,
-  DashboardStats,
-  Transaction,
-} from './types';
-import { CURRENT_USER, OWNED_PROPERTY_IDS } from "./demo/identity";
+import type { User, Property, Conversation, Formation } from './types';
+import { CURRENT_USER } from "./demo/identity";
+import { followerCount, followingCount } from "./demo/social";
 
-// ─── USERS (16) ─────────────────────────────────────────────────────────────
+/* ── Ce qui est écrit, ce qui est dérivé ──────────────────────────────────
 
-/* Derive de `demo/identity` : l identite n est plus recopiee ici.
+   Les compteurs d'une personne ne s'écrivent plus à la main. En fin de
+   fichier, `stampDerivedStats()` calcule pour chacune des seize :
+     · `properties` — les biens qu'elle héberge au catalogue ;
+     · `reviews` / `rating` — les avis qu'elle a RÉELLEMENT reçus (`mockReviews`) ;
+     · `followers` / `following` — le graphe `FOLLOWS` (`demo/social.ts`).
+   Restent écrits `transactions` et `revenue`, parce qu'ils viennent du journal
+   (`demo/ledger.ts`), qui importe ce fichier : l'invariant 15 vérifie qu'ils
+   concordent, pour les seize. Les zéros de départ ci-dessous ne sont donc
+   jamais affichés tels quels. */
 
-   Ce qui change, au-dela du refactor. La ville passe de Neuchatel a Lausanne
-   — les deux fichiers n etaient pas d accord. Les 14 biens deviennent les 3
-   qu il possede reellement au catalogue. Les 2 340 abonnes et les 87 avis
-   s alignent sur le profil, qui en annoncait 56. Et revenue: 485000
-   disparait : ce chiffre n etait lu nulle part, mais il contredisait a lui
-   seul les cinq autres montants de revenus de la maquette. */
+/** Statistiques de départ : tout ce qui se dérive est recalculé plus bas. */
+const derived = (transactions: number, revenue: number): User['stats'] => ({
+  followers: 0,
+  following: 0,
+  properties: 0,
+  reviews: 0,
+  rating: 0,
+  transactions,
+  revenue,
+});
+
+/** Visage synthétique, servi localement (D16) : aucun portrait réel. */
+const face = (id: string) => `/avatars/${id}.jpg`;
+
+// ─── LES SEIZE ──────────────────────────────────────────────────────────────
+
+/* L'utilisateur courant dérive de `demo/identity`. Son `revenue` reste à 0 :
+   son tableau de bord affiche le revenu dérivé du journal (test 16). */
 export const currentUser: User = {
   id: CURRENT_USER.id,
   firstName: CURRENT_USER.firstName,
@@ -42,286 +48,282 @@ export const currentUser: User = {
   country: CURRENT_USER.country,
   roles: [...CURRENT_USER.roles],
   activeRole: 'hote',
-  stats: {
-    followers: CURRENT_USER.stats.followers,
-    following: CURRENT_USER.stats.following,
-    properties: OWNED_PROPERTY_IDS.length,
-    reviews: CURRENT_USER.stats.reviewsCount,
-    rating: CURRENT_USER.stats.rating,
-    transactions: 19,
-    revenue: 0,
-  },
+  stats: derived(155, 0),
   bio: CURRENT_USER.about,
-  languages: ['Français', 'English'],
+  languages: ['Français', 'English', 'Deutsch'],
   responseTime: '2h',
 };
 
 export const users: User[] = [
   currentUser,
+  /* Céline Bovard, 46 ans, Lutry — agente immobilière indépendante (une agence
+     d'une personne). Chaleureuse, précise : elle parle des biens comme des
+     lieux de vie. */
   {
     id: 'user-002',
-    firstName: 'Sophie',
-    lastName: 'Durand',
-    email: 'sophie.durand@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face',
-    city: 'Lausanne',
+    firstName: 'Céline',
+    lastName: 'Bovard',
+    email: 'celine.bovard@e-dome.ch',
+    avatar: face('user-002'),
+    city: 'Lutry',
     country: 'Suisse',
     roles: ['agence', 'hote'],
     activeRole: 'agence',
-    /* Stats CONCORDANTES avec le journal et les avis (\u00e9tape 3, invariant 27) :
-       properties = biens h\u00e9berg\u00e9s au catalogue (prop1, prop19, prop23) ;
-       transactions = \u00e9critures non annul\u00e9es de son journal ; revenue = revenu
-       COMMISSIONNABLE (location courte dur\u00e9e de prop23) \u2014 son volume de mandats
-       de vente (4,65 M) est un GMV, jamais du revenu (D4) ; reviews/rating =
-       avis re\u00e7us sur ses biens. */
-    stats: { followers: 3100, following: 520, properties: 3, reviews: 7, rating: 4.7, transactions: 25, revenue: 12780 },
-    bio: 'Agente immobili\u00e8re ind\u00e9pendante, titulaire du brevet f\u00e9d\u00e9ral. 12 ans sur l\u2019arc l\u00e9manique, sp\u00e9cialit\u00e9 biens de caract\u00e8re \u00e0 Lausanne et dans le Lavaux.',
-    languages: ['Fran\u00e7ais', 'Deutsch', 'English'],
-    certifications: ['Brevet f\u00e9d\u00e9ral d\u2019agente immobili\u00e8re (2019)'],
+    stats: derived(21, 12780),
+    bio: 'Agente immobilière indépendante à Lutry. Je vends des maisons vigneronnes et des appartements du Lavaux, de Lutry à Chexbres — des lieux de vie avant d’être des mètres carrés.',
+    languages: ['Français', 'Deutsch', 'English'],
+    certifications: ['Brevet fédéral d’agente immobilière (2011)'],
     responseTime: '1h',
   },
+  /* Ennio Bordoni, 61 ans, Genève (Champel) — investisseur, ancien banquier
+     privé. Froid, chiffré, phrases courtes. */
   {
     id: 'user-003',
-    firstName: 'Marc',
-    lastName: 'Favre',
-    email: 'marc.favre@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-    city: 'Gen\u00e8ve',
+    firstName: 'Ennio',
+    lastName: 'Bordoni',
+    email: 'ennio.bordoni@e-dome.ch',
+    avatar: face('user-003'),
+    city: 'Genève',
     country: 'Suisse',
-    roles: ['particulier', 'apporteur'],
-    activeRole: 'particulier',
+    roles: ['proprietaire', 'hote'],
+    activeRole: 'proprietaire',
     interests: ['investisseur'],
-    /* Stats CONCORDANTES (\u00e9tape 3, invariant 27) : properties = biens h\u00e9berg\u00e9s
-       (prop11, prop16, prop24, prop25) ; transactions = \u00e9critures non annul\u00e9es ;
-       revenue = revenu locatif COMMISSIONNABLE d\u00e9riv\u00e9 (courte dur\u00e9e Montreux +
-       Nyon). Pas de mandat de vente, donc aucun GMV. */
-    stats: { followers: 5620, following: 340, properties: 4, reviews: 6, rating: 4.7, transactions: 52, revenue: 24820 },
-    bio: 'Investisseur immobilier depuis 2010, bas\u00e9 \u00e0 Gen\u00e8ve. Portefeuille locatif diversifi\u00e9 sur l\u2019arc l\u00e9manique. Analyse froide, rendement net vis\u00e9 5-8 %.',
-    languages: ['Fran\u00e7ais', 'English', 'Portugu\u00eas'],
-    certifications: ['CFA Level II (2018)'],
-    responseTime: '4h',
-  },
-  {
-    id: 'user-004',
-    firstName: 'Amina',
-    lastName: 'El Idrissi',
-    email: 'amina.elidrissi@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&h=150&fit=crop&crop=face',
-    city: 'Marrakech',
-    country: 'Maroc',
-    roles: ['hote', 'createur'],
-    activeRole: 'hote',
-    stats: { followers: 4200, following: 610, properties: 6, reviews: 98, rating: 4.9, transactions: 45, revenue: 340000 },
-    bio: 'Propri\u00e9taire de riads et maisons d\u2019h\u00f4tes \u00e0 Marrakech. Formatrice en gestion locative touristique. Ambassadrice E-Dome Maroc.',
-    languages: ['Fran\u00e7ais', 'Arabic', 'English'],
-    certifications: ['Gestion H\u00f4teli\u00e8re (ISCAE 2020)'],
-    responseTime: '3h',
-  },
-  {
-    id: 'user-005',
-    firstName: 'Lucas',
-    lastName: 'Renaud',
-    email: 'lucas.renaud@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-    city: 'Nice',
-    country: 'France',
-    roles: ['hote', 'prestataire'],
-    activeRole: 'hote',
-    trades: ['photographe'],
-    stats: { followers: 1800, following: 430, properties: 4, reviews: 56, rating: 4.6, transactions: 28, revenue: 195000 },
-    bio: 'Photographe immobilier et h\u00f4te sur la C\u00f4te d\u2019Azur. Je sublime vos biens pour maximiser la conversion. Drone & Matterport.',
-    languages: ['Fran\u00e7ais', 'English', 'Italiano'],
-    certifications: ['Pilote Drone (DGAC 2023)'],
-    responseTime: '2h',
-  },
-  {
-    id: 'user-006',
-    firstName: 'Yasmin',
-    lastName: 'Al Maktoum',
-    email: 'yasmin.almaktoum@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face',
-    city: 'Dubai',
-    country: '\u00c9mirats Arabes Unis',
-    roles: ['agence'],
-    activeRole: 'agence',
-    interests: ['investisseur'],
-    stats: { followers: 8900, following: 210, properties: 35, reviews: 210, rating: 4.8, transactions: 120, revenue: 3500000 },
-    bio: 'Directrice d\u2019agence \u00e0 Dubai. Sp\u00e9cialiste des propri\u00e9t\u00e9s ultra-luxe, penthouses et villas sur Palm Jumeirah.',
-    languages: ['English', 'Arabic', 'Fran\u00e7ais'],
-    certifications: ['RERA Certified Real Estate Agent (2021)'],
-    responseTime: '1h',
-  },
-  {
-    id: 'user-007',
-    firstName: 'Pierre',
-    lastName: 'Gonçalves',
-    email: 'pierre.goncalves@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face',
-    city: 'Lisbonne',
-    country: 'Portugal',
-    roles: ['hote', 'apporteur'],
-    activeRole: 'hote',
-    stats: { followers: 2100, following: 380, properties: 9, reviews: 67, rating: 4.7, transactions: 38, revenue: 275000 },
-    bio: 'Franco-portugais install\u00e9 \u00e0 Lisbonne. Sp\u00e9cialiste de la r\u00e9novation et du Golden Visa. 9 biens en gestion.',
-    languages: ['Fran\u00e7ais', 'Portugu\u00eas', 'English'],
-    certifications: ['AMI License Portugal (2022)'],
-    responseTime: '3h',
-  },
-  {
-    id: 'user-008',
-    firstName: 'Nathalie',
-    lastName: 'Blanc',
-    email: 'nathalie.blanc@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
-    city: 'Gen\u00e8ve',
-    country: 'Suisse',
-    roles: ['prestataire', 'createur'],
-    activeRole: 'prestataire',
-    trades: ['notaire'],
-    stats: { followers: 1500, following: 190, properties: 0, reviews: 34, rating: 4.9, transactions: 95, revenue: 180000 },
-    bio: 'Notaire sp\u00e9cialis\u00e9e en droit immobilier suisse. Formatrice juridique sur E-Dome. Auteure de guides pratiques.',
-    languages: ['Fran\u00e7ais', 'Deutsch'],
-    certifications: ['Brevet de Notaire VD (2016)'],
+    stats: derived(47, 26780),
+    bio: 'Ancien banquier privé. Investisseur. Six appartements, Vaud et Genève. Je regarde le rendement net. Le brut ne m’intéresse pas.',
+    languages: ['Italiano', 'Français', 'English', 'Deutsch'],
     responseTime: '6h',
   },
+  /* Aline Tschanz, 33 ans, Neuchâtel — agente salariée chez Hartmann
+     Immobilier SA. Jeune pro dynamique, organisée. */
   {
-    id: 'user-009',
-    firstName: 'Thomas',
-    lastName: 'Müller',
-    email: 'thomas.muller@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=150&h=150&fit=crop&crop=face',
-    city: 'Lausanne',
+    id: 'user-004',
+    firstName: 'Aline',
+    lastName: 'Tschanz',
+    email: 'aline.tschanz@e-dome.ch',
+    avatar: face('user-004'),
+    city: 'Neuchâtel',
+    country: 'Suisse',
+    roles: ['agent'],
+    activeRole: 'agent',
+    stats: derived(0, 0),
+    bio: 'Agente immobilière chez Hartmann Immobilier SA, à Neuchâtel. Je suis vos ventes et vos locations du premier appel à la remise des clés : visites groupées, dossiers complets, réponse dans la journée.',
+    languages: ['Français', 'Deutsch', 'English'],
+    responseTime: '1h',
+  },
+  /* Nikola Ristić, 29 ans, Yverdon-les-Bains — photographe immobilier (drone,
+     visite 3D). Écrit court, sans accents, en abrégé. */
+  {
+    id: 'user-005',
+    firstName: 'Nikola',
+    lastName: 'Ristić',
+    email: 'nikola.ristic@e-dome.ch',
+    avatar: face('user-005'),
+    city: 'Yverdon-les-Bains',
     country: 'Suisse',
     roles: ['prestataire'],
     activeRole: 'prestataire',
-    trades: ['architecte'],
-    interests: ['investisseur'],
-    stats: { followers: 3400, following: 270, properties: 3, reviews: 29, rating: 4.8, transactions: 15, revenue: 420000 },
-    bio: 'Architecte EPFL, sp\u00e9cialiste en r\u00e9novation \u00e9nerg\u00e9tique et construction durable. Projets Minergie et SNBS.',
-    languages: ['Fran\u00e7ais', 'Deutsch', 'English'],
-    certifications: ['Architecte REG A (SIA)', 'Expert Minergie (2023)'],
-    responseTime: '5h',
+    trades: ['photographe'],
+    stats: derived(4, 2110),
+    bio: 'photographe immo yverdon et environs. photo, drone, visite 3d, plans. dispo semaine + samedi. devis rapide par msg',
+    languages: ['Français', 'Srpski', 'English'],
+    certifications: ['Pilote de drone, catégorie ouverte (OFAC, 2023)'],
+    responseTime: '30 min',
   },
+  /* Ana Ferreira, 34 ans, Renens — cherche à louer, famille avec deux enfants.
+     Débutante : questions simples, polie. */
   {
-    id: 'user-010',
-    firstName: 'Fatima',
-    lastName: 'Zahra',
-    email: 'fatima.zahra@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
-    city: 'Dakar',
-    country: 'S\u00e9n\u00e9gal',
-    roles: ['apporteur', 'createur'],
-    activeRole: 'apporteur',
-    stats: { followers: 1200, following: 560, properties: 0, reviews: 18, rating: 4.5, transactions: 22, revenue: 85000 },
-    bio: 'Apporteuse d\u2019affaires en Afrique de l\u2019Ouest. R\u00e9seau de 200+ investisseurs. Experte en opportunit\u00e9s immobili\u00e8res \u00e9mergentes.',
-    languages: ['Fran\u00e7ais', 'Wolof', 'English'],
-    certifications: [],
-    responseTime: '4h',
-  },
-  {
-    id: 'user-011',
-    firstName: 'Alexandre',
-    lastName: 'Petit',
-    email: 'alexandre.petit@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=150&h=150&fit=crop&crop=face',
-    city: 'Bangkok',
-    country: 'Tha\u00eflande',
-    roles: ['hote'],
-    activeRole: 'hote',
-    interests: ['investisseur'],
-    stats: { followers: 2800, following: 420, properties: 11, reviews: 73, rating: 4.6, transactions: 40, revenue: 310000 },
-    bio: 'Expatri\u00e9 fran\u00e7ais \u00e0 Bangkok. Gestionnaire de condos et villas de luxe \u00e0 Phuket et Koh Samui. Rendements 8-12%.',
-    languages: ['Fran\u00e7ais', 'English', 'Thai'],
-    certifications: ['Property Management Thailand (2022)'],
-    responseTime: '3h',
-  },
-  {
-    id: 'user-012',
-    firstName: 'Cl\u00e9mence',
-    lastName: 'Moreau',
-    email: 'clemence.moreau@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-    city: 'Lausanne',
+    id: 'user-006',
+    firstName: 'Ana',
+    lastName: 'Ferreira',
+    email: 'ana.ferreira@e-dome.ch',
+    avatar: face('user-006'),
+    city: 'Renens',
     country: 'Suisse',
     roles: ['particulier'],
     activeRole: 'particulier',
-    interests: ['investisseur'],
-    stats: { followers: 450, following: 120, properties: 1, reviews: 8, rating: 4.3, transactions: 3, revenue: 12000 },
-    bio: 'Cadre dans la pharma. Premi\u00e8re acquisition immobili\u00e8re en cours. En recherche active d\u2019un 4.5 pi\u00e8ces sur Lausanne.',
-    languages: ['Fran\u00e7ais', 'English'],
-    certifications: [],
-    responseTime: '8h',
-  },
-  {
-    id: 'user-013',
-    firstName: 'Omar',
-    lastName: 'Benjelloun',
-    email: 'omar.benjelloun@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=150&h=150&fit=crop&crop=face',
-    city: 'Marrakech',
-    country: 'Maroc',
-    roles: ['prestataire', 'hote'],
-    activeRole: 'prestataire',
-    trades: ['promoteur'],
-    stats: { followers: 6200, following: 310, properties: 18, reviews: 142, rating: 4.7, transactions: 65, revenue: 1800000 },
-    bio: 'Promoteur immobilier \u00e0 Marrakech et Tanger. Programmes neufs haut standing. Partenaire officiel E-Dome Maroc.',
-    languages: ['Fran\u00e7ais', 'Arabic', 'English'],
-    certifications: ['FNPI Maroc (2019)'],
-    responseTime: '2h',
-  },
-  {
-    id: 'user-014',
-    firstName: 'Elena',
-    lastName: 'Papadopoulos',
-    email: 'elena.papadopoulos@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
-    city: 'Ath\u00e8nes',
-    country: 'Gr\u00e8ce',
-    roles: ['hote', 'apporteur'],
-    activeRole: 'hote',
-    stats: { followers: 1900, following: 380, properties: 7, reviews: 54, rating: 4.8, transactions: 32, revenue: 220000 },
-    bio: 'H\u00f4tesse \u00e0 Ath\u00e8nes et dans les Cyclades. Villas avec vue mer, exp\u00e9riences authentiques. Golden Visa Gr\u00e8ce.',
-    languages: ['Fran\u00e7ais', 'English', '\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac'],
-    certifications: [],
+    interests: ['locataire'],
+    stats: derived(0, 0),
+    bio: 'Bonjour ! Nous cherchons un 4 pièces à Renens ou Prilly pour notre famille (deux enfants, 6 et 9 ans). Je découvre la plateforme, merci pour vos conseils.',
+    languages: ['Português', 'Français'],
     responseTime: '3h',
   },
+  /* Bernard Chappuis, 72 ans, Pully — vend seul la maison familiale. Peu à
+     l'aise avec le numérique, formules datées, quelques fautes. */
+  {
+    id: 'user-007',
+    firstName: 'Bernard',
+    lastName: 'Chappuis',
+    email: 'bernard.chappuis@e-dome.ch',
+    avatar: face('user-007'),
+    city: 'Pully',
+    country: 'Suisse',
+    roles: ['particulier'],
+    activeRole: 'particulier',
+    interests: ['vendeur'],
+    stats: derived(0, 0),
+    bio: 'Retraité, ancien ingénieur. Je vends moi même la maison familliale de Pully, ou nous avons vécu 41 ans avec mon épouse. Visites sur rendez-vous, de préférence le matin.',
+    languages: ['Français', 'Deutsch'],
+    responseTime: '1 jour',
+  },
+  /* Clémence Jaquet, 27 ans, Morges — premier achat. Elle doute, pèse le pour
+     et le contre, demande l'avis des autres. */
+  {
+    id: 'user-008',
+    firstName: 'Clémence',
+    lastName: 'Jaquet',
+    email: 'clemence.jaquet@e-dome.ch',
+    avatar: face('user-008'),
+    city: 'Morges',
+    country: 'Suisse',
+    roles: ['particulier'],
+    activeRole: 'particulier',
+    interests: ['acheteur'],
+    stats: derived(0, 0),
+    bio: 'Infirmière, j’habite à Morges. Avec mon compagnon, on pense à un premier achat… mais est-ce vraiment le moment ? Je lis beaucoup et je pose (trop ?) de questions.',
+    languages: ['Français', 'English'],
+    responseTime: '5h',
+  },
+  /* Reto Jungo, 49 ans, Fribourg — architecte (rénovation, Minergie, CECB).
+     Technique, précis, bilingue. */
+  {
+    id: 'user-009',
+    firstName: 'Reto',
+    lastName: 'Jungo',
+    email: 'reto.jungo@e-dome.ch',
+    avatar: face('user-009'),
+    city: 'Fribourg',
+    country: 'Suisse',
+    roles: ['prestataire', 'createur'],
+    activeRole: 'prestataire',
+    trades: ['architecte'],
+    stats: derived(21, 11740),
+    bio: 'Architecte EPF SIA, bureau à Fribourg. Rénovation énergétique, Minergie, CECB Plus. Je travaille en français et en allemand — Sanierung, Energieberatung, Bauleitung.',
+    languages: ['Deutsch', 'Schweizerdeutsch', 'Français', 'English'],
+    certifications: ['Expert CECB (2016)', 'Conseiller Minergie (2019)'],
+    responseTime: '4h',
+  },
+  /* Elena Currat, 38 ans, Vevey — home staging. Enthousiaste, visuelle,
+     sobre. */
+  {
+    id: 'user-010',
+    firstName: 'Elena',
+    lastName: 'Currat',
+    email: 'elena.currat@e-dome.ch',
+    avatar: face('user-010'),
+    city: 'Vevey',
+    country: 'Suisse',
+    roles: ['prestataire'],
+    activeRole: 'prestataire',
+    trades: ['home-staging'],
+    stats: derived(2, 3550),
+    bio: 'Home staging à Vevey et sur la Riviera. Lumière, couleurs, quelques meubles bien placés : je prépare votre bien pour qu’on ait envie d’y entrer, en photo comme en visite.',
+    languages: ['Français', 'Italiano', 'English'],
+    responseTime: '2h',
+  },
+  /* Sandrine Monnier, 53 ans, Neuchâtel — créatrice de formations (fiscalité
+     immobilière), ex-fiduciaire. Pédagogue, structurée. */
+  {
+    id: 'user-011',
+    firstName: 'Sandrine',
+    lastName: 'Monnier',
+    email: 'sandrine.monnier@e-dome.ch',
+    avatar: face('user-011'),
+    city: 'Neuchâtel',
+    country: 'Suisse',
+    roles: ['createur'],
+    activeRole: 'createur',
+    stats: derived(89, 29055),
+    bio: 'Vingt ans en fiduciaire, puis la pédagogie. Je crée des formations sur la fiscalité immobilière en Suisse romande : valeur locative, déductions, gain immobilier. Pas à pas, avec des cas réels.',
+    languages: ['Français', 'Deutsch'],
+    certifications: ['Brevet fédéral de spécialiste en finance et comptabilité (2004)'],
+    responseTime: '3h',
+  },
+  /* Yves Mottiez, 67 ans, Bulle — apporteur, retraité, connaît toute La
+     Gruyère. Formel, à l'ancienne. */
+  {
+    id: 'user-012',
+    firstName: 'Yves',
+    lastName: 'Mottiez',
+    email: 'yves.mottiez@e-dome.ch',
+    avatar: face('user-012'),
+    city: 'Bulle',
+    country: 'Suisse',
+    roles: ['apporteur'],
+    activeRole: 'apporteur',
+    stats: derived(0, 0),
+    bio: 'Retraité de la banque, établi à Bulle depuis toujours. Je connais La Gruyère et ses gens. Je mets en relation les vendeurs de la région avec des agences sérieuses. Meilleures salutations, Y. Mottiez',
+    languages: ['Français', 'Deutsch'],
+    responseTime: '1 jour',
+  },
+  /* Mirjana Kovač, 45 ans, Montreux — hôte courte durée, deux appartements.
+     Pragmatique : taux d'occupation et saisons. */
+  {
+    id: 'user-013',
+    firstName: 'Mirjana',
+    lastName: 'Kovač',
+    email: 'mirjana.kovac@e-dome.ch',
+    avatar: face('user-013'),
+    city: 'Montreux',
+    country: 'Suisse',
+    roles: ['hote'],
+    activeRole: 'hote',
+    stats: derived(76, 49490),
+    bio: 'Hôte à Montreux, deux appartements en courte durée. Juillet, c’est le Jazz ; décembre, le marché de Noël ; le reste de l’année se travaille au prix et au taux d’occupation.',
+    languages: ['Hrvatski', 'Français', 'Deutsch', 'English'],
+    responseTime: '1h',
+  },
+  /* Hélène Marchal, 52 ans, Évian-les-Bains (France) — apporteuse,
+     marketplace uniquement. Commerciale, réseau transfrontalier. */
+  {
+    id: 'user-014',
+    firstName: 'Hélène',
+    lastName: 'Marchal',
+    email: 'helene.marchal@e-dome.ch',
+    avatar: face('user-014'),
+    city: 'Évian-les-Bains',
+    country: 'France',
+    roles: ['apporteur'],
+    activeRole: 'apporteur',
+    stats: derived(0, 0),
+    bio: 'Basée à Évian, je recommande à mon réseau des deux rives du Léman les formations et les événements qui valent le détour. Depuis la France, mon affiliation porte sur la marketplace uniquement — aucune prime sur les biens.',
+    languages: ['Français', 'English', 'Italiano'],
+    responseTime: '2h',
+  },
+  /* Jean-Luc Hartmann, 58 ans, Neuchâtel — directeur de Hartmann Immobilier
+     SA. Institutionnel, posé. */
   {
     id: 'user-015',
     firstName: 'Jean-Luc',
     lastName: 'Hartmann',
-    email: 'jeanluc.hartmann@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face',
-    city: 'Neuch\u00e2tel',
+    email: 'jeanluc.hartmann@e-dome.ch',
+    avatar: face('user-015'),
+    city: 'Neuchâtel',
     country: 'Suisse',
     roles: ['agence'],
     activeRole: 'agence',
-    /* Stats CONCORDANTES (\u00e9tape 3, invariant 27) : properties = biens h\u00e9berg\u00e9s
-       (prop7, prop14 en gestion, prop26 courte dur\u00e9e, prop27/prop28 mandats de
-       vente) ; transactions = \u00e9critures non annul\u00e9es ; revenue = revenu
-       COMMISSIONNABLE (gestion courte dur\u00e9e) \u2014 le volume de mandats de vente
-       (2,27 M) est un GMV d'agence, jamais du revenu d'E-Dome (D4). */
-    stats: { followers: 4100, following: 250, properties: 5, reviews: 7, rating: 4.6, transactions: 22, revenue: 8700 },
-    bio: 'Directeur de Hartmann Immobilier SA \u00e0 Neuch\u00e2tel. 20 ans dans l\u2019immobilier neuch\u00e2telois, membre USPI et SVIT. Vente, estimation et gestion locative avec une \u00e9quipe de proximit\u00e9.',
-    languages: ['Fran\u00e7ais', 'Deutsch', 'English'],
-    certifications: ['Brevet f\u00e9d\u00e9ral de g\u00e9rant d\u2019immeubles (2012)', 'Expert USPI (2018)'],
-    responseTime: '1h',
+    stats: derived(18, 8700),
+    bio: 'Directeur de Hartmann Immobilier SA, à Neuchâtel. Vingt-cinq ans dans l’immobilier neuchâtelois. Vente, estimation et gestion locative, avec une équipe de proximité.',
+    languages: ['Français', 'Deutsch', 'English'],
+    certifications: ['Brevet fédéral de gérant d’immeubles (2003)', 'Expert en estimations immobilières (2012)'],
+    responseTime: '2h',
   },
+  /* Amina El Idrissi, 44 ans, Marrakech (Guéliz) — créatrice de formations
+     (gestion locative touristique, pricing dynamique), hôte de son riad.
+     Bienveillante, concrète. */
   {
     id: 'user-016',
-    firstName: 'Carlos',
-    lastName: 'Rivera',
-    email: 'carlos.rivera@edome.ch',
-    avatar: 'https://images.unsplash.com/photo-1548449112-96a38a643324?w=150&h=150&fit=crop&crop=face',
-    city: 'Barcelone',
-    country: 'Espagne',
-    roles: ['hote', 'prestataire'],
-    activeRole: 'hote',
-    trades: ['photographe'],
-    stats: { followers: 2500, following: 490, properties: 5, reviews: 62, rating: 4.7, transactions: 35, revenue: 185000 },
-    bio: 'H\u00f4te et photographe immobilier \u00e0 Barcelone. Sp\u00e9cialiste home staging et vid\u00e9o cin\u00e9matique pour biens de prestige.',
-    languages: ['Espa\u00f1ol', 'Fran\u00e7ais', 'English'],
-    certifications: ['Home Staging Europe (2023)'],
-    responseTime: '2h',
+    firstName: 'Amina',
+    lastName: 'El Idrissi',
+    email: 'amina.elidrissi@e-dome.ch',
+    avatar: face('user-016'),
+    city: 'Marrakech',
+    country: 'Maroc',
+    roles: ['createur', 'hote'],
+    activeRole: 'createur',
+    stats: derived(161, 89163),
+    bio: 'Je forme les hôtes à la gestion locative touristique et au pricing dynamique. Mon riad, en médina, me sert de terrain d’essai depuis 2016 : je n’enseigne que ce que j’ai testé.',
+    languages: ['العربية', 'Français', 'English'],
+    responseTime: '3h',
   },
 ];
 
@@ -329,1310 +331,681 @@ export function getUserById(id: string): User | undefined {
   return users.find((u) => u.id === id);
 }
 
-// ─── PROPERTIES (14) ────────────────────────────────────────────────────────
+/** La personne d'identifiant `id` — échoue bruyamment sur un id inconnu. */
+function person(id: string): User {
+  const u = getUserById(id);
+  if (!u) throw new Error(`mock-data : personne inconnue — ${id}`);
+  return u;
+}
+
+// ─── LE CATALOGUE (25 biens) ────────────────────────────────────────────────
+
+/* Chaque bien a pour hôte une personne du casting, dans un lieu réel, à un
+   prix tiré des repères de marché du casting. Les biens lointains qui ne
+   correspondaient à personne (Dubaï, Phuket, Santorin, Lisbonne, Nice,
+   Barcelone, Zurich, Lugano) ont été relocalisés sur leur id, ou retirés
+   (prop11 bureaux genevois, prop18 riad à vendre, prop22 chalet de
+   Crans-Montana) — sauf le riad d'Amina, rattaché à son profil.
+
+   Répartition : 9 en vente (dont 2 vendus, `soldTo`), 6 en location longue
+   durée (`/mois`), 10 en courte durée (`/nuit`).
+
+   `rating` et `reviewCount` sont recalculés en fin de fichier à partir des
+   avis réels : les zéros ci-dessous ne s'affichent pas tels quels. */
+
+const IMG = (id: string) => `https://images.unsplash.com/photo-${id}?w=800&h=600&fit=crop`;
 
 export const properties: Property[] = [
-  // 1 — Vente, Appartement, Lausanne
+  // ── Céline Bovard (user-002) ────────────────────────────────────────────
+  // prop1 — Vente, Appartement, Lutry — VENDU à Ennio (mandat conclu).
   {
     id: 'prop1',
-    title: 'Magnifique 4.5 pi\u00e8ces avec vue sur le Lac L\u00e9man',
+    title: 'Appartement 4,5 pièces vue lac à Lutry',
     description:
-      'Superbe appartement de 4.5 pi\u00e8ces enti\u00e8rement r\u00e9nov\u00e9, situ\u00e9 au 6\u00e8me \u00e9tage avec une vue imprenable sur le lac et les Alpes. Finitions haut de gamme, cuisine \u00e9quip\u00e9e Bulthaup, parquet ch\u00eane massif. Deux places de parking incluses.',
+      'Au deuxième étage d’une petite copropriété au-dessus du bourg, un 4,5 pièces de 128 m² tourné vers le lac et les Alpes. Le matin, la lumière entre par la cuisine ; le soir, on dîne sur la terrasse face au Grammont. Trois chambres, deux salles d’eau, cave et deux places de parc. Le bourg et le débarcadère sont à huit minutes à pied.',
     type: 'appartement',
     transactionType: 'vente',
-    price: 1450000,
+    price: 1690000,
     currency: 'CHF',
-    location: { city: 'Lausanne', country: 'Suisse', address: 'Avenue de Cour 42', lat: 46.5107, lng: 6.6284 },
-    images: [
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1616137466211-f736a1f8e5e0?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop',
-    ],
+    location: { city: 'Lutry', country: 'Suisse', address: 'Route de Lavaux, 1095 Lutry', lat: 46.5035, lng: 6.6855 },
+    images: [IMG('1600596542815-ffad4c1539a9'), IMG('1600607687939-ce8a6c25118c'), IMG('1600585154340-be6161a56a0c'), IMG('1600566753190-17f0baa2a6c3')],
     videos: [],
-    host: users[1], // Sophie
+    host: person('user-002'),
     bedrooms: 3,
     bathrooms: 2,
-    area: 135,
-    floor: 6,
-    amenities: ['Ascenseur', 'Balcon', 'Cave', 'Parking', 'Buanderie', 'Vue lac'],
-    rating: 4.9,
-    reviewCount: 24,
-    featured: true,
-    analytics: {
-      rendementBrut: 3.8,
-      rendementNet: 2.9,
-      prixM2: 10741,
-      dpe: 'B',
-      etatGeneral: 'Excellent',
-      anneeConstruction: 2019,
-      potentielPlusValue: 12,
-      roi5ans: 18.5,
-      roi10ans: 42.0,
-      tauxOccupation: 97,
-    },
-  },
-  // 2 — Location-ct, Studio, Gen\u00e8ve
-  {
-    id: 'prop2',
-    title: 'Studio meubl\u00e9 design au c\u0153ur de Gen\u00e8ve',
-    description:
-      'Studio contemporain de 32m\u00b2 enti\u00e8rement meubl\u00e9, id\u00e9al pour s\u00e9jours courte dur\u00e9e. Cuisine \u00e9quip\u00e9e, literie premium, WiFi fibre. \u00c0 5 minutes de la gare Cornavin.',
-    type: 'studio',
-    transactionType: 'location-ct',
-    price: 120,
-    currency: 'CHF',
-    location: { city: 'Gen\u00e8ve', country: 'Suisse', address: 'Rue du Mont-Blanc 18', lat: 46.2044, lng: 6.1432 },
-    images: [
-      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[0], // Leo — un des trois biens de l utilisateur courant
-    bedrooms: 0,
-    bathrooms: 1,
-    area: 32,
-    floor: 4,
-    amenities: ['WiFi', 'Meubl\u00e9', 'Cuisine \u00e9quip\u00e9e', 'Machine \u00e0 laver', 'Climatisation'],
-    rating: 4.6,
-    reviewCount: 58,
-    featured: false,
-  },
-  // 3 — Vente, Villa, Nice
-  {
-    id: 'prop3',
-    title: 'Villa contemporaine avec piscine \u00e0 d\u00e9bordement',
-    description:
-      'Magnifique villa d\u2019architecte de 280m\u00b2 sur un terrain de 1200m\u00b2. Piscine \u00e0 d\u00e9bordement avec vue mer panoramique. 5 chambres, 3 salles de bains, double garage. Quartier r\u00e9sidentiel calme.',
-    type: 'villa',
-    transactionType: 'vente',
-    price: 2850000,
-    currency: 'EUR',
-    location: { city: 'Nice', country: 'France', address: 'Chemin des Collines 7', lat: 43.7102, lng: 7.262 },
-    images: [
-      'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[4], // Lucas
-    bedrooms: 5,
-    bathrooms: 3,
-    area: 280,
-    amenities: ['Piscine', 'Jardin', 'Garage', 'Terrasse', 'Vue mer', 'Alarme', 'Domotique'],
-    rating: 4.9,
-    reviewCount: 12,
-    featured: true,
-    analytics: {
-      rendementBrut: 4.2,
-      rendementNet: 3.1,
-      prixM2: 10179,
-      dpe: 'C',
-      etatGeneral: 'Excellent',
-      anneeConstruction: 2021,
-      potentielPlusValue: 15,
-      roi5ans: 22.0,
-      roi10ans: 48.5,
-      tauxOccupation: 94,
-    },
-  },
-  // 4 — Vente, Riad, Marrakech
-  {
-    id: 'prop4',
-    title: 'Riad traditionnel r\u00e9nov\u00e9 en M\u00e9dina',
-    description:
-      'Authentique riad de 200m\u00b2 enti\u00e8rement restaur\u00e9 avec mat\u00e9riaux nobles. Patio avec fontaine, 4 suites avec salle de bain, terrasse panoramique. Exploit\u00e9 en maison d\u2019h\u00f4tes avec excellente rentabilit\u00e9.',
-    type: 'riad',
-    transactionType: 'vente',
-    price: 3200000,
-    currency: 'MAD',
-    location: { city: 'Marrakech', country: 'Maroc', address: 'Derb Sidi Bouamar, M\u00e9dina', lat: 31.6295, lng: -7.9811 },
-    images: [
-      'https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1577493340887-b7bfff550145?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[3], // Amina
-    bedrooms: 4,
-    bathrooms: 4,
-    area: 200,
-    amenities: ['Patio', 'Terrasse', 'Fontaine', 'Hammam', 'WiFi', 'Climatisation'],
-    rating: 4.8,
-    reviewCount: 87,
-    featured: true,
-    analytics: {
-      rendementBrut: 9.5,
-      rendementNet: 7.2,
-      prixM2: 16000,
-      dpe: 'D',
-      etatGeneral: 'Tr\u00e8s bon',
-      anneeConstruction: 1890,
-      potentielPlusValue: 20,
-      roi5ans: 38.0,
-      roi10ans: 85.0,
-      tauxOccupation: 78,
-    },
-  },
-  // 5 — Location-ct, Chalet, Verbier
-  {
-    id: 'prop5',
-    title: 'Chalet de luxe au pied des pistes \u00e0 Verbier',
-    description:
-      'Chalet exceptionnel de 350m\u00b2 avec acc\u00e8s ski-in/ski-out. Espace wellness priv\u00e9 (sauna, jacuzzi), chemin\u00e9e, 6 chambres. Vue imprenable sur les sommets. Service de concierge inclus.',
-    type: 'chalet',
-    transactionType: 'location-ct',
-    price: 850,
-    currency: 'CHF',
-    location: { city: 'Verbier', country: 'Suisse', address: 'Route de Verbier Station 15', lat: 46.0967, lng: 7.2286 },
-    images: [
-      'https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1604014237256-11d475e2a2d8?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1520984032042-162d526883e0?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[0], // Léo
-    bedrooms: 6,
-    bathrooms: 4,
-    area: 350,
-    amenities: ['Sauna', 'Jacuzzi', 'Chemin\u00e9e', 'Ski-in/Ski-out', 'Garage', 'Concierge', 'WiFi'],
-    rating: 4.9,
-    reviewCount: 31,
-    featured: true,
-  },
-  // 6 — Vente, Penthouse, Dubai
-  {
-    id: 'prop6',
-    title: 'Penthouse ultra-luxe sur Palm Jumeirah',
-    description:
-      'Penthouse d\u2019exception de 450m\u00b2 au dernier \u00e9tage avec vue 360\u00b0 sur le Golfe et la Marina. Piscine priv\u00e9e sur le toit, ascenseur priv\u00e9, 4 suites. Finitions Armani Casa.',
-    type: 'penthouse',
-    transactionType: 'vente',
-    price: 15000000,
-    currency: 'AED',
-    location: { city: 'Dubai', country: '\u00c9mirats Arabes Unis', address: 'Palm Jumeirah, Crescent Road', lat: 25.1124, lng: 55.139 },
-    images: [
-      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[5], // Yasmin
-    bedrooms: 4,
-    bathrooms: 5,
-    area: 450,
-    floor: 42,
-    amenities: ['Piscine priv\u00e9e', 'Ascenseur priv\u00e9', 'Vue mer', 'Salle de cin\u00e9ma', 'Salle de sport', 'Concierge 24h'],
-    rating: 5.0,
-    reviewCount: 8,
-    featured: true,
-    analytics: {
-      rendementBrut: 5.2,
-      rendementNet: 4.1,
-      prixM2: 33333,
-      dpe: 'A',
-      etatGeneral: 'Neuf',
-      anneeConstruction: 2024,
-      potentielPlusValue: 18,
-      roi5ans: 28.0,
-      roi10ans: 62.0,
-      tauxOccupation: 100,
-    },
-  },
-  // 7 — Location-lt, Appartement, Neuch\u00e2tel
-  {
-    id: 'prop7',
-    title: '3.5 pi\u00e8ces lumineux au bord du lac',
-    description:
-      'Bel appartement de 3.5 pi\u00e8ces au 4\u00e8me \u00e9tage avec vue d\u00e9gag\u00e9e sur le lac de Neuch\u00e2tel. R\u00e9cemment r\u00e9nov\u00e9, cuisine ouverte, balcon orient\u00e9 sud. Proche commerces et transports.',
-    type: 'appartement',
-    transactionType: 'location-lt',
-    price: 1850,
-    currency: 'CHF',
-    location: { city: 'Neuch\u00e2tel', country: 'Suisse', address: 'Quai Philippe-Godet 12', lat: 46.9925, lng: 6.9311 },
-    images: [
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[14], // Jean-Luc
-    bedrooms: 2,
-    bathrooms: 1,
-    area: 85,
-    floor: 4,
-    amenities: ['Balcon', 'Cave', 'Buanderie', 'Parking', 'Vue lac'],
-    rating: 4.7,
-    reviewCount: 19,
-    featured: false,
-  },
-  // 8 — Vente, Maison, Lisbonne
-  {
-    id: 'prop8',
-    title: 'Maison de ville r\u00e9nov\u00e9e \u00e0 Alfama',
-    description:
-      'Charmante maison de ville sur 3 niveaux dans le quartier historique d\u2019Alfama. 160m\u00b2 habitables, terrasse sur le toit avec vue Tage, patio int\u00e9rieur. Id\u00e9al investissement Golden Visa.',
-    type: 'maison',
-    transactionType: 'vente',
-    price: 680000,
-    currency: 'EUR',
-    location: { city: 'Lisbonne', country: 'Portugal', address: 'Rua de S\u00e3o Miguel 34', lat: 38.7103, lng: -9.1302 },
-    images: [
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[6], // Pierre
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 160,
-    amenities: ['Terrasse', 'Patio', 'Chemin\u00e9e', 'Vue fleuve', 'Cave \u00e0 vin'],
-    rating: 4.8,
-    reviewCount: 15,
-    featured: false,
-    analytics: {
-      rendementBrut: 6.1,
-      rendementNet: 4.5,
-      prixM2: 4250,
-      dpe: 'C',
-      etatGeneral: 'Tr\u00e8s bon',
-      anneeConstruction: 1920,
-      potentielPlusValue: 22,
-      roi5ans: 32.0,
-      roi10ans: 70.0,
-      tauxOccupation: 88,
-    },
-  },
-  // 9 — Location-ct, Villa, Phuket
-  {
-    id: 'prop9',
-    title: 'Villa tropicale avec piscine \u00e0 Phuket',
-    description:
-      'Villa de luxe de 220m\u00b2 avec piscine infinity et vue oc\u00e9an. 4 chambres, cuisine ext\u00e9rieure, sala tha\u00ef. Personnel de maison inclus. Location \u00e0 la semaine.',
-    type: 'villa',
-    transactionType: 'location-ct',
-    price: 285,
-    currency: 'CHF',
-    location: { city: 'Phuket', country: 'Tha\u00eflande', address: 'Kamala Beach Road 88', lat: 7.9519, lng: 98.2817 },
-    images: [
-      'https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1573052905904-34ad8c27f0cc?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1615571022219-eb45cf7faa36?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[0], // Leo — un des trois biens de l utilisateur courant
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 220,
-    amenities: ['Piscine', 'Vue mer', 'Jardin tropical', 'Cuisine ext\u00e9rieure', 'Personnel', 'WiFi'],
-    rating: 4.7,
-    reviewCount: 42,
-    featured: false,
-  },
-  // 10 — Vente, Terrain, Marrakech
-  {
-    id: 'prop10',
-    title: 'Terrain constructible 5000m\u00b2 Palmeraie',
-    description:
-      'Terrain viabilis\u00e9 de 5000m\u00b2 dans la Palmeraie de Marrakech. Permis de construire obtenu pour villa de 600m\u00b2. Acc\u00e8s route goudronn\u00e9e, proximit\u00e9 golfs et h\u00f4tels 5 \u00e9toiles.',
-    type: 'terrain',
-    transactionType: 'vente',
-    price: 4500000,
-    currency: 'MAD',
-    location: { city: 'Marrakech', country: 'Maroc', address: 'Circuit de la Palmeraie', lat: 31.6715, lng: -8.0029 },
-    images: [
-      'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1628624747186-a941c476b7ef?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[12], // Omar
-    bedrooms: 0,
-    bathrooms: 0,
-    area: 5000,
-    amenities: ['Viabilis\u00e9', 'Permis de construire', 'Route goudronn\u00e9e', 'Eau', '\u00c9lectricit\u00e9'],
-    rating: 4.5,
-    reviewCount: 6,
-    featured: false,
-    analytics: {
-      rendementBrut: 0,
-      rendementNet: 0,
-      prixM2: 900,
-      dpe: 'N/A',
-      etatGeneral: 'Terrain nu',
-      anneeConstruction: 0,
-      potentielPlusValue: 35,
-      roi5ans: 40.0,
-      roi10ans: 95.0,
-      tauxOccupation: 0,
-    },
-  },
-  // 11 — Vente, Bureau, Gen\u00e8ve
-  {
-    id: 'prop11',
-    title: 'Bureaux standing \u00e0 Gen\u00e8ve Eaux-Vives',
-    description:
-      'Surface de bureaux de 180m\u00b2 au 2\u00e8me \u00e9tage d\u2019un immeuble r\u00e9cent. Open space am\u00e9nageable, 2 salles de r\u00e9union, kitchenette. Fibre optique, climatisation r\u00e9versible. Proche gare des Eaux-Vives.',
-    type: 'bureau',
-    transactionType: 'vente',
-    price: 980000,
-    currency: 'CHF',
-    location: { city: 'Gen\u00e8ve', country: 'Suisse', address: 'Rue de la Terrassi\u00e8re 8', lat: 46.2, lng: 6.1614 },
-    images: [
-      'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1604328698692-f76ea9498e76?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1562664377-709f2c337eb2?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[2], // Marc
-    bedrooms: 0,
-    bathrooms: 2,
-    area: 180,
+    area: 128,
     floor: 2,
-    amenities: ['Climatisation', 'Fibre optique', 'Salles de r\u00e9union', 'Kitchenette', 'Parking', 'Acc\u00e8s handicap\u00e9'],
-    rating: 4.6,
-    reviewCount: 9,
-    featured: false,
-    analytics: {
-      rendementBrut: 4.8,
-      rendementNet: 3.6,
-      prixM2: 5444,
-      dpe: 'B',
-      etatGeneral: 'Excellent',
-      anneeConstruction: 2020,
-      potentielPlusValue: 10,
-      roi5ans: 20.0,
-      roi10ans: 45.0,
-      tauxOccupation: 95,
-    },
+    amenities: ['Vue lac', 'Terrasse', 'Cave', 'Parking', 'Ascenseur', 'Buanderie'],
+    rating: 0,
+    reviewCount: 0,
+    soldTo: 'user-003',
+    analytics: { rendementBrut: 2.9, rendementNet: 2.1, prixM2: 13203, dpe: 'C', etatGeneral: 'Très bon', anneeConstruction: 1998, potentielPlusValue: 9, roi5ans: 12, roi10ans: 27, tauxOccupation: 0 },
   },
-  // 12 — Location-ct, Villa, Gr\u00e8ce
-  {
-    id: 'prop12',
-    title: 'Villa blanche avec vue caldera \u00e0 Santorin',
-    description:
-      'Villa cycladique de 150m\u00b2 perch\u00e9e sur la caldera d\u2019Oia. 3 chambres, piscine priv\u00e9e, terrasses multiples. Vue coucher de soleil l\u00e9gendaire. Service de concierge et chef priv\u00e9 disponibles.',
-    type: 'villa',
-    transactionType: 'location-ct',
-    price: 450,
-    currency: 'EUR',
-    location: { city: 'Santorin', country: 'Gr\u00e8ce', address: 'Oia, Caldera View', lat: 36.4618, lng: 25.3753 },
-    images: [
-      'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1580502304784-8985b7eb7260?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[13], // Elena
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 150,
-    amenities: ['Piscine', 'Vue caldera', 'Terrasse', 'Concierge', 'Chef priv\u00e9', 'WiFi', 'Climatisation'],
-    rating: 4.9,
-    reviewCount: 36,
-    featured: true,
-  },
-  // 13 — Vente, Appartement, Barcelone
-  {
-    id: 'prop13',
-    title: 'Loft industriel r\u00e9nov\u00e9 \u00e0 El Born',
-    description:
-      'Superbe loft de 120m\u00b2 dans un ancien atelier du quartier El Born. Hauteur sous plafond 4m, briques apparentes, verrerie industrielle. Mezzanine, terrasse priv\u00e9e 25m\u00b2.',
-    type: 'appartement',
-    transactionType: 'vente',
-    price: 520000,
-    currency: 'EUR',
-    location: { city: 'Barcelone', country: 'Espagne', address: 'Carrer del Rec 28', lat: 41.3851, lng: 2.183 },
-    images: [
-      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600210491369-e753d80a41f3?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560448075-cbc16bb4af8e?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[15], // Carlos
-    bedrooms: 2,
-    bathrooms: 1,
-    area: 120,
-    floor: 1,
-    amenities: ['Terrasse', 'Mezzanine', 'Hauteur sous plafond', 'Briques', 'Verrerie', 'Climatisation'],
-    rating: 4.7,
-    reviewCount: 21,
-    featured: false,
-    analytics: {
-      rendementBrut: 5.5,
-      rendementNet: 4.0,
-      prixM2: 4333,
-      dpe: 'D',
-      etatGeneral: 'Tr\u00e8s bon',
-      anneeConstruction: 1935,
-      potentielPlusValue: 14,
-      roi5ans: 25.0,
-      roi10ans: 55.0,
-      tauxOccupation: 92,
-    },
-  },
-  // 14 — Location-lt, Appartement, Neuch\u00e2tel
-  {
-    id: 'prop14',
-    title: '2.5 pi\u00e8ces meubl\u00e9 proche universit\u00e9',
-    description:
-      'Appartement de 2.5 pi\u00e8ces enti\u00e8rement meubl\u00e9, id\u00e9al pour \u00e9tudiants ou jeunes professionnels. \u00c0 10 minutes \u00e0 pied de l\u2019Universit\u00e9 de Neuch\u00e2tel. Charges comprises.',
-    type: 'appartement',
-    transactionType: 'location-lt',
-    price: 1350,
-    currency: 'CHF',
-    location: { city: 'Neuch\u00e2tel', country: 'Suisse', address: 'Rue de la Pierre-\u00e0-Mazel 5', lat: 46.9917, lng: 6.9295 },
-    images: [
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[14], // Jean-Luc
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 55,
-    floor: 2,
-    amenities: ['Meubl\u00e9', 'Charges comprises', 'Buanderie', 'Cave', 'Parking v\u00e9lo'],
-    rating: 4.5,
-    reviewCount: 27,
-    featured: false,
-  },
-
-  /* 15 a 22 \u2014 Biens presentes dans le feed.
-
-     Le feed definissait ces huit biens chez lui, sous des identifiants
-     prop3, prop4, prop6, prop7, prop8, prop9, prop12 et prop13 deja pris
-     par des biens differents de ce catalogue. Cliquer \u00ab Voir le bien \u00bb
-     ouvrait donc une autre annonce : le penthouse genevois a 4,8 M CHF
-     menait a une villa a Nice, le studio de Dubai a un riad marocain.
-
-     Ils vivent maintenant ici, avec des identifiants a eux, et le feed les
-     lit par identifiant. La carte et la fiche ne peuvent plus diverger. */
-
-  // 15 \u2014 Vente, Appartement, Zurich
-  {
-    id: 'prop15',
-    title: 'Programme Minergie-P \u00e0 Zurich Nord',
-    description:
-      'Appartement neuf de 3.5 pi\u00e8ces dans un programme certifi\u00e9 Minergie-P. Triple vitrage, pompe \u00e0 chaleur, panneaux solaires en toiture. Livraison 2026.',
-    type: 'appartement',
-    transactionType: 'vente',
-    price: 980000,
-    currency: 'CHF',
-    location: { city: 'Zurich', country: 'Suisse', address: 'Affolternstrasse 120', lat: 47.4123, lng: 8.5215 },
-    images: [
-      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[8], // Thomas Muller, architecte
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 110,
-    amenities: ['Minergie-P', 'Pompe \u00e0 chaleur', 'Panneaux solaires', 'Balcon', 'Parking'],
-    rating: 4.7,
-    reviewCount: 12,
-    featured: false,
-    analytics: { rendementBrut: 4.1, rendementNet: 3.2, prixM2: 8909, dpe: 'A', etatGeneral: 'Neuf', anneeConstruction: 2026, potentielPlusValue: 18, roi5ans: 28, roi10ans: 62, tauxOccupation: 95 },
-  },
-
-  // 16 \u2014 Vente, Penthouse, Geneve
-  {
-    id: 'prop16',
-    title: 'Penthouse 360\u00b0 sur la rive droite',
-    description:
-      'Attique de 280 m\u00b2 en dernier \u00e9tage, terrasse filante et vue d\u00e9gag\u00e9e sur la rade et le Jura. Ascenseur priv\u00e9, deux places de parc.',
-    type: 'penthouse',
-    transactionType: 'vente',
-    price: 4800000,
-    currency: 'CHF',
-    location: { city: 'Gen\u00e8ve', country: 'Suisse', address: 'Quai Wilson 37', lat: 46.2230, lng: 6.1520 },
-    images: [
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[2], // Marc Favre, Geneve
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 280,
-    amenities: ['Terrasse', 'Ascenseur priv\u00e9', 'Vue lac', 'Parking double', 'Climatisation'],
-    rating: 4.9,
-    reviewCount: 8,
-    featured: true,
-    analytics: { rendementBrut: 3.8, rendementNet: 2.6, prixM2: 17142, dpe: 'B', etatGeneral: 'Excellent', anneeConstruction: 2019, potentielPlusValue: 22, roi5ans: 35, roi10ans: 78, tauxOccupation: 100 },
-  },
-
-  // 17 \u2014 Vente, Studio, Dubai
-  {
-    id: 'prop17',
-    title: 'Studio Dubai Marina, livraison 2027',
-    description:
-      'Studio de 52 m\u00b2 en VEFA dans une tour de Dubai Marina. Piscine \u00e0 d\u00e9bordement, salle de sport et conciergerie. Paiement \u00e9chelonn\u00e9 jusqu\u2019\u00e0 la livraison.',
-    type: 'studio',
-    transactionType: 'vente',
-    price: 480000,
-    currency: 'AED',
-    location: { city: 'Dubai', country: '\u00c9mirats Arabes Unis', address: 'Dubai Marina', lat: 25.0805, lng: 55.1403 },
-    images: [
-      'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[5], // Yasmin Al Maktoum
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 52,
-    amenities: ['Piscine', 'Salle de sport', 'Conciergerie', 'Parking', 'S\u00e9curit\u00e9 24h'],
-    rating: 4.6,
-    reviewCount: 15,
-    featured: false,
-    analytics: { rendementBrut: 8.2, rendementNet: 6.8, prixM2: 9230, dpe: 'A', etatGeneral: 'Neuf', anneeConstruction: 2027, potentielPlusValue: 30, roi5ans: 42, roi10ans: 95, tauxOccupation: 91 },
-  },
-
-  // 18 \u2014 Vente, Riad, Marrakech
-  {
-    id: 'prop18',
-    title: 'Riad du XVIII\u1d49 si\u00e8cle class\u00e9 patrimoine',
-    description:
-      'Riad de 280 m\u00b2 enti\u00e8rement restaur\u00e9 dans le respect des techniques traditionnelles. Zellige d\u2019origine, cinq chambres autour du patio, terrasse sur les toits.',
-    type: 'riad',
-    transactionType: 'vente',
-    price: 520000,
-    currency: 'EUR',
-    location: { city: 'Marrakech', country: 'Maroc', address: 'Derb Sidi Bouloukate', lat: 31.6258, lng: -7.9891 },
-    images: [
-      'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[12], // Omar Benjelloun, Marrakech
-    bedrooms: 5,
-    bathrooms: 4,
-    area: 280,
-    amenities: ['Patio', 'Terrasse', 'Hammam', 'Zellige d\u2019origine', 'Classement patrimoine'],
-    rating: 4.8,
-    reviewCount: 19,
-    featured: false,
-    analytics: { rendementBrut: 7.8, rendementNet: 5.9, prixM2: 1857, dpe: 'C', etatGeneral: 'Restaur\u00e9', anneeConstruction: 1780, potentielPlusValue: 18, roi5ans: 38, roi10ans: 85, tauxOccupation: 82 },
-  },
-
-  // 19 \u2014 Vente, Chalet, Verbier
+  // prop19 — Vente, Maison, Riex (Lavaux) — mandat actif.
   {
     id: 'prop19',
-    title: 'Chalet ski-in ski-out \u00e0 Verbier',
+    title: 'Maison vigneronne à Riex, au cœur du Lavaux',
     description:
-      'Chalet de 280 m\u00b2 avec acc\u00e8s direct aux pistes. Cinq chambres, cave \u00e0 vin, ski-room chauff\u00e9e et cheminee centrale.',
-    type: 'chalet',
+      'Une maison de vigneron du XIXe siècle, restaurée avec retenue : murs en molasse, poutres d’origine, cave voûtée où l’on entreposait la récolte. 185 m² sur trois niveaux, quatre chambres, une terrasse qui surplombe les vignes en terrasses et le lac. Une maison qui a une histoire, et de la place pour la suivante.',
+    type: 'maison',
     transactionType: 'vente',
-    price: 3200000,
+    price: 2450000,
     currency: 'CHF',
-    location: { city: 'Verbier', country: 'Suisse', address: 'Chemin de la Barmette 8', lat: 46.0960, lng: 7.2270 },
-    images: [
-      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=800&h=600&fit=crop',
-    ],
+    location: { city: 'Riex', country: 'Suisse', address: 'Route de la Corniche, 1097 Riex', lat: 46.495, lng: 6.724 },
+    images: [IMG('1564013799919-ab600027ffc6'), IMG('1600566753086-00f18fb6b3ea'), IMG('1600210491892-03d54c0aaf87'), IMG('1616594039964-ae9021a400a0')],
     videos: [],
-    host: users[1], // Sophie Durand, agence indépendante
-    bedrooms: 5,
-    bathrooms: 4,
-    area: 280,
-    amenities: ['Ski-in ski-out', 'Chemin\u00e9e', 'Ski-room', 'Cave \u00e0 vin', 'Garage'],
-    rating: 4.9,
-    reviewCount: 11,
-    featured: false,
-    analytics: { rendementBrut: 5.4, rendementNet: 3.9, prixM2: 11428, dpe: 'B', etatGeneral: 'Excellent', anneeConstruction: 2018, potentielPlusValue: 16, roi5ans: 32, roi10ans: 71, tauxOccupation: 78 },
-  },
-
-  // 20 \u2014 Vente, Appartement, Lugano
-  {
-    id: 'prop20',
-    title: 'R\u00e9sidence A+ g\u00e9othermie \u00e0 Lugano',
-    description:
-      'Appartement de 125 m\u00b2 dans une r\u00e9sidence chauff\u00e9e par sondes g\u00e9othermiques. Loggia orient\u00e9e sud, vue sur le lac de Lugano.',
-    type: 'appartement',
-    transactionType: 'vente',
-    price: 1180000,
-    currency: 'CHF',
-    location: { city: 'Lugano', country: 'Suisse', address: 'Via Cantonale 42', lat: 46.0037, lng: 8.9511 },
-    images: [
-      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[8], // Thomas Muller, architecte
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 125,
-    amenities: ['G\u00e9othermie', 'Loggia', 'Vue lac', 'Parking souterrain', 'Cave'],
-    rating: 4.6,
-    reviewCount: 9,
-    featured: false,
-    analytics: { rendementBrut: 4.6, rendementNet: 3.5, prixM2: 9440, dpe: 'A', etatGeneral: 'Neuf', anneeConstruction: 2026, potentielPlusValue: 22, roi5ans: 30, roi10ans: 68, tauxOccupation: 94 },
-  },
-
-  // 21 \u2014 Vente, Appartement, Dubai
-  {
-    id: 'prop21',
-    title: 'Appartement Downtown avec vue sur le Burj',
-    description:
-      'Deux chambres de 98 m\u00b2 au 34\u1d49 \u00e9tage, vue frontale sur le Burj Khalifa et la fontaine. Acc\u00e8s direct au Dubai Mall par passerelle climatis\u00e9e.',
-    type: 'appartement',
-    transactionType: 'vente',
-    price: 2100000,
-    currency: 'AED',
-    location: { city: 'Dubai', country: '\u00c9mirats Arabes Unis', address: 'Downtown Dubai', lat: 25.1972, lng: 55.2744 },
-    images: [
-      'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[5], // Yasmin Al Maktoum
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 98,
-    amenities: ['Vue Burj Khalifa', 'Piscine', 'Salle de sport', 'Conciergerie', 'Parking'],
-    rating: 4.8,
-    reviewCount: 23,
-    featured: false,
-    analytics: { rendementBrut: 7.1, rendementNet: 5.8, prixM2: 21428, dpe: 'A', etatGeneral: 'Excellent', anneeConstruction: 2022, potentielPlusValue: 28, roi5ans: 40, roi10ans: 92, tauxOccupation: 96 },
-  },
-
-  // 22 \u2014 Vente, Chalet, Crans-Montana
-  {
-    id: 'prop22',
-    title: 'Chalet Minergie-P \u00e0 Crans-Montana',
-    description:
-      'Chalet neuf de 165 m\u00b2 certifi\u00e9 Minergie-P, ossature bois locale et triple vitrage. Quatre chambres, terrasse plein sud face aux Alpes valaisannes.',
-    type: 'chalet',
-    transactionType: 'vente',
-    price: 1200000,
-    currency: 'CHF',
-    location: { city: 'Crans-Montana', country: 'Suisse', address: 'Route des M\u00e9l\u00e8zes 14', lat: 46.3140, lng: 7.4800 },
-    images: [
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop',
-    ],
-    videos: [],
-    host: users[8], // Thomas Muller, architecte
+    host: person('user-002'),
     bedrooms: 4,
-    bathrooms: 3,
-    area: 165,
-    amenities: ['Minergie-P', 'Ossature bois', 'Terrasse sud', 'Garage', 'Ski-room'],
-    rating: 4.7,
-    reviewCount: 6,
-    featured: false,
-    analytics: { rendementBrut: 5.1, rendementNet: 3.7, prixM2: 7272, dpe: 'A', etatGeneral: 'Neuf', anneeConstruction: 2026, potentielPlusValue: 20, roi5ans: 31, roi10ans: 69, tauxOccupation: 81 },
+    bathrooms: 2,
+    area: 185,
+    amenities: ['Vue lac', 'Cave voûtée', 'Terrasse', 'Cheminée', 'Jardin'],
+    rating: 0,
+    reviewCount: 0,
+    featured: true,
+    analytics: { rendementBrut: 2.6, rendementNet: 1.8, prixM2: 13243, dpe: 'E', etatGeneral: 'Restauré', anneeConstruction: 1860, potentielPlusValue: 8, roi5ans: 11, roi10ans: 25, tauxOccupation: 0 },
   },
-
-  /* 23 a 28 — Les biens des trois premiers profils complets (etape 3).
-     Tous en Suisse romande (D7). Chaque bien est hote par la vraie personne
-     de l'annuaire, et son id sert de sujet aux ecritures du journal
-     (`demo/ledger.ts`) : le revenu et le volume derivent de la, jamais d'un
-     nombre ecrit ailleurs. */
-
-  // 23 — Location-ct, Studio, Lausanne (Sophie Durand)
+  // prop13 — Vente, Appartement, Morges — mandat actif.
+  {
+    id: 'prop13',
+    title: '3,5 pièces lumineux à deux pas du lac, Morges',
+    description:
+      'Un 3,5 pièces de 92 m² au troisième étage, à trois rues du quai et du château. Séjour traversant, deux chambres, une loggia où le café du matin se prend au soleil. Une première acquisition idéale, ou un pied-à-terre pour qui travaille à Lausanne : la gare est à cinq minutes.',
+    type: 'appartement',
+    transactionType: 'vente',
+    price: 985000,
+    currency: 'CHF',
+    location: { city: 'Morges', country: 'Suisse', address: 'Rue Louis-de-Savoie, 1110 Morges', lat: 46.51, lng: 6.497 },
+    images: [IMG('1560185127-6ed189bf02f4'), IMG('1560448204-e02f11c3d0e2'), IMG('1556909114-f6e7ad7d3136'), IMG('1584622650111-993a426fbf0a')],
+    videos: [],
+    host: person('user-002'),
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 92,
+    floor: 3,
+    amenities: ['Loggia', 'Ascenseur', 'Cave', 'Proche gare', 'Buanderie'],
+    rating: 0,
+    reviewCount: 0,
+    analytics: { rendementBrut: 3.3, rendementNet: 2.5, prixM2: 10707, dpe: 'C', etatGeneral: 'Bon', anneeConstruction: 1972, potentielPlusValue: 10, roi5ans: 14, roi10ans: 31, tauxOccupation: 0 },
+  },
+  // prop23 — Courte durée, Studio, Lausanne (Ouchy) — le pied-à-terre de Céline.
   {
     id: 'prop23',
     title: 'Pied-à-terre meublé à Ouchy, vue lac',
     description:
-      'Studio de standing de 38 m² sur les quais d’Ouchy, meublé avec goût. Balcon face au Léman, à deux pas du métro et des Bains. Idéal pour un séjour courte durée à Lausanne.',
+      'Mon pied-à-terre lausannois, que je loue quand je n’y dors pas : un studio de 38 m² sur les quais d’Ouchy, balcon face au Léman, à deux pas du métro m2. Meublé avec soin, linge fourni, cuisine équipée. On y entend les mouettes et le bateau de 8 h 30.',
     type: 'studio',
     transactionType: 'location-ct',
     price: 180,
     currency: 'CHF',
-    location: { city: 'Lausanne', country: 'Suisse', address: 'Place du Port 3', lat: 46.5066, lng: 6.6266 },
-    images: [
-      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-    ],
+    location: { city: 'Lausanne', country: 'Suisse', address: 'Place du Port, 1006 Lausanne', lat: 46.5066, lng: 6.6266 },
+    images: [IMG('1522708323590-d24dbb6b0267'), IMG('1502672260266-1c1ef2d93688'), IMG('1560448204-e02f11c3d0e2')],
     videos: [],
-    host: users[1], // Sophie Durand
+    host: person('user-002'),
     bedrooms: 0,
     bathrooms: 1,
     area: 38,
     floor: 3,
     amenities: ['WiFi', 'Meublé', 'Balcon', 'Vue lac', 'Cuisine équipée', 'Ascenseur'],
-    rating: 4.9,
-    reviewCount: 2,
-    featured: false,
+    rating: 0,
+    reviewCount: 0,
   },
 
-  // 24 — Location-ct, Studio, Montreux (Marc Favre)
+  // ── Ennio Bordoni (user-003) ────────────────────────────────────────────
+  // prop16 — Vente, Appartement, Genève (Champel) — vendu par son propriétaire.
+  {
+    id: 'prop16',
+    title: '5 pièces à Champel, calme et lumineux',
+    description:
+      '5 pièces, 142 m², 4e étage. Immeuble de 1965, rénové en 2019 (façade, fenêtres, chaudière). Trois chambres, deux salles de bains. Cave, une place en sous-sol. Charges : 690 CHF/mois. Vente directe par le propriétaire, sans intermédiaire.',
+    type: 'appartement',
+    transactionType: 'vente',
+    price: 3150000,
+    currency: 'CHF',
+    location: { city: 'Genève', country: 'Suisse', address: 'Avenue de Champel, 1206 Genève', lat: 46.1905, lng: 6.153 },
+    images: [IMG('1600607687939-ce8a6c25118c'), IMG('1600566753190-17f0baa2a6c3'), IMG('1600210492486-724fe5c67fb0')],
+    videos: [],
+    host: person('user-003'),
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 142,
+    floor: 4,
+    amenities: ['Ascenseur', 'Cave', 'Parking souterrain', 'Balcon', 'Concierge'],
+    rating: 0,
+    reviewCount: 0,
+    analytics: { rendementBrut: 2.8, rendementNet: 2.0, prixM2: 22183, dpe: 'C', etatGeneral: 'Rénové', anneeConstruction: 1965, potentielPlusValue: 7, roi5ans: 10, roi10ans: 24, tauxOccupation: 0 },
+  },
+  // prop24 — Courte durée, Studio, Montreux.
   {
     id: 'prop24',
-    title: 'Studio de rendement à Montreux',
+    title: 'Studio meublé à Montreux, près du Casino',
     description:
-      'Studio meublé de 34 m² sur la Riviera, à cinq minutes du marché couvert et du bord du lac. Louer en courte durée toute l’année grâce aux festivals et au tourisme d’affaires. Rendement régulier.',
+      'Studio de 34 m². Meublé. Cuisine équipée, machine à laver. Gare à six minutes à pied, quais à deux. Arrivée autonome par boîte à clés. Juillet : réservation minimum trois nuits.',
     type: 'studio',
     transactionType: 'location-ct',
     price: 140,
     currency: 'CHF',
-    location: { city: 'Montreux', country: 'Suisse', address: 'Avenue du Casino 32', lat: 46.4312, lng: 6.9107 },
-    images: [
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&h=600&fit=crop',
-    ],
+    location: { city: 'Montreux', country: 'Suisse', address: 'Avenue du Casino, 1820 Montreux', lat: 46.4312, lng: 6.9107 },
+    images: [IMG('1560448204-e02f11c3d0e2'), IMG('1586023492125-27b2c045efd7'), IMG('1631679706909-1844bbd07221')],
     videos: [],
-    host: users[2], // Marc Favre
+    host: person('user-003'),
     bedrooms: 0,
     bathrooms: 1,
     area: 34,
     floor: 2,
-    amenities: ['WiFi', 'Meublé', 'Cuisine équipée', 'Machine à laver', 'Proche gare'],
-    rating: 4.7,
-    reviewCount: 1,
-    featured: false,
+    amenities: ['WiFi', 'Meublé', 'Cuisine équipée', 'Machine à laver', 'Arrivée autonome'],
+    rating: 0,
+    reviewCount: 0,
   },
-
-  // 25 — Location-ct, Appartement, Nyon (Marc Favre)
+  // prop25 — Courte durée, Appartement, Nyon.
   {
     id: 'prop25',
-    title: '2 pièces meublé à Nyon, entre Genève et Lausanne',
+    title: '2 pièces meublé à Nyon, près de la gare',
     description:
-      'Appartement meublé de 52 m² au cœur de la vieille ville de Nyon, idéalement placé entre Genève et Lausanne. Parfait pour cadres en mission et voyageurs d’affaires. Gare CFF à 300 m.',
+      '2 pièces, 52 m², rez surélevé. Gare CFF à 300 m : Genève en 15 minutes, Lausanne en 25. Une chambre, séjour avec canapé-lit. Pour séjours professionnels. Facture au nom de la société sur demande.',
     type: 'appartement',
     transactionType: 'location-ct',
     price: 160,
     currency: 'CHF',
-    location: { city: 'Nyon', country: 'Suisse', address: 'Rue de la Gare 12', lat: 46.3833, lng: 6.2394 },
-    images: [
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&h=600&fit=crop',
-    ],
+    location: { city: 'Nyon', country: 'Suisse', address: 'Rue de la Gare, 1260 Nyon', lat: 46.3833, lng: 6.2394 },
+    images: [IMG('1502672260266-1c1ef2d93688'), IMG('1560185893-a55cbc8c57e8'), IMG('1584622650111-993a426fbf0a')],
     videos: [],
-    host: users[2], // Marc Favre
+    host: person('user-003'),
     bedrooms: 1,
     bathrooms: 1,
     area: 52,
-    floor: 1,
+    floor: 0,
     amenities: ['WiFi', 'Meublé', 'Cuisine équipée', 'Proche gare', 'Cave'],
-    rating: 4.6,
-    reviewCount: 1,
-    featured: false,
+    rating: 0,
+    reviewCount: 0,
   },
-
-  // 26 — Location-ct, Appartement, Neuchâtel (Jean-Luc Hartmann / gestion agence)
+  // prop17 — Longue durée, Appartement, Prilly.
   {
-    id: 'prop26',
-    title: 'Meublé géré au centre de Neuchâtel',
+    id: 'prop17',
+    title: '3,5 pièces à Prilly, proche gare de Prilly-Malley',
     description:
-      'Appartement meublé de 46 m² en zone piétonne, géré par Hartmann Immobilier SA en location courte durée. Check-in autonome, ménage professionnel, à deux pas du château et du lac.',
+      '3,5 pièces, 74 m², 2e étage. Deux chambres, balcon. Gare de Prilly-Malley à 7 minutes, bus 9 et 33 devant l’immeuble. Loyer 1 940 CHF + 150 CHF de charges. Libre au 1er décembre. Garantie de loyer : trois mois.',
     type: 'appartement',
-    transactionType: 'location-ct',
-    price: 150,
+    transactionType: 'location-lt',
+    price: 2090,
     currency: 'CHF',
-    location: { city: 'Neuchâtel', country: 'Suisse', address: 'Rue du Château 9', lat: 46.9896, lng: 6.9293 },
-    images: [
-      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop',
-    ],
+    location: { city: 'Prilly', country: 'Suisse', address: 'Route de Cossonay, 1008 Prilly', lat: 46.534, lng: 6.603 },
+    images: [IMG('1556909114-f6e7ad7d3136'), IMG('1560185893-a55cbc8c57e8'), IMG('1584622650111-993a426fbf0a')],
     videos: [],
-    host: users[14], // Jean-Luc Hartmann
-    bedrooms: 1,
+    host: person('user-003'),
+    bedrooms: 2,
     bathrooms: 1,
-    area: 46,
+    area: 74,
     floor: 2,
-    amenities: ['WiFi', 'Meublé', 'Check-in autonome', 'Ménage inclus', 'Centre-ville'],
-    rating: 4.8,
-    reviewCount: 1,
-    featured: false,
+    amenities: ['Balcon', 'Cave', 'Buanderie', 'Ascenseur', 'Proche transports'],
+    rating: 0,
+    reviewCount: 0,
+  },
+  // prop10 — Longue durée, Appartement, Vevey.
+  {
+    id: 'prop10',
+    title: '3,5 pièces au centre de Vevey',
+    description:
+      '3,5 pièces, 78 m², 3e étage sans ascenseur. Deux chambres. Gare et marché à 5 minutes. Loyer 1 990 CHF + 160 CHF de charges. Dossier complet exigé : attestation de l’Office des poursuites, trois fiches de salaire.',
+    type: 'appartement',
+    transactionType: 'location-lt',
+    price: 2150,
+    currency: 'CHF',
+    location: { city: 'Vevey', country: 'Suisse', address: 'Rue du Simplon, 1800 Vevey', lat: 46.4605, lng: 6.843 },
+    images: [IMG('1560185127-6ed189bf02f4'), IMG('1560448204-e02f11c3d0e2'), IMG('1556909114-f6e7ad7d3136')],
+    videos: [],
+    host: person('user-003'),
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 78,
+    floor: 3,
+    amenities: ['Cave', 'Buanderie', 'Centre-ville', 'Proche gare'],
+    rating: 0,
+    reviewCount: 0,
   },
 
-  // 27 — Vente, Villa, Hauterive (Jean-Luc Hartmann / mandat agence)
+  // ── Léo Martin (user-001) ───────────────────────────────────────────────
+  // prop5 — Courte durée, Appartement-chalet, Verbier.
+  {
+    id: 'prop5',
+    title: 'Appartement dans un chalet, au centre de Verbier',
+    description:
+      'Un 4,5 pièces de 120 m² au premier étage d’un chalet, à dix minutes à pied de Médran. Trois chambres, deux salles de bains, cheminée et balcon plein sud. Local à skis chauffé. Je fais l’accueil moi-même ou par boîte à clés selon l’heure d’arrivée.',
+    type: 'chalet',
+    transactionType: 'location-ct',
+    price: 420,
+    currency: 'CHF',
+    location: { city: 'Verbier', country: 'Suisse', address: 'Rue de Médran, 1936 Verbier', lat: 46.0975, lng: 7.231 },
+    images: [IMG('1518732714860-b62714ce0c59'), IMG('1542718610-a1d656d1884c'), IMG('1510798831971-661eb04b3739'), IMG('1520984032042-162d526883e0')],
+    videos: [],
+    host: person('user-001'),
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 120,
+    floor: 1,
+    amenities: ['Cheminée', 'Local à skis', 'Balcon', 'WiFi', 'Parking'],
+    rating: 0,
+    reviewCount: 0,
+    featured: true,
+  },
+  // prop2 — Courte durée, Studio, Genève.
+  {
+    id: 'prop2',
+    title: 'Studio meublé près de Cornavin, Genève',
+    description:
+      'Studio contemporain de 32 m², entièrement meublé, pour les séjours d’affaires et les week-ends. Cuisine équipée, literie de qualité, fibre. La gare Cornavin est à cinq minutes à pied, le lac à dix.',
+    type: 'studio',
+    transactionType: 'location-ct',
+    price: 120,
+    currency: 'CHF',
+    location: { city: 'Genève', country: 'Suisse', address: 'Rue du Mont-Blanc, 1201 Genève', lat: 46.2085, lng: 6.1435 },
+    images: [IMG('1522708323590-d24dbb6b0267'), IMG('1502672260266-1c1ef2d93688'), IMG('1560448204-e02f11c3d0e2'), IMG('1586023492125-27b2c045efd7')],
+    videos: [],
+    host: person('user-001'),
+    bedrooms: 0,
+    bathrooms: 1,
+    area: 32,
+    floor: 4,
+    amenities: ['WiFi', 'Meublé', 'Cuisine équipée', 'Machine à laver', 'Proche gare'],
+    rating: 0,
+    reviewCount: 0,
+  },
+  // prop9 — Courte durée, Studio, Lausanne (Sous-Gare).
+  {
+    id: 'prop9',
+    title: 'Studio meublé à Sous-Gare, Lausanne',
+    description:
+      'Le studio de 30 m² que je loue dans mon quartier : à six minutes de la gare de Lausanne, entre la gare et Ouchy. Lit double, coin cuisine, douche à l’italienne. Arrivée autonome ; j’habite à deux rues si quelque chose manque.',
+    type: 'studio',
+    transactionType: 'location-ct',
+    price: 135,
+    currency: 'CHF',
+    location: { city: 'Lausanne', country: 'Suisse', address: 'Avenue de la Harpe, 1007 Lausanne', lat: 46.5115, lng: 6.625 },
+    images: [IMG('1502672260266-1c1ef2d93688'), IMG('1586023492125-27b2c045efd7'), IMG('1631679706909-1844bbd07221')],
+    videos: [],
+    host: person('user-001'),
+    bedrooms: 0,
+    bathrooms: 1,
+    area: 30,
+    floor: 1,
+    amenities: ['WiFi', 'Meublé', 'Arrivée autonome', 'Proche gare', 'Cuisine équipée'],
+    rating: 0,
+    reviewCount: 0,
+  },
+  // prop8 — Longue durée, Appartement, Renens — Ana est candidate.
+  {
+    id: 'prop8',
+    title: '4,5 pièces familial à Renens, proche gare',
+    description:
+      'Un 4,5 pièces de 98 m² au 3e étage, trois chambres, une salle de bains et un WC séparé, balcon sur cour. Gare de Renens et tram à 6 minutes, écoles à 400 m. Loyer 2 280 CHF + 200 CHF de charges. Le loyer de l’ancien locataire figure sur la formule officielle de notification du loyer initial (obligatoire dans le canton de Vaud), jointe au bail. Garantie : trois mois de loyer net au maximum, sur un compte bloqué à votre nom.',
+    type: 'appartement',
+    transactionType: 'location-lt',
+    price: 2480,
+    currency: 'CHF',
+    location: { city: 'Renens', country: 'Suisse', address: 'Avenue du 14-Avril, 1020 Renens', lat: 46.537, lng: 6.588 },
+    images: [IMG('1560448204-e02f11c3d0e2'), IMG('1560185893-a55cbc8c57e8'), IMG('1556909114-f6e7ad7d3136'), IMG('1584622650111-993a426fbf0a')],
+    videos: [],
+    host: person('user-001'),
+    bedrooms: 3,
+    bathrooms: 1,
+    area: 98,
+    floor: 3,
+    amenities: ['Balcon', 'Cave', 'Buanderie', 'Ascenseur', 'Proche écoles', 'Proche gare'],
+    rating: 0,
+    reviewCount: 0,
+  },
+
+  // ── Hartmann Immobilier SA — Jean-Luc Hartmann (user-015) ───────────────
+  // prop27 — Vente, Villa, Hauterive — VENDUE à Sandrine (mandat conclu).
   {
     id: 'prop27',
     title: 'Villa individuelle avec vue lac à Hauterive',
     description:
-      'Villa familiale de 210 m² sur 900 m² de terrain, vue dégagée sur le lac de Neuchâtel et les Alpes. Cinq pièces, jardin arboré, double garage. Mandat exclusif Hartmann Immobilier SA.',
+      'Villa familiale de 210 m² sur une parcelle de 900 m², vue dégagée sur le lac de Neuchâtel et les Alpes. Cinq pièces, jardin arboré, double garage. Construction 2004, entretien suivi. Mandat exclusif Hartmann Immobilier SA.',
     type: 'villa',
     transactionType: 'vente',
     price: 1350000,
     currency: 'CHF',
-    location: { city: 'Hauterive', country: 'Suisse', address: 'Chemin des Roulières 5', lat: 47.0122, lng: 6.9756 },
-    images: [
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop',
-    ],
+    location: { city: 'Hauterive', country: 'Suisse', address: 'Chemin des Roulières 5, 2068 Hauterive', lat: 47.0122, lng: 6.9756 },
+    images: [IMG('1600585154340-be6161a56a0c'), IMG('1600596542815-ffad4c1539a9'), IMG('1600607687939-ce8a6c25118c')],
     videos: [],
-    host: users[14], // Jean-Luc Hartmann
+    host: person('user-015'),
     bedrooms: 4,
     bathrooms: 2,
     area: 210,
     amenities: ['Jardin', 'Garage', 'Vue lac', 'Cheminée', 'Cave'],
-    rating: 4.8,
-    reviewCount: 1,
-    featured: false,
+    rating: 0,
+    reviewCount: 0,
+    soldTo: 'user-011',
     analytics: { rendementBrut: 3.4, rendementNet: 2.5, prixM2: 6428, dpe: 'C', etatGeneral: 'Très bon', anneeConstruction: 2004, potentielPlusValue: 12, roi5ans: 16, roi10ans: 38, tauxOccupation: 0 },
   },
-
-  // 28 — Vente, Appartement, Neuchâtel (Jean-Luc Hartmann / mandat agence)
+  // prop28 — Vente, Appartement, Neuchâtel (Beaux-Arts) — mandat actif.
   {
     id: 'prop28',
-    title: '4.5 pièces rénové aux Beaux-Arts, Neuchâtel',
+    title: '4,5 pièces rénové aux Beaux-Arts, Neuchâtel',
     description:
-      'Appartement de 118 m² dans un immeuble de maître du quartier des Beaux-Arts, entièrement rénové. Parquet d’origine, hauts plafonds, balcon. Mandat Hartmann Immobilier SA.',
+      'Appartement de 118 m² dans un immeuble de maître du quartier des Beaux-Arts, entièrement rénové en 2023. Parquet d’origine, hauts plafonds, balcon côté lac. Trois chambres, deux salles d’eau. Mandat Hartmann Immobilier SA.',
     type: 'appartement',
     transactionType: 'vente',
     price: 920000,
     currency: 'CHF',
-    location: { city: 'Neuchâtel', country: 'Suisse', address: 'Avenue du 1er-Mars 20', lat: 46.9959, lng: 6.9403 },
-    images: [
-      'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&h=600&fit=crop',
-    ],
+    location: { city: 'Neuchâtel', country: 'Suisse', address: 'Avenue du 1er-Mars, 2000 Neuchâtel', lat: 46.9959, lng: 6.9403 },
+    images: [IMG('1560185127-6ed189bf02f4'), IMG('1560448204-e02f11c3d0e2'), IMG('1584622650111-993a426fbf0a')],
     videos: [],
-    host: users[14], // Jean-Luc Hartmann
+    host: person('user-015'),
     bedrooms: 3,
     bathrooms: 2,
     area: 118,
     floor: 2,
     amenities: ['Balcon', 'Parquet', 'Cave', 'Ascenseur', 'Proche centre'],
-    rating: 4.7,
-    reviewCount: 1,
-    featured: false,
+    rating: 0,
+    reviewCount: 0,
+    featured: true,
     analytics: { rendementBrut: 3.9, rendementNet: 2.9, prixM2: 7796, dpe: 'B', etatGeneral: 'Rénové', anneeConstruction: 1928, potentielPlusValue: 14, roi5ans: 18, roi10ans: 41, tauxOccupation: 0 },
   },
+  // prop26 — Courte durée, Appartement, Neuchâtel — meublé géré par l'agence.
+  {
+    id: 'prop26',
+    title: 'Meublé géré au centre de Neuchâtel',
+    description:
+      'Appartement meublé de 46 m² en zone piétonne, géré par Hartmann Immobilier SA en location courte durée. Arrivée autonome, ménage professionnel entre chaque séjour, à deux pas du château et du lac.',
+    type: 'appartement',
+    transactionType: 'location-ct',
+    price: 150,
+    currency: 'CHF',
+    location: { city: 'Neuchâtel', country: 'Suisse', address: 'Rue du Château, 2000 Neuchâtel', lat: 46.9896, lng: 6.9293 },
+    images: [IMG('1586023492125-27b2c045efd7'), IMG('1560448204-e02f11c3d0e2'), IMG('1502672260266-1c1ef2d93688')],
+    videos: [],
+    host: person('user-015'),
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 46,
+    floor: 2,
+    amenities: ['WiFi', 'Meublé', 'Arrivée autonome', 'Ménage inclus', 'Centre-ville'],
+    rating: 0,
+    reviewCount: 0,
+  },
+  // prop7 — Longue durée, Appartement, Neuchâtel.
+  {
+    id: 'prop7',
+    title: '3,5 pièces lumineux au bord du lac, Neuchâtel',
+    description:
+      'Bel appartement de 3,5 pièces au 4e étage avec vue dégagée sur le lac de Neuchâtel. Récemment rénové, cuisine ouverte, balcon orienté sud. Commerces et transports à proximité. Gérance Hartmann Immobilier SA.',
+    type: 'appartement',
+    transactionType: 'location-lt',
+    price: 1780,
+    currency: 'CHF',
+    location: { city: 'Neuchâtel', country: 'Suisse', address: 'Quai Philippe-Godet, 2000 Neuchâtel', lat: 46.9925, lng: 6.9311 },
+    images: [IMG('1560448204-e02f11c3d0e2'), IMG('1560185893-a55cbc8c57e8'), IMG('1584622650111-993a426fbf0a'), IMG('1556909114-f6e7ad7d3136')],
+    videos: [],
+    host: person('user-015'),
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 85,
+    floor: 4,
+    amenities: ['Balcon', 'Cave', 'Buanderie', 'Vue lac'],
+    rating: 0,
+    reviewCount: 0,
+  },
+
+  // ── Hartmann Immobilier SA — Aline Tschanz (user-004) ───────────────────
+  // prop15 — Vente, Appartement, Neuchâtel — immeuble rénové (projet Reto Jungo).
+  {
+    id: 'prop15',
+    title: '3,5 pièces rénové Minergie, rue des Parcs',
+    description:
+      'Dans un immeuble des années 1960 entièrement rénové (isolation, fenêtres triple vitrage, pompe à chaleur — étude énergétique et direction de travaux par un architecte fribourgeois), un 3,5 pièces de 89 m² avec balcon. CECB passé de F à B. Gare de Neuchâtel à 8 minutes. Mandat Hartmann Immobilier SA, visites groupées le samedi matin.',
+    type: 'appartement',
+    transactionType: 'vente',
+    price: 695000,
+    currency: 'CHF',
+    location: { city: 'Neuchâtel', country: 'Suisse', address: 'Rue des Parcs, 2000 Neuchâtel', lat: 46.9985, lng: 6.923 },
+    images: [IMG('1545324418-cc1a3fa10c00'), IMG('1560448204-e02f11c3d0e2'), IMG('1586023492125-27b2c045efd7')],
+    videos: [],
+    host: person('user-004'),
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 89,
+    floor: 3,
+    amenities: ['Minergie', 'Pompe à chaleur', 'Balcon', 'Cave', 'Ascenseur'],
+    rating: 0,
+    reviewCount: 0,
+    analytics: { rendementBrut: 4.1, rendementNet: 3.2, prixM2: 7809, dpe: 'B', etatGeneral: 'Rénové', anneeConstruction: 1962, potentielPlusValue: 12, roi5ans: 17, roi10ans: 39, tauxOccupation: 0 },
+  },
+  // prop20 — Vente, Maison, Bulle — bien amené à l'agence par Yves Mottiez.
+  {
+    id: 'prop20',
+    title: 'Maison individuelle à Bulle, vue sur le Moléson',
+    description:
+      'Maison de 5,5 pièces, 150 m² habitables sur une parcelle de 620 m², dans un quartier calme à dix minutes à pied du centre de Bulle. Quatre chambres, jardin, garage double. Chauffage à pellets (2018). Mandat Hartmann Immobilier SA.',
+    type: 'maison',
+    transactionType: 'vente',
+    price: 845000,
+    currency: 'CHF',
+    location: { city: 'Bulle', country: 'Suisse', address: 'Route de Riaz, 1630 Bulle', lat: 46.623, lng: 7.06 },
+    images: [IMG('1600585154526-990dced4db0d'), IMG('1518780664697-55e3ad937233'), IMG('1600566753086-00f18fb6b3ea')],
+    videos: [],
+    host: person('user-004'),
+    bedrooms: 4,
+    bathrooms: 2,
+    area: 150,
+    amenities: ['Jardin', 'Garage double', 'Vue montagne', 'Cave', 'Chauffage pellets'],
+    rating: 0,
+    reviewCount: 0,
+    analytics: { rendementBrut: 3.6, rendementNet: 2.7, prixM2: 5633, dpe: 'C', etatGeneral: 'Bon', anneeConstruction: 1994, potentielPlusValue: 11, roi5ans: 15, roi10ans: 34, tauxOccupation: 0 },
+  },
+  // prop14 — Longue durée, Appartement meublé, Neuchâtel.
+  {
+    id: 'prop14',
+    title: '2,5 pièces meublé proche université, Neuchâtel',
+    description:
+      'Appartement de 2,5 pièces entièrement meublé, idéal pour étudiants ou jeunes professionnels. À dix minutes à pied de l’Université de Neuchâtel. Charges comprises. Gérance Hartmann Immobilier SA.',
+    type: 'appartement',
+    transactionType: 'location-lt',
+    price: 1350,
+    currency: 'CHF',
+    location: { city: 'Neuchâtel', country: 'Suisse', address: 'Rue de la Pierre-à-Mazel, 2000 Neuchâtel', lat: 46.9917, lng: 6.9295 },
+    images: [IMG('1502672260266-1c1ef2d93688'), IMG('1560185893-a55cbc8c57e8'), IMG('1586023492125-27b2c045efd7')],
+    videos: [],
+    host: person('user-004'),
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 55,
+    floor: 2,
+    amenities: ['Meublé', 'Charges comprises', 'Buanderie', 'Cave', 'Parking vélo'],
+    rating: 0,
+    reviewCount: 0,
+  },
+  // prop21 — Longue durée, Appartement, Yverdon-les-Bains.
+  {
+    id: 'prop21',
+    title: '3,5 pièces à Yverdon-les-Bains, proche gare',
+    description:
+      '3,5 pièces de 76 m² au 2e étage, deux chambres, balcon. Gare d’Yverdon et vieille ville à 7 minutes à pied. Loyer 1 440 CHF + 150 CHF de charges. Libre de suite. Gérance Hartmann Immobilier SA.',
+    type: 'appartement',
+    transactionType: 'location-lt',
+    price: 1590,
+    currency: 'CHF',
+    location: { city: 'Yverdon-les-Bains', country: 'Suisse', address: 'Rue des Moulins, 1400 Yverdon-les-Bains', lat: 46.779, lng: 6.641 },
+    images: [IMG('1560448204-e02f11c3d0e2'), IMG('1560185127-6ed189bf02f4'), IMG('1556909114-f6e7ad7d3136')],
+    videos: [],
+    host: person('user-004'),
+    bedrooms: 2,
+    bathrooms: 1,
+    area: 76,
+    floor: 2,
+    amenities: ['Balcon', 'Cave', 'Buanderie', 'Proche gare'],
+    rating: 0,
+    reviewCount: 0,
+  },
+
+  // ── Bernard Chappuis (user-007) ─────────────────────────────────────────
+  // prop3 — Vente, Maison, Pully — vendue seul par son propriétaire.
+  {
+    id: 'prop3',
+    title: 'Maison familiale avec jardin à Pully',
+    description:
+      'Je mets en vente la maison où nous avons élevé nos trois enfants. 6,5 pièces, 210 m² habitable, sur une parcelle de 850 m² avec jardin et vue sur le lac depuis l’étage. Cinq chambres, trois salles d’eau, garage. Construite en 1978, bien entretenue, la cuisine et le chauffage seraient à rafraichir. Le centre de Pully et la gare sont à 10 minutes à pied. Visites sur rendez-vous, de préférence le matin. Pas d’agence s.v.p.',
+    type: 'maison',
+    transactionType: 'vente',
+    price: 2950000,
+    currency: 'CHF',
+    location: { city: 'Pully', country: 'Suisse', address: 'Chemin de Rennier, 1009 Pully', lat: 46.5135, lng: 6.665 },
+    images: [IMG('1583608205776-bfd35f0d9f83'), IMG('1564013799919-ab600027ffc6'), IMG('1600566753086-00f18fb6b3ea'), IMG('1600210491892-03d54c0aaf87')],
+    videos: [],
+    host: person('user-007'),
+    bedrooms: 5,
+    bathrooms: 3,
+    area: 210,
+    amenities: ['Jardin', 'Garage', 'Vue lac', 'Cave', 'Cheminée'],
+    rating: 0,
+    reviewCount: 0,
+    analytics: { rendementBrut: 2.5, rendementNet: 1.7, prixM2: 14047, dpe: 'E', etatGeneral: 'À rafraîchir', anneeConstruction: 1978, potentielPlusValue: 10, roi5ans: 12, roi10ans: 28, tauxOccupation: 0 },
+  },
+
+  // ── Mirjana Kovač (user-013) ────────────────────────────────────────────
+  // prop12 — Courte durée, Appartement, Montreux.
+  {
+    id: 'prop12',
+    title: '2 pièces vue lac à Montreux',
+    description:
+      '2 pièces de 55 m², balcon vue lac, 5e étage avec ascenseur. Une chambre, canapé-lit au salon : jusqu’à 4 personnes. Quais et gare à 5 minutes. Pendant le Montreux Jazz (juillet), minimum 4 nuits ; en décembre, le marché de Noël est en bas de la rue.',
+    type: 'appartement',
+    transactionType: 'location-ct',
+    price: 210,
+    currency: 'CHF',
+    location: { city: 'Montreux', country: 'Suisse', address: 'Avenue des Alpes, 1820 Montreux', lat: 46.433, lng: 6.911 },
+    images: [IMG('1502672260266-1c1ef2d93688'), IMG('1560185893-a55cbc8c57e8'), IMG('1631679706909-1844bbd07221')],
+    videos: [],
+    host: person('user-013'),
+    bedrooms: 1,
+    bathrooms: 1,
+    area: 55,
+    floor: 5,
+    amenities: ['Vue lac', 'Balcon', 'WiFi', 'Meublé', 'Ascenseur', 'Cuisine équipée'],
+    rating: 0,
+    reviewCount: 0,
+    featured: true,
+  },
+  // prop6 — Courte durée, Studio, Clarens (Montreux).
+  {
+    id: 'prop6',
+    title: 'Studio à Clarens, à deux pas du lac',
+    description:
+      'Studio de 32 m² au rez, petite terrasse. Lit double, coin cuisine. Quai de Clarens à 2 minutes, centre de Montreux à 15 minutes à pied par les quais. Arrivée autonome. Ménage fait entre chaque séjour.',
+    type: 'studio',
+    transactionType: 'location-ct',
+    price: 125,
+    currency: 'CHF',
+    location: { city: 'Montreux', country: 'Suisse', address: 'Rue du Lac, 1815 Clarens', lat: 46.44, lng: 6.892 },
+    images: [IMG('1522708323590-d24dbb6b0267'), IMG('1586023492125-27b2c045efd7'), IMG('1631679706909-1844bbd07221')],
+    videos: [],
+    host: person('user-013'),
+    bedrooms: 0,
+    bathrooms: 1,
+    area: 32,
+    floor: 0,
+    amenities: ['Terrasse', 'WiFi', 'Meublé', 'Arrivée autonome', 'Proche lac'],
+    rating: 0,
+    reviewCount: 0,
+  },
+
+  // ── Amina El Idrissi (user-016) ─────────────────────────────────────────
+  // prop4 — Courte durée, Riad, Marrakech (médina).
+  {
+    id: 'prop4',
+    title: 'Riad en médina, quatre suites autour du patio',
+    description:
+      'Mon riad, que je loue en entier : quatre suites autour d’un patio planté d’orangers, une fontaine, une terrasse sur les toits pour le petit-déjeuner. Restauré avec des artisans de la médina. Jusqu’à 8 personnes. Petit-déjeuner compris, accueil à l’arrivée par Fatiha qui travaille avec moi depuis 2016.',
+    type: 'riad',
+    transactionType: 'location-ct',
+    price: 290,
+    currency: 'CHF',
+    location: { city: 'Marrakech', country: 'Maroc', address: 'Derb Sidi Bouamar, Médina', lat: 31.6295, lng: -7.9811 },
+    images: [IMG('1590073242678-70ee3fc28e8e'), IMG('1577493340887-b7bfff550145'), IMG('1571896349842-33c89424de2d'), IMG('1582719478250-c89cae4dc85b')],
+    videos: [],
+    host: person('user-016'),
+    bedrooms: 4,
+    bathrooms: 4,
+    area: 200,
+    amenities: ['Patio', 'Terrasse', 'Fontaine', 'Petit-déjeuner', 'WiFi', 'Climatisation'],
+    rating: 0,
+    reviewCount: 0,
+  },
 ];
 
-// ─── SOCIAL POSTS (10) ──────────────────────────────────────────────────────
+// ─── CONVERSATIONS ──────────────────────────────────────────────────────────
 
-export const socialPosts: SocialPost[] = [
-  {
-    id: 'post-001',
-    author: users[0],
-    content:
-      'Nouvelle acquisition \u00e0 Verbier ! Ce chalet d\u2019exception est d\u00e9sormais disponible pour des s\u00e9jours inoubliables. Ski-in/ski-out, spa priv\u00e9, vue \u00e0 couper le souffle. R\u00e9servations ouvertes pour la saison 2026. \ud83c\udfbf\u2744\ufe0f',
-    media: [
-      'https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=800&h=600&fit=crop',
-    ],
-    type: 'post',
-    likes: 342,
-    comments: [
-      {
-        id: 'comment-001',
-        author: users[1],
-        content: 'Absolument magnifique ! Le chalet est une vraie p\u00e9pite.',
-        createdAt: '2026-03-28T14:30:00Z',
-        likes: 12,
-      },
-      {
-        id: 'comment-002',
-        author: users[2],
-        content: 'Quel rendement tu vises sur la saison ?',
-        createdAt: '2026-03-28T15:10:00Z',
-        likes: 5,
-      },
-    ],
-    createdAt: '2026-03-28T10:00:00Z',
-    location: 'Verbier, Suisse',
-    property: properties[4],
-  },
-  {
-    id: 'post-002',
-    author: users[3],
-    content:
-      'Un nouveau riad vient de rejoindre notre collection en M\u00e9dina de Marrakech. Architecture traditionnelle, r\u00e9novation contemporaine. Le meilleur des deux mondes. #Marrakech #Riad #Investissement',
-    media: [
-      'https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1577493340887-b7bfff550145?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&h=600&fit=crop',
-    ],
-    type: 'post',
-    likes: 567,
-    comments: [
-      {
-        id: 'comment-003',
-        author: users[12],
-        content: 'Magnifique ! C\u2019est exactement ce que je recherche. DM ?',
-        createdAt: '2026-03-27T09:45:00Z',
-        likes: 8,
-      },
-    ],
-    createdAt: '2026-03-27T08:00:00Z',
-    location: 'Marrakech, Maroc',
-    property: properties[3],
-  },
-  {
-    id: 'post-003',
-    author: users[5],
-    content:
-      'Just listed : Penthouse 450m\u00b2 sur Palm Jumeirah. Finitions Armani Casa, piscine priv\u00e9e sur le toit. Vue 360\u00b0 sur le Golfe. Le summum du luxe \u00e0 Dubai. #Dubai #Luxury #RealEstate',
-    media: [
-      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&h=600&fit=crop',
-    ],
-    type: 'reel',
-    likes: 1240,
-    comments: [
-      {
-        id: 'comment-004',
-        author: users[2],
-        content: 'Le march\u00e9 de Dubai est en feu en ce moment. Bon timing !',
-        createdAt: '2026-03-26T18:20:00Z',
-        likes: 22,
-      },
-      {
-        id: 'comment-005',
-        author: users[10],
-        content: 'Prix demand\u00e9 ? Je connais un investisseur int\u00e9ress\u00e9.',
-        createdAt: '2026-03-26T19:00:00Z',
-        likes: 3,
-      },
-    ],
-    createdAt: '2026-03-26T16:00:00Z',
-    location: 'Dubai, EAU',
-    property: properties[5],
-  },
-  {
-    id: 'post-004',
-    author: users[1],
-    content:
-      'Retour sur ma formation "Investir dans l\u2019immobilier locatif en Suisse" donn\u00e9e ce week-end \u00e0 Lausanne. 45 participants passionn\u00e9s ! Prochaine session en mai. #Formation #Immobilier #Suisse',
-    media: [
-      'https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1523580494863-6ead3f3dda5b?w=800&h=600&fit=crop',
-    ],
-    type: 'post',
-    likes: 189,
-    comments: [],
-    createdAt: '2026-03-25T12:00:00Z',
-    location: 'Lausanne, Suisse',
-  },
-  {
-    id: 'post-005',
-    author: users[4],
-    content:
-      'Visite virtuelle de cette villa \u00e0 Nice. Tournage drone + Matterport. Le futur de la visite immobili\u00e8re est d\u00e9j\u00e0 l\u00e0 ! #Drone #VillaLuxe #CoteDAzur',
-    media: [
-      'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop',
-    ],
-    type: 'reel',
-    likes: 423,
-    comments: [
-      {
-        id: 'comment-006',
-        author: users[0],
-        content: 'Super boulot Lucas ! Tu es dispo pour un shooting \u00e0 Verbier ?',
-        createdAt: '2026-03-24T10:15:00Z',
-        likes: 6,
-      },
-    ],
-    createdAt: '2026-03-24T09:00:00Z',
-    location: 'Nice, France',
-    property: properties[2],
-  },
-  {
-    id: 'post-006',
-    author: users[6],
-    content:
-      'Lisbonne continue d\u2019attirer les investisseurs francophones. Notre derni\u00e8re maison \u00e0 Alfama s\u2019est vendue en 48h. Le march\u00e9 portugais reste tr\u00e8s dynamique. #Lisbonne #GoldenVisa #Portugal',
-    media: [
-      'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=600&fit=crop',
-    ],
-    type: 'post',
-    likes: 278,
-    comments: [
-      {
-        id: 'comment-007',
-        author: users[2],
-        content: 'Int\u00e9ressant. Tu as d\u2019autres biens \u00e0 Alfama ?',
-        createdAt: '2026-03-23T14:00:00Z',
-        likes: 4,
-      },
-    ],
-    createdAt: '2026-03-23T11:00:00Z',
-    location: 'Lisbonne, Portugal',
-    property: properties[7],
-  },
-  {
-    id: 'post-007',
-    author: users[13],
-    content:
-      'Coucher de soleil depuis notre villa \u00e0 Santorin. Ces moments qui n\u2019ont pas de prix... mais qui g\u00e9n\u00e8rent un excellent rendement ! #Santorin #Gr\u00e8ce #LocationSaisonni\u00e8re',
-    media: [
-      'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800&h=600&fit=crop',
-    ],
-    type: 'story',
-    likes: 892,
-    comments: [],
-    createdAt: '2026-03-22T19:30:00Z',
-    location: 'Santorin, Gr\u00e8ce',
-    property: properties[11],
-  },
-  {
-    id: 'post-008',
-    author: users[8],
-    content:
-      'Notre projet de r\u00e9novation Minergie \u00e0 Lausanne est termin\u00e9 ! Passage de F \u00e0 A en performance \u00e9nerg\u00e9tique. Plus-value de 35% sur le bien. La r\u00e9novation \u00e9nerg\u00e9tique, c\u2019est l\u2019avenir. #Minergie #R\u00e9novation #Durable',
-    media: [
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800&h=600&fit=crop',
-    ],
-    type: 'post',
-    likes: 156,
-    comments: [
-      {
-        id: 'comment-008',
-        author: users[8],
-        content: 'Le co\u00fbt total de la r\u00e9novation a \u00e9t\u00e9 de 280\u2019000 CHF pour un gain de valeur de 450\u2019000 CHF.',
-        createdAt: '2026-03-21T11:00:00Z',
-        likes: 14,
-      },
-    ],
-    createdAt: '2026-03-21T09:00:00Z',
-    location: 'Lausanne, Suisse',
-  },
-  {
-    id: 'post-009',
-    author: users[9],
-    content:
-      'Webinaire gratuit demain : "Investir en Afrique de l\u2019Ouest : opportunit\u00e9s et pi\u00e8ges \u00e0 \u00e9viter". 200+ inscrits ! Rejoignez-nous. #Afrique #Investissement #Webinaire',
-    media: [
-      'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop',
-    ],
-    type: 'post',
-    likes: 98,
-    comments: [],
-    createdAt: '2026-03-20T14:00:00Z',
-    location: 'Dakar, S\u00e9n\u00e9gal',
-  },
-  {
-    id: 'post-010',
-    author: users[14],
-    content:
-      'Le march\u00e9 immobilier neuch\u00e2telois en 2026 : les prix se stabilisent enfin apr\u00e8s 3 ans de hausse. Bonne nouvelle pour les primo-acc\u00e9dants. Analyse compl\u00e8te sur notre blog. #Neuch\u00e2tel #MarchéImmobilier',
-    media: [
-      'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop',
-    ],
-    type: 'post',
-    likes: 134,
-    comments: [
-      {
-        id: 'comment-009',
-        author: users[11],
-        content: 'Enfin de bonnes nouvelles ! Merci pour l\u2019analyse Jean-Luc.',
-        createdAt: '2026-03-19T16:30:00Z',
-        likes: 7,
-      },
-    ],
-    createdAt: '2026-03-19T10:00:00Z',
-    location: 'Neuch\u00e2tel, Suisse',
-  },
-];
-
-// ─── CONVERSATIONS (7) ──────────────────────────────────────────────────────
-
+/* Les fils de l'utilisateur courant avec des personnes du casting. Le contenu
+   sera repris par le moteur d'interactions (chantier P2) ; ici, chaque fil
+   parle de quelque chose qui existe : l'appartement de Renens auquel Ana est
+   candidate, le reportage de Nikola, la formation de Sandrine… */
 export const conversations: Conversation[] = [
   {
     id: 'conv-001',
-    participant: users[1],
+    participant: person('user-006'),
     messages: [
-      { id: 'msg-001', senderId: 'user-002', content: 'Bonjour Léo, j\u2019ai un client intéressé par le chalet de Verbier.', timestamp: '2026-03-31T09:00:00Z', read: true },
-      { id: 'msg-002', senderId: 'user-001', content: 'Super Sophie ! Il est disponible \u00e0 partir du 15 avril. Quel budget pour ton client ?', timestamp: '2026-03-31T09:15:00Z', read: true },
-      { id: 'msg-003', senderId: 'user-002', content: 'Budget illimit\u00e9, c\u2019est un family office genevois. On peut organiser une visite cette semaine ?', timestamp: '2026-03-31T09:30:00Z', read: false },
+      { id: 'msg-001', senderId: 'user-006', content: 'Bonjour Monsieur Martin, je suis intéressée par le 4,5 pièces à Renens pour ma famille. Est-ce qu’il est encore libre ?', timestamp: '2026-09-27T18:10:00Z', read: true },
+      { id: 'msg-002', senderId: 'user-001', content: 'Bonjour Ana, oui, il est libre au 1er novembre. Je fais des visites samedi matin, 10 h ou 11 h ?', timestamp: '2026-09-27T19:02:00Z', read: true },
+      { id: 'msg-003', senderId: 'user-006', content: '11 h c’est parfait, merci ! Est-ce que c’est normal qu’on demande 3 mois de garantie ? C’est notre premier appartement en Suisse.', timestamp: '2026-09-28T07:45:00Z', read: false },
     ],
     unreadCount: 1,
-    lastMessage: 'Budget illimit\u00e9, c\u2019est un family office genevois. On peut organiser une visite cette semaine ?',
+    lastMessage: 'Est-ce que c’est normal qu’on demande 3 mois de garantie ? C’est notre premier appartement en Suisse.',
     isOnline: true,
   },
   {
     id: 'conv-002',
-    participant: users[3],
+    participant: person('user-005'),
     messages: [
-      { id: 'msg-004', senderId: 'user-004', content: 'Salam Léo ! Le riad est prêt pour les photos. Tu viens quand à Marrakech ?', timestamp: '2026-03-30T15:00:00Z', read: true },
-      { id: 'msg-005', senderId: 'user-001', content: 'Inchallah la semaine prochaine. Je te confirme les dates demain.', timestamp: '2026-03-30T16:00:00Z', read: true },
-      { id: 'msg-006', senderId: 'user-004', content: 'Parfait ! J\u2019ai aussi 2 nouveaux riads \u00e0 te montrer pour le portefeuille.', timestamp: '2026-03-30T16:30:00Z', read: true },
+      { id: 'msg-004', senderId: 'user-001', content: 'Salut Nikola, tu serais dispo pour refaire les photos du studio de Sous-Gare ? J’ai changé le canapé.', timestamp: '2026-09-25T12:00:00Z', read: true },
+      { id: 'msg-005', senderId: 'user-005', content: 'yes dispo mardi ou jeudi aprem. meme prix que la derniere fois', timestamp: '2026-09-25T12:31:00Z', read: true },
+      { id: 'msg-006', senderId: 'user-005', content: 'jeudi 14h ca joue?', timestamp: '2026-09-26T08:05:00Z', read: false },
     ],
-    unreadCount: 0,
-    lastMessage: 'Parfait ! J\u2019ai aussi 2 nouveaux riads \u00e0 te montrer pour le portefeuille.',
-    isOnline: true,
+    unreadCount: 1,
+    lastMessage: 'jeudi 14h ca joue?',
+    isOnline: false,
   },
   {
     id: 'conv-003',
-    participant: users[2],
+    participant: person('user-011'),
     messages: [
-      { id: 'msg-007', senderId: 'user-001', content: 'Marc, tu as analys\u00e9 le rendement du bureau \u00e0 Gen\u00e8ve ?', timestamp: '2026-03-29T11:00:00Z', read: true },
-      { id: 'msg-008', senderId: 'user-003', content: 'Oui, 4.8% brut c\u2019est int\u00e9ressant pour Gen\u00e8ve. Je te envoie mon analyse compl\u00e8te ce soir.', timestamp: '2026-03-29T14:00:00Z', read: true },
-      { id: 'msg-009', senderId: 'user-003', content: 'Voici l\u2019analyse PDF en pi\u00e8ce jointe. Le net apr\u00e8s charges est \u00e0 3.6%.', timestamp: '2026-03-29T20:00:00Z', read: false },
-      { id: 'msg-010', senderId: 'user-003', content: 'Tu as pu regarder ?', timestamp: '2026-03-30T08:00:00Z', read: false },
+      { id: 'msg-007', senderId: 'user-001', content: 'Bonjour Sandrine, merci pour la formation. Une question : la location de mon studio de Genève se déclare dans le canton de Genève ou dans le canton de Vaud ?', timestamp: '2026-09-20T09:00:00Z', read: true },
+      { id: 'msg-008', senderId: 'user-011', content: 'Bonjour Léo, bonne question. Le revenu d’un immeuble est imposé dans le canton où il se trouve : Genève, donc. Vaud en tient compte pour fixer le taux. Je vous mets la référence du module 3 en lien.', timestamp: '2026-09-20T14:20:00Z', read: true },
     ],
-    unreadCount: 2,
-    lastMessage: 'Tu as pu regarder ?',
+    unreadCount: 0,
+    lastMessage: 'Le revenu d’un immeuble est imposé dans le canton où il se trouve : Genève, donc.',
     isOnline: false,
   },
   {
     id: 'conv-004',
-    participant: users[11],
+    participant: person('user-002'),
     messages: [
-      { id: 'msg-011', senderId: 'user-012', content: 'Bonjour, je suis int\u00e9ress\u00e9e par l\u2019appartement \u00e0 Neuch\u00e2tel. Est-il toujours disponible ?', timestamp: '2026-03-28T10:00:00Z', read: true },
-      { id: 'msg-012', senderId: 'user-001', content: 'Bonjour Cl\u00e9mence ! Oui tout \u00e0 fait, quand souhaitez-vous le visiter ?', timestamp: '2026-03-28T10:30:00Z', read: true },
-      { id: 'msg-013', senderId: 'user-012', content: 'Samedi matin si possible ? Vers 10h ?', timestamp: '2026-03-28T11:00:00Z', read: true },
+      { id: 'msg-009', senderId: 'user-002', content: 'Bonjour Léo ! Une cliente cherche un logement pour trois semaines à Lausanne pendant que sa maison est en travaux. Votre studio de Sous-Gare serait libre en novembre ?', timestamp: '2026-09-18T10:00:00Z', read: true },
+      { id: 'msg-010', senderId: 'user-001', content: 'Bonjour Céline, du 3 au 24 novembre, oui. Je vous envoie le lien de réservation.', timestamp: '2026-09-18T11:15:00Z', read: true },
     ],
     unreadCount: 0,
-    lastMessage: 'Samedi matin si possible ? Vers 10h ?',
-    isOnline: false,
-  },
-  {
-    id: 'conv-005',
-    participant: users[5],
-    messages: [
-      { id: 'msg-014', senderId: 'user-006', content: 'Hi Léo, I have a VIP client looking for a ski chalet in Switzerland. Any recommendations?', timestamp: '2026-03-27T12:00:00Z', read: true },
-      { id: 'msg-015', senderId: 'user-001', content: 'Absolutely Yasmin! Our Verbier chalet would be perfect. I\u2019ll send the full dossier.', timestamp: '2026-03-27T13:00:00Z', read: true },
-    ],
-    unreadCount: 0,
-    lastMessage: 'Absolutely Yasmin! Our Verbier chalet would be perfect. I\u2019ll send the full dossier.',
+    lastMessage: 'Du 3 au 24 novembre, oui. Je vous envoie le lien de réservation.',
     isOnline: true,
   },
   {
-    id: 'conv-006',
-    participant: users[7],
+    id: 'conv-005',
+    participant: person('user-013'),
     messages: [
-      { id: 'msg-016', senderId: 'user-001', content: 'Nathalie, j\u2019aurais besoin de votre expertise pour un acte de vente \u00e0 Neuch\u00e2tel.', timestamp: '2026-03-26T09:00:00Z', read: true },
-      { id: 'msg-017', senderId: 'user-008', content: 'Bien sûr Léo. Envoyez-moi les documents et je vous fais un devis. Délai habituel : 10 jours ouvrables.', timestamp: '2026-03-26T11:00:00Z', read: true },
-      { id: 'msg-018', senderId: 'user-001', content: 'Parfait, je vous envoie tout demain matin.', timestamp: '2026-03-26T11:30:00Z', read: true },
-      { id: 'msg-019', senderId: 'user-008', content: 'J\u2019ai bien re\u00e7u les documents. Je reviens vers vous mercredi avec le projet d\u2019acte.', timestamp: '2026-03-27T09:00:00Z', read: false },
-    ],
-    unreadCount: 1,
-    lastMessage: 'J\u2019ai bien re\u00e7u les documents. Je reviens vers vous mercredi avec le projet d\u2019acte.',
-    isOnline: false,
-  },
-  {
-    id: 'conv-007',
-    participant: users[9],
-    messages: [
-      { id: 'msg-020', senderId: 'user-010', content: 'Léo, j\u2019ai 3 investisseurs sénégalais intéressés par vos formations. Commission apporteur possible ?', timestamp: '2026-03-25T14:00:00Z', read: true },
-      { id: 'msg-021', senderId: 'user-001', content: 'Absolument Fatima ! 15% de commission sur chaque inscription. Je t\u2019envoie le lien d\u2019affiliation.', timestamp: '2026-03-25T15:00:00Z', read: true },
+      { id: 'msg-011', senderId: 'user-013', content: 'Léo, tu as baissé ton prix à Verbier pour octobre ? Chez moi à Montreux, -15 % en semaine et les réservations sont revenues.', timestamp: '2026-09-15T16:40:00Z', read: true },
+      { id: 'msg-012', senderId: 'user-001', content: 'Pas encore. Je teste ce que tu as appris dans la formation d’Amina et je te dis.', timestamp: '2026-09-15T17:05:00Z', read: true },
     ],
     unreadCount: 0,
-    lastMessage: 'Absolument Fatima ! 15% de commission sur chaque inscription. Je t\u2019envoie le lien d\u2019affiliation.',
+    lastMessage: 'Pas encore. Je teste ce que tu as appris dans la formation d’Amina et je te dis.',
     isOnline: false,
   },
 ];
 
-// ─── RESERVATIONS (8) ───────────────────────────────────────────────────────
+// ─── FORMATIONS ─────────────────────────────────────────────────────────────
 
-export const reservations: Reservation[] = [
-  {
-    id: 'res-001',
-    property: properties[4], // Chalet Verbier
-    guest: users[2],
-    checkIn: '2026-04-15',
-    checkOut: '2026-04-22',
-    status: 'confirmed',
-    totalPrice: 5950,
-    options: ['Transfert a\u00e9roport', 'Forfait ski'],
-  },
-  {
-    id: 'res-002',
-    property: properties[1], // Studio Gen\u00e8ve
-    guest: users[11],
-    checkIn: '2026-04-05',
-    checkOut: '2026-04-08',
-    status: 'pending',
-    totalPrice: 360,
-  },
-  {
-    id: 'res-003',
-    property: properties[11], // Villa Santorin
-    guest: users[0],
-    checkIn: '2026-06-20',
-    checkOut: '2026-06-27',
-    status: 'confirmed',
-    totalPrice: 3150,
-    options: ['Chef priv\u00e9', 'Excursion bateau'],
-  },
-  {
-    id: 'res-004',
-    property: properties[8], // Villa Phuket
-    guest: users[2],
-    checkIn: '2026-01-10',
-    checkOut: '2026-01-24',
-    status: 'completed',
-    totalPrice: 5320,
-  },
-  {
-    id: 'res-005',
-    property: properties[4], // Chalet Verbier
-    guest: users[5],
-    checkIn: '2026-02-14',
-    checkOut: '2026-02-21',
-    status: 'completed',
-    totalPrice: 5950,
-    options: ['Transfert', 'Moniteur de ski'],
-  },
-  {
-    id: 'res-006',
-    property: properties[1], // Studio Gen\u00e8ve
-    guest: users[9],
-    checkIn: '2026-04-10',
-    checkOut: '2026-04-12',
-    status: 'pending',
-    totalPrice: 240,
-  },
-  {
-    id: 'res-007',
-    property: properties[3], // Riad Marrakech
-    guest: users[6],
-    checkIn: '2026-03-01',
-    checkOut: '2026-03-05',
-    status: 'cancelled',
-    totalPrice: 1800,
-  },
-  {
-    id: 'res-008',
-    property: properties[11], // Villa Santorin
-    guest: users[15],
-    checkIn: '2026-07-10',
-    checkOut: '2026-07-17',
-    status: 'confirmed',
-    totalPrice: 3150,
-    options: ['Concierge VIP'],
-  },
-];
-
-// ─── FORMATIONS (8) ─────────────────────────────────────────────────────────
-
+/* Les formations des créateurs du casting : Léo (investissement locatif),
+   Amina (gestion locative touristique, pricing dynamique), Sandrine
+   (fiscalité immobilière, premier achat), Reto (rénovation énergétique).
+   `studentCount` égale les inscriptions du journal (invariant 19) ; `rating`
+   est recalculé à partir des avis réels. */
 export const formations: Formation[] = [
   {
     id: 'form-001',
@@ -1641,7 +1014,7 @@ export const formations: Formation[] = [
       'Formation compl\u00e8te pour ma\u00eetriser l\u2019investissement locatif. De la recherche du bien au calcul de rentabilit\u00e9, en passant par le financement et la fiscalit\u00e9 suisse.',
     category: 'Investissement',
     level: 'debutant',
-    instructor: users[0],
+    instructor: person('user-001'),
     thumbnail: 'https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=800&h=600&fit=crop',
     price: 497,
     currency: 'CHF',
@@ -1695,17 +1068,17 @@ export const formations: Formation[] = [
         ],
       },
     ],
-    rating: 4.8,
-    studentCount: 342,
+    rating: 0,
+    studentCount: 40,
   },
   {
     id: 'form-002',
     title: 'Ma\u00eetriser la location courte dur\u00e9e',
     description:
-      'Tout savoir pour r\u00e9ussir en location courte dur\u00e9e : plateformes, pricing dynamique, automatisation, r\u00e9glementation et exp\u00e9rience client.',
+      'La gestion locative touristique de A \u00e0 Z : choisir ses plateformes, pr\u00e9parer le logement, \u00e9crire une annonce qui convertit, accueillir, g\u00e9rer les avis, rester dans les r\u00e8gles communales. Avec mes fiches et mes check-lists de m\u00e9nage et d\u2019accueil.',
     category: 'Location',
     level: 'intermediaire',
-    instructor: users[3],
+    instructor: person('user-016'),
     thumbnail: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
     price: 397,
     currency: 'CHF',
@@ -1742,107 +1115,18 @@ export const formations: Formation[] = [
         ],
       },
     ],
-    rating: 4.9,
-    studentCount: 218,
+    rating: 0,
+    studentCount: 69,
   },
-  {
-    id: 'form-003',
-    title: 'N\u00e9gociation immobili\u00e8re : vendre au meilleur prix',
-    description:
-      'Techniques de n\u00e9gociation \u00e9prouv\u00e9es pour vendre vos biens rapidement et au meilleur prix. Psychologie de l\u2019acheteur, strat\u00e9gies de pricing, closing.',
-    category: 'Vente',
-    level: 'avance',
-    instructor: users[1],
-    thumbnail: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=600&fit=crop',
-    price: 597,
-    currency: 'CHF',
-    duration: '6h',
-    modules: [
-      {
-        id: 'mod-008',
-        title: 'Psychologie de la n\u00e9gociation',
-        duration: '2h',
-        lessons: [
-          { id: 'les-022', title: 'Comprendre l\u2019acheteur', duration: '1h' },
-          { id: 'les-023', title: 'Techniques d\u2019influence', duration: '1h' },
-        ],
-      },
-      {
-        id: 'mod-009',
-        title: 'Strat\u00e9gies de vente',
-        duration: '2h',
-        lessons: [
-          { id: 'les-024', title: 'Fixer le bon prix', duration: '1h' },
-          { id: 'les-025', title: 'Cr\u00e9er l\u2019urgence', duration: '1h' },
-        ],
-      },
-      {
-        id: 'mod-010',
-        title: 'Closing et suivi',
-        duration: '2h',
-        lessons: [
-          { id: 'les-026', title: 'Techniques de closing', duration: '1h' },
-          { id: 'les-027', title: 'Apr\u00e8s-vente et recommandations', duration: '1h' },
-        ],
-      },
-    ],
-    rating: 4.7,
-    studentCount: 156,
-  },
-  {
-    id: 'form-004',
-    title: 'Immobilier de luxe : codes et strat\u00e9gies',
-    description:
-      'Apprenez les sp\u00e9cificit\u00e9s du march\u00e9 du luxe : client\u00e8le UHNWI, marketing exclusif, discr\u00e9tion, r\u00e9seaux internationaux et closing haut de gamme.',
-    category: 'Luxe',
-    level: 'avance',
-    instructor: users[5],
-    thumbnail: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop',
-    price: 897,
-    currency: 'CHF',
-    duration: '10h',
-    modules: [
-      {
-        id: 'mod-011',
-        title: 'Le march\u00e9 du luxe',
-        duration: '3h',
-        lessons: [
-          { id: 'les-028', title: 'Comprendre la client\u00e8le UHNWI', duration: '1h' },
-          { id: 'les-029', title: 'March\u00e9s de luxe mondiaux', duration: '1h' },
-          { id: 'les-030', title: 'Tendances et perspectives', duration: '1h' },
-        ],
-      },
-      {
-        id: 'mod-012',
-        title: 'Marketing et vente de luxe',
-        duration: '4h',
-        lessons: [
-          { id: 'les-031', title: 'Branding personnel', duration: '1h' },
-          { id: 'les-032', title: 'Off-market et discr\u00e9tion', duration: '1h30' },
-          { id: 'les-033', title: 'R\u00e9seaux internationaux', duration: '1h30' },
-        ],
-      },
-      {
-        id: 'mod-013',
-        title: 'Closing haut de gamme',
-        duration: '3h',
-        lessons: [
-          { id: 'les-034', title: 'N\u00e9gociation avec les UHNWI', duration: '1h30' },
-          { id: 'les-035', title: 'Aspects juridiques internationaux', duration: '1h30' },
-        ],
-      },
-    ],
-    rating: 4.9,
-    studentCount: 89,
-  },
+
   {
     id: 'form-005',
-    title: 'R\u00e9novation rentable : maximiser la plus-value',
+    title: 'R\u00e9novation \u00e9nerg\u00e9tique : CECB, Minergie et subventions',
     description:
-      'Guide complet pour r\u00e9nover un bien immobilier de mani\u00e8re rentable. Budget, planning, choix des mat\u00e9riaux, Minergie, et calcul de la plus-value.',
+      'Lire un CECB, choisir entre isolation, fenêtres et pompe à chaleur, obtenir les subventions du Programme Bâtiments et des cantons, piloter le chantier. Une formation d’architecte pour propriétaires et gérances, avec les ordres de grandeur réels des coûts en Suisse romande.',
     category: 'R\u00e9novation',
     level: 'intermediaire',
-    instructor: users[8],
+    instructor: person('user-009'),
     thumbnail: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?w=800&h=600&fit=crop',
     price: 347,
     currency: 'CHF',
@@ -1877,1097 +1161,302 @@ export const formations: Formation[] = [
         ],
       },
     ],
-    rating: 4.6,
-    studentCount: 178,
+    rating: 0,
+    studentCount: 20,
   },
+
   {
-    id: 'form-006',
-    title: 'Marketing digital pour l\u2019immobilier',
+    id: 'form-007',
+    title: 'Fiscalité immobilière en Suisse romande : l’essentiel',
     description:
-      'Strat\u00e9gies de marketing digital adapt\u00e9es \u00e0 l\u2019immobilier : r\u00e9seaux sociaux, SEO, publicit\u00e9 en ligne, personal branding et g\u00e9n\u00e9ration de leads.',
-    category: 'Marketing',
+      'Valeur locative, déduction des intérêts et des frais d’entretien, impôt sur la fortune, revenus locatifs dans un autre canton : ce que tout propriétaire romand doit savoir pour remplir sa déclaration sans se tromper. Cas pratiques vaudois, genevois, neuchâtelois et fribourgeois.',
+    category: 'Fiscalité',
     level: 'debutant',
-    instructor: users[4],
-    thumbnail: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=800&h=600&fit=crop',
-    price: 297,
+    instructor: person('user-011'),
+    thumbnail: IMG('1554224155-6726b3ff858f'),
+    price: 349,
     currency: 'CHF',
     duration: '6h',
     modules: [
       {
-        id: 'mod-017',
-        title: 'Fondamentaux du marketing immo',
-        duration: '2h',
-        lessons: [
-          { id: 'les-043', title: 'Personal branding', duration: '1h' },
-          { id: 'les-044', title: 'Cr\u00e9er du contenu engageant', duration: '1h' },
-        ],
-      },
-      {
-        id: 'mod-018',
-        title: 'R\u00e9seaux sociaux',
-        duration: '2h',
-        lessons: [
-          { id: 'les-045', title: 'Instagram et TikTok pour l\u2019immo', duration: '1h' },
-          { id: 'les-046', title: 'LinkedIn immobilier', duration: '1h' },
-        ],
-      },
-      {
-        id: 'mod-019',
-        title: 'G\u00e9n\u00e9ration de leads',
-        duration: '2h',
-        lessons: [
-          { id: 'les-047', title: 'SEO immobilier', duration: '1h' },
-          { id: 'les-048', title: 'Publicit\u00e9 Meta et Google', duration: '1h' },
-        ],
-      },
-    ],
-    rating: 4.5,
-    studentCount: 267,
-  },
-  {
-    id: 'form-007',
-    title: 'Droit immobilier suisse : l\u2019essentiel',
-    description:
-      'Ma\u00eetrisez les fondamentaux du droit immobilier suisse : propri\u00e9t\u00e9, copropri\u00e9t\u00e9, PPE, droit du bail, s\u00e9questre notarial et transfert de propri\u00e9t\u00e9.',
-    category: 'Juridique',
-    level: 'intermediaire',
-    instructor: users[7],
-    thumbnail: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=600&fit=crop',
-    price: 447,
-    currency: 'CHF',
-    duration: '9h',
-    modules: [
-      {
-        id: 'mod-020',
-        title: 'Droit de la propri\u00e9t\u00e9',
-        duration: '3h',
-        lessons: [
-          { id: 'les-049', title: 'Propri\u00e9t\u00e9 et copropri\u00e9t\u00e9', duration: '1h' },
-          { id: 'les-050', title: 'PPE (Propri\u00e9t\u00e9 par \u00e9tages)', duration: '1h' },
-          { id: 'les-051', title: 'Registre foncier', duration: '1h' },
-        ],
-      },
-      {
-        id: 'mod-021',
-        title: 'Droit du bail',
-        duration: '3h',
-        lessons: [
-          { id: 'les-052', title: 'Le contrat de bail', duration: '1h' },
-          { id: 'les-053', title: 'Loyers et charges', duration: '1h' },
-          { id: 'les-054', title: 'R\u00e9siliation et litiges', duration: '1h' },
-        ],
-      },
-      {
-        id: 'mod-022',
-        title: 'Transfert de propri\u00e9t\u00e9',
-        duration: '3h',
-        lessons: [
-          { id: 'les-055', title: 'Processus d\u2019achat/vente', duration: '1h' },
-          { id: 'les-056', title: 'R\u00f4le du notaire', duration: '1h' },
-          { id: 'les-057', title: 'Fiscalit\u00e9 des transactions', duration: '1h' },
-        ],
-      },
-    ],
-    rating: 4.8,
-    studentCount: 134,
-  },
-  {
-    id: 'form-008',
-    title: 'Photographie immobili\u00e8re professionnelle',
-    description:
-      'Apprenez \u00e0 photographier des biens immobiliers comme un pro. Mat\u00e9riel, \u00e9clairage, composition, retouche, vid\u00e9o et drone.',
-    category: 'Photographie',
-    level: 'debutant',
-    instructor: users[15],
-    thumbnail: 'https://images.unsplash.com/photo-1554080353-a576cf803bda?w=800&h=600&fit=crop',
-    price: 247,
-    currency: 'CHF',
-    duration: '5h',
-    modules: [
-      {
-        id: 'mod-023',
-        title: 'Mat\u00e9riel et bases',
-        duration: '1h30',
-        lessons: [
-          { id: 'les-058', title: 'Choisir son mat\u00e9riel', duration: '45min' },
-          { id: 'les-059', title: 'Les bases de la photo immo', duration: '45min' },
-        ],
-      },
-      {
         id: 'mod-024',
-        title: 'Prise de vue',
+        title: 'Les bases',
         duration: '2h',
         lessons: [
-          { id: 'les-060', title: '\u00c9clairage naturel et artificiel', duration: '1h' },
-          { id: 'les-061', title: 'Composition et angles', duration: '1h' },
+          { id: 'les-063', title: 'Revenu, fortune, valeur locative : les trois piliers', duration: '45min' },
+          { id: 'les-064', title: 'Ce que l’on peut déduire, et ce que l’on ne peut pas', duration: '1h15' },
         ],
       },
       {
         id: 'mod-025',
-        title: 'Post-production',
-        duration: '1h30',
+        title: 'Le bailleur',
+        duration: '2h',
         lessons: [
-          { id: 'les-062', title: 'Retouche Lightroom', duration: '45min' },
-          { id: 'les-063', title: 'Vid\u00e9o et drone', duration: '45min' },
+          { id: 'les-065', title: 'Déclarer un loyer, un meublé, une courte durée', duration: '1h' },
+          { id: 'les-066', title: 'Un bien dans un autre canton : la répartition intercantonale', duration: '1h' },
+        ],
+      },
+      {
+        id: 'mod-026',
+        title: 'Cas pratiques',
+        duration: '2h',
+        lessons: [
+          { id: 'les-067', title: 'Quatre déclarations commentées (VD, GE, NE, FR)', duration: '1h30' },
+          { id: 'les-068', title: 'Les erreurs que je voyais le plus en fiduciaire', duration: '30min' },
         ],
       },
     ],
-    rating: 4.7,
-    studentCount: 312,
+    rating: 0,
+    studentCount: 55,
   },
   {
     id: 'form-009',
-    title: 'Investir en Tha\u00eflande',
+    title: 'Premier achat : fonds propres, hypothèque et impôts',
     description:
-      'D\u00e9couvrez les opportunit\u00e9s d\u2019investissement immobilier en Tha\u00eflande : march\u00e9 local, r\u00e9glementation \u00e9trang\u00e8re, zones cl\u00e9s (Bangkok, Phuket, Chiang Mai), rentabilit\u00e9 et fiscalit\u00e9.',
+      'Combien faut-il vraiment de fonds propres ? Peut-on utiliser son 2e pilier ? Que coûte un logement une fois acheté, impôts compris ? Une formation pas à pas pour préparer un premier achat en Suisse romande, avec un tableur de budget à remplir.',
     category: 'Investissement',
-    level: 'intermediaire' as const,
-    instructor: users[2],
-    thumbnail: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=800&h=600&fit=crop',
-    price: 397,
-    currency: 'CHF' as const,
-    duration: '7h',
+    level: 'debutant',
+    instructor: person('user-011'),
+    thumbnail: IMG('1450101499163-c8848c66ca85'),
+    price: 290,
+    currency: 'CHF',
+    duration: '5h',
     modules: [
-      {
-        id: 'mod-026',
-        title: 'Le march\u00e9 immobilier tha\u00eflandais',
-        duration: '2h30',
-        lessons: [
-          { id: 'les-064', title: 'Panorama du march\u00e9 et zones cl\u00e9s', duration: '1h' },
-          { id: 'les-065', title: 'R\u00e9glementation pour les \u00e9trangers', duration: '45min' },
-          { id: 'les-066', title: 'Structures juridiques (leasehold, freehold)', duration: '45min' },
-        ],
-      },
-      {
-        id: 'mod-027',
-        title: 'Strat\u00e9gies d\u2019investissement',
-        duration: '2h30',
-        lessons: [
-          { id: 'les-067', title: 'Condos et villas : rendements compar\u00e9s', duration: '1h' },
-          { id: 'les-068', title: 'Location touristique et gestion \u00e0 distance', duration: '1h' },
-          { id: 'les-069', title: '\u00c9tudes de cas r\u00e9els', duration: '30min' },
-        ],
-      },
-      {
-        id: 'mod-028',
-        title: 'Fiscalit\u00e9 et rapatriement',
-        duration: '2h',
-        lessons: [
-          { id: 'les-070', title: 'Fiscalit\u00e9 locale et conventions', duration: '1h' },
-          { id: 'les-071', title: 'Rapatriement des fonds et risques', duration: '1h' },
-        ],
-      },
-    ],
-    rating: 4.6,
-    studentCount: 98,
-  },
-  {
-    id: 'form-010',
-    title: 'Le march\u00e9 immobilier \u00e0 Duba\u00ef',
-    description:
-      'Ma\u00eetrisez le march\u00e9 immobilier de Duba\u00ef : zones franches, off-plan, Golden Visa, rendements locatifs et strat\u00e9gies d\u2019entr\u00e9e pour investisseurs francophones.',
-    category: 'Investissement',
-    level: 'intermediaire' as const,
-    instructor: users[5],
-    thumbnail: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop',
-    price: 497,
-    currency: 'CHF' as const,
-    duration: '8h',
-    modules: [
-      {
-        id: 'mod-029',
-        title: 'Duba\u00ef : march\u00e9 et r\u00e9glementation',
-        duration: '3h',
-        lessons: [
-          { id: 'les-072', title: 'Panorama du march\u00e9 de Duba\u00ef', duration: '1h' },
-          { id: 'les-073', title: 'Zones freehold et r\u00e9glementation', duration: '1h' },
-          { id: 'les-074', title: 'Golden Visa et r\u00e9sidence', duration: '1h' },
-        ],
-      },
       {
         id: 'mod-030',
-        title: 'Strat\u00e9gies d\u2019achat',
-        duration: '3h',
+        title: 'Le budget',
+        duration: '2h',
         lessons: [
-          { id: 'les-075', title: 'Off-plan vs. march\u00e9 secondaire', duration: '1h' },
-          { id: 'les-076', title: 'Rendements locatifs par zone', duration: '1h' },
-          { id: 'les-077', title: 'Due diligence et promoteurs', duration: '1h' },
+          { id: 'les-076', title: '20 % de fonds propres : d’où ils peuvent venir', duration: '1h' },
+          { id: 'les-077', title: 'Le taux théorique et la règle du tiers', duration: '1h' },
         ],
       },
       {
         id: 'mod-031',
-        title: 'Gestion et fiscalit\u00e9',
-        duration: '2h',
+        title: 'Après la signature',
+        duration: '3h',
         lessons: [
-          { id: 'les-078', title: 'Gestion locative \u00e0 distance', duration: '1h' },
-          { id: 'les-079', title: 'Fiscalit\u00e9 z\u00e9ro et implications suisses', duration: '1h' },
+          { id: 'les-078', title: 'Droits de mutation, frais de notaire, cédule', duration: '1h' },
+          { id: 'les-079', title: 'Valeur locative et déductions : la première déclaration', duration: '1h' },
+          { id: 'les-080', title: 'Retirer ou mettre en gage son 2e pilier', duration: '1h' },
         ],
       },
     ],
-    rating: 4.8,
-    studentCount: 156,
+    rating: 0,
+    studentCount: 34,
   },
   {
-    id: 'form-011',
-    title: 'Bootcamp Apporteur Pro (30j)',
+    id: 'form-010',
+    title: 'Pricing dynamique pour la location courte durée',
     description:
-      'Programme intensif de 30 jours pour devenir apporteur d\u2019affaires immobilier professionnel. Prospection, r\u00e9seau, closing et automatisation de votre activit\u00e9.',
-    category: 'Marketing',
-    level: 'avance' as const,
-    instructor: users[9],
-    thumbnail: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop',
-    price: 697,
-    currency: 'CHF' as const,
-    duration: '15h',
+      'Fixer son prix nuit par nuit selon la saison, les événements, le jour de la semaine et le délai de réservation. Les outils, les règles simples qui marchent sans outil, et comment lire son taux d’occupation pour ajuster. Testé sur mon riad et sur les logements de mes élèves.',
+    category: 'Location',
+    level: 'intermediaire',
+    instructor: person('user-016'),
+    thumbnail: IMG('1551434678-e076c223a692'),
+    price: 290,
+    currency: 'CHF',
+    duration: '5h',
     modules: [
       {
-        id: 'mod-032',
-        title: 'Semaine 1 : Fondations',
-        duration: '4h',
-        lessons: [
-          { id: 'les-080', title: 'Le m\u00e9tier d\u2019apporteur d\u2019affaires', duration: '1h' },
-          { id: 'les-081', title: 'Construire son r\u00e9seau de z\u00e9ro', duration: '1h30' },
-          { id: 'les-082', title: 'Outils et CRM', duration: '1h30' },
-        ],
-      },
-      {
         id: 'mod-033',
-        title: 'Semaine 2-3 : Prospection avanc\u00e9e',
-        duration: '6h',
+        title: 'Comprendre la demande',
+        duration: '2h',
         lessons: [
-          { id: 'les-083', title: 'Prospection LinkedIn et r\u00e9seaux sociaux', duration: '2h' },
-          { id: 'les-084', title: 'Email outreach et s\u00e9quences', duration: '2h' },
-          { id: 'les-085', title: 'Partenariats strat\u00e9giques', duration: '2h' },
+          { id: 'les-084', title: 'Saisons, événements, jours de semaine', duration: '1h' },
+          { id: 'les-085', title: 'Lire son taux d’occupation et son prix moyen', duration: '1h' },
         ],
       },
       {
         id: 'mod-034',
-        title: 'Semaine 4 : Closing et scaling',
-        duration: '5h',
+        title: 'Fixer ses prix',
+        duration: '3h',
         lessons: [
-          { id: 'les-086', title: 'N\u00e9gociation et closing', duration: '2h' },
-          { id: 'les-087', title: 'Automatisation et d\u00e9l\u00e9gation', duration: '1h30' },
-          { id: 'les-088', title: 'Construire un revenu r\u00e9current', duration: '1h30' },
+          { id: 'les-086', title: 'Prix plancher, prix de base, prix d’événement', duration: '1h' },
+          { id: 'les-087', title: 'Remises de dernière minute et séjours longs', duration: '1h' },
+          { id: 'les-088', title: 'Outils automatiques : quand ils aident, quand ils nuisent', duration: '1h' },
         ],
       },
     ],
-    rating: 4.7,
-    studentCount: 67,
+    rating: 0,
+    studentCount: 51,
   },
 ];
 
-// ─── EVENTS (6) ─────────────────────────────────────────────────────────────
+// ─── AVIS ───────────────────────────────────────────────────────────────────
 
-/* ⚠️ ORPHELIN — ne plus utiliser. La source des événements est
-   `@/lib/data/events` (ids `e1`→`e6`).
+/* Chaque avis a pour auteur une personne de l'annuaire, et se rattache à ce
+   qu'elle a RÉELLEMENT acheté, loué ou suivi :
+     · un séjour   → une écriture de séjour au journal à son nom ;
+     · un achat    → le bien porte `soldTo` = l'auteur ;
+     · une formation → une inscription au journal à son nom ;
+     · une prestation → une écriture `services` dont elle est le client, ou
+       — dans l'autre sens — dont elle est le prestataire (avis croisés).
+   L'invariant 18 le vérifie, avec la date : on n'évalue pas avant d'avoir
+   acheté. Les avis ne sont pas unanimes, et chacun parle dans sa voix. */
 
-   Ce jeu porte des ids `evt-001`→`evt-006` que la route `/evenements/[id]` ne
-   sait pas résoudre. Son unique consommateur, le carrousel du feed, générait
-   donc des liens qui menaient tous à « Événement introuvable » ; il a été
-   rebranché sur la couche de données. Conservé ici uniquement parce que
-   l'interface `Event` et le champ `speaker: User` peuvent servir de référence
-   au futur schéma Supabase — à supprimer une fois la table `events` écrite. */
-
-export interface Event {
-  id: string;
-  title: string;
-  description: string;
-  type: 'webinaire' | 'conference' | 'atelier' | 'networking';
-  thumbnail: string;
-  speaker: User;
-  date: string;
-  time: string;
-  duration: string;
-  location: string;
-  isOnline: boolean;
-  spotsTotal: number;
-  spotsTaken: number;
-  price: number;
-  currency: string;
-  tags: string[];
-}
-
-export const events: Event[] = [
-  {
-    id: 'evt-001',
-    title: 'Investir en Suisse romande en 2026',
-    description:
-      'Webinaire complet sur les opportunit\u00e9s d\u2019investissement en Suisse romande. Analyse du march\u00e9, tendances, zones \u00e0 fort potentiel et strat\u00e9gies gagnantes.',
-    type: 'webinaire',
-    thumbnail: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop',
-    speaker: users[0],
-    date: '2026-04-15',
-    time: '18:00',
-    duration: '1h30',
-    location: 'En ligne (Zoom)',
-    isOnline: true,
-    spotsTotal: 200,
-    spotsTaken: 156,
-    price: 0,
-    currency: 'CHF',
-    tags: ['Investissement', 'Suisse', 'March\u00e9'],
-  },
-  {
-    id: 'evt-002',
-    title: 'Conf\u00e9rence E-Dome : L\u2019avenir de l\u2019immobilier digital',
-    description:
-      'Grande conf\u00e9rence annuelle E-Dome r\u00e9unissant les acteurs cl\u00e9s de la proptech. Innovations, IA, blockchain, tokenisation immobili\u00e8re et nouvelles tendances.',
-    type: 'conference',
-    thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
-    speaker: users[14],
-    date: '2026-05-20',
-    time: '09:00',
-    duration: '8h',
-    location: 'Palais de Beaulieu, Lausanne',
-    isOnline: false,
-    spotsTotal: 500,
-    spotsTaken: 312,
-    price: 150,
-    currency: 'CHF',
-    tags: ['Proptech', 'Innovation', 'Conf\u00e9rence'],
-  },
-  {
-    id: 'evt-003',
-    title: 'Atelier : Home staging pour maximiser la vente',
-    description:
-      'Atelier pratique de home staging. Apprenez \u00e0 mettre en valeur un bien pour acc\u00e9l\u00e9rer la vente et obtenir le meilleur prix. Exercices sur un bien r\u00e9el.',
-    type: 'atelier',
-    thumbnail: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&h=600&fit=crop',
-    speaker: users[1],
-    date: '2026-04-25',
-    time: '14:00',
-    duration: '3h',
-    location: 'Espace Fusterie, Gen\u00e8ve',
-    isOnline: false,
-    spotsTotal: 30,
-    spotsTaken: 24,
-    price: 85,
-    currency: 'CHF',
-    tags: ['Home Staging', 'Vente', 'Pratique'],
-  },
-  {
-    id: 'evt-004',
-    title: 'Networking : Investisseurs immobiliers romands',
-    description:
-      'Soir\u00e9e networking d\u00e9di\u00e9e aux investisseurs immobiliers de Suisse romande. \u00c9change d\u2019exp\u00e9riences, deal-sharing et opportunit\u00e9s de co-investissement.',
-    type: 'networking',
-    thumbnail: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&h=600&fit=crop',
-    speaker: users[2],
-    date: '2026-04-30',
-    time: '18:30',
-    duration: '3h',
-    location: 'H\u00f4tel Royal Savoy, Lausanne',
-    isOnline: false,
-    spotsTotal: 80,
-    spotsTaken: 67,
-    price: 45,
-    currency: 'CHF',
-    tags: ['Networking', 'Investisseurs', 'Co-investissement'],
-  },
-  {
-    id: 'evt-005',
-    title: 'Webinaire : Fiscalit\u00e9 immobili\u00e8re internationale',
-    description:
-      'Comment optimiser la fiscalit\u00e9 de vos investissements immobiliers \u00e0 l\u2019\u00e9tranger. Conventions de double imposition, structures holding, Golden Visa.',
-    type: 'webinaire',
-    thumbnail: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop',
-    speaker: users[7],
-    date: '2026-05-10',
-    time: '12:00',
-    duration: '1h',
-    location: 'En ligne (Zoom)',
-    isOnline: true,
-    spotsTotal: 150,
-    spotsTaken: 89,
-    price: 0,
-    currency: 'CHF',
-    tags: ['Fiscalit\u00e9', 'International', 'Juridique'],
-  },
-  {
-    id: 'evt-006',
-    title: 'Atelier photo : Sublimer vos biens immobiliers',
-    description:
-      'Atelier pratique de photographie immobili\u00e8re. Apportez votre appareil photo et apprenez \u00e0 cr\u00e9er des visuels professionnels pour vos annonces.',
-    type: 'atelier',
-    thumbnail: 'https://images.unsplash.com/photo-1554080353-a576cf803bda?w=800&h=600&fit=crop',
-    speaker: users[15],
-    date: '2026-05-15',
-    time: '10:00',
-    duration: '4h',
-    location: 'Studio E-Dome, Neuch\u00e2tel',
-    isOnline: false,
-    spotsTotal: 15,
-    spotsTaken: 12,
-    price: 120,
-    currency: 'CHF',
-    tags: ['Photographie', 'Pratique', 'Immobilier'],
-  },
-];
-
-// ─── NOTIFICATIONS (12) ─────────────────────────────────────────────────────
-
-export const notifications: Notification[] = [
-  {
-    id: 'notif-001',
-    type: 'reservation',
-    title: 'Nouvelle r\u00e9servation',
-    message: 'Cl\u00e9mence Moreau souhaite r\u00e9server le Studio \u00e0 Gen\u00e8ve du 5 au 8 avril.',
-    read: false,
-    createdAt: '2026-04-01T08:00:00Z',
-    href: '/reservations/res-002',
-  },
-  {
-    id: 'notif-002',
-    type: 'message',
-    title: 'Nouveau message',
-    message: 'Sophie Durand vous a envoy\u00e9 un message concernant le chalet de Verbier.',
-    read: false,
-    createdAt: '2026-03-31T09:30:00Z',
-    href: '/messages/conv-001',
-  },
-  {
-    id: 'notif-003',
-    type: 'payment',
-    title: 'Paiement re\u00e7u',
-    message: 'Vous avez re\u00e7u 5\u2019950 CHF pour la r\u00e9servation du chalet de Verbier.',
-    read: false,
-    createdAt: '2026-03-30T14:00:00Z',
-    href: '/dashboard/finances',
-  },
-  {
-    id: 'notif-004',
-    type: 'review',
-    title: 'Nouvel avis',
-    message: 'Marc Favre a laiss\u00e9 un avis 5 \u00e9toiles sur la villa de Phuket.',
-    read: true,
-    createdAt: '2026-03-29T16:00:00Z',
-    href: '/properties/prop9#reviews',
-  },
-  {
-    id: 'notif-005',
-    type: 'follow',
-    title: 'Nouveau follower',
-    message: 'Elena Papadopoulos vous suit d\u00e9sormais.',
-    read: true,
-    createdAt: '2026-03-28T20:00:00Z',
-    href: '/profile/user-014',
-  },
-  {
-    id: 'notif-006',
-    type: 'system',
-    title: 'Mise \u00e0 jour de la plateforme',
-    message: 'Nouvelle fonctionnalit\u00e9 : visites virtuelles 3D disponibles pour vos annonces.',
-    read: true,
-    createdAt: '2026-03-27T10:00:00Z',
-    href: '/updates',
-  },
-  {
-    id: 'notif-007',
-    type: 'reservation',
-    title: 'R\u00e9servation confirm\u00e9e',
-    message: 'Votre r\u00e9servation \u00e0 Santorin du 20 au 27 juin est confirm\u00e9e.',
-    read: true,
-    createdAt: '2026-03-26T12:00:00Z',
-    href: '/reservations/res-003',
-  },
-  {
-    id: 'notif-008',
-    type: 'payment',
-    title: 'Commission apporteur',
-    message: 'Commission de 740 CHF cr\u00e9dit\u00e9e pour le parrainage de Fatima Zahra.',
-    read: false,
-    createdAt: '2026-03-25T09:00:00Z',
-    href: '/dashboard/referrals',
-  },
-  {
-    id: 'notif-009',
-    type: 'system',
-    title: 'V\u00e9rification d\u2019identit\u00e9',
-    message: 'Votre pi\u00e8ce d\u2019identit\u00e9 a \u00e9t\u00e9 v\u00e9rifi\u00e9e avec succ\u00e8s. Badge "V\u00e9rifi\u00e9" activ\u00e9.',
-    read: true,
-    createdAt: '2026-03-24T11:00:00Z',
-    href: '/profile/settings',
-  },
-  {
-    id: 'notif-010',
-    type: 'message',
-    title: 'Nouveau message',
-    message: 'Nathalie Blanc vous a r\u00e9pondu au sujet de l\u2019acte de vente.',
-    read: false,
-    createdAt: '2026-03-27T09:00:00Z',
-    href: '/messages/conv-006',
-  },
-  {
-    id: 'notif-011',
-    type: 'reservation',
-    title: 'R\u00e9servation annul\u00e9e',
-    message: 'Pierre Gon\u00e7alves a annul\u00e9 sa r\u00e9servation au Riad de Marrakech.',
-    read: true,
-    createdAt: '2026-03-22T15:00:00Z',
-    href: '/reservations/res-007',
-  },
-  {
-    id: 'notif-012',
-    type: 'follow',
-    title: 'Nouveau follower',
-    message: 'Carlos Rivera vous suit d\u00e9sormais.',
-    read: true,
-    createdAt: '2026-03-20T18:00:00Z',
-    href: '/profile/user-016',
-  },
-];
-
-// ─── DASHBOARD DATA ─────────────────────────────────────────────────────────
-
-export const dashboardStats: DashboardStats = {
-  totalRevenue: 485000,
-  monthlyRevenue: 42500,
-  totalBookings: 52,
-  occupancyRate: 87,
-  averageRating: 4.8,
-  totalViews: 24680,
-  conversionRate: 3.8,
-  pendingPayments: 6350,
-};
-
-export const transactions: Transaction[] = [
-  {
-    id: 'tx-001',
-    type: 'payment',
-    amount: 5950,
-    currency: 'CHF',
-    status: 'completed',
-    description: 'Location chalet Verbier — Marc Favre',
-    date: '2026-03-30',
-    counterpart: 'Marc Favre',
-  },
-  {
-    id: 'tx-002',
-    type: 'payout',
-    amount: 4760,
-    currency: 'CHF',
-    status: 'completed',
-    description: 'Virement vers compte bancaire',
-    date: '2026-03-28',
-  },
-  {
-    id: 'tx-003',
-    type: 'commission',
-    amount: 740,
-    currency: 'CHF',
-    status: 'completed',
-    description: 'Commission apporteur — Fatima Zahra',
-    date: '2026-03-25',
-    counterpart: 'Fatima Zahra',
-  },
-  {
-    id: 'tx-004',
-    type: 'payment',
-    amount: 360,
-    currency: 'CHF',
-    status: 'pending',
-    description: 'Location studio Gen\u00e8ve — Cl\u00e9mence Moreau',
-    date: '2026-04-01',
-    counterpart: 'Cl\u00e9mence Moreau',
-  },
-  {
-    id: 'tx-005',
-    type: 'payment',
-    amount: 5950,
-    currency: 'CHF',
-    status: 'completed',
-    description: 'Location chalet Verbier — Yasmin Al Maktoum',
-    date: '2026-02-14',
-    counterpart: 'Yasmin Al Maktoum',
-  },
-  {
-    id: 'tx-006',
-    type: 'commission',
-    amount: 1450,
-    currency: 'CHF',
-    status: 'completed',
-    description: 'Commission vente appartement Lausanne',
-    date: '2026-02-10',
-  },
-  {
-    id: 'tx-007',
-    type: 'refund',
-    amount: -1800,
-    currency: 'CHF',
-    status: 'completed',
-    description: 'Remboursement annulation — Pierre Gon\u00e7alves',
-    date: '2026-03-22',
-    counterpart: 'Pierre Gon\u00e7alves',
-  },
-  {
-    id: 'tx-008',
-    type: 'payment',
-    amount: 497,
-    currency: 'CHF',
-    status: 'completed',
-    description: 'Vente formation "Investissement locatif"',
-    date: '2026-03-18',
-  },
-];
-
-/* `monthlyRevenue` (un second moteur de revenus, fig\u00e9 et arr\u00eat\u00e9 \u00e0 mars 2026)
-   a \u00e9t\u00e9 retir\u00e9 ici : personne ne l'importait, et il contredisait la s\u00e9rie
-   d\u00e9riv\u00e9e du journal unique (`dashboard-data.ts`, `derive.monthly()`). Retrait
-   d\u00e9cid\u00e9 \u00e0 l'audit Mission 2 (th\u00e8me 4, comptable). */
-
-export interface MonthlyReferralEarnings {
-  month: string;
-  earnings: number;
-  referrals: number;
-}
-
-export const monthlyReferralEarnings: MonthlyReferralEarnings[] = [
-  { month: 'Oct 2025', earnings: 1200, referrals: 3 },
-  { month: 'Nov 2025', earnings: 850, referrals: 2 },
-  { month: 'D\u00e9c 2025', earnings: 2100, referrals: 5 },
-  { month: 'Jan 2026', earnings: 1680, referrals: 4 },
-  { month: 'F\u00e9v 2026', earnings: 2340, referrals: 6 },
-  { month: 'Mar 2026', earnings: 1950, referrals: 5 },
-];
-
-// ─── REVIEWS ────────────────────────────────────────────────────────────────
+export type ReviewSubject =
+  | { kind: 'property'; id: string }
+  | { kind: 'formation'; id: string }
+  | { kind: 'service'; id: string };
 
 export interface Review {
   id: string;
-  propertyId: string;
+  /** Ce qui est évalué : un bien, une formation, une prestation. */
+  subject: ReviewSubject;
+  /** Compat : renseigné quand l'avis porte sur un bien (fiche du bien). */
+  propertyId?: string;
   author: User;
+  /** La personne qui REÇOIT l'avis — c'est elle dont le compteur augmente. */
+  recipientId: string;
   rating: number;
   comment: string;
   createdAt: string;
+  /** Réponse publique de la personne évaluée. */
+  reply?: { content: string; createdAt: string };
+}
+
+function propertyReview(id: string, propertyId: string, authorId: string, rating: number, createdAt: string, comment: string, reply?: Review['reply']): Review {
+  const p = properties.find((x) => x.id === propertyId);
+  if (!p) throw new Error(`Avis ${id} : bien inconnu — ${propertyId}`);
+  return { id, subject: { kind: 'property', id: propertyId }, propertyId, author: person(authorId), recipientId: p.host.id, rating, comment, createdAt, reply };
+}
+
+function formationReview(id: string, formationId: string, authorId: string, rating: number, createdAt: string, comment: string): Review {
+  const f = formations.find((x) => x.id === formationId);
+  if (!f) throw new Error(`Avis ${id} : formation inconnue — ${formationId}`);
+  return { id, subject: { kind: 'formation', id: formationId }, author: person(authorId), recipientId: f.instructor.id, rating, comment, createdAt };
+}
+
+function serviceReview(id: string, serviceSaleId: string, authorId: string, recipientId: string, rating: number, createdAt: string, comment: string): Review {
+  person(recipientId);
+  return { id, subject: { kind: 'service', id: serviceSaleId }, author: person(authorId), recipientId, rating, comment, createdAt };
 }
 
 export const mockReviews: Review[] = [
-  // ─── prop1 (appartement, vente, Lausanne) ─────────────────────────────
-  {
-    id: 'rev-001',
-    propertyId: 'prop1',
-    author: users[11],
-    rating: 4,
-    comment: 'Appartement avec une vue incroyable sur le lac. Très bien équipé. Seul bémol : le parking est un peu étroit.',
-    createdAt: '2026-03-15T09:00:00Z',
-  },
-  {
-    id: 'rev-002',
-    propertyId: 'prop1',
-    author: users[2],
-    rating: 5,
-    comment: 'J\'ai acquis cet appartement via Sophie Durand : de la première visite à la signature chez le notaire, un accompagnement limpide et des conseils précis sur le rendement. Emplacement idéal, finitions haut de gamme, vue lac magique.',
-    createdAt: '2026-02-28T14:00:00Z',
-  },
-  {
-    id: 'rev-003',
-    propertyId: 'prop1',
-    author: users[8],
-    rating: 5,
-    comment: 'Séjour parfait. Appartement propre, moderne et lumineux. La vue sur le Léman depuis le salon est à couper le souffle.',
-    createdAt: '2026-01-20T11:00:00Z',
-  },
-  // ─── prop2 (studio, location-ct, Genève) ─────────────────────────────
-  {
-    id: 'rev-004',
-    propertyId: 'prop2',
-    author: users[11],
-    rating: 5,
-    comment: 'Studio parfait pour un séjour à Genève. Tout est fonctionnel, propre et bien situé. Le WiFi fibre est un vrai plus.',
-    createdAt: '2026-03-10T08:00:00Z',
-  },
-  {
-    id: 'rev-005',
-    propertyId: 'prop2',
-    author: users[6],
-    rating: 4,
-    comment: 'Très bon rapport qualité-prix. Proche de la gare, idéal pour les déplacements professionnels. Cuisine bien équipée.',
-    createdAt: '2026-02-15T16:00:00Z',
-  },
-  {
-    id: 'rev-006',
-    propertyId: 'prop2',
-    author: users[13],
-    rating: 5,
-    comment: 'Petit studio mais très bien agencé. La literie est excellente. Je recommande vivement pour un court séjour.',
-    createdAt: '2026-01-28T10:00:00Z',
-  },
-  // ─── prop3 (villa, vente, Nice) ───────────────────────────────────────
-  {
-    id: 'rev-007',
-    propertyId: 'prop3',
-    author: users[5],
-    rating: 5,
-    comment: 'Villa d\'architecte magnifique. La piscine à débordement avec vue mer est un rêve. Quartier très calme et résidentiel.',
-    createdAt: '2026-03-05T15:00:00Z',
-  },
-  {
-    id: 'rev-008',
-    propertyId: 'prop3',
-    author: users[2],
-    rating: 5,
-    comment: 'Propriété exceptionnelle sur la Côte d\'Azur. Les finitions sont impeccables, le jardin est un vrai havre de paix.',
-    createdAt: '2026-02-10T12:00:00Z',
-  },
-  // ─── prop4 (riad, vente, Marrakech) ───────────────────────────────────
-  {
-    id: 'rev-009',
-    propertyId: 'prop4',
-    author: users[6],
-    rating: 5,
-    comment: 'Un riad magnifique, authentique et parfaitement rénové. L\u2019accueil d\u2019Amina est chaleureux. Le petit-déjeuner sur la terrasse est un moment magique.',
-    createdAt: '2026-03-06T14:00:00Z',
-  },
-  {
-    id: 'rev-010',
-    propertyId: 'prop4',
-    author: users[0],
-    rating: 5,
-    comment: 'Riad d\'exception dans la médina. Chaque détail est soigné, de la mosaïque au mobilier. Une pépite immobilière.',
-    createdAt: '2026-02-18T09:00:00Z',
-  },
-  // ─── prop5 (chalet, location-ct, Verbier) ────────────────────────────
-  {
-    id: 'rev-011',
-    propertyId: 'prop5',
-    author: users[2],
-    rating: 5,
-    comment: 'Chalet absolument exceptionnel ! Vue à couper le souffle, service impeccable. Le spa privé est un vrai plus. On reviendra sans hésiter.',
-    createdAt: '2026-02-22T10:00:00Z',
-  },
-  {
-    id: 'rev-012',
-    propertyId: 'prop5',
-    author: users[11],
-    rating: 5,
-    comment: 'Chalet authentique et chaleureux. Le sauna et le jacuzzi sont parfaits après le ski. Les enfants ont adoré.',
-    createdAt: '2026-01-15T18:00:00Z',
-  },
-  {
-    id: 'rev-013',
-    propertyId: 'prop5',
-    author: users[8],
-    rating: 4,
-    comment: 'Superbe chalet avec tout le confort moderne. L\'emplacement est idéal pour les pistes. Seul point : le check-in un peu tard.',
-    createdAt: '2026-03-01T11:00:00Z',
-  },
-  // ─── prop6 (penthouse, vente, Dubai) ──────────────────────────────────
-  {
-    id: 'rev-014',
-    propertyId: 'prop6',
-    author: users[10],
-    rating: 5,
-    comment: 'Penthouse spectaculaire avec vue panoramique sur la marina. Les finitions sont dignes d\'un palace. Un investissement sûr.',
-    createdAt: '2026-03-12T14:00:00Z',
-  },
-  {
-    id: 'rev-015',
-    propertyId: 'prop6',
-    author: users[2],
-    rating: 5,
-    comment: 'Yasmin a parfaitement géré la transaction. Le penthouse dépasse toutes les attentes en termes de luxe et de confort.',
-    createdAt: '2026-02-25T10:00:00Z',
-  },
-  // ─── prop7 (appartement, location-lt, Neuchâtel) ─────────────────────
-  {
-    id: 'rev-016',
-    propertyId: 'prop7',
-    author: users[11],
-    rating: 5,
-    comment: 'Appartement lumineux et très bien situé au bord du lac. Le propriétaire est réactif et attentionné.',
-    createdAt: '2026-03-08T09:00:00Z',
-  },
-  {
-    id: 'rev-017',
-    propertyId: 'prop7',
-    author: users[7],
-    rating: 4,
-    comment: 'Bel appartement avec une vue agréable. Quartier calme, idéal pour une location longue durée. Bon rapport qualité-prix.',
-    createdAt: '2026-02-20T15:00:00Z',
-  },
-  // ─── prop9 (villa, location-ct, Phuket) ──────────────────────────────
-  {
-    id: 'rev-018',
-    propertyId: 'prop9',
-    author: users[2],
-    rating: 5,
-    comment: 'Villa de rêve à Phuket ! Le personnel est aux petits soins, la piscine infinity est spectaculaire. Deux semaines de pur bonheur.',
-    createdAt: '2026-01-25T12:00:00Z',
-  },
-  {
-    id: 'rev-019',
-    propertyId: 'prop9',
-    author: users[5],
-    rating: 5,
-    comment: 'Expérience inoubliable. La villa est encore plus belle qu\'en photos. Le chef privé prépare des plats extraordinaires.',
-    createdAt: '2026-02-08T16:00:00Z',
-  },
-  // ─── prop12 (villa, location-ct, Santorin) ────────────────────────────
-  {
-    id: 'rev-020',
-    propertyId: 'prop12',
-    author: users[0],
-    rating: 5,
-    comment: 'Santorin comme dans les rêves. La villa est parfaitement située pour le coucher de soleil. Elena est une hôtesse exceptionnelle.',
-    createdAt: '2026-03-20T18:00:00Z',
-  },
-  {
-    id: 'rev-021',
-    propertyId: 'prop12',
-    author: users[11],
-    rating: 5,
-    comment: 'Vue à couper le souffle sur la caldeira. La piscine privée est un vrai luxe. On se sent comme dans un film.',
-    createdAt: '2026-02-12T14:00:00Z',
-  },
-  // ─── prop13 (appartement, vente, Marrakech) ───────────────────────────
-  {
-    id: 'rev-022',
-    propertyId: 'prop13',
-    author: users[6],
-    rating: 4,
-    comment: 'Bel appartement dans un quartier en plein développement. Bon potentiel d\'investissement. Les espaces communs sont soignés.',
-    createdAt: '2026-03-02T10:00:00Z',
-  },
-  // ─── prop14 (appartement, location-lt, Neuchâtel — géré par Jean-Luc) ──
-  {
-    id: 'rev-023',
-    propertyId: 'prop14',
-    author: users[11],
-    rating: 5,
-    comment: 'Studio meublé parfait pour mes études à l\'Université de Neuchâtel. À dix minutes à pied des cours, calme et bien équipé. L\'agence Hartmann a été réactive du premier jour.',
-    createdAt: '2026-03-18T11:00:00Z',
-  },
-  {
-    id: 'rev-024',
-    propertyId: 'prop14',
-    author: users[7],
-    rating: 4,
-    comment: 'Bon rapport qualité-prix pour un meublé proche de l\'université. Charges comprises, gestion locative sérieuse. Manque juste un peu de rangement.',
-    createdAt: '2026-02-05T08:00:00Z',
-  },
-  // ─── prop11 (bureau, vente, Genève) ─────────────────────────────────
-  {
-    id: 'rev-025',
-    propertyId: 'prop11',
-    author: users[5],
-    rating: 5,
-    comment: 'Bureaux modernes et lumineux, parfaitement agencés. La fibre optique et la climatisation réversible sont de vrais atouts. Quartier des Eaux-Vives très dynamique.',
-    createdAt: '2026-03-22T10:00:00Z',
-  },
-  {
-    id: 'rev-026',
-    propertyId: 'prop11',
-    author: users[8],
-    rating: 5,
-    comment: 'Excellent investissement. Les salles de réunion sont spacieuses, l\'open space se prête à toutes les configurations. Accès handicapé impeccable.',
-    createdAt: '2026-02-28T14:00:00Z',
-  },
-  {
-    id: 'rev-027',
-    propertyId: 'prop11',
-    author: users[11],
-    rating: 4,
-    comment: 'Très beaux bureaux dans un immeuble récent. Proche de la gare des Eaux-Vives, idéal pour les collaborateurs. Seul bémol : le parking est un peu limité.',
-    createdAt: '2026-01-18T09:00:00Z',
-  },
-  /* ─── Étape 3 : avis des trois premiers profils complets ─────────────────
-     Sophie Durand (prop1, prop19, prop23), Marc Favre (prop16, prop24, prop25),
-     Jean-Luc Hartmann (prop26, prop27, prop28). Ces avis alimentent les
-     « avis reçus » de chaque profil (dérivés des biens qu'il héberge), et
-     concordent avec la note et le nombre d'avis annoncés dans users[]
-     (invariant 27). */
-  // ─── prop19 (chalet, vente, Verbier — Sophie) ─────────────────────────
-  {
-    id: 'rev-028',
-    propertyId: 'prop19',
-    author: users[8],
-    rating: 5,
-    comment: 'Sophie connaît le marché alpin sur le bout des doigts. Visite privée impeccable, dossier de vente complet. Un chalet ski-in ski-out d\'un standing rare.',
-    createdAt: '2026-03-14T10:00:00Z',
-  },
-  {
-    id: 'rev-029',
-    propertyId: 'prop19',
-    author: users[11],
-    rating: 4,
-    comment: 'Très beau chalet, emplacement idéal au pied des pistes. Accompagnement sérieux de l’agente. Le prix reste élevé mais justifié par la vue.',
-    createdAt: '2026-02-09T15:00:00Z',
-  },
-  // ─── prop23 (studio, location-ct, Lausanne — Sophie) ──────────────────
-  {
-    id: 'rev-030',
-    propertyId: 'prop23',
-    author: users[3],
-    rating: 5,
-    comment: 'Studio adorable à Ouchy, vue lac au réveil. Sophie répond en quelques minutes et pense à tout. Je recommande sans réserve pour un séjour à Lausanne.',
-    createdAt: '2026-08-22T09:00:00Z',
-  },
-  {
-    id: 'rev-031',
-    propertyId: 'prop23',
-    author: users[0],
-    rating: 5,
-    comment: 'Emplacement parfait sur les quais, décoration soignée. Check-in fluide, communication au top. Un pied-à-terre idéal pour découvrir la région.',
-    createdAt: '2026-07-30T14:00:00Z',
-  },
-  // ─── prop16 (penthouse, vente, Genève — Marc) ─────────────────────────
-  {
-    id: 'rev-032',
-    propertyId: 'prop16',
-    author: users[5],
-    rating: 5,
-    comment: 'Attique d\'exception avec une vue à 360° sur la rade. Marc maîtrise ses chiffres et négocie avec rigueur. Transaction menée de main de maître.',
-    createdAt: '2026-03-19T11:00:00Z',
-  },
-  // ─── prop24 (studio, location-ct, Montreux — Marc) ────────────────────
-  {
-    id: 'rev-033',
-    propertyId: 'prop24',
-    author: users[13],
-    rating: 5,
-    comment: 'Studio nickel à Montreux, parfait pendant le festival. Tout fonctionne, arrivée autonome sans accroc. Excellent rapport qualité-prix.',
-    createdAt: '2026-08-18T16:00:00Z',
-  },
-  // ─── prop25 (appartement, location-ct, Nyon — Marc) ───────────────────
-  {
-    id: 'rev-034',
-    propertyId: 'prop25',
-    author: users[9],
-    rating: 4,
-    comment: 'Bien situé entre Genève et Lausanne, pratique pour mes déplacements pro. Appartement propre et fonctionnel. Petit manque de luminosité au rez.',
-    createdAt: '2026-09-06T08:00:00Z',
-  },
-  // ─── prop26 (appartement, location-ct, Neuchâtel — Jean-Luc / agence) ──
-  {
-    id: 'rev-035',
-    propertyId: 'prop26',
-    author: users[7],
-    rating: 5,
-    comment: 'Meublé impeccable au centre de Neuchâtel, géré par Hartmann Immobilier. Ménage professionnel, check-in autonome parfait. Je reviendrai.',
-    createdAt: '2026-08-27T10:00:00Z',
-  },
-  // ─── prop27 (villa, vente, Hauterive — Jean-Luc / agence) ─────────────
-  {
-    id: 'rev-036',
-    propertyId: 'prop27',
-    author: users[11],
-    rating: 5,
-    comment: 'Nous avons acheté notre villa via l\'agence de Jean-Luc Hartmann. Vingt ans de métier, ça se sent : estimation juste, visites bien organisées, signature sereine. Un service de proximité irréprochable.',
-    createdAt: '2026-06-20T14:00:00Z',
-  },
-  // ─── prop28 (appartement, vente, Neuchâtel — Jean-Luc / agence) ───────
-  {
-    id: 'rev-037',
-    propertyId: 'prop28',
-    author: users[8],
-    rating: 4,
-    comment: 'Bel appartement de maître rénové avec goût. L\'équipe Hartmann est réactive et transparente sur les charges. Quartier des Beaux-Arts très agréable.',
-    createdAt: '2026-05-16T09:00:00Z',
-  },
+  // ── Reçus par Léo Martin ────────────────────────────────────────────────
+  propertyReview('rev-001', 'prop2', 'user-016', 5, '2026-05-03T09:00:00Z',
+    'Studio très bien placé pour le salon à Genève : la gare à cinq minutes, tout était propre et prêt. Léo a répondu à mes questions en quelques minutes. Je reviendrai.'),
+  propertyReview('rev-002', 'prop2', 'user-005', 4, '2026-07-02T21:40:00Z',
+    'propre bien situe. lit ok. parking galere dans le quartier, prevoir le train'),
+  propertyReview('rev-003', 'prop5', 'user-003', 4, '2026-02-03T08:00:00Z',
+    'Appartement conforme à l’annonce. Chauffage efficace. Local à skis pratique. Arrivée à 16 h, pas avant : à préciser dans l’annonce.'),
+  propertyReview('rev-004', 'prop5', 'user-011', 5, '2026-03-04T18:30:00Z',
+    'Une semaine de ski en famille, sans une seule mauvaise surprise. L’appartement est chaleureux, la cheminée tire bien, et Léo avait laissé une liste claire de tout ce qu’il faut savoir. Merci !'),
+  propertyReview('rev-005', 'prop9', 'user-013', 5, '2026-04-02T10:15:00Z',
+    'Propre, bien équipé, arrivée autonome sans souci. En tant qu’hôte moi-même : bon rapport qualité-prix pour Lausanne, je n’aurais pas mis plus cher.'),
+  formationReview('rev-006', 'form-001', 'user-003', 3, '2026-01-20T07:30:00Z',
+    'Correct pour débuter. Les hypothèses de taux du module 2 sont optimistes. Le calcul du rendement net est juste.'),
+  formationReview('rev-007', 'form-001', 'user-008', 4, '2026-05-25T20:10:00Z',
+    'J’ai enfin compris la différence entre rendement brut et net… et que ce n’est peut-être pas pour nous tout de suite. Il manque un module sur l’achat à deux ? Mais c’est très clair.'),
+
+  // ── Reçus par Céline Bovard ─────────────────────────────────────────────
+  propertyReview('rev-008', 'prop1', 'user-003', 4, '2026-02-10T08:00:00Z',
+    'Achat conclu en sept semaines. Dossier complet dès la première visite. Délais tenus. Prix final 2 % sous le prix affiché. Rien à redire.',
+    { content: 'Merci Ennio. Ce fut un plaisir de vous accompagner — et de savoir que cet appartement, où la lumière du matin entre par la cuisine, a trouvé quelqu’un qui en prendra soin.', createdAt: '2026-02-12T17:20:00Z' }),
+  propertyReview('rev-009', 'prop23', 'user-012', 4, '2026-08-04T09:00:00Z',
+    'Séjour agréable avec mon épouse à l’occasion d’un concert à Lausanne. Studio propre et très bien situé, Madame Bovard est d’une grande amabilité. Le lit est un peu ferme à notre âge. Meilleures salutations, Y. Mottiez'),
+  propertyReview('rev-010', 'prop23', 'user-014', 5, '2026-09-03T19:00:00Z',
+    'Parfait pour deux jours de rendez-vous à Lausanne : le métro en bas, le lac devant. Céline pense à tout, jusqu’à la liste des bonnes adresses d’Ouchy.'),
+  serviceReview('rev-011', 'sv-nik-morges', 'user-005', 'user-002', 5, '2026-09-06T13:00:00Z',
+    'cliente top. brief clair, acces ok, paye direct. on refait quand tu veux celine'),
+  serviceReview('rev-012', 'sv-ele-morges', 'user-010', 'user-002', 5, '2026-09-08T11:30:00Z',
+    'Travailler avec Céline, c’est un plaisir : elle connaît chaque pièce de ses biens et sait exactement ce qu’elle veut montrer. Brief précis, clés à l’heure, retours rapides.'),
+
+  // ── Reçus par Nikola Ristić ─────────────────────────────────────────────
+  serviceReview('rev-013', 'sv-nik-riex', 'user-002', 'user-005', 5, '2026-06-05T08:45:00Z',
+    'Nikola a saisi la maison de Riex exactement comme je la voulais : la lumière du soir sur les vignes, la cave voûtée, la terrasse. Les vues de drone ont fait la moitié des demandes de visite. Rapide, discret, ponctuel.'),
+  serviceReview('rev-014', 'sv-nik-pully', 'user-007', 'user-005', 4, '2026-08-12T10:00:00Z',
+    'Trés belles photos. Le jeune homme était ponctuel et poli. Le drone a un peu effrayé le chat. Je recommande.'),
+  serviceReview('rev-015', 'sv-nik-leo', 'user-001', 'user-005', 5, '2026-02-06T12:00:00Z',
+    'Reportage livré en 48 h. Depuis que les nouvelles photos sont en ligne, les demandes pour le studio ont nettement augmenté. Je le recommande sans hésiter.'),
+
+  // ── Reçu par Elena Currat ───────────────────────────────────────────────
+  serviceReview('rev-016', 'sv-ele-riex', 'user-002', 'user-010', 5, '2026-06-06T09:10:00Z',
+    'Elena a rendu à la maison de Riex sa chaleur, sans en faire un décor : trois meubles déplacés, du lin, des bouquets de saison. Les visiteurs se voyaient y vivre. Je ne prépare plus une vente sans elle.'),
+
+  // ── Reçus par Reto Jungo ────────────────────────────────────────────────
+  serviceReview('rev-017', 'sv-reto-cecb', 'user-015', 'user-009', 5, '2026-03-20T14:00:00Z',
+    'Étude énergétique rigoureuse et concept de rénovation clair, chiffré par étapes. Monsieur Jungo a su expliquer ses choix aux copropriétaires comme à nos équipes. Une collaboration que nous poursuivrons.'),
+  formationReview('rev-018', 'form-005', 'user-004', 5, '2026-04-15T18:00:00Z',
+    'Suivie pour mieux conseiller nos propriétaires : le module sur les subventions cantonales est directement utilisable. Clair, concret, avec les bons ordres de grandeur.'),
+
+  // ── Reçus par Sandrine Monnier ──────────────────────────────────────────
+  formationReview('rev-019', 'form-007', 'user-001', 5, '2026-03-10T20:00:00Z',
+    'Je remplissais ma déclaration de bailleur à l’instinct depuis trois ans. Le module sur la répartition intercantonale m’a appris que je le faisais mal pour mon studio de Genève. Clair, structuré, et Sandrine répond aux questions.'),
+  formationReview('rev-020', 'form-009', 'user-008', 4, '2026-06-14T21:15:00Z',
+    'Très pédagogique. Le tableur de budget nous a un peu fait peur, on est encore loin des 20 %… mais au moins on sait où on en est. Merci Sandrine.'),
+
+  // ── Reçus par Amina El Idrissi ──────────────────────────────────────────
+  formationReview('rev-021', 'form-010', 'user-013', 5, '2026-02-15T09:30:00Z',
+    'Appliqué sur mes deux appartements de Montreux : en novembre et en janvier, j’ai rempli des semaines qui restaient vides, sans baisser mon prix moyen. Le module sur les prix d’événement a remboursé la formation dès le Jazz.'),
+  propertyReview('rev-022', 'prop4', 'user-002', 5, '2026-05-02T16:00:00Z',
+    'Une maison qui respire : le patio au réveil, les oranges, le thé sur la terrasse au coucher du soleil. Fatiha nous a accueillis comme des amis. Amina répond à tout, avec beaucoup de gentillesse.'),
+
+  // ── Reçus par Ennio Bordoni ─────────────────────────────────────────────
+  propertyReview('rev-023', 'prop24', 'user-008', 5, '2026-07-20T11:00:00Z',
+    'Week-end au Jazz avec mon compagnon : studio propre, très bien placé, arrivée autonome facile. On a hésité à cause du minimum de trois nuits, mais finalement c’était parfait.'),
+  propertyReview('rev-024', 'prop25', 'user-015', 4, '2026-06-03T08:30:00Z',
+    'Logement fonctionnel et bien tenu, idéal pour des rendez-vous à Genève. Rez-de-chaussée un peu sombre. Échanges brefs mais efficaces avec le propriétaire.'),
+
+  // ── Reçus par Jean-Luc Hartmann ─────────────────────────────────────────
+  propertyReview('rev-025', 'prop27', 'user-011', 5, '2026-02-18T10:00:00Z',
+    'Nous avons acheté notre villa d’Hauterive par Hartmann Immobilier. Estimation juste, visites bien organisées, et un dossier fiscal impeccable — ce qui, venant d’une ancienne fiduciaire, n’est pas un petit compliment.'),
+  propertyReview('rev-026', 'prop26', 'user-009', 5, '2026-04-04T07:45:00Z',
+    'Logé ici pendant les relevés de l’immeuble de la rue des Parcs. Bien situé, calme, propre. Pratique de pouvoir travailler sur la table du séjour.'),
+
+  // ── Reçus par Mirjana Kovač ─────────────────────────────────────────────
+  propertyReview('rev-027', 'prop12', 'user-001', 5, '2026-07-01T09:00:00Z',
+    'Venu voir comment une hôte expérimentée prépare un logement : tout est pensé, du guide d’arrivée aux prises près du lit. Vue lac superbe. J’ai pris des notes.'),
+  propertyReview('rev-028', 'prop12', 'user-006', 5, '2026-09-05T15:20:00Z',
+    'Merci Mirjana, tout était propre et les enfants ont adoré le lac. Est-ce que c’est normal de laisser une caution pour les clés ? Sinon parfait, on reviendra.'),
+  propertyReview('rev-029', 'prop6', 'user-014', 4, '2026-07-22T10:40:00Z',
+    'Idéal pour le Jazz : on rentre à pied par les quais. Studio petit mais bien rangé. La terrasse donne sur la rue, un peu bruyant le samedi soir.'),
 ];
 
-// ─── SUGGESTED USERS, TRENDING, STORIES ─────────────────────────────────────
-
-export interface SuggestedUser {
-  id: string;
-  name: string;
-  avatar: string;
-  role: string;
-  mutualConnections: number;
+/** Les avis reçus par une personne, du plus récent au plus ancien. */
+export function reviewsReceivedBy(personId: string): Review[] {
+  return mockReviews
+    .filter((r) => r.recipientId === personId)
+    .slice()
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-export const suggestedUsers: SuggestedUser[] = [
-  { id: 'user-013', name: 'Omar Benjelloun', avatar: users[12].avatar, role: 'Promoteur', mutualConnections: 8 },
-  { id: 'user-014', name: 'Elena Papadopoulos', avatar: users[13].avatar, role: 'H\u00f4tesse', mutualConnections: 5 },
-  { id: 'user-016', name: 'Carlos Rivera', avatar: users[15].avatar, role: 'H\u00f4te & Photographe', mutualConnections: 3 },
-  { id: 'user-009', name: 'Thomas M\u00fcller', avatar: users[8].avatar, role: 'Architecte', mutualConnections: 12 },
-  { id: 'user-010', name: 'Fatima Zahra', avatar: users[9].avatar, role: 'Apporteuse d\u2019affaires', mutualConnections: 4 },
-];
-
-export interface TrendingHashtag {
-  tag: string;
-  count: number;
+/** Les avis rédigés par une personne. */
+export function reviewsWrittenBy(personId: string): Review[] {
+  return mockReviews.filter((r) => r.author.id === personId);
 }
 
-export const trendingHashtags: TrendingHashtag[] = [
-  { tag: '#ImmobilierSuisse', count: 1240 },
-  { tag: '#InvestissementLocatif', count: 980 },
-  { tag: '#Proptech', count: 856 },
-  { tag: '#Marrakech', count: 742 },
-  { tag: '#VillaDeLuxe', count: 698 },
-  { tag: '#GoldenVisa', count: 534 },
-  { tag: '#LocationCT', count: 489 },
-  { tag: '#R\u00e9novation', count: 423 },
-  { tag: '#Dubai', count: 387 },
-  { tag: '#Minergie', count: 312 },
-];
-
-export interface StoryUser {
-  id: string;
-  name: string;
-  avatar: string;
-  hasNewStory: boolean;
+/** Note moyenne arrondie au dixième (0 sans avis). */
+export function averageRating(reviews: readonly { rating: number }[]): number {
+  if (reviews.length === 0) return 0;
+  return Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10;
 }
 
-export const storyUsers: StoryUser[] = [
-  { id: 'user-001', name: 'Léo', avatar: users[0].avatar, hasNewStory: true },
-  { id: 'user-002', name: 'Sophie', avatar: users[1].avatar, hasNewStory: true },
-  { id: 'user-004', name: 'Amina', avatar: users[3].avatar, hasNewStory: true },
-  { id: 'user-006', name: 'Yasmin', avatar: users[5].avatar, hasNewStory: false },
-  { id: 'user-005', name: 'Lucas', avatar: users[4].avatar, hasNewStory: true },
-  { id: 'user-014', name: 'Elena', avatar: users[13].avatar, hasNewStory: false },
-  { id: 'user-015', name: 'Jean-Luc', avatar: users[14].avatar, hasNewStory: true },
-  { id: 'user-013', name: 'Omar', avatar: users[12].avatar, hasNewStory: false },
-];
+// ─── LES COMPTEURS DÉRIVÉS ──────────────────────────────────────────────────
 
-// ─── FAVORITES ──────────────────────────────────────────────────────────────
-
-export const favoritePropertyIds: string[] = ['prop1', 'prop3', 'prop5', 'prop6', 'prop12'];
-export const favoritePostIds: string[] = ['post-001', 'post-003', 'post-005', 'post-007'];
-
-// ─── APPOINTMENTS ───────────────────────────────────────────────────────────
-
-export interface Appointment {
-  id: string;
-  title: string;
-  propertyId?: string;
-  propertyTitle?: string;
-  clientName: string;
-  date: string;
-  time: string;
-  type: 'visite' | 'signature' | 'estimation';
+/* Calculés une fois, à l'import, à partir des données ci-dessus. Les objets
+   `User` sont partagés par référence (hôtes des biens, formateurs, auteurs
+   d'avis) : tamponner la personne met à jour tous les écrans d'un coup. */
+function stampDerivedStats(): void {
+  for (const u of users) {
+    const received = mockReviews.filter((r) => r.recipientId === u.id);
+    u.stats.properties = properties.filter((p) => p.host.id === u.id).length;
+    u.stats.reviews = received.length;
+    u.stats.rating = averageRating(received);
+    u.stats.followers = followerCount(u.id);
+    u.stats.following = followingCount(u.id);
+  }
+  for (const p of properties) {
+    const rs = mockReviews.filter((r) => r.propertyId === p.id);
+    p.reviewCount = rs.length;
+    p.rating = averageRating(rs);
+  }
+  for (const f of formations) {
+    f.rating = averageRating(mockReviews.filter((r) => r.subject.kind === 'formation' && r.subject.id === f.id));
+  }
 }
-
-export const upcomingAppointments: Appointment[] = [
-  {
-    id: 'apt-001',
-    title: 'Visite appartement Neuch\u00e2tel',
-    propertyId: 'prop7',
-    propertyTitle: '3.5 pi\u00e8ces lumineux au bord du lac',
-    clientName: 'Cl\u00e9mence Moreau',
-    date: '2026-04-05',
-    time: '10:00',
-    type: 'visite',
-  },
-  {
-    id: 'apt-002',
-    title: 'Signature acte de vente',
-    propertyId: 'prop1',
-    propertyTitle: 'Magnifique 4.5 pi\u00e8ces avec vue sur le Lac L\u00e9man',
-    clientName: 'Marc Favre',
-    date: '2026-04-10',
-    time: '14:00',
-    type: 'signature',
-  },
-  {
-    id: 'apt-003',
-    title: 'Estimation villa',
-    clientName: 'Jean-Luc Hartmann',
-    date: '2026-04-12',
-    time: '09:00',
-    type: 'estimation',
-  },
-];
+stampDerivedStats();
 
 // ─── HELPER FUNCTIONS ───────────────────────────────────────────────────────
 
@@ -2975,19 +1464,21 @@ export function getPropertyById(id: string): Property | undefined {
   return properties.find((p) => p.id === id);
 }
 
+/** Les biens encore disponibles : un bien vendu (`soldTo`) n'est plus proposé. */
+export function isAvailable(p: Property): boolean {
+  return !p.soldTo;
+}
+
 export function getSimilarProperties(property: Property): Property[] {
   // Priorité : même type de transaction, puis même pays, puis même type de bien
-  const sameTransaction = properties.filter(
-    (p) => p.id !== property.id && p.transactionType === property.transactionType
-  );
+  const pool = properties.filter((p) => p.id !== property.id && isAvailable(p));
+  const sameTransaction = pool.filter((p) => p.transactionType === property.transactionType);
   if (sameTransaction.length >= 3) return sameTransaction.slice(0, 4);
   // Fallback : même pays
-  const sameCountry = properties.filter(
-    (p) => p.id !== property.id && p.location.country === property.location.country
-  );
+  const sameCountry = pool.filter((p) => p.location.country === property.location.country);
   if (sameCountry.length >= 2) return sameCountry.slice(0, 4);
   // Dernier fallback : n'importe quel bien différent
-  return properties.filter((p) => p.id !== property.id).slice(0, 4);
+  return pool.slice(0, 4);
 }
 
 export function getReviewsForProperty(propertyId: string): Review[] {

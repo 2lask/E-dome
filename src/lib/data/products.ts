@@ -88,10 +88,13 @@ export interface Product {
 
 /* ── Vendeurs ────────────────────────────────────────────────────────────── */
 
+/* Les vendeurs de la boutique sont des enseignes, pas des personnes : leur
+   vignette est une photo de produit, jamais un portrait (D16 — aucun visage
+   réel ; tout visage de personne vient de l'annuaire). */
 const VENDORS = {
   "maison-leman": {
     name: "Maison Léman",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=60&h=60&fit=crop",
     city: "Lausanne",
     rating: 4.8,
     reviews: 412,
@@ -101,7 +104,7 @@ const VENDORS = {
   },
   "studio-verbier": {
     name: "Studio Verbier",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=60&h=60&fit=crop",
     city: "Verbier",
     rating: 4.6,
     reviews: 218,
@@ -111,7 +114,7 @@ const VENDORS = {
   },
   "bois-et-co": {
     name: "Bois & Co.",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=60&h=60&fit=crop",
     city: "Bulle",
     rating: 4.9,
     reviews: 318,
@@ -121,7 +124,7 @@ const VENDORS = {
   },
   "cuisinea-geneva": {
     name: "Cuisinea Geneva",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=60&h=60&fit=crop",
     city: "Genève",
     rating: 4.7,
     reviews: 92,
@@ -131,7 +134,7 @@ const VENDORS = {
   },
   "plumbing-pro": {
     name: "Plumbing Pro",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=60&h=60&fit=crop",
     city: "Zurich",
     rating: 4.5,
     reviews: 156,
@@ -141,7 +144,7 @@ const VENDORS = {
   },
   electromax: {
     name: "ElectroMax",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=60&h=60&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=60&h=60&fit=crop",
     city: "Bâle",
     rating: 4.4,
     reviews: 184,
@@ -161,7 +164,7 @@ const VENDORS = {
   },
   tilemaster: {
     name: "TileMaster",
-    avatar: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=60&h=60&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=60&h=60&fit=crop",
     city: "Sion",
     rating: 4.8,
     reviews: 286,
@@ -171,7 +174,7 @@ const VENDORS = {
   },
   "atelier-argile": {
     name: "Atelier Argile",
-    avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=60&h=60&fit=crop",
+    avatar: "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=60&h=60&fit=crop",
     city: "Fribourg",
     rating: 4.9,
     reviews: 76,

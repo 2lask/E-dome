@@ -10,7 +10,9 @@ import {
   getFormationById,
   getSimilarFormations,
   formations as allFormations,
+  mockReviews,
 } from "@/lib/mock-data";
+import { frDate } from "@/lib/demo/showcase";
 import type { Formation } from "@/lib/types";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
@@ -31,48 +33,25 @@ function resolveFormation(id: string): Formation | undefined {
   return getFormationById(id);
 }
 
-/* ─── Formation reviews (per-formation, not from mock-data property reviews) */
+/* ─── Avis de formation ─────────────────────────────────────────────────────
 
-const FORMATION_REVIEWS: Record<string, { id: string; author: string; avatar: string; rating: number; comment: string; date: string }[]> = {
-  "form-001": [
-    { id: "fr1", author: "Pierre Müller", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop", rating: 5, comment: "Formation exceptionnelle. Très complète et bien structurée. J'ai pu acheter mon premier bien 3 mois après.", date: "2025-11-15" },
-    { id: "fr2", author: "Marie Laurent", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 5, comment: "Léo explique de manière très claire et pratique. Je recommande vivement.", date: "2025-10-22" },
-    { id: "fr3", author: "Lucas Favre", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 4, comment: "Bon contenu, j'aurais aimé plus d'exemples concrets sur le marché romand.", date: "2025-09-30" },
-  ],
-  "form-002": [
-    { id: "fr4", author: "Nathalie Blanc", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=60&h=60&fit=crop", rating: 5, comment: "Amina maîtrise parfaitement la location courte durée. Ses conseils sur le pricing dynamique m'ont permis d'augmenter mes revenus de 40%.", date: "2025-12-05" },
-    { id: "fr5", author: "Jean-Luc Hartmann", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=60&h=60&fit=crop", rating: 5, comment: "Formation très pratique avec des outils concrets. Le module sur l'automatisation est un vrai game-changer.", date: "2025-11-20" },
-  ],
-  "form-003": [
-    { id: "fr6", author: "Marc Favre", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 5, comment: "Sophie est une négociatrice hors pair. Ses techniques m'ont aidé à vendre ma villa 15% au-dessus du prix estimé.", date: "2025-10-10" },
-    { id: "fr7", author: "Elena P.", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop", rating: 4, comment: "Très bon contenu, surtout le module sur la psychologie de l'acheteur. Niveau avancé justifié.", date: "2025-09-18" },
-  ],
-  "form-004": [
-    { id: "fr8", author: "Alexandre Petit", avatar: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=60&h=60&fit=crop", rating: 5, comment: "Yasmin connaît le marché du luxe comme personne. Formation indispensable pour qui veut se positionner sur le haut de gamme.", date: "2025-12-12" },
-  ],
-  "form-005": [
-    { id: "fr9", author: "Pierre Gonçalves", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=60&h=60&fit=crop", rating: 5, comment: "Thomas m'a permis de comprendre les subtilités de la rénovation énergétique. Mon projet Minergie avance grâce à cette formation.", date: "2025-11-28" },
-    { id: "fr10", author: "Clémence Moreau", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 4, comment: "Bonne formation sur la rénovation, le module sur les subventions est très utile.", date: "2025-10-15" },
-  ],
-  "form-006": [
-    { id: "fr11", author: "Carlos Rivera", avatar: "https://images.unsplash.com/photo-1548449112-96a38a643324?w=60&h=60&fit=crop", rating: 5, comment: "Lucas maîtrise parfaitement le marketing digital immobilier. Mes annonces génèrent 3x plus de leads depuis cette formation.", date: "2025-12-01" },
-  ],
-  "form-007": [
-    { id: "fr12", author: "Sophie Durand", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop", rating: 5, comment: "Nathalie est une experte juridique remarquable. Cette formation est essentielle pour tout professionnel de l'immobilier en Suisse.", date: "2025-11-05" },
-  ],
-  "form-008": [
-    { id: "fr13", author: "Omar Benjelloun", avatar: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=60&h=60&fit=crop", rating: 5, comment: "Carlos m'a appris à photographier mes biens comme un pro. Le module drone est fantastique.", date: "2025-12-08" },
-  ],
-  "form-009": [
-    { id: "fr14", author: "Fatima Zahra", avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=60&h=60&fit=crop", rating: 4, comment: "Bonne introduction au marché thaïlandais. Les études de cas réels sont très instructives.", date: "2025-11-18" },
-  ],
-  "form-010": [
-    { id: "fr15", author: "Marc Favre", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 5, comment: "Yasmin connaît Dubaï sur le bout des doigts. Formation incontournable pour investir aux Émirats.", date: "2025-12-15" },
-  ],
-  "form-011": [
-    { id: "fr16", author: "Jean-Luc Hartmann", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=60&h=60&fit=crop", rating: 5, comment: "Le bootcamp de Fatima est intense mais très efficace. J'ai signé mes premiers deals d'apporteur en 30 jours.", date: "2025-11-30" },
-  ],
-};
+   Les avis viennent de `mockReviews` : chacun est écrit par une personne de
+   l'annuaire qui a RÉELLEMENT suivi la formation (inscription à son nom au
+   journal, invariant 18). Plus de visages ni de noms inventés. */
+function formationReviews(formationId: string) {
+  return mockReviews
+    .filter((r) => r.subject.kind === "formation" && r.subject.id === formationId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map((r) => ({
+      id: r.id,
+      authorId: r.author.id,
+      author: `${r.author.firstName} ${r.author.lastName}`,
+      avatar: r.author.avatar,
+      rating: r.rating,
+      comment: r.comment,
+      date: frDate(r.createdAt),
+    }));
+}
 
 const LEVEL_LABELS: Record<string, string> = { debutant: "Débutant", intermediaire: "Intermédiaire", avance: "Avancé" };
 
@@ -124,7 +103,7 @@ function FormationDetail({ formation }: { formation: Formation }) {
   const { formatPrice } = useApp();
 
   const instructor = formation.instructor;
-  const reviews = FORMATION_REVIEWS[formation.id] || [];
+  const reviews = formationReviews(formation.id);
   const similarFormations = getSimilarFormations(formation);
 
   const [openModules, setOpenModules] = useState<Set<string>>(new Set([formation.modules[0]?.id]));
@@ -294,13 +273,16 @@ function FormationDetail({ formation }: { formation: Formation }) {
             <section>
               <h2 className="text-xl font-semibold mb-4">Avis des étudiants</h2>
               <div className="space-y-4">
+                {reviews.length === 0 && (
+                  <p className="text-sm text-[var(--text-muted)]">Aucun avis pour l'instant.</p>
+                )}
                 {reviews.map((review) => (
                   <div key={review.id} className="p-4 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl">
                     <div className="flex items-center gap-3 mb-2">
                       <img src={review.avatar} alt={review.author} className="w-10 h-10 rounded-full object-cover" />
                       <div>
-                        <h4 className="font-medium text-sm">{review.author}</h4>
-                        <span className="text-xs text-[var(--text-muted)]">{new Date(review.date).toLocaleDateString("fr-CH")}</span>
+                        <Link href={`/profil/${review.authorId}`} className="font-medium text-sm hover:underline">{review.author}</Link>
+                        <span className="block text-xs text-[var(--text-muted)]">{review.date}</span>
                       </div>
                       <div className="ml-auto"><Stars rating={review.rating} /></div>
                     </div>

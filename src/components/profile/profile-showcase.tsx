@@ -25,7 +25,20 @@ export interface ProfileProduit { id: string; title: string; cover: string; pric
 export interface ProfileFormation { id: string; title: string; cover: string; price: number; currency: string; students: number; rating: number }
 export interface ProfileLive { id: string; title: string; cover: string; status: "scheduled" | "replay"; scheduledAt?: string; expectedViewers?: number; replayViews?: number }
 export interface ProfileService { id: string; title: string; cover: string; price: number; currency: string; unit: string }
-export interface ProfileAvis { id: string; author: string; rating: number; text: string; date: string }
+export interface ProfileAvis {
+  id: string;
+  author: string;
+  /** Auteur à l'annuaire : son nom ouvre sa fiche, son visage vient de l'annuaire. */
+  authorId?: string;
+  authorAvatar?: string;
+  /** Ce sur quoi porte l'avis (« Séjour · … », « Formation · … »). */
+  about?: string;
+  rating: number;
+  text: string;
+  date: string;
+  /** Réponse publique de la personne évaluée. */
+  reply?: { author: string; text: string; date: string };
+}
 
 export interface ProfileData {
   posts: SocialPost[];
@@ -280,16 +293,34 @@ export function ProfileShowcase({
         <ul className="space-y-3">
           {data.avis.map((r) => (
             <li key={r.id} className="rounded-2xl p-5 bg-[var(--card)] border border-[var(--card-border)]">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-semibold text-[var(--foreground)]">{r.author}</span>
+              <div className="flex items-center justify-between mb-1 gap-2">
+                {r.authorId ? (
+                  <Link href={`/profil/${r.authorId}`} className="flex min-w-0 items-center gap-2 hover:underline">
+                    {r.authorAvatar && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={r.authorAvatar} alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
+                    )}
+                    <span className="truncate text-sm font-semibold text-[var(--foreground)]">{r.author}</span>
+                  </Link>
+                ) : (
+                  <span className="text-sm font-semibold text-[var(--foreground)]">{r.author}</span>
+                )}
                 <div className="flex items-center gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} size={12} style={{ color: i < r.rating ? "var(--rating)" : "var(--card-border)", fill: i < r.rating ? "var(--rating)" : "transparent" }} />
                   ))}
                 </div>
               </div>
+              {r.about && <p className="mb-1 text-[11.5px] text-[var(--text-muted)]">{r.about}</p>}
               <p className="text-sm leading-relaxed text-[var(--text-secondary)]">{r.text}</p>
               <div className="text-[11px] mt-2 text-[var(--text-muted)]">{r.date}</div>
+              {r.reply && (
+                <div className="mt-3 rounded-xl border-l-2 border-[var(--primary)] bg-[var(--hover-bg)] px-3 py-2">
+                  <p className="text-[12px] font-semibold text-[var(--foreground)]">Réponse de {r.reply.author}</p>
+                  <p className="mt-0.5 text-[13px] leading-relaxed text-[var(--text-secondary)]">{r.reply.text}</p>
+                  <p className="mt-1 text-[11px] text-[var(--text-muted)]">{r.reply.date}</p>
+                </div>
+              )}
             </li>
           ))}
         </ul>

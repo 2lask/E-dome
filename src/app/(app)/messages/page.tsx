@@ -41,32 +41,34 @@ interface ConferenceParticipant {
   handRaised: boolean;
 }
 
+/* Tous les visages viennent de l'annuaire : soi, et deux invités réels (un
+   investisseur et une agente immobilière, deux profils typiques d'un deal). */
 const CONF_SELF = {
   id: DEMO_USER.id,
-  name: "Léo Martin",
-  role: "Apporteur",
-  avatar:
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop",
+  name: DEMO_USER.fullName,
+  role: "Hôte",
+  avatar: DEMO_USER.avatar,
 };
+
+const G_ENNIO = requirePerson("user-003");
+const G_CELINE = requirePerson("user-002");
 
 const CONF_EXTRA_GUESTS: Omit<ConferenceParticipant, "isSelf">[] = [
   {
-    id: "p-marc",
-    name: "Marc Dubois",
+    id: G_ENNIO.id,
+    name: `${G_ENNIO.firstName} ${G_ENNIO.lastName}`,
     role: "Investisseur",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop",
+    avatar: G_ENNIO.avatar,
     isHost: false,
     muted: false,
     cameraOff: false,
     handRaised: false,
   },
   {
-    id: "p-yasmin",
-    name: "Yasmin Al Falasi",
-    role: "Agent immobilier",
-    avatar:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=160&h=160&fit=crop",
+    id: G_CELINE.id,
+    name: `${G_CELINE.firstName} ${G_CELINE.lastName}`,
+    role: "Agence",
+    avatar: G_CELINE.avatar,
     isHost: false,
     muted: true,
     cameraOff: false,
@@ -82,8 +84,8 @@ interface ConferenceChatMessage {
 }
 
 const INITIAL_CONF_CHAT: ConferenceChatMessage[] = [
-  { author: "Marc Dubois", text: "Bonjour à tous, prêts à démarrer ?", time: "13:42" },
-  { author: "Yasmin Al Falasi", text: "Oui, j'ai préparé les chiffres.", time: "13:42" },
+  { author: "Ennio Bordoni", text: "Bonjour. On commence ?", time: "13:42" },
+  { author: "Céline Bovard", text: "Oui, j'ai préparé le dossier de Riex.", time: "13:42" },
 ];
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
@@ -104,33 +106,35 @@ const currentUserId = DEMO_USER.id;
    Ces conversations vivant dans un composant de page, l'invariant d'annuaire
    (import-time, dans demo/invariants.ts) ne peut pas les énumérer ; les ids
    ci-dessous sont donc garantis par `requirePerson` au chargement du module. */
-const P_SOPHIE = requirePerson("user-002"); // agente immobilière/hôte, Lausanne
-const P_CLEMENCE = requirePerson("user-012"); // cliente/investisseuse, Lausanne
-const P_JEANLUC = requirePerson("user-015"); // agence, Neuchâtel
-const P_AMINA = requirePerson("user-004"); // hôte/formatrice, Marrakech
-const P_PIERRE = requirePerson("user-007"); // hôte/apporteur, Lisbonne
+/* Les interlocuteurs, pris dans le casting des seize. Le contenu de ces fils
+   sera repris par le moteur d'interactions (chantier P2). */
+const P_SOPHIE = requirePerson("user-002"); // Céline Bovard, agente, Lutry
+const P_CLEMENCE = requirePerson("user-008"); // Clémence Jaquet, premier achat, Morges
+const P_JEANLUC = requirePerson("user-015"); // Jean-Luc Hartmann, agence, Neuchâtel
+const P_AMINA = requirePerson("user-016"); // Amina El Idrissi, formatrice, Marrakech
+const P_PIERRE = requirePerson("user-013"); // Mirjana Kovač, hôte, Montreux
 
 const mockConversations: Conversation[] = [
   {
     id: "c1",
     participant: P_SOPHIE,
     messages: [
-      { id: "m1", senderId: P_SOPHIE.id, content: "Bonjour Léo ! Je suis intéressée par le Chalet Alpin.", timestamp: "2026-03-31T10:00:00", read: true },
-      { id: "m2", senderId: currentUserId, content: "Bonjour Sophie ! Merci pour votre intérêt. Le chalet est disponible dès le 15 avril.", timestamp: "2026-03-31T10:05:00", read: true },
+      { id: "m1", senderId: P_SOPHIE.id, content: "Bonjour Léo ! Une cliente cherche un logement à Verbier en février. Votre appartement est libre ?", timestamp: "2026-03-31T10:00:00", read: true },
+      { id: "m2", senderId: currentUserId, content: "Bonjour Céline ! Merci. Il est libre la semaine du 14 février.", timestamp: "2026-03-31T10:05:00", read: true },
       { id: "m3", senderId: P_SOPHIE.id, content: "Parfait ! Quel est le tarif pour une semaine ?", timestamp: "2026-03-31T10:10:00", read: true },
-      { id: "m4", senderId: currentUserId, content: "Le tarif est de 1 800 CHF la semaine, petit-déjeuner inclus.", timestamp: "2026-03-31T10:15:00", read: true },
-      { id: "m5", senderId: P_SOPHIE.id, content: "Super, je voudrais réserver du 15 au 22 avril pour 4 personnes.", timestamp: "2026-04-01T08:30:00", read: false },
+      { id: "m4", senderId: currentUserId, content: "420 CHF la nuit, ménage compris.", timestamp: "2026-03-31T10:15:00", read: true },
+      { id: "m5", senderId: P_SOPHIE.id, content: "Parfait, je lui transmets. Quatre personnes, du 14 au 21.", timestamp: "2026-04-01T08:30:00", read: false },
     ],
     unreadCount: 1,
-    lastMessage: "Super, je voudrais réserver du 15 au 22 avril pour 4 personnes.",
+    lastMessage: "Parfait, je lui transmets. Quatre personnes, du 14 au 21.",
     isOnline: true,
   },
   {
     id: "c2",
     participant: P_CLEMENCE,
     messages: [
-      { id: "m6", senderId: P_CLEMENCE.id, content: "Bonjour, je cherche une villa avec piscine à Montreux.", timestamp: "2026-03-30T14:00:00", read: true },
-      { id: "m7", senderId: currentUserId, content: "Bonjour Clémence ! Je suis disponible pour organiser une visite. Quel créneau vous convient ?", timestamp: "2026-03-30T14:30:00", read: true },
+      { id: "m6", senderId: P_CLEMENCE.id, content: "Bonjour, désolée de la question… vous pensez que c'est le moment d'acheter un 3,5 pièces à Morges ?", timestamp: "2026-03-30T14:00:00", read: true },
+      { id: "m7", senderId: currentUserId, content: "Bonjour Clémence ! Je ne suis pas conseiller, mais je peux vous raconter mon premier achat. Un café samedi ?", timestamp: "2026-03-30T14:30:00", read: true },
       { id: "m8", senderId: P_CLEMENCE.id, content: "Samedi matin serait idéal, vers 10h.", timestamp: "2026-03-30T15:00:00", read: true },
       { id: "m9", senderId: currentUserId, content: "C'est noté ! Je vous envoie la confirmation par email.", timestamp: "2026-03-30T15:10:00", read: true },
     ],
@@ -142,8 +146,8 @@ const mockConversations: Conversation[] = [
     id: "c3",
     participant: P_JEANLUC,
     messages: [
-      { id: "m10", senderId: P_JEANLUC.id, content: "Bonjour Léo, je cherche un appartement pour 3 mois à Lausanne.", timestamp: "2026-03-29T09:00:00", read: true },
-      { id: "m11", senderId: currentUserId, content: "Bonjour Jean-Luc ! J'ai plusieurs biens disponibles en location moyenne durée.", timestamp: "2026-03-29T09:15:00", read: true },
+      { id: "m10", senderId: P_JEANLUC.id, content: "Bonjour Léo, un collaborateur cherche un logement pour 3 mois à Lausanne.", timestamp: "2026-03-29T09:00:00", read: true },
+      { id: "m11", senderId: currentUserId, content: "Bonjour Jean-Luc ! Mon studio de Sous-Gare peut se louer au mois.", timestamp: "2026-03-29T09:15:00", read: true },
       { id: "m12", senderId: P_JEANLUC.id, content: "Idéal, pouvez-vous m'envoyer les détails ?", timestamp: "2026-03-29T09:20:00", read: true },
       { id: "m13", senderId: currentUserId, content: "Bien sûr ! Je vous prépare une sélection personnalisée.", timestamp: "2026-03-29T09:25:00", read: true },
     ],
@@ -155,13 +159,13 @@ const mockConversations: Conversation[] = [
     id: "c4",
     participant: P_AMINA,
     messages: [
-      { id: "m14", senderId: P_AMINA.id, content: "Bonjour Léo ! Je cherche un apporteur pour un riad à Marrakech.", timestamp: "2026-04-02T11:00:00", read: true },
-      { id: "m15", senderId: currentUserId, content: "Bonjour Amina ! Je suis très intéressé. Quelles sont les conditions ?", timestamp: "2026-04-02T11:10:00", read: true },
-      { id: "m16", senderId: P_AMINA.id, content: "Commission 12%, tracking 30j. Bien à 480 000 CHF.", timestamp: "2026-04-02T11:15:00", read: false },
-      { id: "m17", senderId: currentUserId, content: "Parfait, j'active mon lien dès maintenant.", timestamp: "2026-04-02T11:20:00", read: true },
+      { id: "m14", senderId: P_AMINA.id, content: "Bonjour Léo ! Merci pour ton inscription à la formation. Tu as pu voir le module 2 ?", timestamp: "2026-04-02T11:00:00", read: true },
+      { id: "m15", senderId: currentUserId, content: "Oui, merci ! J'applique les prix d'événement sur Verbier cet hiver.", timestamp: "2026-04-02T11:10:00", read: true },
+      { id: "m16", senderId: P_AMINA.id, content: "Super. Envoie-moi ton calendrier de février, je te dis ce que j'en pense.", timestamp: "2026-04-02T11:15:00", read: false },
+      { id: "m17", senderId: currentUserId, content: "Je te l'envoie ce soir.", timestamp: "2026-04-02T11:20:00", read: true },
     ],
     unreadCount: 1,
-    lastMessage: "Parfait, j'active mon lien dès maintenant.",
+    lastMessage: "Je te l'envoie ce soir.",
     isOnline: false,
   },
   /* ─── Groupes (chat multi-membres) ────────────────────────────
@@ -171,35 +175,35 @@ const mockConversations: Conversation[] = [
   {
     id: "g1",
     type: "group",
-    name: "Hôtes Verbier 2026",
+    name: "Hôtes de l'arc lémanique",
     groupAvatar:
       "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=200&h=200&fit=crop",
     participant: P_SOPHIE,
     members: [P_SOPHIE, P_JEANLUC, P_PIERRE],
     messages: [
       { id: "gm1", senderId: P_JEANLUC.id, content: "Bonjour à tous ! Je propose qu'on se synchronise sur les disponibilités fin avril.", timestamp: "2026-04-03T09:00:00", read: true },
-      { id: "gm2", senderId: P_PIERRE.id, content: "Mon chalet est libre du 18 au 25.", timestamp: "2026-04-03T09:15:00", read: true },
+      { id: "gm2", senderId: P_PIERRE.id, content: "À Montreux, je suis complète du 18 au 25.", timestamp: "2026-04-03T09:15:00", read: true },
       { id: "gm3", senderId: currentUserId, content: "Idem chez moi. Je peux héberger un overflow si besoin.", timestamp: "2026-04-03T09:20:00", read: true },
       { id: "gm4", senderId: P_SOPHIE.id, content: "Super, on prépare un tableau partagé ?", timestamp: "2026-04-03T09:30:00", read: false },
     ],
     unreadCount: 1,
-    lastMessage: "Sophie: Super, on prépare un tableau partagé ?",
+    lastMessage: "Céline: Super, on prépare un tableau partagé ?",
     isOnline: true,
   },
   {
     id: "g2",
     type: "group",
-    name: "Investisseurs Suisse Romande",
+    name: "Formation pricing — promo hiver",
     groupAvatar:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=200&fit=crop",
     participant: P_CLEMENCE,
     members: [P_CLEMENCE, P_AMINA],
     messages: [
-      { id: "gm10", senderId: P_CLEMENCE.id, content: "On se voit ce vendredi pour l'AG annuelle ?", timestamp: "2026-04-02T17:00:00", read: true },
-      { id: "gm11", senderId: currentUserId, content: "Présent. J'apporte les chiffres du Q1.", timestamp: "2026-04-02T17:05:00", read: true },
+      { id: "gm10", senderId: P_CLEMENCE.id, content: "On fait le point sur nos prix de février vendredi ?", timestamp: "2026-04-02T17:00:00", read: true },
+      { id: "gm11", senderId: currentUserId, content: "Présent. J'apporte mes chiffres de Verbier.", timestamp: "2026-04-02T17:05:00", read: true },
     ],
     unreadCount: 0,
-    lastMessage: "Vous: Présent. J'apporte les chiffres du Q1.",
+    lastMessage: "Vous: Présent. J'apporte mes chiffres de Verbier.",
     isOnline: false,
   },
 ];
@@ -799,11 +803,9 @@ function MessagesPageInner() {
               />
             </div>
             <div className="max-h-64 overflow-y-auto px-2 pb-4">
-              {[
-                { id: "u10", firstName: "Alain", lastName: "Bernard", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop", city: "Berne" },
-                { id: "u11", firstName: "Clara", lastName: "Fischer", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop", city: "Bâle" },
-                { id: "u12", firstName: "David", lastName: "Müller", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop", city: "Lucerne" },
-              ]
+              {allUsers
+                .filter((u) => u.id !== currentUserMock.id && !conversations.some((c) => c.participant.id === u.id))
+                .map((u) => ({ id: u.id, firstName: u.firstName, lastName: u.lastName, avatar: u.avatar, city: u.city }))
                 .filter((u) =>
                   `${u.firstName} ${u.lastName}`.toLowerCase().includes(newConvSearch.toLowerCase())
                 )
@@ -813,14 +815,8 @@ function MessagesPageInner() {
                     onClick={() => {
                       const newConv: Conversation = {
                         id: `c-new-${Date.now()}`,
-                        participant: {
-                          id: user.id, firstName: user.firstName, lastName: user.lastName,
-                          email: `${user.firstName.toLowerCase()}@e-dome.ch`,
-                          avatar: user.avatar, city: user.city, country: "Suisse",
-                          roles: ["particulier"], activeRole: "particulier",
-                          stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 },
-                          bio: "",
-                        },
+                        /* La vraie personne de l'annuaire, pas une copie aux stats nulles. */
+                        participant: requirePerson(user.id),
                         messages: [],
                         unreadCount: 0,
                         lastMessage: "",

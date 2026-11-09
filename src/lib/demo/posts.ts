@@ -1,6 +1,7 @@
 import { properties as ALL_PROPERTIES, formations as ALL_FORMATIONS } from "@/lib/mock-data";
-import { CURRENT_USER as DEMO_USER, OWNED_PROPERTY_IDS } from "@/lib/demo/identity";
-import { requirePerson } from "@/lib/demo/directory";
+import { CURRENT_USER as DEMO_USER } from "@/lib/demo/identity";
+import { DIRECTORY, requirePerson } from "@/lib/demo/directory";
+import { followingOf } from "@/lib/demo/social";
 import { DEMO_TODAY } from "@/lib/demo/clock";
 import { buildObjectAffiliate } from "@/lib/referral-links";
 import type { User, SocialPost, Comment, Property } from "@/lib/types";
@@ -23,27 +24,7 @@ import type { User, SocialPost, Comment, Property } from "@/lib/types";
    « Co-fondateur E-Dome » au lieu de « Fondateur », 12 400 abonnes, 38 biens
    et 12,4 millions de francs de revenu cumule. Ces chiffres se lisaient comme
    une traction de la plateforme, puisque la personne EST la plateforme. */
-export const U_LEO: User = {
-  id: DEMO_USER.id,
-  firstName: DEMO_USER.firstName,
-  lastName: DEMO_USER.lastName,
-  email: DEMO_USER.email,
-  avatar: DEMO_USER.avatar,
-  city: DEMO_USER.city,
-  country: DEMO_USER.country,
-  roles: [...DEMO_USER.roles],
-  activeRole: "hote",
-  stats: {
-    followers: DEMO_USER.stats.followers,
-    following: DEMO_USER.stats.following,
-    properties: OWNED_PROPERTY_IDS.length,
-    reviews: DEMO_USER.stats.reviewsCount,
-    rating: DEMO_USER.stats.rating,
-    transactions: 19,
-    revenue: 0,
-  },
-  bio: DEMO_USER.about,
-};
+export const U_LEO: User = requirePerson(DEMO_USER.id);
 
 /* Compte de la plateforme. Il n'existe que pour le post épinglé d'accueil.
 
@@ -71,32 +52,23 @@ export const U_EDOME: User = {
   bio: "Compte officiel de la plateforme.",
 };
 
-/* Les auteurs du fil sont désormais de VRAIES personnes de l'annuaire.
-
-   Ces six constantes portaient jadis des identités inventées, avec des ids
-   (`u1`…`u-yasmin`) qui n'existaient nulle part : cliquer sur l'auteur d'un
-   post menait à « Profil introuvable ». Chacune résout maintenant vers une
-   personne existante de `users[]`, par id — choisie par prénom, rôle et ville :
-
-     U_SOPHIE  → user-002  Sophie Durand      (Lausanne, agence/hôte)
-     U_MARC    → user-003  Marc Favre         (Genève, particulier investisseur/apporteur)
-     U_JEANLUC → user-015  Jean-Luc Hartmann  (Neuchâtel, agence)
-     U_AMIRA   → user-013  Omar Benjelloun    (Marrakech, promoteur/hôte)
-     U_THOMAS  → user-009  Thomas Müller       (Lausanne, architecte, Minergie)
-     U_YASMIN  → user-006  Yasmin Al Maktoum  (Dubaï, agence, off-market luxe)
-     U_AMINA   → user-004  Amina El Idrissi   (Marrakech, hôte/formatrice)
-
-   Les sept ids sont distincts. Le TEXTE de certains commentaires nomme encore
-   l'ancienne identité inventée (« Bravo Amira ») : c'est cosmétique et sera
-   repris à l'étape 4. `requirePerson` échoue à la compilation si un de ces ids
-   disparaissait de l'annuaire. */
-export const U_SOPHIE = requirePerson("user-002");
-export const U_MARC = requirePerson("user-003");
-export const U_JEANLUC = requirePerson("user-015");
-export const U_AMIRA = requirePerson("user-013");
-export const U_THOMAS = requirePerson("user-009");
-export const U_AMINA = requirePerson("user-004");
-export const U_YASMIN = requirePerson("user-006");
+/* Les auteurs du fil sont de VRAIES personnes de l'annuaire, choisies dans le
+   casting des seize (analyse2/casting.md). Le contenu du fil sera réécrit au
+   chantier P2bis (« le fil vivant ») ; ici, les posts ont été ré-attribués à la
+   personne du casting qui pouvait les écrire, et ceux dont le sujet n'existe
+   plus (Dubaï, Zurich, Lugano, Crans-Montana, riad à vendre) ont été retirés.
+   `requirePerson` échoue au chargement si un de ces ids disparaissait. */
+export const U_CELINE = requirePerson("user-002"); // agente indépendante, Lutry
+export const U_ENNIO = requirePerson("user-003"); // investisseur, Genève
+export const U_NIKOLA = requirePerson("user-005"); // photographe, Yverdon
+export const U_ANA = requirePerson("user-006"); // cherche à louer, Renens
+export const U_CLEMENCE = requirePerson("user-008"); // premier achat, Morges
+export const U_RETO = requirePerson("user-009"); // architecte, Fribourg
+export const U_ELENA = requirePerson("user-010"); // home staging, Vevey
+export const U_SANDRINE = requirePerson("user-011"); // formatrice fiscalité, Neuchâtel
+export const U_MIRJANA = requirePerson("user-013"); // hôte, Montreux
+export const U_JEANLUC = requirePerson("user-015"); // Hartmann Immobilier SA
+export const U_AMINA = requirePerson("user-016"); // formatrice, Marrakech
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -208,16 +180,16 @@ export const VIDEO_POSTS: SocialPost[] = [
   },
   /* ── Jean-Luc Hartmann (user-015) — patron d'agence à Neuchâtel ──────────
      Ses deux posts de l'étape 3 : un mandat conclu (avec son bien réel prop27)
-     et une lecture du marché neuchâtelois. Commentaires croisés avec Sophie et
-     Marc — le point « communauté » : les trois profils se répondent. */
+     et une lecture du marché neuchâtelois. Commentaires croisés avec Céline et
+     Ennio — le point « communauté » : les trois profils se répondent. */
   {
     id: "p-jl-1", author: U_JEANLUC,
     content: "Mandat conclu — villa individuelle à Hauterive vendue en six semaines\n\nVue lac, jardin arboré, 210 m². Estimation juste dès le départ, deux visites ciblées, signature sereine chez le notaire. C'est le métier qu'on aime chez Hartmann Immobilier depuis 20 ans. #neuchâtel #vente #mandat",
     media: [clip(24)], type: "post", likes: 176, location: "Neuchâtel, Suisse",
     createdAt: hAgo(4),
     comments: mkComments("p-jl-1", [
-      { author: U_SOPHIE, content: "Bravo Jean-Luc ! Six semaines sur ce segment, c'est du beau travail.", h: 3, likes: 14 },
-      { author: U_MARC, content: "Belle rotation. Le littoral neuchâtelois reste sous-coté à mon sens.", h: 2, likes: 9 },
+      { author: U_CELINE, content: "Bravo Jean-Luc ! Six semaines sur ce segment, c'est du beau travail.", h: 3, likes: 14 },
+      { author: U_ENNIO, content: "Belle rotation. Le littoral neuchâtelois reste sous-coté à mon sens.", h: 2, likes: 9 },
     ]),
     property: propRef("prop27"),
   },
@@ -227,81 +199,61 @@ export const VIDEO_POSTS: SocialPost[] = [
     media: [], type: "post", likes: 243, location: "Neuchâtel, Suisse",
     createdAt: hAgo(20),
     comments: mkComments("p-jl-2", [
-      { author: U_MARC, content: "Analyse posée et utile. La stabilisation crée des points d'entrée intéressants.", h: 18, likes: 21 },
-      { author: U_SOPHIE, content: "Même tendance sur l'arc lémanique haut de gamme. Merci pour le partage.", h: 16, likes: 12 },
+      { author: U_ENNIO, content: "Analyse posée et utile. La stabilisation crée des points d'entrée intéressants.", h: 18, likes: 21 },
+      { author: U_CELINE, content: "Même tendance sur l'arc lémanique haut de gamme. Merci pour le partage.", h: 16, likes: 12 },
     ]),
   },
   {
-    id: "p2", author: U_SOPHIE,
-    content: "Visite express de mon appart 135 m² avec vue sur le Léman\n\nBelle luminosité, parquet d'origine, cuisine refaite l'an dernier. Disponible à la vente — DM si intéressé. #lausanne #appartement #vente",
-    media: [clip(2)], type: "post", likes: 312, location: "Lausanne, Suisse",
+    id: "p2", author: U_CELINE,
+    content: "Vendu — le 4,5 pièces vue lac de Lutry a trouvé son acquéreur\n\nSept semaines entre la mise en ligne et la signature. Merci à Nikola pour les photos et à Elena pour la mise en scène : la lumière du matin dans la cuisine a fait le reste. #lutry #lavaux #vendu",
+    media: [clip(2)], type: "post", likes: 312, location: "Lutry, Suisse",
     createdAt: hAgo(5),
     comments: mkComments("p2", [
-      { author: U_MARC, content: "La vue lac est un argument de vente redoutable", h: 4, likes: 18 },
-      { author: U_THOMAS, content: "Le standing est superbe. Tu acceptes les visites week-end ?", h: 2, likes: 6 },
-      { author: U_JEANLUC, content: "Belle mise en valeur, Sophie. Ce segment de standing part vite en ce moment.", h: 1, likes: 8 },
+      { author: U_ENNIO, content: "Sept semaines. Conforme à ce qui était annoncé.", h: 4, likes: 18 },
+      { author: U_NIKOLA, content: "merci celine, top collab", h: 2, likes: 6 },
+      { author: U_JEANLUC, content: "Belle mise en valeur, Céline. Ce segment part vite en ce moment.", h: 1, likes: 8 },
     ]),
     property: propRef("prop1"),
   },
-  /* Deuxième post de Sophie (étape 3) : une observation de marché lémanique,
+  /* Deuxième post de Céline : une observation de marché lémanique,
      à côté de sa mise en vente (p2). Ton d'agente immobilière : factuel, pas
-     auto-promotionnel. Commentaires croisés avec Marc et Jean-Luc. */
+     auto-promotionnel. Commentaires croisés avec Ennio et Jean-Luc. */
   {
-    id: "p-so-mkt", author: U_SOPHIE,
+    id: "p-so-mkt", author: U_CELINE,
     content: "Ce que je vois sur l'arc lémanique ce trimestre\n\nLes biens de caractère bien estimés partent en moins de 30 jours ; les autres stagnent. À Lausanne et dans le Lavaux, la vue lac et le cachet d'origine restent les deux critères qui font vraiment la différence à la vente. #lausanne #lavaux #marché",
     media: [], type: "post", likes: 388, location: "Lausanne, Suisse",
     createdAt: hAgo(7),
     comments: mkComments("p-so-mkt", [
-      { author: U_MARC, content: "Confirmé côté investisseur : l'écart de délai entre un bien bien estimé et un bien surévalué n'a jamais été aussi net.", h: 6, likes: 24 },
+      { author: U_ENNIO, content: "Confirmé côté investisseur : l'écart de délai entre un bien bien estimé et un bien surévalué n'a jamais été aussi net.", h: 6, likes: 24 },
       { author: U_JEANLUC, content: "Idem sur Neuchâtel. L'estimation juste vaut tous les argumentaires.", h: 5, likes: 17 },
     ]),
   },
   {
-    id: "p3", author: U_AMIRA,
-    content: "Riad d'exception au cœur de la médina\n\n200 m², patio central, hammam privé, 4 suites. Rendement locatif courte durée : 9.5 % brut. Une perle rare — déjà 12 demandes de visite. #marrakech #riad #investissement",
+    id: "p3", author: U_AMINA,
+    content: "Mon riad, au cœur de la médina\n\nQuatre suites autour du patio, la terrasse pour le petit-déjeuner, les orangers. Les dates d'octobre partent vite : si vous visez l'automne, réservez maintenant. #marrakech #riad #locationcourtedurée",
     media: [clip(3)], type: "post", likes: 845, location: "Marrakech, Maroc",
     createdAt: hAgo(8),
     comments: mkComments("p3", [
-      { author: U_MARC, content: "Marrakech affiche des rendements imbattables en ce moment. À surveiller", h: 6, likes: 32 },
-      { author: U_YASMIN, content: "Magnifique. Tu as la fiscalité sur la table ?", h: 4, likes: 14 },
-      { author: U_LEO, content: "Le bois de cèdre original, c'est rare. Bravo Amira.", h: 2, likes: 21 },
+      { author: U_MIRJANA, content: "Tu fixes un minimum de nuits en octobre ?", h: 6, likes: 12 },
+      { author: U_CELINE, content: "J'y étais en avril : c'est encore plus beau qu'en photo.", h: 4, likes: 14 },
+      { author: U_LEO, content: "Le bois de cèdre original, c'est rare. Bravo Amina.", h: 2, likes: 21 },
     ]),
     property: propRef("prop4"),
   },
   {
-    id: "p4", author: U_MARC,
-    content: "Le marché suisse romand sur 5 ans : +37 % en moyenne sur les biens premium\n\nLa formation « Investissement locatif : de zéro à rentier » passe au crible chaque ratio : rendement brut/net, ROI, TIR, LTV. Je la recommande à tous ceux qui démarrent. #investissement #formation",
+    id: "p4", author: U_ENNIO,
+    content: "Suisse romande, 5 ans : +37 % sur le premium\n\nC'est un chiffre brut. Net de charges, d'impôts et de vacance, comptez moitié moins. La formation de Léo Martin explique le calcul correctement. Ses hypothèses de taux sont optimistes. #investissement #rendement",
     media: [clip(4)], type: "post", likes: 1240, location: "Genève, Suisse",
     createdAt: hAgo(12),
     comments: mkComments("p4", [
-      { author: U_LEO, content: "La meilleure formation de la plateforme. Sérieux et rigoureux.", h: 10, likes: 67 },
-      { author: U_SOPHIE, content: "Inscrite à la prochaine session, hâte", h: 8, likes: 12 },
+      { author: U_CLEMENCE, content: "Moitié moins… ça fait réfléchir. Merci pour la franchise.", h: 10, likes: 27 },
+      { author: U_LEO, content: "Remarque juste sur les taux, Ennio. Je mets le module 2 à jour.", h: 8, likes: 12 },
       { author: U_JEANLUC, content: "+37 % sur cinq ans, ça correspond à ce qu'on observe sur le haut de gamme lémanique. Chiffres solides.", h: 6, likes: 15 },
     ]),
     formation: mkFormation("form-001"),
   },
   {
-    id: "p5", author: U_THOMAS,
-    content: "Premier coup d'œil sur notre nouveau projet — Zurich Nord\n\n28 logements certifiés Minergie-P, livraison Q3 2026, vue dégagée sur le Limmat. Réservez votre visite privée avant l'ouverture officielle. #promotion #zurich #minergie",
-    media: [clip(5)], type: "post", likes: 578, location: "Zurich, Suisse",
-    createdAt: hAgo(16),
-    comments: mkComments("p5", [
-      { author: U_MARC, content: "Minergie-P et Zurich Nord, c'est du gagnant. Demande envoyée.", h: 14, likes: 24 },
-    ]),
-    property: propRef("prop15"),
-  },
-  {
-    id: "p6", author: U_YASMIN,
-    content: "Off-market à Dubaï Marina\n\nPenthouse 4 chambres, vue Burj Al Arab, livré meublé, vendu 12 % sous le prix du marché. Pas publié sur les portails — réservé à mon réseau d'apporteurs.\n\nDM avec votre budget. #dubai #offmarket #apporteur",
-    media: [clip(6)], type: "post", likes: 2103, location: "Dubaï, Émirats arabes unis",
-    createdAt: hAgo(20),
-    comments: mkComments("p6", [
-      { author: U_MARC, content: "Sérieusement intéressé. Je t'écris ce soir.", h: 18, likes: 38 },
-      { author: U_LEO, content: "Yasmin gère le off-market à Dubaï comme personne. Référence absolue.", h: 16, likes: 91 },
-    ]),
-  },
-  {
-    id: "p7", author: U_SOPHIE,
+    id: "p7", author: U_CELINE,
     content: "Mon astuce préférée pour booster mes revenus Airbnb\n\nChanger les photos tous les 3 mois pour suivre la saisonnalité : +18 % de réservations en moyenne. La formation d'@amina détaille tout. #locationcourtedurée #airbnb #conseil",
     media: [clip(7)], type: "post", likes: 421, location: "Lausanne, Suisse",
     createdAt: hAgo(26),
@@ -309,7 +261,7 @@ export const VIDEO_POSTS: SocialPost[] = [
       { author: U_AMINA, content: "Exact ! Le pricing dynamique fait le reste. Merci pour le shout-out", h: 22, likes: 28 },
     ]),
     formation: mkFormation("form-002"),
-    // Sophie recommande la formation d'Amina via son lien d'affiliation.
+    // Céline recommande la formation d'Amina via son lien d'affiliation.
     affiliate: mkFormationAffiliate("form-002"),
   },
   {
@@ -318,125 +270,90 @@ export const VIDEO_POSTS: SocialPost[] = [
     media: [clip(8)], type: "post", likes: 1567, location: "Marrakech, Maroc",
     createdAt: hAgo(32),
     comments: mkComments("p8", [
-      { author: U_SOPHIE, content: "J'attendais ce module module commandé.", h: 30, likes: 19 },
-      { author: U_THOMAS, content: "Tu peux automatiser ça aussi sur les long-séjours ?", h: 28, likes: 8 },
-      { author: U_AMIRA, content: "Référence dans le métier. Merci Amina.", h: 26, likes: 22 },
+      { author: U_CELINE, content: "J'attendais ce module.", h: 30, likes: 19 },
+      { author: U_RETO, content: "Tu peux automatiser ça aussi sur les longs séjours ?", h: 28, likes: 8 },
+      { author: U_MIRJANA, content: "Testé tout l'hiver sur mes deux apparts. Ça marche.", h: 26, likes: 22 },
     ]),
     formation: mkFormation("form-002"),
   },
   {
     id: "p9", author: U_LEO,
-    content: "On y sera le 15 mai au Palexpo\n\nStand E-Dome — venez discuter de notre roadmap 2026 et tester les nouvelles fonctionnalités en avant-première. Places limitées, pensez à réserver. #salon #geneve #networking",
-    media: [clip(9)], type: "post", likes: 894, location: "Genève, Suisse",
+    content: "Le 15 mai au Palexpo\n\nSalon de l'immobilier : j'y passe la matinée, surtout pour les conférences sur la fiscalité et la courte durée. On se croise ? #salon #geneve #networking",
+    media: [clip(9)], type: "post", likes: 894, location: "Lausanne, Suisse",
     createdAt: hAgo(40),
     comments: mkComments("p9", [
-      { author: U_MARC, content: "Je passe avec deux investisseurs. À très vite.", h: 38, likes: 15 },
-      { author: U_AMIRA, content: "Le Maroc sera représenté", h: 36, likes: 11 },
+      { author: U_ENNIO, content: "Je passe l'après-midi.", h: 38, likes: 15 },
+      { author: U_AMINA, content: "Le Maroc sera représenté", h: 36, likes: 11 },
     ]),
   },
   {
-    id: "p10", author: U_MARC,
-    content: "Visite privée hier soir d'un penthouse rive droite à Genève\n\n280 m², terrasse 60 m², vue Mont-Blanc 360°. Prix : 4.8 M CHF. Je négocie pour un client — disponible jusqu'à fin du mois si l'offre n'aboutit pas. #penthouse #geneve #luxe",
+    id: "p10", author: U_ENNIO,
+    content: "En vente : 5 pièces à Champel\n\n142 m², 4e étage, rénové en 2019. 3,15 M CHF. Vente directe, sans intermédiaire. Dossier complet sur demande, avec charges et travaux des dix dernières années. #geneve #champel #vente",
     media: [clip(10)], type: "post", likes: 1052, location: "Genève, Suisse",
     createdAt: hAgo(48),
     comments: mkComments("p10", [
-      { author: U_YASMIN, content: "Niveau Dubaï", h: 46, likes: 19 },
       { author: U_LEO, content: "Un de mes clients pourrait être intéressé. Je t'écris.", h: 44, likes: 12 },
     ]),
     property: propRef("prop16"),
   },
   {
-    id: "p11", author: U_AMIRA,
-    content: "La médina à l'aube — magie pure\n\nTrois biens en stock cette semaine pour investisseurs courageux. Rendement net 7-9 % sur le courte durée saisonnier. #marrakech #medina #investissement",
+    id: "p11", author: U_AMINA,
+    content: "La médina à l'aube — le meilleur moment pour vos photos d'annonce\n\nLumière douce, ruelles vides, pas de reflets. Astuce valable partout : photographiez votre logement le matin, fenêtres ouvertes. #marrakech #photo #astuce",
     media: [clip(11)], type: "post", likes: 612, location: "Marrakech, Maroc",
     createdAt: hAgo(56),
     comments: mkComments("p11", [
-      { author: U_SOPHIE, content: "Splendide", h: 54, likes: 8 },
+      { author: U_CELINE, content: "Splendide", h: 54, likes: 8 },
     ]),
   },
   {
-    id: "p12", author: U_THOMAS,
-    content: "Webinaire gratuit le 20 avril à 18h\n\nComment lire un dossier de rendement comme un promoteur — on déchire 3 cas réels en direct (Lausanne, Lugano, Zurich). Posez vos questions en live. #webinaire #rendement #formation",
+    id: "p12", author: U_RETO,
+    content: "Webinaire gratuit le 20 avril à 18h\n\nRénover un immeuble des années 1960 : par quoi commencer ? Trois cas réels (Neuchâtel, Fribourg, Bulle), CECB avant/après, coûts et subventions. Questions en direct. #webinaire #renovation #cecb",
     media: [clip(12)], type: "post", likes: 387, location: "En ligne",
     createdAt: hAgo(64),
     comments: mkComments("p12", [
-      { author: U_MARC, content: "Inscrit", h: 62, likes: 14 },
+      { author: U_ENNIO, content: "Inscrit.", h: 62, likes: 14 },
       { author: U_LEO, content: "Format que je recommande à tous mes étudiants débutants.", h: 60, likes: 22 },
     ]),
   },
   {
-    id: "p13", author: U_SOPHIE,
-    content: "Atelier home staging Lausanne — déjà inscrite\n\nClaire Bernard est une référence en Suisse romande. J'attendais ce cours depuis 6 mois. Encore 8 places dispo. #homestaging #atelier #lausanne",
+    id: "p13", author: U_CELINE,
+    content: "Atelier home staging Lausanne — déjà inscrite\n\nElena Currat prépare mes mises en vente depuis deux ans : elle explique enfin sa méthode. Encore 8 places. #homestaging #atelier #lausanne",
     media: [clip(13)], type: "post", likes: 234, location: "Lausanne, Suisse",
     createdAt: hAgo(72),
     comments: mkComments("p13", [
-      { author: U_AMINA, content: "Claire est incroyable, tu vas voir", h: 70, likes: 9 },
+      { author: U_NIKOLA, content: "elena est trop forte, tu vas voir", h: 70, likes: 9 },
     ]),
   },
   {
-    id: "p14", author: U_YASMIN,
-    content: "Nouveau lancement Dubai Marina\n\n1 chambre à partir de 480 000 AED, livraison 2027, plan de paiement 60/40. Mes clients européens prennent leur place avant l'official launch — les meilleures vues partent en 48h. #dubai #investissement #neuf",
-    media: [clip(14)], type: "post", likes: 1789, location: "Dubaï, Émirats arabes unis",
-    createdAt: hAgo(80),
-    comments: mkComments("p14", [
-      { author: U_MARC, content: "Le 60/40, c'est devenu standard ? Je vois ça partout.", h: 78, likes: 16 },
-      { author: U_YASMIN, content: "@marc oui, c'est devenu le standard sur les off-plans depuis 2025.", h: 76, likes: 22 },
-      { author: U_LEO, content: "Yasmin, tu es ma référence Dubaï. Continue", h: 72, likes: 41 },
-    ]),
-    property: propRef("prop17"),
-  },
-  {
-    id: "p15", author: U_MARC,
-    content: "Networking investisseurs romands — Montreux\n\nLa dernière édition a généré 3 deals à 7 chiffres. Je serai sur place le 5 avril, venez checker. Format : drinks → pitch → matchmaking. #networking #investisseurs #montreux",
+    id: "p15", author: U_ENNIO,
+    content: "Networking investisseurs romands — Montreux, 5 avril\n\nJ'y serai. Format : vingt minutes de chiffres, puis questions. Venez avec les vôtres. #networking #investisseurs #montreux",
     media: [clip(15)], type: "post", likes: 412, location: "Montreux, Suisse",
     createdAt: hAgo(88),
     comments: mkComments("p15", [
-      { author: U_THOMAS, content: "J'y serai avec deux projets en pré-commercialisation.", h: 86, likes: 11 },
+      { author: U_RETO, content: "J'y serai, avec les chiffres avant/après de la rue des Parcs.", h: 86, likes: 11 },
     ]),
-  },
-  {
-    id: "p16", author: U_AMIRA,
-    content: "Cinéma dans ce riad du XVIIIe siècle restauré\n\nMosaïques originales, plafonds de cèdre sculpté, source dans le patio. À vendre, hors marché. Investisseurs passion → DM. #riad #patrimoine #marrakech",
-    media: [clip(16)], type: "post", likes: 1023, location: "Marrakech, Maroc",
-    createdAt: hAgo(96),
-    comments: mkComments("p16", [
-      { author: U_SOPHIE, content: "Le plus beau riad que j'ai vu cette année", h: 94, likes: 24 },
-      { author: U_LEO, content: "Patrimoine pur. Bravo Amira.", h: 92, likes: 31 },
-    ]),
-    property: propRef("prop18"),
   },
   {
     id: "p17", author: U_LEO,
     content: "Ma formation \"Investissement locatif : de zéro à rentier\"\n\nDe la première analyse au closing notarial, tout est cadré. Module 1 gratuit en commentaire si tu débutes. #formation #investissement #zeroaexpert",
-    media: [clip(17)], type: "post", likes: 1875, location: "Genève, Suisse",
+    media: [clip(17)], type: "post", likes: 1875, location: "Lausanne, Suisse",
     createdAt: hAgo(104),
     comments: mkComments("p17", [
-      { author: U_SOPHIE, content: "C'est la formation qui m'a fait basculer dans le métier. Merci.", h: 102, likes: 56 },
-      { author: U_MARC, content: "Référence absolue. Je l'envoie à tous mes débutants.", h: 100, likes: 38 },
-      { author: U_AMINA, content: "Module 1 svp !", h: 98, likes: 14 },
+      { author: U_CLEMENCE, content: "J'ai fait le module 1, c'est clair même pour moi.", h: 102, likes: 56 },
+      { author: U_ENNIO, content: "Correct pour débuter.", h: 100, likes: 38 },
+      { author: U_ANA, content: "Module 1 svp, merci !", h: 98, likes: 14 },
     ]),
     formation: mkFormation("form-001"),
   },
   {
-    id: "p18", author: U_SOPHIE,
-    content: "Coup de cœur cette semaine — chalet à Verbier\n\n5 chambres, jacuzzi sous étoiles, ski-in/ski-out. Mon client veut louer 6 mois/an et habiter le reste. On planifie sa stratégie hybride. #verbier #chalet #montagne",
-    media: [clip(18)], type: "post", likes: 467, location: "Verbier, Suisse",
+    id: "p18", author: U_CELINE,
+    content: "Coup de cœur cette semaine — une maison vigneronne à Riex\n\nCave voûtée, poutres d'origine, la terrasse au-dessus des vignes en terrasses. Nikola a fait les photos au coucher du soleil, Elena a préparé les pièces. Visites dès samedi. #lavaux #riex #maisonvigneronne",
+    media: [clip(18)], type: "post", likes: 467, location: "Riex, Suisse",
     createdAt: hAgo(112),
     comments: mkComments("p18", [
-      { author: U_THOMAS, content: "Verbier c'est le saint Graal de la location alpine. Bons revenus en perspective.", h: 110, likes: 17 },
+      { author: U_ELENA, content: "Cette lumière dans la cave… j'adore ce qu'on en a fait.", h: 110, likes: 17 },
     ]),
     property: propRef("prop19"),
-  },
-  {
-    id: "p19", author: U_THOMAS,
-    content: "Notre nouveau projet à Lugano repense l'éco-conception\n\nPanneaux solaires intégrés à la façade, géothermie, récupération d'eau de pluie. Performance énergétique A+. Bientôt en pré-vente, avant-premières privées en mai. #ecoresponsable #lugano #minergie",
-    media: [clip(19)], type: "post", likes: 821, location: "Lugano, Suisse",
-    createdAt: hAgo(120),
-    comments: mkComments("p19", [
-      { author: U_LEO, content: "C'est le futur de la promotion. Bravo Thomas.", h: 118, likes: 28 },
-      { author: U_MARC, content: "Brochure disponible ?", h: 116, likes: 9 },
-    ]),
-    property: propRef("prop20"),
   },
   {
     id: "p20", author: U_AMINA,
@@ -444,34 +361,22 @@ export const VIDEO_POSTS: SocialPost[] = [
     media: [clip(20)], type: "post", likes: 1340, location: "Marrakech, Maroc",
     createdAt: hAgo(128),
     comments: mkComments("p20", [
-      { author: U_SOPHIE, content: "Tellement vrai. J'ai refait mes 12 covers ce mois-ci, +24 % de bookings.", h: 126, likes: 41 },
-      { author: U_AMIRA, content: "Confirmation totale", h: 124, likes: 15 },
+      { author: U_NIKOLA, content: "confirme. photo 1 = tout", h: 126, likes: 41 },
+      { author: U_MIRJANA, content: "Confirmé. J'ai refait les miennes en mars.", h: 124, likes: 15 },
     ]),
   },
   {
-    id: "p21", author: U_MARC,
-    content: "Formation live le 20 mars — fiscalité immobilière en Suisse\n\nOptimisation légale, impôts sur la fortune, gain en capital, structures holding. Pour investisseurs sérieux uniquement. Tarif early bird jusqu'à dimanche. #fiscalite #formation #live",
+    id: "p21", author: U_SANDRINE,
+    content: "Formation live le 20 mars — fiscalité immobilière en Suisse romande\n\nValeur locative, déductions, revenus d'un bien situé dans un autre canton. Deux heures, en trois temps : la règle, le calcul, un cas réel. Questions en direct. #fiscalite #formation #live",
     media: [clip(21)], type: "post", likes: 532, location: "En ligne",
     createdAt: hAgo(136),
     comments: mkComments("p21", [
-      { author: U_THOMAS, content: "Inscrit. Très attendu, surtout la partie holding.", h: 134, likes: 18 },
+      { author: U_LEO, content: "Inscrit. J'ai une question sur mon studio de Genève.", h: 134, likes: 18 },
     ]),
   },
   {
-    id: "p22", author: U_YASMIN,
-    content: "Vue aérienne du quartier où je viens de boucler un deal\n\nDowntown Dubai, 200 m du Burj Khalifa. Vente sous 9 jours, +18 % au-dessus de la mise à prix. Quand le réseau parle, ça va vite. #dubai #downtown #deal",
-    media: [clip(22)], type: "post", likes: 2456, location: "Dubaï, Émirats arabes unis",
-    createdAt: hAgo(144),
-    comments: mkComments("p22", [
-      { author: U_LEO, content: "Performance hallucinante. La méthode Al Falasi", h: 142, likes: 87 },
-      { author: U_MARC, content: "+18 % en 9 jours, ça se challenge sérieusement. Bravo.", h: 140, likes: 42 },
-      { author: U_AMIRA, content: "Yasmin, on parle Marrakech bientôt ?", h: 138, likes: 19 },
-    ]),
-    property: propRef("prop21"),
-  },
-  {
-    id: "p23", author: U_SOPHIE,
-    content: "Témoignage d'un de mes locataires longue durée\n\nIl repart après 3 ans, hôte heureuse. Communication régulière + entretien sérieux = locataires qui restent. Mon meilleur ROI, c'est la confiance. #temoignage #locationlongue #relation",
+    id: "p23", author: U_LEO,
+    content: "Mon locataire de Renens repart après trois ans\n\nIl déménage pour le travail, et il m'a laissé un mot. Communication régulière, réparations faites vite : des locataires qui restent. L'appartement se libère au 1er novembre. #locationlongue #renens #relation",
     media: [clip(23)], type: "post", likes: 654, location: "Lausanne, Suisse",
     createdAt: hAgo(152),
     comments: mkComments("p23", [
@@ -480,44 +385,23 @@ export const VIDEO_POSTS: SocialPost[] = [
   },
   {
     id: "p24", author: U_LEO,
-    content: "Conférence \"Marché immobilier 2026\" à l'EPFL le 10 mars\n\nGratuit, sur inscription. Je présente nos data internes E-Dome — les chiffres que personne d'autre n'a sur les volumes et la rotation du marché romand. #conference #epfl #marche",
+    content: "Conférence \"Marché immobilier 2026\" à l'EPFL le 10 mars\n\nGratuit, sur inscription. J'y vais pour la table ronde sur la location courte durée à Lausanne. Qui vient ? #conference #epfl #marche",
     media: [clip(24)], type: "post", likes: 1102, location: "Lausanne, Suisse",
     createdAt: hAgo(160),
     comments: mkComments("p24", [
-      { author: U_MARC, content: "Je serai au premier rang. Toujours un plaisir.", h: 158, likes: 31 },
-      { author: U_THOMAS, content: "Les data E-Dome valent leur pesant d'or. Hâte.", h: 156, likes: 24 },
+      { author: U_ENNIO, content: "Je viendrai.", h: 158, likes: 31 },
+      { author: U_RETO, content: "J'y serai aussi, pour la partie rénovation.", h: 156, likes: 24 },
     ]),
   },
   {
-    id: "p25", author: U_AMIRA,
+    id: "p25", author: U_AMINA,
     content: "Coucher de soleil sur les remparts\n\nMarrakech n'est pas seulement un investissement, c'est un mode de vie. Si tu n'as pas encore visité, c'est l'année. #marrakech #medina #coucherdesoleil",
     media: [clip(25)], type: "post", likes: 1567, location: "Marrakech, Maroc",
     createdAt: hAgo(168),
     comments: mkComments("p25", [
-      { author: U_SOPHIE, content: "Je réserve mes billets dès demain", h: 166, likes: 22 },
+      { author: U_CELINE, content: "Je confirme : j'y retourne au printemps.", h: 166, likes: 22 },
       { author: U_LEO, content: "Une des plus belles villes du monde. Confirmé.", h: 164, likes: 35 },
     ]),
-  },
-  {
-    id: "p26", author: U_THOMAS,
-    content: "Survol drone d'un projet alpin en cours\n\n12 chalets en bois local, certifiés Minergie-P, prix de départ 1.2 M CHF. Pré-réservations ouvertes en mai. Vue plein sud, accès ski direct. #chalet #alpes #ecoresponsable",
-    media: [clip(26)], type: "post", likes: 743, location: "Crans-Montana, Suisse",
-    createdAt: hAgo(176),
-    comments: mkComments("p26", [
-      { author: U_SOPHIE, content: "Crans-Montana en plein boom. Excellent placement.", h: 174, likes: 18 },
-    ]),
-    property: propRef("prop22"),
-  },
-  {
-    id: "p27", author: U_AMINA,
-    content: "Le module qui m’a le plus servi dans \"Marketing digital pour l’immobilier\"\n\nInstagram Reels qui convertissent — les leads ne viennent plus des portails, ils viennent du contenu. Inscriptions ouvertes jusqu'au 30 mai. #marketing #reels #formation",
-    media: [clip(27)], type: "post", likes: 1289, location: "Marrakech, Maroc",
-    createdAt: hAgo(184),
-    comments: mkComments("p27", [
-      { author: U_SOPHIE, content: "Mes reels ont fait x3 depuis cette formation. Incontournable.", h: 182, likes: 47 },
-      { author: U_AMIRA, content: "Format imparable 2026, à ne pas rater.", h: 180, likes: 22 },
-    ]),
-    formation: mkFormation("form-006"),
   },
 
   /* ── Posts varies (formats Twitter-like) ──────────────────────────────
@@ -527,12 +411,12 @@ export const VIDEO_POSTS: SocialPost[] = [
   {
     id: "p-text-1", author: U_LEO,
     content: "Question simple : si vous deviez investir 100 K CHF aujourd'hui dans un seul canton suisse, lequel et pourquoi ?\n\nVaud, Geneve, Zurich, Tessin, Valais… Les commentaires sont a vous. #investissement #debat #suisse",
-    media: [], type: "post", likes: 932, location: "Geneve, Suisse",
+    media: [], type: "post", likes: 932, location: "Lausanne, Suisse",
     createdAt: hAgo(1),
     comments: mkComments("p-text-1", [
-      { author: U_MARC, content: "Tessin, sans hesiter. Marche sous-cote et rendements LT corrects.", h: 0.8, likes: 41 },
-      { author: U_SOPHIE, content: "Valais bas pour la location courte duree premium. Marche encore artisanal.", h: 0.5, likes: 33 },
-      { author: U_THOMAS, content: "Zurich pour la liquidite a la revente. Les autres pour les rendements.", h: 0.3, likes: 28 },
+      { author: U_ENNIO, content: "Aucun avec 100 K. Fonds propres insuffisants pour un achat direct.", h: 0.8, likes: 41 },
+      { author: U_CLEMENCE, content: "C'est exactement notre question… on hésite entre Vaud et Fribourg.", h: 0.5, likes: 33 },
+      { author: U_RETO, content: "Fribourg : prix plus bas, et beaucoup d'immeubles à rénover.", h: 0.3, likes: 28 },
     ]),
   },
   {
@@ -542,12 +426,12 @@ export const VIDEO_POSTS: SocialPost[] = [
     type: "post", likes: 612, location: "Marrakech, Maroc",
     createdAt: hAgo(3),
     comments: mkComments("p-photo-1", [
-      { author: U_AMIRA, content: "Magnifique. La fontaine du patio nord est d'origine ?", h: 2.5, likes: 9 },
+      { author: U_MIRJANA, content: "Magnifique. La fontaine du patio nord est d'origine ?", h: 2.5, likes: 9 },
     ]),
   },
   {
-    id: "p-gal-2", author: U_SOPHIE,
-    content: "Avant / apres — renovation cuisine de notre 4.5 pieces a Vevey. Petit budget, gros effet visuel. #renovation #avantapres",
+    id: "p-gal-2", author: U_ELENA,
+    content: "Avant / après — la cuisine d'un 3,5 pièces à Vevey. Petit budget, gros effet : une couleur, deux luminaires, plus rien sur le plan de travail. #homestaging #avantapres",
     media: [
       "https://images.unsplash.com/photo-1556909211-d5b0c0b3a4b8?w=900",
       "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900",
@@ -559,43 +443,27 @@ export const VIDEO_POSTS: SocialPost[] = [
     ]),
   },
   {
-    id: "p-gal-3", author: U_THOMAS,
-    content: "Visite du chantier ce matin — Programme Minergie-P Zurich Nord. Gros oeuvre quasi termine, livraison Q3 2026 tient le cap. #promotion #chantier",
+    id: "p-gal-3", author: U_RETO,
+    content: "Visite du chantier ce matin — rue des Parcs, Neuchâtel. Façade isolée, fenêtres posées, la pompe à chaleur arrive la semaine prochaine. CECB visé : B. #renovation #chantier #cecb",
     media: [
       "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=900",
       "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=900",
       "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900",
     ],
-    type: "post", likes: 541, location: "Zurich, Suisse",
+    type: "post", likes: 541, location: "Neuchâtel, Suisse",
     createdAt: hAgo(9),
     comments: mkComments("p-gal-3", [
-      { author: U_MARC, content: "Belle qualite de finition deja visible. Hate de voir les terrasses.", h: 8, likes: 14 },
+      { author: U_JEANLUC, content: "Les propriétaires ont visité samedi : ils sont ravis. Merci Reto.", h: 8, likes: 14 },
     ]),
   },
   {
-    id: "p-gal-4", author: U_YASMIN,
-    content: "Petit tour photos d'un penthouse Dubai Marina que je propose en off-market. 4 chambres, vue 270deg, livre meuble. DM pour la fiche complete. #dubai #penthouse",
-    media: [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900",
-      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=900",
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900",
-    ],
-    type: "post", likes: 1102, location: "Dubai, EAU",
-    createdAt: hAgo(14),
-    comments: mkComments("p-gal-4", [
-      { author: U_MARC, content: "Penthouse Marina avec vue Burj : la rarete absolue. Interesse.", h: 12, likes: 26 },
-      { author: U_LEO, content: "Yasmin reste la reference off-market a Dubai.", h: 10, likes: 47 },
-    ]),
-  },
-  {
-    id: "p-photo-formation", author: U_MARC,
+    id: "p-photo-formation", author: U_ENNIO,
     content: "Slide cle de la formation \"Investissement locatif : de zero a rentier\" : comprendre le rendement net (apres charges, impots, vacance). C'est LA donnee qui separe les amateurs des serieux. #formation #investissement",
     media: ["https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=900"],
     type: "post", likes: 856, location: "Geneve, Suisse",
     createdAt: hAgo(18),
     comments: mkComments("p-photo-formation", [
-      { author: U_SOPHIE, content: "Le passage du brut au net surprend toujours les nouveaux investisseurs.", h: 16, likes: 22 },
+      { author: U_CELINE, content: "Le passage du brut au net surprend toujours les nouveaux investisseurs.", h: 16, likes: 22 },
     ]),
     formation: mkFormation("form-001"),
   },
@@ -606,26 +474,26 @@ export const VIDEO_POSTS: SocialPost[] = [
   {
     id: "p-t2", author: U_LEO,
     content: "Rappel du jour : le meilleur moment pour investir dans l'immobilier, c'etait il y a 10 ans. Le deuxieme meilleur moment, c'est aujourd'hui.\n\nArretez d'attendre le marche parfait. #investissement #mindset",
-    media: [], type: "post", likes: 1284, location: "Geneve, Suisse", createdAt: hAgo(0.4),
+    media: [], type: "post", likes: 1284, location: "Lausanne, Suisse", createdAt: hAgo(0.4),
     comments: mkComments("p-t2", [
-      { author: U_MARC, content: "A encadrer.", h: 0.3, likes: 54 },
-      { author: U_SOPHIE, content: "Tellement vrai, j'ai trop attendu pour mon 1er bien.", h: 0.2, likes: 31 },
+      { author: U_CLEMENCE, content: "Facile à dire… mais merci, ça me pousse un peu.", h: 0.3, likes: 54 },
+      { author: U_CELINE, content: "Tellement vrai, j'ai trop attendu pour mon 1er bien.", h: 0.2, likes: 31 },
     ]),
   },
   {
-    id: "p-t3", author: U_MARC,
+    id: "p-t3", author: U_ENNIO,
     content: "Petit sondage pour la communaute : en 2026, vous misez sur quoi ?\n\n1) Locatif longue duree\n2) Courte duree / Airbnb\n3) Colocation\n4) Parking / box\n\nJe lis toutes vos reponses en commentaire.",
     media: [], type: "post", likes: 642, location: "Geneve, Suisse", createdAt: hAgo(0.8),
     comments: mkComments("p-t3", [
-      { author: U_THOMAS, content: "3) La colocation, rendement imbattable en ville.", h: 0.6, likes: 22 },
+      { author: U_RETO, content: "3) La colocation, si le bâtiment s'y prête.", h: 0.6, likes: 22 },
       { author: U_AMINA, content: "2) sans hesiter, mais faut gerer le pricing.", h: 0.5, likes: 18 },
-      { author: U_YASMIN, content: "1) pour la tranquillite.", h: 0.4, likes: 9 },
+      { author: U_JEANLUC, content: "1) pour la tranquillité.", h: 0.4, likes: 9 },
     ]),
   },
   {
-    id: "p-t4", author: U_SOPHIE,
-    content: "3 ans que je suis hote sur E-Dome. Ce que j'aurais aime savoir au debut :\n\n— Repondre en < 1h change tout\n— Les photos font 80% de la reservation\n— Un bon menage vaut chaque centime\n\n#locationcourteduree #conseils",
-    media: [], type: "post", likes: 917, location: "Lausanne, Suisse", createdAt: hAgo(4),
+    id: "p-t4", author: U_MIRJANA,
+    content: "Neuf ans que je suis hôte. Ce que j'aurais aimé savoir au début :\n\n— Repondre en < 1h change tout\n— Les photos font 80% de la reservation\n— Un bon menage vaut chaque centime\n\n#locationcourteduree #conseils",
+    media: [], type: "post", likes: 917, location: "Montreux, Suisse", createdAt: hAgo(4),
     comments: mkComments("p-t4", [
       { author: U_AMINA, content: "La regle du < 1h est sous-estimee. Bravo.", h: 3, likes: 27 },
     ]),
@@ -635,33 +503,33 @@ export const VIDEO_POSTS: SocialPost[] = [
     content: "Hot take : la plupart des gens ne calculent JAMAIS leur rendement net. Ils regardent le loyer, pas les charges, la vacance, les impots et la gestion.\n\nResultat : ils croient faire 6% et font 3%. #fiscalite #rendement",
     media: [], type: "post", likes: 1533, location: "Marrakech, Maroc", createdAt: hAgo(7),
     comments: mkComments("p-t5", [
-      { author: U_MARC, content: "Je le repete a chaque formation. Merci de le dire.", h: 6, likes: 44 },
+      { author: U_ENNIO, content: "Exact. Le net.", h: 6, likes: 44 },
       { author: U_LEO, content: "Le brut ment, le net dit la verite.", h: 5, likes: 38 },
     ]),
   },
   {
-    id: "p-t6", author: U_THOMAS,
+    id: "p-t6", author: U_RETO,
     content: "Zurich vient de depasser 15'000 CHF/m2 en moyenne dans l'hypercentre. Geneve suit de pres.\n\nLa Suisse reste l'un des marches les plus resilients d'Europe. Qui investit encore en ville ?",
     media: [], type: "post", likes: 728, location: "Zurich, Suisse", createdAt: hAgo(11),
     comments: mkComments("p-t6", [
-      { author: U_MARC, content: "Les prix defient la gravite.", h: 9, likes: 19 },
+      { author: U_ENNIO, content: "Les prix défient la gravité.", h: 9, likes: 19 },
     ]),
   },
   {
-    id: "p-analytics-1", author: U_MARC,
+    id: "p-analytics-1", author: U_ENNIO,
     content: "Petite demo de la carte analytique E-Dome : le rendement net d'un bien, en un coup d'oeil. On adore la transparence. #data #immobilier",
     media: [], type: "post", likes: 512, location: "Geneve, Suisse", createdAt: hAgo(15),
     comments: mkComments("p-analytics-1", [
-      { author: U_SOPHIE, content: "Cette carte est geniale pour comparer vite.", h: 13, likes: 12 },
+      { author: U_CELINE, content: "Cette carte est geniale pour comparer vite.", h: 13, likes: 12 },
     ]),
     attachment: {
       type: "analytics",
       data: {
         propertyId: "prop1",
-        propertyTitle: "Appartement vue lac · Lausanne",
+        propertyTitle: "Appartement vue lac · Lutry",
         metric: "rendementNet",
         label: "Rendement net annuel",
-        headline: "3.8%",
+        headline: "2.1%",
       },
     },
   },
@@ -670,9 +538,9 @@ export const VIDEO_POSTS: SocialPost[] = [
   {
     id: "p-poll-1", author: U_LEO,
     content: "Selon vous, quelle ville romande offre le meilleur potentiel d'investissement en 2026 ?",
-    media: [], type: "post", likes: 486, location: "Geneve, Suisse", createdAt: hAgo(0.5),
+    media: [], type: "post", likes: 486, location: "Lausanne, Suisse", createdAt: hAgo(0.5),
     comments: mkComments("p-poll-1", [
-      { author: U_MARC, content: "Geneve pour la liquidite, mais Fribourg pour le rendement.", h: 0.4, likes: 21 },
+      { author: U_ENNIO, content: "Genève pour la liquidité. Fribourg pour le rendement.", h: 0.4, likes: 21 },
     ]),
     poll: {
       options: [
@@ -682,11 +550,11 @@ export const VIDEO_POSTS: SocialPost[] = [
         { id: "o4", label: "Sion", votes: 60 },
       ],
       totalVotes: 955,
-      endsAt: new Date(Date.now() + 2 * 24 * 3600_000).toISOString(),
+      endsAt: new Date(DEMO_TODAY.getTime() + 2 * 24 * 3600_000).toISOString(),
     },
   },
   {
-    id: "p-poll-2", author: U_MARC,
+    id: "p-poll-2", author: U_ENNIO,
     content: "Location courte duree ou longue duree : votre strategie preferee ?",
     media: [], type: "post", likes: 312, location: "Geneve, Suisse", createdAt: hAgo(9),
     comments: mkComments("p-poll-2", [
@@ -699,7 +567,7 @@ export const VIDEO_POSTS: SocialPost[] = [
         { id: "o3", label: "Les deux", votes: 240 },
       ],
       totalVotes: 1140,
-      endsAt: new Date(Date.now() + 6 * 3600_000).toISOString(),
+      endsAt: new Date(DEMO_TODAY.getTime() + 6 * 3600_000).toISOString(),
     },
   },
 ];
@@ -707,10 +575,9 @@ export const VIDEO_POSTS: SocialPost[] = [
 // CTAs custom par id de post.
 export type CustomCTA = { href: string; title: string; subtitle: string; icon: "users" | "search" | "user" | "calendar" };
 export const CUSTOM_CTA: Record<string, CustomCTA> = {
-  p6: { href: "/apporteurs", title: "Rejoindre le réseau d'apporteurs", subtitle: "Accès aux deals off-market", icon: "users" },
-  p11: { href: "/recherche?q=marrakech", title: "Explorer Marrakech", subtitle: "Biens disponibles dans la médina", icon: "search" },
-  p23: { href: "/profil/user-002", title: "Voir le profil de Sophie", subtitle: "Agente immobilière & hôte à Lausanne", icon: "user" },
-  p25: { href: "/recherche?q=marrakech", title: "Découvrir le Maroc", subtitle: "Riads & investissements patrimoine", icon: "search" },
+  p11: { href: "/explorer/prop4", title: "Voir le riad d'Amina", subtitle: "Quatre suites en médina, à la nuit", icon: "search" },
+  p23: { href: "/explorer/prop8", title: "Voir le 4,5 pièces de Renens", subtitle: "Location longue durée, libre au 1er novembre", icon: "search" },
+  p25: { href: "/profil/user-016", title: "Voir le profil d'Amina", subtitle: "Formatrice et hôte à Marrakech", icon: "user" },
 };
 
 // Événements (lookup par id de post).
@@ -740,10 +607,12 @@ export const HASHTAGS = [
   "#design", "#maison", "#genève", "#lausanne", "#zurich",
 ];
 
-/* « Qui suivre » : jamais l'utilisateur courant. U_LEO figurait ici, si bien
-   qu'un visiteur se voyait proposé de se suivre lui-même. Remplacé par une
-   autre personne réelle de l'annuaire (Sophie). */
-export const SUGGESTIONS = [U_SOPHIE, U_AMIRA, U_THOMAS, U_YASMIN];
+/* « Qui suivre » : les personnes de l'annuaire que l'utilisateur courant ne
+   suit PAS encore d'après le graphe FOLLOWS — jamais lui-même, jamais quelqu'un
+   qu'il suit déjà. Les écrans filtrent en plus sur les suivis de la session. */
+export const SUGGESTIONS: User[] = DIRECTORY.filter(
+  (p) => p.id !== DEMO_USER.id && !followingOf(DEMO_USER.id).includes(p.id),
+);
 
 // ─── Misc ──────────────────────────────────────────────────────────────────
 

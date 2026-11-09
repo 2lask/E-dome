@@ -21,8 +21,10 @@ import type { User } from "@/lib/types";
    propre à cette page est ce qui ne concerne pas la formation mais
    l'utilisateur de démonstration : sa progression et ses inscriptions. */
 
+/* Léo a terminé la formation fiscalité de Sandrine (il l'a évaluée) et suit
+   celle d'Amina. Sa propre formation (form-001) n'est pas une inscription. */
 const ENROLMENTS: Record<string, number> = {
-  "form-001": 65,
+  "form-007": 100,
   "form-002": 30,
 };
 

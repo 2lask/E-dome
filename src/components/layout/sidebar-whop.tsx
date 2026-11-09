@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { conversations } from "@/lib/mock-data";
+import { CURRENT_USER } from "@/lib/demo/identity";
 
 /* ─────────────────────────────────────────────────────────────
    SidebarWhop : sidebar permanente style Whop / Twitter.
@@ -162,12 +163,12 @@ export function SidebarWhop() {
           className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-sidebar-accent transition-colors"
         >
           <img
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop"
+            src={CURRENT_USER.avatar}
             alt=""
             className="h-8 w-8 shrink-0 rounded-full object-cover"
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[13px] font-medium leading-tight">Léo Martin</p>
+            <p className="truncate text-[13px] font-medium leading-tight">{CURRENT_USER.fullName}</p>
             <p className="truncate text-[11px] text-muted-foreground">Démo</p>
           </div>
         </Link>

@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   Search as SearchIcon, Hotel, Car, Camera, Palette, Ruler, HardHat,
   Scale, Briefcase, Hammer, Package, Check, type LucideIcon,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { PageHeader } from "@/components/ui/page-header";
+import { requirePerson } from "@/lib/demo/directory";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -36,21 +38,32 @@ const GRADIENTS = [
   "from-yellow-500 to-amber-600",
 ];
 
-const SERVICES = [
-  { id: "s1", title: "Conciergerie premium Airbnb", category: "Conciergerie", provider: "Swiss Concierge", providerAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop", rating: 4.9, reviews: 127, price: 150, unit: "/mois", gradient: 0 },
-  { id: "s2", title: "Transport de meubles Suisse romande", category: "Transport", provider: "TransLogistic SA", providerAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop", rating: 4.7, reviews: 89, price: 80, unit: "/trajet", gradient: 1 },
-  { id: "s3", title: "Photographie immobilière HD + drone", category: "Photographie", provider: "PixelHome", providerAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop", rating: 4.8, reviews: 203, price: 350, unit: "/séance", gradient: 2 },
-  { id: "s4", title: "Décoration intérieure & home staging", category: "Décoration", provider: "Deco Studio", providerAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 4.6, reviews: 56, price: 200, unit: "/pièce", gradient: 3 },
-  { id: "s5", title: "Conseil juridique immobilier", category: "Juridique", provider: "Cabinet Moreau", providerAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop", rating: 4.9, reviews: 145, price: 250, unit: "/h", gradient: 4 },
-  { id: "s6", title: "Gestion comptable locative", category: "Finance", provider: "FinImmo Conseil", providerAvatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=60&h=60&fit=crop", rating: 4.5, reviews: 34, price: 120, unit: "/mois", gradient: 5 },
-  { id: "s7", title: "Rénovation complète appartement", category: "Rénovation", provider: "RenovaPro", providerAvatar: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=60&h=60&fit=crop", rating: 4.8, reviews: 178, price: 5000, unit: "/projet", gradient: 6 },
-  { id: "s8", title: "Déménagement professionnel", category: "Déménagement", provider: "MoveSwiss", providerAvatar: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=60&h=60&fit=crop", rating: 4.7, reviews: 92, price: 600, unit: "/déménagement", gradient: 7 },
-  { id: "s9", title: "Gestion clés et accueil voyageurs", category: "Conciergerie", provider: "KeyMaster", providerAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop", rating: 4.6, reviews: 67, price: 30, unit: "/accueil", gradient: 8 },
-  { id: "s10", title: "Plans d'architecte et maîtrise d'œuvre", category: "Architecture & Design", provider: "Atelier Léman", providerAvatar: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=60&h=60&fit=crop", rating: 4.9, reviews: 74, price: 4500, unit: "/projet", gradient: 4 },
-  { id: "s11", title: "Design intérieur sur mesure", category: "Architecture & Design", provider: "Studio Verbier", providerAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop", rating: 4.7, reviews: 52, price: 1800, unit: "/projet", gradient: 3 },
-  { id: "s12", title: "Construction gros œuvre clé en main", category: "Construction & Gros œuvre", provider: "BâtiSuisse", providerAvatar: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=60&h=60&fit=crop", rating: 4.8, reviews: 41, price: 1850, unit: "/m²", gradient: 6 },
-  { id: "s13", title: "Charpente bois & couverture", category: "Construction & Gros œuvre", provider: "Charpentes Alpines", providerAvatar: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=60&h=60&fit=crop", rating: 4.7, reviews: 28, price: 12500, unit: "/projet", gradient: 1 },
+/* Les prestataires du casting (Nikola, Elena, Reto) sont de vraies personnes
+   de l'annuaire : leur visage, leur note et leur nombre d'avis en viennent
+   (avis réellement reçus). Les autres sont des entreprises sans visage,
+   affichées par leurs initiales — plus aucun portrait de personne réelle. */
+type ServiceItem = { id: string; title: string; category: string; provider: string; providerId?: string; rating: number; reviews: number; price: number; unit: string; gradient: number };
+
+const RAW_SERVICES: ServiceItem[] = [
+  { id: "s1", title: "Conciergerie premium Airbnb", category: "Conciergerie", provider: "Swiss Concierge", rating: 4.9, reviews: 127, price: 150, unit: "/mois", gradient: 0 },
+  { id: "s2", title: "Transport de meubles Suisse romande", category: "Transport", provider: "TransLogistic SA", rating: 4.7, reviews: 89, price: 80, unit: "/trajet", gradient: 1 },
+  { id: "s3", title: "Photographie immobilière, drone et visite 3D", category: "Photographie", provider: "Nikola Ristić", providerId: "user-005", rating: 4.8, reviews: 203, price: 350, unit: "/séance", gradient: 2 },
+  { id: "s4", title: "Home staging pour la vente et la location", category: "Décoration", provider: "Elena Currat", providerId: "user-010", rating: 4.6, reviews: 56, price: 200, unit: "/pièce", gradient: 3 },
+  { id: "s5", title: "Conseil juridique immobilier", category: "Juridique", provider: "Cabinet Moreau", rating: 4.9, reviews: 145, price: 250, unit: "/h", gradient: 4 },
+  { id: "s6", title: "Gestion comptable locative", category: "Finance", provider: "FinImmo Conseil", rating: 4.5, reviews: 34, price: 120, unit: "/mois", gradient: 5 },
+  { id: "s7", title: "Rénovation complète appartement", category: "Rénovation", provider: "RenovaPro", rating: 4.8, reviews: 178, price: 5000, unit: "/projet", gradient: 6 },
+  { id: "s8", title: "Déménagement professionnel", category: "Déménagement", provider: "MoveSwiss", rating: 4.7, reviews: 92, price: 600, unit: "/déménagement", gradient: 7 },
+  { id: "s9", title: "Gestion clés et accueil voyageurs", category: "Conciergerie", provider: "KeyMaster", rating: 4.6, reviews: 67, price: 30, unit: "/accueil", gradient: 8 },
+  { id: "s10", title: "Rénovation énergétique : CECB Plus et direction de travaux", category: "Architecture & Design", provider: "Reto Jungo", providerId: "user-009", rating: 4.9, reviews: 74, price: 4500, unit: "/projet", gradient: 4 },
+  { id: "s11", title: "Design intérieur sur mesure", category: "Architecture & Design", provider: "Studio Verbier", rating: 4.7, reviews: 52, price: 1800, unit: "/projet", gradient: 3 },
+  { id: "s12", title: "Construction gros œuvre clé en main", category: "Construction & Gros œuvre", provider: "BâtiSuisse", rating: 4.8, reviews: 41, price: 1850, unit: "/m²", gradient: 6 },
+  { id: "s13", title: "Charpente bois & couverture", category: "Construction & Gros œuvre", provider: "Charpentes Alpines", rating: 4.7, reviews: 28, price: 12500, unit: "/projet", gradient: 1 },
 ];
+
+const SERVICES: (ServiceItem & { avatar?: string })[] = RAW_SERVICES.map((s) => {
+  const p = s.providerId ? requirePerson(s.providerId) : undefined;
+  return p ? { ...s, avatar: p.avatar, rating: p.stats.rating, reviews: p.stats.reviews } : s;
+});
 
 const STEPS = [
   { number: "1", title: "Choisissez un service", desc: "Parcourez notre catalogue de prestataires vérifiés et sélectionnez le service adapté à vos besoins." },
@@ -168,8 +181,19 @@ export default function ServicesPage() {
                 <span className="inline-block px-2 py-0.5 bg-[var(--primary)]/20 text-[var(--primary)] rounded-full text-xs font-medium">{service.category}</span>
                 <h3 className="font-semibold line-clamp-2">{service.title}</h3>
                 <div className="flex items-center gap-2">
-                  <img src={service.providerAvatar} alt={service.provider} className="w-6 h-6 rounded-full object-cover" />
-                  <span className="text-sm text-[var(--text-secondary)]">{service.provider}</span>
+                  {service.avatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={service.avatar} alt="" className="w-6 h-6 rounded-full object-cover" />
+                  ) : (
+                    <span aria-hidden className="flex w-6 h-6 items-center justify-center rounded-full bg-[var(--hover-bg)] text-[10px] font-semibold text-[var(--text-secondary)]">
+                      {service.provider.slice(0, 2).toUpperCase()}
+                    </span>
+                  )}
+                  {service.providerId ? (
+                    <Link href={`/profil/${service.providerId}`} className="text-sm text-[var(--text-secondary)] hover:underline">{service.provider}</Link>
+                  ) : (
+                    <span className="text-sm text-[var(--text-secondary)]">{service.provider}</span>
+                  )}
                 </div>
                 <Stars rating={service.rating} />
                 <span className="text-xs text-[var(--text-muted)]">({service.reviews} avis)</span>

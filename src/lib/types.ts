@@ -85,6 +85,13 @@ export interface Property {
   reviewCount: number;
   featured?: boolean;
   analytics?: PropertyAnalytics;
+  /**
+   * Vendu : l'id de l'acheteur (une personne de l'annuaire). Un bien vendu
+   * reste au catalogue — il est le sujet d'une écriture de volume au journal
+   * et de l'avis de son acheteur — mais n'est plus proposé à la vente
+   * (`isAvailable()` dans `mock-data.ts`). Invariant 17.
+   */
+  soldTo?: string;
 }
 
 // ─── User ────────────────────────────────────────────────────────────────────

@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { agencePage, demoAgency } from "@/content/agence";
 import { PLAN_META } from "@/content/tarifs";
+import { agencyCounts } from "@/lib/demo/agency";
 
 /* ── `/agence` — le hub de l'Espace agence ──────────────────────────────────
 
@@ -26,6 +27,7 @@ const ICONS: Record<string, LucideIcon> = {
 export default function AgenceHubPage() {
   const a = agencePage;
   const planName = PLAN_META[demoAgency.plan]?.name ?? demoAgency.plan;
+  const counts = agencyCounts();
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:py-8">
@@ -39,7 +41,7 @@ export default function AgenceHubPage() {
             </span>
           )}
           <span className="text-[12px] text-[var(--text-muted)]">
-            {demoAgency.city} · {demoAgency.members} agents · {demoAgency.activeMandates} mandats actifs
+            {demoAgency.city} · {counts.members} membres · {counts.activeMandates} mandats actifs
           </span>
         </div>
         <p className="mt-1.5 text-sm leading-snug text-[var(--text-muted)]">{a.hubSubtitle}</p>

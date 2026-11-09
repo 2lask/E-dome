@@ -1,18 +1,25 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Mail, UserPlus, Check, Users } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { listPeople } from "@/lib/profile-data";
+import { listFollowers, listFollowing, listPeople } from "@/lib/profile-data";
+import { personById } from "@/lib/demo/directory";
+import { CURRENT_USER_ID } from "@/lib/demo/identity";
 import { roleLabel } from "@/lib/model/role-labels";
 import type { PersonSummary } from "@/lib/profile-types";
 import { BackButton } from "@/components/ui/back-button";
 
-/* /reseau — mon réseau : Abonnés · Abonnements · Découvrir.
-   Le suivi est piloté par le contexte (followedUsers). Chaque contact ouvre
-   sa fiche /profil/[id]. Recherche par nom / titre / ville. */
+/* /reseau — le réseau d'une personne : Abonnés · Abonnements · Découvrir.
+
+   Les listes viennent du graphe FOLLOWS (demo/social.ts) — plus de l'annuaire
+   entier. « Abonnés » = qui la suit, « Abonnements » = qui elle suit : chaque
+   nombre des fiches de profil se vérifie ici. Pour l'utilisateur courant, les
+   abonnements suivent l'état de session (bouton « Suivre », contexte), qui part
+   du même graphe ; « Découvrir » = les personnes qu'il ne suit pas encore.
+   `/reseau?profil=<id>` montre le réseau d'une autre personne (lecture). */
 
 type Tab = "abonnes" | "abonnements" | "decouvrir";
 
@@ -64,17 +71,25 @@ function PersonCard({ person }: { person: PersonSummary }) {
   );
 }
 
-export default function ReseauPage() {
+export default function ReseauPage({ searchParams }: { searchParams: Promise<{ profil?: string; onglet?: string }> }) {
+  const params = use(searchParams);
   const { isFollowing } = useApp();
-  const [tab, setTab] = useState<Tab>("abonnes");
+  const viewed = params.profil && personById(params.profil) ? params.profil : CURRENT_USER_ID;
+  const isMe = viewed === CURRENT_USER_ID;
+  const owner = personById(viewed)!;
+  const initialTab: Tab = params.onglet === "abonnements" ? "abonnements" : params.onglet === "decouvrir" && isMe ? "decouvrir" : "abonnes";
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [query, setQuery] = useState("");
   const people = useMemo(() => listPeople(), []);
+  const followers = useMemo(() => listFollowers(viewed), [viewed]);
+  const theirFollowing = useMemo(() => listFollowing(viewed), [viewed]);
 
-  const followingIds = people.filter((p) => isFollowing(p.id));
+  const followingIds = isMe ? people.filter((p) => isFollowing(p.id)) : theirFollowing;
   const notFollowing = people.filter((p) => !isFollowing(p.id));
+  const tabs = isMe ? TABS : TABS.filter((t) => t.key !== "decouvrir");
 
   const base: PersonSummary[] =
-    tab === "abonnements" ? followingIds : tab === "decouvrir" ? notFollowing : people;
+    tab === "abonnements" ? followingIds : tab === "decouvrir" ? notFollowing : followers;
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -87,20 +102,24 @@ export default function ReseauPage() {
     );
   }, [base, query]);
 
-  const counts = { abonnes: people.length, abonnements: followingIds.length, decouvrir: notFollowing.length };
+  const counts = { abonnes: followers.length, abonnements: followingIds.length, decouvrir: notFollowing.length };
 
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-6 animate-fade-in">
       <div className="md:hidden mb-2 -mt-2">
-        <BackButton fallbackHref="/profil" />
+        <BackButton fallbackHref={isMe ? "/profil" : `/profil/${viewed}`} />
       </div>
 
       <div className="flex items-center gap-2 mb-1">
         <Users size={22} className="text-[var(--primary)]" />
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Mon réseau</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">
+          {isMe ? "Mon réseau" : `Réseau de ${owner.firstName} ${owner.lastName}`}
+        </h1>
       </div>
       <p className="text-sm text-[var(--text-muted)] mb-5">
-        Gérez vos abonnés, vos abonnements et découvrez des professionnels.
+        {isMe
+          ? "Vos abonnés, vos abonnements, et les personnes que vous ne suivez pas encore."
+          : `Les personnes qui suivent ${owner.firstName}, et celles que ${owner.firstName} suit.`}
       </p>
 
       {/* Recherche */}
@@ -116,7 +135,7 @@ export default function ReseauPage() {
 
       {/* Onglets */}
       <div className="flex items-center gap-1 border-b border-[var(--card-border)] mb-4">
-        {TABS.map((t) => {
+        {tabs.map((t) => {
           const active = tab === t.key;
           return (
             <button
@@ -135,7 +154,7 @@ export default function ReseauPage() {
 
       {list.length === 0 ? (
         <div className="py-16 text-center text-sm text-[var(--text-muted)]">
-          {tab === "abonnements"
+          {tab === "abonnements" && isMe
             ? "Vous ne suivez encore personne. Passez à « Découvrir »."
             : query
               ? "Aucun résultat."

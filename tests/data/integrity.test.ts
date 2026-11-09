@@ -6,7 +6,10 @@ import { join, sep } from "node:path";
 import "@/lib/demo/invariants";
 import * as derive from "@/lib/demo/derive";
 import { LEDGER } from "@/lib/demo/ledger";
-import { CURRENT_USER, CURRENT_USER_ID, OWNED_PROPERTY_IDS, PROFILES } from "@/lib/demo/identity";
+import { CURRENT_USER, CURRENT_USER_ID, OWNED_PROPERTY_IDS, HOSTED_PROPERTY_IDS, PROFILES } from "@/lib/demo/identity";
+import { FOLLOWS, followersOf, followingOf } from "@/lib/demo/social";
+import { AGENCY_MEMBER_IDS, activeSaleMandates, agencyCounts } from "@/lib/demo/agency";
+import { demoAgency } from "@/content/agence";
 import { DEMO_TODAY } from "@/lib/demo/clock";
 import { properties as CATALOGUE, formations as CATALOGUE_FORMATIONS, currentUser, users, mockReviews } from "@/lib/mock-data";
 import { PRODUCTS } from "@/lib/data/products";
@@ -159,11 +162,14 @@ test("13 — l'utilisateur de démonstration n'est pas la plateforme", () => {
 });
 
 test("14 — le nombre de biens annoncé est celui qu'il possède", () => {
-  assert.equal(currentUser.stats.properties, OWNED_PROPERTY_IDS.length);
+  /* Biens hébergés = courte durée (au tableau de bord, avec écritures) +
+     longue durée (le 4,5 pièces de Renens, sans écriture : E-Dome ne
+     commissionne pas le bail). */
+  assert.equal(currentUser.stats.properties, HOSTED_PROPERTY_IDS.length);
   assert.equal(dashProperties.length, OWNED_PROPERTY_IDS.length);
   assert.equal(
     CATALOGUE.filter((p) => p.host.id === CURRENT_USER.id).length,
-    OWNED_PROPERTY_IDS.length,
+    HOSTED_PROPERTY_IDS.length,
   );
 });
 
@@ -342,42 +348,37 @@ test("26 — GMV agence : volume jamais compté dans le revenu", () => {
 
 /* ── Les trois premiers profils complets (B.1, étape 3) ──────────────────── */
 
-test("27 — les stats des 3 profils concordent avec le journal et les avis", () => {
+test("27 — les stats des SEIZE personnes concordent avec le journal et les avis", () => {
   const round1 = (n: number) => Math.round(n * 10) / 10;
-  const focus = PROFILES.filter((p) => p.ownerId !== CURRENT_USER_ID);
-  /* Les trois premiers profils complets sont bien présents. */
-  assert.deepEqual(
-    focus.map((p) => p.ownerId).sort(),
-    ["user-002", "user-003", "user-015"],
-  );
+  assert.equal(users.length, 16, "le casting compte seize personnes");
+  for (const p of PROFILES) assert.ok(users.some((u) => u.id === p.ownerId), `profil ${p.ownerId} absent de users[]`);
 
-  for (const profile of focus) {
-    const person = users.find((u) => u.id === profile.ownerId);
-    assert.ok(person, `profil ${profile.ownerId} absent de users[]`);
-
-    const hostCount = CATALOGUE.filter((p) => p.host.id === profile.ownerId).length;
-    const activity = LEDGER.filter((e) => e.ownerId === profile.ownerId && e.status !== "cancelled").length;
-    const revenue = Math.round(derive.total({ ownerId: profile.ownerId }));
-    const hosted = new Set(CATALOGUE.filter((p) => p.host.id === profile.ownerId).map((p) => p.id));
-    const revs = mockReviews.filter((r) => hosted.has(r.propertyId));
+  for (const person of users) {
+    const id = person.id;
+    const hostCount = CATALOGUE.filter((p) => p.host.id === id).length;
+    const activity = LEDGER.filter((e) => e.ownerId === id && e.status !== "cancelled").length;
+    const revenue = id === CURRENT_USER_ID ? 0 : Math.round(derive.total({ ownerId: id }));
+    const revs = mockReviews.filter((r) => r.recipientId === id);
     const rating = revs.length ? round1(revs.reduce((s, r) => s + r.rating, 0) / revs.length) : 0;
 
-    assert.equal(person.stats.properties, hostCount, `${profile.ownerId} : properties`);
-    assert.equal(person.stats.transactions, activity, `${profile.ownerId} : transactions`);
-    assert.equal(person.stats.revenue, revenue, `${profile.ownerId} : revenue commissionnable`);
-    assert.equal(person.stats.reviews, revs.length, `${profile.ownerId} : reviews`);
-    assert.equal(person.stats.rating, rating, `${profile.ownerId} : rating`);
-
-    /* Chaque profil a une activité ce mois-ci (dashboard non vide). */
-    assert.ok(derive.currentMonth({ ownerId: profile.ownerId }) > 0, `${profile.ownerId} : mois courant vide`);
+    assert.equal(person.stats.properties, hostCount, `${id} : properties`);
+    assert.equal(person.stats.transactions, activity, `${id} : transactions`);
+    assert.equal(person.stats.revenue, revenue, `${id} : revenue commissionnable`);
+    assert.equal(person.stats.reviews, revs.length, `${id} : reviews`);
+    assert.equal(person.stats.rating, rating, `${id} : rating`);
+  }
+  /* Chaque profil à activité récurrente a un mois courant non vide. */
+  for (const p of PROFILES) {
+    if (p.ownedPropertyIds.length === 0 && p.ownedFormationIds.length === 0) continue;
+    assert.ok(derive.currentMonth({ ownerId: p.ownerId }) > 0, `${p.ownerId} : mois courant vide`);
   }
 });
 
 test("28 — le volume de mandats de vente (GMV) reste hors du revenu", () => {
   /* Sophie et Jean-Luc portent un volume de mandats ; Marc n'en a aucun. */
-  assert.ok(derive.gmvVolume("user-002") > 0, "Sophie doit porter un volume de mandats");
+  assert.ok(derive.gmvVolume("user-002") > 0, "Céline doit porter un volume de mandats");
   assert.ok(derive.gmvVolume("user-015") > 0, "Jean-Luc doit porter un volume de mandats");
-  assert.equal(derive.gmvVolume("user-003"), 0, "Marc (investisseur) n'a aucun mandat de vente");
+  assert.equal(derive.gmvVolume("user-003"), 0, "Ennio (investisseur) n'a aucun mandat de vente");
   /* Ce volume n'entre jamais dans le revenu dérivé. */
   for (const owner of ["user-002", "user-015"]) {
     const revenueEntries = derive.entries({ ownerId: owner });
@@ -469,7 +470,7 @@ test("30 — aucun « courtier » dans src/ hors cadre juridique (garde-fou D16.
 test("31 — la fiche publique affiche un volume, jamais un revenu (D16.1)", () => {
   const year = DEMO_TODAY.getUTCFullYear();
   /* Les agences de la démo portent un volume de l'année ; un particulier non. */
-  assert.ok(derive.gmvVolume("user-002", year) > 0, "Sophie : volume de l'année attendu");
+  assert.ok(derive.gmvVolume("user-002", year) > 0, "Céline : volume de l'année attendu");
   assert.ok(derive.gmvVolume("user-015", year) > 0, "Jean-Luc : volume de l'année attendu");
   assert.equal(derive.gmvVolume("user-003", year), 0);
   /* Formatage déterministe, sans toLocaleString. */
@@ -481,4 +482,106 @@ test("31 — la fiche publique affiche un volume, jamais un revenu (D16.1)", () 
   assert.match(header, /Volume de transactions \{transactionVolume\.year\}/);
   assert.match(header, /pas un revenu/);
   assert.doesNotMatch(header, /chiffre d.affaires|revenus|gains/i);
+});
+
+/* ── Chantier P1 — le casting des seize ─────────────────────────────────── */
+
+test("32 — abonnés et suivis égalent le graphe FOLLOWS (seize personnes)", () => {
+  const ids = new Set(users.map((u) => u.id));
+  const edges = new Set<string>();
+  for (const e of FOLLOWS) {
+    assert.ok(ids.has(e.from) && ids.has(e.to), `relation hors annuaire : ${e.from}→${e.to}`);
+    assert.notEqual(e.from, e.to, `auto-suivi : ${e.from}`);
+    const k = `${e.from}→${e.to}`;
+    assert.ok(!edges.has(k), `relation en double : ${k}`);
+    edges.add(k);
+  }
+  for (const u of users) {
+    assert.equal(u.stats.followers, followersOf(u.id).length, `${u.id} : abonnés`);
+    assert.equal(u.stats.following, followingOf(u.id).length, `${u.id} : suivis`);
+    /* Un réseau qui se lance : quelques abonnés, une quinzaine au plus. */
+    assert.ok(u.stats.followers >= 1 && u.stats.followers <= 15, `${u.id} : ${u.stats.followers} abonnés`);
+  }
+  /* « Abonnés » n'est plus l'annuaire entier. */
+  assert.ok(followersOf(CURRENT_USER_ID).length < users.length - 1);
+  assert.equal(DEFAULT_PROFILE.stats.followers, followersOf(CURRENT_USER_ID).length);
+  assert.equal(DEFAULT_PROFILE.stats.following, followingOf(CURRENT_USER_ID).length);
+});
+
+test("33 — chaque avis vient de l'annuaire et se rattache à un achat réel", () => {
+  const name = (id: string) => {
+    const u = users.find((x) => x.id === id)!;
+    return `${u.firstName} ${u.lastName}`;
+  };
+  for (const r of mockReviews) {
+    assert.ok(users.some((u) => u.id === r.author.id), `avis ${r.id} : auteur hors annuaire`);
+    assert.notEqual(r.author.id, r.recipientId, `avis ${r.id} : auto-évaluation`);
+    if (r.subject.kind === "formation") {
+      assert.ok(
+        LEDGER.some((e) => e.source === "formations" && e.subject.id === r.subject.id && e.counterparty === name(r.author.id)),
+        `avis ${r.id} : ${r.author.id} n'a pas suivi ${r.subject.id}`,
+      );
+    }
+  }
+  /* Les relations réciproques du casting. */
+  const has = (author: string, recipient: string) => mockReviews.some((r) => r.author.id === author && r.recipientId === recipient);
+  assert.ok(has("user-003", "user-002"), "Ennio → Céline");
+  assert.ok(mockReviews.find((r) => r.author.id === "user-003" && r.recipientId === "user-002")?.reply, "réponse de Céline à Ennio");
+  assert.ok(has("user-007", "user-005"), "Bernard → Nikola");
+  assert.ok(has("user-002", "user-005") && has("user-005", "user-002"), "Céline ↔ Nikola");
+  assert.ok(has("user-002", "user-010") && has("user-010", "user-002"), "Céline ↔ Elena");
+  assert.ok(has("user-011", "user-015"), "une cliente → Jean-Luc");
+  assert.ok(mockReviews.some((r) => r.author.id === "user-013" && r.subject.kind === "formation" && r.recipientId === "user-016"), "Mirjana → formation d'Amina");
+  assert.ok(mockReviews.some((r) => r.author.id === "user-001" && r.subject.kind === "formation" && r.recipientId === "user-011"), "Léo → formation de Sandrine");
+});
+
+test("34 — catalogue : lieux du casting, location longue durée, biens vendus retirés", () => {
+  const lt = CATALOGUE.filter((p) => p.transactionType === "location-lt");
+  assert.ok(lt.length >= 5, `${lt.length} biens en longue durée`);
+  const lemanique = ["Lausanne", "Renens", "Prilly", "Vevey", "Morges", "Nyon", "Montreux", "Pully", "Lutry"];
+  assert.ok(lt.filter((p) => lemanique.includes(p.location.city)).length >= 2, "plusieurs locations sur l'arc lémanique");
+  /* Le seul bien hors Suisse est le riad d'Amina (profil marocain). */
+  for (const p of CATALOGUE.filter((x) => x.location.country !== "Suisse")) {
+    assert.equal(p.host.id, "user-016", `${p.id} hors Suisse sans profil international`);
+  }
+  /* Tout hôte est une personne du casting ; aucun ancien bien lointain. */
+  for (const p of CATALOGUE) {
+    assert.ok(users.some((u) => u.id === p.host.id), `${p.id} : hôte hors annuaire`);
+    assert.doesNotMatch(p.location.city, /Dubai|Phuket|Santorin|Lisbonne|Nice|Barcelone|Zurich|Lugano/);
+  }
+  /* L'appartement que Léo loue à Renens existe, en longue durée. */
+  assert.ok(CATALOGUE.some((p) => p.host.id === CURRENT_USER_ID && p.location.city === "Renens" && p.transactionType === "location-lt"));
+  /* Un bien vendu n'est plus proposé. */
+  for (const p of CATALOGUE.filter((x) => x.soldTo)) assert.ok(users.some((u) => u.id === p.soldTo), `${p.id} : acheteur hors annuaire`);
+});
+
+test("35 — l'agence de démonstration est Hartmann Immobilier SA, avec une vraie équipe", () => {
+  assert.equal(demoAgency.name, "Hartmann Immobilier SA");
+  assert.deepEqual([...AGENCY_MEMBER_IDS].sort(), ["user-004", "user-015"]);
+  const counts = agencyCounts();
+  assert.equal(counts.members, AGENCY_MEMBER_IDS.length);
+  assert.equal(counts.activeMandates, activeSaleMandates().length);
+  for (const p of activeSaleMandates()) {
+    assert.ok(AGENCY_MEMBER_IDS.includes(p.host.id), `${p.id} : mandat d'un non-membre`);
+    assert.equal(p.soldTo, undefined);
+  }
+  const slugPage = readFileSync("src/app/(app)/agence/[slug]/page.tsx", "utf8");
+  assert.doesNotMatch(slugPage, /CATALOGUE\.filter/);
+});
+
+test("36 — aucun portrait réel dans src/ : tout visage vient de /avatars", () => {
+  for (const u of users) assert.equal(u.avatar, `/avatars/${u.id}.jpg`, `${u.id} : avatar`);
+  const FACE_IDS = [
+    "1500648767791", "1463453091185", "1504257432389", "1531746020798", "1535713875002", "1544005313",
+    "1548449112", "1560250097", "1580489944761", "1487412720507", "1507003211169", "1438761681033",
+    "1472099645785", "1494790108377", "1506794778202", "1534528741775", "1507591064344", "1519345182560",
+    "1581094794329",
+  ];
+  const offenders: string[] = [];
+  for (const file of listSourceFiles("src")) {
+    if (!/\.(tsx?|jsx?)$/.test(file)) continue;
+    const text = readFileSync(file, "utf8");
+    if (/crop=faces?/.test(text) || FACE_IDS.some((id) => text.includes(`photo-${id}`))) offenders.push(file);
+  }
+  assert.deepEqual(offenders, [], `portraits réels :\n${offenders.join("\n")}`);
 });

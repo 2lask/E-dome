@@ -10,16 +10,19 @@
    l'agence postule avec quatre champs imposés. Elle ne reçoit jamais un
    contact ; c'est le particulier qui l'ouvre. */
 
+/* L'agence de démonstration est Hartmann Immobilier SA, dirigée par Jean-Luc
+   Hartmann (casting). Ce fichier n'en porte que l'identité et les textes ; son
+   équipe (de vraies personnes de l'annuaire), ses mandats et tous ses
+   compteurs se dérivent dans `src/lib/demo/agency.ts`. */
 export const demoAgency = {
-  slug: "regie-du-leman",
-  name: "Régie du Léman",
-  city: "Lausanne",
+  slug: "hartmann-immobilier",
+  name: "Hartmann Immobilier SA",
+  city: "Neuchâtel",
   verified: true,
-  since: "2019",
-  members: 6,
-  activeMandates: 14,
+  founded: "2006",
+  since: "2026",
   plan: "vitrine" as const,
-  tagline: "Vente et gérance sur l'arc lémanique, de Nyon à Vevey.",
+  tagline: "Vente, estimation et gérance sur le littoral neuchâtelois, jusqu'à La Gruyère et au Nord vaudois.",
 } as const;
 
 export const agencePage = {
@@ -37,7 +40,7 @@ export const agencePage = {
     { key: "equipe", label: "Équipe", hint: "Vos agents et leurs droits.", href: "/agence/equipe", stage: "launch" },
     { key: "statistiques", label: "Statistiques", hint: "Audience, conversions, délais de vente.", href: "/agence/statistiques", stage: "launch" },
     { key: "abonnement", label: "Abonnement", hint: "Votre formule et ce qu'elle inclut.", href: "/agence/abonnement", stage: "launch" },
-    { key: "publique", label: "Page publique", hint: "Ce que voient les visiteurs de votre vitrine.", href: "/agence/regie-du-leman", stage: "launch" },
+    { key: "publique", label: "Page publique", hint: "Ce que voient les visiteurs de votre vitrine.", href: `/agence/${demoAgency.slug}`, stage: "launch" },
   ],
 
   demandes: {
@@ -49,10 +52,10 @@ export const agencePage = {
     appliedLabel: "Candidature envoyée",
     applyNote: "Postuler est gratuit. Vous renseignez taux, inclus, délai et deux références — les quatre champs imposés.",
     items: [
-      { id: "d1", type: "Appartement 4,5 p.", sector: "Lausanne — Sous-gare", budget: "≈ 1 250 000 CHF", posted: "il y a 1 h", applicants: 2 },
-      { id: "d2", type: "Villa individuelle", sector: "Pully", budget: "≈ 2 400 000 CHF", posted: "il y a 4 h", applicants: 1 },
-      { id: "d3", type: "Studio", sector: "Lausanne — Centre", budget: "≈ 380 000 CHF", posted: "il y a 9 h", applicants: 3 },
-      { id: "d4", type: "Immeuble de rendement", sector: "Vevey", budget: "≈ 5 800 000 CHF", posted: "il y a 1 j", applicants: 0 },
+      { id: "d1", type: "Appartement 4,5 p.", sector: "Neuchâtel — Vauseyon", budget: "≈ 820 000 CHF", posted: "il y a 1 h", applicants: 2 },
+      { id: "d2", type: "Villa individuelle", sector: "Marin-Epagnier", budget: "≈ 1 300 000 CHF", posted: "il y a 4 h", applicants: 1 },
+      { id: "d3", type: "Studio", sector: "Neuchâtel — Centre", budget: "≈ 310 000 CHF", posted: "il y a 9 h", applicants: 3 },
+      { id: "d4", type: "Immeuble de rendement", sector: "La Chaux-de-Fonds", budget: "≈ 3 200 000 CHF", posted: "il y a 1 j", applicants: 0 },
     ],
   },
 
@@ -66,32 +69,13 @@ export const agencePage = {
   },
 } as const;
 
-/* Équipe de démonstration, pour `/agence/equipe`. */
-export const agencyTeam = [
-  { id: "m1", name: "Claire Rochat", role: "Directrice", permissions: "Tous droits", mandates: 5 },
-  { id: "m2", name: "Julien Favre", role: "Agent immobilier", permissions: "Mandats, visites", mandates: 4 },
-  { id: "m3", name: "Sofia Marchetti", role: "Agente immobilière", permissions: "Mandats, visites", mandates: 3 },
-  { id: "m4", name: "Dylan Perret", role: "Assistant", permissions: "Lecture, agenda", mandates: 0 },
-  { id: "m5", name: "Nadia Berger", role: "Gérance", permissions: "Baux, décomptes", mandates: 2 },
-  { id: "m6", name: "Marc Aubert", role: "Photographe interne", permissions: "Médias", mandates: 0 },
-];
-
-/* Mandats de démonstration, pour `/agence/mandats`. Le taux est CELUI DE
-   L'AGENCE, affiché seulement : E-Dome ne touche rien dessus (Mandate.
-   agencyCommission est display-only dans le modèle). */
-export const agencyMandates = [
-  { id: "M-014", bien: "Appartement 4,5 p. — Lausanne", agent: "Julien Favre", rate: "2,5 %", status: "En visite", stage: "visites" },
-  { id: "M-013", bien: "Villa — Pully", agent: "Claire Rochat", rate: "3 %", status: "Offre reçue", stage: "offre" },
-  { id: "M-011", bien: "Duplex — Montreux", agent: "Sofia Marchetti", rate: "2,8 %", status: "Sous compromis", stage: "compromis" },
-  { id: "M-009", bien: "Studio — Vevey", agent: "Julien Favre", rate: "Forfait 9 000 CHF", status: "Mandat signé", stage: "mandat" },
-];
+/* L'équipe et les mandats ne s'écrivent plus ici : ce sont de vraies
+   personnes de l'annuaire et leurs vrais biens (`src/lib/demo/agency.ts`). */
 
 /* Statistiques de démonstration, pour `/agence/statistiques`. */
 export const agencyStats = {
   kpis: [
-    { label: "Vues sur la vitrine (30 j)", value: "1 840" },
-    { label: "Demandes reçues", value: "23" },
-    { label: "Mandats signés (année)", value: "17" },
+    { label: "Vues sur la vitrine (30 j)", value: "412" },
     { label: "Délai de vente médian", value: "6 semaines" },
   ],
   note: "Exemple de tableau de bord. Les chiffres décrivent l'agence de démonstration, pas E-Dome.",

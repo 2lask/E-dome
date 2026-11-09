@@ -7,6 +7,8 @@ import { isPlatformRole, migrateLegacyRoles } from "./model/identity";
 import type { Profile } from "./profile-types";
 import { DEFAULT_PROFILE } from "./profile-data";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
+import { followingOf } from "./demo/social";
+import { CURRENT_USER_ID } from "./demo/identity";
 import { DEFAULT_VIEWING_AS } from "./../content/roles";
 
 // ─── Exchange rates (base CHF = 1) ──────────────────────────────────────────
@@ -112,7 +114,13 @@ const AppContext = createContext<AppContextValue | null>(null);
 const DEFAULT_ROLE: PlatformRole = "particulier";
 const DEFAULT_ROLES: PlatformRole[] = ["particulier", "hote", "createur", "apporteur", "agence"];
 const DEFAULT_CURRENCY: Currency = "CHF";
-const DEFAULT_FAVORITES: string[] = ["prop2", "prop5", "prop3", "prop9"];
+/* Des biens d'AUTRES personnes : on ne met pas ses propres logements en favori. */
+const DEFAULT_FAVORITES: string[] = ["prop12", "prop13", "prop3", "prop4"];
+/* Les suivis de départ sont ceux du graphe FOLLOWS (demo/social.ts) : /reseau,
+   le profil et les suggestions partent des mêmes relations. La clé de
+   stockage est versionnée pour qu'un ancien jeu (vide) ne les masque pas. */
+const DEFAULT_FOLLOWS: string[] = followingOf(CURRENT_USER_ID);
+const FOLLOWS_KEY = "followedUsers.v2";
 const STORAGE_PREFIX = "edome_";
 
 /* Ecriture localStorage tolerante aux pannes.
@@ -139,7 +147,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [viewingAs, setViewingAsState] = useState<PlatformRole>(DEFAULT_VIEWING_AS);
   const [explainMode, setExplainModeState] = useState<boolean>(true);
   const [favorites, setFavorites] = useState<Set<string>>(new Set(DEFAULT_FAVORITES));
-  const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
+  const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set(DEFAULT_FOLLOWS));
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [referralLinks, setReferralLinks] = useState<ReferralLink[]>(DEFAULT_REFERRAL_LINKS);
@@ -181,7 +189,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const storedFavs = localStorage.getItem(`${STORAGE_PREFIX}favorites`);
       if (storedFavs) setFavorites(new Set(JSON.parse(storedFavs)));
 
-      const storedFollows = localStorage.getItem(`${STORAGE_PREFIX}followedUsers`);
+      const storedFollows = localStorage.getItem(`${STORAGE_PREFIX}${FOLLOWS_KEY}`);
       if (storedFollows) setFollowedUsers(new Set(JSON.parse(storedFollows)));
 
       const storedCurrency = localStorage.getItem(`${STORAGE_PREFIX}currency`);
@@ -258,7 +266,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!mounted) return;
-    persist("followedUsers", JSON.stringify([...followedUsers]));
+    persist(FOLLOWS_KEY, JSON.stringify([...followedUsers]));
   }, [followedUsers, mounted]);
 
   useEffect(() => {

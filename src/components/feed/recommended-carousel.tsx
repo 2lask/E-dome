@@ -4,7 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, MapPin, Crown, CalendarDays, ChevronLeft, ChevronRight, Coins, TrendingUp } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { properties } from "@/lib/mock-data";
+import { properties as CATALOGUE, isAvailable } from "@/lib/mock-data";
+
+/* Un bien vendu n'est plus recommandé. */
+const properties = CATALOGUE.filter(isAvailable);
 /* Les événements viennent de la couche de données, plus de `mock-data.events`.
    Ce dernier porte des ids `evt-00N` que la fiche `/evenements/[id]` ne sait
    pas résoudre : tous les liens événement de ce carrousel menaient donc à

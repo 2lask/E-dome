@@ -3,13 +3,15 @@ import type { Profile } from "./profile-types";
 import { properties } from "./mock-data";
 import { requirePerson } from "./demo/directory";
 import { buildObjectAffiliate } from "./referral-links";
+import { DEMO_TODAY } from "./demo/clock";
 
 /* Posts affichés dans l'onglet « Publications » du profil : les vraies
    publications du feed social (vidéos, légendes, commentaires, biens
    affiliés + lien commission). Générés à partir de l'auteur (profil courant
    ou profil consulté) pour que nom/avatar correspondent. */
 
-const hAgo = (h: number) => new Date(Date.now() - h * 3600_000).toISOString();
+/* Daté sur l'horloge figée de la démo, jamais Date.now() (hydratation). */
+const hAgo = (h: number) => new Date(DEMO_TODAY.getTime() - h * 3600_000).toISOString();
 
 /** Convertit un profil en auteur (User) pour ses publications. */
 export function profileToAuthor(p: Profile): User {
@@ -44,9 +46,9 @@ export function profileToAuthor(p: Profile): User {
    que l'annuaire ne lui donne pas) : c'était le bug racine « un id, deux identités ».
    `requirePerson` garantit le même nom, le même avatar et les mêmes stats que
    partout ailleurs, et casse la compilation si l'id disparaît. */
-const C_SOPHIE: User = requirePerson("user-002");
-const C_MARC: User = requirePerson("user-003");
-const C_AMINA: User = requirePerson("user-004");
+const C_SOPHIE: User = requirePerson("user-002"); // Céline Bovard
+const C_MARC: User = requirePerson("user-003"); // Ennio Bordoni
+const C_AMINA: User = requirePerson("user-016"); // Amina El Idrissi
 
 const mkComments = (postId: string, items: { author: User; content: string; h: number; likes?: number }[]): Comment[] =>
   items.map((c, i) => ({ id: `c-${postId}-${i}`, author: c.author, content: c.content, createdAt: hAgo(c.h), likes: c.likes ?? 0 }));
@@ -173,8 +175,8 @@ export function getMyPosts(author: User): SocialPost[] {
     },
     {
       id: "me-p9", author,
-      content: "Off-market : villa d'architecte avec piscine à débordement. Réservé à mon réseau d'investisseurs. #offmarket #prestige",
-      media: [clip(6)], type: "post", likes: 2103, location: "Nice, France", createdAt: hAgo(48),
+      content: "Une maison familiale à Pully, vendue par son propriétaire. Jardin, vue lac depuis l'étage. Je la partage avec mon réseau. #pully #vente",
+      media: [clip(6)], type: "post", likes: 2103, location: "Pully, Suisse", createdAt: hAgo(48),
       comments: mkComments("me-p9", [{ author: C_MARC, content: "Sérieusement intéressé. Je t'écris.", h: 46, likes: 38 }]),
       property: prop3, affiliate: affiliate(prop3),
     },
@@ -182,7 +184,7 @@ export function getMyPosts(author: User): SocialPost[] {
       id: "me-p10", author,
       content: "Petit tour photos d'un penthouse en bord de mer. 4 chambres, vue 270°, livré meublé. #penthouse",
       media: [IMG("1600585154340-be6161a56a0c"), IMG("1600585154526-990dced4db0d"), IMG("1600596542815-ffad4c1539a9"), IMG("1600607687939-ce8a6c25118c")],
-      type: "post", likes: 1102, location: "Cannes, France", createdAt: hAgo(56),
+      type: "post", likes: 1102, location: "Lausanne, Suisse", createdAt: hAgo(56),
       comments: mkComments("me-p10", [{ author: C_SOPHIE, content: "La rareté absolue.", h: 54, likes: 26 }]),
     },
     {
@@ -200,7 +202,7 @@ export function getMyPosts(author: User): SocialPost[] {
     {
       id: "me-p13", author,
       content: "Deal bouclé en 9 jours, +18 % au-dessus de la mise à prix. Quand le réseau parle, ça va vite. #deal #network",
-      media: [clip(22)], type: "post", likes: 2456, location: "Dubaï, Émirats", createdAt: hAgo(96),
+      media: [clip(22)], type: "post", likes: 2456, location: "Lausanne, Suisse", createdAt: hAgo(96),
       comments: mkComments("me-p13", [{ author: C_MARC, content: "Performance hallucinante.", h: 94, likes: 42 }]),
     },
     {

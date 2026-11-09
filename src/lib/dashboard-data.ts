@@ -346,11 +346,11 @@ export const dashboardReservations: Reservation[] = derive
 
    `NAMED` associe chaque avis au bien dont il parle reellement : le chalet
    pour la cheminee, le studio genevois pour la proximite de la gare, la
-   villa de Phuket pour la vue. */
+   studio de Sous-Gare pour le quartier. */
 const REVIEW_TARGETS = {
   chalet: OWNED_PROPERTY_IDS[0],
   studio: OWNED_PROPERTY_IDS[1],
-  villa: OWNED_PROPERTY_IDS[2],
+  lausanne: OWNED_PROPERTY_IDS[2],
 } as const;
 
 const propName = (id: string) => CATALOGUE.find((p) => p.id === id)!.title;
@@ -361,8 +361,8 @@ export const reviews: Review[] = [
   { id: "rv3", source: "formation", sourceId: OWNED_FORMATION_IDS[0], sourceName: CATALOGUE_FORMATIONS.find((f) => f.id === OWNED_FORMATION_IDS[0])!.title, guest: "Cedric Lopez", rating: 5, title: "Pile ce que je cherchais", body: "Modules tres clairs, exemples concrets, j ai augmente mon taux d occupation de 22 % en 2 mois.", postedAt: "2026-08-30", channel: "edome", response: "Merci pour le retour Cedric, content que ca t aide concretement !" },
   { id: "rv4", source: "bien", sourceId: REVIEW_TARGETS.studio, sourceName: propName(REVIEW_TARGETS.studio), guest: "Marie Leroy", rating: 4, title: "Petit mais bien place", body: "Studio propre, proche de la gare. Manque juste un peu de rangement.", postedAt: "2026-09-05", channel: "edome" },
   { id: "rv5", source: "formation", sourceId: OWNED_FORMATION_IDS[0], sourceName: CATALOGUE_FORMATIONS.find((f) => f.id === OWNED_FORMATION_IDS[0])!.title, guest: "Anne Schmid", rating: 5, title: "Indispensable", body: "Le module sur les charges m a fait revoir tout mon decompte annuel.", postedAt: "2026-08-28", channel: "edome" },
-  { id: "rv6", source: "bien", sourceId: REVIEW_TARGETS.villa, sourceName: propName(REVIEW_TARGETS.villa), guest: "Thomas Roux", rating: 5, title: "Cadre exceptionnel", body: "La piscine et le jardin valent a eux seuls le deplacement. Communication parfaite avant l arrivee.", postedAt: "2026-08-25", channel: "edome" },
-  { id: "rv7", source: "bien", sourceId: REVIEW_TARGETS.villa, sourceName: propName(REVIEW_TARGETS.villa), guest: "Amina Khan", rating: 2, title: "Wi-Fi instable", body: "Tres belle vue mais wi-fi qui coupe regulierement, problematique en teletravail.", postedAt: "2026-09-08", channel: "booking" },
+  { id: "rv6", source: "bien", sourceId: REVIEW_TARGETS.lausanne, sourceName: propName(REVIEW_TARGETS.lausanne), guest: "Thomas Roux", rating: 5, title: "Quartier parfait", body: "La gare et Ouchy a pied, le studio est calme et bien equipe. Communication parfaite avant l arrivee.", postedAt: "2026-08-25", channel: "edome" },
+  { id: "rv7", source: "bien", sourceId: REVIEW_TARGETS.lausanne, sourceName: propName(REVIEW_TARGETS.lausanne), guest: "Inès Khan", rating: 2, title: "Wi-Fi instable", body: "Studio bien place mais wi-fi qui coupe regulierement, problematique en teletravail.", postedAt: "2026-09-08", channel: "booking" },
 ];
 
 /* Messagerie. Le contexte de chaque fil — le bien et les dates — descend des

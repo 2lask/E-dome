@@ -13,7 +13,11 @@ import { useApp } from "@/lib/context";
 import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 import { AirbnbPropertyCard } from "@/components/ui/airbnb-property-card";
 import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
-import { properties as ALL_PROPERTIES } from "@/lib/mock-data";
+import { properties as CATALOGUE, isAvailable } from "@/lib/mock-data";
+
+/* Les biens proposés : un bien vendu (`soldTo`) reste consultable depuis
+   un avis ou un profil, mais ne figure plus dans l'exploration. */
+const ALL_PROPERTIES = CATALOGUE.filter(isAvailable);
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
 
 // ─── Constantes ─────────────────────────────────────────────────────────────

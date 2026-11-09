@@ -1,4 +1,4 @@
-import { properties as CATALOGUE, formations as FORMATIONS } from "@/lib/mock-data";
+import { properties as CATALOGUE, formations as FORMATIONS, users as PEOPLE } from "@/lib/mock-data";
 import { DEMO_TODAY, iso, last12Months, stayLabel } from "./clock";
 import { CURRENT_USER, CURRENT_USER_ID, PROFILES } from "./identity";
 
@@ -117,7 +117,7 @@ const GUESTS = [
   "Jean Dupont",
   "Marie Leroy",
   "Thomas Roux",
-  "Amina Khan",
+  "Inès Khan",
   "Laura Meier",
   "Pierre Aubry",
   "Nadia Schmid",
@@ -132,33 +132,99 @@ const GUESTS = [
    depuis le catalogue. C'est ce qui empêche un chiffre de démonstration de
    contredire une fiche.
 
-   La saisonnalité est volontaire et lisible : le chalet de Verbier se remplit
-   l'hiver, la villa de Phuket aussi, le studio de Genève tourne toute
-   l'année. Une courbe plate se remarquerait autant qu'une courbe fausse. */
+   La saisonnalité est volontaire et lisible : Verbier se remplit l'hiver,
+   la Riviera au Jazz de juillet, le studio de Genève tourne toute l'année. Une courbe plate se remarquerait autant qu'une courbe fausse. */
 
-/** Nuits vendues par mois, du plus ancien au plus récent des douze mois. */
+/** Nuits vendues par mois, du plus ancien (octobre de l'an passé) au plus
+    récent (le mois de DEMO_TODAY, septembre). Index 9 = juillet : le Montreux
+    Jazz fait le pic de la Riviera ; index 2 à 5 = l'hiver, la saison de
+    Verbier ; l'été est creux à Marrakech. Chaque plan finit sur un mois courant
+    strictement positif (invariant 5). */
 const NIGHTS_BY_PROPERTY: Record<string, readonly number[]> = {
-  // Verbier — saison de ski marquée.
-  prop5: [7, 4, 2, 1, 2, 3, 5, 6, 8, 9, 6, 7],
-  // Genève — demande d'affaires régulière.
+  // Léo — Verbier : la saison de ski, un creux au printemps, un été correct.
+  prop5: [2, 1, 9, 12, 13, 10, 4, 1, 3, 8, 7, 3],
+  // Léo — Genève, près de Cornavin : demande d'affaires régulière.
   prop2: [14, 13, 15, 16, 14, 12, 10, 11, 15, 17, 16, 15],
-  // Phuket — haute saison en hiver européen.
-  prop9: [11, 9, 7, 5, 4, 4, 6, 8, 10, 12, 10, 11],
-  /* Étape 3 — les trois premiers profils. Chaque plan finit sur un mois courant
-     (dernière valeur) strictement positif : sans ça, le tableau de bord du
-     profil afficherait « 0 CHF » sous un badge de croissance (invariant 5). */
-  // Sophie — pied-à-terre meublé à Lausanne (Ouchy), demande estivale au lac.
+  // Léo — Lausanne Sous-Gare : régulier, plus fort l'été.
+  prop9: [10, 9, 8, 9, 11, 12, 13, 15, 16, 18, 17, 14],
+  // Céline — pied-à-terre à Ouchy, demande estivale au lac.
   prop23: [6, 5, 4, 3, 4, 5, 7, 8, 9, 7, 6, 7],
-  // Marc — studio de rendement à Montreux, régulier toute l'année.
-  prop24: [8, 7, 6, 5, 6, 7, 9, 10, 11, 9, 8, 9],
-  // Marc — 2 pièces meublé à Nyon, entre Genève et Lausanne.
+  // Ennio — studio de Montreux : Jazz en juillet, marché de Noël en décembre.
+  prop24: [8, 7, 9, 5, 6, 7, 9, 10, 11, 16, 12, 9],
+  // Ennio — 2 pièces à Nyon, séjours professionnels.
   prop25: [5, 5, 6, 4, 5, 6, 7, 8, 7, 6, 7, 6],
-  // Jean-Luc — meublé géré au centre de Neuchâtel (gestion locative agence).
+  // Jean-Luc — meublé géré au centre de Neuchâtel.
   prop26: [4, 4, 3, 3, 4, 5, 6, 7, 6, 5, 5, 6],
+  // Mirjana — 2 pièces vue lac à Montreux.
+  prop12: [9, 7, 12, 6, 8, 9, 11, 13, 15, 22, 19, 14],
+  // Mirjana — studio de Clarens.
+  prop6: [10, 8, 13, 7, 9, 10, 12, 14, 16, 22, 20, 15],
+  // Amina — riad en médina : l'automne et le printemps, un été creux (chaleur).
+  prop4: [16, 18, 20, 12, 14, 17, 19, 15, 9, 7, 8, 13],
 };
 
-/** Inscriptions vendues par mois sur la formation de l'utilisateur. */
-const FORMATION_SALES: readonly number[] = [2, 3, 2, 4, 3, 2, 3, 5, 4, 3, 4, 5];
+/* Les séjours des personnes de l'annuaire — ceux qui fondent un avis.
+   La PREMIÈRE réservation du bien, ce mois-là, est à leur nom : un avis de
+   séjour se rattache ainsi à une écriture réelle (invariant 18). Clé :
+   `bien:indexDuMois`. */
+const NAMED_GUESTS: Record<string, string> = {
+  "prop2:6": "user-016", // Amina, salon à Genève (avril)
+  "prop2:8": "user-005", // Nikola, shooting à Genève (juin)
+  "prop5:3": "user-003", // Ennio, ski (janvier)
+  "prop5:4": "user-011", // Sandrine, semaine de ski en famille (février)
+  "prop9:5": "user-013", // Mirjana, à Lausanne (mars)
+  "prop23:9": "user-012", // Yves et son épouse, concert (juillet)
+  "prop23:10": "user-014", // Hélène, rendez-vous à Lausanne (août)
+  "prop24:9": "user-008", // Clémence, week-end au Jazz (juillet)
+  "prop25:7": "user-015", // Jean-Luc, rendez-vous à Genève (mai)
+  "prop26:5": "user-009", // Reto, relevés rue des Parcs (mars)
+  "prop12:8": "user-001", // Léo, chez une consœur (juin)
+  "prop12:10": "user-006", // Ana et sa famille (août)
+  "prop6:9": "user-014", // Hélène, Montreux Jazz (juillet)
+  "prop4:6": "user-002", // Céline, vacances (avril)
+};
+
+/** Inscriptions vendues par mois, par formation. La somme sur douze mois est
+    le `studentCount` du catalogue (invariant 19). */
+const FORMATION_SALES: Record<string, readonly number[]> = {
+  // Léo — investissement locatif.
+  "form-001": [2, 3, 2, 4, 3, 2, 3, 5, 4, 3, 4, 5],
+  // Amina — gestion locative touristique.
+  "form-002": [6, 5, 7, 8, 6, 5, 7, 6, 4, 3, 5, 7],
+  // Reto — rénovation énergétique.
+  "form-005": [1, 2, 1, 2, 2, 3, 2, 1, 1, 1, 2, 2],
+  // Sandrine — fiscalité : le pic de février-mars, la saison des déclarations.
+  "form-007": [4, 5, 3, 6, 9, 11, 4, 2, 2, 1, 3, 5],
+  // Sandrine — premier achat.
+  "form-009": [2, 3, 2, 3, 4, 4, 3, 2, 2, 2, 3, 4],
+  // Amina — pricing dynamique.
+  "form-010": [3, 4, 6, 5, 4, 6, 5, 4, 3, 2, 4, 5],
+};
+
+/* Les inscriptions des personnes de l'annuaire — celles qui fondent un avis
+   de formation. La première inscription du mois est à leur nom. */
+const NAMED_STUDENTS: Record<string, string> = {
+  "form-001:2": "user-003", // Ennio (décembre)
+  "form-001:6": "user-008", // Clémence (avril)
+  "form-005:5": "user-004", // Aline (mars)
+  "form-007:4": "user-001", // Léo (février)
+  "form-009:7": "user-008", // Clémence (mai)
+  "form-010:3": "user-013", // Mirjana (janvier)
+};
+
+/** Nom affichable d'une personne de l'annuaire, pour la contrepartie. */
+function personName(id: string): string {
+  const p = PEOPLE.find((u) => u.id === id);
+  if (!p) throw new Error(`Journal : personne inconnue à l'annuaire — ${id}`);
+  return `${p.firstName} ${p.lastName}`;
+}
+
+/** Inscriptions vendues sur une formation, mois par mois. */
+export function formationSalesPlan(formationId: string): readonly number[] {
+  const plan = FORMATION_SALES[formationId];
+  if (!plan) throw new Error(`Journal : aucun plan d'inscriptions pour ${formationId}`);
+  return plan;
+}
 
 /** Événements organisés : trimestriels, avec places vendues et prix du billet. */
 const EVENTS: readonly { monthIndex: number; id: string; title: string; seats: number; price: number }[] = [
@@ -170,10 +236,10 @@ const EVENTS: readonly { monthIndex: number; id: string; title: string; seats: n
 
 /** Prestations vendues ponctuellement. */
 const SERVICES: readonly { monthIndex: number; id: string; label: string; amount: number; client: string }[] = [
-  { monthIndex: 1, id: "sv-photo-1", label: "Reportage photo · Studio Genève", amount: 480, client: "Marc Dupont" },
-  { monthIndex: 4, id: "sv-staging-1", label: "Home-staging · Verbier", amount: 1250, client: "Anne Schmid" },
-  { monthIndex: 7, id: "sv-photo-2", label: "Reportage photo · Phuket", amount: 620, client: "Laura Meier" },
-  { monthIndex: 10, id: "sv-redac-1", label: "Rédaction d'annonces premium", amount: 240, client: "Cédric Lopez" },
+  { monthIndex: 1, id: "sv-photo-1", label: "Accueil voyageurs et remise des clés · voisin de Sous-Gare", amount: 480, client: "Marc Dupont" },
+  { monthIndex: 4, id: "sv-staging-1", label: "Mise en service d'un meublé · Verbier", amount: 1250, client: "Anne Schmid" },
+  { monthIndex: 7, id: "sv-photo-2", label: "Accompagnement d'un hôte débutant · Lausanne", amount: 620, client: "Laura Meier" },
+  { monthIndex: 10, id: "sv-redac-1", label: "Rédaction d'annonces", amount: 240, client: "Cédric Lopez" },
 ];
 
 /** Ventes de la boutique : quelques articles par mois. */
@@ -248,6 +314,10 @@ function build(): Entry[] {
           const end = new Date(Date.UTC(m.year, m.month, day + nights));
           const isFuture = start.getTime() > DEMO_TODAY.getTime();
           const isPast = end.getTime() <= DEMO_TODAY.getTime();
+          /* Le tirage a toujours lieu (la suite reste déterministe), mais la
+             première réservation du mois peut revenir à une personne nommée. */
+          const drawn = pick(rand, GUESTS);
+          const named = seq === 0 ? NAMED_GUESTS[`${propertyId}:${mi}`] : undefined;
 
           out.push({
             id: `res-${propertyId}-${mi}-${seq}`,
@@ -258,7 +328,7 @@ function build(): Entry[] {
             gross: nights * price,
             status: isFuture ? "pending" : isPast ? "completed" : "confirmed",
             label: name,
-            counterparty: pick(rand, GUESTS),
+            counterparty: named ? personName(named) : drawn,
             stay: { start: iso(start), end: iso(end), nights, label: stayLabel(start, end) },
           });
 
@@ -274,18 +344,24 @@ function build(): Entry[] {
     /* Formations — une écriture par inscription, au prix du catalogue. */
     for (const formationId of profile.ownedFormationIds) {
       const price = formationPrice(formationId);
+      const sales = formationSalesPlan(formationId);
       months.forEach((m, mi) => {
-        for (let i = 0; i < FORMATION_SALES[mi]!; i++) {
+        const count = sales[mi]!;
+        for (let i = 0; i < count; i++) {
+          const drawn = pick(rand, GUESTS);
+          const named = i === 0 ? NAMED_STUDENTS[`${formationId}:${mi}`] : undefined;
           out.push({
             id: `form-${formationId}-${mi}-${i}`,
             ownerId: profile.ownerId,
-            date: iso(new Date(Date.UTC(m.year, m.month, 3 + i * 4))),
+            /* Réparties dans le mois, jamais au-delà du 28 : onze inscriptions
+               ne débordent plus sur le mois suivant. */
+            date: iso(new Date(Date.UTC(m.year, m.month, 2 + Math.floor((i * 26) / count)))),
             source: "formations",
             subject: { kind: "formation", id: formationId },
             gross: price,
             status: "completed",
             label: FORMATIONS.find((f) => f.id === formationId)!.title,
-            counterparty: pick(rand, GUESTS),
+            counterparty: named ? personName(named) : drawn,
           });
         }
       });
@@ -309,10 +385,28 @@ function build(): Entry[] {
         gross: p.price,
         status: "completed",
         label: `Mandat de vente conclu · ${p.title}`,
-        counterparty: pick(rand, GUESTS),
+        /* L'acheteur est une personne de l'annuaire (`soldTo`, invariant 17). */
+        counterparty: p.soldTo ? personName(p.soldTo) : pick(rand, GUESTS),
         commissionable: false,
       });
     });
+
+    /* Prestations de la marketplace — une écriture par prestation vendue, au
+       nom du client de l'annuaire (sujet des avis de prestation). */
+    for (const sale of profile.serviceSales ?? []) {
+      const m = months[sale.monthIndex]!;
+      out.push({
+        id: sale.id,
+        ownerId: profile.ownerId,
+        date: iso(new Date(Date.UTC(m.year, m.month, 8))),
+        source: "services",
+        subject: { kind: "service", id: sale.id },
+        gross: sale.amount,
+        status: "completed",
+        label: sale.label,
+        counterparty: personName(sale.clientId),
+      });
+    }
   }
 
   /* Événements, services, boutique et apports : l'activité de l'utilisateur
