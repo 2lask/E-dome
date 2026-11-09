@@ -18,6 +18,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import { useSession } from "@/lib/use-session";
 
 interface MobileNavItem {
   href: string;
@@ -43,13 +44,19 @@ const publishMenuItems: { icon: LucideIcon; label: string; href: string }[] = [
   { icon: GraduationCap, label: "Créer une formation", href: "/formations/creer" },
   { icon: Radio, label: "Programmer un live", href: "/live" },
   { icon: CalendarPlus, label: "Créer un événement", href: "/evenements/creer" },
-  { icon: Wrench, label: "Proposer un service", href: "/services" },
+  { icon: Wrench, label: "Proposer un service", href: "/services/proposer" },
 ];
 
 export function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  /* Le compteur de messages non lus de la mémoire de session — le même que
+     la barre latérale. Sur mobile, les notifications non lues sont portées
+     par la cloche de l'en-tête et par le menu (barre latérale en tiroir),
+     qui lisent le même compteur unique. */
+  const { unreadMessages } = useSession();
+  const badgeFor = (href: string) => (href === "/messages" ? unreadMessages : 0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu on click outside
@@ -154,12 +161,21 @@ export function MobileNav() {
           <Link
             key={item.href}
             href={item.href}
-            aria-label={item.label}
+            aria-label={badgeFor(item.href) > 0 ? `${item.label}, ${badgeFor(item.href)} non lus` : item.label}
             aria-current={active ? "page" : undefined}
-            className="flex flex-col items-center justify-center gap-1 px-3 min-w-[44px] min-h-[44px] active:opacity-60 transition-opacity"
+            className="relative flex flex-col items-center justify-center gap-1 px-3 min-w-[44px] min-h-[44px] active:opacity-60 transition-opacity"
             style={{ color: active ? "var(--primary)" : "var(--text-muted)" }}
           >
             <Icon size={20} />
+            {badgeFor(item.href) > 0 && (
+              <span
+                aria-hidden
+                className="absolute top-0.5 right-1 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-semibold leading-4 text-center"
+                style={{ background: "var(--primary)", color: "#ffffff" }}
+              >
+                {badgeFor(item.href)}
+              </span>
+            )}
             <span className="text-[10px] font-medium">{item.label}</span>
           </Link>
         );

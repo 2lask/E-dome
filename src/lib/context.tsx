@@ -9,6 +9,7 @@ import { DEFAULT_PROFILE } from "./profile-data";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
 import { followingOf } from "./demo/social";
 import { CURRENT_USER_ID } from "./demo/identity";
+import { recordSessionEvent } from "./use-session";
 import { DEFAULT_VIEWING_AS } from "./../content/roles";
 
 // ─── Exchange rates (base CHF = 1) ──────────────────────────────────────────
@@ -337,14 +338,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [favorites]
   );
 
+  /* Suivre quelqu'un laisse une trace dans la mémoire de session : la personne
+     suivie reçoit une notification « X vous suit » (visible quand on
+     l'incarnera, chantier P3). Ne plus suivre n'en produit pas. L'écriture se
+     fait hors du `setState` (un updater doit rester pur). */
   const toggleFollow = useCallback((id: string) => {
+    const adding = !followedUsers.has(id);
     setFollowedUsers((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
-  }, []);
+    if (adding) recordSessionEvent({ kind: "follow", data: { toId: id } });
+  }, [followedUsers]);
 
   const isFollowing = useCallback(
     (id: string) => followedUsers.has(id),

@@ -8,6 +8,7 @@ import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 import { PageHeader } from "@/components/ui/page-header";
 import { formations as catalogue } from "@/lib/mock-data";
 import type { User } from "@/lib/types";
+import { useSession } from "@/lib/use-session";
 
 /* ─── Catalogue ──────────────────────────────────────────────────────────────
 
@@ -90,15 +91,34 @@ export default function FormationsPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Tous");
 
+  /* Les formations publiées pendant la visite (mémoire de session) entrent
+     au catalogue, en tête, avec leur propre fiche. */
+  const { formations: published } = useSession();
+  const allFormations = useMemo(
+    () => [
+      ...published.map((f) => ({
+        ...f,
+        instructorName: fullName(f.instructor),
+        moduleCount: f.modules.length,
+        progress: 0,
+        enrolled: false,
+        featured: false,
+      })),
+      ...FORMATIONS,
+    ],
+    [published],
+  );
+  const publishedIds = useMemo(() => new Set(published.map((f) => f.id)), [published]);
+
   const enrolledFormations = FORMATIONS.filter((f) => f.enrolled);
 
   const filtered = useMemo(() => {
-    return FORMATIONS.filter((f) => {
+    return allFormations.filter((f) => {
       const matchSearch = f.title.toLowerCase().includes(search.toLowerCase()) || f.instructorName.toLowerCase().includes(search.toLowerCase());
       const matchCat = category === "Tous" || f.category === category;
       return matchSearch && matchCat;
     });
-  }, [search, category]);
+  }, [search, category, allFormations]);
 
   const featured = FORMATIONS.find((f) => f.featured);
 
@@ -224,12 +244,15 @@ export default function FormationsPage() {
                 </div>
                 <div className="p-4 space-y-2">
                   <span className="text-xs text-[var(--text-muted)]">{f.category}</span>
+                  {publishedIds.has(f.id) && (
+                    <span className="ml-2 inline-block px-2 py-0.5 bg-emerald-500/15 text-emerald-500 rounded-full text-[11px] font-medium">Nouveau</span>
+                  )}
                   <h3 className="font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors line-clamp-2">{f.title}</h3>
                   <Link href={`/profil/${f.instructor.id}`} className="relative z-20 inline-flex items-center gap-2 hover:underline">
                     <img src={f.instructor.avatar} alt="" className="w-6 h-6 rounded-full object-cover" />
                     <span className="text-sm text-[var(--text-secondary)]">{f.instructorName}</span>
                   </Link>
-                  <Stars rating={f.rating} />
+                  {f.rating > 0 ? <Stars rating={f.rating} /> : <span className="block text-xs text-[var(--text-muted)]">Pas encore d&apos;avis</span>}
                   <div className="flex items-center justify-between pt-1">
                     <span className="font-bold text-[var(--primary)]">{formatPrice(f.price)}</span>
                     <span className="text-xs text-[var(--text-muted)]">{f.duration} &middot; {f.moduleCount} modules</span>

@@ -7,6 +7,8 @@ import { avisOf, biensOf, formationsOf } from "@/lib/demo/showcase";
 import { ProfileView } from "@/components/profile/profile-view";
 import type { ProfileData } from "@/components/profile/profile-showcase";
 import { getMyPosts, profileToAuthor } from "@/lib/profile-posts";
+import { useSession } from "@/lib/use-session";
+import { sessionShowcaseOf } from "@/lib/demo/session-views";
 
 /* /profil — mon profil. Identité + sections « LinkedIn » viennent du contexte
    (profile, persisté et éditable). L'onglet Publications rend mes vrais posts
@@ -39,9 +41,18 @@ const SHOWCASE: Omit<ProfileData, "posts"> = {
 
 export default function ProfilPage() {
   const { profile } = useApp();
-  const showcase: ProfileData = useMemo(
-    () => ({ ...SHOWCASE, posts: getMyPosts(profileToAuthor(profile)) }),
-    [profile],
-  );
+  /* Ce que la personne a publié pendant la visite passe en tête de sa vitrine. */
+  const { state: sessionState, actorId } = useSession();
+  const showcase: ProfileData = useMemo(() => {
+    const added = sessionShowcaseOf(sessionState, actorId);
+    return {
+      ...SHOWCASE,
+      biens: [...added.biens, ...SHOWCASE.biens],
+      formations: [...added.formations, ...SHOWCASE.formations],
+      services: [...added.services, ...SHOWCASE.services],
+      lives: [...added.lives, ...SHOWCASE.lives],
+      posts: getMyPosts(profileToAuthor(profile)),
+    };
+  }, [profile, sessionState, actorId]);
   return <ProfileView profile={profile} isOwn showcase={showcase} />;
 }

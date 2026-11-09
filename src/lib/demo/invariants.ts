@@ -2,7 +2,6 @@ import {
   properties as CATALOGUE,
   formations as FORMATIONS,
   users as PEOPLE,
-  conversations,
   mockReviews,
 } from "@/lib/mock-data";
 import { DEMO_TODAY, MONTH_LABELS, last12Months } from "./clock";
@@ -14,6 +13,7 @@ import { FOLLOWS, followersOf, followingOf } from "./social";
 import { AGENCY_MEMBERS, MANDATE_TRACKING, agencyProperties } from "./agency";
 import { VIDEO_POSTS, SUGGESTIONS } from "./posts";
 import { PUBLIC_SEED_IDS } from "@/lib/profile-data";
+import { NOTIFICATION_SEEDS, THREAD_SEEDS } from "./inbox-seeds";
 
 /* ── Les invariants, levés à l'import ───────────────────────────────────────
 
@@ -343,10 +343,9 @@ function resolves(id: string): boolean {
    depuis le fil — casse désormais le build.
 
    PÉRIMÈTRE : ne sont énumérées que les données importables à l'import (le fil
-   `demo/posts`, et `conversations`/`mockReviews` de `mock-data`). Les
-   conversations LOCALES de la page /messages vivent dans un composant et ne
-   sont pas énumérables ici ; leurs ids sont garantis par `requirePerson` au
-   chargement de ce module-là (voir src/app/(app)/messages/page.tsx). */
+   `demo/posts`, l'amorce de la messagerie et des notifications
+   `demo/inbox-seeds`, et `mockReviews` de `mock-data`). Ce que le visiteur
+   crée en session vise toujours une personne choisie DANS l'annuaire. */
 {
   type Ref = { id: string; where: string };
   const refs: Ref[] = [];
@@ -360,10 +359,26 @@ function resolves(id: string): boolean {
   for (const s of SUGGESTIONS) {
     refs.push({ id: s.id, where: "suggestion « qui suivre »" });
   }
-  for (const conv of conversations) {
-    refs.push({ id: conv.participant.id, where: `participant de ${conv.id}` });
-    for (const m of conv.members ?? []) {
-      refs.push({ id: m.id, where: `membre de ${conv.id}` });
+  /* L'amorce de la messagerie et des notifications (chantier P2). Un
+     expéditeur doit être membre du fil, et un fil compte au moins deux
+     personnes : sinon la vue dérivée l'afficherait à quelqu'un d'absent. */
+  for (const t of THREAD_SEEDS) {
+    if (t.memberIds.length < 2) throw new Error(`Invariant violé : le fil ${t.id} a moins de deux membres.`);
+    for (const id of t.memberIds) refs.push({ id, where: `membre du fil ${t.id}` });
+    for (const m of t.messages) {
+      if (!t.memberIds.includes(m.senderId)) {
+        throw new Error(`Invariant violé : ${m.senderId} écrit dans le fil ${t.id} sans en être membre.`);
+      }
+      if (m.at > DEMO_TODAY.toISOString()) {
+        throw new Error(`Invariant violé : le message ${m.id} est daté après DEMO_TODAY.`);
+      }
+    }
+  }
+  for (const n of NOTIFICATION_SEEDS) {
+    refs.push({ id: n.recipientId, where: `destinataire de la notification ${n.id}` });
+    if (n.actorId) refs.push({ id: n.actorId, where: `auteur de la notification ${n.id}` });
+    if (n.at > DEMO_TODAY.toISOString()) {
+      throw new Error(`Invariant violé : la notification ${n.id} est datée après DEMO_TODAY.`);
     }
   }
   for (const r of mockReviews) {

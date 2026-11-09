@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useApp } from "@/lib/context";
+import { recordSessionEvent } from "@/lib/use-session";
+import { serviceIdOf } from "@/lib/demo/session-store";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -34,6 +37,8 @@ export default function ProposerServicePage() {
   const { formatPrice } = useApp();
   const [form, setForm] = useState<ServiceForm>(emptyForm);
   const [published, setPublished] = useState(false);
+  const [publishedId, setPublishedId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
   const [photoUrl, setPhotoUrl] = useState("");
 
   const update = <K extends keyof ServiceForm>(key: K, value: ServiceForm[K]) => {
@@ -57,7 +62,29 @@ export default function ProposerServicePage() {
     update("photos", form.photos.filter((_, i) => i !== index));
   };
 
+  /* Le service entre au journal de session : il apparaît en tête de
+     /services, au nom de la personne qui le publie, et une notification le
+     confirme. On ne publie pas un service sans titre, catégorie ni tarif. */
   const handlePublish = () => {
+    const errs: string[] = [];
+    if (form.titre.trim().length < 5) errs.push("Donnez un titre d'au moins cinq caractères.");
+    if (!form.categorie) errs.push("Choisissez une catégorie.");
+    if (!(form.tarif > 0)) errs.push("Indiquez un tarif supérieur à zéro.");
+    setErrors(errs);
+    if (errs.length > 0) return;
+    const event = recordSessionEvent({
+      kind: "service.published",
+      data: {
+        title: form.titre.trim(),
+        category: form.categorie,
+        description: form.description.trim(),
+        zone: form.zone.trim(),
+        price: Math.round(form.tarif),
+        unit: form.uniteTarif,
+        images: form.photos.filter((u) => /^https?:\/\//.test(u)),
+      },
+    });
+    setPublishedId(serviceIdOf(event.seq));
     setPublished(true);
   };
 
@@ -70,9 +97,9 @@ export default function ProposerServicePage() {
           </div>
           <h1 className="text-2xl page-heading mb-2">Service publié !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre service &quot;{form.titre}&quot; est maintenant disponible sur la plateforme.</p>
-          <a href="/services" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
-            Voir les services
-          </a>
+          <Link href={publishedId ? `/services?focus=${publishedId}` : "/services"} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
+            Voir mon service
+          </Link>
         </div>
       </div>
     );
@@ -168,6 +195,13 @@ export default function ProposerServicePage() {
             )}
           </div>
 
+          {errors.length > 0 && (
+            <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+              <ul className="list-disc pl-5">
+                {errors.map((e) => <li key={e}>{e}</li>)}
+              </ul>
+            </div>
+          )}
           <button onClick={handlePublish} className="w-full py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors mt-4">
             Publier le service
           </button>

@@ -27,7 +27,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { conversations } from "@/lib/mock-data";
+import { useSession } from "@/lib/use-session";
 
 /* ─────────────────────────────────────────────────────────────
    Sidebar globale (hors /dashboard/*).
@@ -106,11 +106,9 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
   const [isHovered, setIsHovered] = useState(false);
   const isExpanded = forceExpanded || isHovered;
 
-  const unreadMessages = useMemo(
-    () => conversations.reduce((sum, c) => sum + c.unreadCount, 0),
-    []
-  );
-  const unreadNotifications = 3;
+  /* Les deux compteurs viennent de la mémoire de session (une seule source
+     pour la barre latérale, l'en-tête, la nav mobile et /notifications). */
+  const { unreadMessages, unreadNotifications } = useSession();
 
   const navItems: NavItem[] = useMemo(
     () => [
@@ -137,7 +135,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         matchPrefixes: ["/notifications"],
       },
     ],
-    [unreadMessages]
+    [unreadMessages, unreadNotifications]
   );
 
   /* Le groupe CRÉER n'est qu'un seul item parent collapsible. Il n'a

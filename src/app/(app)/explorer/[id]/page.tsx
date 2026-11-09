@@ -30,6 +30,8 @@ import { CURRENT_USER } from "@/lib/demo/identity";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
 import { REFERRAL_ID } from "@/lib/referral-links";
+import { useSession, recordSessionEvent } from "@/lib/use-session";
+import { isSessionId } from "@/lib/demo/session-views";
 
 // ─── Paid options (applicable to location-ct) ───────────────────────────────
 
@@ -125,7 +127,13 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   const { addToast } = useToast();
   const router = useRouter();
 
-  const property = resolveProperty(id);
+  /* Un bien publié pendant la visite (`s-bien-…`) vit dans la mémoire de
+     session : on le cherche là d'abord. Tant que la session n'est pas relue
+     (premier rendu, identique au serveur), on affiche un chargement plutôt
+     qu'un « introuvable » trompeur. */
+  const { listings: sessionListings, hydrated: sessionHydrated, actorId } = useSession();
+  const property = isSessionId(id) ? sessionListings.find((p) => p.id === id) : resolveProperty(id);
+  const waitingForSession = isSessionId(id) && !property && !sessionHydrated;
 
   // Load reviews from mock-data for this property
   const mockPropertyReviews = property
@@ -238,6 +246,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
     : "0";
 
+  if (waitingForSession) {
+    return <div className="max-w-5xl mx-auto py-20 text-center text-[var(--text-muted)]">Chargement de l&apos;annonce…</div>;
+  }
+
   // If property not found, show a not-found state
   if (!property) {
     return (
@@ -282,9 +294,71 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
     : loanAmount / numPayments;
   const totalCost = monthlyPayment * numPayments;
 
+  /* ── Les actions de contact laissent une trace ──────────────────────────
+     Contacter, demander une visite, faire une offre : chacune entre au
+     journal de session, dépose un message dans le fil avec la personne qui
+     publie le bien, et la notifie. Le toast dit où retrouver l'échange. */
+  const isOwnListing = property.host.id === actorId;
+  const hostFirstName = property.host.firstName;
+  const contactHref = `/messages?to=${property.host.id}`;
+  const refuseOwn = () => {
+    addToast("C'est votre propre annonce : les demandes des autres arrivent dans votre messagerie.", "info");
+  };
+
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isOwnListing) return refuseOwn();
+    const text = contactMessage.trim();
+    if (!text) {
+      addToast("Écrivez un message avant d'envoyer.", "warning");
+      return;
+    }
+    recordSessionEvent({
+      kind: "contact.sent",
+      data: { toId: property.host.id, propertyId: property.id, subject: property.title, text },
+    });
     setContactSent(true);
+    setContactMessage("");
+  };
+
+  const handleVisitRequest = () => {
+    if (isOwnListing) return refuseOwn();
+    if (!visitDate) { addToast("Veuillez sélectionner une date.", "warning"); return; }
+    recordSessionEvent({
+      kind: "visit.requested",
+      data: { toId: property.host.id, propertyId: property.id, subject: property.title, date: visitDate, time: visitTime },
+    });
+    if (requestMessage.trim()) {
+      recordSessionEvent({
+        kind: "contact.sent",
+        data: { toId: property.host.id, propertyId: property.id, subject: property.title, text: requestMessage.trim() },
+      });
+    }
+    addToast(`Demande de visite envoyée à ${hostFirstName}. Retrouvez l'échange dans vos messages.`, "success");
+    setShowVisitModal(false);
+    setVisitDate("");
+    setRequestMessage("");
+    router.push(contactHref);
+  };
+
+  const handleOffer = () => {
+    if (isOwnListing) return refuseOwn();
+    if (!offerAmount || offerAmount <= 0) { addToast("Veuillez saisir un montant valide.", "warning"); return; }
+    recordSessionEvent({
+      kind: "offer.made",
+      data: {
+        toId: property.host.id,
+        propertyId: property.id,
+        subject: property.title,
+        amount: Math.round(offerAmount),
+        currency: property.currency,
+        conditions: offerConditions,
+      },
+    });
+    addToast(`Offre transmise à ${hostFirstName}. Retrouvez-la dans vos messages.`, "success");
+    setShowOfferModal(false);
+    setOfferConditions("");
+    router.push(contactHref);
   };
 
   const handleCopyLink = () => {
@@ -1146,18 +1220,19 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 >
                   Réserver
                 </button>
-                <Link href="/messages" className="block text-center mt-3 text-sm text-[var(--primary)] hover:underline">
-                  Contacter l&apos;hôte
+                <Link href={contactHref} className="block text-center mt-3 text-sm text-[var(--primary)] hover:underline">
+                  Écrire à {hostFirstName}
                 </Link>
               </div>
             );
           })()}
 
-          {/* Vente CTAs */}
-          {property.transactionType === "vente" && (
+          {/* Vente et location longue durée : visite, offre (vente), contact */}
+          {(property.transactionType === "vente" || property.transactionType === "location-lt") && (
             <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 lg:sticky lg:top-20 space-y-3">
               <p className="text-2xl font-bold text-[var(--primary)] mb-4">
                 {formatPrice(property.price, property.currency)}
+                {property.transactionType === "location-lt" && <span className="text-sm font-normal text-[var(--text-muted)]"> /mois</span>}
               </p>
               <button
                 onClick={() => setShowVisitModal(true)}
@@ -1165,17 +1240,19 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               >
                 <CalendarIcon className="w-4 h-4" /> Planifier une visite
               </button>
-              <button
-                onClick={() => setShowOfferModal(true)}
-                className="w-full py-3 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10 font-semibold transition-colors flex items-center justify-center gap-2"
-              >
-                <DollarSign className="w-4 h-4" /> Faire une offre
-              </button>
+              {property.transactionType === "vente" && (
+                <button
+                  onClick={() => setShowOfferModal(true)}
+                  className="w-full py-3 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10 font-semibold transition-colors flex items-center justify-center gap-2"
+                >
+                  <DollarSign className="w-4 h-4" /> Faire une offre
+                </button>
+              )}
               <Link
-                href="/messages"
+                href={contactHref}
                 className="w-full py-3 rounded-xl border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] font-semibold transition-colors flex items-center justify-center gap-2"
               >
-                <MessageCircle className="w-4 h-4" /> Contacter l&apos;agent
+                <MessageCircle className="w-4 h-4" /> Écrire à {hostFirstName}
               </Link>
               <button
                 onClick={() => window.print()}
@@ -1230,8 +1307,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             {contactSent ? (
               <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 animate-fade-in">
                 <p className="text-sm text-green-400 flex items-center gap-2">
-                  <Check className="w-4 h-4" /> Message envoyé avec succès !
+                  <Check className="w-4 h-4" /> Message envoyé à {hostFirstName}.
                 </p>
+                <Link href={contactHref} className="mt-2 inline-block text-sm text-[var(--primary)] hover:underline">
+                  Voir la conversation
+                </Link>
               </div>
             ) : (
               <form onSubmit={handleContactSubmit} className="space-y-3">
@@ -1353,13 +1433,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 />
               </div>
               <button
-                onClick={() => {
-                  if (!visitDate) { addToast("Veuillez sélectionner une date.", "warning"); return; }
-                  addToast("Demande de visite envoyée avec succès !", "success");
-                  setShowVisitModal(false);
-                  setVisitDate("");
-                  setRequestMessage("");
-                }}
+                onClick={handleVisitRequest}
                 className="w-full py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
               >
                 Envoyer la demande
@@ -1397,12 +1471,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[var(--primary)]" />
               </div>
               <button
-                onClick={() => {
-                  if (!offerAmount || offerAmount <= 0) { addToast("Veuillez saisir un montant valide.", "warning"); return; }
-                  addToast("Offre envoyée avec succès !", "success");
-                  setShowOfferModal(false);
-                  setOfferConditions("");
-                }}
+                onClick={handleOffer}
                 className="w-full py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
               >
                 Soumettre l&apos;offre
@@ -1483,14 +1552,20 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             <span className="text-xs text-[var(--text-muted)]">par nuit</span>
           )}
         </div>
-        {property.transactionType === "vente" ? (
+        {property.transactionType === "vente" || property.transactionType === "location-lt" ? (
           <div className="flex gap-2">
             <button onClick={() => setShowVisitModal(true)} className="px-4 py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors text-sm">
               Visite
             </button>
-            <button onClick={() => setShowOfferModal(true)} className="px-4 py-3 rounded-xl border border-[var(--primary)] text-[var(--primary)] font-semibold transition-colors text-sm">
-              Offre
-            </button>
+            {property.transactionType === "vente" ? (
+              <button onClick={() => setShowOfferModal(true)} className="px-4 py-3 rounded-xl border border-[var(--primary)] text-[var(--primary)] font-semibold transition-colors text-sm">
+                Offre
+              </button>
+            ) : (
+              <Link href={contactHref} className="px-4 py-3 rounded-xl border border-[var(--primary)] text-[var(--primary)] font-semibold transition-colors text-sm">
+                Écrire
+              </Link>
+            )}
           </div>
         ) : (
           <button

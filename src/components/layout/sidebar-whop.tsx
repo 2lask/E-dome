@@ -10,7 +10,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { conversations } from "@/lib/mock-data";
+import { useSession } from "@/lib/use-session";
 import { CURRENT_USER } from "@/lib/demo/identity";
 
 /* ─────────────────────────────────────────────────────────────
@@ -35,23 +35,19 @@ interface NavItem {
 export function SidebarWhop() {
   const pathname = usePathname();
 
-  const unreadMessages = useMemo(
-    () => conversations.reduce((sum, c) => sum + c.unreadCount, 0),
-    [],
-  );
+  /* Compteurs et groupes : la mémoire de session, source unique (la page
+     /notifications, l'en-tête et la nav mobile lisent les mêmes). */
+  const { unreadMessages, unreadNotifications, threads } = useSession();
 
-  /* Groupes de chat (les conversations type='group' du mock) :
-     equivalent E-Dome de "MES WHOPS". Limite a 6 pour ne pas surcharger. */
-  const myGroups = useMemo(
-    () => conversations.filter((c) => c.type === "group").slice(0, 6),
-    [],
-  );
+  /* Groupes de chat de l'acteur : equivalent E-Dome de "MES WHOPS". Limite a
+     6 pour ne pas surcharger. */
+  const myGroups = useMemo(() => threads.filter((t) => t.isGroup).slice(0, 6), [threads]);
 
   const navItems: NavItem[] = [
     { label: "Accueil", href: "/feed", icon: Home, matchPrefixes: ["/feed"] },
     { label: "Explorer", href: "/explorer", icon: Search, matchPrefixes: ["/explorer", "/boutique", "/formations", "/services", "/live", "/evenements"] },
     { label: "Messages", href: "/messages", icon: MessageCircle, badge: unreadMessages > 0 ? unreadMessages : undefined, matchPrefixes: ["/messages"] },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: 3, matchPrefixes: ["/notifications"] },
+    { label: "Notifications", href: "/notifications", icon: Bell, badge: unreadNotifications > 0 ? unreadNotifications : undefined, matchPrefixes: ["/notifications"] },
   ];
 
   const espaceItems: NavItem[] = [
@@ -113,11 +109,17 @@ export function SidebarWhop() {
                   "hover:bg-sidebar-accent",
                 )}
               >
-                <img
-                  src={group.groupAvatar}
-                  alt=""
-                  className="h-7 w-7 shrink-0 rounded-md object-cover"
-                />
+                {group.avatar ? (
+                  <img
+                    src={group.avatar}
+                    alt=""
+                    className="h-7 w-7 shrink-0 rounded-md object-cover"
+                  />
+                ) : (
+                  <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-muted-foreground">
+                    <UsersIcon className="h-3.5 w-3.5" />
+                  </span>
+                )}
                 <span className="truncate text-[13px] text-foreground/85 leading-tight">
                   {group.name}
                 </span>

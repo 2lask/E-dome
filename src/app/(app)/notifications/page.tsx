@@ -1,12 +1,6 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
-import { properties as CATALOGUE } from "@/lib/mock-data";
-import { OWNED_PROPERTY_IDS } from "@/lib/demo/identity";
-
-/* Le nom du bien vient du catalogue : la notification citait « Studio
-   Lausanne », qui n existe plus, et un montant sans rapport avec le journal. */
-const OWNED_PROPERTY_NAME = CATALOGUE.find((p) => p.id === OWNED_PROPERTY_IDS[1])!.title;
 import { useRouter } from "next/navigation";
 import {
   BellOff,
@@ -19,39 +13,42 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Notification } from "@/lib/types";
-import { formatDate } from "@/lib/utils";
+import { frDate } from "@/lib/demo/showcase";
 import { PageHeader } from "@/components/ui/page-header";
+import { useSession, markNotificationsAsRead, markAllNotificationsAsRead } from "@/lib/use-session";
 
-// ─── Mock data ──────────────────────────────────────────────────────────────
+/* ── /notifications — une seule source ──────────────────────────────────────
 
-const initialNotifications: Notification[] = [
-  { id: "n1", type: "review", title: "Sophie Martin a aimé votre post", message: "Sophie Martin a aimé votre publication sur le Chalet Verbier.", read: false, createdAt: "2026-04-02T09:30:00", href: "/profil" },
-  { id: "n2", type: "message", title: "Marc Dubois a commenté votre publication", message: "Marc Dubois : \"Superbe bien, je suis intéressé !\"", read: false, createdAt: "2026-04-02T09:00:00", href: "/messages" },
-  { id: "n3", type: "reservation", title: "Nouvelle demande de réservation", message: "Nouvelle demande de réservation de Jean-Marc D. pour l'Appartement Montreux du 15 au 22 juillet.", read: false, createdAt: "2026-04-02T08:00:00", href: "/dashboard/reservations" },
-  { id: "n4", type: "payment", title: "Commission reçue : 84 CHF", message: "Vous avez reçu une commission de 84 CHF suite à la réservation générée via votre lien apporteur.", read: false, createdAt: "2026-04-02T07:00:00", href: "/dashboard" },
-  { id: "n5", type: "follow", title: "Thomas Weber vous suit maintenant", message: "Thomas Weber a commencé à vous suivre.", read: false, createdAt: "2026-04-02T05:00:00", href: "/profil" },
-  { id: "n6", type: "reservation", title: "Réservation confirmée", message: "Votre réservation #R-2026-018 a été confirmée par l'hôte.", read: true, createdAt: "2026-04-01T14:00:00", href: "/dashboard/reservations" },
-  { id: "n7", type: "system", title: "Mise à jour plateforme", message: "Nouvelle fonctionnalité : export CSV disponible dans le dashboard.", read: true, createdAt: "2026-04-01T09:00:00", href: "/dashboard" },
-  { id: "n8", type: "message", title: "Nouveau message", message: "Claire Richard vous a envoyé un message concernant le Penthouse Zurich.", read: true, createdAt: "2026-03-31T16:00:00", href: "/messages" },
-  { id: "n9", type: "payment", title: "Paiement reçu", message: `Vous avez reçu un paiement pour la location du ${OWNED_PROPERTY_NAME}.`, read: true, createdAt: "2026-03-31T10:00:00", href: "/dashboard" },
-  { id: "n10", type: "system", title: "Vérification d'identité validée", message: "Votre pièce d'identité a été vérifiée avec succès. Votre profil est désormais certifié.", read: true, createdAt: "2026-03-30T11:00:00", href: "/profil" },
-];
+   Trois compteurs se contredisaient : « 3 » en dur dans la barre latérale,
+   « aucune » dans l'en-tête, cinq non lues ici, sur dix notifications
+   inventées (« Sophie Martin », « Penthouse Zurich »…). Tout vient désormais
+   de la mémoire de session (`useSession`) : l'amorce, réécrite sur le casting
+   et le journal, plus ce que produit chaque action de la visite (une demande
+   de visite, une réservation, une annonce publiée…). « Tout marquer comme
+   lu » remet le compteur à zéro partout à la fois. */
+
+/** « 14:05 » sans `toLocaleTimeString` (l'ICU serveur et navigateur diffèrent). */
+function hhmm(iso: string): string {
+  const d = new Date(iso);
+  return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+}
 
 type FilterType = "all" | "reservation" | "message" | "follow" | "review" | "system" | "payment";
 
 const FILTER_CHIPS: { key: FilterType; label: string; types: Notification["type"][] }[] = [
   { key: "reservation", label: "Réservations", types: ["reservation"] },
   { key: "message", label: "Messages", types: ["message"] },
-  { key: "follow", label: "Apporteurs", types: ["follow"] },
-  { key: "review", label: "Formations", types: ["review"] },
-  { key: "system", label: "Système", types: ["system", "payment"] },
+  { key: "follow", label: "Abonnés", types: ["follow"] },
+  { key: "review", label: "Avis", types: ["review"] },
+  { key: "payment", label: "Offres", types: ["payment"] },
+  { key: "system", label: "Système", types: ["system"] },
 ];
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function NotificationsPage() {
   const router = useRouter();
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const { notifications } = useSession();
   const [readTab, setReadTab] = useState<"unread" | "read">("unread");
   const [filter, setFilter] = useState<FilterType>("all");
 
@@ -81,16 +78,14 @@ export default function NotificationsPage() {
   const grouped = useMemo(() => {
     const groups: Record<string, Notification[]> = {};
     filtered.forEach((n) => {
-      const key = formatDate(n.createdAt);
+      const key = frDate(n.createdAt);
       if (!groups[key]) groups[key] = [];
       groups[key].push(n);
     });
     return groups;
   }, [filtered]);
 
-  const markAsRead = useCallback((id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-  }, []);
+  const markAsRead = useCallback((id: string) => markNotificationsAsRead([id]), []);
 
   const handleClick = useCallback(
     (notif: Notification) => {
@@ -118,9 +113,7 @@ export default function NotificationsPage() {
         actions={
           counts.all > 0 ? (
             <button
-              onClick={() => {
-                setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-              }}
+              onClick={() => markAllNotificationsAsRead()}
               className="text-sm text-[var(--primary)] hover:underline transition-colors cursor-pointer"
             >
               Tout marquer comme lu
@@ -229,7 +222,7 @@ export default function NotificationsPage() {
                       </div>
                       <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">{notif.message}</p>
                       <span className="text-[10px] text-[var(--text-muted)] mt-1 block">
-                        {new Date(notif.createdAt).toLocaleTimeString("fr-CH", { hour: "2-digit", minute: "2-digit" })}
+                        {hhmm(notif.createdAt)}
                       </span>
                     </div>
                   </button>

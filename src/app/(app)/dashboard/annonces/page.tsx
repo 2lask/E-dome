@@ -4,14 +4,10 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Building2,
-  ShoppingBag,
   GraduationCap,
   Video,
-  CalendarDays,
   Briefcase,
   Eye,
-  Edit3,
-  MoreHorizontal,
   Plus,
   Search,
   PackageSearch,
@@ -33,118 +29,186 @@ import {
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { FilterChip } from "@/components/ui/filter-chip";
-import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/format";
+import { properties as CATALOGUE, formations as CATALOGUE_FORMATIONS } from "@/lib/mock-data";
+import { properties as DASH_PROPERTIES } from "@/lib/dashboard-data";
+import { useSession } from "@/lib/use-session";
+import { publishedBy, seqOfSessionId } from "@/lib/demo/session-views";
+import { sessionTime } from "@/lib/demo/session-store";
+import { frDate } from "@/lib/demo/showcase";
 
-type ListingType =
-  | "bien"
-  | "produit"
-  | "formation"
-  | "live"
-  | "evenement"
-  | "service";
+/* ── /dashboard/annonces — « Mes annonces », dérivé ─────────────────────────
+
+   Cette page lisait un `MOCK_LISTINGS` codé en dur : huit annonces sans
+   rapport avec le catalogue (« Penthouse panoramique Zurich »), 13 322 vues
+   inventées et un « +12,4 % » sorti de nulle part. Elle dérive désormais :
+
+   - des biens que la personne HÉBERGE au catalogue, et des formations dont
+     elle est l'autrice ;
+   - de ce qu'elle a publié pendant la visite (mémoire de session) : un bien
+     publié sur /publier, un service, une formation, un live apparaissent ici
+     tout de suite.
+
+   Les vues ne sont affichées que là où elles sont dérivées (les logements de
+   courte durée, proportionnées aux nuits vendues ce mois-ci, comme sur le
+   tableau de bord). Ailleurs, on n'invente pas de chiffre. Produits et
+   événements n'ont pas encore de propriétaire dans la donnée (chantiers
+   P4/P6) : ils ne figurent pas ici. */
+
+type ListingType = "bien" | "formation" | "live" | "service";
 
 interface Listing {
   id: string;
   type: ListingType;
   title: string;
-  status: "publie" | "brouillon" | "expire";
-  views: number;
-  publishedAt: string;
-  cover: string;
-  metric?: string;
+  status: "publie" | "vendu";
+  /** Vues du mois, si elles sont dérivées ; sinon absent. */
+  views?: number;
+  cover?: string;
+  metric: string;
+  href: string;
+  /** Publiée pendant cette visite. */
+  isNew: boolean;
+  publishedLabel?: string;
 }
 
 const TYPE_LABEL: Record<ListingType, string> = {
   bien: "Bien",
-  produit: "Produit",
   formation: "Formation",
   live: "Live",
-  evenement: "Événement",
   service: "Service",
 };
 
-const TYPE_ICON: Record<
-  ListingType,
-  React.ComponentType<{ className?: string; size?: number }>
-> = {
+const TYPE_ICON: Record<ListingType, React.ComponentType<{ className?: string; size?: number }>> = {
   bien: Building2,
-  produit: ShoppingBag,
   formation: GraduationCap,
   live: Video,
-  evenement: CalendarDays,
   service: Briefcase,
 };
 
-const STATUS_MAP: Record<Listing["status"], string> = {
-  publie: "published",
-  brouillon: "draft",
-  expire: "cancelled",
-};
+const TRANSACTION_LABEL = { vente: "Vente", "location-ct": "Courte durée", "location-lt": "Longue durée" } as const;
 
-const MOCK_LISTINGS: Listing[] = [
-  { id: "l1", type: "bien", title: "Villa moderne avec piscine", status: "publie", views: 2840, publishedAt: "2026-04-12", cover: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400", metric: "1 850 000 CHF" },
-  { id: "l2", type: "bien", title: "Studio centre-ville Genève", status: "publie", views: 1240, publishedAt: "2026-04-08", cover: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400", metric: "Location LT · 2 200 CHF/mois" },
-  { id: "l3", type: "formation", title: "Maîtriser la location courte durée", status: "publie", views: 3120, publishedAt: "2026-03-22", cover: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400", metric: "189 CHF · 4.8/5 (124 avis)" },
-  { id: "l4", type: "live", title: "Décrypter les annonces immobilières", status: "brouillon", views: 0, publishedAt: "2026-05-01", cover: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400", metric: "Programmé le 2026-06-12" },
-  { id: "l5", type: "produit", title: "Plaid lin lavé bleu nuit", status: "publie", views: 480, publishedAt: "2026-04-18", cover: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400", metric: "89 CHF · stock 14" },
-  { id: "l6", type: "evenement", title: "Visite groupée : Chalet Verbier", status: "publie", views: 230, publishedAt: "2026-05-05", cover: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400", metric: "8 places · 75 CHF" },
-  { id: "l7", type: "service", title: "Photographe immobilier Lausanne", status: "publie", views: 612, publishedAt: "2026-03-14", cover: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=400", metric: "À partir de 350 CHF/séance" },
-  { id: "l8", type: "bien", title: "Penthouse panoramique Zurich", status: "expire", views: 4800, publishedAt: "2026-01-20", cover: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400", metric: "3 200 000 CHF" },
-];
+function priceMetric(price: number, currency: string, tx: keyof typeof TRANSACTION_LABEL): string {
+  const unit = tx === "location-ct" ? " / nuit" : tx === "location-lt" ? " / mois" : "";
+  return `${TRANSACTION_LABEL[tx]} · ${formatNumber(price)} ${currency}${unit}`;
+}
+
+const publishedOn = (id: string) => {
+  const seq = seqOfSessionId(id);
+  return seq ? `Publiée le ${frDate(sessionTime(seq))}` : undefined;
+};
 
 const FILTERS: { value: ListingType | "all"; label: string }[] = [
   { value: "all", label: "Tout" },
   { value: "bien", label: "Biens" },
-  { value: "produit", label: "Produits" },
   { value: "formation", label: "Formations" },
   { value: "live", label: "Lives" },
-  { value: "evenement", label: "Événements" },
   { value: "service", label: "Services" },
 ];
 
 export default function MesAnnoncesPage() {
   const [filter, setFilter] = useState<ListingType | "all">("all");
   const [search, setSearch] = useState("");
+  const { state, actorId } = useSession();
+
+  const listings = useMemo<Listing[]>(() => {
+    const mine = publishedBy(state, actorId);
+    const fromSession: Listing[] = [
+      ...mine.listings.map((p) => ({
+        id: p.id,
+        type: "bien" as const,
+        title: p.title,
+        status: "publie" as const,
+        cover: p.images[0],
+        metric: `${priceMetric(p.price, p.currency, p.transactionType)} · ${p.location.city}`,
+        href: `/explorer/${p.id}`,
+        isNew: true,
+        publishedLabel: publishedOn(p.id),
+      })),
+      ...mine.formations.map((f) => ({
+        id: f.id,
+        type: "formation" as const,
+        title: f.title,
+        status: "publie" as const,
+        cover: f.thumbnail,
+        metric: `${formatNumber(f.price)} CHF · ${f.modules.length} module${f.modules.length > 1 ? "s" : ""} · pas encore d'inscrit`,
+        href: `/formations/${f.id}`,
+        isNew: true,
+        publishedLabel: publishedOn(f.id),
+      })),
+      ...mine.services.map((s) => ({
+        id: s.id,
+        type: "service" as const,
+        title: s.title,
+        status: "publie" as const,
+        metric: `${s.category} · ${formatNumber(s.price)} CHF ${s.unit}`,
+        href: `/services?focus=${s.id}`,
+        isNew: true,
+        publishedLabel: publishedOn(s.id),
+      })),
+      ...mine.lives.map((l) => ({
+        id: l.id,
+        type: "live" as const,
+        title: l.title,
+        status: "publie" as const,
+        metric: `Programmé le ${l.dateLabel} · ${l.durationMin} min · ${l.price > 0 ? `${formatNumber(l.price)} CHF` : "gratuit"}`,
+        href: `/live?focus=${l.id}`,
+        isNew: true,
+        publishedLabel: publishedOn(l.id),
+      })),
+    ];
+    const fromCatalogue: Listing[] = [
+      ...CATALOGUE.filter((p) => p.host.id === actorId).map((p) => ({
+        id: p.id,
+        type: "bien" as const,
+        title: p.title,
+        status: p.soldTo ? ("vendu" as const) : ("publie" as const),
+        views: DASH_PROPERTIES.find((d) => d.id === p.id)?.views,
+        cover: p.images[0],
+        metric: `${priceMetric(p.price, p.currency, p.transactionType)} · ${p.location.city}`,
+        href: `/explorer/${p.id}`,
+        isNew: false,
+      })),
+      ...CATALOGUE_FORMATIONS.filter((f) => f.instructor.id === actorId).map((f) => ({
+        id: f.id,
+        type: "formation" as const,
+        title: f.title,
+        status: "publie" as const,
+        cover: f.thumbnail,
+        metric: `${formatNumber(f.price)} CHF · ${f.studentCount} inscrit${f.studentCount > 1 ? "s" : ""}${f.rating > 0 ? ` · ${f.rating.toFixed(1)}/5` : ""}`,
+        href: `/formations/${f.id}`,
+        isNew: false,
+      })),
+    ];
+    return [...fromSession, ...fromCatalogue];
+  }, [state, actorId]);
 
   const filtered = useMemo(() => {
-    return MOCK_LISTINGS.filter((l) => {
+    return listings.filter((l) => {
       if (filter !== "all" && l.type !== filter) return false;
-      if (search && !l.title.toLowerCase().includes(search.toLowerCase()))
-        return false;
+      if (search && !l.title.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [filter, search]);
+  }, [listings, filter, search]);
 
   const counts = useMemo(() => {
-    const c: Record<ListingType | "all", number> = {
-      all: MOCK_LISTINGS.length,
-      bien: 0,
-      produit: 0,
-      formation: 0,
-      live: 0,
-      evenement: 0,
-      service: 0,
-    };
-    MOCK_LISTINGS.forEach((l) => {
+    const c: Record<ListingType | "all", number> = { all: listings.length, bien: 0, formation: 0, live: 0, service: 0 };
+    listings.forEach((l) => {
       c[l.type] += 1;
     });
     return c;
-  }, []);
+  }, [listings]);
 
-  const totalViews = MOCK_LISTINGS.reduce((s, l) => s + l.views, 0);
-  const publishedCount = MOCK_LISTINGS.filter((l) => l.status === "publie")
-    .length;
-  const draftCount = MOCK_LISTINGS.filter((l) => l.status === "brouillon")
-    .length;
-  const expiredCount = MOCK_LISTINGS.filter((l) => l.status === "expire")
-    .length;
+  const withViews = listings.filter((l) => l.views !== undefined);
+  const monthViews = withViews.reduce((s, l) => s + (l.views ?? 0), 0);
+  const publishedCount = listings.filter((l) => l.status === "publie").length;
+  const newCount = listings.filter((l) => l.isNew).length;
 
   return (
     <div className="space-y-6">
       <DashboardPageHeader
         title="Mes annonces"
-        description="Tout ce que vous publiez : biens, produits, formations, lives, événements, services"
+        description="Ce que vous publiez : biens, formations, services, lives"
         actions={
           <Button size="sm" asChild>
             <Link href="/publier">
@@ -158,35 +222,34 @@ export default function MesAnnoncesPage() {
       <KpiGrid>
         <KpiCardPremium
           label="Total annonces"
-          value={String(MOCK_LISTINGS.length)}
-          delta={`${publishedCount} publiées`}
-          trend="up"
+          value={String(listings.length)}
+          delta={`${publishedCount} en ligne`}
+          trend="neutral"
           footer="Catalogue actif"
-          subfooter={`${draftCount} brouillons, ${expiredCount} expirées`}
+          subfooter={`${counts.bien} bien${counts.bien > 1 ? "s" : ""}, ${counts.formation} formation${counts.formation > 1 ? "s" : ""}`}
         />
         <KpiCardPremium
-          label="Vues totales"
-          value={formatNumber(totalViews)}
-          delta="+12.4%"
-          trend="up"
-          footer="Cumul depuis publication"
-          subfooter="Toutes annonces confondues"
+          label="Vues ce mois"
+          value={formatNumber(monthViews)}
+          delta={`${withViews.length} logement${withViews.length > 1 ? "s" : ""}`}
+          trend="neutral"
+          footer="Courte durée uniquement"
+          subfooter="Proportionnées aux nuits vendues"
         />
         <KpiCardPremium
-          label="Brouillons"
-          value={String(draftCount)}
-          delta={draftCount > 0 ? "À finaliser" : "Aucun"}
-          trend={draftCount > 0 ? "neutral" : "up"}
-          footer={draftCount > 0 ? "En attente de publication" : "Tout est en ligne"}
-          subfooter="Non visibles publiquement"
+          label="Publiées pendant la visite"
+          value={String(newCount)}
+          delta={newCount > 0 ? "Nouveau" : "Aucune"}
+          trend={newCount > 0 ? "up" : "neutral"}
+          footer={newCount > 0 ? "Visibles partout sur la plateforme" : "Publiez un bien ou un service"}
+          subfooter="Mémoire de la session"
         />
         <KpiCardPremium
-          label="Performance"
-          value={`${Math.round(totalViews / Math.max(1, MOCK_LISTINGS.length))}`}
-          delta="vues / annonce"
-          trend="up"
-          footer="Moyenne par annonce"
-          subfooter="Comparable au benchmark E-Dome"
+          label="Biens vendus"
+          value={String(listings.filter((l) => l.status === "vendu").length)}
+          trend="neutral"
+          footer="Restent au catalogue"
+          subfooter="Avec l'avis de leur acheteur"
         />
       </KpiGrid>
 
@@ -238,61 +301,55 @@ export default function MesAnnoncesPage() {
               {filtered.map((l) => {
                 const Icon = TYPE_ICON[l.type];
                 return (
-                  <article
+                  <Link
                     key={l.id}
+                    href={l.href}
                     className="group flex flex-col overflow-hidden rounded-lg border bg-card transition-colors hover:border-foreground"
                   >
                     <div className="relative aspect-[16/9] bg-muted">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={l.cover}
-                        alt=""
-                        className="h-full w-full object-cover"
-                      />
-                      <div className="absolute top-2 left-2">
+                      {l.cover ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={l.cover} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                          <Icon className="h-8 w-8" />
+                        </div>
+                      )}
+                      <div className="absolute top-2 left-2 flex gap-1">
                         <span className="inline-flex items-center gap-1 rounded-md bg-background/90 px-2 py-0.5 text-[11px] font-medium backdrop-blur">
                           <Icon className="h-3 w-3" />
                           {TYPE_LABEL[l.type]}
                         </span>
+                        {l.isNew && (
+                          <span className="inline-flex items-center rounded-md bg-emerald-500/90 px-2 py-0.5 text-[11px] font-medium text-white">
+                            Nouveau
+                          </span>
+                        )}
                       </div>
                       <div className="absolute top-2 right-2">
-                        <StatusBadge status={STATUS_MAP[l.status]} />
+                        <StatusBadge status={l.status === "vendu" ? "completed" : "published"} />
                       </div>
                     </div>
 
                     <div className="flex flex-1 flex-col gap-2 p-3">
-                      <h3 className="line-clamp-1 text-sm font-medium">
-                        {l.title}
-                      </h3>
-                      {l.metric && (
-                        <p className="text-xs text-muted-foreground">
-                          {l.metric}
-                        </p>
-                      )}
+                      <h3 className="line-clamp-1 text-sm font-medium group-hover:underline">{l.title}</h3>
+                      <p className="text-xs text-muted-foreground">
+                        {l.status === "vendu" ? "Vendu · " : ""}
+                        {l.metric}
+                      </p>
                       <div className="mt-auto flex items-center justify-between pt-2 text-xs text-muted-foreground">
-                        <span className="inline-flex items-center gap-1 tabular-nums">
-                          <Eye className="h-3 w-3" />
-                          {formatNumber(l.views)}
-                        </span>
-                        <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                          <button
-                            className="rounded p-1 hover:bg-muted"
-                            aria-label="Modifier"
-                            title="Modifier"
-                          >
-                            <Edit3 className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            className="rounded p-1 hover:bg-muted"
-                            aria-label="Plus d'options"
-                            title="Plus d'options"
-                          >
-                            <MoreHorizontal className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
+                        {l.views !== undefined ? (
+                          <span className="inline-flex items-center gap-1 tabular-nums">
+                            <Eye className="h-3 w-3" />
+                            {formatNumber(l.views)} ce mois
+                          </span>
+                        ) : (
+                          <span>{l.publishedLabel ?? ""}</span>
+                        )}
+                        <span className="opacity-0 transition-opacity group-hover:opacity-100">Voir →</span>
                       </div>
                     </div>
-                  </article>
+                  </Link>
                 );
               })}
             </div>

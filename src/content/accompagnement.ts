@@ -15,6 +15,11 @@
 export interface AgencyProposal {
   id: string;
   agency: string;
+  /** La personne de l'annuaire qui reçoit le contact quand le particulier
+      l'ouvre : la conversation s'ouvre avec elle (moteur d'interactions). */
+  contactId: string;
+  /** Son nom et son rôle, affichés sous l'agence. */
+  contactLabel: string;
   verified: boolean;
   /** Taux de commission proposé, en toutes lettres. */
   rate: string;
@@ -46,36 +51,35 @@ export const accompagnementPage = {
     references: "Références locales",
   },
 
+  /* Les agences qui ont postulé sont celles du casting : Céline Bovard,
+     agente indépendante à Lutry, et Hartmann Immobilier SA (Aline Tschanz,
+     agente). Leurs références sont leurs vraies ventes (Lutry → Ennio,
+     Hauterive → Sandrine). Deux réponses seulement : c'est précisément le cas
+     où le rayon s'élargit (temps 5, plus bas). */
   proposals: [
     {
       id: "p1",
-      agency: "Régie du Léman",
+      agency: "Céline Bovard, agente indépendante",
+      contactId: "user-002",
+      contactLabel: "Céline Bovard · Lutry",
       verified: true,
       rate: "2,5 % du prix de vente",
-      included: ["Photos professionnelles", "Home staging virtuel", "Visites accompagnées", "Publication multi-portails"],
-      timeline: "Estimation sous 48 h, mise en vente sous 1 semaine",
-      references: ["Appartement 4,5 p. — Lausanne, vendu en 3 semaines", "Villa — Pully, vendue au prix demandé"],
+      included: ["Photos et drone (Nikola Ristić)", "Home staging (Elena Currat)", "Visites accompagnées", "Publication multi-portails"],
+      timeline: "Estimation sous 48 h, mise en vente sous une semaine",
+      references: ["Appartement 4,5 p. vue lac — Lutry, vendu en 2026", "3,5 pièces — Morges, mandat en cours avec visite 3D"],
       respondedAgo: "il y a 2 h",
     },
     {
       id: "p2",
-      agency: "Alpes Immobilier",
+      agency: "Hartmann Immobilier SA",
+      contactId: "user-004",
+      contactLabel: "Aline Tschanz · agente, Neuchâtel",
       verified: true,
       rate: "3 % du prix de vente, dégressif au-delà de 1,5 M",
-      included: ["Reportage photo + drone", "Annonce rédigée", "Visites 7j/7", "Négociation et suivi notaire"],
-      timeline: "Mise en vente sous 10 jours",
-      references: ["Chalet — Villars, vendu en 5 semaines", "Duplex — Montreux, vendu 4 % sous l'estimation"],
+      included: ["Reportage photo", "Annonce rédigée", "Visites du lundi au samedi", "Négociation et suivi notaire"],
+      timeline: "Estimation sous 72 h, mise en vente sous 10 jours",
+      references: ["Villa individuelle — Hauterive, vendue en 2026", "Maison — Bulle, estimation en cours"],
       respondedAgo: "il y a 5 h",
-    },
-    {
-      id: "p3",
-      agency: "Cardinal & Associés",
-      verified: true,
-      rate: "Forfait 12 000 CHF, quel que soit le prix",
-      included: ["Photos", "Visites sur rendez-vous", "Accompagnement jusqu'à l'acte"],
-      timeline: "Mise en vente sous 2 semaines",
-      references: ["Maison — Nyon, vendue en 6 semaines", "Appartement — Morges, deux offres reçues"],
-      respondedAgo: "il y a 1 j",
     },
   ] satisfies AgencyProposal[],
 

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Search as SearchIcon, Hotel, Car, Camera, Palette, Ruler, HardHat,
   Scale, Briefcase, Hammer, Package, Check, type LucideIcon,
@@ -9,6 +10,8 @@ import {
 import { useApp } from "@/lib/context";
 import { PageHeader } from "@/components/ui/page-header";
 import { requirePerson } from "@/lib/demo/directory";
+import { useSession, recordSessionEvent } from "@/lib/use-session";
+import { quotedServiceIds } from "@/lib/demo/session-views";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
@@ -88,8 +91,44 @@ function Stars({ rating }: { rating: number }) {
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
+/* `useSearchParams` exige une frontière Suspense en App Router (Next 16). */
 export default function ServicesPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <ServicesPageInner />
+    </React.Suspense>
+  );
+}
+
+function ServicesPageInner() {
   const { formatPrice } = useApp();
+  const searchParams = useSearchParams();
+  const focusId = searchParams.get("focus");
+  /* Les services publiés pendant la visite (mémoire de session) passent en
+     tête du catalogue, au nom et au visage de la personne qui les propose. */
+  const { services: published, state: sessionState, actorId } = useSession();
+  const allServices = useMemo<(ServiceItem & { avatar?: string; isNew?: boolean })[]>(
+    () => [
+      ...published.map((p, i) => ({
+        id: p.id,
+        title: p.title,
+        category: p.category,
+        provider: p.provider,
+        providerId: p.providerId,
+        rating: 0,
+        reviews: 0,
+        price: p.price,
+        unit: p.unit,
+        gradient: i % GRADIENTS.length,
+        avatar: p.avatar,
+        isNew: true,
+      })),
+      ...SERVICES,
+    ],
+    [published],
+  );
+  /* Un devis déjà demandé pendant la session reste « envoyé ». */
+  const quoted = useMemo(() => quotedServiceIds(sessionState, actorId), [sessionState, actorId]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Tous");
   const [devisOpenId, setDevisOpenId] = useState<string | null>(null);
@@ -98,27 +137,58 @@ export default function ServicesPage() {
   const [devisNom, setDevisNom] = useState("");
   const [devisEmail, setDevisEmail] = useState("");
   const [devisTel, setDevisTel] = useState("");
-  const [devisSent, setDevisSent] = useState<Set<string>>(new Set());
-  const [toastVisible, setToastVisible] = useState(false);
+  const [toastText, setToastText] = useState<string | null>(null);
+
+  /* Arrivée depuis « Voir mon service » : on fait défiler jusqu'à la carte. */
+  useEffect(() => {
+    if (!focusId) return;
+    const t = setTimeout(() => document.getElementById(`service-${focusId}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 150);
+    return () => clearTimeout(t);
+  }, [focusId, published.length]);
 
   const filtered = useMemo(() => {
-    return SERVICES.filter((s) => {
+    return allServices.filter((s) => {
       const matchSearch = s.title.toLowerCase().includes(search.toLowerCase()) || s.provider.toLowerCase().includes(search.toLowerCase());
       const matchCat = category === "Tous" || s.category === category;
       return matchSearch && matchCat;
     });
-  }, [search, category]);
+  }, [search, category, allServices]);
 
+  /* La demande de devis entre au journal de session. Si le prestataire est
+     une personne de l'annuaire, elle arrive dans son fil de messagerie (et
+     une notification chez elle). Les entreprises du catalogue n'ont pas
+     encore de compte : on le dit, au lieu de prétendre l'avoir transmise. */
   const handleSendDevis = (serviceId: string) => {
-    setDevisSent((prev) => { const n = new Set(prev); n.add(serviceId); return n; });
+    const service = allServices.find((s) => s.id === serviceId);
+    if (!service) return;
+    if (service.providerId === actorId) {
+      setToastText("C'est votre propre service.");
+      setTimeout(() => setToastText(null), 3000);
+      return;
+    }
+    recordSessionEvent({
+      kind: "quote.sent",
+      data: {
+        toId: service.providerId,
+        serviceId,
+        subject: service.title,
+        providerName: service.provider,
+        text: devisMessage,
+        date: devisDate || undefined,
+      },
+    });
     setDevisOpenId(null);
     setDevisMessage("");
     setDevisDate("");
     setDevisNom("");
     setDevisEmail("");
     setDevisTel("");
-    setToastVisible(true);
-    setTimeout(() => setToastVisible(false), 3000);
+    setToastText(
+      service.providerId
+        ? `Demande envoyée à ${service.provider}. Retrouvez l'échange dans vos messages.`
+        : `Demande enregistrée. ${service.provider} n'a pas encore de compte E-Dome : elle lui sera transmise à son inscription.`,
+    );
+    setTimeout(() => setToastText(null), 4000);
   };
 
   return (
@@ -131,12 +201,12 @@ export default function ServicesPage() {
           description="Trouvez les meilleurs prestataires pour vos biens"
           variant="serif"
           actions={
-            <a
+            <Link
               href="/services/proposer"
               className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-xl font-medium transition-colors"
             >
               Proposer un service
-            </a>
+            </Link>
           }
         />
 
@@ -169,7 +239,13 @@ export default function ServicesPage() {
         {/* ── Service Grid ────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((service) => (
-            <div key={service.id} className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl overflow-hidden hover:border-[var(--primary)]/40 transition-colors">
+            <div
+              key={service.id}
+              id={`service-${service.id}`}
+              className={`bg-[var(--card)] border rounded-2xl overflow-hidden hover:border-[var(--primary)]/40 transition-colors ${
+                focusId === service.id ? "border-[var(--primary)] ring-2 ring-[var(--primary)]/30" : "border-[var(--card-border)]"
+              }`}
+            >
               {/* Gradient thumbnail */}
               <div className={`h-32 bg-gradient-to-br ${GRADIENTS[service.gradient]} flex items-center justify-center`}>
                 {(() => {
@@ -179,6 +255,9 @@ export default function ServicesPage() {
               </div>
               <div className="p-4 space-y-3">
                 <span className="inline-block px-2 py-0.5 bg-[var(--primary)]/20 text-[var(--primary)] rounded-full text-xs font-medium">{service.category}</span>
+                {service.isNew && (
+                  <span className="ml-2 inline-block px-2 py-0.5 bg-emerald-500/15 text-emerald-500 rounded-full text-xs font-medium">Nouveau</span>
+                )}
                 <h3 className="font-semibold line-clamp-2">{service.title}</h3>
                 <div className="flex items-center gap-2">
                   {service.avatar ? (
@@ -195,14 +274,20 @@ export default function ServicesPage() {
                     <span className="text-sm text-[var(--text-secondary)]">{service.provider}</span>
                   )}
                 </div>
-                <Stars rating={service.rating} />
-                <span className="text-xs text-[var(--text-muted)]">({service.reviews} avis)</span>
+                {service.reviews > 0 ? (
+                  <>
+                    <Stars rating={service.rating} />
+                    <span className="text-xs text-[var(--text-muted)]">({service.reviews} avis)</span>
+                  </>
+                ) : (
+                  <span className="text-xs text-[var(--text-muted)]">Pas encore d&apos;avis</span>
+                )}
                 <div className="flex items-center justify-between pt-2">
                   <div>
                     <span className="font-bold text-[var(--primary)]">{formatPrice(service.price)}</span>
                     <span className="text-xs text-[var(--text-muted)]"> {service.unit}</span>
                   </div>
-                  {devisSent.has(service.id) ? (
+                  {quoted.has(service.id) ? (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">
                       <Check size={14} strokeWidth={2.5} /> Devis envoy&eacute;
                     </span>
@@ -268,12 +353,12 @@ export default function ServicesPage() {
         )}
 
         {/* Toast notification */}
-        {toastVisible && (
+        {toastText && (
           <div
             role="status"
             aria-live="polite"
             className="fixed bottom-[calc(80px+env(safe-area-inset-bottom)+1rem)] md:bottom-6 right-4 md:right-6 left-4 md:left-auto z-50 px-5 py-3 toast-success rounded-xl shadow-lg text-sm font-medium animate-fade-in text-center md:text-left">
-            Demande de devis envoy&eacute;e avec succ&egrave;s !
+            {toastText}
           </div>
         )}
 

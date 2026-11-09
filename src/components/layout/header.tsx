@@ -13,6 +13,7 @@ import {
   Menu,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { useSession, markNotificationsAsRead, markAllNotificationsAsRead } from "@/lib/use-session";
 import { useLanguage, type Language } from "@/lib/i18n";
 import type { Currency } from "@/lib/types";
 
@@ -39,6 +40,10 @@ interface HeaderProps {
 export function Header({ onMenuToggle }: HeaderProps) {
   const router = useRouter();
   const { currency, setCurrency } = useApp();
+  /* Les notifications de la mémoire de session : le même compteur que la
+     barre latérale et la page /notifications. */
+  const { notifications, unreadNotifications } = useSession();
+  const unreadPreview = notifications.filter((n) => !n.read).slice(0, 4);
   const { language, setLanguage, t } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -310,7 +315,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
               closeAllDropdowns();
               setShowNotifications(!showNotifications);
             }}
-            aria-label="Notifications"
+            aria-label={unreadNotifications > 0 ? `Notifications, ${unreadNotifications} non lues` : "Notifications"}
             aria-haspopup="menu"
             aria-expanded={showNotifications}
             className="flex items-center justify-center w-11 h-11 rounded-lg transition-colors cursor-pointer relative"
@@ -319,20 +324,62 @@ export function Header({ onMenuToggle }: HeaderProps) {
             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           >
             <Bell size={18} />
-            <span
-              aria-hidden
-              className="absolute top-2 right-2 w-2 h-2 rounded-full"
-              style={{ background: "var(--gold)" }}
-            />
+            {unreadNotifications > 0 && (
+              <span
+                aria-hidden
+                className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-semibold leading-4 text-center"
+                style={{ background: "var(--gold)", color: "var(--background)" }}
+              >
+                {unreadNotifications}
+              </span>
+            )}
           </button>
           {showNotifications && (
             <div style={{ ...dropdownStyle, minWidth: 300, maxHeight: 400, overflow: "auto" }}>
-              <p className="text-sm font-medium px-3 py-2" style={{ color: "var(--text-primary)" }}>
-                Notifications
-              </p>
-              <div className="px-3 py-8 text-center" style={{ color: "var(--text-muted)" }}>
-                <p className="text-sm">Aucune nouvelle notification</p>
+              <div className="flex items-center justify-between px-3 py-2">
+                <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                  Notifications
+                </p>
+                {unreadNotifications > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => markAllNotificationsAsRead()}
+                    className="text-xs hover:underline"
+                    style={{ color: "var(--accent)" }}
+                  >
+                    Tout marquer comme lu
+                  </button>
+                )}
               </div>
+              {unreadPreview.length === 0 ? (
+                <div className="px-3 py-8 text-center" style={{ color: "var(--text-muted)" }}>
+                  <p className="text-sm">Aucune nouvelle notification</p>
+                </div>
+              ) : (
+                <ul className="px-1 pb-1">
+                  {unreadPreview.map((n) => (
+                    <li key={n.id}>
+                      <Link
+                        href={n.href}
+                        onClick={() => {
+                          markNotificationsAsRead([n.id]);
+                          setShowNotifications(false);
+                        }}
+                        className="block rounded-lg px-2.5 py-2"
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                      >
+                        <span className="block text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
+                          {n.title}
+                        </span>
+                        <span className="block text-xs truncate" style={{ color: "var(--text-muted)" }}>
+                          {n.message}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
               <div style={{ borderTop: "1px solid var(--card-border)", margin: "4px 0" }} />
               <Link
                 href="/notifications"

@@ -10,6 +10,8 @@ import {
   ShieldCheck, Sparkles, ChevronDown, SlidersHorizontal, Percent, Check, Leaf,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { useSession } from "@/lib/use-session";
+import { isSessionId } from "@/lib/demo/session-views";
 import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 import { AirbnbPropertyCard } from "@/components/ui/airbnb-property-card";
 import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
@@ -17,7 +19,9 @@ import { properties as CATALOGUE, isAvailable } from "@/lib/mock-data";
 
 /* Les biens proposés : un bien vendu (`soldTo`) reste consultable depuis
    un avis ou un profil, mais ne figure plus dans l'exploration. */
-const ALL_PROPERTIES = CATALOGUE.filter(isAvailable);
+/* Le catalogue figé ; les biens publiés pendant la visite (mémoire de
+   session) s'y ajoutent dans le composant. */
+const BASE_PROPERTIES = CATALOGUE.filter(isAvailable);
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
 
 // ─── Constantes ─────────────────────────────────────────────────────────────
@@ -74,6 +78,9 @@ const compactPrice = (n: number) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed
 
 export default function ExplorerPage() {
   const { formatPrice, toggleFavorite, isFavorite, favorites } = useApp();
+  /* Un bien publié sur /publier apparaît ici, en tête du tri par défaut. */
+  const { listings: sessionListings } = useSession();
+  const ALL_PROPERTIES = useMemo(() => [...sessionListings, ...BASE_PROPERTIES], [sessionListings]);
 
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<PropertyType | "">("");
@@ -125,14 +132,14 @@ export default function ExplorerPage() {
         setRecentlyViewed(ALL_PROPERTIES.filter((p) => ids.includes(p.id)));
       }
     } catch { /* ignore */ }
-  }, []);
+  }, [ALL_PROPERTIES]);
 
   // ─── Compteurs par pays ─────────────────────────────────────────────────
   const countryCounts = useMemo(() => {
     const m: Record<string, number> = {};
     for (const p of ALL_PROPERTIES) m[p.location.country] = (m[p.location.country] ?? 0) + 1;
     return m;
-  }, []);
+  }, [ALL_PROPERTIES]);
   const countryList = useMemo(
     () => Object.keys(countryCounts).sort((a, b) => countryCounts[b] - countryCounts[a]),
     [countryCounts],
@@ -141,7 +148,7 @@ export default function ExplorerPage() {
   // ─── Collections ────────────────────────────────────────────────────────
   const coupsDeCoeur = useMemo(
     () => [...ALL_PROPERTIES].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 10),
-    [],
+    [ALL_PROPERTIES],
   );
   const recommended = useMemo(() => {
     const favs = ALL_PROPERTIES.filter((p) => favorites.has(p.id));
@@ -152,14 +159,14 @@ export default function ExplorerPage() {
       .filter((p) => !favorites.has(p.id))
       .map((p) => ({ p, score: (favTypes.has(p.type) ? 2 : 0) + (favCities.has(p.location.city) ? 1.5 : 0) + (p.rating ?? 0) / 5 }))
       .sort((a, b) => b.score - a.score).slice(0, 10).map((x) => x.p);
-  }, [favorites, coupsDeCoeur]);
+  }, [favorites, coupsDeCoeur, ALL_PROPERTIES]);
   const hasFavorites = favorites.size > 0;
 
   const meilleursRendements = useMemo(
     () => ALL_PROPERTIES.filter((p) => p.transactionType === "vente" && (p.analytics?.rendementBrut ?? 0) > 0).sort((a, b) => b.analytics!.rendementBrut - a.analytics!.rendementBrut).slice(0, 10),
-    [],
+    [ALL_PROPERTIES],
   );
-  const sejoursCourts = useMemo(() => ALL_PROPERTIES.filter((p) => p.transactionType === "location-ct").slice(0, 10), []);
+  const sejoursCourts = useMemo(() => ALL_PROPERTIES.filter((p) => p.transactionType === "location-ct").slice(0, 10), [ALL_PROPERTIES]);
 
   const destinations = useMemo(() => {
     const map = new Map<string, { city: string; country: string; image: string; count: number }>();
@@ -169,7 +176,7 @@ export default function ExplorerPage() {
       map.get(key)!.count++;
     }
     return [...map.values()].sort((a, b) => b.count - a.count).slice(0, 6);
-  }, []);
+  }, [ALL_PROPERTIES]);
 
   // ─── Filtrage ───────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -194,9 +201,9 @@ export default function ExplorerPage() {
     else if (sortBy === "rendement") r.sort((a, b) => (b.analytics?.rendementBrut ?? 0) - (a.analytics?.rendementBrut ?? 0));
     else if (sortBy === "surface") r.sort((a, b) => (b.area ?? 0) - (a.area ?? 0));
     else if (sortBy === "rating") r.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-    else r.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || (b.rating ?? 0) - (a.rating ?? 0));
+    else r.sort((a, b) => Number(isSessionId(b.id)) - Number(isSessionId(a.id)) || (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || (b.rating ?? 0) - (a.rating ?? 0));
     return r;
-  }, [search, filterType, filterTransaction, filterCountries, filterPriceMin, filterPriceMax, filterBedrooms, filterBathrooms, filterSurfaceMin, filterRendementMin, filterDpe, sortBy]);
+  }, [ALL_PROPERTIES, search, filterType, filterTransaction, filterCountries, filterPriceMin, filterPriceMax, filterBedrooms, filterBathrooms, filterSurfaceMin, filterRendementMin, filterDpe, sortBy]);
 
   const visibleProperties = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
@@ -305,7 +312,7 @@ export default function ExplorerPage() {
       <header className="pt-1 pb-5">
         <h1 className="font-serif text-3xl md:text-4xl leading-tight tracking-tight text-[var(--foreground)]">Trouvez le lieu qui vous ressemble.</h1>
         <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-[var(--text-muted)]">
-          <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-[var(--success)]" /> {ALL_PROPERTIES.length} biens vérifiés</span>
+          <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-[var(--success)]" /> {BASE_PROPERTIES.length} biens vérifiés</span>
           <span className="inline-flex items-center gap-1.5"><TrendingUp className="w-3.5 h-3.5" /> Rendement transparent</span>
           <span className="inline-flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" /> Sans intermédiaire</span>
         </div>

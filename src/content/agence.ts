@@ -50,9 +50,12 @@ export const agencePage = {
     fields: { type: "Bien", sector: "Secteur", budget: "Prix visé", posted: "Déposée" },
     applyCta: "Postuler",
     appliedLabel: "Candidature envoyée",
-    applyNote: "Postuler est gratuit. Vous renseignez taux, inclus, délai et deux références — les quatre champs imposés.",
+    applyNote: "Postuler est gratuit. Vous renseignez taux, inclus, délai et deux références — les quatre champs imposés. Le particulier ne vous révèle son identité que s'il ouvre le contact.",
     items: [
-      { id: "d1", type: "Appartement 4,5 p.", sector: "Neuchâtel — Vauseyon", budget: "≈ 820 000 CHF", posted: "il y a 1 h", applicants: 2 },
+      /* `ownerId` n'est JAMAIS affiché à l'agence : il sert seulement à
+         notifier le particulier qu'une candidature est arrivée. Ici, Sandrine
+         Monnier, qui vend son appartement depuis l'achat de sa villa. */
+      { id: "d1", type: "Appartement 4,5 p.", sector: "Neuchâtel — Vauseyon", budget: "≈ 820 000 CHF", posted: "il y a 1 h", applicants: 2, ownerId: "user-011" },
       { id: "d2", type: "Villa individuelle", sector: "Marin-Epagnier", budget: "≈ 1 300 000 CHF", posted: "il y a 4 h", applicants: 1 },
       { id: "d3", type: "Studio", sector: "Neuchâtel — Centre", budget: "≈ 310 000 CHF", posted: "il y a 9 h", applicants: 3 },
       { id: "d4", type: "Immeuble de rendement", sector: "La Chaux-de-Fonds", budget: "≈ 3 200 000 CHF", posted: "il y a 1 j", applicants: 0 },

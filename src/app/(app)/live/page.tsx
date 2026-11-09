@@ -6,13 +6,31 @@ import { Video, Bell, CalendarPlus, Radio, Check } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { CameraPreview } from "@/components/live/camera-preview";
 import { REPLAYS } from "@/lib/replays";
+import { useSearchParams } from "next/navigation";
+import { useSession, recordSessionEvent } from "@/lib/use-session";
+import { groupThousands } from "@/lib/demo/session-views";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
 
-const UPCOMING_LIVES = [
-  { id: "L1", titre: "Investir dans l'immobilier suisse en 2026", speaker: "Marc Bonnard", role: "Formateur", date: "5 avril 2026 à 18h00", inscrits: 124 },
-  { id: "L2", titre: "Visite virtuelle : Villa Montreux", speaker: "Sophie Meier", role: "Agence", date: "8 avril 2026 à 14h00", inscrits: 87 },
-  { id: "L3", titre: "Optimiser son annonce immobilière", speaker: "Laura Fischer", role: "Hôte", date: "12 avril 2026 à 10h00", inscrits: 56 },
+/* Les prochains lives, animés par des personnes du casting, à des dates
+   postérieures au « aujourd'hui » de la démonstration (30 septembre 2026).
+   Un réseau qui se lance : des dizaines d'inscrits, pas des centaines. Les
+   lives programmés pendant la visite (mémoire de session) s'ajoutent en tête. */
+interface UpcomingLive {
+  id: string;
+  titre: string;
+  speaker: string;
+  speakerId?: string;
+  role: string;
+  date: string;
+  inscrits: number;
+  isNew?: boolean;
+}
+
+const UPCOMING_LIVES: UpcomingLive[] = [
+  { id: "L1", titre: "Pricing dynamique : préparer l'hiver en courte durée", speaker: "Amina El Idrissi", speakerId: "user-016", role: "Créatrice de formations", date: "8 octobre 2026 à 18h00", inscrits: 24 },
+  { id: "L2", titre: "Visite commentée : la maison vigneronne de Riex", speaker: "Céline Bovard", speakerId: "user-002", role: "Agente immobilière", date: "14 octobre 2026 à 12h30", inscrits: 17 },
+  { id: "L3", titre: "Déclarer un bien loué dans un autre canton", speaker: "Sandrine Monnier", speakerId: "user-011", role: "Créatrice de formations", date: "21 octobre 2026 à 19h00", inscrits: 31 },
 ];
 
 /* Les replays viennent de @/lib/replays : la fiche /live/replay/[id] lit le
@@ -29,8 +47,36 @@ const MOCK_CHAT = [
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
+/* `useSearchParams` exige une frontière Suspense en App Router (Next 16). */
 export default function LivePage() {
+  return (
+    <React.Suspense fallback={null}>
+      <LivePageInner />
+    </React.Suspense>
+  );
+}
+
+function LivePageInner() {
   const { activeRole } = useApp();
+  const focusId = useSearchParams().get("focus");
+  const { lives: scheduled } = useSession();
+  const upcoming = React.useMemo<UpcomingLive[]>(
+    () => [
+      ...scheduled.map((l) => ({
+        id: l.id,
+        titre: l.title,
+        speaker: l.speaker,
+        speakerId: l.speakerId,
+        role: l.format === "masterclass" ? "Masterclass" : l.format === "qa" ? "Questions-réponses" : "Webinaire",
+        date: l.dateLabel,
+        inscrits: 0,
+        isNew: true,
+      })),
+      ...UPCOMING_LIVES,
+    ],
+    [scheduled],
+  );
+  const [createError, setCreateError] = useState<string | null>(null);
   const [isLive] = useState(false);
   const [viewingReplay, setViewingReplay] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -118,7 +164,7 @@ export default function LivePage() {
       {/* Toast */}
       {toastVisible && (
         <div className="fixed top-6 right-6 z-[60] flex items-center gap-1.5 px-5 py-3 rounded-xl toast-success text-sm font-medium shadow-lg animate-fade-in">
-          <Check size={14} strokeWidth={2.5} /> Live programmé ! (démonstration)
+          <Check size={14} strokeWidth={2.5} /> Live programmé : il figure dans « Prochains lives ».
         </div>
       )}
 
@@ -165,8 +211,8 @@ export default function LivePage() {
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-[var(--foreground)]">Investir dans l&apos;immobilier suisse en 2026</h2>
-                <p className="text-sm text-[var(--text-secondary)]">Par Marc Bonnard — Formateur</p>
+                <h2 className="text-lg font-semibold text-[var(--foreground)]">Pricing dynamique : préparer l&apos;hiver en courte durée</h2>
+                <p className="text-sm text-[var(--text-secondary)]">Par Amina El Idrissi — Créatrice de formations</p>
               </div>
               <div className="flex gap-2">
                 <button
@@ -234,7 +280,7 @@ export default function LivePage() {
 
               <p className="text-white/80 text-sm font-medium uppercase tracking-widest mb-2">Prochain Live E-Dome</p>
               <h2 className="text-xl md:text-2xl font-bold text-white mb-1">{countdown.title}</h2>
-              <p className="text-white/70 text-sm mb-6">Investir dans l&apos;immobilier suisse en 2026</p>
+              <p className="text-white/70 text-sm mb-6">Les lives de la communauté E-Dome</p>
 
               {/* Countdown numbers */}
               <div className="flex items-center justify-center gap-3 md:gap-6 mb-8">
@@ -262,7 +308,7 @@ export default function LivePage() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
                   onClick={() => {
-                    const firstLive = UPCOMING_LIVES[0];
+                    const firstLive = upcoming[0];
                     if (firstLive && !inscriptions.has(firstLive.id)) handleInscription(firstLive.id);
                   }}
                   className="px-6 py-3 rounded-xl bg-white text-[var(--primary)] font-semibold text-sm hover:bg-white/90 transition shadow-lg flex items-center gap-2"
@@ -300,10 +346,27 @@ export default function LivePage() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-[var(--foreground)]">Prochains lives</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {UPCOMING_LIVES.map((live) => (
-            <div key={live.id} className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-3 hover:border-[var(--primary)]/40 transition">
-              <h3 className="font-medium text-[var(--foreground)]">{live.titre}</h3>
-              <p className="text-sm text-[var(--text-secondary)]">{live.speaker} — {live.role}</p>
+          {upcoming.map((live) => (
+            <div
+              key={live.id}
+              className={`p-5 rounded-xl bg-[var(--card)] border space-y-3 hover:border-[var(--primary)]/40 transition ${
+                focusId === live.id ? "border-[var(--primary)] ring-2 ring-[var(--primary)]/30" : "border-[var(--card-border)]"
+              }`}
+            >
+              <h3 className="font-medium text-[var(--foreground)]">
+                {live.titre}
+                {live.isNew && (
+                  <span className="ml-2 align-middle inline-block px-2 py-0.5 bg-emerald-500/15 text-emerald-500 rounded-full text-[11px] font-medium">Nouveau</span>
+                )}
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)]">
+                {live.speakerId ? (
+                  <Link href={`/profil/${live.speakerId}`} className="hover:underline">{live.speaker}</Link>
+                ) : (
+                  live.speaker
+                )}{" "}
+                — {live.role}
+              </p>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[var(--text-muted)]">{live.date}</span>
                 <span className="text-[var(--primary)] font-medium">{liveInscrits[live.id] ?? live.inscrits} inscrits</span>
@@ -349,7 +412,7 @@ export default function LivePage() {
             />
           </div>
           <p className="text-sm text-[var(--text-secondary)]">
-            Par {replayItem.speaker} — {replayItem.date} — {replayItem.vues.toLocaleString("fr-CH")} vues
+            Par {replayItem.speaker} — {replayItem.date} — {groupThousands(replayItem.vues)} vues
           </p>
         </section>
       )}
@@ -373,7 +436,7 @@ export default function LivePage() {
                 <p className="text-xs text-[var(--text-secondary)]">{replay.speaker}</p>
                 <div className="flex justify-between text-xs text-[var(--text-muted)]">
                   <span>{replay.date}</span>
-                  <span>{replay.vues.toLocaleString("fr-CH")} vues</span>
+                  <span>{groupThousands(replay.vues)} vues</span>
                 </div>
               </div>
             </Link>
@@ -449,6 +512,9 @@ export default function LivePage() {
                 )}
               </div>
             </div>
+            {createError && (
+              <p role="alert" className="text-sm text-red-400">{createError}</p>
+            )}
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowCreateModal(false)}
@@ -458,6 +524,25 @@ export default function LivePage() {
               </button>
               <button
                 onClick={() => {
+                  /* Le live entre au journal de session : il apparaît dans
+                     « Prochains lives », et une notification le confirme. */
+                  if (newLive.titre.trim().length < 5 || !newLive.date) {
+                    setCreateError("Indiquez un titre (cinq caractères au moins) et une date.");
+                    return;
+                  }
+                  recordSessionEvent({
+                    kind: "live.scheduled",
+                    data: {
+                      title: newLive.titre.trim(),
+                      format: newLive.type,
+                      date: newLive.date.slice(0, 10),
+                      durationMin: Math.max(15, Math.round(Number(newLive.duree) || 60)),
+                      description: newLive.description.trim(),
+                      price: Math.max(0, Math.round(Number(newLive.prix) || 0)),
+                    },
+                  });
+                  setCreateError(null);
+                  setNewLive({ titre: "", type: "webinaire", date: "", duree: "60", description: "", prix: "0" });
                   setShowCreateModal(false);
                   setToastVisible(true);
                   setTimeout(() => setToastVisible(false), 3000);

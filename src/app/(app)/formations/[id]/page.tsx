@@ -15,6 +15,8 @@ import {
 import { frDate } from "@/lib/demo/showcase";
 import type { Formation } from "@/lib/types";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
+import { useSession } from "@/lib/use-session";
+import { isSessionId } from "@/lib/demo/session-views";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
 
 /* ─── Résolution d'une formation ────────────────────────────────────────────
@@ -86,7 +88,19 @@ function Stars({ rating, size = "sm" }: { rating: number; size?: "sm" | "md" }) 
 
 export default function FormationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const formation = resolveFormation(id);
+  /* Une formation publiée pendant la visite (`s-form-…`) vit dans la mémoire
+     de session ; tant qu'elle n'est pas relue, on patiente au lieu d'afficher
+     « introuvable ». */
+  const { formations: published, hydrated } = useSession();
+  const formation = isSessionId(id) ? published.find((f) => f.id === id) : resolveFormation(id);
+
+  if (!formation && isSessionId(id) && !hydrated) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <p className="text-[var(--text-muted)]">Chargement de la formation…</p>
+      </div>
+    );
+  }
 
   if (!formation) {
     return (

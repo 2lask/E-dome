@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useApp } from "@/lib/context";
 import { LottiePlayer } from "@/components/ui/lottie-player";
+import Link from "next/link";
+import { recordSessionEvent } from "@/lib/use-session";
+import { formationIdOf } from "@/lib/demo/session-store";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -61,6 +64,8 @@ export default function CreerFormationPage() {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<FormData>(emptyForm);
   const [published, setPublished] = useState(false);
+  const [publishedId, setPublishedId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
 
   // Load draft from localStorage
   useEffect(() => {
@@ -144,7 +149,35 @@ export default function CreerFormationPage() {
     }));
   };
 
+  /* La formation entre au journal de session : elle apparaît dans
+     /formations, a sa propre fiche, et une notification le confirme. On ne
+     publie pas une formation sans titre, catégorie ni module nommé. */
   const handlePublish = () => {
+    const errs: string[] = [];
+    if (form.titre.trim().length < 5) errs.push("Donnez un titre d'au moins cinq caractères (étape 1).");
+    if (!form.categorie) errs.push("Choisissez une catégorie (étape 1).");
+    if (!form.modules.some((m) => m.title.trim())) errs.push("Nommez au moins un module (étape 2).");
+    setErrors(errs);
+    if (errs.length > 0) return;
+    const event = recordSessionEvent({
+      kind: "formation.published",
+      data: {
+        title: form.titre.trim(),
+        category: form.categorie,
+        level: (["debutant", "intermediaire", "avance"] as const).find((l) => l === form.niveau) ?? "debutant",
+        description: form.description.trim(),
+        image: /^https?:\/\//.test(form.image) ? form.image : "",
+        price: Math.max(0, Math.round(form.prix)),
+        duration: form.duree.trim(),
+        modules: form.modules
+          .filter((m) => m.title.trim())
+          .map((m) => ({
+            title: m.title.trim(),
+            lessons: m.lessons.filter((l) => l.title.trim()).map((l) => ({ title: l.title.trim(), duration: l.duration.trim() })),
+          })),
+      },
+    });
+    setPublishedId(formationIdOf(event.seq));
     setPublished(true);
     try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
   };
@@ -160,9 +193,9 @@ export default function CreerFormationPage() {
           </div>
           <h1 className="text-2xl page-heading mb-2">Formation publiée !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre formation &quot;{form.titre}&quot; est maintenant disponible.</p>
-          <a href="/formations" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
-            Voir mes formations
-          </a>
+          <Link href={publishedId ? `/formations/${publishedId}` : "/formations"} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
+            Voir ma formation
+          </Link>
         </div>
       </div>
     );
@@ -361,6 +394,14 @@ export default function CreerFormationPage() {
 
             {form.quiz.length > 0 && (
               <p className="text-sm text-[var(--text-muted)]">Quiz : {form.quiz.length} question(s)</p>
+            )}
+
+            {errors.length > 0 && (
+              <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                <ul className="list-disc pl-5">
+                  {errors.map((e) => <li key={e}>{e}</li>)}
+                </ul>
+              </div>
             )}
 
             <div className="flex justify-between">

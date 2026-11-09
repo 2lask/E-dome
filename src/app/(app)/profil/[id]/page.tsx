@@ -12,6 +12,8 @@ import { BackButton } from "@/components/ui/back-button";
 import type { Profile } from "@/lib/profile-types";
 import { gmvVolume } from "@/lib/demo/derive";
 import { DEMO_TODAY } from "@/lib/demo/clock";
+import { useSession } from "@/lib/use-session";
+import { sessionShowcaseOf } from "@/lib/demo/session-views";
 
 /* /profil/[id] — profil public d'un autre utilisateur. Le profil (identité +
    sections LinkedIn) vient de getMockProfile ; la vitrine (biens/formations…)
@@ -36,6 +38,7 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
   const router = useRouter();
   const profile = getMockProfile(id);
   const { isFollowing, toggleFollow } = useApp();
+  const { state: sessionState } = useSession();
 
   if (!profile) {
     return (
@@ -61,12 +64,15 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
      de biens ni d'avis pour la remplir. Produits, lives et services n'ont pas
      encore de propriétaire dans la donnée (chantiers P4/P6). */
   const { avis, ratingBreakdown } = avisOf(profile.id);
+  /* + ce que cette personne a publié pendant la session (chantier P3 : quand
+     on l'incarne, ses publications apparaissent sur sa fiche publique). */
+  const added = sessionShowcaseOf(sessionState, profile.id);
   const showcase: ProfileData = {
-    biens: biensOf(profile.id),
-    formations: formationsOf(profile.id),
+    biens: [...added.biens, ...biensOf(profile.id)],
+    formations: [...added.formations, ...formationsOf(profile.id)],
     produits: [],
-    lives: [],
-    services: [],
+    lives: added.lives,
+    services: added.services,
     avis,
     ratingBreakdown,
     posts: getPublicPosts(profileToAuthor(profile)),

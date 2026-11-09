@@ -6,6 +6,9 @@ import type { TransactionType, PropertyType } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import { PRIME_RANGE_LABEL } from "@/lib/pricing";
 import { publierObligations } from "@/content/publier-obligations";
+import Link from "next/link";
+import { recordSessionEvent } from "@/lib/use-session";
+import { listingIdOf } from "@/lib/demo/session-store";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -97,6 +100,11 @@ export default function PublierPage() {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<PublishForm>(emptyForm);
   const [published, setPublished] = useState(false);
+  /* L'id de l'annonce créée dans la mémoire de session (« Voir l'annonce »
+     mène à SA fiche, plus à /explorer en général). */
+  const [publishedId, setPublishedId] = useState<string | null>(null);
+  /* Les erreurs de validation de l'étape en cours, affichées sous le bouton. */
+  const [stepErrors, setStepErrors] = useState<string[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [drafts, setDrafts] = useState<{ id: string; titre: string; date: string }[]>([]);
   const [photoInput, setPhotoInput] = useState("");
@@ -174,11 +182,61 @@ export default function PublierPage() {
     } catch { /* ignore */ }
   };
 
+  /* ── Validation minimale ─────────────────────────────────────────────
+     On ne publie pas « Sans titre / Prix à définir ». L'étape 1 exige le type
+     de transaction, le type de bien, la ville et un prix ; l'étape 2 un titre.
+     La publication revérifie tout (on peut sauter d'étape par le fil
+     d'Ariane). */
+  const errorsForStep = (n: number): string[] => {
+    const errs: string[] = [];
+    if (n === 1) {
+      if (!form.transactionType) errs.push("Choisissez un type de transaction.");
+      if (!form.propertyType) errs.push("Choisissez un type de bien.");
+      if (!form.ville.trim()) errs.push("Indiquez la ville.");
+      if (!(form.prix > 0)) errs.push("Indiquez un prix supérieur à zéro.");
+    }
+    if (n === 2) {
+      if (form.titre.trim().length < 5) errs.push("Donnez un titre d'au moins cinq caractères.");
+    }
+    return errs;
+  };
+  const goNext = (from: number, to: number) => {
+    const errs = errorsForStep(from);
+    setStepErrors(errs);
+    if (errs.length === 0) setStep(to);
+  };
+
   const handlePublish = () => {
+    const errs = [...errorsForStep(1), ...errorsForStep(2)];
+    setStepErrors(errs);
+    if (errs.length > 0 || !form.transactionType || !form.propertyType) return;
+    /* L'annonce entre au journal de session : elle apparaît dans /explorer,
+       sur sa fiche, dans « Mes annonces », et une notification la confirme. */
+    const event = recordSessionEvent({
+      kind: "listing.published",
+      data: {
+        title: form.titre.trim(),
+        description: form.description.trim(),
+        type: form.propertyType,
+        transactionType: form.transactionType,
+        price: Math.round(form.prix),
+        currency: "CHF",
+        city: form.ville.trim(),
+        address: form.adresse.trim() || undefined,
+        postalCode: form.codePostal.trim() || undefined,
+        bedrooms: Math.max(0, Math.round(form.chambres)),
+        bathrooms: Math.max(0, Math.round(form.sallesDeBain)),
+        area: Math.max(0, Math.round(form.surface)),
+        images: form.photos.filter((u) => /^https?:\/\//.test(u)),
+        amenities: form.equipements,
+        openToReferrers: form.autoriserApporteurs,
+      },
+    });
+    setPublishedId(listingIdOf(event.seq));
     setShowConfetti(true);
-    setToastMsg("Bien publié avec succès ! Il est maintenant visible dans l'Explorer. (démonstration)");
-    setTimeout(() => { setPublished(true); try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ } }, 2500);
-    setTimeout(() => setToastMsg(""), 5000);
+    setToastMsg("Bien publié. Il est visible dans l'Explorer et dans « Mes annonces ».");
+    setTimeout(() => { setPublished(true); try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ } }, 1200);
+    setTimeout(() => setToastMsg(""), 4000);
   };
 
   /* ── Published success ──────────────────────────────────────────────── */
@@ -192,9 +250,14 @@ export default function PublierPage() {
           </div>
           <h1 className="text-2xl page-heading mb-2">Bien publié avec succès !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre annonce &quot;{form.titre}&quot; est maintenant en ligne.</p>
-          <a href="/explorer" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
-            Voir l&apos;annonce
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link href={publishedId ? `/explorer/${publishedId}` : "/explorer"} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
+              Voir l&apos;annonce
+            </Link>
+            <Link href="/dashboard/annonces" className="px-6 py-3 border border-[var(--card-border)] rounded-xl font-medium text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors inline-block">
+              Mes annonces
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -250,7 +313,7 @@ export default function PublierPage() {
         <div className="flex items-center gap-2 mb-8">
           {stepLabels.map((s, i) => (
             <React.Fragment key={i}>
-              <button onClick={() => setStep(i + 1)} className={`px-3 py-2 rounded-full text-xs font-medium transition-colors ${step === i + 1 ? "bg-[var(--primary)] text-white" : step > i + 1 ? "bg-[var(--primary)]/20 text-[var(--primary)]" : "bg-[var(--card)] text-[var(--text-muted)]"}`}>
+              <button onClick={() => { if (i + 1 <= 1) { setStepErrors([]); setStep(1); return; } const errs = [...errorsForStep(1), ...(i + 1 > 2 ? errorsForStep(2) : [])]; setStepErrors(errs); if (errs.length === 0) setStep(i + 1); }} className={`px-3 py-2 rounded-full text-xs font-medium transition-colors ${step === i + 1 ? "bg-[var(--primary)] text-white" : step > i + 1 ? "bg-[var(--primary)]/20 text-[var(--primary)]" : "bg-[var(--card)] text-[var(--text-muted)]"}`}>
                 <span className="hidden sm:inline">{s}</span>
                 <span className="sm:hidden">{i + 1}</span>
               </button>
@@ -258,6 +321,15 @@ export default function PublierPage() {
             </React.Fragment>
           ))}
         </div>
+
+        {stepErrors.length > 0 && (
+          <div role="alert" className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <p className="font-medium">Avant de continuer :</p>
+            <ul className="mt-1 list-disc pl-5">
+              {stepErrors.map((e) => <li key={e}>{e}</li>)}
+            </ul>
+          </div>
+        )}
 
         {/* ── Step 1: Type & Address ──────────────────────────────────── */}
         {step === 1 && (
@@ -293,7 +365,7 @@ export default function PublierPage() {
               {form.prix > 0 && <p className="text-xs text-[var(--text-muted)] mt-1">Affiche : {formatPrice(form.prix)}</p>}
             </div>
             <div className="flex justify-end">
-              <button onClick={() => setStep(2)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => goNext(1, 2)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}
@@ -310,7 +382,7 @@ export default function PublierPage() {
             <div><label className={labelCls}>Description</label><textarea className={`${inputCls} min-h-[150px] resize-y`} placeholder="Décrivez votre bien en détail..." value={form.description} onChange={(e) => update("description", e.target.value)} /></div>
             <div className="flex justify-between">
               <button onClick={() => setStep(1)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(3)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
+              <button onClick={() => goNext(2, 3)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>
           </div>
         )}

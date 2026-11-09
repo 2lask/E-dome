@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ShieldCheck, Lock, Clock, MapPin, ArrowRight } from "lucide-react";
 import { accompagnementPage } from "@/content/accompagnement";
 import { PlatformRules } from "@/components/legal/platform-rules";
 import { useToast } from "@/components/ui/toast";
+import { useSession, recordSessionEvent } from "@/lib/use-session";
+import { applicationsReceivedBy, contactedProposalIds, displayName } from "@/lib/demo/session-views";
 
 /* ── `/vendre/accompagnement` — comparer les propositions ────────────────────
 
@@ -19,13 +21,42 @@ export default function AccompagnementPage() {
   const a = accompagnementPage;
   const router = useRouter();
   const { addToast } = useToast();
-  const [opened, setOpened] = useState<Set<string>>(new Set());
+  /* Ouvrir le contact laisse une trace : l'événement `agency.contacted` crée
+     la conversation avec la personne de l'agence (et la notifie). C'est le
+     seul moment où l'identité du particulier circule — par son acte. */
+  const { state: sessionState, actorId } = useSession();
+  const opened = useMemo(() => contactedProposalIds(sessionState, actorId), [sessionState, actorId]);
+  /* Les candidatures reçues en session sur les demandes de l'acteur (une
+     agence a postulé depuis /agence/demandes) s'ajoutent à la comparaison. */
+  const received = useMemo(() => applicationsReceivedBy(sessionState, actorId), [sessionState, actorId]);
 
-  const openContact = (id: string, agency: string) => {
-    setOpened((prev) => new Set(prev).add(id));
-    addToast(`Contact ouvert avec ${agency}. Elle reçoit vos coordonnées.`, "success");
-    router.push("/messages");
+  const openContact = (id: string, agency: string, contactId: string) => {
+    if (contactId === actorId) {
+      addToast("Cette proposition est la vôtre.", "info");
+      return;
+    }
+    if (!opened.has(id)) {
+      recordSessionEvent({ kind: "agency.contacted", data: { toId: contactId, proposalId: id, agencyName: agency } });
+    }
+    addToast(`Contact ouvert avec ${agency}. La conversation est dans vos messages.`, "success");
+    router.push(`/messages?to=${contactId}`);
   };
+
+  const proposals = [
+    ...received.map((r) => ({
+      id: r.id,
+      agency: displayName(r.agencyId),
+      contactId: r.agencyId,
+      contactLabel: `${displayName(r.agencyId)} · ${r.demandLabel}`,
+      verified: false,
+      rate: r.rate,
+      included: r.included.split(/[,;\n]/).map((x) => x.trim()).filter(Boolean),
+      timeline: r.timeline,
+      references: [...r.references],
+      respondedAgo: "à l'instant",
+    })),
+    ...a.proposals,
+  ];
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-8">
@@ -43,7 +74,7 @@ export default function AccompagnementPage() {
 
       {/* Les trois propositions, champs alignés */}
       <div className="grid gap-3 md:grid-cols-3">
-        {a.proposals.map((p) => {
+        {proposals.map((p) => {
           const isOpen = opened.has(p.id);
           return (
             <section
@@ -56,6 +87,7 @@ export default function AccompagnementPage() {
                   <ShieldCheck size={15} className="text-emerald-500" aria-label="Agence vérifiée" />
                 )}
               </div>
+              <p className="text-[11.5px] text-[var(--text-secondary)]">{p.contactLabel}</p>
               <p className="mb-3 flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
                 <Clock size={11} aria-hidden />
                 {p.respondedAgo}
@@ -107,12 +139,11 @@ export default function AccompagnementPage() {
 
               <button
                 type="button"
-                onClick={() => openContact(p.id, p.agency)}
-                disabled={isOpen}
+                onClick={() => openContact(p.id, p.agency, p.contactId)}
                 className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--foreground)] px-4 py-2.5 text-[13px] font-medium text-[var(--background)] transition-opacity hover:opacity-90 disabled:opacity-50"
               >
-                {isOpen ? "Contact ouvert" : a.openContact}
-                {!isOpen && <ArrowRight size={14} aria-hidden />}
+                {isOpen ? "Contact ouvert · voir la conversation" : a.openContact}
+                <ArrowRight size={14} aria-hidden />
               </button>
             </section>
           );

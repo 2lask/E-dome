@@ -1,14 +1,16 @@
 "use client";
 
-import React, { Suspense, useState, useMemo } from "react";
+import React, { Suspense, useState, useMemo, useRef } from "react";
+import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "@/lib/context";
-import type { Currency } from "@/lib/types";
+import type { Currency, Property } from "@/lib/types";
 import { getPropertyById } from "@/lib/mock-data";
 import { DEMO_TODAY, iso } from "@/lib/demo/clock";
 import { chf } from "@/lib/model/billing";
 import { MoneyFlow } from "@/components/pricing/money-flow";
+import { useSession, recordSessionEvent } from "@/lib/use-session";
 
 /* ─── La vraie commande, pas un ORDER codé en dur ────────────────────────────
 
@@ -22,6 +24,10 @@ import { MoneyFlow } from "@/components/pricing/money-flow";
    pas de plantage. */
 
 interface Order {
+  /** Vrai quand la commande vient d'un vrai « Réserver » (et pas de
+      l'exemple par défaut) : seule une vraie commande laisse une trace. */
+  fromBooking: boolean;
+  hostId: string;
   propertyId: string;
   propertyTitle: string;
   propertyImage: string;
@@ -45,6 +51,8 @@ function defaultOrder(): Order {
   const pricePerNight = p?.price ?? 350;
   const nights = 5;
   return {
+    fromBooking: false,
+    hostId: p?.host.id ?? "",
     propertyId: p?.id ?? "prop5",
     propertyTitle: p?.title ?? "Chalet de luxe · Verbier",
     propertyImage: p?.images?.[0] ?? "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=250&fit=crop",
@@ -59,10 +67,12 @@ function defaultOrder(): Order {
   };
 }
 
-function orderFromParams(params: URLSearchParams): Order {
+/* `sessionListings` : les biens publiés pendant la visite, réservables eux
+   aussi (ils ne sont pas dans le catalogue figé). */
+function orderFromParams(params: URLSearchParams, sessionListings: Property[]): Order {
   const propertyId = params.get("propertyId");
   if (!propertyId) return defaultOrder();
-  const p = getPropertyById(propertyId);
+  const p = getPropertyById(propertyId) ?? sessionListings.find((x) => x.id === propertyId);
   if (!p) return defaultOrder();
 
   const nights = Math.max(1, Math.round(Number(params.get("nights")) || 1));
@@ -73,6 +83,8 @@ function orderFromParams(params: URLSearchParams): Order {
   const fallback = defaultOrder();
 
   return {
+    fromBooking: true,
+    hostId: p.host.id,
     propertyId: p.id,
     propertyTitle: p.title,
     propertyImage: p.images?.[0] ?? fallback.propertyImage,
@@ -109,7 +121,8 @@ function PaiementInner() {
   const { formatPrice } = useApp();
   const searchParams = useSearchParams();
 
-  const order = useMemo(() => orderFromParams(searchParams), [searchParams]);
+  const { listings: sessionListings } = useSession();
+  const order = useMemo(() => orderFromParams(searchParams, sessionListings), [searchParams, sessionListings]);
 
   // Payment method
   const [method, setMethod] = useState<"carte" | "twint" | "virement">("carte");
@@ -207,8 +220,33 @@ function PaiementInner() {
     setTimeout(() => {
       setVerifying3DS(false);
       setShow3DS(false);
-      setSuccess(true);
+      confirmBooking();
     }, 2000);
+  };
+
+  /* ── La réservation laisse une trace ─────────────────────────────────
+     Une fois le paiement passé, la réservation entre au journal de session :
+     elle apparaît dans /dashboard/reservations, l'hôte reçoit une
+     notification et un message dans son fil. Une seule fois par paiement. */
+  const bookedRef = useRef(false);
+  const confirmBooking = () => {
+    if (order.fromBooking && !bookedRef.current) {
+      bookedRef.current = true;
+      recordSessionEvent({
+        kind: "booking.made",
+        data: {
+          propertyId: order.propertyId,
+          hostId: order.hostId,
+          subject: order.propertyTitle,
+          checkIn: order.checkIn,
+          checkOut: order.checkOut,
+          nights: order.nights,
+          total,
+          currency: order.currency,
+        },
+      });
+    }
+    setSuccess(true);
   };
 
   /* ── Payment handler ────────────────────────────────────────────────── */
@@ -220,7 +258,7 @@ function PaiementInner() {
       if (method === "carte") {
         setShow3DS(true);
       } else {
-        setSuccess(true);
+        confirmBooking();
       }
     }, 1500);
   };
@@ -237,9 +275,9 @@ function PaiementInner() {
           <h1 className="text-2xl page-heading mb-2">Paiement reussi !</h1>
           <p className="text-[var(--text-secondary)] mb-2">Montant : <strong className="text-[var(--primary)]">{formatPrice(total, order.currency)}</strong></p>
           <p className="text-sm text-[var(--text-muted)] mb-6">Un email de confirmation a été envoyé.</p>
-          <a href="/dashboard/reservations" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
-            Voir mes reservations
-          </a>
+          <Link href="/dashboard/reservations" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
+            Voir mes réservations
+          </Link>
         </div>
       </div>
     );

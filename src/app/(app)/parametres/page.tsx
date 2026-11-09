@@ -4,6 +4,7 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { X, Camera, ArrowRight } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { useSession, resetDemo } from "@/lib/use-session";
 import type { PlatformRole } from "@/lib/model/identity";
 import { PLATFORM_ROLE_LABELS } from "@/lib/model/role-labels";
 import type { ProfileVisibility, ToggleableSection } from "@/lib/profile-types";
@@ -54,6 +55,11 @@ const ALL_ROLES: PlatformRole[] = [
 export default function ParametresPage() {
   const { formatPrice, availableRoles, toggleAvailableRole, profile, updateProfile } = useApp();
   const [section, setSection] = useState<Section>("general");
+  /* Réinitialiser la démonstration : vide la mémoire de session (annonces
+     publiées, messages, réservations, notifications lues…) et repart des
+     données d'amorce. Une confirmation en deux temps, pas de `confirm()`. */
+  const { state: sessionState } = useSession();
+  const [confirmReset, setConfirmReset] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -765,6 +771,46 @@ export default function ParametresPage() {
                 </div>
               </div>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* Démonstration : réinitialiser la mémoire de session */}
+      <div className="mt-8 border-t border-[var(--card-border)] pt-6">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-[var(--foreground)]">Réinitialiser la démonstration</p>
+            <p className="text-xs text-[var(--text-muted)]">
+              {sessionState.events.length === 0
+                ? "Rien à effacer : vous voyez la démonstration telle qu'au premier jour."
+                : `${sessionState.events.length} action${sessionState.events.length > 1 ? "s" : ""} enregistrée${sessionState.events.length > 1 ? "s" : ""} pendant votre visite (annonces, messages, réservations, suivis…). Tout sera effacé, ainsi que vos favoris et votre panier.`}
+            </p>
+          </div>
+          {confirmReset ? (
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmReset(false)}
+                className="rounded-lg border border-[var(--card-border)] px-3 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={() => resetDemo()}
+                className="rounded-lg bg-red-500 px-3 py-2 text-sm font-medium text-white hover:bg-red-600"
+              >
+                Oui, tout effacer
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmReset(true)}
+              className="rounded-lg border border-red-500/40 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10"
+            >
+              Réinitialiser
+            </button>
           )}
         </div>
       </div>

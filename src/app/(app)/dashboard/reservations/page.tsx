@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   Check,
   X,
@@ -31,8 +32,19 @@ import {
   type Reservation,
   type ReservationStatus,
 } from "@/lib/dashboard-data";
+import { useSession } from "@/lib/use-session";
+import { bookingsHostedBy, bookingsMadeBy, displayName } from "@/lib/demo/session-views";
+import { stayLabel } from "@/lib/demo/clock";
 
-/* /dashboard/reservations : style premium coherent. */
+/* /dashboard/reservations : style premium coherent.
+
+   Deux sources, une seule liste : les réservations du journal (dérivées) et
+   celles faites pendant la visite (mémoire de session). Une réservation reçue
+   en session arrive « en attente » ; celles que l'acteur a faites comme
+   voyageur ont leur propre bloc, « Vos séjours réservés ». */
+
+const stayOf = (checkIn: string, checkOut: string) =>
+  stayLabel(new Date(`${checkIn}T12:00:00Z`), new Date(`${checkOut}T12:00:00Z`));
 
 type Filter = "all" | ReservationStatus;
 
@@ -45,7 +57,23 @@ const FILTERS: { value: Filter; label: string }[] = [
 ];
 
 export default function ReservationsPage() {
-  const [items, setItems] = useState<Reservation[]>(seed);
+  const { state: sessionState, actorId } = useSession();
+  const [statusOverride, setStatusOverride] = useState<Record<string, ReservationStatus>>({});
+  const myStays = useMemo(() => bookingsMadeBy(sessionState, actorId), [sessionState, actorId]);
+  const items = useMemo<Reservation[]>(() => {
+    const received: Reservation[] = bookingsHostedBy(sessionState, actorId).map((b) => ({
+      id: b.id,
+      propertyId: b.propertyId,
+      guest: displayName(b.guestId),
+      dateLabel: stayOf(b.checkIn, b.checkOut),
+      startDate: b.checkIn,
+      endDate: b.checkOut,
+      nights: b.nights,
+      amount: b.total,
+      status: "pending",
+    }));
+    return [...received, ...seed].map((r) => ({ ...r, status: statusOverride[r.id] ?? r.status }));
+  }, [sessionState, actorId, statusOverride]);
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
 
@@ -74,7 +102,7 @@ export default function ReservationsPage() {
   }, [items, filter, search]);
 
   function setStatus(id: string, status: ReservationStatus) {
-    setItems((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+    setStatusOverride((prev) => ({ ...prev, [id]: status }));
   }
 
   const totalRevenue = items
@@ -127,10 +155,44 @@ export default function ReservationsPage() {
         />
       </KpiGrid>
 
+      {myStays.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Vos séjours réservés</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="flex flex-col gap-2.5">
+              {myStays.map((b) => (
+                <li key={b.id} className="flex items-center gap-3 rounded-lg border bg-card p-3 sm:p-4">
+                  <div className="min-w-0 flex-1">
+                    <Link href={`/explorer/${b.propertyId}`} className="truncate text-sm font-medium hover:underline block">
+                      {b.subject}
+                    </Link>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {stayOf(b.checkIn, b.checkOut)} · hôte :{" "}
+                      <Link href={`/messages?to=${b.hostId}`} className="hover:underline">
+                        {displayName(b.hostId)}
+                      </Link>
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-sm font-medium tabular-nums">
+                      {formatNumber(b.total)}{" "}
+                      <span className="text-xs font-normal text-muted-foreground">{b.currency}</span>
+                    </p>
+                    <StatusBadge status="confirmed" />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader className="gap-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle>Liste des réservations</CardTitle>
+            <CardTitle>Réservations de vos biens</CardTitle>
             <Input
               type="text"
               value={search}

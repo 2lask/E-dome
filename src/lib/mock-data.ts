@@ -4,7 +4,7 @@
 // s'y rattache : biens, formations, conversations, avis.
 // ============================================================
 
-import type { User, Property, Conversation, Formation } from './types';
+import type { User, Property, Formation } from './types';
 import { CURRENT_USER } from "./demo/identity";
 import { followerCount, followingCount } from "./demo/social";
 
@@ -935,69 +935,10 @@ export const properties: Property[] = [
 
 // ─── CONVERSATIONS ──────────────────────────────────────────────────────────
 
-/* Les fils de l'utilisateur courant avec des personnes du casting. Le contenu
-   sera repris par le moteur d'interactions (chantier P2) ; ici, chaque fil
-   parle de quelque chose qui existe : l'appartement de Renens auquel Ana est
-   candidate, le reportage de Nikola, la formation de Sandrine… */
-export const conversations: Conversation[] = [
-  {
-    id: 'conv-001',
-    participant: person('user-006'),
-    messages: [
-      { id: 'msg-001', senderId: 'user-006', content: 'Bonjour Monsieur Martin, je suis intéressée par le 4,5 pièces à Renens pour ma famille. Est-ce qu’il est encore libre ?', timestamp: '2026-09-27T18:10:00Z', read: true },
-      { id: 'msg-002', senderId: 'user-001', content: 'Bonjour Ana, oui, il est libre au 1er novembre. Je fais des visites samedi matin, 10 h ou 11 h ?', timestamp: '2026-09-27T19:02:00Z', read: true },
-      { id: 'msg-003', senderId: 'user-006', content: '11 h c’est parfait, merci ! Est-ce que c’est normal qu’on demande 3 mois de garantie ? C’est notre premier appartement en Suisse.', timestamp: '2026-09-28T07:45:00Z', read: false },
-    ],
-    unreadCount: 1,
-    lastMessage: 'Est-ce que c’est normal qu’on demande 3 mois de garantie ? C’est notre premier appartement en Suisse.',
-    isOnline: true,
-  },
-  {
-    id: 'conv-002',
-    participant: person('user-005'),
-    messages: [
-      { id: 'msg-004', senderId: 'user-001', content: 'Salut Nikola, tu serais dispo pour refaire les photos du studio de Sous-Gare ? J’ai changé le canapé.', timestamp: '2026-09-25T12:00:00Z', read: true },
-      { id: 'msg-005', senderId: 'user-005', content: 'yes dispo mardi ou jeudi aprem. meme prix que la derniere fois', timestamp: '2026-09-25T12:31:00Z', read: true },
-      { id: 'msg-006', senderId: 'user-005', content: 'jeudi 14h ca joue?', timestamp: '2026-09-26T08:05:00Z', read: false },
-    ],
-    unreadCount: 1,
-    lastMessage: 'jeudi 14h ca joue?',
-    isOnline: false,
-  },
-  {
-    id: 'conv-003',
-    participant: person('user-011'),
-    messages: [
-      { id: 'msg-007', senderId: 'user-001', content: 'Bonjour Sandrine, merci pour la formation. Une question : la location de mon studio de Genève se déclare dans le canton de Genève ou dans le canton de Vaud ?', timestamp: '2026-09-20T09:00:00Z', read: true },
-      { id: 'msg-008', senderId: 'user-011', content: 'Bonjour Léo, bonne question. Le revenu d’un immeuble est imposé dans le canton où il se trouve : Genève, donc. Vaud en tient compte pour fixer le taux. Je vous mets la référence du module 3 en lien.', timestamp: '2026-09-20T14:20:00Z', read: true },
-    ],
-    unreadCount: 0,
-    lastMessage: 'Le revenu d’un immeuble est imposé dans le canton où il se trouve : Genève, donc.',
-    isOnline: false,
-  },
-  {
-    id: 'conv-004',
-    participant: person('user-002'),
-    messages: [
-      { id: 'msg-009', senderId: 'user-002', content: 'Bonjour Léo ! Une cliente cherche un logement pour trois semaines à Lausanne pendant que sa maison est en travaux. Votre studio de Sous-Gare serait libre en novembre ?', timestamp: '2026-09-18T10:00:00Z', read: true },
-      { id: 'msg-010', senderId: 'user-001', content: 'Bonjour Céline, du 3 au 24 novembre, oui. Je vous envoie le lien de réservation.', timestamp: '2026-09-18T11:15:00Z', read: true },
-    ],
-    unreadCount: 0,
-    lastMessage: 'Du 3 au 24 novembre, oui. Je vous envoie le lien de réservation.',
-    isOnline: true,
-  },
-  {
-    id: 'conv-005',
-    participant: person('user-013'),
-    messages: [
-      { id: 'msg-011', senderId: 'user-013', content: 'Léo, tu as baissé ton prix à Verbier pour octobre ? Chez moi à Montreux, -15 % en semaine et les réservations sont revenues.', timestamp: '2026-09-15T16:40:00Z', read: true },
-      { id: 'msg-012', senderId: 'user-001', content: 'Pas encore. Je teste ce que tu as appris dans la formation d’Amina et je te dis.', timestamp: '2026-09-15T17:05:00Z', read: true },
-    ],
-    unreadCount: 0,
-    lastMessage: 'Pas encore. Je teste ce que tu as appris dans la formation d’Amina et je te dis.',
-    isOnline: false,
-  },
-];
+/* Les fils de la messagerie ne vivent plus ici : ils sont l'amorce du moteur
+   d'interactions (chantier P2), dans `demo/inbox-seeds.ts`, et toute lecture
+   passe par les vues dérivées de `demo/session-views.ts` (amorce + ce que le
+   visiteur fait pendant sa session). */
 
 // ─── FORMATIONS ─────────────────────────────────────────────────────────────
 

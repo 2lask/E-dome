@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Check, CheckCheck,
   Mic, MicOff, Video, VideoOff, MonitorUp, Hand,
@@ -9,11 +10,13 @@ import {
   LayoutGrid, Maximize2, X as XIcon, Send as SendIcon, Link as LinkIcon,
   Paperclip, Plus, UserPlus,
 } from "lucide-react";
-import type { Conversation, Message, User } from "@/lib/types";
+import type { User } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
-import { users as allUsers, currentUser as currentUserMock } from "@/lib/mock-data";
 import { CURRENT_USER as DEMO_USER } from "@/lib/demo/identity";
-import { requirePerson } from "@/lib/demo/directory";
+import { DIRECTORY, personById, requirePerson } from "@/lib/demo/directory";
+import { directThreadId } from "@/lib/demo/session-store";
+import type { ThreadView } from "@/lib/demo/session-views";
+import { useSession, recordSessionEvent, markThreadAsRead } from "@/lib/use-session";
 import { roleLabel } from "@/lib/model/role-labels";
 import {
   Dialog,
@@ -88,125 +91,105 @@ const INITIAL_CONF_CHAT: ConferenceChatMessage[] = [
   { author: "Céline Bovard", text: "Oui, j'ai préparé le dossier de Riex.", time: "13:42" },
 ];
 
-// ─── Mock data ──────────────────────────────────────────────────────────────
+// ─── La messagerie, branchée sur la mémoire de session ──────────────────────
 
-/* Derive de demo/identity : la messagerie utilisait « me » quand le profil
-   utilisait « user-001 ». Deux identifiants pour une seule personne. */
-const currentUserId = DEMO_USER.id;
+/* Les fils ne vivent plus dans ce composant : ils viennent de la mémoire de
+   session (`useSession`) — l'amorce réécrite sur le casting (Ana ↔ Léo pour
+   Renens, Bernard ↔ Nikola, Mirjana ↔ Amina…) plus tout ce que la visite a
+   produit : une demande de visite, une offre, un devis, un contact d'agence,
+   une réservation déposent un message dans le fil de la bonne personne.
 
-/* Les interlocuteurs sont de VRAIES personnes de l'annuaire (demo/directory),
-   plus des identités inventées sous des ids « u1 »…« u5 » qui n'existaient
-   nulle part. Le deep-link `/messages?to=<id>` depuis /reseau ou /profil/[id]
-   résout donc, et l'interlocuteur d'une conversation est la même personne que
-   sa fiche publique. `requirePerson` échoue à la compilation si un id sortait
-   de l'annuaire.
+   - `/messages?to=<id>` ouvre le fil avec n'importe quelle personne de
+     l'annuaire, ou un fil neuf (brouillon) qui n'existe qu'au premier envoi.
+   - `/messages?conv=<id>` ouvre un fil précis (groupes).
+   - Envoyer un message l'inscrit au journal (`message.sent`) : il reste après
+     un rechargement et notifie les autres membres. */
 
-   NOTE de périmètre : la persistance « un contact crée une conversation » (la
-   modale « Nouvelle conversation », les invités de la visio) reste à l'étape 4.
-   Ces conversations vivant dans un composant de page, l'invariant d'annuaire
-   (import-time, dans demo/invariants.ts) ne peut pas les énumérer ; les ids
-   ci-dessous sont donc garantis par `requirePerson` au chargement du module. */
-/* Les interlocuteurs, pris dans le casting des seize. Le contenu de ces fils
-   sera repris par le moteur d'interactions (chantier P2). */
-const P_SOPHIE = requirePerson("user-002"); // Céline Bovard, agente, Lutry
-const P_CLEMENCE = requirePerson("user-008"); // Clémence Jaquet, premier achat, Morges
-const P_JEANLUC = requirePerson("user-015"); // Jean-Luc Hartmann, agence, Neuchâtel
-const P_AMINA = requirePerson("user-016"); // Amina El Idrissi, formatrice, Marrakech
-const P_PIERRE = requirePerson("user-013"); // Mirjana Kovač, hôte, Montreux
+/** Un message, au format qu'attend le rendu de cette page. */
+interface ConvMessage {
+  id: string;
+  senderId: string;
+  content: string;
+  timestamp: string;
+  read: boolean;
+  topic?: string;
+}
 
-const mockConversations: Conversation[] = [
-  {
-    id: "c1",
-    participant: P_SOPHIE,
-    messages: [
-      { id: "m1", senderId: P_SOPHIE.id, content: "Bonjour Léo ! Une cliente cherche un logement à Verbier en février. Votre appartement est libre ?", timestamp: "2026-03-31T10:00:00", read: true },
-      { id: "m2", senderId: currentUserId, content: "Bonjour Céline ! Merci. Il est libre la semaine du 14 février.", timestamp: "2026-03-31T10:05:00", read: true },
-      { id: "m3", senderId: P_SOPHIE.id, content: "Parfait ! Quel est le tarif pour une semaine ?", timestamp: "2026-03-31T10:10:00", read: true },
-      { id: "m4", senderId: currentUserId, content: "420 CHF la nuit, ménage compris.", timestamp: "2026-03-31T10:15:00", read: true },
-      { id: "m5", senderId: P_SOPHIE.id, content: "Parfait, je lui transmets. Quatre personnes, du 14 au 21.", timestamp: "2026-04-01T08:30:00", read: false },
-    ],
-    unreadCount: 1,
-    lastMessage: "Parfait, je lui transmets. Quatre personnes, du 14 au 21.",
-    isOnline: true,
-  },
-  {
-    id: "c2",
-    participant: P_CLEMENCE,
-    messages: [
-      { id: "m6", senderId: P_CLEMENCE.id, content: "Bonjour, désolée de la question… vous pensez que c'est le moment d'acheter un 3,5 pièces à Morges ?", timestamp: "2026-03-30T14:00:00", read: true },
-      { id: "m7", senderId: currentUserId, content: "Bonjour Clémence ! Je ne suis pas conseiller, mais je peux vous raconter mon premier achat. Un café samedi ?", timestamp: "2026-03-30T14:30:00", read: true },
-      { id: "m8", senderId: P_CLEMENCE.id, content: "Samedi matin serait idéal, vers 10h.", timestamp: "2026-03-30T15:00:00", read: true },
-      { id: "m9", senderId: currentUserId, content: "C'est noté ! Je vous envoie la confirmation par email.", timestamp: "2026-03-30T15:10:00", read: true },
-    ],
+interface ConvView {
+  id: string;
+  type: "direct" | "group";
+  name?: string;
+  groupAvatar?: string;
+  /** L'interlocuteur (direct) ou le premier autre membre (groupe). */
+  participant: User;
+  members: User[];
+  memberIds: string[];
+  messages: ConvMessage[];
+  unreadCount: number;
+  lastMessage: string;
+  isOnline: boolean;
+  subject?: { id: string; title: string };
+  /** Fil pas encore écrit : il n'existera qu'au premier message. */
+  draft?: boolean;
+}
+
+/* Présence déterministe (aucun `Math.random()` en rendu) : une maquette ne
+   sait pas qui est en ligne, mais l'indicateur ne doit pas clignoter. */
+const ONLINE = new Set(["user-006", "user-002", "user-013", "user-005"]);
+
+const GROUP_FALLBACK_AVATAR =
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop";
+
+function toConvView(t: ThreadView): ConvView {
+  const others = t.otherIds.map((id) => personById(id)).filter((u): u is User => Boolean(u));
+  const participant = others[0] ?? requirePerson(t.memberIds[0]!);
+  return {
+    id: t.id,
+    type: t.isGroup ? "group" : "direct",
+    name: t.name,
+    groupAvatar: t.isGroup ? t.avatar ?? GROUP_FALLBACK_AVATAR : undefined,
+    participant,
+    members: others,
+    memberIds: t.memberIds,
+    messages: t.messages.map((m, i) => ({
+      id: m.id,
+      senderId: m.senderId,
+      content: m.text,
+      timestamp: m.at,
+      topic: m.topic,
+      /* « Lu » : tout message suivi d'un autre, et ceux de l'amorce. */
+      read: i < t.messages.length - 1 || !m.fromSession,
+    })),
+    unreadCount: t.unreadCount,
+    lastMessage: t.lastText,
+    isOnline: !t.isGroup && ONLINE.has(participant.id),
+    subject: t.subject ? { id: t.subject.id, title: t.subject.title } : undefined,
+  };
+}
+
+function draftConv(actorId: string, other: User): ConvView {
+  return {
+    id: directThreadId(actorId, other.id),
+    type: "direct",
+    participant: other,
+    members: [other],
+    memberIds: [actorId, other.id],
+    messages: [],
     unreadCount: 0,
-    lastMessage: "C'est noté ! Je vous envoie la confirmation par email.",
-    isOnline: false,
-  },
-  {
-    id: "c3",
-    participant: P_JEANLUC,
-    messages: [
-      { id: "m10", senderId: P_JEANLUC.id, content: "Bonjour Léo, un collaborateur cherche un logement pour 3 mois à Lausanne.", timestamp: "2026-03-29T09:00:00", read: true },
-      { id: "m11", senderId: currentUserId, content: "Bonjour Jean-Luc ! Mon studio de Sous-Gare peut se louer au mois.", timestamp: "2026-03-29T09:15:00", read: true },
-      { id: "m12", senderId: P_JEANLUC.id, content: "Idéal, pouvez-vous m'envoyer les détails ?", timestamp: "2026-03-29T09:20:00", read: true },
-      { id: "m13", senderId: currentUserId, content: "Bien sûr ! Je vous prépare une sélection personnalisée.", timestamp: "2026-03-29T09:25:00", read: true },
-    ],
-    unreadCount: 0,
-    lastMessage: "Bien sûr ! Je vous prépare une sélection personnalisée.",
-    isOnline: true,
-  },
-  {
-    id: "c4",
-    participant: P_AMINA,
-    messages: [
-      { id: "m14", senderId: P_AMINA.id, content: "Bonjour Léo ! Merci pour ton inscription à la formation. Tu as pu voir le module 2 ?", timestamp: "2026-04-02T11:00:00", read: true },
-      { id: "m15", senderId: currentUserId, content: "Oui, merci ! J'applique les prix d'événement sur Verbier cet hiver.", timestamp: "2026-04-02T11:10:00", read: true },
-      { id: "m16", senderId: P_AMINA.id, content: "Super. Envoie-moi ton calendrier de février, je te dis ce que j'en pense.", timestamp: "2026-04-02T11:15:00", read: false },
-      { id: "m17", senderId: currentUserId, content: "Je te l'envoie ce soir.", timestamp: "2026-04-02T11:20:00", read: true },
-    ],
-    unreadCount: 1,
-    lastMessage: "Je te l'envoie ce soir.",
-    isOnline: false,
-  },
-  /* ─── Groupes (chat multi-membres) ────────────────────────────
-     L'attribut `type: 'group'` declenche un rendu different :
-     groupAvatar + name + compteur de membres au lieu de l'avatar
-     d'un seul participant. */
-  {
-    id: "g1",
-    type: "group",
-    name: "Hôtes de l'arc lémanique",
-    groupAvatar:
-      "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=200&h=200&fit=crop",
-    participant: P_SOPHIE,
-    members: [P_SOPHIE, P_JEANLUC, P_PIERRE],
-    messages: [
-      { id: "gm1", senderId: P_JEANLUC.id, content: "Bonjour à tous ! Je propose qu'on se synchronise sur les disponibilités fin avril.", timestamp: "2026-04-03T09:00:00", read: true },
-      { id: "gm2", senderId: P_PIERRE.id, content: "À Montreux, je suis complète du 18 au 25.", timestamp: "2026-04-03T09:15:00", read: true },
-      { id: "gm3", senderId: currentUserId, content: "Idem chez moi. Je peux héberger un overflow si besoin.", timestamp: "2026-04-03T09:20:00", read: true },
-      { id: "gm4", senderId: P_SOPHIE.id, content: "Super, on prépare un tableau partagé ?", timestamp: "2026-04-03T09:30:00", read: false },
-    ],
-    unreadCount: 1,
-    lastMessage: "Céline: Super, on prépare un tableau partagé ?",
-    isOnline: true,
-  },
-  {
-    id: "g2",
-    type: "group",
-    name: "Formation pricing — promo hiver",
-    groupAvatar:
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=200&fit=crop",
-    participant: P_CLEMENCE,
-    members: [P_CLEMENCE, P_AMINA],
-    messages: [
-      { id: "gm10", senderId: P_CLEMENCE.id, content: "On fait le point sur nos prix de février vendredi ?", timestamp: "2026-04-02T17:00:00", read: true },
-      { id: "gm11", senderId: currentUserId, content: "Présent. J'apporte mes chiffres de Verbier.", timestamp: "2026-04-02T17:05:00", read: true },
-    ],
-    unreadCount: 0,
-    lastMessage: "Vous: Présent. J'apporte mes chiffres de Verbier.",
-    isOnline: false,
-  },
-];
+    lastMessage: "Nouvelle conversation",
+    isOnline: ONLINE.has(other.id),
+    draft: true,
+  };
+}
+
+/* Heure et date de Suisse romande, construites à la main : `toLocale*` diffère
+   entre l'ICU du serveur et celle du navigateur (hydratation cassée). Toutes
+   les dates de la démonstration tombent en heure d'été (UTC+2). */
+const ZURICH_OFFSET_MS = 2 * 3_600_000;
+const MONTHS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+function localDate(ts: string): Date {
+  return new Date(new Date(ts).getTime() + ZURICH_OFFSET_MS);
+}
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -223,7 +206,11 @@ export default function MessagesPage() {
 function MessagesPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [conversations, setConversations] = useState(mockConversations);
+  const { threads, actorId, state: sessionState } = useSession();
+  const currentUserId = actorId;
+  /* Brouillon : la personne choisie (deep link ou modale) avec qui aucun fil
+     n'existe encore. */
+  const [draftWith, setDraftWith] = useState<string | null>(null);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [search, setSearch] = useState("");
@@ -244,7 +231,6 @@ function MessagesPageInner() {
   const isSelfMuted = participants.find((p) => p.isSelf)?.muted ?? false;
   const isSelfCameraOff = participants.find((p) => p.isSelf)?.cameraOff ?? false;
   const isSelfHandRaised = participants.find((p) => p.isSelf)?.handRaised ?? false;
-  const [typing, setTyping] = useState(false);
   const [deletedMessages, setDeletedMessages] = useState<Set<string>>(new Set());
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [showNewConv, setShowNewConv] = useState(false);
@@ -256,55 +242,76 @@ function MessagesPageInner() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const callIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  /* Les fils de l'acteur, plus le brouillon éventuel en tête. Un brouillon
+     disparaît de lui-même dès que le fil réel existe (premier message). */
+  const conversations: ConvView[] = useMemo(() => {
+    const real = threads.map(toConvView);
+    if (!draftWith) return real;
+    if (real.some((c) => c.type === "direct" && c.participant.id === draftWith)) return real;
+    const other = personById(draftWith);
+    return other ? [draftConv(currentUserId, other), ...real] : real;
+  }, [threads, draftWith, currentUserId]);
+
   const activeConv = conversations.find((c) => c.id === activeConvId) || null;
 
   const filteredConvs = conversations.filter((c) => {
-    const name = `${c.participant.firstName} ${c.participant.lastName}`.toLowerCase();
+    const name = (c.type === "group" ? c.name ?? "" : `${c.participant.firstName} ${c.participant.lastName}`).toLowerCase();
     return name.includes(search.toLowerCase());
   });
 
-  /* Auto-sélection de conversation depuis une query string :
-     - /messages?to=user-002      → ouvre la conv avec cette personne
-     - /messages?product=b3&...   → ouvre la 1ère conv et pré-remplit
-       le message avec une référence au produit (UX deeplink depuis
-       boutique/[id] "Contacter" / "Poser une question").
-     Ne tente qu'une seule fois (refs) pour ne pas écraser l'état. */
-  const autoSelectAppliedRef = useRef(false);
+  /* Ouvre (ou prépare) le fil direct avec une personne de l'annuaire. */
+  const openWith = useCallback(
+    (personId: string) => {
+      if (personId === currentUserId || !personById(personId)) return;
+      const existing = threads.find((t) => !t.isGroup && t.otherIds.length === 1 && t.otherIds[0] === personId);
+      if (existing) {
+        setActiveConvId(existing.id);
+      } else {
+        setDraftWith(personId);
+        setActiveConvId(directThreadId(currentUserId, personId));
+      }
+    },
+    [threads, currentUserId],
+  );
+
+  /* Auto-sélection depuis la query string :
+     - /messages?to=user-002    → le fil avec cette personne (créé au besoin)
+     - /messages?conv=<id>      → ce fil précis (groupes)
+     - /messages?product=…      → la modale « Nouvelle conversation », message
+       pré-rempli : on choisit soi-même à qui l'adresser.
+     Ré-appliquée quand la query change (un lien vers un autre fil depuis une
+     notification), pas à chaque rendu. */
+  const appliedQueryRef = useRef<string | null>(null);
   useEffect(() => {
-    if (autoSelectAppliedRef.current) return;
+    const key = searchParams.toString();
+    if (appliedQueryRef.current === key) return;
     const to = searchParams.get("to");
+    const conv = searchParams.get("conv");
     const productId = searchParams.get("product");
     const vendor = searchParams.get("vendor");
     if (to) {
-      const conv = conversations.find((c) => c.participant.id === to);
-      if (conv) {
-        setActiveConvId(conv.id);
-        autoSelectAppliedRef.current = true;
-      }
+      openWith(to);
+    } else if (conv) {
+      if (!threads.some((t) => t.id === conv)) return; // la session n'est peut-être pas encore relue
+      setActiveConvId(conv);
     } else if (productId) {
-      const conv = conversations[0];
-      if (conv) {
-        setActiveConvId(conv.id);
-        setMessage(
-          `Bonjour${vendor ? " " + vendor : ""}, je vous contacte au sujet de l'annonce ${productId}.`
-        );
-        autoSelectAppliedRef.current = true;
-      }
+      setMessage(`Bonjour${vendor ? " " + vendor : ""}, je vous contacte au sujet de l'annonce ${productId}.`);
+      setShowNewConv(true);
     }
-  }, [searchParams, conversations]);
+    appliedQueryRef.current = key;
+  }, [searchParams, openWith, threads]);
+
+  /* Ouvrir un fil le marque lu, jusqu'au dernier message affiché. */
+  const activeLength = activeConv?.messages.length ?? 0;
+  useEffect(() => {
+    if (!activeConvId || activeLength === 0) return;
+    markThreadAsRead(activeConvId, activeLength);
+  }, [activeConvId, activeLength]);
 
   // Scroll to bottom on new message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [activeConv?.messages.length]);
-
-  // Simulate typing
-  useEffect(() => {
-    if (!activeConvId) return;
-    const t = setTimeout(() => setTyping(true), 2000);
-    const t2 = setTimeout(() => setTyping(false), 4000);
-    return () => { clearTimeout(t); clearTimeout(t2); };
-  }, [activeConvId]);
 
   // Conference timer
   useEffect(() => {
@@ -407,24 +414,18 @@ function MessagesPageInner() {
     }
   }, [activeConv]);
 
+  /* Envoyer : le message entre au journal de session, dans ce fil (le
+     brouillon devient un vrai fil), et notifie les autres membres. */
   const sendMessage = useCallback(() => {
-    if (!message.trim() || !activeConvId) return;
-    const newMsg: Message = {
-      id: `m-${Date.now()}`,
-      senderId: currentUserId,
-      content: message.trim(),
-      timestamp: new Date().toISOString(),
-      read: false,
-    };
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === activeConvId
-          ? { ...c, messages: [...c.messages, newMsg], lastMessage: newMsg.content }
-          : c
-      )
-    );
+    const text = message.trim();
+    if (!text || !activeConv) return;
+    recordSessionEvent({
+      kind: "message.sent",
+      data: { threadId: activeConv.id, memberIds: activeConv.memberIds, text },
+    });
+    if (activeConv.draft) setDraftWith(null);
     setMessage("");
-  }, [message, activeConvId]);
+  }, [message, activeConv]);
 
   const deleteMessage = useCallback(
     (msgId: string) => {
@@ -434,8 +435,11 @@ function MessagesPageInner() {
     []
   );
 
-  const formatTime = (ts: string) =>
-    new Date(ts).toLocaleTimeString("fr-CH", { hour: "2-digit", minute: "2-digit" });
+  const formatTime = (ts: string) => {
+    if (!ts) return "";
+    const d = localDate(ts);
+    return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+  };
 
   const formatCallTimer = (s: number) => {
     const m = Math.floor(s / 60);
@@ -443,19 +447,19 @@ function MessagesPageInner() {
     return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   };
 
-  const groupMessagesByDate = (messages: Message[]) => {
-    const groups: Record<string, Message[]> = {};
+  const groupMessagesByDate = (messages: ConvMessage[]) => {
+    const groups: Record<string, ConvMessage[]> = {};
     messages.forEach((m) => {
-      const dateKey = new Date(m.timestamp).toLocaleDateString("fr-CH", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
+      const d = localDate(m.timestamp);
+      const dateKey = `${d.getUTCDate()} ${MONTHS_FR[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
       if (!groups[dateKey]) groups[dateKey] = [];
       groups[dateKey].push(m);
     });
     return groups;
   };
+
+  /* La modale « Nouvelle conversation » propose TOUT l'annuaire, sauf soi. */
+  const directoryChoices = DIRECTORY.filter((u) => u.id !== currentUserId);
 
   // ── Mobile: show list or chat ──
   const showList = !activeConvId;
@@ -546,7 +550,7 @@ function MessagesPageInner() {
                 )}
                 {isGroup && (
                   <div className="absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full bg-foreground px-1 py-0.5 text-[8px] font-mono font-medium text-background">
-                    {conv.members?.length ?? 0}
+                    {conv.memberIds.length}
                   </div>
                 )}
               </div>
@@ -619,7 +623,7 @@ function MessagesPageInner() {
                 </div>
                 <div className="text-xs text-[var(--text-muted)]">
                   {activeConv.type === "group"
-                    ? `${activeConv.members?.length ?? 0} membres`
+                    ? `${activeConv.memberIds.length} membres`
                     : activeConv.isOnline
                     ? "En ligne"
                     : "Hors ligne"}
@@ -642,8 +646,27 @@ function MessagesPageInner() {
               </button>
             </div>
 
+            {/* Ce dont parle le fil (un bien), avec un lien vers sa fiche */}
+            {activeConv.subject && (
+              <Link
+                href={`/explorer/${activeConv.subject.id}`}
+                className="flex items-center gap-2 border-b border-[var(--card-border)] bg-[var(--card)] px-4 py-2 text-xs text-[var(--text-secondary)] hover:text-[var(--foreground)]"
+              >
+                <span className="font-medium">À propos de :</span>
+                <span className="truncate">{activeConv.subject.title}</span>
+              </Link>
+            )}
+
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {activeConv.messages.length === 0 && (
+                <div className="py-12 text-center text-sm text-[var(--text-muted)]">
+                  <p>
+                    Nouvelle conversation avec {activeConv.type === "group" ? activeConv.name : `${activeConv.participant.firstName} ${activeConv.participant.lastName}`}.
+                  </p>
+                  <p className="mt-1 text-xs">Votre premier message crée le fil ; il restera dans votre messagerie.</p>
+                </div>
+              )}
               {Object.entries(groupMessagesByDate(activeConv.messages)).map(([date, msgs]) => (
                 <div key={date}>
                   <div className="text-center mb-4">
@@ -673,6 +696,14 @@ function MessagesPageInner() {
                               "Message supprimé"
                             ) : (
                               <>
+                                {msg.topic && (
+                                  <div className="mb-1 text-[11px] font-medium text-[var(--text-muted)]">{msg.topic}</div>
+                                )}
+                                {activeConv.type === "group" && !isMine && (
+                                  <div className="mb-0.5 text-[11px] font-semibold text-[var(--primary)]">
+                                    {personById(msg.senderId)?.firstName ?? ""}
+                                  </div>
+                                )}
                                 <div>{msg.content}</div>
                                 <div
                                   className={`text-[10px] mt-1 flex items-center gap-1 ${
@@ -705,18 +736,6 @@ function MessagesPageInner() {
                 </div>
               ))}
 
-              {/* Typing indicator */}
-              {typing && (
-                <div className="flex justify-start">
-                  <div className="bg-[var(--card)] px-4 py-2.5 rounded-2xl rounded-bl-md">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 rounded-full bg-[var(--text-muted)] animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <div className="w-2 h-2 rounded-full bg-[var(--text-muted)] animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <div className="w-2 h-2 rounded-full bg-[var(--text-muted)] animate-bounce" style={{ animationDelay: "300ms" }} />
-                    </div>
-                  </div>
-                </div>
-              )}
               <div ref={messagesEndRef} />
             </div>
 
@@ -803,41 +822,37 @@ function MessagesPageInner() {
               />
             </div>
             <div className="max-h-64 overflow-y-auto px-2 pb-4">
-              {allUsers
-                .filter((u) => u.id !== currentUserMock.id && !conversations.some((c) => c.participant.id === u.id))
-                .map((u) => ({ id: u.id, firstName: u.firstName, lastName: u.lastName, avatar: u.avatar, city: u.city }))
+              {directoryChoices
                 .filter((u) =>
-                  `${u.firstName} ${u.lastName}`.toLowerCase().includes(newConvSearch.toLowerCase())
+                  `${u.firstName} ${u.lastName} ${u.city}`.toLowerCase().includes(newConvSearch.toLowerCase())
                 )
-                .map((user) => (
-                  <button
-                    key={user.id}
-                    onClick={() => {
-                      const newConv: Conversation = {
-                        id: `c-new-${Date.now()}`,
-                        /* La vraie personne de l'annuaire, pas une copie aux stats nulles. */
-                        participant: requirePerson(user.id),
-                        messages: [],
-                        unreadCount: 0,
-                        lastMessage: "",
-                        isOnline: Math.random() > 0.5,
-                      };
-                      setConversations((prev) => [newConv, ...prev]);
-                      setActiveConvId(newConv.id);
-                      setShowNewConv(false);
-                      setNewConvSearch("");
-                    }}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--hover-bg)] transition-colors"
-                  >
-                    <img src={user.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
-                    <div className="text-left">
-                      <div className="text-sm font-medium text-[var(--foreground)]">
-                        {user.firstName} {user.lastName}
+                .map((user) => {
+                  const hasThread = threads.some((t) => !t.isGroup && t.otherIds[0] === user.id);
+                  return (
+                    <button
+                      key={user.id}
+                      onClick={() => {
+                        openWith(user.id);
+                        setShowNewConv(false);
+                        setNewConvSearch("");
+                      }}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--hover-bg)] transition-colors"
+                    >
+                      <img src={user.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                      <div className="min-w-0 flex-1 text-left">
+                        <div className="text-sm font-medium text-[var(--foreground)] truncate">
+                          {user.firstName} {user.lastName}
+                        </div>
+                        <div className="text-xs text-[var(--text-muted)] truncate">
+                          {roleLabel(user.activeRole, user.trades)} · {user.city}, {user.country}
+                        </div>
                       </div>
-                      <div className="text-xs text-[var(--text-muted)]">{user.city}, Suisse</div>
-                    </div>
-                  </button>
-                ))}
+                      {hasThread && (
+                        <span className="shrink-0 text-[10px] text-[var(--text-muted)]">Fil existant</span>
+                      )}
+                    </button>
+                  );
+                })}
             </div>
           </div>
         </div>
@@ -891,8 +906,7 @@ function MessagesPageInner() {
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground/40 focus:ring-2 focus:ring-foreground/10"
               />
               <div className="mt-2 max-h-56 overflow-y-auto rounded-md border border-border">
-                {allUsers
-                  .filter((u) => u.id !== currentUserMock.id)
+                {directoryChoices
                   .filter((u) =>
                     `${u.firstName} ${u.lastName} ${u.city}`
                       .toLowerCase()
@@ -952,24 +966,14 @@ function MessagesPageInner() {
               type="button"
               onClick={() => {
                 if (!newGroupName.trim() || newGroupMembers.length < 2) return;
-                const members = allUsers.filter((u) => newGroupMembers.includes(u.id));
-                /* On garde currentUser implicite dans le groupe : seul lui peut
-                   l'ouvrir, donc on ne le re-stocke pas comme membre dans la
-                   liste affichee. */
-                const newGroup: Conversation = {
-                  id: `g-new-${Date.now()}`,
-                  type: "group",
-                  name: newGroupName.trim(),
-                  groupAvatar:
-                    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop",
-                  participant: members[0] as User,
-                  members,
-                  messages: [],
-                  unreadCount: 0,
-                  lastMessage: "",
-                  isOnline: false,
-                };
-                setConversations((prev) => [newGroup, ...prev]);
+                /* Le groupe entre au journal de session : il survit au
+                   rechargement, et chaque membre est notifié. */
+                const threadId = `grp-${sessionState.seq + 1}`;
+                recordSessionEvent({
+                  kind: "group.created",
+                  data: { threadId, name: newGroupName.trim(), memberIds: [currentUserId, ...newGroupMembers] },
+                });
+                const newGroup = { id: threadId };
                 setActiveConvId(newGroup.id);
                 setShowNewGroup(false);
                 setNewGroupName("");
