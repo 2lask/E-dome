@@ -3,12 +3,9 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
-  ShoppingBag,
-  X,
   Search,
-  Star,
   Truck,
-  Shield,
+  Building2,
   Sofa,
   Lamp,
   Wrench,
@@ -20,23 +17,20 @@ import {
   SlidersHorizontal,
   ChevronRight,
   ArrowUpDown,
-  Check,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { BlurImage } from "@/components/ui/blur-image";
 import { listProducts, type Condition, type Product } from "@/lib/data/products";
+import { AFFILIATION_NOTICE, ConditionChip } from "@/components/boutique/affiliation";
 
-/* ─── Pôle Boutique e-commerce (V1.0) ────────────────────────────────────────
-   Refonte style marketplace e-commerce (esprit eBay) :
-   - Sidebar gauche : catégories + filtres (état, prix, livraison, top vendeur)
-   - Recherche en tête + tri
-   - Grille dense de cartes produit avec toutes les infos clés visibles
-     (photo, titre, prix, frais de port, vendeur + note, état, localisation,
-     délai de livraison)
-   - Panier persistant + drawer (via useApp)
-   E-Dome fournit la vitrine + paiement + visibilité. Vendeurs responsables
-   de produits, expéditions et SAV. Commission marketplace 4–8 %, jamais
-   ajoutée au prix payé par l'acheteur. */
+/* ─── Boutique EN AFFILIATION (Mission 2, P4b) ───────────────────────────────
+   Ce n'est plus un marketplace (`DECISIONS-2.md` §D5, `DECISIONS.md` §1.8,
+   art. 20a LTVA). E-Dome référence des produits de marchands partenaires et
+   redirige vers eux : pas de panier, pas de paiement, pas de stock, pas de
+   garantie E-Dome. Chaque carte montre le prix INDICATIF du marchand, son nom
+   et la mention « en affiliation ». Aucune note ni aucun avis produit : sans
+   transaction, un avis n'a rien à quoi se rattacher. L'état (Neuf /
+   Reconditionné / Occasion) porte un jeton sémantique `chip-*` par valeur. */
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -64,56 +58,33 @@ const CONDITIONS: Condition[] = ["Neuf", "Reconditionné", "Occasion"];
    tandis que la fiche produit n'en connaissait que 6 — d'où 10 fiches en 404. */
 const PRODUCTS: Product[] = listProducts();
 
+/* Ni « plus populaires » ni « meilleures notes » : E-Dome ne voit pas les
+   ventes du marchand et n'affiche aucune note. */
 const SORTS = [
-  { key: "popular",   label: "Plus populaires" },
+  { key: "default",   label: "Ordre du catalogue" },
   { key: "price-asc", label: "Prix croissant" },
   { key: "price-desc",label: "Prix décroissant" },
-  { key: "rating",    label: "Meilleures notes" },
-  { key: "new",       label: "Nouveautés" },
 ] as const;
 
 type SortKey = typeof SORTS[number]["key"];
 
-// ─── Étoiles ────────────────────────────────────────────────────────────
-
-function Stars({ rating, size = 13 }: { rating: number; size?: number }) {
-  return (
-    <span className="inline-flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((s) => (
-        <Star
-          key={s}
-          size={size}
-          style={{
-            color: s <= Math.round(rating) ? "var(--rating)" : "var(--card-border)",
-            fill: s <= Math.round(rating) ? "var(--rating)" : "transparent",
-          }}
-        />
-      ))}
-    </span>
-  );
-}
-
 // ─── Page ──────────────────────────────────────────────────────────────
 
 export default function BoutiquePage() {
-  const { formatPrice, cart, cartCount, addToCart, updateCartQty, removeFromCart, clearCart } = useApp();
+  const { formatPrice } = useApp();
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [conditions, setConditions] = useState<Set<Condition>>(new Set());
   const [freeShippingOnly, setFreeShippingOnly] = useState(false);
-  const [topRatedOnly, setTopRatedOnly] = useState(false);
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
-  const [sort, setSort] = useState<SortKey>("popular");
-  const [toastVisible, setToastVisible] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
+  const [sort, setSort] = useState<SortKey>("default");
   const [filtersOpen, setFiltersOpen] = useState(false); // mobile drawer
 
   const activeFiltersCount =
     (conditions.size) +
     (freeShippingOnly ? 1 : 0) +
-    (topRatedOnly ? 1 : 0) +
     (priceMin ? 1 : 0) +
     (priceMax ? 1 : 0);
 
@@ -133,7 +104,6 @@ export default function BoutiquePage() {
     setCategory("all");
     setConditions(new Set());
     setFreeShippingOnly(false);
-    setTopRatedOnly(false);
     setPriceMin("");
     setPriceMax("");
   };
@@ -147,33 +117,16 @@ export default function BoutiquePage() {
       const matchCat = category === "all" || p.category === category;
       const matchCond = conditions.size === 0 || conditions.has(p.condition);
       const matchShip = !freeShippingOnly || p.shipping === 0;
-      const matchTop = !topRatedOnly || p.topRated === true;
       const matchPrice = p.price >= minN && p.price <= maxN;
-      return matchSearch && matchCat && matchCond && matchShip && matchTop && matchPrice;
+      return matchSearch && matchCat && matchCond && matchShip && matchPrice;
     });
     switch (sort) {
       case "price-asc":   arr.sort((a, b) => a.price - b.price); break;
       case "price-desc":  arr.sort((a, b) => b.price - a.price); break;
-      case "rating":      arr.sort((a, b) => b.rating - a.rating); break;
-      case "new":         arr.sort((a, b) => b.stock - a.stock); break;
-      case "popular":
-      default:            arr.sort((a, b) => b.sold - a.sold); break;
+      default:            break;
     }
     return arr;
-  }, [search, category, conditions, freeShippingOnly, topRatedOnly, priceMin, priceMax, sort]);
-
-  const isInCart = (id: string) => cart.some((c) => c.id === id);
-
-  const handleAddToCart = (p: Product) => {
-    addToCart({ id: p.id, title: p.title, price: p.price, currency: "CHF", cover: p.cover });
-    setToastVisible(true);
-    setTimeout(() => setToastVisible(false), 2200);
-  };
-
-  const cartSubtotal = useMemo(
-    () => cart.reduce((s, c) => s + (c.price ?? 0) * c.qty, 0),
-    [cart]
-  );
+  }, [search, category, conditions, freeShippingOnly, priceMin, priceMax, sort]);
 
   return (
     <div className="min-h-screen text-[var(--foreground)]">
@@ -182,42 +135,24 @@ export default function BoutiquePage() {
         {/* Header */}
         <header className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl page-heading">Boutique E-Dome</h1>
+            <h1 className="text-3xl page-heading">Boutique</h1>
             <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
-              Marketplace : meubles, déco, matériaux, cuisines, équipements, électroménager — vendeurs vérifiés.
+              Meubles, déco, matériaux, cuisines, équipements, électroménager — sélectionnés chez des marchands partenaires. Vous achetez chez le marchand.
             </p>
           </div>
-          <div className="flex gap-2 flex-wrap w-full sm:w-auto">
-            <button
-              onClick={() => setCartOpen(true)}
-              className="relative inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
-              style={{ border: "1px solid var(--card-border)", background: "var(--card)", color: "var(--foreground)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "var(--card)")}
-            >
-              <ShoppingBag size={16} />
-              Panier
-              {cartCount > 0 && (
-                <span className="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 rounded-full text-[11px] font-semibold px-1.5 tabular-nums"
-                  style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
-                  {cartCount}
-                </span>
-              )}
-            </button>
-            <Link href="/boutique/vendre" className="px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-white"
-              style={{ background: "var(--primary)" }}>
-              Vendre un produit
-            </Link>
-          </div>
+          <Link href="/boutique/vendre" className="px-4 py-2.5 rounded-xl text-sm font-medium transition-colors hover:bg-[var(--hover-bg)]"
+            style={{ border: "1px solid var(--card-border)", background: "var(--card)", color: "var(--foreground)" }}>
+            Marchand ? Proposer vos produits
+          </Link>
         </header>
 
-        {/* Cadrage V1.0 — discret */}
+        {/* Cadrage : affiliation */}
         <div className="rounded-xl px-3 py-2 text-xs flex items-start gap-2"
           style={{ background: "var(--card)", border: "1px solid var(--card-border)", color: "var(--text-secondary)" }}>
-          <Shield size={14} style={{ color: "var(--primary)", marginTop: 1 }} className="shrink-0" />
+          <Building2 size={14} style={{ color: "var(--primary)", marginTop: 1 }} className="shrink-0" />
           <span>
-            <strong style={{ color: "var(--foreground)" }}>E-Dome fournit la vitrine + paiement + visibilité.</strong>{" "}
-            Vendeurs responsables des produits, expéditions et SAV. Commission marketplace 4–8 %, jamais ajoutée au prix payé.
+            <strong style={{ color: "var(--foreground)" }}>E-Dome ne vend rien ici : la boutique fonctionne en affiliation.</strong>{" "}
+            Chaque produit renvoie vers son marchand, qui garde la vente, la livraison, la garantie et le service après-vente. {AFFILIATION_NOTICE}
           </span>
         </div>
 
@@ -226,7 +161,7 @@ export default function BoutiquePage() {
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
           <input
             type="search"
-            placeholder="Rechercher un produit, une boutique, un matériau…"
+            placeholder="Rechercher un produit, un marchand, un matériau…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 rounded-xl text-sm outline-none transition-colors"
@@ -366,7 +301,7 @@ export default function BoutiquePage() {
                 </ul>
               </div>
 
-              {/* Livraison + top vendeur */}
+              {/* Livraison */}
               <div className="space-y-1.5">
                 <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "var(--text-secondary)" }}>
                   <input
@@ -377,16 +312,6 @@ export default function BoutiquePage() {
                   />
                   <Truck size={13} style={{ color: "var(--text-muted)" }} />
                   Livraison gratuite
-                </label>
-                <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "var(--text-secondary)" }}>
-                  <input
-                    type="checkbox"
-                    checked={topRatedOnly}
-                    onChange={(e) => setTopRatedOnly(e.target.checked)}
-                    className="accent-[var(--primary)]"
-                  />
-                  <Sparkles size={13} style={{ color: "var(--text-muted)" }} />
-                  Top vendeur
                 </label>
               </div>
             </div>
@@ -462,22 +387,13 @@ export default function BoutiquePage() {
                       {/* Photo + badges */}
                       <Link href={`/boutique/${p.id}`} className="relative block bg-[var(--hover-bg)] overflow-hidden group" style={{ aspectRatio: "4/3" }}>
                         <BlurImage src={p.cover} alt={p.title} className="group-hover:scale-105 transition-transform duration-500" />
-                        {p.topRated && (
-                          <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold"
-                            style={{ background: "#0f172a", color: "#fff" }}>
-                            <Sparkles size={10} /> Top vendeur
-                          </span>
-                        )}
                         {discount > 0 && (
                           <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded text-[10px] font-bold text-white"
                             style={{ background: "var(--destructive)" }}>
                             -{discount}%
                           </span>
                         )}
-                        <span className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded text-[10px] font-medium"
-                          style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}>
-                          {p.condition}
-                        </span>
+                        <ConditionChip condition={p.condition} className="absolute bottom-2 left-2" />
                       </Link>
 
                       {/* Contenu */}
@@ -489,77 +405,37 @@ export default function BoutiquePage() {
                           {p.title}
                         </Link>
 
-                        {/* Prix */}
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-base font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
-                            {formatPrice(p.price)}
-                          </span>
-                          {p.oldPrice && (
-                            <span className="text-xs line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
-                              {formatPrice(p.oldPrice)}
+                        {/* Prix indicatif du marchand */}
+                        <div>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-base font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
+                              {formatPrice(p.price)}
                             </span>
-                          )}
+                            {p.oldPrice && (
+                              <span className="text-xs line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
+                                {formatPrice(p.oldPrice)}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Prix indicatif du marchand</p>
                         </div>
 
-                        {/* Étoiles produit + nb avis */}
-                        <div className="flex items-center gap-1">
-                          <Stars rating={p.rating} size={12} />
-                          <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                            ({p.reviews})
+                        {/* Livraison annoncée par le marchand */}
+                        <div className="flex items-center gap-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
+                          <Truck size={11} />
+                          {p.shipping === 0 ? "Livraison offerte" : `+${formatPrice(p.shipping)} livraison`}
+                          <span>· {p.shippingDays}</span>
+                        </div>
+
+                        {/* Marchand : une entreprise, pas un visage */}
+                        <div className="mt-auto pt-1.5 flex items-center gap-1 text-[11px] min-w-0" style={{ borderTop: "1px solid var(--card-border)", color: "var(--text-secondary)" }}>
+                          <Building2 size={11} className="shrink-0" style={{ color: "var(--text-muted)" }} />
+                          <span className="truncate">{p.vendor}</span>
+                          <span className="inline-flex items-center gap-0.5 shrink-0" style={{ color: "var(--text-muted)" }}>
+                            · <MapPin size={10} /> {p.vendorCity}
                           </span>
                         </div>
-
-                        {/* Livraison */}
-                        <div className="flex items-center gap-1 text-[11px]" style={{ color: p.shipping === 0 ? "var(--success)" : "var(--text-muted)" }}>
-                          <Truck size={11} />
-                          {p.shipping === 0 ? "Livraison gratuite" : `+${formatPrice(p.shipping)} livraison`}
-                          <span style={{ color: "var(--text-muted)" }}>· {p.shippingDays}</span>
-                        </div>
-
-                        {/* Vendeur — pas de fiche vendeur dédiée, on route
-                            vers /recherche pour afficher tous ses listings. */}
-                        <Link href={`/recherche?q=${encodeURIComponent(p.vendor)}`} className="flex items-center gap-1 text-[11px] truncate hover:underline" style={{ color: "var(--text-secondary)" }}>
-                          <span className="truncate">{p.vendor}</span>
-                          <span style={{ color: "var(--text-muted)" }}>·</span>
-                          <Star size={10} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
-                          <span className="tabular-nums">{p.vendorRating.toFixed(1)}</span>
-                          <span style={{ color: "var(--text-muted)" }} className="tabular-nums">({p.vendorReviews})</span>
-                        </Link>
-
-                        {/* Localisation + ventes */}
-                        <div className="flex items-center justify-between text-[11px]" style={{ color: "var(--text-muted)" }}>
-                          <span className="inline-flex items-center gap-0.5"><MapPin size={11} /> {p.vendorCity}</span>
-                          <span className="tabular-nums">{p.sold} vendus</span>
-                        </div>
-
-                        {/* CTA */}
-                        <div className="mt-1.5 flex gap-1.5">
-                          {isInCart(p.id) ? (
-                            <button
-                              onClick={() => setCartOpen(true)}
-                              className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-                              style={{ background: "color-mix(in srgb, var(--success) 12%, transparent)", color: "var(--success)" }}
-                            >
-                              <Check size={12} strokeWidth={2.5} /> Au panier
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleAddToCart(p)}
-                              disabled={p.stock === 0}
-                              className="flex-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors text-white disabled:opacity-40 disabled:cursor-not-allowed"
-                              style={{ background: p.stock === 0 ? "var(--text-muted)" : "var(--primary)" }}
-                            >
-                              Ajouter
-                            </button>
-                          )}
-                          <Link
-                            href={`/boutique/${p.id}`}
-                            className="px-2 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                            style={{ border: "1px solid var(--card-border)", color: "var(--text-secondary)" }}
-                          >
-                            Voir
-                          </Link>
-                        </div>
+                        <p className="text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>En affiliation</p>
                       </div>
                     </li>
                   );
@@ -568,117 +444,6 @@ export default function BoutiquePage() {
             )}
           </div>
         </div>
-
-        {/* Toast notification — décalé au-dessus de la bottom-nav mobile
-            (~80 px + safe-area), retour au bas standard en md+. */}
-        {toastVisible && (
-          <div
-            role="status"
-            aria-live="polite"
-            className="fixed bottom-[calc(80px+env(safe-area-inset-bottom)+1rem)] md:bottom-6 right-4 md:right-6 left-4 md:left-auto z-50 px-4 py-2.5 rounded-xl text-sm font-medium animate-fade-in text-center md:text-left"
-            style={{ background: "var(--success)", color: "#fff", boxShadow: "0 4px 14px color-mix(in srgb, var(--success) 25%, transparent)" }}>
-            Produit ajouté au panier
-          </div>
-        )}
-
-        {/* Drawer panier */}
-        {cartOpen && (
-          <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setCartOpen(false)}>
-            <div className="absolute inset-0 animate-fade-in" style={{ background: "rgba(15,23,42,0.4)" }} />
-            <aside onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md h-full flex flex-col animate-slide-in-right"
-              style={{ background: "var(--card)", borderLeft: "1px solid var(--card-border)" }}
-            >
-              <header className="flex items-center justify-between px-5 py-4"
-                style={{ borderBottom: "1px solid var(--card-border)" }}>
-                <div className="flex items-center gap-2">
-                  <ShoppingBag size={18} style={{ color: "var(--foreground)" }} />
-                  <h3 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
-                    Panier ({cartCount})
-                  </h3>
-                </div>
-                <button onClick={() => setCartOpen(false)} aria-label="Fermer"
-                  className="p-1.5 rounded-lg transition-colors"
-                  style={{ color: "var(--text-secondary)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                >
-                  <X size={18} />
-                </button>
-              </header>
-
-              <div className="flex-1 overflow-y-auto px-5 py-4">
-                {cart.length === 0 ? (
-                  <div className="py-16 text-center text-sm" style={{ color: "var(--text-muted)" }}>
-                    Votre panier est vide.
-                  </div>
-                ) : (
-                  <ul className="space-y-3">
-                    {cart.map((item) => (
-                      <li key={item.id} className="flex gap-3 p-3 rounded-xl"
-                        style={{ border: "1px solid var(--card-border)" }}>
-                        {item.cover && (
-                          <img src={item.cover} alt="" className="w-16 h-16 rounded-lg object-cover shrink-0" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium leading-tight line-clamp-2"
-                            style={{ color: "var(--foreground)" }}>{item.title}</p>
-                          <p className="text-sm font-semibold mt-1 tabular-nums"
-                            style={{ color: "var(--primary)" }}>
-                            {formatPrice((item.price ?? 0) * item.qty)}
-                          </p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <button onClick={() => updateCartQty(item.id, item.qty - 1)}
-                              className="w-7 h-7 rounded-md transition-colors"
-                              style={{ background: "var(--hover-bg)", color: "var(--foreground)" }}
-                              aria-label="Diminuer">−</button>
-                            <span className="text-sm font-medium tabular-nums w-6 text-center"
-                              style={{ color: "var(--foreground)" }}>{item.qty}</span>
-                            <button onClick={() => updateCartQty(item.id, item.qty + 1)}
-                              className="w-7 h-7 rounded-md transition-colors"
-                              style={{ background: "var(--hover-bg)", color: "var(--foreground)" }}
-                              aria-label="Augmenter">+</button>
-                            <button onClick={() => removeFromCart(item.id)}
-                              className="ml-auto text-xs"
-                              style={{ color: "var(--text-muted)" }}>Retirer</button>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-              {cart.length > 0 && (
-                <footer className="px-5 py-4 space-y-3"
-                  style={{ borderTop: "1px solid var(--card-border)" }}>
-                  <div className="flex items-center justify-between text-sm"
-                    style={{ color: "var(--text-secondary)" }}>
-                    <span>Sous-total</span>
-                    <span className="font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
-                      {formatPrice(cartSubtotal)}
-                    </span>
-                  </div>
-                  <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                    Paiement sécurisé E-Dome (démonstration). Commission marketplace 4–8 %, déjà incluse côté vendeur — jamais ajoutée au prix payé.
-                  </p>
-                  <div className="flex gap-2">
-                    <button onClick={clearCart}
-                      className="px-3 py-2 text-sm rounded-xl transition-colors"
-                      style={{ border: "1px solid var(--card-border)", color: "var(--text-secondary)", background: "var(--card)" }}>
-                      Vider
-                    </button>
-                    <button onClick={() => alert("Paiement (démo) : Stripe Connect sera intégré en Phase 4 V1.0.")}
-                      className="flex-1 px-4 py-2 text-sm font-medium rounded-xl transition-colors text-white"
-                      style={{ background: "var(--primary)" }}>
-                      Passer commande
-                    </button>
-                  </div>
-                </footer>
-              )}
-            </aside>
-          </div>
-        )}
 
       </div>
     </div>

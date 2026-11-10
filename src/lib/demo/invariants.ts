@@ -14,6 +14,7 @@ import { AGENCY_MEMBERS, MANDATE_TRACKING, agencyProperties } from "./agency";
 import { VIDEO_POSTS, SUGGESTIONS } from "./posts";
 import { PUBLIC_SEED_IDS } from "@/lib/profile-data";
 import { NOTIFICATION_SEEDS, THREAD_SEEDS } from "./inbox-seeds";
+import { PRODUCTS } from "@/lib/data/products";
 
 /* ── Les invariants, levés à l'import ───────────────────────────────────────
 
@@ -734,6 +735,31 @@ for (const f of FORMATIONS) {
     found: `${f.id} : studentCount = ${f.studentCount}`,
     expected: `${sales} inscription(s) au journal`,
     fix: `${DIRECTORY_FILE} — aligner studentCount sur le plan d'inscriptions (FORMATION_SALES, ${LEDGER_FILE}).`,
+  });
+}
+
+/* 20 — Boutique en affiliation : aucun revenu de produit n'est attribué à
+   quelqu'un d'autre que son marchand. Le journal créditait l'utilisateur
+   courant du chiffre d'affaires plein d'un produit de « linen-house », pour
+   une commission nulle (audit comptable Mission 2, §2.3 ; `DECISIONS-2.md`
+   §D5). E-Dome ne tient pas le checkout : il n'y a, côté plateforme, aucune
+   vente de produit à inscrire. */
+for (const e of LEDGER) {
+  if (e.source !== "boutique" && e.subject.kind !== "product") continue;
+  const product = PRODUCTS.find((p) => p.id === e.subject.id);
+  assert(!!product && e.ownerId === product.vendorId, 20, {
+    rule: "Un revenu boutique ne revient qu'au marchand du produit (affiliation : E-Dome ne vend pas).",
+    found: `écriture ${e.id} (${e.source}, ${e.subject.kind} ${e.subject.id}) attribuée à ${e.ownerId}`,
+    expected: product ? `le marchand « ${product.vendorId} », ou aucune écriture` : "un produit du catalogue et son marchand",
+    fix: `${LEDGER_FILE} — retirer l'écriture : la vente a lieu chez le marchand, pas sur E-Dome.`,
+  });
+}
+for (const p of PROFILES) {
+  assert(!PRODUCTS.some((x) => x.vendorId === p.ownerId), 20, {
+    rule: "Aucun profil du journal n'est un marchand de la boutique.",
+    found: `le profil ${p.ownerId} porte l'identifiant d'un marchand`,
+    expected: "des marchands distincts des personnes de l'annuaire",
+    fix: "src/lib/data/products.ts / src/lib/demo/identity.ts — séparer marchands et personnes.",
   });
 }
 

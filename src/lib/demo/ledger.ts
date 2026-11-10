@@ -242,13 +242,21 @@ const SERVICES: readonly { monthIndex: number; id: string; label: string; amount
   { monthIndex: 10, id: "sv-redac-1", label: "Rédaction d'annonces", amount: 240, client: "Cédric Lopez" },
 ];
 
-/** Ventes de la boutique : quelques articles par mois. */
-const PRODUCT_SALES: readonly { monthIndex: number; id: string; units: number; price: number; label: string }[] = [
-  { monthIndex: 3, id: "b11", units: 4, price: 89, label: "Plaid lin lavé bleu nuit" },
-  { monthIndex: 6, id: "b11", units: 3, price: 89, label: "Plaid lin lavé bleu nuit" },
-  { monthIndex: 9, id: "b11", units: 5, price: 89, label: "Plaid lin lavé bleu nuit" },
-  { monthIndex: 11, id: "b11", units: 6, price: 89, label: "Plaid lin lavé bleu nuit" },
-];
+/* Boutique : AUCUNE écriture, et c'est voulu (Mission 2, P4b).
+
+   Ce module créditait l'utilisateur courant du chiffre d'affaires PLEIN du
+   produit `b11` (« Plaid lin lavé », 6 × 89 CHF certains mois) — un produit
+   du marchand tiers « linen-house », sans aucun lien avec lui, et pour une
+   commission qui vaut 0 par construction (`RATES.boutique`, catalog.ts).
+   Audit comptable Mission 2, §2.3.
+
+   La boutique est de l'AFFILIATION (`DECISIONS-2.md` §D5, `DECISIONS.md`
+   §1.8, art. 20a LTVA) : la vente est conclue chez le marchand, E-Dome
+   n'encaisse rien de l'acheteur, et la rémunération d'affiliation est
+   convenue avec chaque marchand — aucun montant n'est modélisé, donc aucun
+   n'est inventé ici. Un revenu boutique ne peut revenir qu'au marchand
+   lui-même, et aucun marchand n'est un profil de ce journal. L'invariant 20
+   (`invariants.ts`) rend la régression impossible. */
 
 /**
  * Apports réalisés par l'utilisateur.
@@ -409,7 +417,8 @@ function build(): Entry[] {
     }
   }
 
-  /* Événements, services, boutique et apports : l'activité de l'utilisateur
+  /* Événements, services et apports (la boutique n'en a plus : voir plus
+     haut) : l'activité de l'utilisateur
      courant (les autres profils recevront la leur à l'étape 3). Chaque écriture
      porte son `ownerId`. */
   for (const e of EVENTS) {
@@ -439,21 +448,6 @@ function build(): Entry[] {
       status: "completed",
       label: s.label,
       counterparty: s.client,
-    });
-  }
-
-  for (const p of PRODUCT_SALES) {
-    const m = months[p.monthIndex]!;
-    out.push({
-      id: `prod-${p.id}-${p.monthIndex}`,
-      ownerId: CURRENT_USER_ID,
-      date: iso(new Date(Date.UTC(m.year, m.month, 17))),
-      source: "boutique",
-      subject: { kind: "product", id: p.id },
-      gross: p.units * p.price,
-      status: "completed",
-      label: `${p.label} · ${p.units}×`,
-      counterparty: pick(rand, GUESTS),
     });
   }
 

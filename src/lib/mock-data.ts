@@ -48,7 +48,9 @@ export const currentUser: User = {
   country: CURRENT_USER.country,
   roles: [...CURRENT_USER.roles],
   activeRole: 'hote',
-  stats: derived(155, 0),
+  /* 151 écritures au journal (invariant 15) : les 4 « ventes boutique » de b11
+     ont été retirées (P4b — affiliation, Léo n'est pas le marchand). */
+  stats: derived(151, 0),
   bio: CURRENT_USER.about,
   languages: ['Français', 'English', 'Deutsch'],
   responseTime: '2h',

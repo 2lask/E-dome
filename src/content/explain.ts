@@ -98,9 +98,9 @@ export const POLE_EXPLAIN: Record<string, Explanation> = {
     insteadLabel: "Voir les lives",
   },
   boutique: {
-    what: "Acheter et vendre mobilier, matériaux et équipements entre professionnels et particuliers.",
-    who: "Qui rénove, meuble ou vide un bien.",
-    revenue: "Aucune commission : E-Dome ne facilite pas la livraison, la boutique fonctionne en affiliation. Le motif est fiscal (art. 20a LTVA) — voir les questions à l'avocat.",
+    what: "Une sélection de mobilier, matériaux et équipements de marchands partenaires, en affiliation : E-Dome recommande et redirige vers le marchand, qui vend, encaisse, livre et garantit. E-Dome ne vend pas, ne tient ni panier ni paiement.",
+    who: "Qui rénove ou meuble un bien — et les marchands qui veulent être recommandés.",
+    revenue: "Une rémunération d'affiliation payée par le marchand, convenue avec chacun, jamais ajoutée au prix de l'acheteur ; aucune commission marketplace. Le motif est fiscal (art. 20a LTVA) — voir les questions à l'avocat.",
     when: "Ensuite.",
     insteadHref: "/boutique",
     insteadLabel: "Voir la boutique",

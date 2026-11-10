@@ -1,169 +1,73 @@
 "use client";
 
-import React, { useState, use, useMemo } from "react";
+import React, { useState, use, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PRODUCTS, type Product } from "@/lib/data/products";
+import { PRODUCTS } from "@/lib/data/products";
 import {
   ChevronRight,
-  Star,
-  ShoppingBag,
-  Heart,
+  ChevronLeft,
   Share2,
   Truck,
   Undo2,
-  Shield,
-  CheckCircle2,
-  MessageCircle,
-  ChevronLeft,
-  Sparkles,
+  ShieldCheck,
   Building2,
   MapPin,
   ZoomIn,
   X,
-  CreditCard,
-  Clock,
-  Award,
-  HelpCircle,
+  ExternalLink,
+  Info,
+  MessageSquareText,
+  Check,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { BlurImage } from "@/components/ui/blur-image";
 import { BackButton } from "@/components/ui/back-button";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
+import {
+  AFFILIATION_NOTICE,
+  AffiliationChip,
+  ConditionChip,
+  LeavingInterstitial,
+} from "@/components/boutique/affiliation";
 
-/* /boutique/[id] — Fiche produit refondue au standard marketplace (eBay).
+/* /boutique/[id] — fiche produit EN AFFILIATION (Mission 2, P4b).
 
-   Layout 3 colonnes desktop : galerie (col-span-7) | infos+CTA (col-span-5).
-   En bas : caracteristiques + description + vendeur etendu + similaires.
+   Ce qu'elle était : une fiche de marketplace façon eBay — « Acheter
+   maintenant », panier E-Dome, « Paiement sécurisé E-Dome, protection
+   acheteur incluse », cinq avis génériques partagés par les seize produits
+   avec un badge « Achat vérifié » sans transaction, et « commission
+   marketplace 4–8 % ». Exactement le vendeur apparent que l'art. 20a LTVA
+   rend fournisseur de la livraison (`DECISIONS.md` §1.8).
 
-   Donnees fictives uniquement, alignees sur le mock principal /boutique
-   pour garder la coherence (meme cover, vendor, rating, condition, etc.). */
-
-// ─── Types ──────────────────────────────────────────────────────────────
-
-/* Types et catalogue : voir '@/lib/data/products'.
-
-   Ce fichier declarait auparavant sa propre interface Product ET exportait
-   son tableau PRODUCTS, que la page liste et /apporteurs importaient a
-   l envers depuis un module de route. Il ne contenait que 6 produits sur
-   les 16 affiches dans la boutique, ce qui renvoyait 10 fiches en 404. */
-
-// ─── Avis & Q&A — communs (pas spécifiques par produit en maquette) ──
-
-interface Review { id: string; author: string; rating: number; date: string; text: string; verified?: boolean }
-
-const COMMON_REVIEWS: Review[] = [
-  { id: "rv1", author: "Jean-Pierre M.", rating: 5, date: "12 mars 2026", verified: true, text: "Excellente qualité, conforme à la description. Vendeur sérieux, livraison rapide. Je recommande sans hésiter." },
-  { id: "rv2", author: "Marie L.",        rating: 5, date: "28 fév. 2026",  verified: true, text: "Très satisfaite de mon achat. L'emballage était soigné et le produit en parfait état. Communication parfaite avec le vendeur." },
-  { id: "rv3", author: "Thomas K.",       rating: 4, date: "5 fév. 2026",                   text: "Bon rapport qualité-prix. Un petit retard de livraison mais le vendeur a été réactif et transparent. Produit conforme." },
-  { id: "rv4", author: "Sophie B.",       rating: 5, date: "20 jan. 2026",  verified: true, text: "Conforme à mes attentes, finitions impeccables. C'est mon deuxième achat chez ce vendeur, toujours au top." },
-  { id: "rv5", author: "Pierre R.",       rating: 4, date: "8 jan. 2026",                   text: "Produit correct. Quelques détails de finition perfectibles mais bon dans l'ensemble pour le prix." },
-];
-
-const RATING_BREAKDOWN = [
-  { stars: 5, count: 92 },
-  { stars: 4, count: 31 },
-  { stars: 3, count: 12 },
-  { stars: 2, count: 4 },
-  { stars: 1, count: 3 },
-];
-
-interface QaItem { id: string; question: string; questionDate: string; askedBy: string; answer: string; answeredBy: string; answerDate: string }
-
-const COMMON_QA: QaItem[] = [
-  { id: "qa1", question: "Quels sont les délais d'expédition vers la France ?",     askedBy: "Alex M.",    questionDate: "il y a 5 j",  answer: "Bonjour, nous expédions également en France métropolitaine sous 5-8 jours ouvrés via Mondial Relay ou DHL. Frais supplémentaires de 25 CHF.", answeredBy: "Vendeur", answerDate: "il y a 4 j" },
-  { id: "qa2", question: "Le produit est-il sous garantie constructeur ?",          askedBy: "Sandra K.",  questionDate: "il y a 12 j", answer: "Oui, garantie 2 ans constructeur + 1 an supplémentaire offerte par notre boutique. Facture et certificat de garantie inclus dans le colis.",            answeredBy: "Vendeur", answerDate: "il y a 11 j" },
-  { id: "qa3", question: "Possibilité de venir voir le produit avant achat ?",      askedBy: "Marc D.",    questionDate: "il y a 18 j", answer: "Tout à fait, sur rendez-vous dans notre showroom. Contactez-nous via la messagerie E-Dome pour convenir d'un créneau.",                          answeredBy: "Vendeur", answerDate: "il y a 17 j" },
-];
-
-// Méthodes de paiement acceptées sur E-Dome (logos en lettres minimales).
-const PAYMENT_METHODS = [
-  { label: "Visa",       short: "VISA" },
-  { label: "Mastercard", short: "MC" },
-  { label: "TWINT",      short: "TWINT" },
-  { label: "PayPal",     short: "PayPal" },
-  { label: "Virement",   short: "IBAN" },
-];
-
-// Date livraison estimée — aujourd'hui + medianShippingDays.
-// On parse "3-5 j" → prend la médiane, idem "< 24 h" → 1 jour.
-function deliveryEstimate(shippingDays: string): string {
-  let median = 5;
-  const m = shippingDays.match(/(\d+)\s*-\s*(\d+)\s*j/);
-  if (m) median = Math.round((parseInt(m[1]) + parseInt(m[2])) / 2);
-  else if (/<\s*24\s*h/.test(shippingDays)) median = 1;
-  else if (/<\s*48\s*h/.test(shippingDays)) median = 2;
-  else if (/sur rdv/i.test(shippingDays)) return "sur rendez-vous";
-  // Sans Date.now() (sandbox), on utilise une date fictive proche pour la démo.
-  const baseDays = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
-  return `livraison sous ${median} jour${median > 1 ? "s" : ""} ouvrés (avant ${baseDays[median % 7]} prochain)`;
-}
-
-// ─── Étoiles utilitaire ────────────────────────────────────────────────
-
-function Stars({ rating, size = 14 }: { rating: number; size?: number }) {
-  return (
-    <span className="inline-flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((s) => (
-        <Star
-          key={s}
-          size={size}
-          style={{
-            color: s <= Math.round(rating) ? "var(--rating)" : "var(--card-border)",
-            fill: s <= Math.round(rating) ? "var(--rating)" : "transparent",
-          }}
-        />
-      ))}
-    </span>
-  );
-}
-
-// ─── Composant Page ────────────────────────────────────────────────────
+   Ce qu'elle est : une recommandation. Le marchand — une entreprise — est
+   identifié ; « Voir chez le marchand » ouvre un interstitiel honnête ; la
+   mention d'affiliation est visible ; il n'y a ni note ni avis produit,
+   puisque l'achat a lieu chez le marchand (`DECISIONS-2.md` §D5). */
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const { formatPrice, addToCart } = useApp();
+  const { formatPrice } = useApp();
   const { id } = use(params);
   const product = PRODUCTS.find((p) => p.id === id);
   const [selectedImg, setSelectedImg] = useState(0);
-  const [qty, setQty] = useState(1);
-  const [added, setAdded] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [reviewsExpanded, setReviewsExpanded] = useState(false);
-  const [reviewSort, setReviewSort] = useState<"recent" | "rating-desc" | "rating-asc">("recent");
+  const [leaving, setLeaving] = useState(false);
+  const [shared, setShared] = useState(false);
 
-  // Hooks doivent être appelés même si product est null — useMemo conditionnel.
   const similar = useMemo(() => {
     if (!product) return [];
     return PRODUCTS.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4);
   }, [product]);
 
-  const vendorOtherProducts = useMemo(() => {
+  const merchantOtherProducts = useMemo(() => {
     if (!product) return [];
-    return PRODUCTS.filter((p) => p.id !== product.id && p.vendor === product.vendor).slice(0, 3);
+    return PRODUCTS.filter((p) => p.id !== product.id && p.vendorId === product.vendorId).slice(0, 3);
   }, [product]);
 
-  // "Vous pourriez aussi aimer" : produits hors catégorie courante, mais
-  // tri par note croisée. Permet de découvrir d'autres pôles boutique.
-  const alsoLike = useMemo(() => {
-    if (!product) return [];
-    return [...PRODUCTS]
-      .filter((p) => p.id !== product.id && p.category !== product.category)
-      .sort((a, b) => b.rating - a.rating)
-      .slice(0, 4);
-  }, [product]);
+  const closeLeaving = useCallback(() => setLeaving(false), []);
 
-  const totalReviews = RATING_BREAKDOWN.reduce((s, r) => s + r.count, 0);
-
-  const sortedReviews = useMemo(() => {
-    const arr = [...COMMON_REVIEWS];
-    if (reviewSort === "rating-desc") arr.sort((a, b) => b.rating - a.rating);
-    else if (reviewSort === "rating-asc") arr.sort((a, b) => a.rating - b.rating);
-    // "recent" : ordre par défaut (déjà ordonnés du plus récent au plus ancien)
-    return arr;
-  }, [reviewSort]);
-
-  // Esc ferme le lightbox
+  // Esc ferme le lightbox, flèches = navigation
   React.useEffect(() => {
     if (!lightboxOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -181,111 +85,86 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
   if (!product) return notFound();
 
-  const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
-  const handleAdd = () => {
-    addToCart({
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      currency: "CHF",
-      qty,
-      cover: product.gallery[0],
-    });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2500);
+  const share = () => {
+    navigator.clipboard?.writeText(window.location.href);
+    setShared(true);
+    setTimeout(() => setShared(false), 2000);
   };
+
+  const prevImg = () => setSelectedImg((i) => (i - 1 + product.gallery.length) % product.gallery.length);
+  const nextImg = () => setSelectedImg((i) => (i + 1) % product.gallery.length);
 
   return (
     <div className="min-h-screen text-[var(--foreground)]">
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6 animate-fade-in">
 
-        {/* Back button mobile (le breadcrumb desktop reste plus bas) */}
         <div className="md:hidden -mt-2">
           <BackButton fallbackHref="/boutique" />
         </div>
 
-        {/* Breadcrumb */}
         <nav aria-label="Fil d'Ariane" className="hidden md:flex items-center gap-1.5 text-xs" style={{ color: "var(--text-muted)" }}>
           <Link href="/boutique" className="hover:underline" style={{ color: "var(--text-secondary)" }}>
             Boutique
           </Link>
           <ChevronRight size={12} />
-          <Link href={`/boutique?cat=${encodeURIComponent(product.category)}`} className="hover:underline" style={{ color: "var(--text-secondary)" }}>
-            {product.category}
-          </Link>
+          <span style={{ color: "var(--text-secondary)" }}>{product.category}</span>
           <ChevronRight size={12} />
           <span style={{ color: "var(--foreground)" }} className="font-medium truncate max-w-[260px]">
             {product.title}
           </span>
         </nav>
 
-        {/* Bannière de confiance si on arrive via un lien d'apporteur (?ref=) */}
         <ReferralBanner kind="produit" id={product.id} />
 
-        {/* Layout 2 colonnes principal */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-          {/* Galerie — col-span-7 desktop. Image principale cliquable
-              (ouvre lightbox), badge remise -X% conservé. Badge Top
-              vendeur retiré (doublonné avec le panneau vendeur ci-dessous,
-              eBay le met dans le panneau pas sur l'image). */}
+          {/* Galerie */}
           <section className="lg:col-span-7 space-y-3">
-            <button
-              type="button"
-              onClick={() => setLightboxOpen(true)}
-              className="relative rounded-2xl overflow-hidden bg-[var(--hover-bg)] w-full cursor-zoom-in group"
-              style={{ aspectRatio: "4/3" }}
-              aria-label="Agrandir l'image"
-            >
-              <BlurImage src={product.gallery[selectedImg]} alt={product.title} eager />
-              {discount > 0 && (
-                <span className="absolute top-3 right-3 px-2 py-1 rounded-md text-[11px] font-bold text-white"
-                  style={{ background: "var(--destructive)" }}>
-                  -{discount}%
-                </span>
-              )}
-              {/* Indicateur zoom — apparaît au survol */}
-              <span
-                className="absolute bottom-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}
+            <div className="relative rounded-2xl overflow-hidden bg-[var(--hover-bg)]" style={{ aspectRatio: "4/3" }}>
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(true)}
+                className="absolute inset-0 w-full cursor-zoom-in group"
+                aria-label="Agrandir l'image"
               >
-                <ZoomIn size={12} /> Agrandir
-              </span>
-              {/* Navigation flèches galerie */}
+                <BlurImage src={product.gallery[selectedImg]} alt={product.title} eager />
+                <span
+                  className="absolute bottom-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}
+                >
+                  <ZoomIn size={12} /> Agrandir
+                </span>
+              </button>
               {product.gallery.length > 1 && (
                 <>
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => { e.stopPropagation(); setSelectedImg((i) => (i - 1 + product.gallery.length) % product.gallery.length); }}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); setSelectedImg((i) => (i - 1 + product.gallery.length) % product.gallery.length); } }}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                  <button
+                    type="button"
+                    onClick={prevImg}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center"
                     style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}
                     aria-label="Image précédente"
                   >
                     <ChevronLeft size={18} />
-                  </span>
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => { e.stopPropagation(); setSelectedImg((i) => (i + 1) % product.gallery.length); }}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); setSelectedImg((i) => (i + 1) % product.gallery.length); } }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextImg}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center"
                     style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}
                     aria-label="Image suivante"
                   >
                     <ChevronRight size={18} />
-                  </span>
+                  </button>
                 </>
               )}
-            </button>
+            </div>
 
-            {/* Vignettes */}
             {product.gallery.length > 1 && (
               <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                 {product.gallery.map((g, i) => (
                   <button
                     key={i}
+                    type="button"
                     onClick={() => setSelectedImg(i)}
                     className="relative rounded-lg overflow-hidden bg-[var(--hover-bg)] transition-all"
                     style={{
@@ -303,41 +182,31 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             )}
           </section>
 
-          {/* Infos + CTA — col-span-5 desktop */}
+          {/* Infos + CTA */}
           <section className="lg:col-span-5 space-y-5">
-
-            {/* En-tête */}
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium"
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium"
                   style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}>
                   {product.category}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium"
-                  style={{
-                    background: product.condition === "Neuf" ? "color-mix(in srgb, var(--success) 10%, transparent)" : "rgba(115,115,115,0.10)",
-                    color: product.condition === "Neuf" ? "var(--success)" : "var(--text-secondary)",
-                  }}>
-                  État : {product.condition}
-                </span>
+                <ConditionChip condition={product.condition} className="text-[11px]" />
+                <AffiliationChip className="text-[11px]" />
               </div>
               <h1 className="text-xl md:text-2xl font-semibold leading-tight mt-3" style={{ color: "var(--foreground)" }}>
                 {product.title}
               </h1>
-              <div className="mt-2 flex items-center gap-2 text-sm">
-                <Stars rating={product.rating} />
-                <Link href="#avis" className="hover:underline tabular-nums" style={{ color: "var(--text-secondary)" }}>
-                  {product.rating.toFixed(1)} ({product.reviews} avis)
-                </Link>
-                <span style={{ color: "var(--text-muted)" }}>·</span>
-                <span className="tabular-nums" style={{ color: "var(--text-muted)" }}>
-                  {product.sold} vendus
-                </span>
-              </div>
+              <p className="mt-1.5 text-sm inline-flex items-center gap-1.5" style={{ color: "var(--text-secondary)" }}>
+                <Building2 size={14} style={{ color: "var(--text-muted)" }} />
+                Vendu par <strong style={{ color: "var(--foreground)" }}>{product.vendor}</strong>
+              </p>
             </div>
 
-            {/* Prix */}
+            {/* Prix indicatif du marchand */}
             <div className="space-y-1">
+              <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: "var(--text-muted)" }}>
+                Prix indicatif chez {product.vendor}
+              </p>
               <div className="flex items-baseline gap-3 flex-wrap">
                 <span className="text-3xl font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
                   {formatPrice(product.price)}
@@ -346,244 +215,116 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   <span className="text-sm" style={{ color: "var(--text-muted)" }}>{product.unit}</span>
                 )}
                 {product.oldPrice && (
-                  <>
-                    <span className="text-sm line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
-                      {formatPrice(product.oldPrice)}
-                    </span>
-                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: "var(--destructive)", color: "#fff" }}>
-                      Vous économisez {formatPrice(product.oldPrice - product.price)}
-                    </span>
-                  </>
-                )}
-              </div>
-              <p className="text-xs" style={{ color: product.shipping === 0 ? "var(--success)" : "var(--text-muted)" }}>
-                {product.shipping === 0
-                  ? `Livraison GRATUITE en ${product.shippingDays}`
-                  : `+ ${formatPrice(product.shipping)} de livraison · ${product.shippingDays}`}
-              </p>
-            </div>
-
-            {/* Stock + qté + CTA */}
-            <div className="space-y-3">
-              <p className="text-sm" style={{ color: product.stock > 0 ? "var(--success)" : "var(--destructive)" }}>
-                {product.stock > 0 ? (
-                  <span className="inline-flex items-center gap-1.5">
-                    <CheckCircle2 size={14} />
-                    {product.stock <= 3 ? `Plus que ${product.stock} en stock !` : `${product.stock} en stock`}
+                  <span className="text-sm line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
+                    {formatPrice(product.oldPrice)}
                   </span>
-                ) : "Rupture de stock"}
-              </p>
-
-              <div className="flex items-center gap-3">
-                <label className="text-xs" style={{ color: "var(--text-muted)" }}>Quantité</label>
-                <div className="flex items-center rounded-lg overflow-hidden" style={{ border: "1px solid var(--card-border)" }}>
-                  <button
-                    onClick={() => setQty((q) => Math.max(1, q - 1))}
-                    className="px-3 py-1.5 hover:bg-[var(--hover-bg)] transition-colors text-base leading-none"
-                    aria-label="Diminuer"
-                  >−</button>
-                  <span className="px-3 text-sm font-medium tabular-nums w-10 text-center">{qty}</span>
-                  <button
-                    onClick={() => setQty((q) => Math.min(product.stock, q + 1))}
-                    className="px-3 py-1.5 hover:bg-[var(--hover-bg)] transition-colors text-base leading-none"
-                    aria-label="Augmenter"
-                  >+</button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                {added ? (
-                  <div className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-medium animate-fade-in"
-                    style={{ background: "color-mix(in srgb, var(--success) 12%, transparent)", color: "var(--success)" }}>
-                    <CheckCircle2 size={16} strokeWidth={2.5} /> Ajouté au panier
-                  </div>
-                ) : (
-                  <>
-                    {/* CTA primaire eBay : Acheter maintenant */}
-                    <button
-                      onClick={handleAdd}
-                      disabled={product.stock === 0}
-                      className="w-full px-6 py-3 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                      style={{ background: "var(--primary)" }}
-                      onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "var(--accent-hover)"; }}
-                      onMouseLeave={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "var(--primary)"; }}
-                    >
-                      Acheter maintenant
-                    </button>
-                    {/* CTA secondaire eBay : Ajouter au panier */}
-                    <button
-                      onClick={handleAdd}
-                      disabled={product.stock === 0}
-                      className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                      style={{ border: "1px solid var(--primary)", color: "var(--primary)", background: "var(--card)" }}
-                      onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "rgba(245, 113, 50,0.06)"; }}
-                      onMouseLeave={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = "var(--card)"; }}
-                    >
-                      <ShoppingBag size={16} />
-                      Ajouter au panier
-                    </button>
-                  </>
                 )}
-                <div className="flex gap-2">
-                  <button
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors"
-                    style={{ border: "1px solid var(--card-border)", color: "var(--text-secondary)", background: "var(--card)" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "var(--card)")}
-                  >
-                    <Heart size={14} />
-                    Favoris
-                  </button>
-                  <button
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors"
-                    style={{ border: "1px solid var(--card-border)", color: "var(--text-secondary)", background: "var(--card)" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "var(--card)")}
-                  >
-                    <Share2 size={14} />
-                    Partager
-                  </button>
-                </div>
-                {/* Recommander & gagner (apporteur d'affaires) */}
-                <RecommendButton
-                  kind="produit"
-                  id={product.id}
-                  title={product.title}
-                  image={product.gallery?.[0]}
-                  price={product.price}
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border border-[var(--primary)]/40 text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors"
-                />
               </div>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                Le prix final, les frais de port et la disponibilité sont ceux affichés par le marchand au moment de l&apos;achat.
+              </p>
             </div>
 
-            {/* Livraison & retours */}
+            {/* CTA */}
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setLeaving(true)}
+                className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                style={{ background: "var(--primary)" }}
+              >
+                Voir chez le marchand
+                <ExternalLink size={15} />
+              </button>
+              <p className="text-[11px] leading-relaxed flex items-start gap-1.5" style={{ color: "var(--text-muted)" }}>
+                <Info size={12} className="shrink-0 mt-0.5" />
+                <span>{AFFILIATION_NOTICE}</span>
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={share}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors hover:bg-[var(--hover-bg)]"
+                  style={{ border: "1px solid var(--card-border)", color: "var(--text-secondary)", background: "var(--card)" }}
+                >
+                  {shared ? <Check size={14} /> : <Share2 size={14} />}
+                  {shared ? "Lien copié" : "Partager"}
+                </button>
+              </div>
+              <RecommendButton
+                kind="produit"
+                id={product.id}
+                title={product.title}
+                image={product.gallery?.[0]}
+                price={product.price}
+                className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border border-[var(--primary)]/40 text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors"
+              />
+            </div>
+
+            {/* Conditions du marchand */}
             <div className="rounded-xl p-4 space-y-3" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
               <h3 className="text-xs uppercase tracking-wider font-semibold" style={{ color: "var(--text-muted)" }}>
-                Livraison &amp; retours
+                Conditions annoncées par {product.vendor}
               </h3>
               <ul className="space-y-1.5 text-xs" style={{ color: "var(--text-secondary)" }}>
                 <li className="flex items-start gap-2">
                   <Truck size={14} style={{ color: "var(--text-muted)", marginTop: 1 }} />
                   <span>
-                    {product.shipping === 0 ? "Livraison gratuite" : `Livraison ${formatPrice(product.shipping)}`} ·{" "}
-                    <strong style={{ color: "var(--foreground)" }}>{deliveryEstimate(product.shippingDays)}</strong>.
+                    {product.shipping === 0 ? "Livraison offerte" : `Livraison ${formatPrice(product.shipping)}`} · {product.shippingDays}, par le marchand.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Undo2 size={14} style={{ color: "var(--text-muted)", marginTop: 1 }} />
                   <span>
                     {product.returnDays > 0
-                      ? <>Retour gratuit sous <strong style={{ color: "var(--foreground)" }}>{product.returnDays} jours</strong> après réception.</>
-                      : "Vente ferme — produits sur mesure, non retournables."}
+                      ? `Retour sous ${product.returnDays} jours, selon la politique du marchand.`
+                      : "Produit sur mesure : non repris, selon la politique du marchand."}
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Shield size={14} style={{ color: "var(--text-muted)", marginTop: 1 }} />
-                  <span>Paiement sécurisé E-Dome. Protection acheteur incluse (remboursement si produit non conforme ou non reçu).</span>
+                  <ShieldCheck size={14} style={{ color: "var(--text-muted)", marginTop: 1 }} />
+                  <span>Contrat de vente, paiement, garantie et service après-vente : ceux du marchand. E-Dome n&apos;est pas partie à l&apos;achat.</span>
                 </li>
               </ul>
-
-              {/* Méthodes de paiement acceptées */}
-              <div className="pt-2 border-t" style={{ borderColor: "var(--card-border)" }}>
-                <p className="text-[11px] mb-1.5 inline-flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
-                  <CreditCard size={11} /> Paiements acceptés
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {PAYMENT_METHODS.map((pm) => (
-                    <span
-                      key={pm.label}
-                      className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide"
-                      style={{ background: "var(--hover-bg)", color: "var(--text-secondary)", border: "1px solid var(--card-border)" }}
-                    >
-                      {pm.short}
-                    </span>
-                  ))}
-                </div>
-              </div>
             </div>
 
-            {/* Vendeur enrichi (style eBay : badge Top + indicateurs de confiance) */}
+            {/* Le marchand : une entreprise, pas un visage */}
             <div className="rounded-xl p-4 space-y-3" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
               <div className="flex items-start gap-3">
-                <img src={product.vendorAvatar} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
+                <span className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-[var(--hover-bg)]">
+                  <BlurImage src={product.vendorAvatar} alt="" />
+                </span>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <Link href={`/recherche?q=${encodeURIComponent(product.vendor)}`} className="text-sm font-semibold hover:underline truncate" style={{ color: "var(--foreground)" }}>
-                      {product.vendor}
-                    </Link>
-                    {product.topRated && (
-                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold"
-                        style={{ background: "var(--foreground)", color: "var(--background)" }}>
-                        <Sparkles size={9} /> Top Rated
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-                    <Star size={11} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
-                    <span className="tabular-nums">{product.vendorRating.toFixed(1)}</span>
-                    <span>· {product.vendorReviews} avis</span>
+                  <p className="text-sm font-semibold truncate" style={{ color: "var(--foreground)" }}>
+                    {product.vendor}
+                  </p>
+                  <p className="flex items-center gap-1.5 text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                    <Building2 size={11} />
+                    <span>Marchand partenaire</span>
                     <span>·</span>
                     <MapPin size={11} />
                     <span>{product.vendorCity}</span>
-                  </div>
-                </div>
-                <Link
-                  href={`/messages?product=${encodeURIComponent(product.id)}&vendor=${encodeURIComponent(product.vendor)}`}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0"
-                  style={{ border: "1px solid var(--card-border)", color: "var(--foreground)", background: "var(--card)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "var(--card)")}
-                >
-                  <MessageCircle size={13} />
-                  Contacter
-                </Link>
-              </div>
-
-              {/* Indicateurs de confiance (style eBay) */}
-              <div className="grid grid-cols-3 gap-2 pt-2 border-t" style={{ borderColor: "var(--card-border)" }}>
-                <div className="text-center">
-                  <p className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>Membre</p>
-                  <p className="text-sm font-semibold tabular-nums mt-0.5" style={{ color: "var(--foreground)" }}>
-                    depuis {product.vendorMemberSince}
                   </p>
-                </div>
-                <div className="text-center" style={{ borderLeft: "1px solid var(--card-border)", borderRight: "1px solid var(--card-border)" }}>
-                  <p className="text-[10px] uppercase tracking-wider inline-flex items-center gap-0.5" style={{ color: "var(--text-muted)" }}>
-                    <MessageCircle size={9} /> Réponse
-                  </p>
-                  <p className="text-sm font-semibold tabular-nums mt-0.5"
-                    style={{ color: product.vendorResponseRate >= 90 ? "var(--success)" : "var(--foreground)" }}>
-                    {product.vendorResponseRate} %
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[10px] uppercase tracking-wider inline-flex items-center gap-0.5" style={{ color: "var(--text-muted)" }}>
-                    <Clock size={9} /> Expédition
-                  </p>
-                  <p className="text-sm font-semibold mt-0.5" style={{ color: "var(--foreground)" }}>
-                    {product.vendorShipsIn}
+                  <p className="text-[11px] mt-1.5 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                    Vend, expédie (annonce : {product.vendorShipsIn}) et garantit ce produit. E-Dome le référence en affiliation.
                   </p>
                 </div>
               </div>
-              {vendorOtherProducts.length > 0 && (
+              {merchantOtherProducts.length > 0 && (
                 <div>
                   <p className="text-[11px] mb-2" style={{ color: "var(--text-muted)" }}>
-                    Autres produits de ce vendeur :
+                    Autres produits de {product.vendor} référencés :
                   </p>
                   <div className="grid grid-cols-3 gap-2">
-                    {vendorOtherProducts.map((p) => (
-                      <Link
-                        key={p.id}
-                        href={`/boutique/${p.id}`}
-                        className="block group"
-                      >
+                    {merchantOtherProducts.map((p) => (
+                      <Link key={p.id} href={`/boutique/${p.id}`} className="block group">
                         <div className="relative rounded-lg overflow-hidden bg-[var(--hover-bg)]" style={{ aspectRatio: "1/1" }}>
-                          <BlurImage src={p.gallery[0]} />
+                          <BlurImage src={p.gallery[0]} alt={p.title} />
                         </div>
                         <p className="text-[11px] mt-1 truncate font-medium" style={{ color: "var(--foreground)" }}>
                           {p.title}
                         </p>
-                        <p className="text-[11px] tabular-nums" style={{ color: "var(--primary)" }}>
+                        <p className="text-[11px] tabular-nums" style={{ color: "var(--text-secondary)" }}>
                           {formatPrice(p.price)}
                         </p>
                       </Link>
@@ -595,11 +336,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           </section>
         </div>
 
-        {/* Bas : Caractéristiques + Description */}
+        {/* Caractéristiques + Description */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <section className="rounded-xl p-5" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
-            <h2 className="text-sm uppercase tracking-wider font-semibold mb-3"
-              style={{ color: "var(--text-muted)" }}>
+            <h2 className="text-sm uppercase tracking-wider font-semibold mb-3" style={{ color: "var(--text-muted)" }}>
               Caractéristiques
             </h2>
             <dl className="divide-y" style={{ borderColor: "var(--card-border)" }}>
@@ -615,9 +355,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           </section>
 
           <section className="rounded-xl p-5" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
-            <h2 className="text-sm uppercase tracking-wider font-semibold mb-3"
-              style={{ color: "var(--text-muted)" }}>
-              Description
+            <h2 className="text-sm uppercase tracking-wider font-semibold mb-3" style={{ color: "var(--text-muted)" }}>
+              Description du marchand
             </h2>
             <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
               {product.description}
@@ -625,161 +364,40 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           </section>
         </div>
 
-        {/* Cadrage V1.0 — discret */}
+        {/* Avis : aucune note inventée */}
+        <section id="avis" className="rounded-xl px-5 py-4 flex items-start gap-3"
+          style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
+          <MessageSquareText size={18} className="shrink-0 mt-0.5" style={{ color: "var(--text-muted)" }} />
+          <div className="space-y-1">
+            <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Avis</h2>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Les avis sont sur le site du marchand. L&apos;achat se fait chez {product.vendor} : E-Dome n&apos;a aucune
+              transaction à laquelle rattacher un avis, et n&apos;en affiche donc pas.
+            </p>
+          </div>
+        </section>
+
+        {/* Ce qu'est la boutique */}
         <div className="rounded-xl px-4 py-3 text-xs flex items-start gap-2"
           style={{ background: "var(--card)", border: "1px solid var(--card-border)", color: "var(--text-secondary)" }}>
           <Building2 size={14} style={{ color: "var(--primary)", marginTop: 1 }} className="shrink-0" />
           <span>
-            <strong style={{ color: "var(--foreground)" }}>E-Dome fournit la vitrine + paiement + visibilité.</strong>{" "}
-            Le vendeur reste responsable du produit, de l&apos;expédition et du SAV. Commission marketplace 4–8 %, prélevée sur ce qu&apos;E-Dome encaisse — jamais ajoutée au prix payé.
+            <strong style={{ color: "var(--foreground)" }}>E-Dome ne vend pas ce produit.</strong>{" "}
+            La boutique référence des produits de marchands partenaires et vous redirige vers eux. E-Dome ne tient ni
+            panier, ni paiement, ni stock, et ne garantit pas l&apos;achat. Sa rémunération d&apos;affiliation est payée
+            par le marchand et convenue avec lui — jamais ajoutée au prix que vous payez.
           </span>
         </div>
 
-        {/* Avis clients (style eBay : note moyenne + breakdown + liste triable) */}
-        <section id="avis" className="rounded-xl p-5 space-y-5" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <h2 className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>
-              Avis clients
-            </h2>
-            <select
-              value={reviewSort}
-              onChange={(e) => setReviewSort(e.target.value as typeof reviewSort)}
-              className="text-xs px-2 py-1 rounded-lg outline-none cursor-pointer"
-              style={{ background: "var(--background)", border: "1px solid var(--card-border)", color: "var(--foreground)" }}
-            >
-              <option value="recent">Plus récents</option>
-              <option value="rating-desc">Note décroissante</option>
-              <option value="rating-asc">Note croissante</option>
-            </select>
-          </div>
-
-          {/* Note moyenne + barres breakdown */}
-          <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-5 items-center">
-            <div className="text-center">
-              <div className="text-4xl font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
-                {product.rating.toFixed(1)}
-              </div>
-              <Stars rating={product.rating} size={16} />
-              <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
-                {totalReviews} avis vérifiés
-              </p>
-            </div>
-            <ul className="space-y-1.5">
-              {RATING_BREAKDOWN.map((r) => {
-                const pct = totalReviews > 0 ? (r.count / totalReviews) * 100 : 0;
-                return (
-                  <li key={r.stars} className="flex items-center gap-2 text-xs">
-                    <span className="tabular-nums w-3" style={{ color: "var(--text-secondary)" }}>{r.stars}</span>
-                    <Star size={10} style={{ color: "var(--rating)", fill: "var(--rating)" }} />
-                    <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "var(--hover-bg)" }}>
-                      <div className="h-full rounded-full transition-all" style={{ background: "var(--primary)", width: `${pct}%` }} />
-                    </div>
-                    <span className="tabular-nums w-10 text-right" style={{ color: "var(--text-muted)" }}>{r.count}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-
-          {/* Liste avis */}
-          <ul className="divide-y" style={{ borderColor: "var(--card-border)" }}>
-            {(reviewsExpanded ? sortedReviews : sortedReviews.slice(0, 3)).map((r) => (
-              <li key={r.id} className="py-4 first:pt-0 last:pb-0 space-y-2">
-                <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{r.author}</span>
-                    {r.verified && (
-                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium"
-                        style={{ background: "color-mix(in srgb, var(--success) 10%, transparent)", color: "var(--success)" }}>
-                        <CheckCircle2 size={9} /> Achat vérifié
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Stars rating={r.rating} size={12} />
-                    <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{r.date}</span>
-                  </div>
-                </div>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  {r.text}
-                </p>
-              </li>
-            ))}
-          </ul>
-
-          {sortedReviews.length > 3 && (
-            <button
-              onClick={() => setReviewsExpanded((v) => !v)}
-              className="w-full text-center text-sm font-medium hover:underline"
-              style={{ color: "var(--primary)" }}
-            >
-              {reviewsExpanded ? "Réduire les avis" : `Voir les ${sortedReviews.length - 3} avis suivants`}
-            </button>
-          )}
-        </section>
-
-        {/* Questions et réponses (style eBay Q&A) */}
-        <section className="rounded-xl p-5 space-y-4" style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <h2 className="text-lg font-semibold inline-flex items-center gap-2" style={{ color: "var(--foreground)" }}>
-              <HelpCircle size={18} style={{ color: "var(--primary)" }} />
-              Questions et réponses
-            </h2>
-            <Link href={`/messages?product=${encodeURIComponent(product.id)}&vendor=${encodeURIComponent(product.vendor)}`}
-              className="text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
-              style={{ border: "1px solid var(--card-border)", color: "var(--foreground)" }}
-            >
-              Poser une question
-            </Link>
-          </div>
-          <ul className="divide-y space-y-3" style={{ borderColor: "var(--card-border)" }}>
-            {COMMON_QA.map((q) => (
-              <li key={q.id} className="pt-3 first:pt-0 space-y-2">
-                {/* Question */}
-                <div className="flex items-start gap-2">
-                  <span className="text-[11px] font-bold px-1.5 py-0.5 rounded shrink-0"
-                    style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}>
-                    Q
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{q.question}</p>
-                    <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-                      {q.askedBy} — {q.questionDate}
-                    </p>
-                  </div>
-                </div>
-                {/* Réponse */}
-                <div className="flex items-start gap-2 pl-2 border-l-2" style={{ borderColor: "var(--primary)" }}>
-                  <span className="text-[11px] font-bold px-1.5 py-0.5 rounded shrink-0"
-                    style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
-                    R
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>{q.answer}</p>
-                    <p className="text-[11px] mt-0.5 inline-flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
-                      <Award size={10} style={{ color: "var(--primary)" }} />
-                      {q.answeredBy} — {q.answerDate}
-                    </p>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Produits similaires (même catégorie) */}
+        {/* Produits similaires */}
         {similar.length > 0 && (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>
                 Produits similaires
               </h2>
-              <Link
-                href={`/boutique?cat=${encodeURIComponent(product.category)}`}
-                className="text-xs hover:underline"
-                style={{ color: "var(--primary)" }}
-              >
-                Voir toute la catégorie →
+              <Link href="/boutique" className="text-xs hover:underline" style={{ color: "var(--primary)" }}>
+                Toute la boutique →
               </Link>
             </div>
             <ul className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -789,6 +407,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   <Link href={`/boutique/${p.id}`} className="block">
                     <div className="relative bg-[var(--hover-bg)]" style={{ aspectRatio: "4/3" }}>
                       <BlurImage src={p.gallery[0]} alt={p.title} />
+                      <ConditionChip condition={p.condition} className="absolute bottom-2 left-2" />
                     </div>
                     <div className="p-3 space-y-1">
                       <p className="text-[13px] font-medium leading-tight line-clamp-2" style={{ color: "var(--foreground)" }}>
@@ -797,50 +416,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                       <p className="text-sm font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
                         {formatPrice(p.price)}
                       </p>
-                      <p className="text-[11px]" style={{ color: p.shipping === 0 ? "var(--success)" : "var(--text-muted)" }}>
-                        {p.shipping === 0 ? "Livraison gratuite" : `+${formatPrice(p.shipping)} livraison`}
-                      </p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* "Vous pourriez aussi aimer" — découverte cross-catégorie */}
-        {alsoLike.length > 0 && (
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>
-                Vous pourriez aussi aimer
-              </h2>
-              <Link href="/boutique" className="text-xs hover:underline" style={{ color: "var(--primary)" }}>
-                Explorer la boutique →
-              </Link>
-            </div>
-            <ul className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {alsoLike.map((p) => (
-                <li key={p.id} className="rounded-xl overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(15,23,42,0.06)]"
-                  style={{ background: "var(--card)", border: "1px solid var(--card-border)" }}>
-                  <Link href={`/boutique/${p.id}`} className="block">
-                    <div className="relative bg-[var(--hover-bg)]" style={{ aspectRatio: "4/3" }}>
-                      <BlurImage src={p.gallery[0]} alt={p.title} />
-                      <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[10px] font-medium"
-                        style={{ background: "rgba(255,255,255,0.92)", color: "var(--text-secondary)" }}>
-                        {p.category}
-                      </span>
-                    </div>
-                    <div className="p-3 space-y-1">
-                      <p className="text-[13px] font-medium leading-tight line-clamp-2" style={{ color: "var(--foreground)" }}>
-                        {p.title}
-                      </p>
-                      <div className="flex items-center gap-1.5">
-                        <Stars rating={p.rating} size={10} />
-                        <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>({p.reviews})</span>
-                      </div>
-                      <p className="text-sm font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
-                        {formatPrice(p.price)}
+                      <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>
+                        chez {p.vendor} · en affiliation
                       </p>
                     </div>
                   </Link>
@@ -851,7 +428,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         )}
       </div>
 
-      {/* Lightbox modal — zoom galerie au clic, navigation clavier (Esc/← →) */}
+      {leaving && (
+        <LeavingInterstitial merchant={product.vendor} productTitle={product.title} onClose={closeLeaving} />
+      )}
+
       {lightboxOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in"
@@ -859,39 +439,37 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           onClick={() => setLightboxOpen(false)}
         >
           <button
+            type="button"
             onClick={() => setLightboxOpen(false)}
             aria-label="Fermer"
-            className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+            className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center"
             style={{ background: "rgba(255,255,255,0.12)", color: "#fff" }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.12)")}
           >
             <X size={20} />
           </button>
           {product.gallery.length > 1 && (
             <>
               <button
-                onClick={(e) => { e.stopPropagation(); setSelectedImg((i) => (i - 1 + product.gallery.length) % product.gallery.length); }}
+                type="button"
+                onClick={(e) => { e.stopPropagation(); prevImg(); }}
                 aria-label="Image précédente"
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center transition-colors"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center"
                 style={{ background: "rgba(255,255,255,0.12)", color: "#fff" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.12)")}
               >
                 <ChevronLeft size={22} />
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); setSelectedImg((i) => (i + 1) % product.gallery.length); }}
+                type="button"
+                onClick={(e) => { e.stopPropagation(); nextImg(); }}
                 aria-label="Image suivante"
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center"
                 style={{ background: "rgba(255,255,255,0.12)", color: "#fff" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.12)")}
               >
                 <ChevronRight size={22} />
               </button>
             </>
           )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={product.gallery[selectedImg]}
             alt={product.title}

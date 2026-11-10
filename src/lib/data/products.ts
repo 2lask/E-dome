@@ -27,7 +27,16 @@
    aujourd'hui parce que les pages boutique sont encore des Client Components.
    Quand ces pages passeront en Server Components, ajouter ici des variantes
    `async` lisant Supabase : les appelants changent d'`await`, pas de forme.
-   Cible : tables `products`, `product_media`, `profiles` (vendeur). */
+   Cible : tables `products`, `product_media`, `profiles` (vendeur).
+
+   ── Affiliation (Mission 2, P4b — `DECISIONS-2.md` §D5) ──
+   La boutique n'est PAS un marketplace. E-Dome référence ces produits et
+   redirige vers le marchand, qui garde le contrat de vente, la livraison, la
+   garantie et la TVA (motif : art. 20a LTVA, `DECISIONS.md` §1.8). Le prix
+   affiché est le prix indicatif du marchand ; la rémunération d'E-Dome est
+   payée par le marchand, jamais ajoutée à l'acheteur. D'où l'absence de toute
+   note ou de tout avis produit dans ce catalogue. Les URLs d'images mortes
+   relevées par l'audit (8 identifiants Unsplash en 404) ont été remplacées. */
 
 export type Condition = "Neuf" | "Reconditionné" | "Occasion";
 
@@ -36,18 +45,18 @@ export interface ProductSpec {
   value: string;
 }
 
-/** Profil vendeur — déclaré une seule fois, réutilisé par tous ses produits. */
+/** Marchand partenaire — une ENTREPRISE, déclarée une seule fois.
+
+    Ni note, ni nombre d'avis, ni « membre depuis », ni taux de réponse : ce
+    sont des signaux de marketplace. En affiliation, E-Dome ne voit aucune
+    transaction du marchand et ne peut donc rien attester à son sujet
+    (`DECISIONS-2.md` §D5 — un avis exige une transaction). */
 export interface Vendor {
   name: string;
+  /** Vignette de l'enseigne : une photo de produit, jamais un visage. */
   avatar: string;
   city: string;
-  rating: number;
-  reviews: number;
-  /** Année d'inscription sur la plateforme. */
-  memberSince: number;
-  /** Taux de réponse aux messages, en %. */
-  responseRate: number;
-  /** Délai d'expédition annoncé, ex. "< 24 h". */
+  /** Délai d'expédition annoncé PAR LE MARCHAND, ex. "< 24 h". */
   shipsIn: string;
 }
 
@@ -64,25 +73,23 @@ export interface Product {
   /** Suffixe de prix quand le produit est vendu au lot, ex. "/ 18 m²". */
   unit?: string;
   condition: Condition;
+  /** Disponibilité indicative déclarée par le marchand (E-Dome ne tient aucun stock). */
   stock: number;
-  sold: number;
-  rating: number;
-  reviews: number;
-  topRated?: boolean;
-  /** Frais de port en CHF. 0 = gratuit. */
+  /* Aucune note, aucun nombre d'avis, aucun compteur « vendus » : l'achat se
+     fait chez le marchand, E-Dome n'a aucune transaction à laquelle rattacher
+     un avis (`ReviewCompliance`, transactionId obligatoire). */
+  /** Frais de port en CHF annoncés par le marchand. 0 = gratuit. */
   shipping: number;
   shippingDays: string;
   /** Jours de rétractation. 0 = non repris (sur mesure). */
   returnDays: number;
   description: string;
   specs: ProductSpec[];
+  /** Identifiant du marchand : le SEUL à qui un revenu de ce produit peut revenir. */
+  vendorId: VendorId;
   vendor: string;
   vendorAvatar: string;
   vendorCity: string;
-  vendorRating: number;
-  vendorReviews: number;
-  vendorMemberSince: number;
-  vendorResponseRate: number;
   vendorShipsIn: string;
 }
 
@@ -96,110 +103,66 @@ const VENDORS = {
     name: "Maison Léman",
     avatar: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=60&h=60&fit=crop",
     city: "Lausanne",
-    rating: 4.8,
-    reviews: 412,
-    memberSince: 2019,
-    responseRate: 96,
     shipsIn: "< 12 h",
   },
   "studio-verbier": {
     name: "Studio Verbier",
     avatar: "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=60&h=60&fit=crop",
     city: "Verbier",
-    rating: 4.6,
-    reviews: 218,
-    memberSince: 2021,
-    responseRate: 88,
     shipsIn: "< 24 h",
   },
   "bois-et-co": {
     name: "Bois & Co.",
     avatar: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=60&h=60&fit=crop",
     city: "Bulle",
-    rating: 4.9,
-    reviews: 318,
-    memberSince: 2017,
-    responseRate: 94,
     shipsIn: "< 12 h",
   },
   "cuisinea-geneva": {
     name: "Cuisinea Geneva",
     avatar: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=60&h=60&fit=crop",
     city: "Genève",
-    rating: 4.7,
-    reviews: 92,
-    memberSince: 2020,
-    responseRate: 90,
     shipsIn: "< 48 h",
   },
   "plumbing-pro": {
     name: "Plumbing Pro",
     avatar: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=60&h=60&fit=crop",
     city: "Zurich",
-    rating: 4.5,
-    reviews: 156,
-    memberSince: 2018,
-    responseRate: 92,
     shipsIn: "< 24 h",
   },
   electromax: {
     name: "ElectroMax",
     avatar: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=60&h=60&fit=crop",
     city: "Bâle",
-    rating: 4.4,
-    reviews: 184,
-    memberSince: 2016,
-    responseRate: 89,
     shipsIn: "< 24 h",
   },
   "deco-studio": {
     name: "Deco Studio",
     avatar: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=60&h=60&fit=crop",
     city: "Neuchâtel",
-    rating: 4.6,
-    reviews: 134,
-    memberSince: 2021,
-    responseRate: 87,
     shipsIn: "< 24 h",
   },
   tilemaster: {
     name: "TileMaster",
     avatar: "https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=60&h=60&fit=crop",
     city: "Sion",
-    rating: 4.8,
-    reviews: 286,
-    memberSince: 2018,
-    responseRate: 93,
     shipsIn: "< 24 h",
   },
   "atelier-argile": {
     name: "Atelier Argile",
     avatar: "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=60&h=60&fit=crop",
     city: "Fribourg",
-    rating: 4.9,
-    reviews: 76,
-    memberSince: 2022,
-    responseRate: 98,
     shipsIn: "< 12 h",
   },
   "linen-house": {
     name: "Linen House",
     avatar: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=60&h=60&fit=crop",
     city: "Vevey",
-    rating: 4.7,
-    reviews: 168,
-    memberSince: 2020,
-    responseRate: 91,
     shipsIn: "< 24 h",
   },
   "outils-repares": {
     name: "OutilsRéparés",
     avatar: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=60&h=60&fit=crop",
     city: "Genève",
-    rating: 4.3,
-    reviews: 64,
-    memberSince: 2023,
-    responseRate: 81,
     shipsIn: "< 48 h",
   },
 } as const satisfies Record<string, Vendor>;
@@ -214,13 +177,10 @@ const U = "https://images.unsplash.com/photo-";
 type ProductSeed = Omit<
   Product,
   | "cover"
+  | "vendorId"
   | "vendor"
   | "vendorAvatar"
   | "vendorCity"
-  | "vendorRating"
-  | "vendorReviews"
-  | "vendorMemberSince"
-  | "vendorResponseRate"
   | "vendorShipsIn"
 > & { vendorId: VendorId };
 
@@ -230,13 +190,9 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Canapé d'angle modulable lin naturel",
     category: "Meubles",
     vendorId: "maison-leman",
-    topRated: true,
-    rating: 4.8,
-    reviews: 142,
     price: 2490,
     oldPrice: 2890,
     stock: 4,
-    sold: 86,
     condition: "Neuf",
     shipping: 0,
     shippingDays: "3-5 j",
@@ -253,7 +209,6 @@ const PRODUCT_SEEDS: ProductSeed[] = [
       `${U}1555041469-a586c61ea9bc?w=1000`,
       `${U}1567538096630-e0c55bd6374c?w=1000`,
       `${U}1540574163026-643ea20ade25?w=1000`,
-      `${U}1605883705077-8d3d8c84a8d2?w=1000`,
     ],
   },
   {
@@ -261,11 +216,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Lampadaire design laiton noir",
     category: "Décoration",
     vendorId: "studio-verbier",
-    rating: 4.6,
-    reviews: 67,
     price: 389,
     stock: 12,
-    sold: 132,
     condition: "Neuf",
     shipping: 12,
     shippingDays: "2-4 j",
@@ -289,13 +241,9 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Parquet chêne massif huilé — 18 m²",
     category: "Matériaux",
     vendorId: "bois-et-co",
-    topRated: true,
-    rating: 4.9,
-    reviews: 203,
     price: 1480,
     unit: "/ 18 m²",
     stock: 22,
-    sold: 56,
     condition: "Neuf",
     shipping: 89,
     shippingDays: "7-10 j",
@@ -311,7 +259,6 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     gallery: [
       `${U}1583847268964-b28dc8f51f92?w=1000`,
       `${U}1505691938895-1758d7feb511?w=1000`,
-      `${U}1565796330194-d5d10c0e8e1c?w=1000`,
     ],
   },
   {
@@ -319,11 +266,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Cuisine sur mesure noyer + îlot quartz",
     category: "Cuisines",
     vendorId: "cuisinea-geneva",
-    rating: 4.7,
-    reviews: 38,
     price: 18900,
     stock: 1,
-    sold: 12,
     condition: "Neuf",
     shipping: 0,
     shippingDays: "Sur RDV",
@@ -339,7 +283,6 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     gallery: [
       `${U}1556909114-f6e7ad7d3136?w=1000`,
       `${U}1556910103-1c02745aae4d?w=1000`,
-      `${U}1556909249-f937e8e0d9e1?w=1000`,
     ],
   },
   {
@@ -347,11 +290,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Robinet mitigeur cuivre brossé",
     category: "Équipements",
     vendorId: "plumbing-pro",
-    rating: 4.5,
-    reviews: 88,
     price: 245,
     stock: 35,
-    sold: 240,
     condition: "Neuf",
     shipping: 9,
     shippingDays: "2-3 j",
@@ -366,7 +306,7 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     ],
     gallery: [
       `${U}1620626011761-996317b8d101?w=1000`,
-      `${U}1584622781867-bc5d0671e1f8?w=1000`,
+      `${U}1584622650111-993a426fbf0a?w=1000`,
     ],
   },
   {
@@ -374,12 +314,9 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Lave-vaisselle encastrable A+++",
     category: "Électroménager",
     vendorId: "electromax",
-    rating: 4.4,
-    reviews: 56,
     price: 1290,
     oldPrice: 1490,
     stock: 8,
-    sold: 41,
     condition: "Reconditionné",
     shipping: 49,
     shippingDays: "5-7 j",
@@ -394,7 +331,7 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     ],
     gallery: [
       `${U}1610557892470-55d9e80c0bce?w=1000`,
-      `${U}1574269910231-bc508bcb8e29?w=1000`,
+      `${U}1556911220-bff31c812dba?w=1000`,
     ],
   },
 
@@ -406,12 +343,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Table basse marbre travertin",
     category: "Meubles",
     vendorId: "maison-leman",
-    topRated: true,
-    rating: 4.7,
-    reviews: 41,
     price: 690,
     stock: 6,
-    sold: 28,
     condition: "Neuf",
     shipping: 0,
     shippingDays: "3-5 j",
@@ -434,12 +367,9 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Set de 4 chaises bouclette écru",
     category: "Meubles",
     vendorId: "deco-studio",
-    rating: 4.6,
-    reviews: 92,
     price: 980,
     unit: "/ lot de 4",
     stock: 14,
-    sold: 62,
     condition: "Neuf",
     shipping: 0,
     shippingDays: "3-5 j",
@@ -462,12 +392,9 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Carrelage grès cérame XXL — 24 m²",
     category: "Matériaux",
     vendorId: "tilemaster",
-    rating: 4.8,
-    reviews: 117,
     price: 2160,
     unit: "/ 24 m²",
     stock: 18,
-    sold: 34,
     condition: "Neuf",
     shipping: 120,
     shippingDays: "7-12 j",
@@ -490,12 +417,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Vase grès noir mat — 35 cm",
     category: "Décoration",
     vendorId: "atelier-argile",
-    topRated: true,
-    rating: 4.9,
-    reviews: 31,
     price: 65,
     stock: 22,
-    sold: 88,
     condition: "Neuf",
     shipping: 7,
     shippingDays: "2-3 j",
@@ -518,11 +441,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Plaid lin lavé bleu nuit",
     category: "Décoration",
     vendorId: "linen-house",
-    rating: 4.7,
-    reviews: 54,
     price: 89,
     stock: 14,
-    sold: 174,
     condition: "Neuf",
     shipping: 0,
     shippingDays: "2-4 j",
@@ -545,12 +465,9 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Four pyrolyse encastrable 71 L",
     category: "Électroménager",
     vendorId: "electromax",
-    rating: 4.5,
-    reviews: 73,
     price: 749,
     oldPrice: 899,
     stock: 11,
-    sold: 49,
     condition: "Neuf",
     shipping: 35,
     shippingDays: "5-7 j",
@@ -564,7 +481,7 @@ const PRODUCT_SEEDS: ProductSeed[] = [
       { label: "Garantie", value: "2 ans" },
     ],
     gallery: [
-      `${U}1574269910231-bc508bcb8e29?w=1000`,
+      `${U}1556911220-bff31c812dba?w=1000`,
       `${U}1610557892470-55d9e80c0bce?w=1000`,
     ],
   },
@@ -573,12 +490,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Plan de travail bois massif chêne",
     category: "Cuisines",
     vendorId: "bois-et-co",
-    topRated: true,
-    rating: 4.8,
-    reviews: 28,
     price: 540,
     stock: 9,
-    sold: 22,
     condition: "Neuf",
     shipping: 65,
     shippingDays: "5-8 j",
@@ -592,7 +505,6 @@ const PRODUCT_SEEDS: ProductSeed[] = [
       { label: "Finition", value: "Huilé, à entretenir" },
     ],
     gallery: [
-      `${U}1556909114-44e3e9636da7?w=1000`,
       `${U}1556910103-1c02745aae4d?w=1000`,
     ],
   },
@@ -601,12 +513,9 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Perceuse visseuse 18 V (occasion testée)",
     category: "Équipements",
     vendorId: "outils-repares",
-    rating: 4.2,
-    reviews: 14,
     price: 89,
     oldPrice: 159,
     stock: 3,
-    sold: 17,
     condition: "Occasion",
     shipping: 12,
     shippingDays: "3-5 j",
@@ -620,8 +529,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
       { label: "Garantie", value: "6 mois atelier" },
     ],
     gallery: [
-      `${U}1583858175013-d3b7ec3a0f44?w=1000`,
-      `${U}1584622781867-bc5d0671e1f8?w=1000`,
+      `${U}1504148455328-c376907d081c?w=1000`,
+      `${U}1572981779307-38b8cabb2407?w=1000`,
     ],
   },
   {
@@ -629,12 +538,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Suspension cuivre artisanale",
     category: "Décoration",
     vendorId: "atelier-argile",
-    topRated: true,
-    rating: 4.9,
-    reviews: 22,
     price: 215,
     stock: 8,
-    sold: 41,
     condition: "Neuf",
     shipping: 15,
     shippingDays: "2-3 j",
@@ -657,11 +562,8 @@ const PRODUCT_SEEDS: ProductSeed[] = [
     title: "Hotte aspirante îlot inox",
     category: "Électroménager",
     vendorId: "electromax",
-    rating: 4.4,
-    reviews: 19,
     price: 1190,
     stock: 4,
-    sold: 12,
     condition: "Neuf",
     shipping: 0,
     shippingDays: "7-10 j",
@@ -675,7 +577,7 @@ const PRODUCT_SEEDS: ProductSeed[] = [
       { label: "Filtration", value: "Métal lavable + charbon" },
     ],
     gallery: [
-      `${U}1556909114-37c9b8aacc7e?w=1000`,
+      `${U}1556912173-3bb406ef7e77?w=1000`,
       `${U}1556909114-f6e7ad7d3136?w=1000`,
     ],
   },
@@ -688,16 +590,13 @@ function hydrate(seed: ProductSeed): Product {
   const v = VENDORS[vendorId];
   return {
     ...rest,
+    vendorId,
     /* `cover` n'est pas stocké : c'est toujours la première image. Évite le
        cas où la vignette de liste et la galerie de fiche divergent. */
     cover: seed.gallery[0],
     vendor: v.name,
     vendorAvatar: v.avatar,
     vendorCity: v.city,
-    vendorRating: v.rating,
-    vendorReviews: v.reviews,
-    vendorMemberSince: v.memberSince,
-    vendorResponseRate: v.responseRate,
     vendorShipsIn: v.shipsIn,
   };
 }

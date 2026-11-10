@@ -2,78 +2,93 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Check } from "lucide-react";
-import { useApp } from "@/lib/context";
+import { Check, Building2, ExternalLink, Handshake } from "lucide-react";
 
-/* Formulaire « Vendre un produit » — pôle E-commerce V1.0.
-   Reprend le pattern simple de /services/proposer.
-   Cadrage : les vendeurs restent responsables de leurs produits, du SAV et
-   des expéditions. E-Dome fournit la vitrine, le paiement sécurisé et la
-   visibilité. Commission marketplace 4–8 % au lancement. */
+/* /boutique/vendre — « Proposer vos produits en affiliation » (Mission 2, P4b).
 
-interface ProductForm {
-  titre: string;
-  categorie: string;
-  description: string;
-  prix: number;
-  stock: number;
-  delaiExpedition: string;
-  poids: number;
-  photos: string[];
-  autoriserApporteurs: boolean;
-  termsAccepted: boolean;
+   Ce que c'était : « Vendre un produit » façon eBay — mise en ligne validée
+   « par l'équipe E-Dome », paiement encaissé via le PSP d'E-Dome, « commission
+   marketplace 4–8 % » et une part apporteur de 10–30 % d'une commission qui
+   vaut 0 (`RATES.boutique`). Le vendeur apparent que l'art. 20a LTVA vise.
+
+   Ce que c'est : une demande de PARTENARIAT d'un marchand (une entreprise).
+   E-Dome référence ses produits et redirige vers son site ; le marchand garde
+   la vente, l'encaissement, la livraison, le SAV et la TVA. La rémunération
+   d'affiliation est convenue avec chaque marchand — aucun pourcentage n'est
+   affiché ni inventé ici (`DECISIONS-2.md` §D5, `DECISIONS.md` §1.8). */
+
+interface MerchantForm {
+  entreprise: string;
+  ide: string;
+  site: string;
+  contact: string;
+  email: string;
+  categories: string[];
+  references: string;
+  message: string;
+  attestation: boolean;
 }
 
 const CATEGORIES = ["Meubles", "Décoration", "Matériaux", "Cuisines", "Équipements", "Électroménager"];
 
-const emptyForm: ProductForm = {
-  titre: "", categorie: "", description: "", prix: 0, stock: 1,
-  delaiExpedition: "5–7 jours ouvrés", poids: 0, photos: [],
-  autoriserApporteurs: true, termsAccepted: false,
+const emptyForm: MerchantForm = {
+  entreprise: "", ide: "", site: "", contact: "", email: "",
+  categories: [], references: "", message: "", attestation: false,
 };
 
 const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors";
 const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5";
 
-export default function VendreProduitPage() {
-  const { formatPrice } = useApp();
-  const [form, setForm] = useState<ProductForm>(emptyForm);
-  const [published, setPublished] = useState(false);
-  const [photoUrl, setPhotoUrl] = useState("");
+const ROLES: { title: string; items: string[] }[] = [
+  {
+    title: "Ce que fait E-Dome",
+    items: [
+      "Référence vos produits dans la boutique, avec votre nom d'entreprise.",
+      "Redirige l'acheteur vers votre site, après un écran « Vous quittez E-Dome ».",
+      "Signale chaque fiche comme recommandation en affiliation.",
+    ],
+  },
+  {
+    title: "Ce qui reste chez vous",
+    items: [
+      "La vente : le contrat est conclu sur votre site, à votre prix.",
+      "L'encaissement, la livraison, les retours et la garantie.",
+      "Le service après-vente, et la TVA sur vos ventes.",
+    ],
+  },
+];
 
-  const update = <K extends keyof ProductForm>(key: K, value: ProductForm[K]) => {
+export default function ProposerProduitsPage() {
+  const [form, setForm] = useState<MerchantForm>(emptyForm);
+  const [sent, setSent] = useState(false);
+
+  const update = <K extends keyof MerchantForm>(key: K, value: MerchantForm[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const addPhoto = () => {
-    if (photoUrl.trim()) {
-      update("photos", [...form.photos, photoUrl.trim()]);
-      setPhotoUrl("");
-    }
+  const toggleCategory = (cat: string) => {
+    update("categories", form.categories.includes(cat) ? form.categories.filter((c) => c !== cat) : [...form.categories, cat]);
   };
 
-  const removePhoto = (idx: number) => {
-    update("photos", form.photos.filter((_, i) => i !== idx));
-  };
+  const isValid =
+    form.entreprise.trim() && form.contact.trim() && /.+@.+\..+/.test(form.email) && form.categories.length > 0 && form.attestation;
 
-  const isValid = form.titre.trim() && form.categorie && form.description.trim() && form.prix > 0 && form.stock > 0 && form.termsAccepted;
-
-  if (published) {
+  if (sent) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-6 animate-fade-in">
-        <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 text-green-400 flex items-center justify-center">
+        <div className="w-20 h-20 mx-auto rounded-full chip-success-soft flex items-center justify-center">
           <Check size={40} strokeWidth={2.5} />
         </div>
-        <h1 className="text-2xl font-bold">Produit mis en ligne</h1>
+        <h1 className="text-2xl font-bold">Demande de partenariat enregistrée</h1>
         <p className="text-[var(--text-secondary)]">
-          Votre produit est en cours de validation par l&apos;équipe E-Dome. Vous serez notifié(e) dès qu&apos;il sera visible dans la boutique. Les premières commandes apparaîtront dans votre dashboard.
+          Merci, {form.entreprise.trim()}. En service, E-Dome reviendrait vers {form.contact.trim()} pour convenir des
+          conditions d&apos;affiliation propres à votre enseigne. Rien n&apos;est mis en vente sur E-Dome : vos produits
+          seraient référencés avec un renvoi vers votre site.
         </p>
-        <div className="flex gap-3 justify-center pt-2">
-          <Link href="/boutique" className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
+        <p className="text-xs text-[var(--text-muted)]">Démonstration : aucune demande n&apos;est transmise.</p>
+        <div className="flex gap-3 justify-center pt-2 flex-wrap">
+          <Link href="/boutique" className="px-6 py-3 bg-[var(--primary)] text-white rounded-xl font-medium transition-opacity hover:opacity-90">
             Retour à la boutique
-          </Link>
-          <Link href="/dashboard" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">
-            Voir mon dashboard
           </Link>
         </div>
       </div>
@@ -82,236 +97,139 @@ export default function VendreProduitPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
-      {/* Header */}
       <div>
-        <h1 className="text-3xl page-heading">Vendre un produit</h1>
+        <h1 className="text-3xl page-heading">Proposer vos produits en affiliation</h1>
         <p className="text-[var(--text-secondary)] mt-1">
-          Listez votre produit sur le pôle Boutique d&apos;E-Dome. Vous restez responsable du produit, de l&apos;expédition et du SAV.
+          Pour les marchands — fabricants, enseignes, ateliers — qui veulent être recommandés aux propriétaires et
+          rénovateurs d&apos;E-Dome. E-Dome référence, vous gardez la vente.
         </p>
       </div>
 
-      {/* Cadrage V1.0 */}
-      <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4 space-y-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-        <p>
-          <strong className="text-[var(--foreground)]">Ce qu&apos;E-Dome fournit :</strong> la vitrine, le paiement sécurisé via un PSP agréé, la visibilité dans la boutique et les outils de gestion.
-        </p>
-        <p>
-          <strong className="text-[var(--foreground)]">Ce qui reste à votre charge :</strong> la qualité du produit, l&apos;expédition, le SAV, le droit de rétractation consommateurs, la TVA si applicable.
-        </p>
-        <p>
-          <strong className="text-[var(--foreground)]">Modèle économique :</strong> commission marketplace 4–8 % par vente, prélevée sur ce qu&apos;E-Dome encaisse via le PSP. Aucun abonnement mensuel imposé.
-        </p>
-      </div>
-
-      {/* Form */}
-      <div className="space-y-5">
-        <div>
-          <label className={labelCls}>Titre du produit *</label>
-          <input
-            type="text"
-            className={inputCls}
-            placeholder="Ex : Canapé d'angle modulable lin naturel"
-            value={form.titre}
-            onChange={(e) => update("titre", e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className={labelCls}>Catégorie *</label>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => update("categorie", cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${form.categorie === cat ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--primary)]/40"}`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className={labelCls}>Description *</label>
-          <textarea
-            className={`${inputCls} min-h-[120px] resize-y`}
-            placeholder="Matériaux, dimensions, finitions, garantie, particularités…"
-            value={form.description}
-            onChange={(e) => update("description", e.target.value)}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className={labelCls}>Prix *</label>
-            <input
-              type="number"
-              min={0}
-              className={inputCls}
-              placeholder="0"
-              value={form.prix || ""}
-              onChange={(e) => update("prix", Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <label className={labelCls}>Stock disponible *</label>
-            <input
-              type="number"
-              min={1}
-              className={inputCls}
-              placeholder="1"
-              value={form.stock || ""}
-              onChange={(e) => update("stock", Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <label className={labelCls}>Poids (kg)</label>
-            <input
-              type="number"
-              min={0}
-              step={0.1}
-              className={inputCls}
-              placeholder="0"
-              value={form.poids || ""}
-              onChange={(e) => update("poids", Number(e.target.value))}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className={labelCls}>Délai d&apos;expédition</label>
-          <input
-            type="text"
-            className={inputCls}
-            placeholder="Ex : 5–7 jours ouvrés"
-            value={form.delaiExpedition}
-            onChange={(e) => update("delaiExpedition", e.target.value)}
-          />
-        </div>
-
-        {/* Photos */}
-        <div>
-          <label className={labelCls}>Photos du produit</label>
-          <div className="flex gap-2 mb-2 flex-wrap">
-            <input
-              type="url"
-              className={`${inputCls} flex-1 min-w-[200px]`}
-              placeholder="URL https://… ou téléverser →"
-              value={photoUrl}
-              onChange={(e) => setPhotoUrl(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addPhoto())}
-            />
-            <button
-              type="button"
-              onClick={addPhoto}
-              className="px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl text-sm font-medium transition-colors"
-            >
-              Ajouter
-            </button>
-            <label
-              className="cursor-pointer px-4 py-3 rounded-xl text-sm font-medium transition-colors"
-              style={{ border: "1px solid var(--card-border)", background: "var(--card)", color: "var(--foreground)" }}
-            >
-              Téléverser
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files ?? []);
-                  if (files.length === 0) return;
-                  const urls = files.map((f) => URL.createObjectURL(f));
-                  update("photos", [...form.photos, ...urls]);
-                  e.target.value = "";
-                }}
-              />
-            </label>
-          </div>
-          {form.photos.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {form.photos.map((url, i) => (
-                <div key={i} className="relative">
-                  <img src={url} alt="" className="w-20 h-20 rounded-xl object-cover border border-[var(--card-border)]" />
-                  <button
-                    type="button"
-                    onClick={() => removePhoto(i)}
-                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600 transition-colors"
-                  >
-                    ×
-                  </button>
-                </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {ROLES.map((r) => (
+          <div key={r.title} className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4 space-y-2">
+            <h2 className="text-sm font-semibold text-[var(--foreground)]">{r.title}</h2>
+            <ul className="space-y-1.5 text-xs text-[var(--text-secondary)] leading-relaxed">
+              {r.items.map((it) => (
+                <li key={it} className="flex items-start gap-2">
+                  <Check size={12} className="mt-0.5 shrink-0 text-[var(--primary)]" />
+                  <span>{it}</span>
+                </li>
               ))}
-            </div>
-          )}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4 text-xs text-[var(--text-secondary)] leading-relaxed flex items-start gap-2.5">
+        <Handshake size={16} className="shrink-0 mt-0.5 text-[var(--primary)]" />
+        <p>
+          <strong className="text-[var(--foreground)]">Rémunération :</strong> une rémunération d&apos;affiliation,
+          payée par vous sur les ventes que nos recommandations vous apportent, convenue avec chaque marchand. Elle ne
+          s&apos;ajoute jamais au prix payé par l&apos;acheteur, et E-Dome n&apos;encaisse rien de lui.
+        </p>
+      </div>
+
+      <div className="space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="m-entreprise" className={labelCls}>Raison sociale *</label>
+            <input id="m-entreprise" type="text" className={inputCls} placeholder="Ex : Atelier du Bois SA"
+              value={form.entreprise} onChange={(e) => update("entreprise", e.target.value)} />
+          </div>
+          <div>
+            <label htmlFor="m-ide" className={labelCls}>Numéro IDE</label>
+            <input id="m-ide" type="text" className={inputCls} placeholder="CHE-123.456.789"
+              value={form.ide} onChange={(e) => update("ide", e.target.value)} />
+          </div>
         </div>
 
-        {/* Apporteurs toggle */}
-        <button
-          type="button"
-          onClick={() => update("autoriserApporteurs", !form.autoriserApporteurs)}
-          className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form.autoriserApporteurs ? "bg-[var(--primary)]/10 border-[var(--primary)]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[var(--primary)]/40"}`}
-        >
-          <div className="text-left">
-            <h3 className="font-medium">Autoriser les apporteurs d&apos;affaires</h3>
-            <p className="text-xs text-[var(--text-muted)]">
-              Les apporteurs pourront partager votre fiche produit. Leur part (10–30 %) est prélevée sur la commission marketplace d&apos;E-Dome — jamais ajoutée au prix.
-            </p>
+        <div>
+          <label htmlFor="m-site" className={labelCls}>Site marchand</label>
+          <div className="relative">
+            <ExternalLink size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+            <input id="m-site" type="text" className={`${inputCls} pl-10`} placeholder="Le site où vos clients achètent"
+              value={form.site} onChange={(e) => update("site", e.target.value)} />
           </div>
-          <div className={`w-12 h-6 rounded-full transition-colors relative shrink-0 ${form.autoriserApporteurs ? "bg-[var(--primary)]" : "bg-[var(--card-border)]"}`}>
-            <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${form.autoriserApporteurs ? "translate-x-6" : "translate-x-0.5"}`} />
-          </div>
-        </button>
+          <p className="text-[11px] text-[var(--text-muted)] mt-1">C&apos;est vers lui que les fiches renverront.</p>
+        </div>
 
-        {/* Récap commission */}
-        {form.prix > 0 && (
-          <div className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-[var(--text-secondary)]">Prix de vente affiché</span>
-              <span className="font-medium">{formatPrice(form.prix)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--text-secondary)]">Commission E-Dome (8 % indicatif)</span>
-              <span className="text-[var(--primary)]">−{formatPrice(form.prix * 0.08)}</span>
-            </div>
-            <div className="h-px bg-[var(--card-border)]" />
-            <div className="flex justify-between">
-              <span className="font-medium">Vous recevez par vente</span>
-              <span className="font-bold text-green-400">{formatPrice(form.prix * 0.92)}</span>
-            </div>
-            <p className="text-[11px] text-[var(--text-muted)] italic pt-1">
-              Commission prélevée sur ce qu&apos;encaisse E-Dome via le PSP, jamais ajoutée au prix payé par l&apos;acheteur. Taux exact défini selon votre catégorie (fourchette 4–8 %).
-            </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="m-contact" className={labelCls}>Personne de contact *</label>
+            <input id="m-contact" type="text" className={inputCls} placeholder="Prénom Nom"
+              value={form.contact} onChange={(e) => update("contact", e.target.value)} />
           </div>
-        )}
+          <div>
+            <label htmlFor="m-email" className={labelCls}>E-mail professionnel *</label>
+            <input id="m-email" type="email" className={inputCls} placeholder="contact@entreprise.ch"
+              value={form.email} onChange={(e) => update("email", e.target.value)} />
+          </div>
+        </div>
 
-        {/* Terms */}
+        <div>
+          <p className={labelCls}>Catégories proposées *</p>
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map((cat) => {
+              const on = form.categories.includes(cat);
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => toggleCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${on ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--primary)]/40"}`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="m-refs" className={labelCls}>Nombre approximatif de références</label>
+          <input id="m-refs" type="text" className={inputCls} placeholder="Ex : une quarantaine"
+            value={form.references} onChange={(e) => update("references", e.target.value)} />
+        </div>
+
+        <div>
+          <label htmlFor="m-message" className={labelCls}>Votre gamme en quelques mots</label>
+          <textarea id="m-message" className={`${inputCls} min-h-[110px] resize-y`}
+            placeholder="Ce que vous fabriquez ou distribuez, votre zone de livraison, ce qui vous distingue…"
+            value={form.message} onChange={(e) => update("message", e.target.value)} />
+        </div>
+
         <label className="flex items-start gap-3 cursor-pointer">
-          <button
-            type="button"
-            onClick={() => update("termsAccepted", !form.termsAccepted)}
-            className={`w-5 h-5 mt-0.5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${form.termsAccepted ? "bg-[var(--primary)] border-[var(--primary)]" : "border-[var(--text-muted)]"}`}
-          >
-            {form.termsAccepted && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
-          </button>
+          <input
+            type="checkbox"
+            checked={form.attestation}
+            onChange={(e) => update("attestation", e.target.checked)}
+            className="mt-1 accent-[var(--primary)]"
+          />
           <span className="text-sm text-[var(--text-secondary)]">
-            J&apos;atteste être responsable de ce produit (conformité, SAV, expédition, droit de rétractation) et j&apos;accepte les conditions générales d&apos;utilisation et la politique vendeurs d&apos;E-Dome.
+            Je confirme que mon entreprise reste le vendeur de ses produits : elle conclut la vente, encaisse le prix,
+            livre, garantit et assure le service après-vente. E-Dome se limite à recommander mes produits.
           </span>
         </label>
 
-        <div className="flex justify-end gap-3 pt-2">
-          <Link href="/boutique" className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
-            Annuler
-          </Link>
-          <button
-            type="button"
-            onClick={() => setPublished(true)}
-            disabled={!isValid}
-            className={`px-8 py-3 rounded-xl font-medium transition-colors ${isValid ? "bg-[var(--primary)] hover:bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}
-          >
-            Publier le produit
-          </button>
+        <div className="flex items-center justify-between gap-3 pt-2 flex-wrap">
+          <p className="text-[11px] text-[var(--text-muted)] inline-flex items-center gap-1.5">
+            <Building2 size={12} /> Réservé aux entreprises.
+          </p>
+          <div className="flex gap-3">
+            <Link href="/boutique" className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
+              Annuler
+            </Link>
+            <button
+              type="button"
+              onClick={() => setSent(true)}
+              disabled={!isValid}
+              className={`px-8 py-3 rounded-xl font-medium transition-colors ${isValid ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}
+            >
+              Envoyer la demande
+            </button>
+          </div>
         </div>
       </div>
     </div>
