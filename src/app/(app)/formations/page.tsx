@@ -87,7 +87,7 @@ function Stars({ rating }: { rating: number }) {
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function FormationsPage() {
-  const { formatPrice, activeRole } = useApp();
+  const { formatPrice, actorRoles } = useApp();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Tous");
 
@@ -132,7 +132,7 @@ export default function FormationsPage() {
           description="Développez vos compétences immobilières"
           variant="serif"
           actions={
-            activeRole === "createur" ? (
+            actorRoles.includes("createur") ? (
               <Link
                 href="/formations/creer"
                 className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-xl font-medium transition-colors"

@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import type { User } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
-import { CURRENT_USER as DEMO_USER } from "@/lib/demo/identity";
+import { actorSummary } from "@/lib/demo/actors";
 import { DIRECTORY, personById, requirePerson } from "@/lib/demo/directory";
 import { directThreadId } from "@/lib/demo/session-store";
 import type { ThreadView } from "@/lib/demo/session-views";
@@ -44,14 +44,13 @@ interface ConferenceParticipant {
   handRaised: boolean;
 }
 
-/* Tous les visages viennent de l'annuaire : soi, et deux invités réels (un
-   investisseur et une agente immobilière, deux profils typiques d'un deal). */
-const CONF_SELF = {
-  id: DEMO_USER.id,
-  name: DEMO_USER.fullName,
-  role: "Hôte",
-  avatar: DEMO_USER.avatar,
-};
+/* Tous les visages viennent de l'annuaire : soi (la personne incarnée,
+   chantier P3), et deux invités réels (un investisseur et une agente
+   immobilière, deux profils typiques d'un deal). */
+function confSelf(actorId: string) {
+  const a = actorSummary(actorId);
+  return { id: a.id, name: a.name, role: a.line, avatar: a.avatar };
+}
 
 const G_ENNIO = requirePerson("user-003");
 const G_CELINE = requirePerson("user-002");
@@ -347,12 +346,13 @@ function MessagesPageInner() {
     if (!activeConv) return;
     const partRole =
       roleLabel(activeConv.participant.activeRole, activeConv.participant.trades);
+    const self = confSelf(currentUserId);
     setParticipants([
       {
-        id: CONF_SELF.id,
-        name: CONF_SELF.name,
-        role: CONF_SELF.role,
-        avatar: CONF_SELF.avatar,
+        id: self.id,
+        name: self.name,
+        role: self.role,
+        avatar: self.avatar,
         isHost: true,
         isSelf: true,
         muted: false,
@@ -370,12 +370,12 @@ function MessagesPageInner() {
         cameraOff: false,
         handRaised: false,
       },
-      ...CONF_EXTRA_GUESTS.map((g) => ({ ...g, isSelf: false })),
+      ...CONF_EXTRA_GUESTS.filter((g) => g.id !== currentUserId && g.id !== activeConv.participant.id).map((g) => ({ ...g, isSelf: false })),
     ]);
     setConfSidePanel(null);
     setConfChat(INITIAL_CONF_CHAT);
     setShowConference(true);
-  }, [activeConv]);
+  }, [activeConv, currentUserId]);
 
   const endConference = useCallback(() => {
     setShowConference(false);

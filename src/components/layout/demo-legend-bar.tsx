@@ -6,7 +6,7 @@ import { STAGE_DOT, STAGE_LABEL, STAGE_HINT, STAGE_ORDER } from "@/lib/model/sta
 import { demoBar } from "@/content/common";
 import { explainMode as explainCopy } from "@/content/explain";
 import { useApp } from "@/lib/context";
-import { RoleSwitcher } from "@/components/layout/role-switcher";
+import { PersonaSwitcher } from "@/components/layout/role-switcher";
 
 /* ── Bandeau-légende permanent ──────────────────────────────────────────────
 
@@ -18,7 +18,8 @@ import { RoleSwitcher } from "@/components/layout/role-switcher";
      · la mention obligatoire — rien ici n'est réel ;
      · la LÉGENDE DES STATUTS — la clé de lecture du vert et des gris qu'on
        croise sur tous les écrans, avec le lien vers `/demo` qui l'explique ;
-     · le SÉLECTEUR DE RÔLE — l'outil de la visite en cinq minutes, ici parce
+     · QUI L'ON EST — « Vous êtes Céline Bovard · agente immobilière à Lutry
+       — changer » : le sélecteur de personne (chantier P3), ici parce
        que c'est le seul emplacement présent sur toutes les routes, y compris
        le tableau de bord dont la chrome est différente.
 
@@ -75,7 +76,7 @@ export function DemoLegendBar() {
           >
             {demoBar.learnMore}
           </Link>
-          <RoleSwitcher variant="bar" />
+          <PersonaSwitcher />
         </div>
       </div>
     </div>

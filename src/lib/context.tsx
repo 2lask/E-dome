@@ -3,14 +3,14 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import type { Currency, ReferralLink } from "./types";
 import type { PlatformRole } from "./model/identity";
-import { isPlatformRole, migrateLegacyRoles } from "./model/identity";
+import { migrateLegacyRoles } from "./model/identity";
 import type { Profile } from "./profile-types";
 import { DEFAULT_PROFILE } from "./profile-data";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
 import { followingOf } from "./demo/social";
-import { CURRENT_USER_ID } from "./demo/identity";
-import { recordSessionEvent } from "./use-session";
-import { DEFAULT_VIEWING_AS } from "./../content/roles";
+import { actorSummary } from "./demo/actors";
+import { recordSessionEvent, useSession } from "./use-session";
+import { personaFor } from "./../content/roles";
 
 // ─── Exchange rates (base CHF = 1) ──────────────────────────────────────────
 
@@ -47,17 +47,16 @@ export interface CartItem {
 }
 
 interface AppContextValue {
-  /* Le rôle sous lequel l'interface se présente (garde-fous « Créer »,
-     tableau de bord). Un `PlatformRole`, comme `viewingAs`, qui le pilote. */
+  /* La personne incarnée (chantier P3, « être un profil ») : l'acteur de la
+     mémoire de session. On ne visite plus « en tant que rôle » : le rôle sous
+     lequel l'interface se présente (`activeRole`) et les rôles détenus
+     (`actorRoles`) sont ceux de cette personne de l'annuaire. Pour changer de
+     personne : `incarnate(id)` (`use-session.ts`). */
+  actorId: string;
   activeRole: PlatformRole;
-  setActiveRole: (role: PlatformRole) => void;
+  actorRoles: PlatformRole[];
   availableRoles: PlatformRole[];
   toggleAvailableRole: (role: PlatformRole) => void;
-  /* Le rôle qu'on VISITE, découplé des droits : le sélecteur de rôle le
-     pilote pour montrer la plateforme de chaque point de vue. Le régler met
-     aussi à jour `activeRole`. */
-  viewingAs: PlatformRole;
-  setViewingAs: (role: PlatformRole) => void;
   /* Le mode explicatif : les affordances « ? » qui expliquent un élément.
      Actif par défaut — une démonstration se lit mieux commentée — mais on peut
      l'éteindre pour voir la maquette nue. */
@@ -112,16 +111,31 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 // ─── Default values ─────────────────────────────────────────────────────────
 
-const DEFAULT_ROLE: PlatformRole = "particulier";
 const DEFAULT_ROLES: PlatformRole[] = ["particulier", "hote", "createur", "apporteur", "agence"];
 const DEFAULT_CURRENCY: Currency = "CHF";
-/* Des biens d'AUTRES personnes : on ne met pas ses propres logements en favori. */
-const DEFAULT_FAVORITES: string[] = ["prop12", "prop13", "prop3", "prop4"];
-/* Les suivis de départ sont ceux du graphe FOLLOWS (demo/social.ts) : /reseau,
-   le profil et les suggestions partent des mêmes relations. La clé de
-   stockage est versionnée pour qu'un ancien jeu (vide) ne les masque pas. */
-const DEFAULT_FOLLOWS: string[] = followingOf(CURRENT_USER_ID);
-const FOLLOWS_KEY = "followedUsers.v2";
+/* Favoris et suivis sont PAR PERSONNE incarnée (chantier P3) : Ana n'a pas
+   les favoris de Léo. Les favoris de départ viennent de `content/roles.ts`
+   (des biens d'AUTRES personnes), les suivis du graphe FOLLOWS
+   (demo/social.ts) — /reseau, le profil et les suggestions partent des mêmes
+   relations. Une personne jamais touchée garde son jeu de départ ; on ne
+   stocke que ce qui a changé. Clés versionnées : l'ancien jeu (celui de Léo
+   seul) ne masque pas les nouveaux. */
+const defaultFavorites = (actorId: string): string[] => personaFor(actorId)?.favorites ?? [];
+const defaultFollows = (actorId: string): string[] => followingOf(actorId);
+export const FAVORITES_KEY = "favorites.v2";
+export const FOLLOWS_KEY = "followedUsers.v3";
+type ByActor = Record<string, string[]>;
+
+function readByActor(raw: string | null): ByActor {
+  if (!raw) return {};
+  const parsed: unknown = JSON.parse(raw);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+  const out: ByActor = {};
+  for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
+    if (Array.isArray(v)) out[k] = v.filter((x): x is string => typeof x === "string");
+  }
+  return out;
+}
 const STORAGE_PREFIX = "edome_";
 
 /* Ecriture localStorage tolerante aux pannes.
@@ -143,12 +157,24 @@ function persist(key: string, value: string) {
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
-  const [activeRole, setActiveRoleState] = useState<PlatformRole>(DEFAULT_ROLE);
+  /* La personne incarnée : Léo au rendu serveur et pendant l'hydratation,
+     puis celle mémorisée (relue par le magasin de session, après montage). */
+  const { actorId } = useSession();
+  const actor = useMemo(() => actorSummary(actorId), [actorId]);
+  const activeRole = actor.activeRole;
+  const actorRoles = actor.roles;
   const [availableRoles, setAvailableRoles] = useState<PlatformRole[]>(DEFAULT_ROLES);
-  const [viewingAs, setViewingAsState] = useState<PlatformRole>(DEFAULT_VIEWING_AS);
   const [explainMode, setExplainModeState] = useState<boolean>(true);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set(DEFAULT_FAVORITES));
-  const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set(DEFAULT_FOLLOWS));
+  const [favoritesByActor, setFavoritesByActor] = useState<ByActor>({});
+  const [followsByActor, setFollowsByActor] = useState<ByActor>({});
+  const favorites = useMemo(
+    () => new Set(favoritesByActor[actorId] ?? defaultFavorites(actorId)),
+    [favoritesByActor, actorId],
+  );
+  const followedUsers = useMemo(
+    () => new Set(followsByActor[actorId] ?? defaultFollows(actorId)),
+    [followsByActor, actorId],
+  );
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [referralLinks, setReferralLinks] = useState<ReferralLink[]>(DEFAULT_REFERRAL_LINKS);
@@ -164,17 +190,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
          (« formateur », « client »…). On le convertit par la table de passage
          (`migrateLegacyRoles`) ; une valeur inconnue est ignorée et l'on
          retombe sur le défaut — réparable, là où un rôle fantôme ne l'est pas. */
-      const storedRole = localStorage.getItem(`${STORAGE_PREFIX}activeRole`);
-      if (storedRole) {
-        const migrated = migrateLegacyRoles([storedRole]).roles[0];
-        if (migrated) setActiveRoleState(migrated);
-      }
-
-      /* Même prudence que pour `activeRole` : une valeur inconnue est ignorée,
-         on retombe sur le défaut. `PlatformRole` peut évoluer. */
-      const storedViewingAs = localStorage.getItem(`${STORAGE_PREFIX}viewingAs`);
-      if (storedViewingAs && isPlatformRole(storedViewingAs)) setViewingAsState(storedViewingAs);
-
       const storedExplain = localStorage.getItem(`${STORAGE_PREFIX}explainMode`);
       if (storedExplain === "0") setExplainModeState(false);
 
@@ -187,11 +202,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      const storedFavs = localStorage.getItem(`${STORAGE_PREFIX}favorites`);
-      if (storedFavs) setFavorites(new Set(JSON.parse(storedFavs)));
-
-      const storedFollows = localStorage.getItem(`${STORAGE_PREFIX}${FOLLOWS_KEY}`);
-      if (storedFollows) setFollowedUsers(new Set(JSON.parse(storedFollows)));
+      setFavoritesByActor(readByActor(localStorage.getItem(`${STORAGE_PREFIX}${FAVORITES_KEY}`)));
+      setFollowsByActor(readByActor(localStorage.getItem(`${STORAGE_PREFIX}${FOLLOWS_KEY}`)));
 
       const storedCurrency = localStorage.getItem(`${STORAGE_PREFIX}currency`);
       if (storedCurrency) setCurrencyState(storedCurrency as Currency);
@@ -242,16 +254,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Persist effects (only after mount)
   useEffect(() => {
     if (!mounted) return;
-    persist("activeRole", activeRole);
-  }, [activeRole, mounted]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    persist("viewingAs", viewingAs);
-  }, [viewingAs, mounted]);
-
-  useEffect(() => {
-    if (!mounted) return;
     persist("explainMode", explainMode ? "1" : "0");
   }, [explainMode, mounted]);
 
@@ -262,13 +264,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!mounted) return;
-    persist("favorites", JSON.stringify([...favorites]));
-  }, [favorites, mounted]);
+    persist(FAVORITES_KEY, JSON.stringify(favoritesByActor));
+  }, [favoritesByActor, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
-    persist(FOLLOWS_KEY, JSON.stringify([...followedUsers]));
-  }, [followedUsers, mounted]);
+    persist(FOLLOWS_KEY, JSON.stringify(followsByActor));
+  }, [followsByActor, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -302,17 +304,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // ── Actions ─────────────────────────────────────────────────────────────
 
-  const setActiveRole = useCallback((role: PlatformRole) => {
-    setActiveRoleState(role);
-  }, []);
-
-  /* Régler le rôle de visite met aussi à jour `activeRole` : les deux
-     parlent désormais le même `PlatformRole`, il n'y a plus de pont. */
-  const setViewingAs = useCallback((role: PlatformRole) => {
-    setViewingAsState(role);
-    setActiveRoleState(role);
-  }, []);
-
   const setExplainMode = useCallback((on: boolean) => setExplainModeState(on), []);
 
   const toggleAvailableRole = useCallback((role: PlatformRole) => {
@@ -325,33 +316,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const toggleFavorite = useCallback((id: string) => {
-    setFavorites((prev) => {
-      const next = new Set(prev);
+    setFavoritesByActor((prev) => {
+      const next = new Set(prev[actorId] ?? defaultFavorites(actorId));
       if (next.has(id)) next.delete(id);
       else next.add(id);
-      return next;
+      return { ...prev, [actorId]: [...next] };
     });
-  }, []);
+  }, [actorId]);
 
   const isFavorite = useCallback(
     (id: string) => favorites.has(id),
     [favorites]
   );
 
-  /* Suivre quelqu'un laisse une trace dans la mémoire de session : la personne
-     suivie reçoit une notification « X vous suit » (visible quand on
-     l'incarnera, chantier P3). Ne plus suivre n'en produit pas. L'écriture se
-     fait hors du `setState` (un updater doit rester pur). */
+  /* Suivre quelqu'un laisse une trace dans la mémoire de session, au nom de la
+     personne incarnée : la personne suivie reçoit une notification « X vous
+     suit » (visible quand on l'incarne). Ne plus suivre n'en produit pas.
+     L'écriture se fait hors du `setState` (un updater doit rester pur). */
   const toggleFollow = useCallback((id: string) => {
     const adding = !followedUsers.has(id);
-    setFollowedUsers((prev) => {
-      const next = new Set(prev);
+    setFollowsByActor((prev) => {
+      const next = new Set(prev[actorId] ?? defaultFollows(actorId));
       if (next.has(id)) next.delete(id);
       else next.add(id);
-      return next;
+      return { ...prev, [actorId]: [...next] };
     });
     if (adding) recordSessionEvent({ kind: "follow", data: { toId: id } });
-  }, [followedUsers]);
+  }, [followedUsers, actorId]);
 
   const isFollowing = useCallback(
     (id: string) => followedUsers.has(id),
@@ -462,10 +453,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<AppContextValue>(
     () => ({
+      actorId,
       activeRole,
-      setActiveRole,
-      viewingAs,
-      setViewingAs,
+      actorRoles,
       explainMode,
       setExplainMode,
       availableRoles,
@@ -499,10 +489,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       hidePost,
     }),
     [
+      actorId,
       activeRole,
-      setActiveRole,
-      viewingAs,
-      setViewingAs,
+      actorRoles,
       explainMode,
       setExplainMode,
       availableRoles,

@@ -1,114 +1,232 @@
 import type { PlatformRole } from "@/lib/model/identity";
 
-/* ── Le parcours par rôle ───────────────────────────────────────────────────
+/* ── Les profils qu'on peut incarner (chantier P3, « être un profil ») ─────
 
-   La maquette doit pouvoir se montrer entière en cinq minutes. Le sélecteur de
-   rôle est l'outil de cette visite : on choisit « Agence », on atterrit sur
-   l'espace agence ; on choisit « Apporteur », sur le tableau des liens. Chaque
-   rôle est une porte vers une partie distincte de la plateforme.
+   On ne « visite » plus la plateforme en tant que RÔLE : on entre dans la peau
+   d'une PERSONNE existante de l'annuaire (DECISIONS-2 §D2). On est Céline,
+   agente à Lutry, avec son compte, ses biens, ses messages et son tableau de
+   bord réels. Plus jamais un rôle sans visage.
 
-   Le rôle sélectionné est un `viewingAs` : ce qu'on VISITE, découplé de ce
-   qu'on aurait le droit de faire (un `RoleGrant`, cf. `model/identity.ts`).
-   Dans une démonstration, on regarde tous les rôles sans en détenir aucun.
+   Ce fichier est la liste des seize profils proposés par le sélecteur, rangés
+   par ce qu'ils font, avec ce qui ne se dérive pas de la donnée : la façon de
+   dire qui l'on est (« agente immobilière »), l'action principale de la
+   personne, ses favoris et ses recherches de départ. Tout le reste — nom,
+   photo, ville, rôles, biens, montants — vient de l'annuaire et du journal.
 
-   `role` est un `PlatformRole` — la vérité du modèle, « ce qu'on peut
-   faire », onze valeurs. C'est ce que porte `viewingAs` (et, depuis
-   l'étape 4a, `activeRole` aussi : plus de pont vers l'ancien `Role`).
+   Les identifiants sont ceux de l'annuaire (`users[]`) : un id inconnu fait
+   échouer `tests/data/p3-actor.test.ts`. */
 
-   La visite est CURÉE, pas exhaustive : huit portes qui, ensemble, couvrent
-   toute la plateforme sans se répéter. `visiteur`, `agent` et `annonceur` du
-   modèle n'ont pas d'entrée propre — le premier est l'état par défaut, les
-   deux autres se voient à l'intérieur d'« Agence » et de la boutique. */
+export type PersonaGroup = "particuliers" | "proprietaires" | "agents" | "prestataires" | "createurs" | "apporteurs";
 
-export interface RoleTour {
-  role: PlatformRole;
-  label: string;
-  /** Une ligne : ce que ce rôle vient faire sur E-Dome. */
-  tagline: string;
-  /** La porte principale : où l'on atterrit en choisissant ce rôle. */
-  href: string;
-  /** Nom d'icône lucide, résolu par le composant. */
-  icon: string;
-  /** Deux ou trois choses à regarder une fois sur place. */
-  see: string[];
+export interface Persona {
+  /** Identifiant de l'annuaire. */
+  id: string;
+  group: PersonaGroup;
+  /** Ce que fait la personne, en minuscules, accordé (« agente immobilière »). */
+  as: string;
+  /** L'action principale proposée dans la barre latérale. */
+  cta: { label: string; href: string };
+  /** Biens mis en favori au départ (des biens d'AUTRES personnes). */
+  favorites: string[];
+  /** Recherches enregistrées (vides pour qui ne cherche rien). */
+  searches: { label: string; href: string }[];
 }
 
-export const roleTour = {
-  title: "Visiter en tant que",
-  hint: "Changez de rôle pour voir la plateforme de son point de vue. Aucun compte, aucun droit réel — c'est une démonstration.",
-  reset: "Revenir à l'accueil",
-  roles: [
-    {
-      role: "particulier",
-      label: "Particulier",
-      tagline: "Acheter, louer ou réserver un bien.",
-      href: "/explorer",
-      icon: "Search",
-      see: ["La recherche et les filtres", "Une fiche de bien et son analyse", "La réservation courte durée"],
-    },
-    {
-      role: "proprietaire",
-      label: "Propriétaire",
-      tagline: "Vendre ou louer son bien — 0 CHF à E-Dome.",
-      href: "/vendre",
-      icon: "KeyRound",
-      see: ["Les deux façons de vendre", "Ce que coûte chaque option", "0 CHF à E-Dome, des deux côtés"],
-    },
-    {
-      role: "hote",
-      label: "Hôte",
-      tagline: "Louer en courte durée et suivre ses revenus.",
-      href: "/dashboard",
-      icon: "BedDouble",
-      see: ["Les revenus par bien et par mois", "Les réservations", "D'où vient chaque franc"],
-    },
-    {
-      role: "agence",
-      label: "Agence",
-      tagline: "Mandats, équipe, vitrine et abonnement.",
-      href: "/agence",
-      icon: "Building2",
-      see: ["Les demandes de votre secteur", "Les quatre formules d'abonnement", "La page publique de l'agence"],
-    },
-    {
-      role: "prestataire",
-      label: "Prestataire",
-      tagline: "Proposer un service, recevoir des demandes de devis.",
-      href: "/services",
-      icon: "Wrench",
-      see: ["Le catalogue de services", "Une fiche prestataire", "La demande de devis"],
-    },
-    {
-      role: "createur",
-      label: "Créateur",
-      tagline: "Publier des formations, animer des lives.",
-      href: "/formations",
-      icon: "GraduationCap",
-      see: ["Le catalogue de formations", "Une fiche et son programme", "La publication d'une formation"],
-    },
-    {
-      role: "apporteur",
-      label: "Apporteur",
-      tagline: "Recommander par un lien traçable, être rémunéré.",
-      href: "/apporteurs",
-      icon: "Handshake",
-      see: ["Le tableau des liens et des apports", "Comment la part est calculée", "Le classement (exemple)"],
-    },
-    {
-      role: "admin",
-      label: "Administration",
-      tagline: "Modérer la plateforme.",
-      href: "/admin",
-      icon: "ShieldCheck",
-      see: ["La file de modération", "Les biens à valider", "Les signalements"],
-    },
-  ] satisfies RoleTour[],
-} as const;
+export const PERSONA_GROUP_LABELS: Readonly<Record<PersonaGroup, string>> = {
+  particuliers: "Particuliers",
+  proprietaires: "Propriétaires & hôtes",
+  agents: "Agents & agences",
+  prestataires: "Prestataires",
+  createurs: "Créateurs",
+  apporteurs: "Apporteurs",
+};
 
-/** Le rôle de visite par défaut : un particulier qui découvre. */
-export const DEFAULT_VIEWING_AS: PlatformRole = "particulier";
+export const PERSONA_GROUP_ORDER: readonly PersonaGroup[] = [
+  "particuliers",
+  "proprietaires",
+  "agents",
+  "prestataires",
+  "createurs",
+  "apporteurs",
+];
 
-/** Retrouve l'entrée de visite d'un rôle, si elle existe. */
-export function tourFor(role: PlatformRole): RoleTour | undefined {
-  return roleTour.roles.find((r) => r.role === role);
+const PUBLISH = { label: "Publier un bien", href: "/publier" };
+const SEARCH = { label: "Chercher un bien", href: "/explorer" };
+
+export const PERSONAS: readonly Persona[] = [
+  /* ── Particuliers ── */
+  {
+    id: "user-006",
+    group: "particuliers",
+    as: "particulière qui cherche à louer",
+    cta: SEARCH,
+    favorites: ["prop8", "prop17"],
+    searches: [
+      { label: "4 pièces à louer · Renens", href: "/recherche?q=Renens" },
+      { label: "3,5 pièces à louer · Prilly", href: "/recherche?q=Prilly" },
+    ],
+  },
+  {
+    id: "user-008",
+    group: "particuliers",
+    as: "particulière, premier achat",
+    cta: SEARCH,
+    favorites: ["prop13", "prop15"],
+    searches: [
+      { label: "3,5 pièces à vendre · Morges", href: "/recherche?q=Morges" },
+      { label: "Formation premier achat", href: "/formations/form-009" },
+    ],
+  },
+  {
+    id: "user-007",
+    group: "particuliers",
+    as: "particulier qui vend sa maison",
+    cta: PUBLISH,
+    favorites: [],
+    searches: [],
+  },
+  /* ── Propriétaires & hôtes ── */
+  {
+    id: "user-001",
+    group: "proprietaires",
+    as: "propriétaire bailleur et hôte",
+    cta: PUBLISH,
+    favorites: ["prop12", "prop13", "prop3", "prop4"],
+    searches: [],
+  },
+  {
+    id: "user-003",
+    group: "proprietaires",
+    as: "investisseur",
+    cta: PUBLISH,
+    favorites: ["prop28", "prop19"],
+    searches: [{ label: "Rendement > 4 % · Vaud et Genève", href: "/investisseurs" }],
+  },
+  {
+    id: "user-013",
+    group: "proprietaires",
+    as: "hôte en courte durée",
+    cta: PUBLISH,
+    favorites: ["prop24"],
+    searches: [],
+  },
+  /* ── Agents & agences ── */
+  {
+    id: "user-002",
+    group: "agents",
+    as: "agente immobilière",
+    cta: PUBLISH,
+    favorites: [],
+    searches: [],
+  },
+  {
+    id: "user-015",
+    group: "agents",
+    as: "directeur d'agence immobilière",
+    cta: PUBLISH,
+    favorites: [],
+    searches: [],
+  },
+  {
+    id: "user-004",
+    group: "agents",
+    as: "agente immobilière salariée",
+    cta: PUBLISH,
+    favorites: [],
+    searches: [],
+  },
+  /* ── Prestataires ── */
+  {
+    id: "user-005",
+    group: "prestataires",
+    as: "photographe immobilier",
+    cta: { label: "Proposer un service", href: "/services/proposer" },
+    favorites: [],
+    searches: [],
+  },
+  {
+    id: "user-009",
+    group: "prestataires",
+    as: "architecte",
+    cta: { label: "Proposer un service", href: "/services/proposer" },
+    favorites: [],
+    searches: [],
+  },
+  {
+    id: "user-010",
+    group: "prestataires",
+    as: "décoratrice en home staging",
+    cta: { label: "Proposer un service", href: "/services/proposer" },
+    favorites: [],
+    searches: [],
+  },
+  /* ── Créateurs ── */
+  {
+    id: "user-011",
+    group: "createurs",
+    as: "créatrice de formations",
+    cta: { label: "Créer une formation", href: "/formations/creer" },
+    favorites: [],
+    searches: [],
+  },
+  {
+    id: "user-016",
+    group: "createurs",
+    as: "créatrice de formations et hôte",
+    cta: { label: "Créer une formation", href: "/formations/creer" },
+    favorites: [],
+    searches: [],
+  },
+  /* ── Apporteurs ── */
+  {
+    id: "user-012",
+    group: "apporteurs",
+    as: "apporteur d'affaires",
+    cta: { label: "Recommander un bien", href: "/apporteurs" },
+    favorites: ["prop20"],
+    searches: [],
+  },
+  {
+    id: "user-014",
+    group: "apporteurs",
+    as: "apporteuse d'affaires (marketplace)",
+    cta: { label: "Recommander une formation", href: "/apporteurs" },
+    favorites: [],
+    searches: [],
+  },
+];
+
+/** Le profil incarné par défaut : Léo, l'utilisateur de démonstration. */
+export const DEFAULT_PERSONA_ID = "user-001";
+
+export function personaFor(id: string): Persona | undefined {
+  return PERSONAS.find((p) => p.id === id);
 }
+
+/* La visite guidée (refaite au chantier P5) désigne encore ses arrêts par
+   rôle. On incarne alors la personne qui porte ce rôle dans le casting —
+   jamais un rôle sans visage. */
+const PERSONA_BY_ROLE: Partial<Record<PlatformRole, string>> = {
+  particulier: "user-006",
+  proprietaire: "user-007",
+  hote: "user-001",
+  agence: "user-015",
+  agent: "user-004",
+  prestataire: "user-005",
+  createur: "user-011",
+  apporteur: "user-012",
+};
+
+/** La personne à incarner pour un rôle (Léo à défaut). */
+export function personaIdForRole(role: PlatformRole): string {
+  return PERSONA_BY_ROLE[role] ?? DEFAULT_PERSONA_ID;
+}
+
+/* Les textes du sélecteur et du bandeau. */
+export const personaPicker = {
+  title: "Entrer dans la peau de…",
+  hint: "Choisissez une personne : vous voyez la plateforme avec son compte, ses biens, ses messages et son tableau de bord. Aucun compte réel — c'est une démonstration.",
+  youAre: "Vous êtes",
+  change: "changer",
+  current: "Profil incarné",
+};

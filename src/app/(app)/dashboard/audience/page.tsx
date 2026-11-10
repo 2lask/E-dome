@@ -1,5 +1,6 @@
 "use client";
 
+import { ActorGate } from "@/components/dashboard/actor-dashboard";
 import React, { useState, useMemo } from "react";
 import { properties } from "@/lib/dashboard-data";
 import { formatNumber } from "@/lib/format";
@@ -70,7 +71,7 @@ function Sparkline({ data }: { data: number[] }) {
   );
 }
 
-export default function AudiencePage() {
+function AudiencePage() {
   const [period, setPeriod] = useState<Period>("30j");
   const [sortCol, setSortCol] = useState<"nom" | "vues" | "visiteurs" | "taux">("vues");
   const [sortAsc, setSortAsc] = useState(false);
@@ -309,5 +310,15 @@ export default function AudiencePage() {
         </div>
       </section>
     </div>
+  );
+}
+
+/* Le tableau de bord suit la personne incarnée (chantier P3) : Léo voit cette
+   page, toute autre personne voit la sienne (`ActorGate`). */
+export default function Page() {
+  return (
+    <ActorGate section="audience">
+      <AudiencePage />
+    </ActorGate>
   );
 }

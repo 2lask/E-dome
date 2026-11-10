@@ -7,7 +7,7 @@ import { Search, Mail, UserPlus, Check, Users } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { listFollowers, listFollowing, listPeople } from "@/lib/profile-data";
 import { personById } from "@/lib/demo/directory";
-import { CURRENT_USER_ID } from "@/lib/demo/identity";
+
 import { roleLabel } from "@/lib/model/role-labels";
 import type { PersonSummary } from "@/lib/profile-types";
 import { BackButton } from "@/components/ui/back-button";
@@ -73,14 +73,15 @@ function PersonCard({ person }: { person: PersonSummary }) {
 
 export default function ReseauPage({ searchParams }: { searchParams: Promise<{ profil?: string; onglet?: string }> }) {
   const params = use(searchParams);
-  const { isFollowing } = useApp();
-  const viewed = params.profil && personById(params.profil) ? params.profil : CURRENT_USER_ID;
-  const isMe = viewed === CURRENT_USER_ID;
+  /* « Mon » réseau : celui de la personne incarnée (chantier P3). */
+  const { isFollowing, actorId } = useApp();
+  const viewed = params.profil && personById(params.profil) ? params.profil : actorId;
+  const isMe = viewed === actorId;
   const owner = personById(viewed)!;
   const initialTab: Tab = params.onglet === "abonnements" ? "abonnements" : params.onglet === "decouvrir" && isMe ? "decouvrir" : "abonnes";
   const [tab, setTab] = useState<Tab>(initialTab);
   const [query, setQuery] = useState("");
-  const people = useMemo(() => listPeople(), []);
+  const people = useMemo(() => listPeople(actorId), [actorId]);
   const followers = useMemo(() => listFollowers(viewed), [viewed]);
   const theirFollowing = useMemo(() => listFollowing(viewed), [viewed]);
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { ActorGate } from "@/components/dashboard/actor-dashboard";
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
@@ -56,7 +57,7 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: "cancelled", label: "Annulée" },
 ];
 
-export default function ReservationsPage() {
+function ReservationsPage() {
   const { state: sessionState, actorId } = useSession();
   const [statusOverride, setStatusOverride] = useState<Record<string, ReservationStatus>>({});
   const myStays = useMemo(() => bookingsMadeBy(sessionState, actorId), [sessionState, actorId]);
@@ -291,5 +292,15 @@ export default function ReservationsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+/* Le tableau de bord suit la personne incarnée (chantier P3) : Léo voit cette
+   page, toute autre personne voit la sienne (`ActorGate`). */
+export default function Page() {
+  return (
+    <ActorGate section="reservations">
+      <ReservationsPage />
+    </ActorGate>
   );
 }

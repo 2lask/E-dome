@@ -23,6 +23,7 @@ import {
   threadsFor,
 } from "./demo/session-views";
 import { CURRENT_USER_ID } from "./demo/identity";
+import { resolveActorId } from "./demo/actors";
 
 /* ── La mémoire de session, branchée sur React ──────────────────────────────
 
@@ -43,9 +44,14 @@ import { CURRENT_USER_ID } from "./demo/identity";
    ── L'acteur ───────────────────────────────────────────────────────────────
 
    `actorId` est la personne au nom de qui on agit et dont on lit la
-   messagerie. C'est l'utilisateur courant tant que le chantier P3 (« être un
-   profil ») n'existe pas ; P3 n'aura qu'à appeler `setSessionActor(id)` —
-   toutes les vues prennent déjà l'acteur en paramètre. */
+   messagerie : la personne INCARNÉE (chantier P3, « être un profil »). Léo
+   par défaut — c'est toujours lui au rendu serveur et pendant l'hydratation.
+   Le choix est mémorisé (`ACTOR_STORAGE_KEY`) et relu au premier instantané
+   client, comme la session : jamais au rendu serveur. `incarnate(id)` change
+   la personne ; toutes les vues prennent l'acteur en paramètre. */
+
+/** La clé où le choix de la personne incarnée est mémorisé. */
+export const ACTOR_STORAGE_KEY = "edome_actor.v1";
 
 interface Snapshot {
   state: SessionState;
@@ -71,7 +77,15 @@ function storage(): Storage | undefined {
 function ensureLoaded() {
   if (loaded || typeof window === "undefined") return;
   loaded = true;
-  snapshot = { ...snapshot, state: loadSession(storage()), hydrated: true };
+  snapshot = { ...snapshot, state: loadSession(storage()), actorId: readStoredActor(), hydrated: true };
+}
+
+function readStoredActor(): string {
+  try {
+    return resolveActorId(storage()?.getItem(ACTOR_STORAGE_KEY));
+  } catch {
+    return CURRENT_USER_ID;
+  }
 }
 
 function emit() {
@@ -84,8 +98,13 @@ function setState(next: SessionState) {
   emit();
 }
 
-/* Un autre onglet a modifié la session : on la relit. */
+/* Un autre onglet a modifié la session (ou la personne incarnée) : on relit. */
 function onStorage(e: StorageEvent) {
+  if (e.key === ACTOR_STORAGE_KEY) {
+    snapshot = { ...snapshot, actorId: resolveActorId(e.newValue) };
+    emit();
+    return;
+  }
   if (e.key !== SESSION_STORAGE_KEY) return;
   snapshot = { ...snapshot, state: parseSession(e.newValue), hydrated: true };
   emit();
@@ -139,12 +158,25 @@ export function markThreadAsRead(threadId: string, seen: number) {
   if (next !== snapshot.state) setState(next);
 }
 
-/** Change la personne incarnée (chantier P3). */
+/** Change la personne incarnée (chantier P3), sans mémoriser le choix. */
 export function setSessionActor(actorId: string) {
   ensureLoaded();
   if (snapshot.actorId === actorId) return;
   snapshot = { ...snapshot, actorId };
   emit();
+}
+
+/** Entrer dans la peau de quelqu'un : la personne devient l'acteur (messagerie,
+    notifications, actions, tableau de bord) et le choix est mémorisé. Un id
+    inconnu ramène à Léo. À appeler depuis un gestionnaire d'événement. */
+export function incarnate(personId: string) {
+  const id = resolveActorId(personId);
+  try {
+    storage()?.setItem(ACTOR_STORAGE_KEY, id);
+  } catch {
+    /* Stockage indisponible : le changement vaut pour la visite en cours. */
+  }
+  setSessionActor(id);
 }
 
 /* Les clés des autres traces d'interaction de la démonstration (contexte
@@ -153,7 +185,9 @@ export function setSessionActor(actorId: string) {
    disparaît. Le profil, la langue et la devise sont des préférences : gardés. */
 const INTERACTION_KEYS = [
   "edome_favorites",
+  "edome_favorites.v2",
   "edome_followedUsers.v2",
+  "edome_followedUsers.v3",
   "edome_cart",
   "edome_referralLinks",
   "edome_pinnedPosts",

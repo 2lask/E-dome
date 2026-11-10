@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import { useSession } from "@/lib/use-session";
+import { useActor } from "@/lib/use-actor";
 
 interface MobileNavItem {
   href: string;
@@ -56,6 +57,8 @@ export function MobileNav() {
      par la cloche de l'en-tête et par le menu (barre latérale en tiroir),
      qui lisent le même compteur unique. */
   const { unreadMessages } = useSession();
+  /* L'onglet Profil porte le visage de la personne incarnée (chantier P3). */
+  const actor = useActor();
   const badgeFor = (href: string) => (href === "/messages" ? unreadMessages : 0);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -166,7 +169,16 @@ export function MobileNav() {
             className="relative flex flex-col items-center justify-center gap-1 px-3 min-w-[44px] min-h-[44px] active:opacity-60 transition-opacity"
             style={{ color: active ? "var(--primary)" : "var(--text-muted)" }}
           >
-            <Icon size={20} />
+            {item.href === "/profil" ? (
+              <img
+                src={actor.avatar}
+                alt=""
+                className="h-5 w-5 rounded-full object-cover"
+                style={{ outline: active ? "2px solid var(--primary)" : "none", outlineOffset: 1 }}
+              />
+            ) : (
+              <Icon size={20} />
+            )}
             {badgeFor(item.href) > 0 && (
               <span
                 aria-hidden
@@ -176,7 +188,7 @@ export function MobileNav() {
                 {badgeFor(item.href)}
               </span>
             )}
-            <span className="text-[10px] font-medium">{item.label}</span>
+            <span className="text-[10px] font-medium">{item.href === "/profil" ? actor.firstName : item.label}</span>
           </Link>
         );
       })}

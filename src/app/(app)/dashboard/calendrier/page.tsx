@@ -1,3 +1,4 @@
+import { ActorGate } from "@/components/dashboard/actor-dashboard";
 import { Download, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,7 @@ import { formatNumber, formatPercent } from "@/lib/format";
    l'occupation, les trous, et les chevauchements. Inspire des
    channel managers (Smoobu, Hostaway). */
 
-export default function CalendrierPage() {
+function CalendrierPage() {
   const { reservations, kpis } = dashboard;
 
   const confirmedFutur = reservations.filter(
@@ -89,5 +90,15 @@ export default function CalendrierPage() {
           temporelle, mais source differente. */}
       <UpcomingEvents />
     </div>
+  );
+}
+
+/* Le tableau de bord suit la personne incarnée (chantier P3) : Léo voit cette
+   page, toute autre personne voit la sienne (`ActorGate`). */
+export default function Page() {
+  return (
+    <ActorGate section="calendrier">
+      <CalendrierPage />
+    </ActorGate>
   );
 }

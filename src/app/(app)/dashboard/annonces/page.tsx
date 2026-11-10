@@ -1,5 +1,6 @@
 "use client";
 
+import { ActorGate } from "@/components/dashboard/actor-dashboard";
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
@@ -106,7 +107,7 @@ const FILTERS: { value: ListingType | "all"; label: string }[] = [
   { value: "service", label: "Services" },
 ];
 
-export default function MesAnnoncesPage() {
+function MesAnnoncesPage() {
   const [filter, setFilter] = useState<ListingType | "all">("all");
   const [search, setSearch] = useState("");
   const { state, actorId } = useSession();
@@ -357,5 +358,15 @@ export default function MesAnnoncesPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+/* Le tableau de bord suit la personne incarnée (chantier P3) : Léo voit cette
+   page, toute autre personne voit la sienne (`ActorGate`). */
+export default function Page() {
+  return (
+    <ActorGate section="annonces">
+      <MesAnnoncesPage />
+    </ActorGate>
   );
 }

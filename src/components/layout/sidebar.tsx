@@ -9,10 +9,6 @@ import {
   Search,
   MessageCircle,
   Bell,
-  LayoutDashboard,
-  Heart,
-  Handshake,
-  User as UserIcon,
   Settings,
   HelpCircle,
   LogOut,
@@ -28,6 +24,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/lib/use-session";
+import { useActor, useActorNav } from "@/lib/use-actor";
+import { ACTOR_NAV_ICONS } from "@/components/layout/actor-nav-icons";
 
 /* ─────────────────────────────────────────────────────────────
    Sidebar globale (hors /dashboard/*).
@@ -94,17 +92,16 @@ const CREATE_SUB: SubItem[] = [
   { label: "Proposer un service", href: "/services", icon: Briefcase },
 ];
 
-const ESPACE_ITEMS: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Apporteurs", href: "/apporteurs", icon: Handshake },
-  { label: "Favoris", href: "/favoris", icon: Heart },
-  { label: "Profil", href: "/profil", icon: UserIcon },
-];
-
 export function Sidebar({ forceExpanded = false }: SidebarProps) {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const isExpanded = forceExpanded || isHovered;
+
+  /* La personne incarnée (chantier P3) : son identité en tête du tiroir, et
+     « Mon espace » selon SES rôles (`navFor`). */
+  const actor = useActor();
+  const actorNav = useActorNav();
+  const espaceItems = actorNav.map((it) => ({ label: it.label, href: it.href, icon: ACTOR_NAV_ICONS[it.icon] }));
 
   /* Les deux compteurs viennent de la mémoire de session (une seule source
      pour la barre latérale, l'en-tête, la nav mobile et /notifications). */
@@ -357,6 +354,24 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         )}
       </Link>
 
+      {/* Qui l'on est : la personne incarnée, vers SA fiche. */}
+      <Link
+        href="/profil"
+        title={!isExpanded ? actor.name : undefined}
+        className={cn(
+          "mx-2 mb-1 flex shrink-0 items-center gap-2.5 rounded-lg py-1.5 transition-colors hover:bg-[var(--hover-bg)]",
+          isExpanded ? "px-2" : "justify-center px-0",
+        )}
+      >
+        <img src={actor.avatar} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
+        {isExpanded && (
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-medium" style={{ color: "var(--foreground)" }}>{actor.name}</span>
+            <span className="block truncate text-[11px]" style={{ color: "var(--text-muted)" }}>{actor.line}</span>
+          </span>
+        )}
+      </Link>
+
       <nav className="flex-1 overflow-y-auto px-2 py-2 no-scrollbar">
         {/* ─── GROUPE 1 : NAVIGUER ───────────────────────────── */}
         <SectionHeader label="Naviguer" expanded={isExpanded} />
@@ -388,11 +403,13 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         {/* ─── GROUPE 3 : MON ESPACE ────────────────────────── */}
         <SectionHeader label="Mon espace" expanded={isExpanded} />
         <div className="space-y-0.5">
-          {ESPACE_ITEMS.map((item) => {
+          {espaceItems.map((item) => {
             const active =
               item.href === "/dashboard"
                 ? pathname.startsWith("/dashboard")
-                : isExactActive(item.href);
+                : item.href.includes("#")
+                  ? false
+                  : isExactActive(item.href);
             return renderSimpleLink(item, active);
           })}
         </div>

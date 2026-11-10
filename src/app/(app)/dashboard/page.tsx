@@ -1,5 +1,6 @@
 "use client";
 
+import { ActorGate } from "@/components/dashboard/actor-dashboard";
 import Link from "next/link";
 import {
   Card,
@@ -43,7 +44,7 @@ import { cn } from "@/lib/utils";
    (l'eyebrow suffit). Une seule famille de carte (border hairline,
    radius homogene, ombre quasi nulle via card.tsx). */
 
-export default function DashboardOverviewPage() {
+function DashboardOverviewPage() {
   const { objectives } = dashboard;
 
   /* Total CA 12 mois TOUTES sources via buildView('all'). Cette
@@ -336,5 +337,15 @@ function ProgressRow({
         />
       </div>
     </div>
+  );
+}
+
+/* Le tableau de bord suit la personne incarnée (chantier P3) : Léo voit cette
+   page, toute autre personne voit la sienne (`ActorGate`). */
+export default function Page() {
+  return (
+    <ActorGate section="overview">
+      <DashboardOverviewPage />
+    </ActorGate>
   );
 }

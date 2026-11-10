@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Compass, X, ArrowRight, ArrowLeft, Eye } from "lucide-react";
 import { guidedTour } from "@/content/tour";
-import { useApp } from "@/lib/context";
+import { incarnate } from "@/lib/use-session";
+import { personaIdForRole } from "@/content/roles";
 
 /* ── La visite guidée ───────────────────────────────────────────────────────
 
@@ -13,7 +14,9 @@ import { useApp } from "@/lib/context";
    L'état (ouverte, index) vit dans `localStorage`, enveloppé de try/catch —
    un navigateur privé qui refuse le stockage ne casse pas la page.
 
-   Quand un arrêt porte un rôle, la visite pilote `setViewingAs` : le même
+   Quand un arrêt porte un rôle, la visite INCARNE la personne qui le porte
+   dans le casting (`personaIdForRole`, chantier P3) — Bernard pour vendre,
+   Léo pour l'hôte, Jean-Luc pour l'agence : le même
    mécanisme que la visite libre, pour que l'écran s'affiche du bon point de
    vue. Le texte vient de `content/tour.ts` ; ce composant ne fait que naviguer
    et afficher. */
@@ -35,7 +38,6 @@ function readStored(): { open: boolean; step: number } {
 export function GuidedTour() {
   const router = useRouter();
   const pathname = usePathname();
-  const { setViewingAs } = useApp();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -63,7 +65,7 @@ export function GuidedTour() {
     setStep(i);
     persist(true, i);
     const stop = stops[i];
-    if (stop.as) setViewingAs(stop.as);
+    if (stop.as) incarnate(personaIdForRole(stop.as));
     if (pathname !== stop.route) router.push(stop.route);
   };
 

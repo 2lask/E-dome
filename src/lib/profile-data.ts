@@ -515,8 +515,8 @@ function summary(id: string): PersonSummary {
 
 /* Liste des personnes (hors moi) pour les pages réseau / contacts. Source
    unique : l'annuaire. Chaque personne ouvre une vraie fiche /profil/[id]. */
-export function listPeople(): PersonSummary[] {
-  return DIRECTORY.filter((p) => p.id !== CURRENT_USER.id).map((p) => summary(p.id));
+export function listPeople(excludeId: string = CURRENT_USER.id): PersonSummary[] {
+  return DIRECTORY.filter((p) => p.id !== excludeId).map((p) => summary(p.id));
 }
 
 /** Les abonnés d'une personne — le graphe FOLLOWS, relations entrantes. */

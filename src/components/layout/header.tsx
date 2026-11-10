@@ -15,6 +15,7 @@ import {
 import { useApp } from "@/lib/context";
 import { useSession, markNotificationsAsRead, markAllNotificationsAsRead } from "@/lib/use-session";
 import { useLanguage, type Language } from "@/lib/i18n";
+import { useActor } from "@/lib/use-actor";
 import type { Currency } from "@/lib/types";
 
 const CURRENCIES: { code: Currency; label: string }[] = [
@@ -45,6 +46,8 @@ export function Header({ onMenuToggle }: HeaderProps) {
   const { notifications, unreadNotifications } = useSession();
   const unreadPreview = notifications.filter((n) => !n.read).slice(0, 4);
   const { language, setLanguage, t } = useLanguage();
+  /* La personne incarnée (chantier P3) : son visage mène à SA fiche. */
+  const actor = useActor();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
@@ -395,6 +398,18 @@ export function Header({ onMenuToggle }: HeaderProps) {
             </div>
           )}
         </div>
+
+        <Link
+          href="/profil"
+          aria-label={`Mon profil — ${actor.name}`}
+          title={`${actor.name} · ${actor.line}`}
+          className="flex shrink-0 items-center gap-2 rounded-full p-0.5 pr-0.5 transition-colors hover:bg-[var(--hover-bg)] lg:pr-3"
+        >
+          <img src={actor.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
+          <span className="hidden text-sm font-medium lg:inline" style={{ color: "var(--foreground)" }}>
+            {actor.firstName}
+          </span>
+        </Link>
 
       </div>
     </header>

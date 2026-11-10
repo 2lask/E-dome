@@ -26,7 +26,7 @@ import {
   getReviewsForProperty,
 } from "@/lib/mock-data";
 import type { Review } from "@/lib/mock-data";
-import { CURRENT_USER } from "@/lib/demo/identity";
+import { useActor } from "@/lib/use-actor";
 import { RecommendButton } from "@/components/affiliate/recommend-button";
 import { ReferralBanner } from "@/components/affiliate/referral-banner";
 import { REFERRAL_ID } from "@/lib/referral-links";
@@ -124,6 +124,8 @@ function mapMockReviewToDisplay(r: Review): DisplayReview {
 export default function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { formatPrice, toggleFavorite, isFavorite, activeRole } = useApp();
+  /* L'avis est écrit par la personne incarnée (chantier P3). */
+  const actor = useActor();
   const { addToast } = useToast();
   const router = useRouter();
 
@@ -985,7 +987,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 onClick={() => {
                   const newReview = {
                     id: `r-new-${Date.now()}`,
-                    author: { name: "Vous", avatar: CURRENT_USER.avatar, id: CURRENT_USER.id },
+                    author: { name: "Vous", avatar: actor.avatar, id: actor.id },
                     rating: reviewRating,
                     content: reviewText,
                     date: new Date().toISOString().split("T")[0],

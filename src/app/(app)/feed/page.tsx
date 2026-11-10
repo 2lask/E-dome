@@ -12,8 +12,11 @@ import { DiscoverHub } from "@/components/layout/discover-hub";
 import { RecommendedCarousel } from "@/components/feed/recommended-carousel";
 import { MarketPulse } from "@/components/feed/market-pulse";
 import {
-  CURRENT_USER, PINNED_POST_ID, SUGGESTIONS, VIDEO_POSTS, feedTimeAgo, likedByMe,
+  PINNED_POST_ID, VIDEO_POSTS, feedTimeAgo, likersOf,
 } from "@/lib/demo/posts";
+import { DIRECTORY } from "@/lib/demo/directory";
+import { followingOf } from "@/lib/demo/social";
+import { useActor } from "@/lib/use-actor";
 import { PostCard, renderContent } from "@/components/feed/post-card";
 import { ComposerAction } from "@/components/feed/composer/actions";
 import { EVENTS_AVAILABLE, type ComposerEvent } from "@/components/feed/composer/events";
@@ -50,6 +53,15 @@ import {
 
 export default function FeedPage() {
   const { isFollowing, toggleFollow } = useApp();
+  /* On publie, commente et aime AU NOM de la personne incarnée (chantier P3). */
+  const actor = useActor();
+  const me = actor.user;
+  /* Suggestions : les personnes que la personne incarnée ne suit pas d'après
+     le graphe FOLLOWS, jamais elle-même (le bouton dit ensuite « Suivi »). */
+  const suggestions = useMemo(() => {
+    const followed = new Set(followingOf(me.id));
+    return DIRECTORY.filter((p) => p.id !== me.id && !followed.has(p.id));
+  }, [me.id]);
   const [posts, setPosts] = useState<SocialPost[]>(VIDEO_POSTS);
   /* ─── Composer rapide en tête du feed ─────────────────────────────────
      Texte court (≤280) + jusqu'à 4 médias (image/vidéo) + 1 attachement
@@ -91,7 +103,7 @@ export default function FeedPage() {
      courant figure déjà parmi elles, le cœur part rempli, et le retirer
      décompte bien une personne. */
   const [likedPosts, setLikedPosts] = useState<Set<string>>(
-    () => new Set(VIDEO_POSTS.filter(likedByMe).map((p) => p.id)),
+    () => new Set(VIDEO_POSTS.filter((p) => likersOf(p).includes(me.id)).map((p) => p.id)),
   );
   const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set());
   const [repostedPosts, setRepostedPosts] = useState<Set<string>>(new Set());
@@ -171,7 +183,7 @@ export default function FeedPage() {
     if (!text) return;
     const newComment: Comment = {
       id: `c-new-${Date.now()}`,
-      author: CURRENT_USER,
+      author: me,
       content: replyTo ? `@${replyTo} ${text}` : text,
       /* Horloge de la démo : le fil entier est daté sur DEMO_TODAY. */
       createdAt: DEMO_TODAY.toISOString(),
@@ -321,7 +333,7 @@ export default function FeedPage() {
 
     const newPost: SocialPost = {
       id: `p-${Date.now()}`,
-      author: CURRENT_USER,
+      author: me,
       content: composerText.trim(),
       media: composerMedia.map((m) => m.url),
       mediaTypes: composerMedia.map((m) => m.type),
@@ -451,7 +463,7 @@ export default function FeedPage() {
             <div className="px-4 py-3 border-b border-[var(--card-border)]">
               <div className="flex gap-3">
                 <img
-                  src={CURRENT_USER.avatar}
+                  src={me.avatar}
                   alt=""
                   className="w-8 h-8 rounded-full object-cover shrink-0"
                 />
@@ -473,7 +485,7 @@ export default function FeedPage() {
                         publishFromComposer();
                       }
                     }}
-                    placeholder={`Quoi de neuf, ${CURRENT_USER.firstName} ?`}
+                    placeholder={`Quoi de neuf, ${me.firstName} ?`}
                     maxLength={280}
                     rows={1}
                     aria-label="Rédiger une publication"
@@ -763,7 +775,7 @@ export default function FeedPage() {
               dense, 10 profils, avatar 40px + bouton Suivre pill. */}
           <div>
             <ul className="space-y-0.5">
-              {SUGGESTIONS.slice(0, 10).map((user) => (
+              {suggestions.slice(0, 10).map((user) => (
                 <li key={user.id} className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] transition-colors">
                   <Link href={`/profil/${user.id}`} className="shrink-0">
                     <img
@@ -875,7 +887,7 @@ export default function FeedPage() {
                 </div>
               )}
               <div className="flex gap-2 items-center">
-                <img src={CURRENT_USER.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                <img src={me.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
                 <input
                   type="text"
                   value={commentInput}

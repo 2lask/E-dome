@@ -1,5 +1,6 @@
 "use client";
 
+import { ActorGate } from "@/components/dashboard/actor-dashboard";
 import { useMemo, useState } from "react";
 import { Download, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ const FILTERS: { value: ReviewSource | "all"; label: string }[] = [
   { value: "evenement", label: "Événements" },
 ];
 
-export default function AvisPage() {
+function AvisPage() {
   const { addToast } = useToast();
   const [filter, setFilter] = useState<ReviewSource | "all">("all");
   const [showLowOnly, setShowLowOnly] = useState(false);
@@ -136,5 +137,15 @@ export default function AvisPage() {
         </div>
       )}
     </div>
+  );
+}
+
+/* Le tableau de bord suit la personne incarnée (chantier P3) : Léo voit cette
+   page, toute autre personne voit la sienne (`ActorGate`). */
+export default function Page() {
+  return (
+    <ActorGate section="avis">
+      <AvisPage />
+    </ActorGate>
   );
 }

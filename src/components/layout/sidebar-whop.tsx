@@ -4,14 +4,14 @@ import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Search, MessageCircle, Bell, LayoutDashboard,
-  Heart, Handshake, User as UserIcon, Settings, HelpCircle,
+  Home, Search, MessageCircle, Bell, Settings, HelpCircle,
   Plus, Users as UsersIcon,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/lib/use-session";
-import { CURRENT_USER } from "@/lib/demo/identity";
+import { useActor, useActorNav } from "@/lib/use-actor";
+import { ACTOR_NAV_ICONS } from "@/components/layout/actor-nav-icons";
 
 /* ─────────────────────────────────────────────────────────────
    SidebarWhop : sidebar permanente style Whop / Twitter.
@@ -50,12 +50,20 @@ export function SidebarWhop() {
     { label: "Notifications", href: "/notifications", icon: Bell, badge: unreadNotifications > 0 ? unreadNotifications : undefined, matchPrefixes: ["/notifications"] },
   ];
 
-  const espaceItems: NavItem[] = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, matchPrefixes: ["/dashboard"] },
-    { label: "Apporteurs", href: "/apporteurs", icon: Handshake, matchPrefixes: ["/apporteurs"] },
-    { label: "Favoris", href: "/favoris", icon: Heart, matchPrefixes: ["/favoris"] },
-    { label: "Profil", href: "/profil", icon: UserIcon, matchPrefixes: ["/profil"] },
-  ];
+  /* La personne incarnée (chantier P3) : son nom et sa photo en pied de
+     barre, son action principale en tête, et « Mon espace » selon SES rôles
+     (`navFor`) — l'espace agence pour l'équipe Hartmann, l'espace apporteur
+     pour qui recommande, ses formations pour qui en crée… */
+  const actor = useActor();
+  const actorNav = useActorNav();
+  const espaceItems: NavItem[] = actorNav.map((it) => ({
+    label: it.label,
+    href: it.href,
+    icon: ACTOR_NAV_ICONS[it.icon],
+    /* « Mes formations » pointe dans le tableau de bord : seul « Tableau de
+       bord » s'allume sur /dashboard. */
+    matchPrefixes: it.href.includes("#") ? [] : [it.href],
+  }));
 
   const resourceItems: NavItem[] = [
     { label: "Aide", href: "/aide", icon: HelpCircle, matchPrefixes: ["/aide"] },
@@ -82,11 +90,11 @@ export function SidebarWhop() {
         {/* CTA "Publier un bien" : py-2.5 text-[13.5px] (Whop CTA dimensions) */}
         <div className="px-3 pb-3">
           <Link
-            href="/publier"
+            href={actor.cta.href}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-foreground py-2.5 text-[13.5px] font-medium text-background hover:opacity-90 transition-opacity"
           >
             <Plus className="h-4 w-4" />
-            Publier un bien
+            {actor.cta.label}
           </Link>
         </div>
 
@@ -165,13 +173,13 @@ export function SidebarWhop() {
           className="flex items-center gap-2.5 rounded-lg p-2 hover:bg-sidebar-accent transition-colors"
         >
           <img
-            src={CURRENT_USER.avatar}
+            src={actor.avatar}
             alt=""
             className="h-8 w-8 shrink-0 rounded-full object-cover"
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[13px] font-medium leading-tight">{CURRENT_USER.fullName}</p>
-            <p className="truncate text-[11px] text-muted-foreground">Démo</p>
+            <p className="truncate text-[13px] font-medium leading-tight">{actor.name}</p>
+            <p className="truncate text-[11px] text-muted-foreground">{actor.line}</p>
           </div>
         </Link>
       </div>

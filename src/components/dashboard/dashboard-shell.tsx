@@ -17,18 +17,24 @@ import {
   BarChart3,
   type LucideIcon,
 } from "lucide-react";
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import {
-  dashboardUser,
   reviewsSummary,
   dashboardReservations,
 } from "@/lib/dashboard-data";
+import { useSession } from "@/lib/use-session";
+import { useActor } from "@/lib/use-actor";
+import { actorDashboard, type DashboardSection } from "@/lib/demo/actor-dashboard";
 
 interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
   badge?: string | number;
+  /** La sous-page, pour la masquer quand elle n'a pas de sens pour la
+      personne incarnée (pas de réservations chez Ana…). */
+  section?: DashboardSection;
 }
 
 interface NavGroup {
@@ -45,8 +51,8 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Pilotage",
     items: [
       { href: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
-      { href: "/dashboard/calendrier", label: "Calendrier", icon: Calendar },
-      { href: "/dashboard/audience", label: "Audience", icon: BarChart3 },
+      { href: "/dashboard/calendrier", label: "Calendrier", icon: Calendar, section: "calendrier" },
+      { href: "/dashboard/audience", label: "Audience", icon: BarChart3, section: "audience" },
     ],
   },
   {
@@ -56,12 +62,14 @@ const NAV_GROUPS: NavGroup[] = [
         href: "/dashboard/reservations",
         label: "Réservations",
         icon: CalendarDays,
+        section: "reservations",
         badge: pendingReservations > 0 ? pendingReservations : undefined,
       },
       {
         href: "/dashboard/avis",
         label: "Avis",
         icon: Star,
+        section: "avis",
         badge:
           reviewsSummary.pendingResponse > 0
             ? reviewsSummary.pendingResponse
@@ -72,8 +80,8 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Catalogue & croissance",
     items: [
-      { href: "/dashboard/annonces", label: "Annonces", icon: Building2 },
-      { href: "/dashboard/apporteurs", label: "Apporteurs", icon: Handshake },
+      { href: "/dashboard/annonces", label: "Annonces", icon: Building2, section: "annonces" },
+      { href: "/dashboard/apporteurs", label: "Apporteurs", icon: Handshake, section: "apporteurs" },
     ],
   },
 ];
@@ -124,7 +132,22 @@ function NavLink({
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const allItems = NAV_GROUPS.flatMap((g) => g.items);
+  /* Le tableau de bord est celui de la personne incarnée (chantier P3) : son
+     nom en tête, et seulement les sous-pages qui ont un sens pour elle. Les
+     badges (réservations en attente, avis à répondre) sont ceux de Léo. */
+  const actor = useActor();
+  const { state } = useSession();
+  const navGroups = useMemo<NavGroup[]>(() => {
+    if (actor.isDefault) return NAV_GROUPS;
+    const sections = new Set(actorDashboard(actor.id, state).sections);
+    return NAV_GROUPS.map((g) => ({
+      ...g,
+      items: g.items
+        .filter((it) => !it.section || sections.has(it.section))
+        .map((it) => ({ ...it, badge: undefined })),
+    })).filter((g) => g.items.length > 0);
+  }, [actor.isDefault, actor.id, state]);
+  const allItems = navGroups.flatMap((g) => g.items);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -137,14 +160,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-2.5">
             <div className="hidden text-right leading-tight sm:block">
-              <p className="text-[13px] font-medium">{dashboardUser.name}</p>
-              <p className="text-[11px] text-muted-foreground">
-                {dashboardUser.roles.join(" · ")}
-              </p>
+              <p className="text-[13px] font-medium">{actor.name}</p>
+              <p className="text-[11px] text-muted-foreground">{actor.line}</p>
             </div>
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-              {dashboardUser.initials}
-            </div>
+            <Link href="/profil" aria-label={`Mon profil — ${actor.name}`}>
+              <img src={actor.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
+            </Link>
           </div>
         </div>
 
@@ -165,7 +186,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         {/* Sidebar desktop groupee */}
         <aside className="hidden w-52 shrink-0 md:block lg:w-56">
           <nav className="sticky top-20 flex flex-col gap-4">
-            {NAV_GROUPS.map((group) => (
+            {navGroups.map((group) => (
               <div key={group.label}>
                 <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
                   {group.label}

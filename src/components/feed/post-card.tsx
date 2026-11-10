@@ -5,7 +5,7 @@ import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Send, Repeat2, 
 import { useApp } from "@/lib/context";
 import { formatCount } from "@/lib/utils";
 import type { SocialPost } from "@/lib/types";
-import { CURRENT_USER_ID, CUSTOM_CTA, PINNED_POST_ID, feedTimeAgo } from "@/lib/demo/posts";
+import { CUSTOM_CTA, PINNED_POST_ID, feedTimeAgo } from "@/lib/demo/posts";
 import { PollBlock } from "./poll-block";
 import { MediaGallery } from "./media/gallery";
 import { VideoPlayer } from "./media/video-player";
@@ -125,9 +125,10 @@ export function PostCard({
   onToggleLike, onToggleSave, onToggleRepost, onOpenComments, onOpenShare, onOpenMore,
   shareOpen, moreOpen, closeMenus, onEdit, onDelete, onSignal, onShareCopy, onVotePoll,
 }: PostCardProps) {
-  const { formatPrice } = useApp();
+  const { formatPrice, actorId } = useApp();
   const cta = CUSTOM_CTA[post.id];
-  const isOwn = post.author.id === CURRENT_USER_ID;
+  /* « Mon » post : celui de la personne incarnée (chantier P3). */
+  const isOwn = post.author.id === actorId;
   /* L'avis d'accueil porte « Épinglé » au lieu d'un horodatage : « il y a
      2 h » sur un avertissement permanent affirme une fraîcheur qui n'a pas
      de sens, et invite à le lire comme une actualité qu'on peut dépasser. */

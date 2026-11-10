@@ -24,10 +24,14 @@ export function ProfileHeader({
   isFollowing = false,
   onToggleFollow,
   onMessage,
+  editable = true,
 }: {
   profile: Profile;
   isOwn: boolean;
   open: OpenEditor;
+  /** Faux pour la fiche d'une personne incarnée autre que Léo (chantier P3) :
+      c'est la sienne, mais la démonstration ne la modifie pas. */
+  editable?: boolean;
   /** Volume de transactions d'un agent / d'une agence (D16.1). */
   transactionVolume?: { year: number; amountChf: number };
   isFollowing?: boolean;
@@ -82,7 +86,7 @@ export function ProfileHeader({
             style={{ background: "linear-gradient(135deg, var(--hover-bg), var(--card))" }}
           />
         )}
-        {isOwn && (
+        {isOwn && editable && (
           <button
             onClick={() => open({ type: "banner" })}
             aria-label="Modifier la couverture"
@@ -104,7 +108,7 @@ export function ProfileHeader({
               className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover"
               style={{ border: "4px solid var(--card)" }}
             />
-            {isOwn && (
+            {isOwn && editable && (
               <button
                 onClick={() => open({ type: "avatar" })}
                 aria-label="Modifier la photo"
@@ -118,7 +122,7 @@ export function ProfileHeader({
           {/* Actions */}
           <div ref={moreRef} className="flex gap-2 flex-wrap w-full md:w-auto md:ml-auto relative md:pb-1">
             {isOwn ? (
-              <button
+              editable && <button
                 onClick={() => open({ type: "intro" })}
                 className="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium rounded-full border border-[var(--card-border)] text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
               >
