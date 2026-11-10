@@ -5,6 +5,8 @@ import { useApp } from "@/lib/context";
 import { LottiePlayer } from "@/components/ui/lottie-player";
 import Link from "next/link";
 import { recordSessionEvent } from "@/lib/use-session";
+import { AffiliationToggle, type AffiliationValue } from "@/components/business/affiliation-toggle";
+import { defaultAffiliationRate } from "@/lib/pricing";
 import { formationIdOf } from "@/lib/demo/session-store";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
@@ -66,6 +68,7 @@ export default function CreerFormationPage() {
   const [published, setPublished] = useState(false);
   const [publishedId, setPublishedId] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
+  const [affiliation, setAffiliation] = useState<AffiliationValue>({ open: false, rate: defaultAffiliationRate("formation") });
 
   // Load draft from localStorage
   useEffect(() => {
@@ -169,6 +172,7 @@ export default function CreerFormationPage() {
         image: /^https?:\/\//.test(form.image) ? form.image : "",
         price: Math.max(0, Math.round(form.prix)),
         duration: form.duree.trim(),
+        affiliationRate: affiliation.open && form.prix > 0 ? affiliation.rate : undefined,
         modules: form.modules
           .filter((m) => m.title.trim())
           .map((m) => ({
@@ -281,6 +285,7 @@ export default function CreerFormationPage() {
               </div>
               <div><label className={labelCls}>Durée estimée</label><input className={inputCls} placeholder="Ex: 12h" value={form.duree} onChange={(e) => updateField("duree", e.target.value)} /></div>
             </div>
+            <AffiliationToggle pole="formation" priceChf={form.prix} value={affiliation} onChange={setAffiliation} priceLabel="par inscription" />
             <div className="flex justify-end">
               <button onClick={() => setStep(2)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
             </div>

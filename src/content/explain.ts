@@ -52,7 +52,7 @@ export const POLE_EXPLAIN: Record<string, Explanation> = {
   biens: {
     what: "Publier et rechercher des biens à la vente ou à la location, avec une analyse de rentabilité sur chaque fiche.",
     who: "Propriétaires, agences, et toute personne qui cherche à acheter, louer ou réserver.",
-    revenue: "Rien sur la vente ou la location d'un bien entre particuliers. Les professionnels paient un abonnement pour les outils, pas la transaction.",
+    revenue: "Rien sur la vente ou la location d'un bien entre particuliers. Les professionnels démarrent gratuitement (plafond de biens généreux) et s'abonnent quand ils grandissent. Si un vendeur offre une prime de mise en relation à un apporteur, E-Dome en retient une part — à l'intérieur de la prime, jamais en plus.",
     when: "Au lancement.",
     insteadHref: "/explorer",
     insteadLabel: "Explorer les biens",
@@ -66,9 +66,9 @@ export const POLE_EXPLAIN: Record<string, Explanation> = {
     insteadLabel: "Voir les services",
   },
   apporteurs: {
-    what: "Recommander un bien ou une prestation par un lien traçable, et être rémunéré pour l'apport.",
-    who: "Quiconque a un réseau : un ancien client, un artisan, un influenceur immobilier.",
-    revenue: "L'apporteur touche une part (10 à 30 %) de ce que gagne E-Dome sur la conversion — c'est un partage de la marge, pas un supplément pour le client.",
+    what: "Recommander un bien ou une offre de la marketplace par un lien traçable, et voir son gain net avant de recommander.",
+    who: "Quiconque a un réseau : un ancien client, un artisan, une voisine bien entourée. Le volet biens dépend du pays de l'apporteur ; la marketplace est ouverte partout.",
+    revenue: "Deux mécaniques, jamais confondues. Biens : le vendeur offre une prime fixe en francs, payée quand il accepte le contact ; E-Dome en retient 12 % à l'intérieur. Marketplace : le vendeur reverse un pourcentage du prix, pris sur sa marge ; la commission d'E-Dome ne change pas. Abonnements apportés : une part de ce qu'encaisse E-Dome, 12 mois au plus. Jamais un supplément pour le client.",
     when: "Au lancement.",
     insteadHref: "/apporteurs",
     insteadLabel: "Le réseau d'apporteurs",

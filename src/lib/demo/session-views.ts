@@ -396,6 +396,34 @@ function notificationsOf(e: SessionEvent): Draft[] {
           message: e.data.name,
           href: `/messages?conv=${e.data.threadId}`,
         }));
+    /* Modèle économique visible (P4a) : les deux côtés d'une mise en relation. */
+    case "introduction.made":
+      return [{
+        recipientId: e.data.sellerId,
+        actorId: e.actorId,
+        type: "payment",
+        title: `${actor} vous propose un contact`,
+        message: `${e.data.contactLabel} — prime ${groupThousands(e.data.primeChf)} CHF si vous acceptez. Refuser est gratuit.`,
+        href: "/publier#primes",
+      }];
+    case "introduction.answered":
+      return [{
+        recipientId: e.data.apporteurId,
+        actorId: e.actorId,
+        type: "payment",
+        title: e.data.decision === "accepted" ? `${actor} a accepté votre mise en relation` : `${actor} a décliné votre contact`,
+        message: e.data.decision === "accepted" ? "Votre prime nette est acquise." : "Rien n'est facturé ; vous pouvez proposer un autre contact.",
+        href: "/apporteurs",
+      }];
+    case "introduction.disputed":
+      return [{
+        recipientId: e.data.apporteurId,
+        actorId: e.actorId,
+        type: "system",
+        title: `${actor} a signalé un contact comme peu sérieux`,
+        message: e.data.reason,
+        href: "/apporteurs",
+      }];
     default:
       return [];
   }

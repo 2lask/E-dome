@@ -5,6 +5,7 @@ import { agencePage } from "@/content/agence";
 import { activeSaleMandates, concludedSaleMandates, MANDATE_TRACKING } from "@/lib/demo/agency";
 import { useApp } from "@/lib/context";
 import type { Property } from "@/lib/types";
+import { PlanGate } from "@/components/business/plan-gate";
 
 /* `/agence/mandats` — les mandats de vente de l'agence : ses VRAIS biens en
    vente au catalogue (ceux qu'hébergent ses membres), puis les mandats
@@ -49,6 +50,11 @@ export default function AgenceMandatsPage() {
           E-Dome ne prélève rien dessus.
         </p>
       </header>
+
+      <PlanGate
+        feature="mandats"
+        why="La gestion formelle des mandats (références, suivi des commissions de l'agence, agenda des visites) est une fonction de réussite, incluse dans Mandats. Vos biens restent publiés et visibles."
+      />
 
       <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">Mandats actifs ({active.length})</h2>
       <ul className="space-y-2.5">

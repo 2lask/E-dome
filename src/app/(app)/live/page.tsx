@@ -8,6 +8,8 @@ import { CameraPreview } from "@/components/live/camera-preview";
 import { REPLAYS } from "@/lib/replays";
 import { useSearchParams } from "next/navigation";
 import { useSession, recordSessionEvent } from "@/lib/use-session";
+import { AffiliationToggle, type AffiliationValue } from "@/components/business/affiliation-toggle";
+import { defaultAffiliationRate } from "@/lib/pricing";
 import { groupThousands } from "@/lib/demo/session-views";
 
 /* ─── Mock Data ──────────────────────────────────────────────────────────── */
@@ -91,6 +93,7 @@ function LivePageInner() {
   });
 
   // Create modal state
+  const [affiliation, setAffiliation] = useState<AffiliationValue>({ open: false, rate: defaultAffiliationRate("live") });
   const [newLive, setNewLive] = useState({ titre: "", type: "webinaire", date: "", duree: "60", description: "", prix: "0" });
 
   const [toastVisible, setToastVisible] = useState(false);
@@ -511,6 +514,7 @@ function LivePageInner() {
                   <p className="text-xs text-green-500 mt-1">Gratuit</p>
                 )}
               </div>
+              <AffiliationToggle pole="live" priceChf={Math.max(0, Number(newLive.prix) || 0)} value={affiliation} onChange={setAffiliation} priceLabel="par participant" />
             </div>
             {createError && (
               <p role="alert" className="text-sm text-red-400">{createError}</p>
@@ -539,6 +543,7 @@ function LivePageInner() {
                       durationMin: Math.max(15, Math.round(Number(newLive.duree) || 60)),
                       description: newLive.description.trim(),
                       price: Math.max(0, Math.round(Number(newLive.prix) || 0)),
+                      affiliationRate: affiliation.open && Number(newLive.prix) > 0 ? affiliation.rate : undefined,
                     },
                   });
                   setCreateError(null);

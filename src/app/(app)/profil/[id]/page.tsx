@@ -14,6 +14,9 @@ import { gmvVolume } from "@/lib/demo/derive";
 import { DEMO_TODAY } from "@/lib/demo/clock";
 import { useSession } from "@/lib/use-session";
 import { sessionShowcaseOf } from "@/lib/demo/session-views";
+import { personById } from "@/lib/demo/directory";
+import { primeEligibility } from "@/lib/pricing";
+import { PrimeCountryNotice } from "@/components/business/apporteur-summary";
 
 /* /profil/[id] — profil public d'un autre utilisateur. Le profil (identité +
    sections LinkedIn) vient de getMockProfile ; la vitrine (biens/formations…)
@@ -78,11 +81,22 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
     posts: getPublicPosts(profileToAuthor(profile)),
   };
 
+  /* Restriction pays VISIBLE (D7) : un apporteur d'un pays où le volet biens
+     est fermé (France, Allemagne, Portugal…) ne touche jamais de prime sur un
+     bien — et sa fiche dit pourquoi. */
+  const person = personById(profile.id);
+  const primeAccess = person?.roles.includes("apporteur") ? primeEligibility(person.country) : undefined;
+
   return (
     <>
       <div className="md:hidden mb-2 -mt-2">
         <BackButton fallbackHref="/feed" />
       </div>
+      {primeAccess && !primeAccess.eligible && (
+        <div className="mb-3">
+          <PrimeCountryNotice country={primeAccess.country} reason={primeAccess.reason} />
+        </div>
+      )}
       <ProfileView
         profile={profile}
         isOwn={false}

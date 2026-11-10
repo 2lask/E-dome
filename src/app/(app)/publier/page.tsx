@@ -4,7 +4,9 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useApp } from "@/lib/context";
 import type { TransactionType, PropertyType } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
-import { PRIME_RANGE_LABEL } from "@/lib/pricing";
+import { PRIME_START_CHF } from "@/lib/pricing";
+import { PrimeActivation, primeDraftErrors, type PrimeDraft } from "@/components/business/prime-activation";
+import { SellerPrimeTracking } from "@/components/business/seller-prime-tracking";
 import { publierObligations } from "@/content/publier-obligations";
 import Link from "next/link";
 import { recordSessionEvent } from "@/lib/use-session";
@@ -38,9 +40,10 @@ interface PublishForm {
   etatGeneral: string;
   potentielPlusValue: number;
   tauxOccupation: number;
-  // Apporteurs — V1.0 : seul controle vendeur = ON/OFF (opt-in).
-  // Le taux 10-30 % est fixe par la plateforme selon le pole, jamais
-  // par le vendeur. Aucun champ commissionApporteur cote form.
+  // Apporteurs (D14) : ouverture du bien aux apporteurs. Sur la vente et la
+  // location longue duree, le montant est une PRIME en francs reglee dans
+  // l'etat `prime` (jamais un pourcentage) ; en courte duree, affiliation
+  // marketplace.
   autoriserApporteurs: boolean;
   // Options
   optionMiseEnAvant: boolean;
@@ -114,6 +117,10 @@ export default function PublierPage() {
   const isVente = form.transactionType === "vente";
   const totalSteps = isVente ? 7 : 6;
   const [toastMsg, setToastMsg] = useState("");
+  /* La prime biens (D14) : tenue hors du brouillon persistant — un brouillon
+     ne garde jamais une carte, même simulée. */
+  const [prime, setPrime] = useState<PrimeDraft>({ active: false, amountChf: PRIME_START_CHF, budgetChf: PRIME_START_CHF * 3, cardLast4: "" });
+  const primeApplies = form.transactionType === "vente" || form.transactionType === "location-lt";
 
   // Load form + drafts
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -207,7 +214,7 @@ export default function PublierPage() {
   };
 
   const handlePublish = () => {
-    const errs = [...errorsForStep(1), ...errorsForStep(2)];
+    const errs = [...errorsForStep(1), ...errorsForStep(2), ...(primeApplies && form.autoriserApporteurs ? primeDraftErrors(prime) : [])];
     setStepErrors(errs);
     if (errs.length > 0 || !form.transactionType || !form.propertyType) return;
     /* L'annonce entre au journal de session : elle apparaît dans /explorer,
@@ -233,6 +240,19 @@ export default function PublierPage() {
       },
     });
     setPublishedId(listingIdOf(event.seq));
+    /* Prime activée : la carte est enregistrée, RIEN n'est prélevé. Le bien
+       entre dans l'espace des apporteurs, classé par prime. */
+    if (primeApplies && form.autoriserApporteurs && prime.active) {
+      recordSessionEvent({
+        kind: "prime.set",
+        data: {
+          propertyId: listingIdOf(event.seq),
+          amountChf: Math.round(prime.amountChf),
+          budgetChf: Math.round(prime.budgetChf),
+          cardLast4: prime.cardLast4,
+        },
+      });
+    }
     setShowConfetti(true);
     setToastMsg("Bien publié. Il est visible dans l'Explorer et dans « Mes annonces ».");
     setTimeout(() => { setPublished(true); try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ } }, 1200);
@@ -293,6 +313,9 @@ export default function PublierPage() {
             Sauvegarder brouillon
           </button>
         </div>
+
+        {/* Le suivi du vendeur : primes, contacts reçus, ce qu'il a payé */}
+        <SellerPrimeTracking />
 
         {/* Drafts */}
         {drafts.length > 0 && (
@@ -555,30 +578,27 @@ export default function PublierPage() {
               </div>
             </button>
 
-            {/* Bloc lecture seule V1.0 — le taux apporteur est fixé par
-                E-Dome, jamais par le vendeur. Le seul contrôle du vendeur est
-                le toggle ON/OFF au-dessus (opt-out). Ici on affiche :
-                - le rappel du modèle ("taux fixé par la plateforme"),
-                - la fourchette indicative simulée sur le pôle de l'annonce,
-                - le tracking. Pas de slider, pas d'input. */}
+            {/* Le vendeur règle lui-même sa prime (biens) — jamais un taux fixé par E-Dome. */}
             {form.autoriserApporteurs && (
               <div className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-5">
-                {/* Bloc lecture seule — deux mécaniques (D14), jamais
-                    confondues. Biens (vente / location longue durée) : une prime
-                    fixe en francs, définie par le vendeur, rien prélevé à
-                    l'activation. Courte durée : affiliation marketplace. */}
-                <div className="p-4 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 space-y-2">
-                  <span className="text-sm font-medium text-[var(--foreground)]">
-                    {form.transactionType === "location-ct"
-                      ? "Affiliation marketplace"
-                      : "Prime de mise en relation"}
-                  </span>
-                  <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
-                    {form.transactionType === "location-ct"
-                      ? "En courte durée, un affilié touche un pourcentage du prix, prélevé sur votre marge — jamais ajouté au prix payé par le voyageur, et sans diminuer la commission d'E-Dome."
-                      : `Vous fixez une prime fixe en francs (${PRIME_RANGE_LABEL}), due seulement lorsque vous acceptez une mise en relation. Jamais un pourcentage du prix, jamais conditionnée à la vente. Rien n'est prélevé à l'activation.`}
-                  </p>
-                </div>
+                {/* Deux mécaniques (D14), jamais confondues. Biens (vente /
+                    location longue durée) : une prime fixe en francs, réglée
+                    par le vendeur, rien prélevé à l'activation. Courte durée :
+                    affiliation marketplace (pourcentage sur la marge). */}
+                {primeApplies ? (
+                  <PrimeActivation
+                    value={prime}
+                    onChange={setPrime}
+                    audience={form.transactionType === "vente" ? "acheteurs" : "locataires"}
+                  />
+                ) : (
+                  <div className="p-4 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 space-y-2">
+                    <span className="text-sm font-medium text-[var(--foreground)]">Affiliation marketplace</span>
+                    <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
+                      En courte durée, un affilié touche un pourcentage du prix, prélevé sur votre marge — jamais ajouté au prix payé par le voyageur, et sans diminuer la commission d&apos;E-Dome.
+                    </p>
+                  </div>
+                )}
 
                 {/* Tracking details */}
                 <div className="grid grid-cols-2 gap-3">

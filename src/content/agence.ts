@@ -50,7 +50,7 @@ export const agencePage = {
     fields: { type: "Bien", sector: "Secteur", budget: "Prix visé", posted: "Déposée" },
     applyCta: "Postuler",
     appliedLabel: "Candidature envoyée",
-    applyNote: "Postuler est gratuit. Vous renseignez taux, inclus, délai et deux références — les quatre champs imposés. Le particulier ne vous révèle son identité que s'il ouvre le contact.",
+    applyNote: "Postuler ne coûte rien : la formule gratuite couvre un quota de candidatures actives, illimitées en payant. Vous renseignez taux, inclus, délai et deux références — les quatre champs imposés. Le particulier ne vous révèle son identité que s'il ouvre le contact.",
     items: [
       /* `ownerId` n'est JAMAIS affiché à l'agence : il sert seulement à
          notifier le particulier qu'une candidature est arrivée. Ici, Sandrine

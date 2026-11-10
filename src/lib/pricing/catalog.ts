@@ -93,6 +93,29 @@ export function assertAffiliationRate(pole: CommissionPole, rate: number): void 
   }
 }
 
+/**
+ * Où le taux d'affiliation est PRÉ-REMPLI dans sa fourchette, de 0 (minimum)
+ * à 1 (maximum). Anti-cold-start (`analyse2/marketing-modele.md` §E.1) : un
+ * taux pré-rempli au plancher n'attire aucun apporteur. Aux deux tiers, le
+ * produit est recommandable d'emblée ; le vendeur reste libre de baisser.
+ */
+export const AFFILIATION_DEFAULT_POSITION = 2 / 3;
+
+/** Ramène un taux dans la fourchette de son pôle (arrondi au point entier). */
+export function clampAffiliationRate(pole: CommissionPole, rate: number): number {
+  const r = AFFILIATION_RATES[pole];
+  if (!r) return 0;
+  const whole = Math.round(rate * 100) / 100;
+  return Math.min(r.max, Math.max(r.min, whole));
+}
+
+/** Le taux proposé par défaut à l'ouverture d'un produit à l'affiliation. */
+export function defaultAffiliationRate(pole: CommissionPole): number {
+  const r = AFFILIATION_RATES[pole];
+  if (!r) return 0;
+  return clampAffiliationRate(pole, r.min + (r.max - r.min) * AFFILIATION_DEFAULT_POSITION);
+}
+
 /** Libellé court « X à Y % » du taux d'affiliation d'un pôle marketplace. */
 export function affiliationLabel(pole: CommissionPole): string {
   const r = AFFILIATION_RATES[pole];
@@ -168,6 +191,103 @@ export function primeChf(amountChf: number): PrimeMoney {
   return m as PrimeMoney;
 }
 
+/**
+ * Montant de DÉPART proposé dans le formulaire d'activation, en CHF. Une valeur
+ * fixe, la même pour tous les biens : elle n'est **jamais** dérivée du prix du
+ * bien (verrou anti-« 1 % », `JURIDIQUE-A-VALIDER.md` §0.3).
+ */
+export const PRIME_START_CHF = 200;
+
+/**
+ * Au-delà de ce montant, une prime passe en VÉRIFICATION RENFORCÉE : identité
+ * de l'apporteur contrôlée et mise en relation validée à la main avant d'être
+ * facturée (paliers de vérification, `PLAN-2.md` étape 6). En dessous :
+ * vérification automatique.
+ */
+export const PRIME_MANUAL_REVIEW_ABOVE: Money = chf(1000);
+
+/**
+ * Protection du vendeur. Toutes des valeurs de catalogue, ajustables sans code.
+ *
+ * · `windowHours` — le vendeur peut signaler « ce contact n'était pas sérieux »
+ *   pendant 48 h après avoir accepté la mise en relation ;
+ * · `maxRefundsPerMonth` — remboursement PLAFONNÉ : au-delà, le signalement
+ *   part en examen manuel au lieu d'être remboursé d'office (sinon « accepter
+ *   puis contester » devient un moyen de ne jamais payer) ;
+ * · `contestedLimit` — un apporteur trop souvent contesté perd l'accès au volet
+ *   biens.
+ */
+export const PRIME_DISPUTE = {
+  windowHours: 48,
+  maxRefundsPerMonth: 2,
+  contestedLimit: 3,
+} as const;
+
+// ─── Restriction géographique du volet biens (D7, JURIDIQUE §0.5) ────────────
+
+export type PrimeCountryStatus = "ouvert" | "exclu" | "a-valider";
+
+/**
+ * Pays × volet BIENS. La marketplace (pourcentage) reste ouverte partout ; la
+ * prime biens, elle, ne l'est que là où recommander un bien contre
+ * rémunération ne relève pas d'un régime d'autorisation (`JURIDIQUE-A-VALIDER.md`
+ * §0.5). Un profil d'un pays « exclu » ne touche JAMAIS de prime sur un bien,
+ * et l'interface dit pourquoi (D7, précision du fondateur).
+ */
+export const PRIME_COUNTRIES: Readonly<Record<string, { status: PrimeCountryStatus; reason: string }>> = {
+  Suisse: {
+    status: "ouvert",
+    reason: "La prime de mise en relation est ouverte en Suisse, avec les verrous du programme.",
+  },
+  France: {
+    status: "exclu",
+    reason:
+      "En France, être rémunéré pour recommander un bien immobilier relève de la loi Hoguet et de la carte professionnelle. Depuis la France, l'affiliation porte sur la marketplace uniquement.",
+  },
+  Allemagne: {
+    status: "exclu",
+    reason:
+      "En Allemagne, recommander un bien contre rémunération demande une autorisation (§34c GewO). Depuis l'Allemagne, l'affiliation porte sur la marketplace uniquement.",
+  },
+  Portugal: {
+    status: "exclu",
+    reason:
+      "Au Portugal, l'activité est réservée aux titulaires d'une licence AMI. Depuis le Portugal, l'affiliation porte sur la marketplace uniquement.",
+  },
+  "Royaume-Uni": {
+    status: "a-valider",
+    reason: "Au Royaume-Uni, le volet biens attend la validation juridique (Estate Agents Act). La marketplace est ouverte.",
+  },
+  "Émirats arabes unis": {
+    status: "a-valider",
+    reason: "Aux Émirats, le volet biens attend la validation juridique (régime RERA). La marketplace est ouverte.",
+  },
+  Maroc: {
+    status: "a-valider",
+    reason: "Au Maroc, le volet biens attend la validation juridique (régime en évolution). La marketplace est ouverte.",
+  },
+};
+
+/** Le volet biens est-il ouvert à une personne de ce pays ? Inconnu = fermé. */
+export function primeEligibility(country: string | undefined): {
+  eligible: boolean;
+  status: PrimeCountryStatus;
+  country: string;
+  reason: string;
+} {
+  const c = country?.trim() || "pays non renseigné";
+  const entry = PRIME_COUNTRIES[c];
+  if (!entry) {
+    return {
+      eligible: false,
+      status: "a-valider",
+      country: c,
+      reason: "Le volet biens n'est pas encore ouvert dans ce pays. La marketplace est ouverte.",
+    };
+  }
+  return { eligible: entry.status === "ouvert", status: entry.status, country: c, reason: entry.reason };
+}
+
 // ─── Tarif fondateur créateur ────────────────────────────────────────────────
 
 /**
@@ -200,7 +320,7 @@ export const AGENCY_FOUNDING_MONTHS = 12;
  * Part de l'apporteur d'un ABONNEMENT, **par formule**, en fraction du revenu
  * net d'E-Dome (hors TVA, après frais de paiement).
  *
- * Le générique « apporteur = 10 à 30 % du revenu E-Dome sur tous les pôles » est
+ * L'ancien taux générique unique de l'apporteur « sur tous les pôles » est
  * **aboli** (D14) : il ne vaut plus que pour l'abonnement, et par barème de
  * formule. Les biens passent par la PRIME (`bien-introduction`, `primeChf`), la
  * marketplace par l'AFFILIATION (`AFFILIATION_RATES`) — jamais par cette table.
@@ -238,6 +358,88 @@ export const BOUNTIES = {
 /** Prime « hôte activé » en CHF, dérivée de `BOUNTIES` (acquisition, pas une commission). */
 export const HOST_BOUNTY_CHF = BOUNTIES["host-activated"].amount.cents / 100;
 
+// ─── Freemium : la limite gratuite PAR RÔLE (D15) ────────────────────────────
+
+/**
+ * Les rôles du découpage gratuit / payant. Le particulier est dedans pour dire
+ * explicitement qu'il ne paie rien — pas par oubli.
+ */
+export type FreemiumRole =
+  | "particulier"
+  | "proprietaire"
+  | "agent"
+  | "agence"
+  | "prestataire"
+  | "createur"
+  | "hote";
+
+export const FREEMIUM_ROLES: readonly FreemiumRole[] = [
+  "particulier",
+  "proprietaire",
+  "agent",
+  "agence",
+  "prestataire",
+  "createur",
+  "hote",
+];
+
+/**
+ * LES PLAFONDS GRATUITS ET LE QUOTA D'ACCOMPAGNEMENT — des valeurs de
+ * catalogue, que le fondateur ajuste après ses entretiens avec les agences sans
+ * toucher au code (D15, précision du fondateur). Tout l'affichage (`/tarifs`,
+ * `/agence/demandes`, la formule Présence) les LIT ici ; aucun écran n'écrit
+ * « 10 » ou « 3 » en dur.
+ *
+ * La synthèse de CEO validée découple deux choses : des plafonds d'INVENTAIRE
+ * généreux (on démarre gratuitement et on travaille vraiment) et des fonctions
+ * DE RÉUSSITE payantes (2e utilisateur, mise en avant, statistiques complètes,
+ * automatisations, volume illimité) — la limite qui gêne quand on grandit, pas
+ * au démarrage. Plus un QUOTA gratuit de candidatures d'accompagnement actives.
+ *
+ * Ce que chaque expert perd dans ce compromis, et l'indicateur qui dirait qu'on
+ * s'est trompé de côté :
+ * · LE MARKETING perd l'accompagnement gratuit et illimité (son levier
+ *   d'acquisition le plus fort). Serré de trop si : peu de comptes agence créés,
+ *   peu de premières candidatures, ou un abandon élevé au moment où le quota
+ *   gratuit se ferme → monter `activeApplications`.
+ * · LE COMPTABLE perd la protection stricte des quatre lignes qui justifient
+ *   Vitrine (le quota ouvre une brèche vers l'accompagnement). Ouvert de trop
+ *   si : des agences décrochent des mandats via le quota et RESTENT gratuites
+ *   (conversion vers Vitrine trop basse, le tunnel de DECISIONS.md §8 ne se
+ *   referme pas) → baisser `activeApplications` ou `activeListings`.
+ */
+export const FREE_LIMITS = {
+  /** Tout est gratuit : chercher, contacter, réserver, alertes. Jamais monétisé (côté demande du marché). */
+  particulier: {},
+  /** Vendre et louer sans plafond, 0 CHF sur la transaction. Patrimoine devient utile dès le 2e bien loué. */
+  proprietaire: { rentedPropertiesFree: 1 },
+  /** Agent indépendant : même plafond que l'agence. */
+  agent: { activeListings: 10, seats: 1, activeApplications: 3 },
+  /** Agence : 10 biens actifs (42 % des agences suisses ont ≤ 5 biens), 1 utilisateur, 3 candidatures actives. */
+  agence: { activeListings: 10, seats: 1, activeApplications: 3 },
+  /** Prestataire : déjà rémunérateur via la commission dès le premier devis transformé. */
+  prestataire: { activeServices: 5 },
+  /** Créateur : de quoi tester plusieurs offres ; les lives restent illimités (déjà commissionnés). */
+  createur: { activeFormations: 2 },
+  /** Hôte : au-delà de 2 biens simultanés, on devient un petit professionnel de la location. */
+  hote: { activeShortStays: 2 },
+} as const satisfies Record<FreemiumRole, Record<string, number>>;
+
+/**
+ * Les formules ouvertes à chaque rôle, par identifiant de `PLANS`. `proLater` :
+ * une formule Pro est prévue mais N'A PAS ENCORE DE PRIX — elle s'affiche en
+ * statut « Ensuite », sans montant inventé (prestataire, créateur, hôte).
+ */
+export const ROLE_PLANS: Readonly<Record<FreemiumRole, { planIds: readonly PlanId[]; proLater?: boolean }>> = {
+  particulier: { planIds: [] },
+  proprietaire: { planIds: ["patrimoine"] },
+  agent: { planIds: ["presence", "vitrine"] },
+  agence: { planIds: ["presence", "vitrine", "mandats", "regie"] },
+  prestataire: { planIds: [], proLater: true },
+  createur: { planIds: [], proLater: true },
+  hote: { planIds: [], proLater: true },
+};
+
 // ─── Formules ────────────────────────────────────────────────────────────────
 
 export interface Plan {
@@ -271,7 +473,9 @@ export const PLANS: readonly Plan[] = [
     holder: "agency",
     tier: 0,
     price: { month: chf(0) },
-    includes: ["profil-pro", "biens-3", "reseau", "messagerie"],
+    /* Présence gratuite PLAFONNÉE (D15) : le plafond de biens et le quota de
+       candidatures se lisent dans `FREE_LIMITS.agence`, pas dans la clé. */
+    includes: ["profil-pro", "biens-plafond", "utilisateur-1", "candidatures-quota", "statistiques-base", "reseau", "messagerie"],
     stage: "launch",
   },
   {
@@ -339,6 +543,32 @@ export const PLANS: readonly Plan[] = [
 
 /** Douze mois payés dix sur l'engagement annuel. */
 export const ANNUAL_DISCOUNT = 2 / 12;
+
+/** Une formule inclut-elle une fonction ? Lit `includes`, jamais le nom de la formule. */
+export function planIncludes(planId: PlanId, feature: string): boolean {
+  return PLANS.find((p) => p.id === planId)?.includes.includes(feature) ?? false;
+}
+
+/** La formule disponible la moins chère qui inclut une fonction (pour l'appel à monter). */
+export function lowestPlanWith(feature: string, holder: Plan["holder"] = "agency"): Plan | undefined {
+  return PLANS.filter((p) => p.holder === holder && p.stage === "launch" && p.includes.includes(feature))
+    .slice()
+    .sort((a, b) => a.tier - b.tier)[0];
+}
+
+/**
+ * Quota de candidatures d'accompagnement ACTIVES d'une agence selon sa
+ * formule : `null` = illimité (la formule inclut « demandes-accompagnement »),
+ * sinon le quota gratuit de `FREE_LIMITS.agence`.
+ */
+export function applicationQuota(planId: PlanId): number | null {
+  return planIncludes(planId, "demandes-accompagnement") ? null : FREE_LIMITS.agence.activeApplications;
+}
+
+/** Nombre d'utilisateurs couverts : illimité avec « equipe-droits », sinon le plafond gratuit. */
+export function seatQuota(planId: PlanId): number | null {
+  return planIncludes(planId, "equipe-droits") ? null : FREE_LIMITS.agence.seats;
+}
 
 // ─── Forfaits ponctuels ──────────────────────────────────────────────────────
 

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useApp } from "@/lib/context";
 import { recordSessionEvent } from "@/lib/use-session";
 import { serviceIdOf } from "@/lib/demo/session-store";
+import { AffiliationToggle, type AffiliationValue } from "@/components/business/affiliation-toggle";
+import { defaultAffiliationRate } from "@/lib/pricing";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -40,6 +42,7 @@ export default function ProposerServicePage() {
   const [publishedId, setPublishedId] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [photoUrl, setPhotoUrl] = useState("");
+  const [affiliation, setAffiliation] = useState<AffiliationValue>({ open: false, rate: defaultAffiliationRate("service") });
 
   const update = <K extends keyof ServiceForm>(key: K, value: ServiceForm[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -82,6 +85,7 @@ export default function ProposerServicePage() {
         price: Math.round(form.tarif),
         unit: form.uniteTarif,
         images: form.photos.filter((u) => /^https?:\/\//.test(u)),
+        affiliationRate: affiliation.open ? affiliation.rate : undefined,
       },
     });
     setPublishedId(serviceIdOf(event.seq));
@@ -194,6 +198,8 @@ export default function ProposerServicePage() {
               </div>
             )}
           </div>
+
+          <AffiliationToggle pole="service" priceChf={form.tarif} value={affiliation} onChange={setAffiliation} priceLabel={`par prestation${form.uniteTarif ? ` ${form.uniteTarif}` : ""}`} />
 
           {errors.length > 0 && (
             <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">

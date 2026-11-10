@@ -2,6 +2,7 @@
 
 import { agencePage, agencyStats } from "@/content/agence";
 import { activeSaleMandates, concludedSaleMandates, agencyRentals } from "@/lib/demo/agency";
+import { PlanGate } from "@/components/business/plan-gate";
 
 /* `/agence/statistiques` — audience et conversions de l'agence de démonstration. */
 export default function AgenceStatistiquesPage() {
@@ -22,6 +23,11 @@ export default function AgenceStatistiquesPage() {
         <h1 className="mt-1 text-xl font-bold text-[var(--foreground)] sm:text-2xl">Statistiques</h1>
         <p className="mt-1.5 text-sm leading-snug text-[var(--text-muted)]">{agencyStats.note}</p>
       </header>
+
+      <PlanGate
+        feature="statistiques-completes"
+        why="Vous voyez les statistiques de base. Les statistiques complètes (sources d'audience, délais de vente par bien, conversions par agent) sont une fonction de réussite, incluse dans Mandats."
+      />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((k) => (

@@ -71,6 +71,9 @@ export interface ServiceData {
   price: number;
   unit: string;
   images: string[];
+  /** Ouvert à l'affiliation marketplace (D14) : taux sortant de la marge du
+      prestataire, borné par `AFFILIATION_RATES.service`. Absent = fermé. */
+  affiliationRate?: number;
 }
 
 export interface FormationData {
@@ -82,6 +85,8 @@ export interface FormationData {
   price: number;
   duration: string;
   modules: { title: string; lessons: { title: string; duration: string }[] }[];
+  /** Ouverte à l'affiliation marketplace (D14). Absent = fermée. */
+  affiliationRate?: number;
 }
 
 export interface LiveData {
@@ -92,6 +97,8 @@ export interface LiveData {
   durationMin: number;
   description: string;
   price: number;
+  /** Ouvert à l'affiliation marketplace (D14). Absent = fermé. */
+  affiliationRate?: number;
 }
 
 export interface ApplicationData {
@@ -105,6 +112,19 @@ export interface ApplicationData {
   included: string;
   timeline: string;
   references: [string, string];
+}
+
+/** La prime de mise en relation d'un bien (D14), telle que le vendeur la
+    règle. Montant en francs ENTIERS, jamais un pourcentage ; rien n'est prélevé
+    à l'activation (la carte est seulement enregistrée). */
+export interface PrimeSettingData {
+  propertyId: string;
+  /** Prime par mise en relation acceptée, en CHF (bornée par `primeChf`). */
+  amountChf: number;
+  /** Plafond de dépense mensuel, en CHF : au-delà, plus aucune acceptation facturée. */
+  budgetChf: number;
+  /** Quatre derniers chiffres de la carte enregistrée (simulée). */
+  cardLast4: string;
 }
 
 /** Ce que l'appelant fournit : un type et ses données. */
@@ -140,7 +160,29 @@ export type SessionEventInput =
     }
   | { kind: "follow"; data: { toId: string } }
   | { kind: "message.sent"; data: { threadId: string; memberIds: string[]; text: string } }
-  | { kind: "group.created"; data: { threadId: string; memberIds: string[]; name: string } };
+  | { kind: "group.created"; data: { threadId: string; memberIds: string[]; name: string } }
+  /* ── Modèle économique visible (chantier P4a, ajout) ─────────────────── */
+  /** Le vendeur active ou modifie la prime d'un bien. Rien n'est prélevé. */
+  | { kind: "prime.set"; data: PrimeSettingData }
+  /** Le vendeur met la prime en pause (désactivable sans frais). */
+  | { kind: "prime.paused"; data: { propertyId: string } }
+  /** Le vendeur retire la prime (sans frais). */
+  | { kind: "prime.removed"; data: { propertyId: string } }
+  /** Un apporteur propose un contact au vendeur d'un bien à prime. La prime est
+      figée au moment de la proposition. */
+  | {
+      kind: "introduction.made";
+      data: { propertyId: string; sellerId: string; contactLabel: string; primeChf: number };
+    }
+  /** Le vendeur accepte (la prime est facturée) ou refuse (gratuit). */
+  | {
+      kind: "introduction.answered";
+      data: { introductionId: string; apporteurId: string; propertyId: string; decision: "accepted" | "declined" };
+    }
+  /** « Ce contact n'était pas sérieux », sous 48 h après l'acceptation. */
+  | { kind: "introduction.disputed"; data: { introductionId: string; apporteurId: string; reason: string } }
+  /** Changement de formule d'abonnement (agence ou compte). */
+  | { kind: "plan.changed"; data: { holderId: string; planId: string } };
 
 export type SessionEventKind = SessionEventInput["kind"];
 

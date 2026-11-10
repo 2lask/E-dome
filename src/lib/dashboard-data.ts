@@ -11,7 +11,6 @@
    Les taux et libelles de commission ne sont PAS definis ici : ils viennent
    de @/lib/pricing, source unique du modele de remuneration. */
 
-import { HOST_BOUNTY_CHF, affiliationLabel, PRIME_RANGE_LABEL } from "./pricing";
 import { CURRENT_USER, OWNED_FORMATION_IDS, OWNED_PROPERTY_IDS } from "./demo/identity";
 import * as derive from "./demo/derive";
 import "./demo/invariants";
@@ -389,38 +388,10 @@ export const messageThreads: MessageThread[] = THREAD_SEEDS.map((seed, i) => {
   };
 });
 
-/* Apporteurs (referrals). */
-export interface ReferralChannel {
-  id: string;
-  label: string;
-  reward: string;
-  clicks: number;
-  conversions: number;
-}
-
-/* Deux mécaniques (D14) : la marketplace (client, courte durée) rémunère un
-   pourcentage du prix prélevé sur la marge du vendeur ; les biens rémunèrent une
-   prime fixe en francs, jamais un pourcentage du prix. Les libellés viennent de
-   @/lib/pricing. */
-export const referralChannels: ReferralChannel[] = [
-  { id: "host", label: "Amener un hôte", reward: `${HOST_BOUNTY_CHF} CHF / activation`, clicks: 23, conversions: 8 },
-  { id: "client", label: "Amener un client", reward: affiliationLabel("location-ct"), clicks: 41, conversions: 12 },
-  { id: "property", label: "Amener un bien", reward: `Prime fixe (${PRIME_RANGE_LABEL})`, clicks: 17, conversions: 5 },
-];
-
-export interface LeaderboardEntry {
-  rank: number;
-  name: string;
-  commission: number;
-  isCurrentUser?: boolean;
-}
-
-export const leaderboard: LeaderboardEntry[] = [
-  { rank: 1, name: "Laura M.", commission: 15200 },
-  { rank: 2, name: "Léo M. · vous", commission: 9500, isCurrentUser: true },
-  { rank: 3, name: "Jean-Pierre D.", commission: 8700 },
-  { rank: 4, name: "Nadia S.", commission: 6100 },
-];
+/* Apporteurs : les canaux et le classement nominatif (« Léo M. · 9 500 CHF »)
+   ont été retirés (P4a). Le seul total d'un apporteur est `apporteurBook()`
+   (`src/lib/demo/affiliation.ts`) ; aucun classement avec montants n'affirme
+   de traction sur E-Dome. */
 
 /* Derive du journal. Les trois montants etaient ecrits en dur et ne
    correspondaient ni au classement de /dashboard/apporteurs ni a celui de

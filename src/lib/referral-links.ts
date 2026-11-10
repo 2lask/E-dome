@@ -15,6 +15,9 @@ import { money, type Money } from "./model/billing";
    URL de tracking. */
 export const REFERRAL_ID = "AP-7291";
 
+/* `earned` reste à 0 : ce qu'un apporteur a gagné ne s'écrit plus sur un lien
+   (c'était l'un des trois chiffres contradictoires — 770 CHF). Le seul total
+   est `apporteurBook()` (`src/lib/demo/affiliation.ts`), dérivé par `quote()`. */
 export const DEFAULT_REFERRAL_LINKS: ReferralLink[] = [
   {
     label: "Amener un hôte",
@@ -23,7 +26,7 @@ export const DEFAULT_REFERRAL_LINKS: ReferralLink[] = [
     commission: `${HOST_BOUNTY_CHF} CHF / hôte activé`,
     clicks: 8,
     conversions: 2,
-    earned: 200,
+    earned: 0,
     color: "bg-amber-500/20 text-amber-400",
   },
   {
@@ -33,7 +36,7 @@ export const DEFAULT_REFERRAL_LINKS: ReferralLink[] = [
     commission: affiliationLabel("location-ct"),
     clicks: 12,
     conversions: 5,
-    earned: 320,
+    earned: 0,
     color: "bg-blue-500/20 text-blue-400",
   },
   {
@@ -43,7 +46,7 @@ export const DEFAULT_REFERRAL_LINKS: ReferralLink[] = [
     commission: `Prime fixe (${PRIME_RANGE_LABEL})`,
     clicks: 3,
     conversions: 1,
-    earned: 250,
+    earned: 0,
     color: "bg-emerald-500/20 text-emerald-400",
   },
 ];
@@ -72,8 +75,8 @@ export const REFERRAL_ROUTE: Record<ReferralTargetKind, string> = {
 /* Deux mécaniques (D14), jamais confondues. BIENS : une prime fixe en francs,
    définie par le vendeur (jamais un pourcentage du prix). MARKETPLACE : un
    pourcentage du prix, prélevé sur la marge du vendeur, la commission d'E-Dome
-   inchangée. L'ancien « % du prix payé par le client » et « 10 à 30 % du frais
-   fixe » sont abolis. */
+   inchangée. L'ancien « % du prix payé par le client » et l'ancienne part du frais
+   fixe sont abolis. */
 const AFFILIATE_CONFIG: Record<
   ReferralTargetKind,
   { commission: string; description: (title: string) => string; color: string }

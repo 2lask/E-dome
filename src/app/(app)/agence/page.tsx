@@ -8,6 +8,7 @@ import {
 import { agencePage, demoAgency } from "@/content/agence";
 import { PLAN_META } from "@/content/tarifs";
 import { agencyCounts } from "@/lib/demo/agency";
+import { useAgencyPlan } from "@/lib/use-business";
 
 /* ── `/agence` — le hub de l'Espace agence ──────────────────────────────────
 
@@ -26,7 +27,9 @@ const ICONS: Record<string, LucideIcon> = {
 
 export default function AgenceHubPage() {
   const a = agencePage;
-  const planName = PLAN_META[demoAgency.plan]?.name ?? demoAgency.plan;
+  /* La formule en vigueur : celle choisie sur /agence/abonnement, sinon l'amorce. */
+  const planId = useAgencyPlan();
+  const planName = PLAN_META[planId]?.name ?? planId;
   const counts = agencyCounts();
 
   return (

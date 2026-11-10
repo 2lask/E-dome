@@ -2,7 +2,17 @@
 
 import React, { useState, useMemo } from "react";
 import { Calendar as BookingCallout } from "@/components/ui/calendar";
-import { RATES } from "@/lib/pricing/catalog";
+import {
+  AFFILIATION_RATES,
+  APPORTEUR_SUBSCRIPTION_SHARES,
+  APPORTEUR_WINDOW_MONTHS,
+  EDOME_PRIME_SHARE,
+  FREE_LIMITS,
+  PRIME_DISPUTE,
+  PRIME_RANGE_LABEL,
+  RATES,
+} from "@/lib/pricing/catalog";
+import { chfLabel, primeBreakdown, affiliationBreakdown } from "@/lib/demo/affiliation";
 
 /* ─── FAQ Data ───────────────────────────────────────────────────────────── */
 
@@ -36,11 +46,10 @@ const FAQS: FAQ[] = [
   { category: "Paiement", question: "Quand reçois-je mon paiement en tant qu'hôte ?", answer: "Le paiement est versé dans les 48 heures suivant le check-in du client, après déduction de la commission plateforme. Les versements sont effectués sur votre compte bancaire enregistré." },
   { category: "Paiement", question: "Combien coûte la vente ou la location longue durée d'un bien ?", answer: "Rien à E-Dome. Publier un bien à la vente ou en location longue durée est gratuit, et aucune somme due à E-Dome ne dépend de la conclusion de la vente ou du bail. E-Dome gagne sa vie du côté professionnel, par les abonnements des agences — pas sur la transaction d'un particulier." },
   { category: "Paiement", question: "Combien coûte un pôle de la marketplace ?", answer: `Une commission sur ce qui se vend via la plateforme, prélevée sur le prestataire ou l'hôte, jamais ajoutée au prix payé par le client. Location courte durée : ${range(RATES["location-ct"].min, RATES["location-ct"].max)} de la réservation, à la charge de l'hôte. Services : ${range(RATES.service.min, RATES.service.max)}. Formations : ${range(RATES.formation.min, RATES.formation.max)}. Lives : ${range(RATES.live.min, RATES.live.max)}. Événements : ${range(RATES.evenement.min, RATES.evenement.max)} plus une part fixe par billet. Boutique : aucune commission, elle fonctionne en affiliation.` },
-  { category: "Paiement", question: "Qui paie la part de l'apporteur ?", answer: "Personne en plus. La part de l'apporteur (10 à 30 %) est prélevée sur ce qu'E-Dome encaisse déjà, jamais ajoutée au prix payé par l'hôte, l'acheteur, le locataire ou le client. C'est un partage de la marge d'E-Dome, pas un supplément." },
+  { category: "Paiement", question: "Qu'est-ce qui est gratuit, et qu'est-ce qui est payant ?", answer: `Tout le monde démarre gratuitement et peut vraiment travailler. Une agence ou un agent publie jusqu'à ${FREE_LIMITS.agence.activeListings} biens actifs, avec ${FREE_LIMITS.agence.seats} utilisateur et ${FREE_LIMITS.agence.activeApplications} candidatures d'accompagnement actives à la fois ; un prestataire ${FREE_LIMITS.prestataire.activeServices} fiches, un créateur ${FREE_LIMITS.createur.activeFormations} formations, un hôte ${FREE_LIMITS.hote.activeShortStays} biens en courte durée. Un particulier ne paie jamais rien. Le payant, c'est grandir : volume illimité, équipe, mise en avant, statistiques complètes. Détail par rôle sur la page Tarifs.` },
   // Apporteurs
   { category: "Apporteurs", question: "Comment devenir apporteur d'affaires ?", answer: "Activez le rôle 'Apporteur' dans vos paramètres. Vous aurez accès à vos liens de parrainage personnalisés que vous pouvez partager pour amener des hôtes, clients ou biens sur la plateforme." },
-  { category: "Apporteurs", question: "Comment est calculée ma rémunération ?", answer: "Votre rémunération est une part de ce qu'E-Dome perçoit sur la conversion — entre 10 et 30 % selon le pôle de la marketplace (courte durée, services, formations, événements, lives) — ou une prime fixe, par exemple lorsque vous amenez un hôte. Sur une vente ou une location longue durée, E-Dome ne perçoit rien, donc il n'y a pas de pourcentage à partager : ces apports se rémunèrent par une prime fixe quand elle existe. Votre part est calculée automatiquement à chaque conversion et n'est jamais ajoutée au prix payé par le client." },
-  { category: "Apporteurs", question: "Combien de temps dure le tracking d'un lien ?", answer: "Le cookie de tracking est valide pendant 90 jours après le clic. Si le prospect s'inscrit et réalise une transaction dans ce délai, la conversion vous est attribuée." },
+  { category: "Apporteurs", question: "Combien de temps dure le tracking d'un lien ?", answer: "Le cookie de tracking est valide pendant 30 jours après le clic (attribution au premier clic). Si le prospect s'inscrit et réalise une transaction dans ce délai, la conversion vous est attribuée." },
   // Technique
   { category: "Technique", question: "L'application est-elle disponible sur mobile ?", answer: "E-Dome est une application web responsive accessible depuis tout navigateur mobile. Une application native iOS et Android est en cours de développement et sera disponible courant 2026." },
   { category: "Technique", question: "Mes données sont-elles sécurisées ?", answer: "Oui. Nous utilisons le chiffrement TLS 1.3 pour les transmissions et AES-256 pour le stockage. Nos serveurs sont hébergés en Suisse et certifiés ISO 27001. L'authentification à deux facteurs est disponible." },
@@ -48,6 +57,25 @@ const FAQS: FAQ[] = [
 ];
 
 const CATEGORIES = [...new Set(FAQS.map((f) => f.category))];
+
+/* ─── Le tableau comparatif des deux mécaniques apporteur ─────────────────
+   Remplace l'ancienne FAQ à taux unique. Deux colonnes, jamais mélangées ;
+   les exemples chiffrés passent par `quote()` (via affiliation.ts). */
+const primeExample = primeBreakdown(200);
+const formationExample = affiliationBreakdown("formation", 400, 0.35);
+const affRange = (p: keyof typeof AFFILIATION_RATES) => {
+  const r = AFFILIATION_RATES[p];
+  return r ? range(r.min, r.max) : "—";
+};
+const COMPARE_ROWS: { label: string; biens: string; marketplace: string }[] = [
+  { label: "Ce que vous touchez", biens: "Une prime fixe en francs", marketplace: "Un pourcentage du prix, toujours affiché en net CHF" },
+  { label: "Qui la fixe", biens: `Le vendeur ou le bailleur, de ${PRIME_RANGE_LABEL}`, marketplace: `Le vendeur, dans une fourchette par pôle (formations ${affRange("formation")}, événements ${affRange("evenement")}, services ${affRange("service")}, courte durée ${affRange("location-ct")})` },
+  { label: "Quand c'est dû", biens: "Quand le vendeur accepte la mise en relation. Refuser est gratuit ; jamais lié à la vente", marketplace: "Quand le produit est vendu grâce à votre lien" },
+  { label: "Qui paie", biens: `Le vendeur. E-Dome retient ${pct(EDOME_PRIME_SHARE)} à l'intérieur de la prime`, marketplace: "Le vendeur, sur sa marge. La commission d'E-Dome ne change pas" },
+  { label: "Exemple", biens: `Prime de ${chfLabel(primeExample.primeCents)} → vous touchez ${chfLabel(primeExample.apporteurCents)} net`, marketplace: `Formation à ${chfLabel(formationExample.grossCents)}, taux 35 % → vous touchez ${chfLabel(formationExample.affiliateCents)} net` },
+  { label: "Protection", biens: `Contact « pas sérieux » signalable ${PRIME_DISPUTE.windowHours} h ; vérification renforcée au-delà de 1'000 CHF`, marketplace: "Attribution au premier clic, 30 jours" },
+  { label: "Pays", biens: "Fermé en France, en Allemagne et au Portugal", marketplace: "Ouvert partout" },
+];
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
@@ -132,6 +160,36 @@ export default function AidePage() {
           </button>
         ))}
       </div>
+
+      {/* Biens / Marketplace : le tableau comparatif */}
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold text-[var(--foreground)]">Apporteurs : deux mécaniques, jamais confondues</h2>
+        <div className="overflow-x-auto rounded-xl border border-[var(--card-border)] bg-[var(--card)]">
+          <table className="w-full min-w-[34rem] text-sm">
+            <thead>
+              <tr className="border-b border-[var(--card-border)] text-left">
+                <th className="w-32 p-3 font-medium text-[var(--text-muted)]"></th>
+                <th className="p-3 font-semibold text-[var(--foreground)]">Biens · vente et location longue durée</th>
+                <th className="p-3 font-semibold text-[var(--foreground)]">Marketplace · formations, lives, événements, services, courte durée</th>
+              </tr>
+            </thead>
+            <tbody>
+              {COMPARE_ROWS.map((r) => (
+                <tr key={r.label} className="border-b border-[var(--card-border)] last:border-0 align-top">
+                  <th scope="row" className="p-3 text-left text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">{r.label}</th>
+                  <td className="p-3 text-[var(--text-secondary)]">{r.biens}</td>
+                  <td className="p-3 text-[var(--text-secondary)]">{r.marketplace}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-[var(--text-muted)]">
+          Et les abonnements : amener une agence ou un propriétaire qui s&apos;abonne vous rapporte une part de ce qu&apos;encaisse E-Dome —{" "}
+          {pct(APPORTEUR_SUBSCRIPTION_SHARES.patrimoine ?? 0)} Patrimoine, {pct(APPORTEUR_SUBSCRIPTION_SHARES.vitrine ?? 0)} Vitrine et Mandats,{" "}
+          {pct(APPORTEUR_SUBSCRIPTION_SHARES.regie ?? 0)} Régie — pendant {APPORTEUR_WINDOW_MONTHS} mois au plus. Jamais un supplément pour le client.
+        </p>
+      </section>
 
       {/* FAQ Accordion */}
       {filteredFaqs.length === 0 ? (

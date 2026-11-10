@@ -2,6 +2,9 @@
 
 import React, { useState } from "react";
 import { useApp } from "@/lib/context";
+import { AffiliationToggle, type AffiliationValue } from "@/components/business/affiliation-toggle";
+import { defaultAffiliationRate } from "@/lib/pricing";
+import { pctLabel } from "@/lib/demo/affiliation";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -37,6 +40,7 @@ export default function CreerEvenementPage() {
   const { formatPrice } = useApp();
   const [form, setForm] = useState<EventForm>(emptyForm);
   const [published, setPublished] = useState(false);
+  const [affiliation, setAffiliation] = useState<AffiliationValue>({ open: false, rate: defaultAffiliationRate("evenement") });
 
   const update = <K extends keyof EventForm>(key: K, value: EventForm[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -55,6 +59,9 @@ export default function CreerEvenementPage() {
           </div>
           <h1 className="text-2xl page-heading mb-2">Événement publié !</h1>
           <p className="text-[var(--text-secondary)] mb-6">Votre événement &quot;{form.titre}&quot; est maintenant visible.</p>
+          {affiliation.open && form.prix > 0 && (
+            <p className="text-sm text-[var(--text-muted)] -mt-4 mb-6">Ouvert à l&apos;affiliation à {pctLabel(affiliation.rate)} du prix du billet.</p>
+          )}
           <a href="/evenements" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
             Voir les événements
           </a>
@@ -153,6 +160,8 @@ export default function CreerEvenementPage() {
               {form.prix === 0 && <p className="text-xs text-green-400 mt-1">Gratuit</p>}
             </div>
           </div>
+
+          <AffiliationToggle pole="evenement" priceChf={form.prix} value={affiliation} onChange={setAffiliation} priceLabel="par billet" />
 
           <button onClick={handlePublish} className="w-full py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors mt-4">
             Publier l&apos;événement

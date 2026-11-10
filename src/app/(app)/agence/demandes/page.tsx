@@ -7,6 +7,10 @@ import { PlatformRules } from "@/components/legal/platform-rules";
 import { useToast } from "@/components/ui/toast";
 import { useSession, recordSessionEvent } from "@/lib/use-session";
 import { applicationsBy } from "@/lib/demo/session-views";
+import Link from "next/link";
+import { applicationQuota, lowestPlanWith } from "@/lib/pricing/catalog";
+import { PLAN_META } from "@/content/tarifs";
+import { useAgencyPlan } from "@/lib/use-business";
 
 /* ── `/agence/demandes` — la distribution, vue côté agence ───────────────────
 
@@ -44,6 +48,13 @@ export default function AgenceDemandesPage() {
   const { state: sessionState, actorId } = useSession();
   const sent = useMemo(() => applicationsBy(sessionState, actorId), [sessionState, actorId]);
   const sentByDemand = useMemo(() => new Map(sent.map((a) => [a.demandId, a])), [sent]);
+  /* QUOTA GRATUIT (D15) : un petit nombre de candidatures ACTIVES à la fois
+     sur la formule gratuite, illimité en payant. Le quota se lit dans le
+     catalogue (`applicationQuota` → `FREE_LIMITS`), jamais en dur. */
+  const planId = useAgencyPlan();
+  const quota = applicationQuota(planId);
+  const quotaReached = quota !== null && sent.length >= quota;
+  const unlimitedPlan = lowestPlanWith("demandes-accompagnement");
   const [openId, setOpenId] = useState<string | null>(null);
   const [form, setForm] = useState<ApplyForm>(EMPTY);
   const [errors, setErrors] = useState<string[]>([]);
@@ -58,6 +69,7 @@ export default function AgenceDemandesPage() {
     if (!form.ref1.trim() || !form.ref2.trim()) errs.push("Deux références locales.");
     setErrors(errs);
     if (errs.length > 0) return;
+    if (quotaReached) return;
     recordSessionEvent({
       kind: "application.sent",
       data: {
@@ -88,6 +100,34 @@ export default function AgenceDemandesPage() {
         <span>{d.applyNote}</span>
       </p>
 
+      <div
+        className={`mb-4 flex flex-wrap items-center gap-2 rounded-xl border px-3.5 py-2.5 text-[12.5px] ${
+          quotaReached ? "border-amber-500/40 bg-amber-500/[0.08]" : "border-[var(--card-border)] bg-[var(--card)]"
+        }`}
+      >
+        {quota === null ? (
+          <span className="text-[var(--foreground)]">
+            Candidatures illimitées avec votre formule {PLAN_META[planId]?.name ?? planId} · {sent.length} envoyée{sent.length > 1 ? "s" : ""}.
+          </span>
+        ) : (
+          <>
+            <span className="font-semibold text-[var(--foreground)]">
+              {sent.length} / {quota} candidatures actives
+            </span>
+            <span className="text-[var(--text-muted)]">
+              {quotaReached
+                ? "Quota gratuit atteint : vous pourrez postuler à nouveau quand une candidature sera close, ou sans limite en payant."
+                : `Quota gratuit de la formule ${PLAN_META[planId]?.name ?? planId}.`}
+            </span>
+            {unlimitedPlan && (
+              <Link href="/agence/abonnement" className="ml-auto font-medium text-[var(--primary)] hover:underline">
+                Illimité avec {PLAN_META[unlimitedPlan.id]?.name ?? unlimitedPlan.id}
+              </Link>
+            )}
+          </>
+        )}
+      </div>
+
       <ul className="space-y-2.5">
         {d.items.map((item) => {
           const application = sentByDemand.get(item.id);
@@ -115,6 +155,13 @@ export default function AgenceDemandesPage() {
                   <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-emerald-500/15 px-3 py-2 text-[13px] font-medium text-emerald-500">
                     <Check size={14} aria-hidden /> {d.appliedLabel}
                   </span>
+                ) : quotaReached ? (
+                  <Link
+                    href="/agence/abonnement"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--card-border)] px-4 py-2 text-[13px] font-medium text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
+                  >
+                    <Lock size={13} aria-hidden /> Quota atteint
+                  </Link>
                 ) : (
                   <button
                     type="button"

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { agencePage, demoAgency } from "@/content/agence";
 import { agencyProperties, agencyTeam } from "@/lib/demo/agency";
 import { roleLabel } from "@/lib/model/role-labels";
+import { PlanGate } from "@/components/business/plan-gate";
 
 /* `/agence/equipe` — les membres de l'agence et leurs droits. Ce sont de
    VRAIES personnes de l'annuaire : chaque ligne ouvre leur profil, et le
@@ -24,6 +25,11 @@ export default function AgenceEquipePage() {
           Les membres de {demoAgency.name}, leurs droits et les biens dont ils ont la charge.
         </p>
       </header>
+
+      <PlanGate
+        feature="equipe-droits"
+        why="La formule gratuite et Vitrine couvrent un seul utilisateur. Une équipe de deux personnes ou plus, avec des droits par membre, demande Mandats."
+      />
 
       <ul className="space-y-2.5">
         {team.map((m) => (

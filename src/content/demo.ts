@@ -97,8 +97,8 @@ export const demoScreen = {
   money: [
     { who: "Vendre ou louer un bien", pays: "Rien à E-Dome sur la transaction. Un tiers — notaire, régie — se paie à part." },
     { who: "Services, formations, événements, lives", pays: "Une commission sur ce qui se vend, de 5 à 12 % selon le pôle." },
-    { who: "Apporteurs", pays: "Une part de ce que gagne E-Dome (10 à 30 %), jamais un supplément pour le client." },
-    { who: "Agences et propriétaires", pays: "Un abonnement mensuel pour les outils professionnels, à partir de 19 CHF." },
+    { who: "Apporteurs", pays: "Biens : une prime fixe en francs, offerte par le vendeur. Marketplace : un pourcentage pris sur la marge du vendeur. Jamais un supplément pour le client." },
+    { who: "Agences et propriétaires", pays: "Gratuit pour démarrer ; un abonnement quand on grandit (volume, équipe, statistiques), à partir de 19 CHF." },
   ] satisfies MoneyLine[],
   moneyFootnote:
     "Aucun prix affiché ici n'est un engagement : la tarification est en cours de validation.",
