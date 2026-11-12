@@ -15,8 +15,11 @@ import { CURRENT_USER, OWNED_FORMATION_IDS, OWNED_PROPERTY_IDS } from "./demo/id
 import * as derive from "./demo/derive";
 import "./demo/invariants";
 import { properties as CATALOGUE, formations as CATALOGUE_FORMATIONS } from "./mock-data";
-import { PRODUCTS } from "./data/products";
 import { roleLabel } from "./model/role-labels";
+import { EVENTS, isPastEvent } from "./data/events";
+import { UPCOMING_LIVES } from "./data/lives";
+import { daysFromToday } from "./demo/clock";
+import type { ApporteurBook } from "./demo/affiliation";
 
 export type ReservationStatus = "confirmed" | "pending" | "completed" | "cancelled";
 export type ListingStatus = "published" | "draft";
@@ -217,35 +220,51 @@ export const formations: DashboardFormation[] = OWNED_FORMATION_IDS.map((id) => 
   };
 });
 
-/* Lives et evenements a venir (ordre chronologique). */
+/* Lives et événements à venir de l'utilisateur, DÉRIVÉS des catalogues
+   (`data/events.ts`, `data/lives.ts`) : ceux qu'il organise ou anime, datés
+   par rapport au « aujourd'hui » de la démonstration. Il y avait ici quatre
+   rendez-vous écrits à la main — « Sam 14 juin », une visite groupée d'un
+   chalet qui n'est pas à lui, 87 inscrits à un live. */
+const WEEKDAYS = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+const MONTHS_SHORT = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+function whenLabel(isoDate: string, hour: string): string {
+  const d = new Date(`${isoDate}T12:00:00Z`);
+  return `${WEEKDAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS_SHORT[d.getUTCMonth()]} · ${hour.replace(":", "h")}`;
+}
+const daysUntil = (isoDate: string) => daysFromToday(new Date(`${isoDate}T12:00:00Z`));
+
 export const upcomingEvents: UpcomingEvent[] = [
-  { id: "ev-1", kind: "live", title: "Décrypter les annonces immobilières", whenLabel: "Demain · 19h00", daysUntil: 1, spotsTaken: 87, spotsTotal: 120, price: 0, forecast: 0 },
-  { id: "ev-2", kind: "visite", title: "Visite groupée Chalet Verbier", whenLabel: "Sam 14 juin · 14h", daysUntil: 5, spotsTaken: 6, spotsTotal: 8, price: 75, forecast: 450 },
-  { id: "ev-3", kind: "atelier", title: "Atelier home-staging à Lausanne", whenLabel: "Mar 17 juin · 18h30", daysUntil: 8, spotsTaken: 12, spotsTotal: 20, price: 45, forecast: 540 },
-  { id: "ev-4", kind: "evenement", title: "Networking investisseurs romands", whenLabel: "Jeu 26 juin · 19h", daysUntil: 17, spotsTaken: 34, spotsTotal: 80, price: 25, forecast: 850 },
-];
+  ...EVENTS.filter((e) => e.organizerId === CURRENT_USER.id && !isPastEvent(e)).map((e) => ({
+    id: e.id,
+    kind: (e.type === "Atelier" ? "atelier" : "evenement") as EventKind,
+    title: e.titre,
+    whenLabel: whenLabel(e.date, e.heure),
+    daysUntil: daysUntil(e.date),
+    spotsTaken: e.spots - e.spotsRemaining,
+    spotsTotal: e.spots,
+    price: e.prix,
+    forecast: (e.spots - e.spotsRemaining) * e.prix,
+  })),
+  ...UPCOMING_LIVES.filter((l) => l.organizerId === CURRENT_USER.id).map((l) => ({
+    id: l.id,
+    kind: "live" as EventKind,
+    title: l.titre,
+    whenLabel: whenLabel(l.date, l.startsAt.slice(11, 16)),
+    daysUntil: daysUntil(l.date),
+    /* Un live n'a pas de jauge : la « capacité » affichée est le nombre
+       d'inscrits (100 %), jamais une salle inventée. */
+    spotsTaken: l.inscrits,
+    spotsTotal: Math.max(1, l.inscrits),
+    price: l.price,
+    forecast: l.inscrits * l.price,
+  })),
+].sort((a, b) => a.daysUntil - b.daysUntil);
 
-/* Boutique.
-
-   Deux des trois alertes désignaient des produits qui n'existent dans aucun
-   catalogue — `p-stage` et `p-bougie`. La troisième existait bien (`b11`),
-   mais avec trois états contradictoires : stock 14 sur sa fiche, stock 3
-   « faible » au tableau de bord, et 14 de nouveau sur la page des annonces.
-
-   Les alertes descendent maintenant du catalogue produits pour le stock et le
-   prix, et du journal pour les ventes du mois. */
-export const boutiqueAlerts: BoutiqueAlert[] = ["b11"].map((id) => {
-  const p = PRODUCTS.find((x) => x.id === id)!;
-  const soldThisMonth = Math.round(derive.currentMonth({ source: "boutique", subjectId: id }) / p.price);
-  return {
-    id,
-    name: p.title,
-    stock: p.stock,
-    level: p.stock === 0 ? "rupture" : p.stock <= 5 ? "faible" : "ok",
-    price: p.price,
-    soldThisMonth,
-  };
-});
+/* Boutique : plus d'alerte de stock. La boutique est en affiliation pure
+   (P4b) — Léo n'y vend rien, le stock est celui du marchand. L'alerte « stock
+   faible » sur `b11` n'avait donc pas lieu d'être sur son tableau de bord. La
+   liste reste exportée (vide) pour les compteurs qui la lisent. */
+export const boutiqueAlerts: BoutiqueAlert[] = [];
 
 /* Pipeline services : devis ouverts + prestations planifiees. */
 export const serviceLeads: ServiceLead[] = [
@@ -393,15 +412,15 @@ export const messageThreads: MessageThread[] = THREAD_SEEDS.map((seed, i) => {
    (`src/lib/demo/affiliation.ts`) ; aucun classement avec montants n'affirme
    de traction sur E-Dome. */
 
-/* Derive du journal. Les trois montants etaient ecrits en dur et ne
-   correspondaient ni au classement de /dashboard/apporteurs ni a celui de
-   /apporteurs, qui divergeaient eux-memes d un facteur 9. */
-const apporteurYear = derive.total({ source: "apporteurs" });
-export const apporteurSummary = {
-  earnedThisMonth: derive.currentMonth({ source: "apporteurs" }),
-  alreadyPaid: apporteurYear - derive.currentMonth({ source: "apporteurs" }),
-  pending: derive.currentMonth({ source: "apporteurs" }),
-};
+/* La tuile « Apporteurs » du tableau de bord lit LA source unique des
+   apports : `apporteurBook()` (P4a), la même que `/apporteurs` et
+   `/dashboard/apporteurs`. Elle lisait les anciennes lignes « apporteurs » du
+   journal (187 CHF « ce mois ») pendant que l'espace apporteur affichait un
+   autre total. Fonction pure du carnet : la page lui passe le carnet de la
+   personne incarnée (`useApporteurBook()`). Montants en centimes. */
+export function apporteurTile(book: ApporteurBook): { acquiredCents: number; pendingCents: number } {
+  return { acquiredCents: book.totals.total, pendingCents: book.totals.pending };
+}
 
 /* KPIs derives — JAMAIS codes en dur. */
 /* Le revenu du mois, TOUTES sources. Il valait la somme des biens seuls,
@@ -464,8 +483,6 @@ export const kpis = {
   revenueDelta: derive.growthLabel(),
   reservations: dashboardReservations.length,
   reservationsDelta: derive.growthLabel({ source: "biens" }),
-  commissions: apporteurSummary.earnedThisMonth,
-  commissionsDelta: derive.growthLabel({ source: "apporteurs" }),
   occupancy: avgOccupancy,
   occupancyDelta: "+4 pts",
   rating: Number(reviewsAvg.toFixed(2)),

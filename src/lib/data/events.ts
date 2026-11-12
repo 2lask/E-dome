@@ -22,9 +22,21 @@
    courte (cartes de liste et carrousel). Les deux existaient déjà dans le
    code ; les conserver séparément évite de casser la mise en page des cartes.
 
+   ── Organisateurs et dates (chantier P6c) ──
+   Chaque événement a un ORGANISATEUR qui est une personne de l'annuaire
+   (`organizerId`) : plus de « Plusieurs experts » ni de noms inventés.
+   `intervenant` n'est plus saisi, il se lit dans l'annuaire. Les dates sont
+   posées autour de `DEMO_TODAY` (30 septembre 2026) : les événements à venir
+   sont réservables, les passés sont marqués comme tels. Un réseau qui se
+   lance : des dizaines de places, pas des centaines.
+
    ── Migration Supabase ──
    Accesseurs synchrones tant que les pages événements sont des Client
    Components. Cible : tables `events`, `event_registrations`. */
+
+import { personById, requirePerson } from "@/lib/demo/directory";
+import { DEMO_TODAY, iso } from "@/lib/demo/clock";
+import { eventIdOf, type SessionEvent, type SessionState } from "@/lib/demo/session-store";
 
 export type EventType =
   | "Conférence"
@@ -54,8 +66,13 @@ export interface AppEvent {
   /** En CHF. 0 = gratuit. */
   prix: number;
   featured: boolean;
+  /** L'organisateur : une personne de l'annuaire (`requirePerson`). */
+  organizerId: string;
+  /** « Prénom Nom » de l'organisateur, lu dans l'annuaire — jamais saisi. */
   intervenant: string;
   programme: string[];
+  /** Créé pendant la visite (mémoire de session). */
+  fromSession?: boolean;
 }
 
 /** Classes de badge par type. Étaient dupliquées dans les deux pages. */
@@ -69,56 +86,59 @@ export const EVENT_TYPE_COLORS: Record<EventType, string> = {
 
 const U = "https://images.unsplash.com/photo-";
 
-type EventSeed = Omit<AppEvent, "enLigne">;
+type EventSeed = Omit<AppEvent, "enLigne" | "intervenant">;
 
+/* Les ids e1→e5 sont conservés : l'affiliation (`demo/affiliation.ts`) leur
+   rattache des ventes de billets, et les prix sont inchangés pour que les
+   carnets d'apporteurs restent exacts. */
 const EVENT_SEEDS: EventSeed[] = [
   {
     id: "e1",
-    titre: "Salon de l'immobilier Suisse 2026",
+    titre: "Rencontres immobilières de Neuchâtel",
     type: "Conférence",
-    date: "2026-05-15",
+    date: "2026-10-24",
     heure: "09:00",
-    duree: "8h",
-    lieu: "Palexpo, Genève",
+    duree: "6h",
+    lieu: "Neuchâtel, centre-ville",
     description:
-      "Le plus grand salon immobilier de Suisse romande. Retrouvez plus de 200 exposants, des conférences thématiques et des ateliers pratiques pour tous les profils : investisseurs, propriétaires, agents immobiliers et passionnés d'immobilier.",
-    resume: "Le plus grand salon immobilier de Suisse romande.",
+      "Une journée organisée par Hartmann Immobilier SA pour les propriétaires et futurs acheteurs du canton : le marché neuchâtelois, la rénovation énergétique d'un immeuble, la fiscalité d'un bien loué. Des intervenants que vous retrouvez sur E-Dome, des questions concrètes, un repas partagé.",
+    resume: "Marché neuchâtelois, rénovation énergétique et fiscalité, en une journée.",
     thumbnail: `${U}1540575467063-178a50c2df87?w=600&h=400&fit=crop`,
-    spots: 500,
-    spotsRemaining: 127,
+    spots: 120,
+    spotsRemaining: 41,
     prix: 45,
     featured: true,
-    intervenant: "Plusieurs experts",
+    organizerId: "user-015",
     programme: [
-      "09:00 — Ouverture des portes",
-      "10:00 — Keynote : Tendances immobilières 2026",
-      "11:30 — Table ronde : Investir en Suisse romande",
-      "14:00 — Ateliers pratiques (3 salles)",
-      "16:00 — Networking & cocktail",
-      "17:00 — Clôture",
+      "09:00 — Accueil, par Jean-Luc Hartmann",
+      "09:30 — Le marché neuchâtelois en 2026, par Aline Tschanz",
+      "10:45 — Rénover un immeuble : Minergie et CECB, par Reto Jungo",
+      "12:00 — Repas",
+      "13:30 — Déclarer un bien loué, par Sandrine Monnier",
+      "15:00 — Questions libres et clôture",
     ],
   },
   {
     id: "e2",
     titre: "Webinaire : Optimiser son rendement locatif",
     type: "Webinaire",
-    date: "2026-04-20",
+    date: "2026-10-15",
     heure: "18:00",
     duree: "1h30",
     lieu: "En ligne",
     description:
-      "Stratégies concrètes pour maximiser la rentabilité de vos biens locatifs. Calcul du rendement net, optimisation fiscale, gestion des charges et conseils pour réduire la vacance locative.",
-    resume: "Stratégies pour maximiser la rentabilité de vos biens.",
+      "Un an après avoir mis son appartement de Sous-Gare en location, Léo partage ses chiffres : rendement brut et net, charges qu'il n'avait pas vues venir, vacance locative, et ce qu'il ferait autrement. Pas une méthode miracle, un retour d'expérience.",
+    resume: "Un bailleur lausannois partage ses chiffres, sans méthode miracle.",
     thumbnail: `${U}1591115765373-5207764f72e7?w=600&h=400&fit=crop`,
-    spots: 200,
-    spotsRemaining: 84,
+    spots: 100,
+    spotsRemaining: 63,
     prix: 0,
     featured: false,
-    intervenant: "Sophie Martin",
+    organizerId: "user-001",
     programme: [
-      "18:00 — Introduction et objectifs",
-      "18:15 — Calcul du rendement net réel",
-      "18:45 — Optimisation fiscale",
+      "18:00 — Pourquoi j'ai loué plutôt que vendu",
+      "18:15 — Rendement brut, rendement net : mes vrais chiffres",
+      "18:45 — Charges, entretien, vacance",
       "19:15 — Questions / Réponses",
       "19:30 — Fin",
     ],
@@ -127,19 +147,19 @@ const EVENT_SEEDS: EventSeed[] = [
     id: "e3",
     titre: "Atelier : Home staging pratique",
     type: "Atelier",
-    date: "2026-04-10",
+    date: "2026-10-10",
     heure: "14:00",
     duree: "3h",
-    lieu: "Lausanne, Centre Flon",
+    lieu: "Vevey",
     description:
-      "Apprenez les techniques de home staging pour vendre plus vite et au meilleur prix. Mise en scène, photographie, dépersonnalisation et conseils de décoration accessibles à tous.",
-    resume: "Apprenez les techniques de home staging pour vendre plus vite.",
+      "Elena Currat montre, pièce par pièce, comment préparer un logement pour la vente ou la location : désencombrer, dépersonnaliser, éclairer, photographier. Exercices en petit groupe, avant/après de vrais chantiers.",
+    resume: "Préparer un logement pour la vente, pièce par pièce.",
     thumbnail: `${U}1586023492125-27b2c045efd7?w=600&h=400&fit=crop`,
-    spots: 30,
-    spotsRemaining: 8,
+    spots: 16,
+    spotsRemaining: 5,
     prix: 89,
     featured: false,
-    intervenant: "Claire Bernard",
+    organizerId: "user-010",
     programme: [
       "14:00 — Accueil",
       "14:15 — Les bases du home staging",
@@ -152,23 +172,23 @@ const EVENT_SEEDS: EventSeed[] = [
     id: "e4",
     titre: "Networking investisseurs romands",
     type: "Networking",
-    date: "2026-04-05",
+    date: "2026-11-05",
     heure: "19:00",
     duree: "2h",
-    lieu: "Hôtel Royal, Montreux",
+    lieu: "Genève, Champel",
     description:
-      "Rencontrez les investisseurs les plus actifs de Suisse romande dans un cadre exclusif. Échangez vos stratégies, partagez vos deals et créez des partenariats durables.",
-    resume: "Rencontrez les investisseurs les plus actifs de la région.",
+      "Une soirée en petit comité, à l'invitation d'Ennio Bordoni : chacun présente en cinq minutes un dossier en cours, chiffres à l'appui. Pas de vente, pas de démarchage — des échanges entre personnes qui investissent.",
+    resume: "Une soirée en petit comité, chiffres à l'appui.",
     thumbnail: `${U}1511578314322-379afb476865?w=600&h=400&fit=crop`,
-    spots: 80,
-    spotsRemaining: 22,
+    spots: 40,
+    spotsRemaining: 18,
     prix: 35,
     featured: false,
-    intervenant: "Marc Dupont",
+    organizerId: "user-003",
     programme: [
-      "19:00 — Accueil & cocktail",
-      "19:30 — Présentations flash (5 investisseurs)",
-      "20:15 — Networking libre",
+      "19:00 — Accueil",
+      "19:30 — Présentations flash (cinq dossiers)",
+      "20:15 — Échanges libres",
       "21:00 — Fin",
     ],
   },
@@ -176,19 +196,19 @@ const EVENT_SEEDS: EventSeed[] = [
     id: "e5",
     titre: "Formation live : Fiscalité immobilière",
     type: "Formation live",
-    date: "2026-03-20",
+    date: "2026-10-20",
     heure: "10:00",
     duree: "4h",
     lieu: "En ligne",
     description:
-      "Comprendre la fiscalité liée aux investissements immobiliers en Suisse. Impôt sur le revenu locatif, plus-values, déductions et optimisation via les sociétés immobilières.",
-    resume: "Comprendre la fiscalité liée aux investissements immobiliers.",
+      "Sandrine Monnier, ancienne fiduciaire, reprend en direct les points de sa formation : imposition de la valeur locative et des loyers, déductions d'entretien, plus-values, cas d'un bien situé dans un autre canton.",
+    resume: "Valeur locative, déductions, plus-values : l'essentiel, en direct.",
     thumbnail: `${U}1554224155-6726b3ff858f?w=600&h=400&fit=crop`,
-    spots: 150,
-    spotsRemaining: 0,
+    spots: 60,
+    spotsRemaining: 12,
     prix: 120,
     featured: false,
-    intervenant: "Jean Leroy",
+    organizerId: "user-011",
     programme: [
       "10:00 — Introduction",
       "10:30 — Fiscalité des revenus locatifs",
@@ -200,36 +220,123 @@ const EVENT_SEEDS: EventSeed[] = [
   },
   {
     id: "e6",
-    titre: "Conférence : Marché immobilier 2026",
-    type: "Conférence",
-    date: "2026-03-10",
-    heure: "17:00",
-    duree: "2h",
-    lieu: "EPFL, Lausanne",
+    titre: "Café-conseil : premier achat",
+    type: "Atelier",
+    date: "2026-09-12",
+    heure: "10:00",
+    duree: "1h30",
+    lieu: "Morges",
     description:
-      "Analyse approfondie et perspectives du marché immobilier suisse pour 2026. Données exclusives, tendances régionales et prévisions d'experts reconnus.",
-    resume: "Analyse et perspectives du marché immobilier suisse.",
+      "Céline Bovard avait proposé un café aux personnes qui hésitent à acheter leur premier logement : fonds propres, hypothèque, frais de notaire, et la question que tout le monde se pose — est-ce le moment ?",
+    resume: "Fonds propres, hypothèque, frais : les questions d'un premier achat.",
     thumbnail: `${U}1505373877841-8d25f7d46678?w=600&h=400&fit=crop`,
-    spots: 300,
+    spots: 12,
     spotsRemaining: 0,
     prix: 0,
     featured: false,
-    intervenant: "Prof. A. Blanc",
+    organizerId: "user-002",
     programme: [
-      "17:00 — Ouverture",
-      "17:15 — État des lieux du marché",
-      "18:00 — Prévisions régionales",
-      "18:30 — Débat avec le public",
-      "19:00 — Fin",
+      "10:00 — Tour de table",
+      "10:15 — Fonds propres et hypothèque",
+      "10:45 — Les frais qu'on oublie",
+      "11:15 — Questions libres",
+      "11:30 — Fin",
+    ],
+  },
+  {
+    id: "e7",
+    titre: "Visite de chantier : rénovation Minergie",
+    type: "Atelier",
+    date: "2026-09-05",
+    heure: "09:30",
+    duree: "2h",
+    lieu: "Neuchâtel",
+    description:
+      "Reto Jungo a ouvert le chantier de rénovation énergétique d'un immeuble neuchâtelois : isolation, pompe à chaleur, CECB avant et après. Une visite technique, en petit groupe.",
+    resume: "Isolation, pompe à chaleur, CECB : une visite technique.",
+    thumbnail: `${U}1586023492125-27b2c045efd7?w=600&h=400&fit=crop`,
+    spots: 15,
+    spotsRemaining: 0,
+    prix: 0,
+    featured: false,
+    organizerId: "user-009",
+    programme: [
+      "09:30 — Accueil sur le chantier",
+      "09:45 — L'enveloppe : isolation et fenêtres",
+      "10:30 — Chauffage : la pompe à chaleur",
+      "11:00 — CECB avant / après",
+      "11:30 — Fin",
     ],
   },
 ];
+
+const fullName = (id: string) => {
+  const p = requirePerson(id);
+  return `${p.firstName} ${p.lastName}`;
+};
 
 /** Les événements du catalogue. */
 export const EVENTS: AppEvent[] = EVENT_SEEDS.map((e) => ({
   ...e,
   enLigne: e.lieu === "En ligne",
+  intervenant: fullName(e.organizerId),
 }));
+
+/* ── Le temps des événements (horloge de la démonstration) ───────────────── */
+
+const TODAY_ISO = iso(DEMO_TODAY);
+
+/** Passé : avant le « aujourd'hui » de la démonstration (30 septembre 2026). */
+export function isPastEvent(e: Pick<AppEvent, "date">): boolean {
+  return e.date < TODAY_ISO;
+}
+
+const MONTHS_LONG = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
+/** « 24 octobre 2026 », sans `toLocaleDateString` (hydratation stable). */
+export function eventDateLabel(isoDate: string): string {
+  const [y, m, d] = isoDate.slice(0, 10).split("-").map(Number) as [number, number, number];
+  if (!y || !m || !d) return isoDate;
+  return `${d} ${MONTHS_LONG[m - 1]} ${y}`;
+}
+
+/* ── Événements créés pendant la visite ──────────────────────────────────── */
+
+const EVENT_TYPES: EventType[] = ["Conférence", "Webinaire", "Atelier", "Networking", "Formation live"];
+const DEFAULT_SESSION_THUMB = `${U}1540575467063-178a50c2df87?w=600&h=400&fit=crop`;
+
+/** Les événements publiés depuis /evenements/creer (journal de session). */
+export function sessionEvents(state: SessionState): AppEvent[] {
+  return state.events
+    .filter((e): e is Extract<SessionEvent, { kind: "event.published" }> => e.kind === "event.published")
+    .map((e) => ({
+      id: eventIdOf(e.seq),
+      titre: e.data.titre,
+      type: (EVENT_TYPES as string[]).includes(e.data.type) ? (e.data.type as EventType) : "Atelier",
+      date: e.data.date,
+      heure: e.data.heure,
+      duree: e.data.duree,
+      lieu: e.data.lieu,
+      enLigne: e.data.lieu === "En ligne",
+      description: e.data.description,
+      resume: e.data.description.slice(0, 90),
+      thumbnail: e.data.image || DEFAULT_SESSION_THUMB,
+      spots: Math.max(1, e.data.places),
+      spotsRemaining: Math.max(1, e.data.places),
+      prix: Math.max(0, e.data.prix),
+      featured: false,
+      organizerId: e.actorId,
+      intervenant: personById(e.actorId) ? fullName(e.actorId) : "",
+      programme: [],
+      fromSession: true,
+    }))
+    .reverse();
+}
+
+/** Catalogue + créations de session, les plus récentes créations en tête. */
+export function allEvents(state: SessionState): AppEvent[] {
+  return [...sessionEvents(state), ...EVENTS];
+}
 
 /* ── Accesseurs ──────────────────────────────────────────────────────────── */
 
@@ -255,11 +362,11 @@ export function isSoldOut(e: AppEvent): boolean {
 }
 
 /**
- * Événements les plus chers d'abord — utilisé par le carrousel du feed,
- * qui mettait auparavant en avant les événements d'un jeu de données dont
- * les identifiants ne résolvaient sur aucune fiche.
+ * Événements à venir, les plus chers d'abord — utilisé par le carrousel du
+ * feed, qui mettait auparavant en avant les événements d'un jeu de données
+ * dont les identifiants ne résolvaient sur aucune fiche.
  */
 export function listEventsByPriceDesc(limit?: number): AppEvent[] {
-  const sorted = [...EVENTS].sort((a, b) => b.prix - a.prix);
+  const sorted = EVENTS.filter((e) => !isPastEvent(e)).sort((a, b) => b.prix - a.prix);
   return typeof limit === "number" ? sorted.slice(0, limit) : sorted;
 }

@@ -85,7 +85,9 @@ const EXPLORER_SUB: SubItem[] = [
 
 const CREATE_SUB: SubItem[] = [
   { label: "Publier un bien", href: "/publier", icon: Building2 },
-  { label: "Vendre un produit", href: "/boutique/vendre", icon: ShoppingBag },
+  /* Plus de « Vendre un produit » : la boutique est en affiliation pure, et
+     aucune des seize personnes n'est un marchand. Les entreprises proposent
+     leurs produits depuis la boutique (/boutique/vendre). */
   { label: "Créer une formation", href: "/formations/creer", icon: GraduationCap },
   { label: "Programmer un live", href: "/live", icon: Video },
   { label: "Créer un événement", href: "/evenements/creer", icon: CalendarDays },
@@ -142,7 +144,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
     icon: Plus,
     subItems: CREATE_SUB,
     accent: true,
-    matchPrefixes: ["/publier", "/boutique/vendre", "/formations/creer", "/evenements/creer"],
+    matchPrefixes: ["/publier", "/formations/creer", "/evenements/creer"],
   };
 
   const isItemActive = (item: { href?: string; matchPrefixes?: string[] }) => {

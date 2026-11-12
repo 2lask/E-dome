@@ -72,7 +72,7 @@ export default function ApporteursPage() {
         </p>
       </header>
 
-      <section aria-label="Vos apports" className="space-y-2">
+      <section data-tour="apporteurs-totals" aria-label="Vos apports" className="space-y-2">
         <ApporteurTotals book={book} />
         <p className="text-[11.5px] text-[var(--text-muted)]">
           Un seul calcul pour tout l&apos;espace — le même que votre <Link href="/dashboard/apporteurs" className="text-[var(--primary)] hover:underline">tableau de bord</Link>.
@@ -80,7 +80,7 @@ export default function ApporteursPage() {
       </section>
 
       {/* Le commutateur */}
-      <div role="tablist" aria-label="Mécanique" className="inline-flex rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-1">
+      <div data-tour="apporteurs-tabs" role="tablist" aria-label="Mécanique" className="inline-flex rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-1">
         {([
           { key: "biens", label: "Biens", icon: Building2, hint: "prime en CHF" },
           { key: "marketplace", label: "Marketplace", icon: Percent, hint: "net en CHF" },
@@ -109,7 +109,7 @@ export default function ApporteursPage() {
 
       <AbonnementsSection book={book} />
 
-      <section className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-5">
+      <section data-tour="apporteurs-rules" className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-5">
         <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
           <ShieldCheck size={15} className="text-[var(--primary)]" aria-hidden /> Les règles du programme
         </h2>
@@ -313,7 +313,7 @@ function MarketplaceTab({ state, book }: { state: ReturnType<typeof useSession>[
 function AbonnementsSection({ book }: { book: ReturnType<typeof useApporteurBook> }) {
   const paid = PLANS.filter((p) => p.price.month.cents > 0).slice().sort((a, b) => a.tier - b.tier || a.price.month.cents - b.price.month.cents);
   return (
-    <section className="space-y-3" aria-label="Abonnements">
+    <section data-tour="apporteurs-abonnements" className="space-y-3" aria-label="Abonnements">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-[var(--foreground)]">
         <Repeat size={17} className="text-[var(--primary)]" aria-hidden /> Abonnements
       </h2>

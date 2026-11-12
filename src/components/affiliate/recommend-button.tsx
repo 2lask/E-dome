@@ -7,7 +7,7 @@ import { useApp } from "@/lib/context";
 import { buildObjectAffiliate, referralEarning } from "@/lib/referral-links";
 import type { ReferralTargetKind, TransactionType } from "@/lib/types";
 
-/* Bouton « Recommander & gagner » posé sur chaque annonce vendable.
+/* Bouton « Recommander » (« & gagner » quand il y a un gain) posé sur chaque annonce vendable.
    Au clic : génère (ou retrouve) le lien d'affiliation rattaché à
    l'annonce, l'ajoute à « Mes liens » (dédup côté contexte), crédite des
    points de récompense, et ouvre un popover avec le gain potentiel, l'URL
@@ -62,7 +62,10 @@ export function RecommendButton({
         }
       >
         <Link2 size={15} className="text-[var(--primary)]" />
-        Recommander &amp; gagner
+        {/* « & gagner » seulement quand un gain existe : un produit de la
+            boutique (affiliation payée par le marchand) ou un événement gratuit
+            ne rapporte rien à qui recommande. */}
+        {earning ? "Recommander & gagner" : "Recommander"}
       </button>
 
       {open && (

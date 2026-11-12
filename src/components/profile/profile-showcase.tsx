@@ -59,7 +59,9 @@ type LinkKey = "publications" | SubTab;
 const SUB_TABS: { key: SubTab; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
   { key: "biens", label: "Biens", icon: Building2 },
   { key: "formations", label: "Formations", icon: GraduationCap },
-  { key: "produits", label: "Produits", icon: ShoppingBag },
+  /* La boutique est en affiliation pure (P4b) : une personne n'y vend rien,
+     elle y RECOMMANDE des produits de marchands partenaires. */
+  { key: "produits", label: "Recommandés", icon: ShoppingBag },
   { key: "services", label: "Services", icon: Briefcase },
   { key: "lives", label: "Lives", icon: Video },
   { key: "avis", label: "Avis", icon: Star },
@@ -69,7 +71,7 @@ const SUB_TABS: { key: SubTab; label: string; icon: React.ComponentType<{ size?:
 const TAB_LINKS: Record<LinkKey, { seeAll?: string; add?: { href: string; label: string }; empty: string }> = {
   publications: { seeAll: "/feed", add: { href: "/creer-post", label: "Publier" }, empty: "Aucune publication" },
   biens: { seeAll: "/explorer", add: { href: "/publier", label: "Publier un bien" }, empty: "Aucun bien publié" },
-  produits: { seeAll: "/boutique", add: { href: "/boutique", label: "Gérer la boutique" }, empty: "Aucun produit en vente" },
+  produits: { seeAll: "/boutique", add: { href: "/boutique", label: "Parcourir la boutique" }, empty: "Aucun produit recommandé" },
   formations: { seeAll: "/formations", add: { href: "/formations/creer", label: "Créer une formation" }, empty: "Aucune formation" },
   lives: { seeAll: "/live", add: { href: "/live", label: "Programmer un live" }, empty: "Aucun live programmé" },
   services: { seeAll: "/services", add: { href: "/services/proposer", label: "Proposer un service" }, empty: "Aucun service" },
@@ -217,7 +219,7 @@ export function ProfileShowcase({
                 <h3 className="text-sm font-medium leading-tight line-clamp-2 text-[var(--foreground)]">{p.title}</h3>
                 <div className="flex items-baseline justify-between mt-2">
                   <p className="text-sm font-semibold tabular-nums text-[var(--foreground)]">{formatPrice(p.price, p.currency as "CHF")}</p>
-                  <p className="text-[11px] text-[var(--text-muted)]">Stock {p.stock}</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">Chez le marchand</p>
                 </div>
               </div>
             </Card>
@@ -231,7 +233,7 @@ export function ProfileShowcase({
       <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {data.services.map((s) => (
           <li key={s.id}>
-            <Card href="/services">
+            <Card href={`/services/${s.id}`}>
               <CardImage src={s.cover} aspect="16/9" />
               <div className="p-4">
                 <h3 className="text-sm font-semibold leading-tight text-[var(--foreground)]">{s.title}</h3>

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -8,7 +8,7 @@ import {
   Users, Settings, Loader2, Sparkles, PhoneOff, MessageSquare, X,
 } from "lucide-react";
 import { JitsiMeet } from "@/components/jitsi-meet";
-import { currentUser } from "@/lib/mock-data";
+import { useActor } from "@/lib/use-actor";
 
 /* /reunion/[roomId] : 2 etapes
    1. Lobby (pre-join) : preview camera, controles micro/cam, nom editable,
@@ -24,14 +24,22 @@ export default function ReunionPage({ params }: { params: Promise<{ roomId: stri
   const router = useRouter();
 
   const subject = searchParams.get("titre") ?? "Reunion E-Dome";
-  const inviteUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/reunion/${roomId}`
-    : `/reunion/${roomId}`;
+  /* L'origine n'existe qu'au navigateur : la lire au rendu (`typeof window`)
+     donnait un HTML serveur différent du premier rendu client. */
+  const origin = useSyncExternalStore(
+    () => () => {},
+    () => window.location.origin,
+    () => "",
+  );
+  const inviteUrl = `${origin}/reunion/${roomId}`;
 
   const [stage, setStage] = useState<Stage>("lobby");
-  const [displayName, setDisplayName] = useState(
-    `${currentUser.firstName} ${currentUser.lastName}`,
-  );
+  /* Le nom affiché est celui de la personne INCARNÉE (P3), tant qu'on ne l'a
+     pas modifié — plus « l'utilisateur courant » figé. */
+  const actor = useActor();
+  const [editedName, setEditedName] = useState<string | null>(null);
+  const displayName = editedName ?? actor.name;
+  const setDisplayName = (v: string) => setEditedName(v);
   const [audioMuted, setAudioMuted] = useState(false);
   const [videoMuted, setVideoMuted] = useState(false);
 

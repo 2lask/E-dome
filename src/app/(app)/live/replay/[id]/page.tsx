@@ -81,22 +81,19 @@ export default async function ReplayPage({ params }: { params: Promise<{ id: str
       {/* Back link */}
       <BackButton fallbackHref="/live" label="Retour aux lives" />
 
-      {/* YouTube Embed */}
-      <div className="rounded-xl overflow-hidden bg-gray-900">
-        <iframe
-          className="w-full aspect-video"
-          src={`https://www.youtube.com/embed/${replay.youtubeId}`}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          title={replay.titre}
-        />
+      {/* Pas de vidéo sans rapport : la maquette n'embarque aucun replay réel. */}
+      <div className="rounded-xl overflow-hidden bg-gray-900 aspect-video flex flex-col items-center justify-center gap-3 px-6 text-center">
+        <Film size={36} strokeWidth={1.5} className="text-white/50" aria-hidden />
+        <p className="text-sm text-white/70 max-w-md">
+          Démonstration : l&apos;enregistrement de ce live serait diffusé ici. Aucune vidéo n&apos;est incluse dans la maquette.
+        </p>
       </div>
 
       {/* Info */}
       <div className="space-y-2">
         <h1 className="text-2xl page-heading text-[var(--foreground)]">{replay.titre}</h1>
         <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--text-secondary)]">
-          <span className="font-medium text-[var(--primary)]">{replay.speaker}</span>
+          <Link href={`/profil/${replay.speakerId}`} className="font-medium text-[var(--primary)] hover:underline">{replay.speaker}</Link>
           <span className="text-[var(--text-muted)]">&middot;</span>
           <span>{replay.date}</span>
           <span className="text-[var(--text-muted)]">&middot;</span>

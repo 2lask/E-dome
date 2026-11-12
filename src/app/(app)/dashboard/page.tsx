@@ -28,13 +28,14 @@ import {
   dashboard,
   formations,
   properties,
-  boutiqueAlerts,
-  apporteurSummary,
+  apporteurTile,
   dashboardReservations,
   reviewsSummary,
   activeListingsCount,
 } from "@/lib/dashboard-data";
 import { buildView } from "@/lib/revenue-data";
+import { useApporteurBook } from "@/lib/use-business";
+import { chfLabel } from "@/lib/demo/affiliation";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -62,7 +63,9 @@ function DashboardOverviewPage() {
   const occupancyAvg =
     properties.reduce((s, p) => s + p.occupancy, 0) / properties.length;
 
-  const draftBoutique = boutiqueAlerts.filter((b) => b.level !== "ok").length;
+  /* La tuile Apporteurs lit le MÊME carnet que /dashboard/apporteurs
+     (`apporteurBook()` de la personne incarnée) — P6c. */
+  const apporteurs = apporteurTile(useApporteurBook());
   const pendingReservations = dashboardReservations.filter(
     (r) => r.status === "pending",
   ).length;
@@ -76,7 +79,6 @@ function DashboardOverviewPage() {
     `${activeListingsCount.formations} formations`,
     `${activeListingsCount.events} événements`,
     `${activeListingsCount.services} services`,
-    `${activeListingsCount.boutique} produits`,
   ].join(" · ");
 
   return (
@@ -120,7 +122,7 @@ function DashboardOverviewPage() {
         {/* Bande d'alertes : ne contient PLUS que ce qui n'est pas
             deja dans le hero. Reservations + avis sont dans le hero,
             commissions est unique a cette bande. */}
-        <AlertsBanner pendingCommissions={apporteurSummary.pending} />
+        <AlertsBanner pendingCents={apporteurs.pendingCents} />
 
         {/* Prochains rendez-vous + Objectifs (2-cols) */}
         <div className="grid gap-6 lg:grid-cols-2">
@@ -206,10 +208,10 @@ function DashboardOverviewPage() {
           <SummaryCard
             icon={Handshake}
             label="Apporteurs"
-            value={`${formatNumber(apporteurSummary.earnedThisMonth)} CHF ce mois`}
-            hint={`${formatNumber(apporteurSummary.pending)} CHF en attente`}
+            value={`${chfLabel(apporteurs.acquiredCents)} acquis`}
+            hint={`${chfLabel(apporteurs.pendingCents)} en attente d'acceptation`}
             href="/dashboard/apporteurs"
-            tone={apporteurSummary.pending > 0 ? "warning" : "default"}
+            tone={apporteurs.pendingCents > 0 ? "warning" : "default"}
           />
           <SummaryCard
             icon={BarChart3}
@@ -222,9 +224,8 @@ function DashboardOverviewPage() {
             icon={CalendarCheck}
             label="Calendrier"
             value={`${Math.round(occupancyAvg * 100)}% occupation`}
-            hint={`${formations.length} formations · ${draftBoutique} alertes boutique`}
+            hint={`${formations.length} formations`}
             href="/dashboard/calendrier"
-            tone={draftBoutique > 0 ? "warning" : "default"}
           />
         </div>
       </section>
@@ -284,11 +285,11 @@ function KpiTile({
    (reservations + avis sont dans le hero). Si rien -> bordure
    dashed sobre. */
 function AlertsBanner({
-  pendingCommissions,
+  pendingCents,
 }: {
-  pendingCommissions: number;
+  pendingCents: number;
 }) {
-  if (pendingCommissions <= 0) {
+  if (pendingCents <= 0) {
     return null;
   }
 
@@ -301,7 +302,7 @@ function AlertsBanner({
         )}
       >
         <Handshake className="h-3.5 w-3.5" />
-        {formatNumber(pendingCommissions)} CHF de commissions en attente
+        {chfLabel(pendingCents)} de primes en attente d&apos;acceptation
         <ArrowRight className="h-3 w-3" />
       </Link>
     </div>

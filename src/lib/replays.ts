@@ -8,32 +8,48 @@
    tête aurait décalé silencieusement tous les liens.
 
    Les deux pages lisent maintenant ce tableau, et l'adressage se fait par
-   identifiant. */
+   identifiant.
+
+   Chantier P6c : chaque replay est celui d'un live animé par une personne de
+   l'annuaire (`speakerId`) — plus de « Jean-Pierre Dumont » ni de « Nadia
+   Silva » —, daté avant le « aujourd'hui » de la démonstration, avec des vues
+   à l'échelle d'un réseau qui se lance (des dizaines). La vidéo YouTube sans
+   rapport qui tenait lieu de replay est retirée : la fiche le dit. */
+
+import { requirePerson } from "@/lib/demo/directory";
+import { groupThousands } from "@/lib/demo/session-views";
 
 export interface Replay {
   id: string;
   titre: string;
+  /** L'animateur : une personne de l'annuaire. */
+  speakerId: string;
+  /** « Prénom Nom », lu dans l'annuaire. */
   speaker: string;
   date: string;
   vues: number;
   duree: string;
-  /** Identifiant de la vidéo YouTube intégrée sur la fiche. */
-  youtubeId: string;
 }
 
-export const REPLAYS: Replay[] = [
-  { id: "R1", titre: "Les tendances du marché Q1 2026", speaker: "Jean-Pierre Dumont", date: "20 mars 2026", vues: 1240, duree: "1h12", youtubeId: "FqjDgXlE2nQ" },
-  { id: "R2", titre: "Comment fixer le bon prix de location", speaker: "Nadia Silva", date: "15 mars 2026", vues: 890, duree: "45min", youtubeId: "E0dyHPjiJDo" },
-  { id: "R3", titre: "Fiscalité immobilière en Suisse", speaker: "Patrick Leroy", date: "10 mars 2026", vues: 2100, duree: "1h30", youtubeId: "_DtWLPqqnwU" },
-  { id: "R4", titre: "Home staging : avant/après", speaker: "Amina Koné", date: "5 mars 2026", vues: 670, duree: "38min", youtubeId: "p5Kk_HBASHg" },
-  { id: "R5", titre: "Droit du bail : vos obligations", speaker: "Thomas Roth", date: "28 février 2026", vues: 1560, duree: "55min", youtubeId: "NBjn9FkvpCQ" },
-  { id: "R6", titre: "Photographie immobilière pro", speaker: "Amina Koné", date: "20 février 2026", vues: 780, duree: "42min", youtubeId: "FqjDgXlE2nQ" },
+const SEEDS: Omit<Replay, "speaker">[] = [
+  { id: "R1", titre: "Le marché romand au troisième trimestre", speakerId: "user-003", date: "17 septembre 2026", vues: 46, duree: "52min" },
+  { id: "R2", titre: "Fixer son prix en courte durée", speakerId: "user-013", date: "9 septembre 2026", vues: 38, duree: "45min" },
+  { id: "R3", titre: "Fiscalité immobilière en Suisse", speakerId: "user-011", date: "2 septembre 2026", vues: 61, duree: "1h10" },
+  { id: "R4", titre: "Home staging : avant/après", speakerId: "user-010", date: "26 août 2026", vues: 29, duree: "38min" },
+  { id: "R5", titre: "Droit du bail : les obligations du bailleur", speakerId: "user-004", date: "19 août 2026", vues: 33, duree: "55min" },
+  { id: "R6", titre: "Photographie immobilière : les bases", speakerId: "user-005", date: "12 août 2026", vues: 22, duree: "42min" },
 ];
+
+export const REPLAYS: Replay[] = SEEDS.map((r) => {
+  const p = requirePerson(r.speakerId);
+  return { ...r, speaker: `${p.firstName} ${p.lastName}` };
+});
 
 export function getReplayById(id: string): Replay | undefined {
   return REPLAYS.find((r) => r.id === id);
 }
 
+/** Groupement suisse, sans `toLocaleString` (hydratation stable). */
 export function formatVues(vues: number): string {
-  return vues.toLocaleString("fr-CH");
+  return groupThousands(vues);
 }

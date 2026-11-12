@@ -5,6 +5,9 @@ import { useApp } from "@/lib/context";
 import { AffiliationToggle, type AffiliationValue } from "@/components/business/affiliation-toggle";
 import { defaultAffiliationRate } from "@/lib/pricing";
 import { pctLabel } from "@/lib/demo/affiliation";
+import { recordSessionEvent } from "@/lib/use-session";
+import { useActor } from "@/lib/use-actor";
+import { eventIdOf } from "@/lib/demo/session-store";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -18,8 +21,6 @@ interface EventForm {
   lieu: string;
   description: string;
   image: string;
-  intervenantNom: string;
-  intervenantBio: string;
   places: number;
   prix: number;
 }
@@ -28,7 +29,7 @@ const TYPES = ["Webinaire", "Conférence", "Atelier", "Networking", "Formation l
 
 const emptyForm: EventForm = {
   titre: "", type: "", date: "", heure: "", duree: "", enLigne: false, lieu: "", description: "", image: "",
-  intervenantNom: "", intervenantBio: "", places: 0, prix: 0,
+  places: 0, prix: 0,
 };
 
 const inputCls = "w-full px-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors";
@@ -39,7 +40,13 @@ const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5"
 export default function CreerEvenementPage() {
   const { formatPrice } = useApp();
   const [form, setForm] = useState<EventForm>(emptyForm);
-  const [published, setPublished] = useState(false);
+  /* Correctif P6c : « Publier » affichait « maintenant visible » sans rien
+     créer, et l'intervenant était un nom libre (donc inventé). L'événement
+     entre désormais au journal de session (`event.published`) et
+     l'organisateur est la personne incarnée. */
+  const actor = useActor();
+  const [publishedId, setPublishedId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [affiliation, setAffiliation] = useState<AffiliationValue>({ open: false, rate: defaultAffiliationRate("evenement") });
 
   const update = <K extends keyof EventForm>(key: K, value: EventForm[K]) => {
@@ -47,10 +54,31 @@ export default function CreerEvenementPage() {
   };
 
   const handlePublish = () => {
-    setPublished(true);
+    if (form.titre.trim().length < 5 || !form.type || !form.date || !form.heure || !(form.places > 0) || (!form.enLigne && !form.lieu.trim())) {
+      setError("Indiquez un titre (cinq caractères au moins), un type, une date, une heure, un lieu et un nombre de places.");
+      return;
+    }
+    const ev = recordSessionEvent({
+      kind: "event.published",
+      data: {
+        titre: form.titre.trim(),
+        type: form.type,
+        date: form.date,
+        heure: form.heure,
+        duree: form.duree.trim() || "1h",
+        lieu: form.enLigne ? "En ligne" : form.lieu.trim(),
+        description: form.description.trim(),
+        image: form.image.trim(),
+        places: Math.round(form.places),
+        prix: Math.max(0, Math.round(form.prix || 0)),
+        affiliationRate: affiliation.open && form.prix > 0 ? affiliation.rate : undefined,
+      },
+    });
+    setError(null);
+    setPublishedId(eventIdOf(ev.seq));
   };
 
-  if (published) {
+  if (publishedId) {
     return (
       <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4">
         <div className="text-center animate-scale-in max-w-md">
@@ -62,8 +90,8 @@ export default function CreerEvenementPage() {
           {affiliation.open && form.prix > 0 && (
             <p className="text-sm text-[var(--text-muted)] -mt-4 mb-6">Ouvert à l&apos;affiliation à {pctLabel(affiliation.rate)} du prix du billet.</p>
           )}
-          <a href="/evenements" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
-            Voir les événements
+          <a href={`/evenements/${publishedId}`} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors inline-block">
+            Voir l&apos;événement
           </a>
         </div>
       </div>
@@ -135,16 +163,12 @@ export default function CreerEvenementPage() {
             {form.image && <img src={form.image} alt="Preview" className="mt-2 w-full h-40 object-cover rounded-xl" />}
           </div>
 
-          {/* Intervenant */}
-          <div className="p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl space-y-4">
-            <h3 className="font-medium">Intervenant</h3>
+          {/* L'organisateur : la personne incarnée, jamais un nom saisi */}
+          <div className="p-5 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl flex items-center gap-3">
+            <img src={actor.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
             <div>
-              <label className={labelCls}>Nom</label>
-              <input className={inputCls} placeholder="Nom de l'intervenant" value={form.intervenantNom} onChange={(e) => update("intervenantNom", e.target.value)} />
-            </div>
-            <div>
-              <label className={labelCls}>Bio courte</label>
-              <textarea className={`${inputCls} min-h-[80px] resize-y`} placeholder="Courte biographie..." value={form.intervenantBio} onChange={(e) => update("intervenantBio", e.target.value)} />
+              <p className="text-sm text-[var(--text-muted)]">Organisateur</p>
+              <p className="font-medium">{actor.name}</p>
             </div>
           </div>
 
@@ -162,6 +186,8 @@ export default function CreerEvenementPage() {
           </div>
 
           <AffiliationToggle pole="evenement" priceChf={form.prix} value={affiliation} onChange={setAffiliation} priceLabel="par billet" />
+
+          {error && <p role="alert" className="text-sm text-red-400">{error}</p>}
 
           <button onClick={handlePublish} className="w-full py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors mt-4">
             Publier l&apos;événement

@@ -23,8 +23,10 @@ import {
   revenueBySource,
   revenueByType,
   kpis,
-  apporteurSummary,
+  apporteurTile,
 } from "@/lib/dashboard-data";
+import { apporteurBook } from "@/lib/demo/affiliation";
+import { emptySession } from "@/lib/demo/session-store";
 import { PROPS, buildView } from "@/lib/revenue-data";
 import { quote, primeChf, AFFILIATION_RATES, EDOME_PRIME_SHARE } from "@/lib/pricing";
 import { chf } from "@/lib/model/billing";
@@ -193,7 +195,15 @@ test("16 — aucun compteur d'audience à quatre chiffres", () => {
 });
 
 test("17 — un seul chiffre pour les apporteurs", () => {
-  assert.equal(apporteurSummary.earnedThisMonth, derive.currentMonth({ source: "apporteurs" }));
+  /* La tuile du tableau de bord et l'espace apporteur lisent la MÊME source
+     (`apporteurBook()`, P4a) — plus les anciennes lignes « apporteurs » du
+     journal. Chantier P6c : on épingle la source unique, pour chaque apporteur. */
+  for (const id of ["user-001", "user-012", "user-014"]) {
+    const book = apporteurBook(emptySession(), id);
+    const tile = apporteurTile(book);
+    assert.equal(tile.acquiredCents, book.totals.total, `acquis ${id}`);
+    assert.equal(tile.pendingCents, book.totals.pending, `en attente ${id}`);
+  }
 });
 
 test("18 — le montant de chaque réservation affichée est vérifiable", () => {

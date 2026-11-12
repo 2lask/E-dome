@@ -36,16 +36,6 @@ const CURRENCY_SYMBOLS: Record<Currency, string> = {
 
 // ─── Context shape ──────────────────────────────────────────────────────────
 
-export interface CartItem {
-  id: string;
-  qty: number;
-  /** Snapshot lors de l'ajout — affichage panier sans relookup. */
-  title?: string;
-  price?: number;
-  currency?: Currency;
-  cover?: string;
-}
-
 interface AppContextValue {
   /* La personne incarnée (chantier P3, « être un profil ») : l'acteur de la
      mémoire de session. On ne visite plus « en tant que rôle » : le rôle sous
@@ -71,13 +61,8 @@ interface AppContextValue {
   currency: Currency;
   setCurrency: (c: Currency) => void;
   formatPrice: (amount: number, originalCurrency?: Currency) => string;
-  /* ── Panier boutique ── */
-  cart: CartItem[];
-  cartCount: number;
-  addToCart: (item: Omit<CartItem, "qty"> & { qty?: number }) => void;
-  removeFromCart: (id: string) => void;
-  updateCartQty: (id: string, qty: number) => void;
-  clearCart: () => void;
+  /* Pas de panier : la boutique est en affiliation pure (P4b) — l'achat se
+     conclut chez le marchand. L'ancien panier n'avait plus aucun appelant. */
   /* ── Liens d'apporteur d'affaires (partagés entre /apporteurs et le
      composer du feed, pour attacher un lien de redirection affilié) ── */
   referralLinks: ReferralLink[];
@@ -176,7 +161,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [followsByActor, actorId],
   );
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [referralLinks, setReferralLinks] = useState<ReferralLink[]>(DEFAULT_REFERRAL_LINKS);
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [pinnedPosts, setPinnedPosts] = useState<string[]>([]);
@@ -207,12 +191,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       const storedCurrency = localStorage.getItem(`${STORAGE_PREFIX}currency`);
       if (storedCurrency) setCurrencyState(storedCurrency as Currency);
-
-      const storedCart = localStorage.getItem(`${STORAGE_PREFIX}cart`);
-      if (storedCart) {
-        const parsed = JSON.parse(storedCart);
-        if (Array.isArray(parsed)) setCart(parsed);
-      }
 
       const storedReferralLinks = localStorage.getItem(`${STORAGE_PREFIX}referralLinks`);
       if (storedReferralLinks) {
@@ -276,11 +254,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
     persist("currency", currency);
   }, [currency, mounted]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    persist("cart", JSON.stringify(cart));
-  }, [cart, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -353,31 +326,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCurrencyState(c);
   }, []);
 
-  const addToCart = useCallback((item: Omit<CartItem, "qty"> & { qty?: number }) => {
-    const qty = item.qty ?? 1;
-    setCart((prev) => {
-      const existing = prev.find((c) => c.id === item.id);
-      if (existing) {
-        return prev.map((c) => (c.id === item.id ? { ...c, qty: c.qty + qty } : c));
-      }
-      return [...prev, { ...item, qty }];
-    });
-  }, []);
-
-  const removeFromCart = useCallback((id: string) => {
-    setCart((prev) => prev.filter((c) => c.id !== id));
-  }, []);
-
-  const updateCartQty = useCallback((id: string, qty: number) => {
-    if (qty <= 0) {
-      setCart((prev) => prev.filter((c) => c.id !== id));
-      return;
-    }
-    setCart((prev) => prev.map((c) => (c.id === id ? { ...c, qty } : c)));
-  }, []);
-
-  const clearCart = useCallback(() => setCart([]), []);
-
   const addReferralLink = useCallback((link: ReferralLink) => {
     let created = false;
     setReferralLinks((prev) => {
@@ -432,8 +380,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPinnedPosts((prev) => prev.filter((x) => x !== postId));
   }, []);
 
-  const cartCount = useMemo(() => cart.reduce((s, c) => s + c.qty, 0), [cart]);
-
   const formatPrice = useCallback(
     (amount: number, originalCurrency: Currency = "CHF") => {
       const inCHF = amount / EXCHANGE_RATES[originalCurrency];
@@ -469,12 +415,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       currency,
       setCurrency,
       formatPrice,
-      cart,
-      cartCount,
-      addToCart,
-      removeFromCart,
-      updateCartQty,
-      clearCart,
       referralLinks,
       addReferralLink,
       hasReferralLinkFor,
@@ -505,12 +445,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       currency,
       setCurrency,
       formatPrice,
-      cart,
-      cartCount,
-      addToCart,
-      removeFromCart,
-      updateCartQty,
-      clearCart,
       referralLinks,
       addReferralLink,
       hasReferralLinkFor,

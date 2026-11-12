@@ -10,7 +10,6 @@ import {
   MessageCircle,
   User,
   HomeIcon,
-  Store,
   GraduationCap,
   Radio,
   CalendarPlus,
@@ -41,7 +40,6 @@ const navItems: MobileNavItem[] = [
 
 const publishMenuItems: { icon: LucideIcon; label: string; href: string }[] = [
   { icon: HomeIcon, label: "Publier un bien", href: "/publier" },
-  { icon: Store, label: "Vendre un produit", href: "/boutique/vendre" },
   { icon: GraduationCap, label: "Créer une formation", href: "/formations/creer" },
   { icon: Radio, label: "Programmer un live", href: "/live" },
   { icon: CalendarPlus, label: "Créer un événement", href: "/evenements/creer" },
