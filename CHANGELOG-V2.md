@@ -120,12 +120,64 @@ entre parenthèses sont les commits.
 
 ---
 
-## Portes de qualité (au dernier commit)
+## Plan priorisé P0→P7 — « rendre la plateforme vivante » (reprise 2026-11)
 
-`npm run typecheck` 0 · `npm run lint` 0 erreur · `npm run build` 66 pages ·
-`npm test` 13/13 Playwright · `npm run test:data` 18/18.
+*Deuxième moitié de la Mission 2. L'ordre suit l'impact, pas les écrans un par
+un : d'abord les systèmes dont tout dépend, les détails à la fin. Un commit par
+chantier, portes vertes et vérification à l'écran à chaque fois. Bilan complet
+dans `RAPPORT-FINAL-2.md`.*
+
+- **P1 — Le casting des seize** (`84ef578`) : seize personnes réelles et
+  cohérentes (Léo … Amina), 25 biens sur des lieux réels, graphe d'abonnés,
+  avis réciproques liés à des transactions, agence Hartmann et sa vraie équipe.
+- **P2bis — Le fil vivant** (`da29da7`) : 44 posts sur trois semaines, seize
+  voix distinctes (dont une qui écrit court et mal, une débutante, une qui
+  doute), compteurs de « j'aime » vrais.
+- **P2 — Le moteur d'interactions** (`a6e40fb`) : une mémoire de session unique
+  où chaque clic laisse une trace (publier, contacter, devis, postuler,
+  réserver, offrir, favoris), messagerie qui relie, notifications dérivées des
+  événements avec un seul compteur.
+- **P4b — La boutique en affiliation** (`9fa6da7`) : fin du panier, du paiement
+  et de la garantie E-Dome ; « Vous quittez E-Dome pour <marchand> » sans URL
+  inventée ; avis non liés à un achat retirés ; le journal ne crédite plus Léo
+  des ventes d'un marchand tiers (invariant 20).
+- **P3 — Être un profil** (`84f4d28`) : on entre dans la peau d'une des seize
+  personnes ; identité, navigation, tableau de bord, messages et notifications
+  suivent, y compris un tableau de bord utile pour qui n'a aucun bien.
+- **P4a — Le modèle économique visible** (`0b39c70`) : activation de la prime
+  biens sur `/publier` (prime fixe en CHF, jamais un % du prix, 12 % E-Dome),
+  espace apporteur Biens/Marketplace/Abonnements d'une source unique,
+  restriction France visible, freemium en valeurs de catalogue, `/tarifs` par
+  rôle, changement de formule et garde-fous d'agence.
+- **P6a — Services et Formations** (`31fa4c5`) : fiche service par prestataire
+  réel, parcours devis→paiement→avis ; leçons propres à chaque formation,
+  progression dérivée, certificat de démonstration à 100 %.
+- **P6b — Location, investisseurs, recherche** (`117ace1`) : « Demander une
+  visite » et prix au mois en longue durée, offre d'achat avec le panneau « qui
+  paie quoi », pôle investisseurs calculé, recherche en texte libre tokenisée.
+- **P6c — Événements, admin, apporteurs** (`21bc1a5`) : organisateurs réels et
+  dates cohérentes, `/live` du point de vue de l'acteur, admin aligné sur le
+  casting (« Volume de transactions 2026 »), tuile apporteur et espace de la
+  même source, reliquats boutique retirés.
+- **P5 — Le tutoriel guidé** (`8c4bb8a`) : mise en lumière en portail,
+  cinq parcours (découverte + par rôle), compteur d'étapes, « Passer »,
+  reprise, lancement automatique à la première visite, version mobile ;
+  « Mode explicatif » devient « Glossaire ».
+- **P7 — Finitions** (`8d99a9c`) : faux liens cal.com → support interne, fin des
+  notes « 0 (0 avis) » (« Nouveau » sinon), noms accessibles sur les avatars.
+
+---
+
+## Portes de qualité (au dernier commit, 2026-11-12)
+
+`npm run typecheck` 0 · `npm run build` compilé (toutes routes) ·
+`npm run test:data` **113/113** · audit runtime Playwright : 29 routes × 2
+tailles (360 px et 1280 px) + passes par persona, **aucune erreur de page,
+aucun débordement horizontal, aucune image cassée**. Déploiement Vercel de la
+préproduction au vert.
 
 ## Ce qui reste ouvert
 
-Voir `TODO.md` (reliquat de l'étape 8, sécurité de `/admin`, panneau de flux à
-étendre) et `JURIDIQUE-A-VALIDER.md` (les points à confirmer par l'avocat).
+Voir `RAPPORT-FINAL-2.md` (bilan, décisions prises seul, points ouverts, les
+trois points les moins satisfaisants) et `JURIDIQUE-A-VALIDER.md` (affiliation
+et points à confirmer par l'avocat).

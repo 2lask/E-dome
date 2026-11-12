@@ -9,7 +9,9 @@
 *Décision de reprise (fondateur : « d'abord ce qui est le plus important, le
 gros du travail, et les détails à la fin »). Les étapes ci-dessous gardent
 leur contenu ; c'est l'ORDRE qui change, réglé sur l'impact pour la plateforme
-et sur les dépendances. Fait : 0, 1, 1.5, 2, 3, 4a.*
+et sur les dépendances. **TOUT EST FAIT** : P0, P1, P1.5, P2, P2bis, P3, P4a,
+P4b, P5, P6a, P6b, P6c, P7 — commités et poussés sur `feat/plateforme-v2`
+(voir `CHANGELOG-V2.md` et `RAPPORT-FINAL-2.md`).*
 
 **Critère qui trie tout :** quelqu'un ouvre la plateforme seul, ne tombe sur rien
 de cassé, et comprend E-Dome en dix minutes. Ce qui compte d'abord, ce sont
@@ -33,11 +35,12 @@ P2 et P2bis en parallèle avec des frontières de fichiers explicites.
 
 ## POINT DE REPRISE (pour une session neuve)
 
-- **Où on en est (maj 2026-09-25).** Étapes **0, 1, 1.5, 2, 3 FAITES** et poussées. **⛔ ARRÊT DE VALIDATION après l'étape 3** : en attente du feu vert du fondateur sur les 3 premiers profils (Sophie user-002, Marc user-003, Jean-Luc user-015) avant de construire les 12 autres. Suite prévue sans autre arrêt : 4 (profils+fil) → 5 (tutoriel+être-un-profil) → 6 (affiliation+freemium+boutique) → 7 (pôles) → 8 (design/mobile/tests).
-- **Historique.** Audit fait (`AUDIT-2.md`, 18 notes dans `analyse2/`), arbitrages faits (`DECISIONS-2.md`), **go du fondateur reçu** (2026-09-25) avec géographie et cadence tranchées. **Changement de modèle intégré** : affiliation à deux mécaniques (D14) + freemium (D15), challengé par 4 agents (`analyse2/*-modele.md`), reflété ici et dans `JURIDIQUE-A-VALIDER.md §0`. **Il reste à montrer au fondateur le diff de ce PLAN avant l'étape 0** (et deux questions ouvertes : part E-Dome sur la prime biens 0 %/12 %, frontière freemium).
-- **Branche.** `feat/plateforme-v2`, rien de fusionné, landing figée.
-- **Serveur de dev** sur `:3002` (`npm run dev`). Gates : `npm run typecheck` / `lint` / `build` / `test` (Playwright) / `test:data`.
-- **Prochaine action concrète :** étape 0 (sécurité `/admin` + nettoyages), puis étape 1 (annuaire unique), puis étape 1.5 (moteur pricing).
+- **Où on en est (maj 2026-11-12). Mission 2 TERMINÉE.** Tous les chantiers P0→P7 sont commités et poussés sur `feat/plateforme-v2`, chaque commit avec les portes de qualité vertes et une vérification à l'écran. Le déploiement Vercel de la préproduction passe. Bilan et points ouverts dans `RAPPORT-FINAL-2.md` ; liste des commits dans `CHANGELOG-V2.md`.
+- **Casting.** Les 16 personnes finales sont celles de `analyse2/casting.md` (Léo user-001 … Amina user-016). Les anciens noms génériques (Sophie, Marc, Marie Dupont…) n'existent plus que dans des commentaires d'historique.
+- **Historique.** Audit (`AUDIT-2.md`, notes dans `analyse2/`), arbitrages (`DECISIONS-2.md`, D1→D16), modèle à deux mécaniques d'affiliation (D14) + freemium (D15), point juridique dans `JURIDIQUE-A-VALIDER.md §0`.
+- **Branche.** `feat/plateforme-v2`, rien de fusionné, landing figée (jamais touchée).
+- **Serveur de dev** (`npm run dev`). Gates : `npm run typecheck` / `lint` / `build` / `test:data` (113 tests) / `test` (Playwright, Mission 1).
+- **Ce qui reste ouvert** (non bloquant, détaillé dans `RAPPORT-FINAL-2.md`) : validation juridique de l'affiliation ; quelques détails de contenu (adresses de rue non vérifiées, textes de leçons génériques) ; a11y et design à approfondir ; vérifier `ADMIN_PASSWORD` sur Vercel.
 
 ---
 
