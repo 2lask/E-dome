@@ -226,17 +226,16 @@ export default function AidePage() {
         </div>
       )}
 
-      {/* Contact CTA — deux pistes : appel direct (Calendar / cal.com)
-          ou formulaire support. L'appel passe en premier car c'est
-          souvent ce que les nouveaux utilisateurs cherchent quand ils
-          ne trouvent pas dans la FAQ. */}
+      {/* Contact CTA. En démonstration, pas de réservation externe fictive :
+          le bouton mène au support écrit interne (`/contact`), comme le lien
+          juste en dessous. */}
       <section className="space-y-4">
         <BookingCallout
-          bookingLink="https://cal.com/edome/support"
+          bookingLink="/contact"
           title="Vous n'avez pas trouvé votre réponse ?"
-          subtitle="Réservez un appel avec notre équipe support. Lundi-vendredi, 9h-18h (CET)."
-          ctaLabel="Réserver un appel"
-          duration="20 min"
+          subtitle="Écrivez à l'équipe support. Réponse sous un jour ouvré, du lundi au vendredi."
+          ctaLabel="Écrire au support"
+          duration="Réponse sous un jour ouvré"
         />
         <div className="text-center">
           <a

@@ -133,9 +133,13 @@ export default function FavorisPage() {
                         {formatPrice(p.price, p.currency)}
                         {p.transactionType === "location-ct" ? "/nuit" : ""}
                       </span>
-                      <span className="text-xs text-[var(--text-muted)]">
-                        {p.rating} ({p.reviewCount})
-                      </span>
+                      {p.reviewCount > 0 ? (
+                        <span className="text-xs text-[var(--text-muted)]">
+                          {p.rating} ({p.reviewCount})
+                        </span>
+                      ) : (
+                        <span className="text-xs text-[var(--text-muted)]">Nouveau</span>
+                      )}
                     </div>
                     <button
                       onClick={() => handleRemove(p.id)}

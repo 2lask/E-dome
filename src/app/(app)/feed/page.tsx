@@ -777,10 +777,10 @@ export default function FeedPage() {
             <ul className="space-y-0.5">
               {suggestions.slice(0, 10).map((user) => (
                 <li key={user.id} className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-[var(--hover-bg)] transition-colors">
-                  <Link href={`/profil/${user.id}`} className="shrink-0">
+                  <Link href={`/profil/${user.id}`} className="shrink-0" aria-label={`Profil de ${user.firstName} ${user.lastName}`}>
                     <img
                       src={user.avatar}
-                      alt=""
+                      alt={`${user.firstName} ${user.lastName}`}
                       className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity"
                     />
                   </Link>

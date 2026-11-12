@@ -32,7 +32,8 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ day, isHeader, highlighted })
 };
 
 interface CalendarProps {
-  /** Cal.com (ou autre) URL pour la réservation. */
+  /** Où mène le bouton. En démonstration : une route interne (le support
+      écrit `/contact`), jamais un lien de réservation externe fictif. */
   bookingLink?: string;
   /** Titre principal de la carte. */
   title?: string;
@@ -45,7 +46,7 @@ interface CalendarProps {
 }
 
 export function Calendar({
-  bookingLink = "https://cal.com/edome/demo",
+  bookingLink = "/contact",
   title = "Une question sur E-Dome ?",
   subtitle = "Réservez un appel découverte avec l'équipe.",
   ctaLabel = "Réserver",
@@ -116,7 +117,7 @@ export function Calendar({
                     </span>
                   </p>
                   <span className="h-1 w-1 rounded-full bg-[var(--text-muted)]">&nbsp;</span>
-                  <p className="text-xs text-[var(--text-muted)]">Appel de {duration}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{duration}</p>
                 </div>
                 <div className="mt-4 grid grid-cols-7 gap-2 px-1 md:px-4">
                   {calendarCells}

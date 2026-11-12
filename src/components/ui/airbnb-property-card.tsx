@@ -246,7 +246,9 @@ export function AirbnbPropertyCard({
         )}
         <p className="text-sm text-[var(--foreground)] flex items-center gap-1.5">
           <span className="font-semibold">{priceLabel}</span>
-          {rating !== undefined && (
+          {/* Une note ne s'affiche que si elle est réelle (> 0). Un bien sans
+              avis reste muet — jamais « ★ 0,00 », qui sonnerait faux. */}
+          {rating !== undefined && rating > 0 && (
             <>
               <span className="text-[var(--text-muted)]">·</span>
               <span className="inline-flex items-center gap-0.5">
