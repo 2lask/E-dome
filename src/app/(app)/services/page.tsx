@@ -3,93 +3,23 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {
-  Search as SearchIcon, Hotel, Car, Camera, Palette, Ruler, HardHat,
-  Scale, Briefcase, Hammer, Package, Check, type LucideIcon,
-} from "lucide-react";
+import { Search as SearchIcon, Check } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { PageHeader } from "@/components/ui/page-header";
-import { requirePerson } from "@/lib/demo/directory";
-import { useSession, recordSessionEvent } from "@/lib/use-session";
+import { ServiceCover, CategoryIcon } from "@/components/services/service-visual";
+import { RatingLine } from "@/components/services/stars";
+import { servicesText } from "@/content/services";
+import { useSession } from "@/lib/use-session";
 import { quotedServiceIds } from "@/lib/demo/session-views";
+import { allServices, ratingSummary, serviceReviews } from "@/lib/demo/services-catalog";
 
-/* ─── Mock Data ──────────────────────────────────────────────────────────── */
+/* /services — le catalogue (P6a). Chaque service est tenu par une personne
+   de l'annuaire (`lib/demo/services-catalog.ts`) ; sa note se dérive de ses
+   avis réels, « Nouveau » sinon. La carte ouvre la fiche `/services/[id]`,
+   où se fait la demande de devis. Les services publiés pendant la visite
+   passent en tête. */
 
-const CATEGORIES: { label: string; Icon: LucideIcon }[] = [
-  { label: "Tous", Icon: SearchIcon },
-  { label: "Conciergerie", Icon: Hotel },
-  { label: "Transport", Icon: Car },
-  { label: "Photographie", Icon: Camera },
-  { label: "Décoration", Icon: Palette },
-  { label: "Architecture & Design", Icon: Ruler },
-  { label: "Construction & Gros œuvre", Icon: HardHat },
-  { label: "Juridique", Icon: Scale },
-  { label: "Finance", Icon: Briefcase },
-  { label: "Rénovation", Icon: Hammer },
-  { label: "Déménagement", Icon: Package },
-];
-
-const GRADIENTS = [
-  "from-blue-600 to-indigo-700",
-  "from-amber-500 to-orange-600",
-  "from-emerald-500 to-teal-600",
-  "from-rose-500 to-pink-600",
-  "from-purple-500 to-violet-600",
-  "from-cyan-500 to-blue-600",
-  "from-red-500 to-rose-600",
-  "from-green-500 to-emerald-600",
-  "from-yellow-500 to-amber-600",
-];
-
-/* Les prestataires du casting (Nikola, Elena, Reto) sont de vraies personnes
-   de l'annuaire : leur visage, leur note et leur nombre d'avis en viennent
-   (avis réellement reçus). Les autres sont des entreprises sans visage,
-   affichées par leurs initiales — plus aucun portrait de personne réelle. */
-type ServiceItem = { id: string; title: string; category: string; provider: string; providerId?: string; rating: number; reviews: number; price: number; unit: string; gradient: number };
-
-const RAW_SERVICES: ServiceItem[] = [
-  { id: "s1", title: "Conciergerie premium Airbnb", category: "Conciergerie", provider: "Swiss Concierge", rating: 4.9, reviews: 127, price: 150, unit: "/mois", gradient: 0 },
-  { id: "s2", title: "Transport de meubles Suisse romande", category: "Transport", provider: "TransLogistic SA", rating: 4.7, reviews: 89, price: 80, unit: "/trajet", gradient: 1 },
-  { id: "s3", title: "Photographie immobilière, drone et visite 3D", category: "Photographie", provider: "Nikola Ristić", providerId: "user-005", rating: 4.8, reviews: 203, price: 350, unit: "/séance", gradient: 2 },
-  { id: "s4", title: "Home staging pour la vente et la location", category: "Décoration", provider: "Elena Currat", providerId: "user-010", rating: 4.6, reviews: 56, price: 200, unit: "/pièce", gradient: 3 },
-  { id: "s5", title: "Conseil juridique immobilier", category: "Juridique", provider: "Cabinet Moreau", rating: 4.9, reviews: 145, price: 250, unit: "/h", gradient: 4 },
-  { id: "s6", title: "Gestion comptable locative", category: "Finance", provider: "FinImmo Conseil", rating: 4.5, reviews: 34, price: 120, unit: "/mois", gradient: 5 },
-  { id: "s7", title: "Rénovation complète appartement", category: "Rénovation", provider: "RenovaPro", rating: 4.8, reviews: 178, price: 5000, unit: "/projet", gradient: 6 },
-  { id: "s8", title: "Déménagement professionnel", category: "Déménagement", provider: "MoveSwiss", rating: 4.7, reviews: 92, price: 600, unit: "/déménagement", gradient: 7 },
-  { id: "s9", title: "Gestion clés et accueil voyageurs", category: "Conciergerie", provider: "KeyMaster", rating: 4.6, reviews: 67, price: 30, unit: "/accueil", gradient: 8 },
-  { id: "s10", title: "Rénovation énergétique : CECB Plus et direction de travaux", category: "Architecture & Design", provider: "Reto Jungo", providerId: "user-009", rating: 4.9, reviews: 74, price: 4500, unit: "/projet", gradient: 4 },
-  { id: "s11", title: "Design intérieur sur mesure", category: "Architecture & Design", provider: "Studio Verbier", rating: 4.7, reviews: 52, price: 1800, unit: "/projet", gradient: 3 },
-  { id: "s12", title: "Construction gros œuvre clé en main", category: "Construction & Gros œuvre", provider: "BâtiSuisse", rating: 4.8, reviews: 41, price: 1850, unit: "/m²", gradient: 6 },
-  { id: "s13", title: "Charpente bois & couverture", category: "Construction & Gros œuvre", provider: "Charpentes Alpines", rating: 4.7, reviews: 28, price: 12500, unit: "/projet", gradient: 1 },
-];
-
-const SERVICES: (ServiceItem & { avatar?: string })[] = RAW_SERVICES.map((s) => {
-  const p = s.providerId ? requirePerson(s.providerId) : undefined;
-  return p ? { ...s, avatar: p.avatar, rating: p.stats.rating, reviews: p.stats.reviews } : s;
-});
-
-const STEPS = [
-  { number: "1", title: "Choisissez un service", desc: "Parcourez notre catalogue de prestataires vérifiés et sélectionnez le service adapté à vos besoins." },
-  { number: "2", title: "Demandez un devis", desc: "Décrivez votre projet et recevez un devis personnalisé directement du prestataire." },
-  { number: "3", title: "Profitez du service", desc: "Le prestataire réalise la mission. Payez en toute sécurité via la plateforme." },
-];
-
-/* ─── Stars ──────────────────────────────────────────────────────────────── */
-
-function Stars({ rating }: { rating: number }) {
-  return (
-    <span className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((s) => (
-        <svg key={s} className={`w-3.5 h-3.5 ${s <= Math.round(rating) ? "text-amber-400" : "text-[var(--text-muted)]"}`} fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
-      <span className="text-xs text-[var(--text-muted)] ml-1">{rating.toFixed(1)}</span>
-    </span>
-  );
-}
-
-/* ─── Page ───────────────────────────────────────────────────────────────── */
+const L = servicesText.list;
 
 /* `useSearchParams` exige une frontière Suspense en App Router (Next 16). */
 export default function ServicesPage() {
@@ -104,273 +34,132 @@ function ServicesPageInner() {
   const { formatPrice } = useApp();
   const searchParams = useSearchParams();
   const focusId = searchParams.get("focus");
-  /* Les services publiés pendant la visite (mémoire de session) passent en
-     tête du catalogue, au nom et au visage de la personne qui les propose. */
-  const { services: published, state: sessionState, actorId } = useSession();
-  const allServices = useMemo<(ServiceItem & { avatar?: string; isNew?: boolean })[]>(
-    () => [
-      ...published.map((p, i) => ({
-        id: p.id,
-        title: p.title,
-        category: p.category,
-        provider: p.provider,
-        providerId: p.providerId,
-        rating: 0,
-        reviews: 0,
-        price: p.price,
-        unit: p.unit,
-        gradient: i % GRADIENTS.length,
-        avatar: p.avatar,
-        isNew: true,
+  const { state: sessionState, actorId } = useSession();
+  const services = useMemo(
+    () =>
+      allServices(sessionState).map((s) => ({
+        ...s,
+        summary: ratingSummary(serviceReviews(sessionState, s)),
       })),
-      ...SERVICES,
-    ],
-    [published],
+    [sessionState],
   );
-  /* Un devis déjà demandé pendant la session reste « envoyé ». */
+  const categories = useMemo(() => [L.all, ...new Set(services.map((s) => s.category))], [services]);
+  /* Un devis déjà demandé pendant la session reste visible. */
   const quoted = useMemo(() => quotedServiceIds(sessionState, actorId), [sessionState, actorId]);
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("Tous");
-  const [devisOpenId, setDevisOpenId] = useState<string | null>(null);
-  const [devisMessage, setDevisMessage] = useState("");
-  const [devisDate, setDevisDate] = useState("");
-  const [devisNom, setDevisNom] = useState("");
-  const [devisEmail, setDevisEmail] = useState("");
-  const [devisTel, setDevisTel] = useState("");
-  const [toastText, setToastText] = useState<string | null>(null);
+  const [category, setCategory] = useState<string>(L.all);
 
   /* Arrivée depuis « Voir mon service » : on fait défiler jusqu'à la carte. */
   useEffect(() => {
     if (!focusId) return;
     const t = setTimeout(() => document.getElementById(`service-${focusId}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 150);
     return () => clearTimeout(t);
-  }, [focusId, published.length]);
+  }, [focusId, services.length]);
 
   const filtered = useMemo(() => {
-    return allServices.filter((s) => {
-      const matchSearch = s.title.toLowerCase().includes(search.toLowerCase()) || s.provider.toLowerCase().includes(search.toLowerCase());
-      const matchCat = category === "Tous" || s.category === category;
+    const q = search.toLowerCase();
+    return services.filter((s) => {
+      const matchSearch = s.title.toLowerCase().includes(q) || s.provider.toLowerCase().includes(q);
+      const matchCat = category === L.all || s.category === category;
       return matchSearch && matchCat;
     });
-  }, [search, category, allServices]);
-
-  /* La demande de devis entre au journal de session. Si le prestataire est
-     une personne de l'annuaire, elle arrive dans son fil de messagerie (et
-     une notification chez elle). Les entreprises du catalogue n'ont pas
-     encore de compte : on le dit, au lieu de prétendre l'avoir transmise. */
-  const handleSendDevis = (serviceId: string) => {
-    const service = allServices.find((s) => s.id === serviceId);
-    if (!service) return;
-    if (service.providerId === actorId) {
-      setToastText("C'est votre propre service.");
-      setTimeout(() => setToastText(null), 3000);
-      return;
-    }
-    recordSessionEvent({
-      kind: "quote.sent",
-      data: {
-        toId: service.providerId,
-        serviceId,
-        subject: service.title,
-        providerName: service.provider,
-        text: devisMessage,
-        date: devisDate || undefined,
-      },
-    });
-    setDevisOpenId(null);
-    setDevisMessage("");
-    setDevisDate("");
-    setDevisNom("");
-    setDevisEmail("");
-    setDevisTel("");
-    setToastText(
-      service.providerId
-        ? `Demande envoyée à ${service.provider}. Retrouvez l'échange dans vos messages.`
-        : `Demande enregistrée. ${service.provider} n'a pas encore de compte E-Dome : elle lui sera transmise à son inscription.`,
-    );
-    setTimeout(() => setToastText(null), 4000);
-  };
+  }, [search, category, services]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
-
-        {/* Header */}
         <PageHeader
-          title="Services"
-          description="Trouvez les meilleurs prestataires pour vos biens"
+          title={L.title}
+          description={L.description}
           variant="serif"
           actions={
-            <Link
-              href="/services/proposer"
-              className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-xl font-medium transition-colors"
-            >
-              Proposer un service
+            <Link href="/services/proposer" className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white rounded-xl font-medium transition-colors">
+              {L.propose}
             </Link>
           }
         />
 
-        {/* Search */}
         <div className="relative">
-          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input type="text" placeholder="Rechercher un service..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-12 pr-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors" />
+          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" aria-hidden />
+          <input
+            type="text"
+            placeholder={L.search}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 bg-[var(--card)] border border-[var(--card-border)] rounded-xl text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors"
+          />
         </div>
 
-        {/* Category chips */}
         <div className="flex gap-2 flex-wrap">
-          {CATEGORIES.map((cat) => {
-            const Icon = cat.Icon;
-            const active = category === cat.label;
+          {categories.map((cat) => {
+            const active = category === cat;
             return (
               <button
-                key={cat.label}
-                onClick={() => setCategory(cat.label)}
+                key={cat}
+                onClick={() => setCategory(cat)}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${active ? "bg-[var(--primary)] text-white" : "bg-[var(--card)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--primary)]/40"}`}
               >
-                <Icon size={14} />
-                {cat.label}
+                {cat === L.all ? <SearchIcon size={14} aria-hidden /> : <CategoryIcon category={cat} />}
+                {cat}
               </button>
             );
           })}
         </div>
 
-        {/* ── Service Grid ────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Patron « lien étiré » : la carte entière ouvre la fiche, le lien
+              vers le profil du prestataire passe au-dessus (pas de <Link>
+              imbriqué). */}
           {filtered.map((service) => (
-            <div
+            <article
               key={service.id}
               id={`service-${service.id}`}
-              className={`bg-[var(--card)] border rounded-2xl overflow-hidden hover:border-[var(--primary)]/40 transition-colors ${
+              className={`relative bg-[var(--card)] border rounded-2xl overflow-hidden hover:border-[var(--primary)]/40 transition-colors ${
                 focusId === service.id ? "border-[var(--primary)] ring-2 ring-[var(--primary)]/30" : "border-[var(--card-border)]"
               }`}
             >
-              {/* Gradient thumbnail */}
-              <div className={`h-32 bg-gradient-to-br ${GRADIENTS[service.gradient]} flex items-center justify-center`}>
-                {(() => {
-                  const CatIcon = CATEGORIES.find((c) => c.label === service.category)?.Icon;
-                  return CatIcon ? <CatIcon size={48} className="text-white/90" strokeWidth={1.5} /> : null;
-                })()}
-              </div>
+              <Link href={`/services/${service.id}`} className="absolute inset-0 z-10" aria-label={service.title} />
+              <ServiceCover category={service.category} />
               <div className="p-4 space-y-3">
-                <span className="inline-block px-2 py-0.5 bg-[var(--primary)]/20 text-[var(--primary)] rounded-full text-xs font-medium">{service.category}</span>
-                {service.isNew && (
-                  <span className="ml-2 inline-block px-2 py-0.5 bg-emerald-500/15 text-emerald-500 rounded-full text-xs font-medium">Nouveau</span>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-block px-2 py-0.5 bg-[var(--primary)]/20 text-[var(--primary)] rounded-full text-xs font-medium">{service.category}</span>
+                  <RatingLine summary={service.summary} />
+                </div>
                 <h3 className="font-semibold line-clamp-2">{service.title}</h3>
-                <div className="flex items-center gap-2">
+                <Link href={`/profil/${service.providerId}`} className="relative z-20 inline-flex items-center gap-2 hover:underline">
                   {service.avatar ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={service.avatar} alt="" className="w-6 h-6 rounded-full object-cover" />
                   ) : (
-                    <span aria-hidden className="flex w-6 h-6 items-center justify-center rounded-full bg-[var(--hover-bg)] text-[10px] font-semibold text-[var(--text-secondary)]">
-                      {service.provider.slice(0, 2).toUpperCase()}
-                    </span>
+                    <span aria-hidden className="w-6 h-6 rounded-full bg-[var(--hover-bg)]" />
                   )}
-                  {service.providerId ? (
-                    <Link href={`/profil/${service.providerId}`} className="text-sm text-[var(--text-secondary)] hover:underline">{service.provider}</Link>
-                  ) : (
-                    <span className="text-sm text-[var(--text-secondary)]">{service.provider}</span>
-                  )}
-                </div>
-                {service.reviews > 0 ? (
-                  <>
-                    <Stars rating={service.rating} />
-                    <span className="text-xs text-[var(--text-muted)]">({service.reviews} avis)</span>
-                  </>
-                ) : (
-                  <span className="text-xs text-[var(--text-muted)]">Pas encore d&apos;avis</span>
-                )}
+                  <span className="text-sm text-[var(--text-secondary)]">{service.provider}</span>
+                </Link>
                 <div className="flex items-center justify-between pt-2">
                   <div>
                     <span className="font-bold text-[var(--primary)]">{formatPrice(service.price)}</span>
                     <span className="text-xs text-[var(--text-muted)]"> {service.unit}</span>
                   </div>
                   {quoted.has(service.id) ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium">
-                      <Check size={14} strokeWidth={2.5} /> Devis envoy&eacute;
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-500/15 text-green-600 dark:text-green-400 rounded-lg text-sm font-medium">
+                      <Check size={14} strokeWidth={2.5} aria-hidden /> {L.quoteSent}
                     </span>
-                  ) : devisOpenId === service.id ? (
-                    <button onClick={() => setDevisOpenId(null)} className="px-3 py-1.5 border border-[var(--card-border)] rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">
-                      Annuler
-                    </button>
                   ) : (
-                    <button onClick={() => setDevisOpenId(service.id)} className="px-3 py-1.5 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-lg text-sm font-medium transition-colors">
-                      Demander un devis
-                    </button>
+                    <span className="px-3 py-1.5 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">{L.details}</span>
                   )}
                 </div>
-
-                {/* Inline devis form */}
-                {devisOpenId === service.id && (
-                  <div className="pt-3 border-t border-[var(--card-border)] space-y-3 animate-fade-in">
-                    <textarea
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 min-h-[80px] resize-y transition-colors"
-                      placeholder="Description du besoin..."
-                      value={devisMessage}
-                      onChange={(e) => setDevisMessage(e.target.value)}
-                    />
-                    <input
-                      type="date"
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors"
-                      value={devisDate}
-                      onChange={(e) => setDevisDate(e.target.value)}
-                      placeholder="Date souhait&eacute;e"
-                    />
-                    <input
-                      type="text"
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors"
-                      placeholder="Votre nom"
-                      value={devisNom}
-                      onChange={(e) => setDevisNom(e.target.value)}
-                    />
-                    <input
-                      type="email"
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors"
-                      placeholder="Email"
-                      value={devisEmail}
-                      onChange={(e) => setDevisEmail(e.target.value)}
-                    />
-                    <input
-                      type="tel"
-                      className="w-full px-3 py-2 bg-[var(--background)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors"
-                      placeholder="T&eacute;l&eacute;phone"
-                      value={devisTel}
-                      onChange={(e) => setDevisTel(e.target.value)}
-                    />
-                    <button onClick={() => handleSendDevis(service.id)} className="w-full py-2 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-lg text-sm font-medium transition-colors">
-                      Envoyer
-                    </button>
-                  </div>
-                )}
               </div>
-            </div>
+            </article>
           ))}
         </div>
-        {filtered.length === 0 && (
-          <p className="text-center text-[var(--text-muted)] py-12">Aucun service trouvé.</p>
-        )}
+        {filtered.length === 0 && <p className="text-center text-[var(--text-muted)] py-12">{L.empty}</p>}
 
-        {/* Toast notification */}
-        {toastText && (
-          <div
-            role="status"
-            aria-live="polite"
-            className="fixed bottom-[calc(80px+env(safe-area-inset-bottom)+1rem)] md:bottom-6 right-4 md:right-6 left-4 md:left-auto z-50 px-5 py-3 toast-success rounded-xl shadow-lg text-sm font-medium animate-fade-in text-center md:text-left">
-            {toastText}
-          </div>
-        )}
-
-        {/* ── Comment ca marche ───────────────────────────────────────── */}
         <section className="py-10">
-          <h2 className="text-2xl font-bold text-center mb-8">Comment &ccedil;a marche</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">{L.howTitle}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {STEPS.map((step) => (
-              <div key={step.number} className="text-center p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl">
-                <div className="w-12 h-12 bg-[var(--primary)]/20 text-[var(--primary)] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                  {step.number}
-                </div>
+            {L.steps.map((step, i) => (
+              <div key={step.title} className="text-center p-6 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl">
+                <div className="w-12 h-12 bg-[var(--primary)]/20 text-[var(--primary)] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">{i + 1}</div>
                 <h3 className="font-semibold mb-2">{step.title}</h3>
                 <p className="text-sm text-[var(--text-secondary)]">{step.desc}</p>
               </div>

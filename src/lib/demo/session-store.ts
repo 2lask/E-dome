@@ -182,7 +182,76 @@ export type SessionEventInput =
   /** « Ce contact n'était pas sérieux », sous 48 h après l'acceptation. */
   | { kind: "introduction.disputed"; data: { introductionId: string; apporteurId: string; reason: string } }
   /** Changement de formule d'abonnement (agence ou compte). */
-  | { kind: "plan.changed"; data: { holderId: string; planId: string } };
+  | { kind: "plan.changed"; data: { holderId: string; planId: string } }
+  /* ── Pôles Services et Formations complets (chantier P6a, ajout) ─────── */
+  /** Réponse SIMULÉE du prestataire à une demande de devis (`quote.sent`),
+      inscrite au même moment. Le message part au nom du prestataire. */
+  | { kind: "service.quoted"; data: ServiceQuoteData }
+  /** Le client accepte le devis reçu. */
+  | { kind: "service.quote.accepted"; data: { serviceId: string; providerId: string; quotedId: string; totalChf: number } }
+  /** Le client paie la prestation (paiement simulé, flux via `quote()`). */
+  | { kind: "service.paid"; data: { serviceId: string; providerId: string; quotedId: string; totalChf: number } }
+  /** Le client confirme que la prestation a été réalisée. */
+  | { kind: "service.completed"; data: { serviceId: string; providerId: string; quotedId: string } }
+  /** Le client laisse un avis sur une prestation payée et réalisée. */
+  | {
+      kind: "service.reviewed";
+      data: { serviceId: string; providerId: string; quotedId: string; rating: number; comment: string };
+    }
+  /** Inscription (payée, simulée) à une formation. */
+  | { kind: "formation.enrolled"; data: { formationId: string; authorId: string; priceChf: number } }
+  /** Une leçon marquée terminée (`done: true`) ou rouverte (`done: false`). */
+  | { kind: "lesson.marked"; data: { formationId: string; lessonId: string; done: boolean } }
+  /* ── Événements et lives (chantier P6c, ajout) ───────────────────────── */
+  /** Inscription à un événement ou à un live. `priceChf` > 0 : billet payé
+      (simulé), le flux d'argent vient de `quote()` (pôle evenement / live). */
+  | { kind: "event.registered"; data: EventRegistrationData }
+  /** Désinscription (gratuite) d'un événement ou d'un live. */
+  | { kind: "event.unregistered"; data: Omit<EventRegistrationData, "priceChf" | "date"> }
+  /** « Ajouter à mon agenda » : une trace dans l'application, aucun lien externe. */
+  | { kind: "agenda.added"; data: Omit<EventRegistrationData, "priceChf"> }
+  /** Un événement créé depuis /evenements/creer ; l'organisateur est l'acteur. */
+  | { kind: "event.published"; data: EventPublishedData };
+
+/** Ce qu'une inscription retient de l'événement (figé au moment du clic). */
+export interface EventRegistrationData {
+  eventId: string;
+  target: "evenement" | "live";
+  title: string;
+  organizerId: string;
+  /** Date ISO (AAAA-MM-JJ). */
+  date: string;
+  priceChf: number;
+}
+
+export interface EventPublishedData {
+  titre: string;
+  type: string;
+  /** Date ISO (AAAA-MM-JJ). */
+  date: string;
+  heure: string;
+  duree: string;
+  lieu: string;
+  description: string;
+  image: string;
+  places: number;
+  prix: number;
+  /** Ouvert à l'affiliation marketplace (D14). Absent = fermé. */
+  affiliationRate?: number;
+}
+
+/** Le devis simulé d'un prestataire : lignes chiffrées, total, message. */
+export interface ServiceQuoteData {
+  serviceId: string;
+  providerId: string;
+  /** Id de l'événement `quote.sent` auquel il répond. */
+  requestId: string;
+  subject: string;
+  lines: { label: string; amountChf: number }[];
+  totalChf: number;
+  /** Le mot du prestataire, dans sa voix. */
+  message: string;
+}
 
 export type SessionEventKind = SessionEventInput["kind"];
 
@@ -222,6 +291,7 @@ export const serviceIdOf = (seq: number) => `s-svc-${seq}`;
 export const formationIdOf = (seq: number) => `s-form-${seq}`;
 export const liveIdOf = (seq: number) => `s-live-${seq}`;
 export const bookingIdOf = (seq: number) => `s-res-${seq}`;
+export const eventIdOf = (seq: number) => `s-evt-${seq}`;
 
 /** L'id d'un fil direct entre deux personnes, indépendant de l'ordre. */
 export function directThreadId(a: string, b: string): string {
@@ -241,6 +311,8 @@ export function createdObjectId(e: SessionEvent): string | undefined {
       return liveIdOf(e.seq);
     case "booking.made":
       return bookingIdOf(e.seq);
+    case "event.published":
+      return eventIdOf(e.seq);
     default:
       return undefined;
   }

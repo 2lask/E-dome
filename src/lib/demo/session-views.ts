@@ -11,6 +11,7 @@ import {
   formationIdOf,
   liveIdOf,
   bookingIdOf,
+  eventIdOf,
 } from "./session-store";
 import { NOTIFICATION_SEEDS, THREAD_SEEDS, type ThreadSeed } from "./inbox-seeds";
 
@@ -161,6 +162,37 @@ function directMessageOf(e: SessionEvent): { toId: string; text: string; topic?:
   }
 }
 
+/** P6a (ajout) : le message qu'un événement dépose au nom d'une AUTRE
+    personne que l'acteur (réponse simulée), ou un message de l'acteur qui
+    n'est pas une première prise de contact (acceptation, paiement, avis). */
+function counterpartMessageOf(e: SessionEvent): { senderId: string; toId: string; text: string; topic?: string } | null {
+  switch (e.kind) {
+    case "service.quoted":
+      return {
+        senderId: e.data.providerId,
+        toId: e.actorId,
+        text: `${e.data.message} Total : ${money(e.data.totalChf, "CHF")}.`,
+        topic: `Devis · ${e.data.subject}`,
+      };
+    case "service.quote.accepted":
+      return {
+        senderId: e.actorId,
+        toId: e.data.providerId,
+        text: `J'accepte votre devis de ${money(e.data.totalChf, "CHF")}. Je procède au paiement sur E-Dome.`,
+        topic: "Devis accepté",
+      };
+    case "service.paid":
+      return {
+        senderId: e.actorId,
+        toId: e.data.providerId,
+        text: `Paiement de ${money(e.data.totalChf, "CHF")} effectué sur E-Dome (simulation). À bientôt pour la prestation.`,
+        topic: "Paiement",
+      };
+    default:
+      return null;
+  }
+}
+
 /** Tous les fils (amorce + session), indépendamment de qui regarde. */
 export function buildThreads(state: SessionState): Thread[] {
   const threads = new Map<string, Thread>();
@@ -211,6 +243,13 @@ export function buildThreads(state: SessionState): Thread[] {
     if (dm && dm.toId !== e.actorId) {
       const t = ensureDirect(e.actorId, dm.toId);
       t.messages.push({ id: e.id, senderId: e.actorId, text: dm.text, topic: dm.topic, at: e.at, seedUnread: false, fromSession: true });
+    }
+    /* P6a (ajout) : les messages qui partent AU NOM DE L'AUTRE partie — le
+       devis simulé du prestataire, et l'accusé de paiement côté client. */
+    const reply = counterpartMessageOf(e);
+    if (reply && reply.senderId !== reply.toId) {
+      const t = ensureDirect(reply.senderId, reply.toId);
+      t.messages.push({ id: `${e.id}:r`, senderId: reply.senderId, text: reply.text, topic: reply.topic, at: e.at, seedUnread: false, fromSession: true });
     }
   }
   return [...threads.values()];
@@ -423,6 +462,102 @@ function notificationsOf(e: SessionEvent): Draft[] {
         title: `${actor} a signalé un contact comme peu sérieux`,
         message: e.data.reason,
         href: "/apporteurs",
+      }];
+    /* ── Services et formations (P6a, ajout) ── */
+    case "service.quoted":
+      return [{
+        recipientId: e.actorId,
+        actorId: e.data.providerId,
+        type: "message",
+        title: `Devis reçu de ${displayName(e.data.providerId)}`,
+        message: `${e.data.subject} · ${money(e.data.totalChf, "CHF")}`,
+        href: `/services/${e.data.serviceId}#devis`,
+      }];
+    case "service.quote.accepted":
+      return [{
+        recipientId: e.data.providerId,
+        actorId: e.actorId,
+        type: "message",
+        title: `${actor} a accepté votre devis`,
+        message: money(e.data.totalChf, "CHF"),
+        href: `/messages?to=${e.actorId}`,
+      }];
+    case "service.paid":
+      return [{
+        recipientId: e.data.providerId,
+        actorId: e.actorId,
+        type: "payment",
+        title: `Paiement reçu de ${actor}`,
+        message: `${money(e.data.totalChf, "CHF")} · prestation à réaliser`,
+        href: `/services/${e.data.serviceId}`,
+      }];
+    case "service.reviewed":
+      return [{
+        recipientId: e.data.providerId,
+        actorId: e.actorId,
+        type: "system",
+        title: `${actor} vous a laissé un avis`,
+        message: `${e.data.rating}/5${e.data.comment.trim() ? ` · ${quote(e.data.comment, 70)}` : ""}`,
+        href: `/services/${e.data.serviceId}#avis`,
+      }];
+    case "formation.enrolled":
+      return e.data.authorId !== e.actorId
+        ? [{
+            recipientId: e.data.authorId,
+            actorId: e.actorId,
+            type: "payment",
+            title: `${actor} s'est inscrit·e à votre formation`,
+            message: money(e.data.priceChf, "CHF"),
+            href: `/formations/${e.data.formationId}`,
+          }]
+        : [];
+    /* Événements et lives (P6c) : l'inscrit reçoit sa confirmation, et
+       l'organisateur — une personne de l'annuaire — est prévenu. */
+    case "event.registered": {
+      const href = e.data.target === "live" ? `/live?focus=${e.data.eventId}` : `/evenements/${e.data.eventId}`;
+      const what = e.data.target === "live" ? "live" : "événement";
+      const paid = e.data.priceChf > 0 ? ` · billet ${money(e.data.priceChf, "CHF")}` : " · gratuit";
+      const out: Draft[] = [
+        { recipientId: e.actorId, type: "system", title: "Inscription confirmée", message: `${e.data.title} · ${dayLabel(e.data.date)}${paid}`, href },
+      ];
+      if (e.data.organizerId !== e.actorId) {
+        out.push({
+          recipientId: e.data.organizerId,
+          actorId: e.actorId,
+          type: e.data.priceChf > 0 ? "payment" : "system",
+          title: `${actor} s'est inscrit·e à votre ${what}`,
+          message: `${e.data.title}${paid}`,
+          href,
+        });
+      }
+      return out;
+    }
+    case "event.unregistered":
+      return e.data.organizerId !== e.actorId
+        ? [{
+            recipientId: e.data.organizerId,
+            actorId: e.actorId,
+            type: "system",
+            title: `${actor} a annulé son inscription`,
+            message: e.data.title,
+            href: e.data.target === "live" ? `/live?focus=${e.data.eventId}` : `/evenements/${e.data.eventId}`,
+          }]
+        : [];
+    case "agenda.added":
+      return [{
+        recipientId: e.actorId,
+        type: "system",
+        title: "Ajouté à votre agenda",
+        message: `${e.data.title} · ${dayLabel(e.data.date)}`,
+        href: e.data.target === "live" ? `/live?focus=${e.data.eventId}` : `/evenements/${e.data.eventId}`,
+      }];
+    case "event.published":
+      return [{
+        recipientId: e.actorId,
+        type: "system",
+        title: "Votre événement est publié",
+        message: `${e.data.titre} · ${dayLabel(e.data.date)}`,
+        href: `/evenements/${eventIdOf(e.seq)}`,
       }];
     default:
       return [];
@@ -726,4 +861,52 @@ export function publishedBy(state: SessionState, actorId: string) {
     formations: sessionFormations(mine),
     lives: sessionLives(mine),
   };
+}
+
+/* ── Services et formations (chantier P6a, ajout) ───────────────────────── */
+
+/** Un avis de prestation laissé pendant la session. */
+export interface SessionServiceReview {
+  id: string;
+  serviceId: string;
+  providerId: string;
+  authorId: string;
+  rating: number;
+  comment: string;
+  at: string;
+}
+
+/** Les avis de prestation laissés pendant la session, du plus récent au plus ancien. */
+export function sessionServiceReviews(state: SessionState): SessionServiceReview[] {
+  return state.events
+    .filter((e): e is Extract<SessionEvent, { kind: "service.reviewed" }> => e.kind === "service.reviewed")
+    .sort(byNewest)
+    .map((e) => ({
+      id: e.id,
+      serviceId: e.data.serviceId,
+      providerId: e.data.providerId,
+      authorId: e.actorId,
+      rating: e.data.rating,
+      comment: e.data.comment,
+      at: e.at,
+    }));
+}
+
+/** Les avis de session reçus par `personId`, au format des avis de profil. */
+export function sessionAvisOf(state: SessionState, personId: string, titleOf?: (serviceId: string) => string | undefined) {
+  return sessionServiceReviews(state)
+    .filter((r) => r.providerId === personId && r.authorId !== personId)
+    .map((r) => {
+      const a = person(r.authorId);
+      return {
+        id: r.id,
+        author: displayName(r.authorId),
+        authorId: r.authorId,
+        authorAvatar: a?.avatar ?? "",
+        about: `Prestation · ${titleOf?.(r.serviceId) ?? "cette session"}`,
+        rating: r.rating,
+        text: r.comment,
+        date: dayLabel(r.at),
+      };
+    });
 }

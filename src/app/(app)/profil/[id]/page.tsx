@@ -13,7 +13,8 @@ import type { Profile } from "@/lib/profile-types";
 import { gmvVolume } from "@/lib/demo/derive";
 import { DEMO_TODAY } from "@/lib/demo/clock";
 import { useSession } from "@/lib/use-session";
-import { sessionShowcaseOf } from "@/lib/demo/session-views";
+import { sessionShowcaseOf, sessionAvisOf } from "@/lib/demo/session-views";
+import { findService, servicesOf } from "@/lib/demo/services-catalog";
 import { personById } from "@/lib/demo/directory";
 import { primeEligibility } from "@/lib/pricing";
 import { PrimeCountryNotice } from "@/components/business/apporteur-summary";
@@ -70,14 +71,22 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
   /* + ce que cette personne a publié pendant la session (chantier P3 : quand
      on l'incarne, ses publications apparaissent sur sa fiche publique). */
   const added = sessionShowcaseOf(sessionState, profile.id);
+  /* P6a : les services du catalogue tenus par cette personne, et les avis de
+     prestation laissés pendant la session (en tête). */
+  const sessionAvis = sessionAvisOf(sessionState, profile.id, (sid) => findService(sessionState, sid)?.title);
+  const catalogServices = servicesOf(sessionState, profile.id)
+    .filter((s) => !s.fromSession)
+    .map((s) => ({ id: s.id, title: s.title, cover: s.avatar, price: s.price, currency: "CHF", unit: s.unit }));
+  const allAvis = [...sessionAvis, ...avis];
+  const allBreakdown = ratingBreakdown.map((b) => ({ ...b, count: b.count + sessionAvis.filter((a) => a.rating === b.stars).length }));
   const showcase: ProfileData = {
     biens: [...added.biens, ...biensOf(profile.id)],
     formations: [...added.formations, ...formationsOf(profile.id)],
     produits: [],
     lives: added.lives,
-    services: added.services,
-    avis,
-    ratingBreakdown,
+    services: [...added.services, ...catalogServices],
+    avis: allAvis,
+    ratingBreakdown: allBreakdown,
     posts: getPublicPosts(profileToAuthor(profile)),
   };
 

@@ -6,9 +6,11 @@ import { Star } from "lucide-react";
 import { useApp } from "@/lib/context";
 import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 import { PageHeader } from "@/components/ui/page-header";
-import { formations as catalogue } from "@/lib/mock-data";
+import { formations as catalogue, mockReviews, averageRating } from "@/lib/mock-data";
 import type { User } from "@/lib/types";
 import { useSession } from "@/lib/use-session";
+import { formationProgress, sessionEnrolmentCount } from "@/lib/demo/lessons";
+import { formationsText } from "@/content/formations";
 
 /* ─── Catalogue ──────────────────────────────────────────────────────────────
 
@@ -22,24 +24,17 @@ import { useSession } from "@/lib/use-session";
    propre à cette page est ce qui ne concerne pas la formation mais
    l'utilisateur de démonstration : sa progression et ses inscriptions. */
 
-/* Léo a terminé la formation fiscalité de Sandrine (il l'a évaluée) et suit
-   celle d'Amina. Sa propre formation (form-001) n'est pas une inscription. */
-const ENROLMENTS: Record<string, number> = {
-  "form-007": 100,
-  "form-002": 30,
-};
-
 const FEATURED_ID = "form-001";
 
 /* Le catalogue porte des User (firstName / lastName), pas un champ `name`. */
 const fullName = (u: User) => `${u.firstName} ${u.lastName}`;
 
+/* La progression n'est plus codée en dur (« 30 % ») : elle se dérive des
+   leçons cochées par la personne incarnée (`lib/demo/lessons.ts`, P6a). */
 const FORMATIONS = catalogue.map((f) => ({
   ...f,
   instructorName: fullName(f.instructor),
   moduleCount: f.modules.length,
-  progress: ENROLMENTS[f.id] ?? 0,
-  enrolled: f.id in ENROLMENTS,
   featured: f.id === FEATURED_ID,
 }));
 
@@ -61,7 +56,8 @@ const INSTRUCTORS = [...new Map(catalogue.map((f) => [f.instructor.id, f.instruc
       avatar: person.avatar,
       specialty,
       students: taught.reduce((sum, f) => sum + f.studentCount, 0),
-      rating: taught.reduce((sum, f) => sum + f.rating, 0) / taught.length,
+      /* Moyenne des AVIS réels sur ses formations (0 sans avis : non affichée). */
+      rating: averageRating(mockReviews.filter((r) => r.subject.kind === "formation" && taught.some((f) => f.id === r.subject.id))),
     };
   },
 );
@@ -93,24 +89,26 @@ export default function FormationsPage() {
 
   /* Les formations publiées pendant la visite (mémoire de session) entrent
      au catalogue, en tête, avec leur propre fiche. */
-  const { formations: published } = useSession();
+  const { formations: published, state, actorId } = useSession();
   const allFormations = useMemo(
-    () => [
-      ...published.map((f) => ({
-        ...f,
-        instructorName: fullName(f.instructor),
-        moduleCount: f.modules.length,
-        progress: 0,
-        enrolled: false,
-        featured: false,
-      })),
-      ...FORMATIONS,
-    ],
-    [published],
+    () =>
+      [
+        ...published.map((f) => ({
+          ...f,
+          instructorName: fullName(f.instructor),
+          moduleCount: f.modules.length,
+          featured: false,
+        })),
+        ...FORMATIONS,
+      ].map((f) => {
+        const p = formationProgress(state, actorId, f);
+        return { ...f, progress: p.percent, enrolled: p.enrolled, students: f.studentCount + sessionEnrolmentCount(state, f) };
+      }),
+    [published, state, actorId],
   );
   const publishedIds = useMemo(() => new Set(published.map((f) => f.id)), [published]);
 
-  const enrolledFormations = FORMATIONS.filter((f) => f.enrolled);
+  const enrolledFormations = allFormations.filter((f) => f.enrolled);
 
   const filtered = useMemo(() => {
     return allFormations.filter((f) => {
@@ -120,7 +118,7 @@ export default function FormationsPage() {
     });
   }, [search, category, allFormations]);
 
-  const featured = FORMATIONS.find((f) => f.featured);
+  const featured = allFormations.find((f) => f.featured);
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -150,7 +148,7 @@ export default function FormationsPage() {
             on en voit 2 d'un coup sur desktop, scroll horizontal mobile. */}
         {enrolledFormations.length > 0 && (
           <HorizontalScroller
-            title="Mes formations en cours"
+            title={formationsText.list.mine}
             cardWidth="300px"
           >
             {enrolledFormations.map((f) => (
@@ -184,8 +182,8 @@ export default function FormationsPage() {
               <h2 className="text-2xl font-bold text-white mb-1">{featured.title}</h2>
               <div className="flex items-center gap-4 text-white/80 text-sm">
                 <span>{featured.instructorName}</span>
-                <span>{featured.studentCount} étudiants</span>
-                <Stars rating={featured.rating} />
+                <span>{formationsText.list.students(featured.students)}</span>
+                {featured.rating > 0 && <Stars rating={featured.rating} />}
                 <span className="font-semibold text-[var(--primary)]">{formatPrice(featured.price)}</span>
               </div>
             </div>
@@ -280,10 +278,12 @@ export default function FormationsPage() {
                 <h3 className="font-medium text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors text-center line-clamp-1">{inst.name}</h3>
                 <span className="text-sm text-[var(--text-muted)] line-clamp-1 text-center">{inst.specialty}</span>
                 <div className="flex items-center gap-3 mt-2 text-xs text-[var(--text-secondary)]">
-                  <span>{inst.students} étudiants</span>
-                  <span className="inline-flex items-center gap-0.5 text-[var(--primary)]">
-                    <Star size={11} fill="currentColor" /> {inst.rating.toFixed(1)}
-                  </span>
+                  <span>{formationsText.list.students(inst.students)}</span>
+                  {inst.rating > 0 && (
+                    <span className="inline-flex items-center gap-0.5 text-[var(--primary)]">
+                      <Star size={11} fill="currentColor" /> {inst.rating.toFixed(1)}
+                    </span>
+                  )}
                 </div>
               </Link>
             ))}
