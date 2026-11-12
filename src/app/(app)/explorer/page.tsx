@@ -16,12 +16,25 @@ import { HorizontalScroller } from "@/components/ui/horizontal-scroller";
 import { AirbnbPropertyCard } from "@/components/ui/airbnb-property-card";
 import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
 import { properties as CATALOGUE, isAvailable } from "@/lib/mock-data";
+import { estimateYield, pctLabel } from "@/lib/explore/listing";
 
 /* Les biens proposés : un bien vendu (`soldTo`) reste consultable depuis
    un avis ou un profil, mais ne figure plus dans l'exploration. */
 /* Le catalogue figé ; les biens publiés pendant la visite (mémoire de
    session) s'y ajoutent dans le composant. */
 const BASE_PROPERTIES = CATALOGUE.filter(isAvailable);
+
+/* Rendement brut ESTIMÉ (loyers comparables du catalogue, `estimateYield`) —
+   le même chiffre que la fiche du bien et le pôle Investisseurs. Calculé une
+   fois par bien : la fonction est pure et déterministe. */
+const YIELD_CACHE = new Map<string, number>();
+function yieldPct(p: Property): number {
+  const hit = YIELD_CACHE.get(p.id);
+  if (hit !== undefined) return hit;
+  const v = estimateYield(p, CATALOGUE)?.pct ?? 0;
+  YIELD_CACHE.set(p.id, v);
+  return v;
+}
 import type { Property, TransactionType, PropertyType, Currency } from "@/lib/types";
 
 // ─── Constantes ─────────────────────────────────────────────────────────────
@@ -61,9 +74,9 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
 const BEDROOM_OPTIONS = ["", "1", "2", "3", "4"];
 const RENDEMENT_PRESETS = [
   { value: "", label: "Tout" },
+  { value: "2", label: "≥ 2 %" },
   { value: "3", label: "≥ 3 %" },
-  { value: "5", label: "≥ 5 %" },
-  { value: "7", label: "≥ 7 %" },
+  { value: "4", label: "≥ 4 %" },
 ];
 const DPE_CLASSES = ["A", "B", "C", "D"];
 const dpeTone = (c: string) =>
@@ -163,7 +176,7 @@ export default function ExplorerPage() {
   const hasFavorites = favorites.size > 0;
 
   const meilleursRendements = useMemo(
-    () => ALL_PROPERTIES.filter((p) => p.transactionType === "vente" && (p.analytics?.rendementBrut ?? 0) > 0).sort((a, b) => b.analytics!.rendementBrut - a.analytics!.rendementBrut).slice(0, 10),
+    () => ALL_PROPERTIES.filter((p) => p.transactionType === "vente" && yieldPct(p) > 0).sort((a, b) => yieldPct(b) - yieldPct(a)).slice(0, 10),
     [ALL_PROPERTIES],
   );
   const sejoursCourts = useMemo(() => ALL_PROPERTIES.filter((p) => p.transactionType === "location-ct").slice(0, 10), [ALL_PROPERTIES]);
@@ -193,12 +206,12 @@ export default function ExplorerPage() {
     if (filterBedrooms) r = r.filter((p) => p.bedrooms >= Number(filterBedrooms));
     if (filterBathrooms) r = r.filter((p) => (p.bathrooms ?? 0) >= Number(filterBathrooms));
     if (filterSurfaceMin) r = r.filter((p) => (p.area ?? 0) >= Number(filterSurfaceMin));
-    if (filterRendementMin) r = r.filter((p) => (p.analytics?.rendementBrut ?? 0) >= Number(filterRendementMin));
+    if (filterRendementMin) r = r.filter((p) => yieldPct(p) >= Number(filterRendementMin));
     if (filterDpe.length) r = r.filter((p) => p.analytics?.dpe && filterDpe.includes(p.analytics.dpe));
 
     if (sortBy === "price-asc") r.sort((a, b) => a.price - b.price);
     else if (sortBy === "price-desc") r.sort((a, b) => b.price - a.price);
-    else if (sortBy === "rendement") r.sort((a, b) => (b.analytics?.rendementBrut ?? 0) - (a.analytics?.rendementBrut ?? 0));
+    else if (sortBy === "rendement") r.sort((a, b) => yieldPct(b) - yieldPct(a));
     else if (sortBy === "surface") r.sort((a, b) => (b.area ?? 0) - (a.area ?? 0));
     else if (sortBy === "rating") r.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     else r.sort((a, b) => Number(isSessionId(b.id)) - Number(isSessionId(a.id)) || (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || (b.rating ?? 0) - (a.rating ?? 0));
@@ -277,9 +290,9 @@ export default function ExplorerPage() {
   const renderCard = (prop: Property) => {
     const suffix = priceSuffix(prop.transactionType);
     const subtitle = [prop.bedrooms > 0 ? `${prop.bedrooms} ch.` : null, `${prop.area} m²`].filter(Boolean).join(" · ");
-    const r = prop.analytics?.rendementBrut;
+    const r = yieldPct(prop);
     const bottomBadge = prop.transactionType === "vente" && r && r > 0
-      ? { label: `${r.toFixed(1)}% brut`, tone: (r > 7 ? "warning" : r >= 5 ? "success" : "info") as "success" | "warning" | "info" }
+      ? { label: `${pctLabel(r)} brut estimé`, tone: (r >= 4 ? "success" : "info") as "success" | "warning" | "info" }
       : undefined;
     return (
       <AirbnbPropertyCard
@@ -319,7 +332,7 @@ export default function ExplorerPage() {
       </header>
 
       {/* ── Barre recherche + filtres (sticky) ──────────────────────────── */}
-      <div className="sticky top-2 z-30 mb-5">
+      <div data-tour="explorer-search" className="sticky top-2 z-30 mb-5">
         <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)]/95 backdrop-blur-md p-2.5 shadow-sm space-y-2.5">
           <div className="flex items-center gap-2">
             <div className="flex-1 flex gap-1 p-1 rounded-xl bg-[var(--input-bg)] overflow-x-auto no-scrollbar">
@@ -404,7 +417,7 @@ export default function ExplorerPage() {
                   <button key={p.value || "any"} onClick={() => setFilterRendementMin(p.value)} className={`flex-1 h-9 rounded-lg text-sm font-medium border transition-colors ${filterRendementMin === p.value ? "bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)]" : "border-[var(--card-border)] text-[var(--foreground)] hover:bg-[var(--hover-bg)]"}`}>{p.label}</button>
                 ))}
               </div>
-              <p className="mt-2 text-[11px] text-[var(--text-muted)]">Sur les biens à la vente avec rendement communiqué.</p>
+              <p className="mt-2 text-[11px] text-[var(--text-muted)]">Rendement brut estimé sur les loyers à l’année voisines du catalogue.</p>
             </FilterDropdown>
 
             {/* Plus de filtres */}
@@ -560,7 +573,7 @@ export default function ExplorerPage() {
               <div className="p-3 space-y-1">
                 {filtered.map((prop) => {
                   const suffix = priceSuffix(prop.transactionType);
-                  const r = prop.analytics?.rendementBrut;
+                  const r = yieldPct(prop);
                   return (
                     <div key={prop.id} onMouseEnter={() => setHoveredId(prop.id)} onMouseLeave={() => setHoveredId(null)}>
                       <Link href={`/explorer/${prop.id}`} className={`flex gap-3 p-2 rounded-xl transition-colors ${hoveredId === prop.id ? "bg-[var(--hover-bg)] ring-1 ring-[var(--primary)]/30" : "hover:bg-[var(--hover-bg)]"}`}>
@@ -574,7 +587,7 @@ export default function ExplorerPage() {
                           <p className="text-sm font-semibold text-[var(--foreground)] truncate">{prop.title}</p>
                           <p className="text-xs text-[var(--text-muted)] flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" /> {prop.location.city}</p>
                           <p className="text-sm font-bold text-[var(--foreground)] mt-1">{formatPrice(prop.price, prop.currency)}<span className="text-xs font-normal text-[var(--text-muted)]">{suffix}</span></p>
-                          {prop.transactionType === "vente" && r && r > 0 && <p className="text-[11px] text-[var(--success)] font-medium mt-0.5">{r.toFixed(1)}% brut</p>}
+                          {prop.transactionType === "vente" && r && r > 0 && <p className="text-[11px] text-[var(--success)] font-medium mt-0.5">{pctLabel(r)} brut estimé</p>}
                         </div>
                       </Link>
                     </div>

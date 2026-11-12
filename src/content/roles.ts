@@ -98,9 +98,10 @@ export const PERSONAS: readonly Persona[] = [
     id: "user-003",
     group: "proprietaires",
     as: "investisseur",
-    cta: PUBLISH,
+    /* Son action principale : suivre son portefeuille (pôle Investisseurs, P6b). */
+    cta: { label: "Mon patrimoine", href: "/investisseurs" },
     favorites: ["prop28", "prop19"],
-    searches: [{ label: "Rendement > 4 % · Vaud et Genève", href: "/investisseurs" }],
+    searches: [{ label: "Opportunités · rendement brut estimé", href: "/investisseurs" }],
   },
   {
     id: "user-013",

@@ -22,7 +22,6 @@ import type { Property, PropertyAnalytics, User } from "@/lib/types";
 import {
   properties as allProperties,
   getPropertyById,
-  getSimilarProperties,
   getReviewsForProperty,
 } from "@/lib/mock-data";
 import type { Review } from "@/lib/mock-data";
@@ -32,6 +31,23 @@ import { ReferralBanner } from "@/components/affiliate/referral-banner";
 import { REFERRAL_ID } from "@/lib/referral-links";
 import { useSession, recordSessionEvent } from "@/lib/use-session";
 import { isSessionId } from "@/lib/demo/session-views";
+import { DEMO_TODAY } from "@/lib/demo/clock";
+import { primeSettings, chfLabel } from "@/lib/demo/affiliation";
+import { primeChf } from "@/lib/pricing/catalog";
+import {
+  estimateYield,
+  pctLabel,
+  priceUnit,
+  rentBreakdown,
+  similarListings,
+  visitSlots,
+  yieldTone,
+} from "@/lib/explore/listing";
+import { propertyPage as T } from "@/content/explorer";
+
+/* Les créneaux de visite proposés, à partir de l'horloge de la démonstration. */
+const VISIT_SLOTS = visitSlots(DEMO_TODAY);
+const DEMO_DAY = DEMO_TODAY.toISOString().slice(0, 10);
 
 // ─── Paid options (applicable to location-ct) ───────────────────────────────
 
@@ -133,7 +149,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
      session : on le cherche là d'abord. Tant que la session n'est pas relue
      (premier rendu, identique au serveur), on affiche un chargement plutôt
      qu'un « introuvable » trompeur. */
-  const { listings: sessionListings, hydrated: sessionHydrated, actorId } = useSession();
+  const { listings: sessionListings, hydrated: sessionHydrated, actorId, state: sessionState } = useSession();
   const property = isSessionId(id) ? sessionListings.find((p) => p.id === id) : resolveProperty(id);
   const waitingForSession = isSessionId(id) && !property && !sessionHydrated;
 
@@ -142,8 +158,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
     ? getReviewsForProperty(property.id).map(mapMockReviewToDisplay)
     : [];
 
-  // Similar properties from mock-data (excludes current property)
-  const similarProperties = property ? getSimilarProperties(property) : [];
+  /* Biens similaires : même transaction, puis les plus proches (distance et
+     gamme de prix). Le rendement brut d'une vente est estimé sur les loyers
+     comparables du catalogue — jamais un chiffre déclaré. */
+  const similarProperties = property ? similarListings(property, allProperties) : [];
+  const yieldEstimate = property ? estimateYield(property, allProperties) : null;
+  const rent = property ? rentBreakdown(property) : null;
+  const primeSetting = property ? primeSettings(sessionState).get(property.id) : undefined;
+  const activePrimeChf = primeSetting?.status === "active" ? primeSetting.amountChf : undefined;
 
   // Gallery
   const [galleryIndex, setGalleryIndex] = useState(0);
@@ -164,8 +186,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   const [selectedOptions, setSelectedOptions] = useState<Set<string>>(new Set());
 
   // Calendar (for location-ct)
-  const [calMonth, setCalMonth] = useState(new Date().getMonth());
-  const [calYear, setCalYear] = useState(new Date().getFullYear());
+  /* Horloge de la démonstration, pas `new Date()` : le serveur et le
+     navigateur rendent le même mois (hydratation). */
+  const [calMonth, setCalMonth] = useState(DEMO_TODAY.getUTCMonth());
+  const [calYear, setCalYear] = useState(DEMO_TODAY.getUTCFullYear());
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(2);
@@ -199,6 +223,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   const [showVisitModal, setShowVisitModal] = useState(false);
   const [visitDate, setVisitDate] = useState("");
   const [visitTime, setVisitTime] = useState("10:00");
+  const [visitCustom, setVisitCustom] = useState(false);
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [offerAmount, setOfferAmount] = useState(0);
   const [offerConditions, setOfferConditions] = useState("");
@@ -304,7 +329,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   const hostFirstName = property.host.firstName;
   const contactHref = `/messages?to=${property.host.id}`;
   const refuseOwn = () => {
-    addToast("C'est votre propre annonce : les demandes des autres arrivent dans votre messagerie.", "info");
+    addToast(T.own, "info");
+  };
+  const isLongTerm = property.transactionType === "location-lt";
+  const openVisit = () => {
+    setVisitDate(VISIT_SLOTS[0]?.date ?? "");
+    setVisitTime(VISIT_SLOTS[0]?.time ?? "10:00");
+    setVisitCustom(false);
+    setShowVisitModal(true);
   };
 
   const handleContactSubmit = (e: React.FormEvent) => {
@@ -325,7 +357,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
   const handleVisitRequest = () => {
     if (isOwnListing) return refuseOwn();
-    if (!visitDate) { addToast("Veuillez sélectionner une date.", "warning"); return; }
+    if (!visitDate) { addToast(T.visitModal.pickSlot, "warning"); return; }
     recordSessionEvent({
       kind: "visit.requested",
       data: { toId: property.host.id, propertyId: property.id, subject: property.title, date: visitDate, time: visitTime },
@@ -336,16 +368,17 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         data: { toId: property.host.id, propertyId: property.id, subject: property.title, text: requestMessage.trim() },
       });
     }
-    addToast(`Demande de visite envoyée à ${hostFirstName}. Retrouvez l'échange dans vos messages.`, "success");
+    addToast(T.visitModal.sent(hostFirstName), "success");
     setShowVisitModal(false);
     setVisitDate("");
+    setVisitCustom(false);
     setRequestMessage("");
     router.push(contactHref);
   };
 
   const handleOffer = () => {
     if (isOwnListing) return refuseOwn();
-    if (!offerAmount || offerAmount <= 0) { addToast("Veuillez saisir un montant valide.", "warning"); return; }
+    if (!offerAmount || offerAmount <= 0) { addToast(T.offerModal.invalid, "warning"); return; }
     recordSessionEvent({
       kind: "offer.made",
       data: {
@@ -357,7 +390,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         conditions: offerConditions,
       },
     });
-    addToast(`Offre transmise à ${hostFirstName}. Retrouvez-la dans vos messages.`, "success");
+    addToast(T.offerModal.sent(hostFirstName), "success");
     setShowOfferModal(false);
     setOfferConditions("");
     router.push(contactHref);
@@ -474,7 +507,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         {/* Main content */}
         <div className="flex-1 min-w-0">
           {/* Title, price, badges */}
-          <div className="flex items-start justify-between mb-4">
+          <div data-tour="property-title" className="flex items-start justify-between mb-4">
             <div>
               <h1 className="text-2xl md:text-3xl page-heading text-[var(--foreground)] mb-2">
                 {property.title}
@@ -499,16 +532,34 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                 <span className="inline-block rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">Vendu</span>
               )}
               {property.transactionType === "location-ct" && (
-                <span className="text-sm text-[var(--text-muted)]">par nuit</span>
+                <span className="text-sm text-[var(--text-muted)]">{T.perNight}</span>
               )}
               {property.transactionType === "location-lt" && (
-                <span className="text-sm text-[var(--text-muted)]">par mois</span>
+                <span className="block text-sm text-[var(--text-muted)]">
+                  {T.perMonth}
+                  {rent?.chargesChf !== undefined && ` · dont ${chfLabel(rent.chargesChf * 100)} de charges`}
+                </span>
               )}
             </div>
           </div>
 
           {/* Badges */}
           <div className="flex gap-2 mb-6 flex-wrap">
+            {yieldEstimate && !property.soldTo && (
+              <span
+                data-testid="yield-badge"
+                title={T.yield.note}
+                className={`px-3 py-1 rounded-lg text-sm font-medium ${
+                  yieldTone(yieldEstimate.pct) === "success"
+                    ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                    : yieldTone(yieldEstimate.pct) === "info"
+                      ? "bg-sky-500/15 text-sky-700 dark:text-sky-400"
+                      : "bg-[var(--hover-bg)] text-[var(--text-secondary)]"
+                }`}
+              >
+                {T.yield.badge(pctLabel(yieldEstimate.pct))}
+              </span>
+            )}
             <span className="px-3 py-1 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] text-sm font-medium">
               {property.type.charAt(0).toUpperCase() + property.type.slice(1)}
             </span>
@@ -696,36 +747,59 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               IMPORTANT : ces chiffres sont DECLARES par le vendeur.
               E-Dome ne les certifie pas — etiquetage explicite en tete
               et mention de verification en pied de bloc. */}
-          {property.transactionType === "vente" && property.analytics && (
+          {property.transactionType === "vente" && (property.analytics || yieldEstimate) && (
             <div className="mb-8">
               <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
                 <h2 className="text-lg font-bold text-[var(--foreground)] flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-[var(--primary)]" />
                   Analyse d&apos;investissement
                 </h2>
-                <span
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
-                  style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}
-                  title="Ces chiffres sont déclarés par le vendeur. E-Dome ne les certifie pas."
-                >
-                  Données communiquées par le vendeur
-                </span>
+                {property.analytics && (
+                  <span
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
+                    style={{ background: "var(--hover-bg)", color: "var(--text-secondary)" }}
+                    title="L'état, la construction et le DPE sont déclarés par le vendeur. E-Dome ne les certifie pas."
+                  >
+                    Caractéristiques communiquées par le vendeur
+                  </span>
+                )}
               </div>
               <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6">
+                {/* Rendement ESTIMÉ par E-Dome sur les loyers comparables du
+                    catalogue (même calcul que la carte et le pôle
+                    Investisseurs) — en couleur neutre : ce n'est pas une
+                    promesse de gain. Les rendements « déclarés » ont disparu :
+                    deux chiffres pour la même chose finissaient par diverger. */}
+                {yieldEstimate && (
+                  <div className="mb-6 rounded-xl bg-[var(--hover-bg)] p-4">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <p className="text-sm font-semibold text-[var(--foreground)]">{T.yield.title}</p>
+                      <p className="text-2xl font-bold text-[var(--foreground)]">{pctLabel(yieldEstimate.pct)}</p>
+                    </div>
+                    <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                      {T.yield.rent} : {chfLabel(yieldEstimate.monthlyRentChf * 100)} {T.perMonth} ·{" "}
+                      {T.yield.basis(yieldEstimate.comparables.length, String(yieldEstimate.perM2).replace(".", ","))}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {yieldEstimate.comparables.map((c) => (
+                        <Link key={c.property.id} href={`/explorer/${c.property.id}`} className="rounded-full border border-[var(--card-border)] bg-[var(--card)] px-2 py-0.5 text-[11px] text-[var(--text-secondary)] hover:text-[var(--primary)]">
+                          {c.property.location.city} · {chfLabel(c.netChf * 100)}
+                        </Link>
+                      ))}
+                    </div>
+                    <p className="mt-2 text-[11px] text-[var(--text-muted)]">{T.yield.note}</p>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  {/* Rendement et ROI en couleur NEUTRE, pas en vert : un vert
-                      « +X % » se lit comme un gain garanti. Ce sont des
-                      projections déclarées par le vendeur (label ci-dessus),
-                      pas une promesse d'E-Dome — leur libellé porte « indicatif ». */}
                   {[
-                    { label: "Rendement brut (indicatif)", value: `${property.analytics.rendementBrut.toFixed(1)}%`, color: "text-[var(--foreground)]" },
-                    { label: "Rendement net (indicatif)", value: `${property.analytics.rendementNet.toFixed(1)}%`, color: "text-[var(--foreground)]" },
-                    { label: "Prix/m²", value: formatPrice(property.analytics.prixM2, property.currency), color: "text-[var(--primary)]" },
-                    { label: "DPE", value: property.analytics.dpe, color: "text-blue-400" },
-                    { label: "État", value: property.analytics.etatGeneral, color: "text-[var(--foreground)]" },
-                    { label: "Construction", value: `${property.analytics.anneeConstruction}`, color: "text-[var(--foreground)]" },
-                    { label: "ROI 5 ans (indicatif)", value: `${property.analytics.roi5ans}%`, color: "text-[var(--foreground)]" },
-                    { label: "ROI 10 ans (indicatif)", value: `${property.analytics.roi10ans}%`, color: "text-[var(--foreground)]" },
+                    ...(property.area > 0 ? [{ label: T.yield.priceM2, value: formatPrice(Math.round(property.price / property.area), property.currency), color: "text-[var(--primary)]" }] : []),
+                    ...(property.analytics
+                      ? [
+                          { label: "DPE", value: property.analytics.dpe, color: "text-[var(--foreground)]" },
+                          { label: "État", value: property.analytics.etatGeneral, color: "text-[var(--foreground)]" },
+                          { label: "Construction", value: `${property.analytics.anneeConstruction}`, color: "text-[var(--foreground)]" },
+                        ]
+                      : []),
                   ].map(({ label, value, color }) => (
                     <div key={label} className="text-center">
                       <p className={`text-lg font-bold ${color}`}>{value}</p>
@@ -799,6 +873,38 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             </div>
           )}
 
+          {/* Location longue durée : le loyer au mois, charges à part si
+              l'annonce les précise. Jamais de prix « à la nuit » ici. */}
+          {isLongTerm && rent && (
+            <div className="mb-8" data-testid="rent-breakdown">
+              <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">{T.rent.title}</h2>
+              <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-5">
+                <dl className="space-y-2 text-sm">
+                  {rent.chargesChf !== undefined && (
+                    <>
+                      <div className="flex justify-between text-[var(--text-secondary)]">
+                        <dt>{T.rent.net}</dt>
+                        <dd className="tabular-nums">{chfLabel(rent.netChf * 100)}</dd>
+                      </div>
+                      <div className="flex justify-between text-[var(--text-secondary)]">
+                        <dt>{T.rent.charges}</dt>
+                        <dd className="tabular-nums">{chfLabel(rent.chargesChf * 100)}</dd>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex justify-between border-t border-[var(--card-border)] pt-2 font-semibold text-[var(--foreground)]">
+                    <dt>{T.rent.total}</dt>
+                    <dd className="tabular-nums">{chfLabel(rent.totalChf * 100)} {T.perMonth}</dd>
+                  </div>
+                </dl>
+                {rent.chargesChf === undefined && (
+                  <p className="mt-2 text-xs text-[var(--text-muted)]">{T.rent.chargesUnknown}</p>
+                )}
+                <p className="mt-2 text-xs text-[var(--text-muted)]">{T.rent.deposit}</p>
+              </div>
+            </div>
+          )}
+
           {/* Paid options */}
           {property.transactionType === "location-ct" && (
             <div className="mb-8">
@@ -867,7 +973,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               La commission courte durée EST PRÉLEVÉE SUR L'HÔTE, jamais ajoutée
               au prix affiché — la phrase générée par `quote()` le dit. */}
           {property.transactionType === "location-ct" && property.currency === "CHF" && (
-            <div className="mb-8">
+            <div data-tour="money-flow" className="mb-8">
               <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">Ce que rapporte une nuit</h2>
               <MoneyFlow
                 charge={{ kind: "commission", pole: "location-ct", gross: chf(property.price) }}
@@ -908,10 +1014,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   {Array.from({ length: getDaysInMonth(calMonth, calYear) }, (_, i) => {
                     const day = i + 1;
                     const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    const cellDate = new Date(calYear, calMonth, day);
-                    const isPast = cellDate < today;
+                    const isPast = dateStr < DEMO_DAY;
                     const isBooked = day % 7 === 0; // Mock: booked dates
                     const isDisabled = isPast || isBooked;
                     return (
@@ -1045,7 +1148,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               Devenez apporteur sur ce bien
             </h3>
             <p className="text-sm text-[var(--text-secondary)]">
-              Partagez ce bien avec votre réseau et touchez une commission automatique si une transaction se conclut via votre lien.
+              {property.transactionType === "location-ct"
+                ? T.referral.leadMarketplace
+                : activePrimeChf !== undefined
+                  ? T.referral.leadPrime(chfLabel(activePrimeChf * 100))
+                  : T.referral.leadNoPrime}
             </p>
 
             {/* Lien de parrainage */}
@@ -1063,7 +1170,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               <a href={`mailto:?subject=Bien E-Dome&body=${encodeURIComponent("Découvrez ce bien : https://edome.world/ref/bien/" + property.id + "/" + REFERRAL_ID)}`} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">
                 <Mail size={12} /> Email
               </a>
-              <button className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors">
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard?.writeText(`https://edome.world/ref/bien/${property.id}/${REFERRAL_ID}`).catch(() => {});
+                  addToast(T.qr.copied, "success");
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--card-border)] text-xs hover:bg-[var(--card-border)] transition-colors"
+              >
                 <QrCode size={12} /> QR Code
               </button>
             </div>
@@ -1094,13 +1208,15 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
           {/* Similar properties */}
           {similarProperties.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-bold text-[var(--foreground)] mb-4">Biens similaires</h2>
+          <div className="mb-8" data-testid="similar-listings">
+            <h2 className="text-lg font-bold text-[var(--foreground)]">{T.similar.title}</h2>
+            <p className="text-xs text-[var(--text-muted)] mb-4">{T.similar.subtitle[property.transactionType]}</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {similarProperties.slice(0, 3).map((sp) => (
+              {similarProperties.map((sp) => (
                 <Link
                   key={sp.id}
                   href={`/explorer/${sp.id}`}
+                  data-transaction={sp.transactionType}
                   className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] overflow-hidden card-hover"
                 >
                   <img src={sp.images[0]} alt="" className="w-full h-36 object-cover" />
@@ -1108,14 +1224,15 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     <p className="text-sm font-medium text-[var(--foreground)] truncate">{sp.title}</p>
                     <p className="text-sm font-bold text-[var(--primary)] mt-1">
                       {formatPrice(sp.price, sp.currency)}
-                      {sp.transactionType === "location-ct" && <span className="text-xs text-[var(--text-muted)]">/nuit</span>}
-                      {sp.transactionType === "location-lt" && <span className="text-xs text-[var(--text-muted)]">/mois</span>}
+                      <span className="text-xs font-normal text-[var(--text-muted)]">{priceUnit(sp.transactionType)}</span>
                     </p>
                     <div className="flex items-center gap-3 mt-1 text-xs text-[var(--text-muted)]">
                       <span>{sp.location.city}</span>
-                      <span className="flex items-center gap-0.5">
-                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {sp.rating}
-                      </span>
+                      {sp.reviewCount > 0 && (
+                        <span className="flex items-center gap-0.5">
+                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {sp.rating}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -1126,7 +1243,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         </div>
 
         {/* Right sidebar */}
-        <aside className="w-full lg:w-80 shrink-0 space-y-6">
+        <aside data-tour="property-aside" className="w-full lg:w-80 shrink-0 space-y-6">
           {/* Booking widget for location-ct */}
           {property.transactionType === "location-ct" && (() => {
             const nights = checkIn && checkOut
@@ -1232,35 +1349,49 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           {/* Vente et location longue durée : visite, offre (vente), contact */}
           {(property.transactionType === "vente" || property.transactionType === "location-lt") && (
             <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-6 lg:sticky lg:top-20 space-y-3">
-              <p className="text-2xl font-bold text-[var(--primary)] mb-4">
+              <p className="text-2xl font-bold text-[var(--primary)] mb-1">
                 {formatPrice(property.price, property.currency)}
-                {property.transactionType === "location-lt" && <span className="text-sm font-normal text-[var(--text-muted)]"> /mois</span>}
+                {isLongTerm && <span className="text-sm font-normal text-[var(--text-muted)]"> {T.perMonth}</span>}
               </p>
-              <button
-                onClick={() => setShowVisitModal(true)}
-                className="w-full py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors flex items-center justify-center gap-2"
-              >
-                <CalendarIcon className="w-4 h-4" /> Planifier une visite
-              </button>
-              {property.transactionType === "vente" && (
-                <button
-                  onClick={() => setShowOfferModal(true)}
-                  className="w-full py-3 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10 font-semibold transition-colors flex items-center justify-center gap-2"
-                >
-                  <DollarSign className="w-4 h-4" /> Faire une offre
-                </button>
+              {isLongTerm && rent?.chargesChf !== undefined && (
+                <p className="text-xs text-[var(--text-muted)]">
+                  {T.rent.net} {chfLabel(rent.netChf * 100)} + {chfLabel(rent.chargesChf * 100)} de charges
+                </p>
+              )}
+              {property.soldTo ? (
+                <p className="rounded-xl bg-[var(--hover-bg)] p-3 text-sm text-[var(--text-secondary)]">{T.sold}</p>
+              ) : (
+                <>
+                  <button
+                    data-testid="visit-cta"
+                    onClick={openVisit}
+                    className="mt-3 w-full py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                  >
+                    <CalendarIcon className="w-4 h-4" /> {isLongTerm ? T.ltAside.cta : T.saleAside.visit}
+                  </button>
+                  {property.transactionType === "vente" && (
+                    <button
+                      data-testid="offer-cta"
+                      onClick={() => setShowOfferModal(true)}
+                      className="w-full py-3 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10 font-semibold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <DollarSign className="w-4 h-4" /> {T.saleAside.offer}
+                    </button>
+                  )}
+                </>
               )}
               <Link
                 href={contactHref}
                 className="w-full py-3 rounded-xl border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] font-semibold transition-colors flex items-center justify-center gap-2"
               >
-                <MessageCircle className="w-4 h-4" /> Écrire à {hostFirstName}
+                <MessageCircle className="w-4 h-4" /> {T.saleAside.write(hostFirstName)}
               </Link>
+              {isLongTerm && <p className="text-xs text-[var(--text-muted)]">{T.ltAside.hint}</p>}
               <button
                 onClick={() => window.print()}
                 className="w-full py-3 rounded-xl border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] font-semibold transition-colors flex items-center justify-center gap-2"
               >
-                <Printer className="w-4 h-4" /> Télécharger la fiche PDF
+                <Printer className="w-4 h-4" /> {T.saleAside.sheet}
               </button>
             </div>
           )}
@@ -1342,7 +1473,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                   type="submit"
                   className="w-full py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors flex items-center justify-center gap-2"
                 >
-                  <Send className="w-4 h-4" /> Contacter l&apos;hôte
+                  <Send className="w-4 h-4" /> {property.transactionType === "location-ct" ? "Contacter l'hôte" : T.contactSubmit(hostFirstName)}
                 </button>
               </form>
             )}
@@ -1389,7 +1520,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
               ))}
             </div>
             <button
-              onClick={() => setShowReport(false)}
+              onClick={() => {
+                setShowReport(false);
+                setReportReason("");
+                addToast(T.report.sent, "success");
+              }}
               disabled={!reportReason}
               className="w-full py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold transition-colors disabled:opacity-40"
             >
@@ -1402,43 +1537,76 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
       {/* Visit scheduling modal (vente) */}
       {showVisitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowVisitModal(false)}>
-          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full mx-4 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto animate-scale-in" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[var(--foreground)]">Planifier une visite</h3>
-              <button onClick={() => setShowVisitModal(false)} className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
+              <h3 className="text-lg font-bold text-[var(--foreground)]">{isLongTerm ? T.visitModal.titleLt : T.visitModal.titleSale}</h3>
+              <button onClick={() => setShowVisitModal(false)} aria-label="Fermer" className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="space-y-4">
+              {/* Créneaux proposés par le propriétaire (horloge de la démo). */}
               <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Date souhaitée</label>
-                <input type="date" value={visitDate} onChange={(e) => setVisitDate(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)]" />
+                <p className="block text-xs text-[var(--text-muted)] mb-2">{T.visitModal.slotsLabel}</p>
+                <div className="grid grid-cols-2 gap-2" role="radiogroup">
+                  {VISIT_SLOTS.map((slot) => {
+                    const active = !visitCustom && visitDate === slot.date && visitTime === slot.time;
+                    return (
+                      <button
+                        key={slot.date + slot.time}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        data-testid="visit-slot"
+                        onClick={() => { setVisitCustom(false); setVisitDate(slot.date); setVisitTime(slot.time); }}
+                        className={`rounded-xl border px-3 py-2.5 text-sm transition-colors ${
+                          active
+                            ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--foreground)] font-semibold"
+                            : "border-[var(--card-border)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]"
+                        }`}
+                      >
+                        {slot.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-[11px] text-[var(--text-muted)]">{T.visitModal.slotsHint(hostFirstName)}</p>
+                <button
+                  type="button"
+                  onClick={() => { setVisitCustom((v) => !v); setVisitDate(""); }}
+                  className="mt-2 text-xs text-[var(--primary)] hover:underline"
+                >
+                  {T.visitModal.otherDate}
+                </button>
               </div>
+              {visitCustom && (
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="date" min={DEMO_DAY} value={visitDate} onChange={(e) => setVisitDate(e.target.value)} aria-label="Date"
+                    className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)]" />
+                  <select value={visitTime} onChange={(e) => setVisitTime(e.target.value)} aria-label="Heure"
+                    className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)] appearance-none cursor-pointer">
+                    {["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00"].map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Heure</label>
-                <select value={visitTime} onChange={(e) => setVisitTime(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)] appearance-none cursor-pointer">
-                  {["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"].map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Message (optionnel)</label>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">{T.visitModal.message}</label>
                 <textarea
                   value={requestMessage}
                   onChange={(e) => setRequestMessage(e.target.value)}
-                  placeholder="Précisez vos disponibilités ou questions..."
+                  placeholder={isLongTerm ? T.visitModal.messagePlaceholderLt : T.visitModal.messagePlaceholderSale}
                   rows={3}
                   className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[var(--primary)]"
                 />
               </div>
               <button
+                data-testid="visit-submit"
                 onClick={handleVisitRequest}
                 className="w-full py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
               >
-                Envoyer la demande
+                {T.visitModal.submit}
               </button>
             </div>
           </div>
@@ -1448,35 +1616,76 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
       {/* Offer modal (vente) */}
       {showOfferModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowOfferModal(false)}>
-          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full mx-4 animate-scale-in" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto animate-scale-in" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[var(--foreground)]">Faire une offre</h3>
-              <button onClick={() => setShowOfferModal(false)} className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
+              <h3 className="text-lg font-bold text-[var(--foreground)]">{T.offerModal.title}</h3>
+              <button onClick={() => setShowOfferModal(false)} aria-label="Fermer" className="text-[var(--text-muted)] hover:text-[var(--foreground)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Prix demandé</label>
+                <p className="block text-xs text-[var(--text-muted)] mb-1">{T.offerModal.asked}</p>
                 <p className="text-sm text-[var(--foreground)] font-semibold">{formatPrice(property.price, property.currency)}</p>
               </div>
               <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Montant de votre offre ({property.currency})</label>
-                <input type="number" value={offerAmount} onChange={(e) => setOfferAmount(Number(e.target.value))}
+                <label htmlFor="offer-amount" className="block text-xs text-[var(--text-muted)] mb-1">{T.offerModal.amount(property.currency)}</label>
+                <input id="offer-amount" type="number" min={0} value={offerAmount} onChange={(e) => setOfferAmount(Number(e.target.value))}
                   className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)]" />
               </div>
+
+              {/* Qui paie quoi sur une VENTE : le prix va de l'acheteur au
+                  vendeur, en direct ; E-Dome ne prend rien dessus (une
+                  commission sur le prix d'un bien ne compile même pas, cf.
+                  `CommissionPole`). Si une prime est active, elle est à la
+                  charge du vendeur seul, et seulement à l'acceptation d'une
+                  mise en relation — son flux sort de `quote()` via MoneyFlow. */}
+              <div data-testid="offer-money-flow" className="rounded-xl border border-[var(--card-border)] bg-[var(--background)] p-3.5">
+                <p className="text-[13px] font-semibold text-[var(--foreground)] flex items-center gap-1.5">
+                  <Info size={14} className="text-[var(--primary)]" /> {T.offerModal.flowTitle}
+                </p>
+                <dl className="mt-2 space-y-1.5 text-[12.5px]">
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-[var(--text-secondary)]">{T.offerModal.buyerPays}</dt>
+                    <dd className="tabular-nums font-semibold text-[var(--foreground)]">{formatPrice(Math.max(0, Math.round(offerAmount || 0)), property.currency)}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-[var(--text-secondary)]">{T.offerModal.sellerGets}</dt>
+                    <dd className="tabular-nums text-[var(--foreground)]">{formatPrice(Math.max(0, Math.round(offerAmount || 0)), property.currency)}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-[var(--text-secondary)]">{T.offerModal.edome}</dt>
+                    <dd className="tabular-nums text-[var(--foreground)]">{T.offerModal.edomeZero}</dd>
+                  </div>
+                </dl>
+                <p className="mt-2 border-t border-[var(--card-border)] pt-2 text-[11.5px] italic leading-snug text-[var(--text-muted)]">{T.offerModal.direct}</p>
+              </div>
+              {activePrimeChf !== undefined && activePrimeChf >= 50 && activePrimeChf <= 3000 && property.currency === "CHF" && (
+                <div data-testid="offer-prime">
+                  <p className="text-xs font-semibold text-[var(--foreground)]">{T.offerModal.primeTitle(chfLabel(activePrimeChf * 100))}</p>
+                  <p className="mt-1 mb-2 text-[11.5px] text-[var(--text-secondary)]">{T.offerModal.primeText}</p>
+                  <MoneyFlow
+                    charge={{ kind: "bien-introduction", pole: "vente", prime: primeChf(activePrimeChf) }}
+                    grossLabel={T.offerModal.primeFlowLabel}
+                    beneficiaryLabel={T.offerModal.primeBeneficiary}
+                    defaultOpen={false}
+                  />
+                </div>
+              )}
+
               <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Conditions (optionnel)</label>
-                <textarea value={offerConditions} onChange={(e) => setOfferConditions(e.target.value)}
-                  placeholder="Ex: sous réserve de financement, date de remise souhaitée..."
+                <label htmlFor="offer-conditions" className="block text-xs text-[var(--text-muted)] mb-1">{T.offerModal.conditions}</label>
+                <textarea id="offer-conditions" value={offerConditions} onChange={(e) => setOfferConditions(e.target.value)}
+                  placeholder={T.offerModal.conditionsPlaceholder}
                   rows={3}
                   className="w-full px-3 py-2.5 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-sm text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none resize-none focus:border-[var(--primary)]" />
               </div>
               <button
+                data-testid="offer-submit"
                 onClick={handleOffer}
                 className="w-full py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors"
               >
-                Soumettre l&apos;offre
+                {T.offerModal.submit}
               </button>
             </div>
           </div>
@@ -1526,7 +1735,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             </div>
             <button
               onClick={() => {
-                addToast("Boost active !", "success");
+                addToast(T.boost.done(boostDuration), "success");
                 setShowBoostModal(false);
               }}
               className="w-full py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
@@ -1550,14 +1759,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           <p className="text-lg font-bold text-[var(--primary)]">
             {formatPrice(property.price, property.currency)}
           </p>
-          {property.transactionType === "location-ct" && (
-            <span className="text-xs text-[var(--text-muted)]">par nuit</span>
+          {property.transactionType !== "vente" && (
+            <span className="text-xs text-[var(--text-muted)]">{priceUnit(property.transactionType).trim()}</span>
           )}
         </div>
-        {property.transactionType === "vente" || property.transactionType === "location-lt" ? (
+        {property.soldTo ? (
+          <span className="text-xs text-[var(--text-muted)]">{T.sold}</span>
+        ) : property.transactionType === "vente" || property.transactionType === "location-lt" ? (
           <div className="flex gap-2">
-            <button onClick={() => setShowVisitModal(true)} className="px-4 py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors text-sm">
-              Visite
+            <button onClick={openVisit} className="px-4 py-3 rounded-xl bg-[var(--primary)] hover:bg-[var(--gold-hover)] text-white font-semibold transition-colors text-sm">
+              {isLongTerm ? T.ltAside.cta : "Visite"}
             </button>
             {property.transactionType === "vente" ? (
               <button onClick={() => setShowOfferModal(true)} className="px-4 py-3 rounded-xl border border-[var(--primary)] text-[var(--primary)] font-semibold transition-colors text-sm">

@@ -1,15 +1,29 @@
 "use client";
 
 import React, { Suspense, useState, useMemo, useCallback, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search as SearchIcon, SearchX, X, Clock } from "lucide-react";
+import { Search as SearchIcon, SearchX, X, Clock, SlidersHorizontal } from "lucide-react";
 import { useApp } from "@/lib/context";
-import { listProperties } from "@/lib/data/properties";
 import { listEvents } from "@/lib/data/events";
-import { formations as ALL_FORMATIONS } from "@/lib/mock-data";
+import { formations as ALL_FORMATIONS, properties as CATALOGUE } from "@/lib/mock-data";
 import { listPeople } from "@/lib/profile-data";
-import type { Formation } from "@/lib/types";
+import type { Formation, Property } from "@/lib/types";
 import { roleLabel } from "@/lib/model/role-labels";
+import { useSession } from "@/lib/use-session";
+import { isSessionId } from "@/lib/demo/session-views";
+import {
+  citiesOf,
+  hasFilters,
+  nearbyCitiesIn,
+  normalize,
+  parseQuery,
+  queryWithout,
+  searchListings,
+  suggestionsFor,
+} from "@/lib/search/query";
+import { estimateYield, pctLabel, priceUnit, roomsLabel, roomsOf } from "@/lib/explore/listing";
+import { recherche as R } from "@/content/recherche";
 
 /* Cle localStorage partagee avec le header (composants/layout/header.tsx)
    pour que recherches recentes soient unifiees entre la barre du header
@@ -19,17 +33,14 @@ const MAX_RECENT_SEARCHES = 8;
 
 /* ─── Index de recherche ─────────────────────────────────────────────────────
 
-   Derive des sources reelles. Ce fichier definissait auparavant son propre
-   index avec des identifiants inventes (B1→B8, F1→F4, U1→U5, E1→E3) : comme
-   les routes de destination resolvent `prop*`, `form-*`, `user-*` et `e*`,
-   CHAQUE resultat de recherche menait a une page d erreur.
+   Les BIENS passent par la recherche tokenisée (`src/lib/search/query.ts`) :
+   « 3 pièces Lausanne moins de 2500 » devient des puces (ville, pièces,
+   budget, transaction déduite) que l'on retire une à une. Les biens publiés
+   pendant la visite (mémoire de session) s'y ajoutent ; sans coordonnées, ils
+   restent dans la liste.
 
-   La forme de vue (titre / prix / ville / …) est conservee telle quelle :
-   seule l origine des donnees change, donc les filtres et le rendu plus bas
-   sont inchanges.
-
-   Les services restent locaux : il n existe pas de route `/services/[id]`,
-   le clic renvoie vers `/services`. */
+   Les autres catégories (formations, profils, événements, services) gardent
+   une recherche plein texte, sur les mots libres et les villes de la requête. */
 
 const LEVEL_LABELS: Record<Formation["level"], string> = {
   debutant: "Débutant",
@@ -37,17 +48,7 @@ const LEVEL_LABELS: Record<Formation["level"], string> = {
   avance: "Avancé",
 };
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
-const ALL_RESULTS = {
-  biens: listProperties().map((p) => ({
-    id: p.id,
-    titre: p.title,
-    prix: p.price,
-    type: capitalize(p.type),
-    ville: p.location.city,
-    pays: p.location.country,
-  })),
+const OTHER_RESULTS = {
   formations: ALL_FORMATIONS.map((f) => ({
     id: f.id,
     titre: f.title,
@@ -72,21 +73,10 @@ const ALL_RESULTS = {
   services: [
     { id: "S1", titre: "Estimation immobilière", description: "Estimation professionnelle de votre bien", prix: 150 },
     { id: "S2", titre: "Photographie immobilière pro", description: "Séance photo HDR + drone", prix: 450 },
-    { id: "S3", titre: "Home staging virtuel", description: "Mise en scene 3D de votre bien", prix: 299 },
+    { id: "S3", titre: "Home staging virtuel", description: "Mise en scène 3D de votre bien", prix: 299 },
     { id: "S4", titre: "Accompagnement juridique", description: "Conseil juridique pour transactions", prix: 200 },
   ],
 };
-
-const POPULAR_SEARCHES = [
-  "Villa Lausanne",
-  "Appartement Genève",
-  "Chalet Verbier",
-  "Investissement immobilier",
-  "Location courte durée",
-  "Marrakech",
-  "Studio Zurich",
-  "Penthouse",
-];
 
 /* ─── Category tabs ─────────────────────────────────────────────────────── */
 
@@ -101,33 +91,16 @@ const CATEGORY_TABS: { key: CategoryKey; label: string }[] = [
   { key: "services", label: "Services" },
 ];
 
-/* ─── Search logic ───────────────────────────────────────────────────────── */
+/* ─── Search logic (catégories hors biens) ────────────────────────────────── */
 
-function filterResults(query: string) {
-  const q = query.toLowerCase();
+function filterOthers(terms: string[]) {
+  const ts = terms.map(normalize).filter((t) => t.length >= 3);
+  const hit = (...fields: string[]) => ts.length > 0 && ts.some((t) => fields.some((f) => normalize(f).includes(t)));
   return {
-    biens: ALL_RESULTS.biens.filter(
-      (b) =>
-        b.titre.toLowerCase().includes(q) ||
-        b.ville.toLowerCase().includes(q) ||
-        b.pays.toLowerCase().includes(q) ||
-        b.type.toLowerCase().includes(q)
-    ),
-    formations: ALL_RESULTS.formations.filter(
-      (f) => f.titre.toLowerCase().includes(q) || f.instructeur.toLowerCase().includes(q)
-    ),
-    utilisateurs: ALL_RESULTS.utilisateurs.filter(
-      (u) =>
-        u.nom.toLowerCase().includes(q) ||
-        u.role.toLowerCase().includes(q) ||
-        u.ville.toLowerCase().includes(q)
-    ),
-    evenements: ALL_RESULTS.evenements.filter(
-      (e) => e.titre.toLowerCase().includes(q) || e.lieu.toLowerCase().includes(q)
-    ),
-    services: ALL_RESULTS.services.filter(
-      (s) => s.titre.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
-    ),
+    formations: OTHER_RESULTS.formations.filter((f) => hit(f.titre, f.instructeur)),
+    utilisateurs: OTHER_RESULTS.utilisateurs.filter((u) => hit(u.nom, u.role, u.ville)),
+    evenements: OTHER_RESULTS.evenements.filter((e) => hit(e.titre, e.lieu)),
+    services: OTHER_RESULTS.services.filter((s) => hit(s.titre, s.description)),
   };
 }
 
@@ -140,9 +113,12 @@ function SearchResults() {
   const query = searchParams.get("q") || "";
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("tous");
 
-  /* Recherches recentes — partage la cle localStorage avec le header
-     pour une experience unifiee : ce qu'on tape dans la barre du header
-     apparait dans 'Recherches recentes' ici, et vice versa. */
+  /* Le catalogue + les biens publiés pendant la session. */
+  const { listings: sessionListings } = useSession();
+  const pool = useMemo<Property[]>(() => [...sessionListings, ...CATALOGUE], [sessionListings]);
+  const cities = useMemo(() => citiesOf(pool), [pool]);
+  const nearby = useMemo(() => nearbyCitiesIn(CATALOGUE), []);
+
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState(query);
   const [autoOpen, setAutoOpen] = useState(false);
@@ -193,56 +169,57 @@ function SearchResults() {
     } catch {}
   }, []);
 
+  const goTo = useCallback(
+    (term: string) => {
+      const clean = term.trim();
+      router.push(clean ? `/recherche?q=${encodeURIComponent(clean)}` : "/recherche");
+    },
+    [router],
+  );
+
   const submitSearch = useCallback(
     (term: string) => {
       const clean = term.trim();
       if (!clean) return;
       pushRecent(clean);
-      router.push(`/recherche?q=${encodeURIComponent(clean)}`);
+      goTo(clean);
       setAutoOpen(false);
       inputRef.current?.blur();
     },
-    [pushRecent, router]
+    [pushRecent, goTo],
   );
 
-  /* Suggestions d'autocomplete : top 3 biens / 2 formations / 2 profils /
-     2 services matchant le prefixe en cours, regroupes par categorie.
-     Visible quand l'input est focus + a >= 2 caracteres. */
+  /* Suggestions d'autocomplete : top 3 biens / 2 formations / 2 profils. */
   const autocompleteResults = useMemo(() => {
-    const q = inputValue.trim().toLowerCase();
+    const q = normalize(inputValue);
     if (q.length < 2) return null;
     return {
-      biens: ALL_RESULTS.biens
-        .filter((b) => b.titre.toLowerCase().includes(q) || b.ville.toLowerCase().includes(q))
+      biens: pool
+        .filter((b) => !b.soldTo && (normalize(b.title).includes(q) || normalize(b.location.city).includes(q)))
         .slice(0, 3),
-      formations: ALL_RESULTS.formations
-        .filter((f) => f.titre.toLowerCase().includes(q))
-        .slice(0, 2),
-      utilisateurs: ALL_RESULTS.utilisateurs
-        .filter((u) => u.nom.toLowerCase().includes(q))
-        .slice(0, 2),
-      services: ALL_RESULTS.services
-        .filter((s) => s.titre.toLowerCase().includes(q))
-        .slice(0, 2),
+      formations: OTHER_RESULTS.formations.filter((f) => normalize(f.titre).includes(q)).slice(0, 2),
+      utilisateurs: OTHER_RESULTS.utilisateurs.filter((u) => normalize(u.nom).includes(q)).slice(0, 2),
     };
-  }, [inputValue]);
+  }, [inputValue, pool]);
 
   const showAutocomplete =
     autoOpen &&
     autocompleteResults &&
-    (autocompleteResults.biens.length +
-      autocompleteResults.formations.length +
-      autocompleteResults.utilisateurs.length +
-      autocompleteResults.services.length) > 0;
+    autocompleteResults.biens.length + autocompleteResults.formations.length + autocompleteResults.utilisateurs.length > 0;
 
-  const results = useMemo(() => (query.trim() ? filterResults(query) : null), [query]);
+  /* La requête comprise : puces + mots libres. */
+  const parsed = useMemo(() => parseQuery(query, cities), [query, cities]);
 
-  /* Quand /recherche est ouvert avec une query non vide, on enregistre
-     automatiquement dans les recents (cas : arrive depuis un lien
-     external comme #hashtag du feed). */
+  const results = useMemo(() => {
+    if (!query.trim()) return null;
+    const biens = searchListings(pool, parsed);
+    const terms = hasFilters(parsed.filters) ? [...parsed.free, ...parsed.filters.cities] : [query, ...parsed.free];
+    return { biens, ...filterOthers(terms) };
+  }, [query, parsed, pool]);
+
+  /* Arrivée avec une requête (lien externe, #hashtag du fil) : on l'enregistre. */
   useEffect(() => {
     if (query.trim()) pushRecent(query);
-    // pushRecent stable via useCallback
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
@@ -260,15 +237,11 @@ function SearchResults() {
     return c;
   }, [results]);
 
-  const handlePopularSearch = useCallback(
-    (term: string) => {
-      router.push(`/recherche?q=${encodeURIComponent(term)}`);
-    },
-    [router]
+  const suggestions = useMemo(
+    () => (results && results.biens.length === 0 && parsed.tokens.length > 0 ? suggestionsFor(pool, parsed, cities, nearby) : []),
+    [results, parsed, pool, cities, nearby],
   );
 
-  /* Barre de recherche inline + dropdown autocomplete. Affichee aussi
-     bien dans l'etat vide (pas de query) qu'avec resultats. */
   const searchBar = (
     <div className="relative max-w-2xl mx-auto" data-search-input>
       <form
@@ -286,7 +259,9 @@ function SearchResults() {
             onChange={(e) => setInputValue(e.target.value)}
             onFocus={() => setAutoOpen(true)}
             onBlur={() => setTimeout(() => setAutoOpen(false), 150)}
-            placeholder="Rechercher un bien, une formation, un profil..."
+            placeholder={R.placeholder}
+            aria-label={R.title}
+            data-testid="search-input"
             className="w-full pl-12 pr-10 py-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)] text-[var(--foreground)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 transition-colors"
           />
           {inputValue && (
@@ -305,15 +280,10 @@ function SearchResults() {
         </div>
       </form>
 
-      {/* Dropdown autocomplete */}
       {showAutocomplete && (
         <div
           className="absolute left-0 right-0 top-full mt-2 rounded-xl border shadow-lg overflow-hidden z-30 animate-fade-in"
-          style={{
-            background: "var(--card)",
-            borderColor: "var(--card-border)",
-            boxShadow: "var(--shadow-card)",
-          }}
+          style={{ background: "var(--card)", borderColor: "var(--card-border)", boxShadow: "var(--shadow-card)" }}
         >
           <div className="max-h-[60vh] overflow-y-auto">
             {autocompleteResults!.biens.length > 0 && (
@@ -323,11 +293,11 @@ function SearchResults() {
                   <button
                     key={b.id}
                     type="button"
-                    onMouseDown={() => submitSearch(b.titre)}
+                    onMouseDown={() => router.push(`/explorer/${b.id}`)}
                     className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--hover-bg)] transition-colors flex items-center justify-between"
                   >
-                    <span className="truncate">{b.titre}</span>
-                    <span className="text-xs text-[var(--text-muted)] shrink-0 ml-2">{b.ville}</span>
+                    <span className="truncate">{b.title}</span>
+                    <span className="text-xs text-[var(--text-muted)] shrink-0 ml-2">{b.location.city}</span>
                   </button>
                 ))}
               </div>
@@ -339,7 +309,7 @@ function SearchResults() {
                   <button
                     key={f.id}
                     type="button"
-                    onMouseDown={() => submitSearch(f.titre)}
+                    onMouseDown={() => router.push(`/formations/${f.id}`)}
                     className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--hover-bg)] transition-colors"
                   >
                     {f.titre}
@@ -364,28 +334,77 @@ function SearchResults() {
                 ))}
               </div>
             )}
-            {autocompleteResults!.services.length > 0 && (
-              <div className="py-1 border-t" style={{ borderColor: "var(--card-border)" }}>
-                <p className="px-3 py-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--text-muted)]">Services</p>
-                {autocompleteResults!.services.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onMouseDown={() => submitSearch(s.titre)}
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--hover-bg)] transition-colors"
-                  >
-                    {s.titre}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       )}
     </div>
   );
 
-  // Empty state with popular + recent searches
+  const examples = (
+    <div className="max-w-lg mx-auto text-center">
+      <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-3">{R.examplesTitle}</h3>
+      <div className="flex flex-wrap justify-center gap-2">
+        {R.examples.map((term) => (
+          <button
+            key={term}
+            onClick={() => submitSearch(term)}
+            className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[var(--primary)]/40 hover:text-[var(--primary)] transition-colors cursor-pointer"
+          >
+            {term}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  /* Les puces : chaque filtre compris, retirable. La transaction déduite du
+     budget s'affiche aussi, sans croix : elle tombe avec le budget. */
+  const chips = parsed.tokens.length > 0 && (
+    <div className="space-y-1.5" data-testid="search-chips">
+      <p className="text-xs font-medium text-[var(--text-muted)] inline-flex items-center gap-1.5">
+        <SlidersHorizontal size={12} /> {R.filtersTitle}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {parsed.tokens.map((t) => {
+          const label = R.chip(t);
+          return (
+            <span
+              key={t.id}
+              data-testid="search-chip"
+              data-kind={t.kind}
+              className="inline-flex items-center gap-1 rounded-full border border-[var(--primary)]/40 bg-[var(--primary)]/10 pl-3 pr-1 py-1 text-sm text-[var(--foreground)]"
+            >
+              {label}
+              <button
+                type="button"
+                onClick={() => goTo(queryWithout(parsed, t.id))}
+                aria-label={R.removeChip(label)}
+                className="flex h-6 w-6 items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--hover-bg)] hover:text-[var(--foreground)]"
+              >
+                <X size={12} />
+              </button>
+            </span>
+          );
+        })}
+        {parsed.filters.transactionInferred && parsed.filters.transaction && (
+          <span
+            data-testid="search-chip"
+            data-kind="transaction-inferred"
+            title={R.inferredHint}
+            className="inline-flex items-center gap-1 rounded-full border border-dashed border-[var(--card-border)] px-3 py-1 text-sm text-[var(--text-secondary)]"
+          >
+            {R.transactionLabel(parsed.filters.transaction)}
+            <span className="text-[11px] text-[var(--text-muted)]">· {R.inferredHint.toLowerCase()}</span>
+          </span>
+        )}
+      </div>
+      {parsed.free.length > 0 && hasFilters(parsed.filters) && (
+        <p className="text-[11px] text-[var(--text-muted)]">{R.ignored(parsed.free.join(", "))}</p>
+      )}
+    </div>
+  );
+
+  // Empty state with examples + recent searches
   if (!query.trim()) {
     return (
       <div className="space-y-8">
@@ -394,25 +413,19 @@ function SearchResults() {
           <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
             <SearchIcon size={32} strokeWidth={1.6} />
           </div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">Rechercher sur E-Dome</h2>
-          <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-            Tapez un terme dans la barre de recherche pour trouver des biens, formations, utilisateurs ou événements.
-          </p>
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">{R.emptyTitle}</h2>
+          <p className="text-[var(--text-secondary)] max-w-md mx-auto">{R.emptyText}</p>
         </div>
 
-        {/* Recherches recentes (localStorage) */}
         {recentSearches.length > 0 && (
           <div className="max-w-lg mx-auto">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-[var(--text-muted)] inline-flex items-center gap-1.5">
                 <Clock size={13} />
-                Recherches récentes
+                {R.recentTitle}
               </h3>
-              <button
-                onClick={clearAllRecent}
-                className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors"
-              >
-                Tout effacer
+              <button onClick={clearAllRecent} className="text-xs text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors">
+                {R.clearRecent}
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -421,10 +434,7 @@ function SearchResults() {
                   key={term}
                   className="inline-flex items-center gap-1 rounded-full bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition-colors"
                 >
-                  <button
-                    onClick={() => submitSearch(term)}
-                    className="px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)]"
-                  >
+                  <button onClick={() => submitSearch(term)} className="px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)]">
                     {term}
                   </button>
                   <button
@@ -440,21 +450,7 @@ function SearchResults() {
           </div>
         )}
 
-        {/* Recherches populaires (statique) */}
-        <div className="max-w-lg mx-auto text-center">
-          <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-3">Recherches populaires</h3>
-          <div className="flex flex-wrap justify-center gap-2">
-            {POPULAR_SEARCHES.map((term) => (
-              <button
-                key={term}
-                onClick={() => handlePopularSearch(term)}
-                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[var(--primary)]/40 hover:text-[var(--primary)] transition-colors cursor-pointer"
-              >
-                {term}
-              </button>
-            ))}
-          </div>
-        </div>
+        {examples}
       </div>
     );
   }
@@ -462,31 +458,35 @@ function SearchResults() {
   // No results
   if (counts.tous === 0) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-6">
         {searchBar}
-        <div className="text-center py-8 space-y-4">
+        {chips}
+        <div className="text-center py-6 space-y-3" data-testid="search-empty">
           <div className="w-20 h-20 mx-auto rounded-full bg-[var(--card)] text-[var(--text-muted)] flex items-center justify-center">
             <SearchX size={32} strokeWidth={1.6} />
           </div>
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">Aucun résultat</h2>
-          <p className="text-[var(--text-secondary)]">
-            Aucun résultat pour &laquo;{query}&raquo;. Essayez avec d&apos;autres termes.
-          </p>
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">{R.noResultTitle}</h2>
+          {suggestions.length > 0 ? (
+            <>
+              <p className="text-[var(--text-secondary)]">{R.noResultText(query)}</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {suggestions.map((s) => (
+                  <button
+                    key={s.query}
+                    data-testid="search-suggestion"
+                    onClick={() => submitSearch(s.query)}
+                    className="px-4 py-2 rounded-full border border-[var(--primary)]/40 bg-[var(--card)] text-sm text-[var(--foreground)] hover:bg-[var(--primary)]/10 transition-colors"
+                  >
+                    {s.removed ? R.suggestionRemove(R.chip(s.removed), s.count) : R.suggestionCity(s.city ?? "", s.count)}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-[var(--text-secondary)]">{R.noResultOther}</p>
+          )}
         </div>
-        <div className="max-w-lg mx-auto text-center">
-          <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-3">Recherches populaires</h3>
-          <div className="flex flex-wrap justify-center gap-2">
-            {POPULAR_SEARCHES.map((term) => (
-              <button
-                key={term}
-                onClick={() => handlePopularSearch(term)}
-                className="px-4 py-2 rounded-full bg-[var(--card)] border border-[var(--card-border)] text-sm text-[var(--text-secondary)] hover:border-[var(--primary)]/40 hover:text-[var(--primary)] transition-colors cursor-pointer"
-              >
-                {term}
-              </button>
-            ))}
-          </div>
-        </div>
+        {examples}
       </div>
     );
   }
@@ -500,8 +500,9 @@ function SearchResults() {
   return (
     <div className="space-y-6">
       {searchBar}
-      <p className="text-[var(--text-secondary)]">
-        {counts.tous} résultat{counts.tous > 1 ? "s" : ""} pour &laquo;<span className="text-[var(--foreground)] font-medium">{query}</span>&raquo;
+      {chips}
+      <p className="text-[var(--text-secondary)]" data-testid="search-count">
+        {R.results(counts.tous, query)}
       </p>
 
       {/* Category tabs */}
@@ -513,16 +514,12 @@ function SearchResults() {
               key={tab.key}
               onClick={() => setActiveCategory(tab.key)}
               className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                activeCategory === tab.key
-                  ? "bg-[var(--primary)] text-white"
-                  : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
+                activeCategory === tab.key ? "bg-[var(--primary)] text-white" : "text-[var(--text-secondary)] hover:text-[var(--foreground)]"
               }`}
             >
               {tab.label}
               {count > 0 && (
-                <span className={`ml-1.5 text-xs ${activeCategory === tab.key ? "text-white/80" : "text-[var(--text-muted)]"}`}>
-                  ({count})
-                </span>
+                <span className={`ml-1.5 text-xs ${activeCategory === tab.key ? "text-white/80" : "text-[var(--text-muted)]"}`}>({count})</span>
               )}
             </button>
           );
@@ -532,20 +529,47 @@ function SearchResults() {
       {/* Biens */}
       {showBiens && (
         <section className="space-y-3 animate-fade-in">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">
-            Biens immobiliers <span className="text-sm text-[var(--text-muted)] font-normal">({results!.biens.length})</span>
-          </h2>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {results!.biens.map((b) => (
-              <div key={b.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition cursor-pointer"
-                onClick={() => router.push(`/explorer/${b.id}`)}>
-                <h3 className="font-medium text-[var(--foreground)]">{b.titre}</h3>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-sm text-[var(--text-secondary)]">{b.type} — {b.ville}, {b.pays}</span>
-                  <span className="text-sm font-bold text-[var(--primary)]">{formatPrice(b.prix)}</span>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-lg font-semibold text-[var(--foreground)]">
+              {R.sectionBiens} <span className="text-sm text-[var(--text-muted)] font-normal">({results!.biens.length})</span>
+            </h2>
+            <Link href="/explorer" className="text-xs text-[var(--primary)] hover:underline">
+              {R.seeOnExplorer}
+            </Link>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3" data-testid="search-results-biens">
+            {results!.biens.map((b) => {
+              const y = estimateYield(b, CATALOGUE);
+              return (
+                <Link
+                  key={b.id}
+                  href={`/explorer/${b.id}`}
+                  data-testid="search-result-bien"
+                  data-transaction={b.transactionType}
+                  className="flex gap-3 p-3 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition"
+                >
+                  <img src={b.images[0]} alt="" className="h-20 w-24 shrink-0 rounded-lg object-cover" />
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-medium text-[var(--foreground)] text-sm leading-snug line-clamp-2">{b.title}</h3>
+                    <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                      {b.location.city} · {roomsLabel(roomsOf(b))} · {b.area} m²
+                    </p>
+                    <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                      <span className="text-sm font-bold text-[var(--primary)]">
+                        {formatPrice(b.price, b.currency)}
+                        <span className="text-xs font-normal text-[var(--text-muted)]">{priceUnit(b.transactionType)}</span>
+                      </span>
+                      {y && (
+                        <span className="rounded-full bg-[var(--hover-bg)] px-2 py-0.5 text-[10.5px] text-[var(--text-secondary)]">{R.yieldBadge(pctLabel(y.pct))}</span>
+                      )}
+                      {isSessionId(b.id) && (
+                        <span className="rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-[10.5px] text-[var(--primary)]">{R.sessionBadge}</span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}
@@ -558,18 +582,21 @@ function SearchResults() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {results!.formations.map((f) => (
-              <div key={f.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition cursor-pointer"
-                onClick={() => router.push(`/formations/${f.id}`)}>
+              <Link
+                key={f.id}
+                href={`/formations/${f.id}`}
+                className="block p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition"
+              >
                 <h3 className="font-medium text-[var(--foreground)]">{f.titre}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">{f.instructeur} — {f.niveau}</p>
                 <p className="text-sm font-bold text-[var(--primary)] mt-1">{formatPrice(f.prix)}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
       )}
 
-      {/* Profils (Utilisateurs) */}
+      {/* Profils */}
       {showProfils && (
         <section className="space-y-3 animate-fade-in">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">
@@ -577,8 +604,11 @@ function SearchResults() {
           </h2>
           <div className="space-y-2">
             {results!.utilisateurs.map((u) => (
-              <div key={u.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] flex items-center justify-between hover:bg-[var(--hover-bg)] transition cursor-pointer"
-                onClick={() => router.push(`/profil/${u.id}`)}>
+              <Link
+                key={u.id}
+                href={`/profil/${u.id}`}
+                className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] flex items-center justify-between hover:bg-[var(--hover-bg)] transition"
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[var(--primary)]/20 flex items-center justify-center text-[var(--primary)] font-bold text-sm">
                     {u.nom.split(" ").map((n) => n[0]).join("")}
@@ -588,16 +618,8 @@ function SearchResults() {
                     <p className="text-xs text-[var(--text-muted)]">{u.role} — {u.ville}</p>
                   </div>
                 </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    router.push(`/profil/${u.id}`);
-                  }}
-                  className="px-3 py-1.5 rounded-lg border border-[var(--card-border)] text-[var(--foreground)] text-sm hover:bg-[var(--hover-bg)] transition"
-                >
-                  Voir le profil
-                </button>
-              </div>
+                <span className="px-3 py-1.5 rounded-lg border border-[var(--card-border)] text-[var(--foreground)] text-sm">Voir le profil</span>
+              </Link>
             ))}
           </div>
         </section>
@@ -611,14 +633,17 @@ function SearchResults() {
           </h2>
           <div className="space-y-2">
             {results!.evenements.map((e) => (
-              <div key={e.id} className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition cursor-pointer"
-                onClick={() => router.push(`/evenements/${e.id}`)}>
+              <Link
+                key={e.id}
+                href={`/evenements/${e.id}`}
+                className="block p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition"
+              >
                 <h3 className="font-medium text-[var(--foreground)]">{e.titre}</h3>
                 <div className="flex items-center gap-4 mt-1 text-sm text-[var(--text-secondary)]">
                   <span>{e.date}</span>
                   <span>{e.lieu}</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -632,15 +657,15 @@ function SearchResults() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {results!.services.map((s) => (
-              <div
+              <Link
                 key={s.id}
-                onClick={() => router.push("/services")}
-                className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition cursor-pointer"
+                href="/services"
+                className="block p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] hover:border-[var(--primary)]/40 transition"
               >
                 <h3 className="font-medium text-[var(--foreground)]">{s.titre}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">{s.description}</p>
                 <p className="text-sm font-bold text-[var(--primary)] mt-2">Dès {formatPrice(s.prix)}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -654,7 +679,7 @@ function SearchResults() {
 export default function RecherchePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
-      <h1 className="text-3xl page-heading text-[var(--foreground)] mb-8">Recherche</h1>
+      <h1 className="text-3xl page-heading text-[var(--foreground)] mb-8">{R.title}</h1>
       <Suspense
         fallback={
           <div className="text-center py-16">
