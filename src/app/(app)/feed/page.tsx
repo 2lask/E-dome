@@ -431,7 +431,7 @@ export default function FeedPage() {
           {/* Tabs sticky : style underline subtle (Whop). py-2 gap-5,
               inactif text-muted, underline plus discret. */}
           <div className="sticky top-16 z-20 -mx-4 px-4 py-1 bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--card-border)] md:-mx-0 md:px-0 md:bg-transparent md:backdrop-blur-0">
-            <div className="max-w-[760px] flex items-center gap-5 px-2">
+            <div data-tour="feed-tabs" className="max-w-[760px] flex items-center gap-5 px-2">
               {(["pour-vous", "suivis"] as const).map((tab) => (
                 <button
                   key={tab}

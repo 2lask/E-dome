@@ -12,7 +12,7 @@ import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ExplorerTabs } from "@/components/layout/explorer-tabs";
 import { AiAssistant } from "@/components/ai/ai-assistant";
-import { GuidedTour } from "@/components/layout/guided-tour";
+import { GuidedTour } from "@/components/tour/guided-tour";
 
 /* ── Chrome applicative interactive ──────────────────────────────────────────
 
@@ -182,8 +182,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {/* Assistant IA « Expert E-Dome » — accessible partout. */}
             <AiAssistant />
 
-            {/* Visite guidée — montée ici pour survivre à la navigation entre
-                ses six arrêts. */}
+            {/* Tutoriel guidé (chantier P5) — monté ici pour survivre à la
+                navigation entre les étapes d'un parcours. */}
             <GuidedTour />
           </div>
         </ToastProvider>

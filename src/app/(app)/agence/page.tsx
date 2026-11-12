@@ -51,7 +51,7 @@ export default function AgenceHubPage() {
       </header>
 
       {/* Formule active */}
-      <div className="mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-[var(--card-border)] bg-[var(--card)] px-4 py-3">
+      <div data-tour="agence-plan" className="mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-[var(--card-border)] bg-[var(--card)] px-4 py-3">
         <span className="text-[12px] text-[var(--text-muted)]">{a.currentPlanLabel}</span>
         <span className="text-[15px] font-bold text-[var(--foreground)]">{planName}</span>
         <Link
@@ -64,7 +64,7 @@ export default function AgenceHubPage() {
       </div>
 
       {/* Les fonctions */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div data-tour="agence-sections" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {a.sections.map((s) => {
           const Icon = ICONS[s.key] ?? Inbox;
           return (

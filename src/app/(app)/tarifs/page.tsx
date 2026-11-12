@@ -157,7 +157,7 @@ export default function TarifsPage() {
       </header>
 
       <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">{t.rolesTitle}</h2>
-      <ul className="mb-2 space-y-2.5">
+      <ul data-tour="tarifs-roles" className="mb-2 space-y-2.5">
         {FREEMIUM_ROLES.map((role) => (
           <RoleRow key={role} role={role} />
         ))}

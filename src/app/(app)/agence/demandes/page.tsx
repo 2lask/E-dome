@@ -134,7 +134,7 @@ export default function AgenceDemandesPage() {
           const applicants = item.applicants + (application ? 1 : 0);
           const isOpen = openId === item.id;
           return (
-            <li key={item.id} className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-4">
+            <li key={item.id} data-tour="demande" className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <div className="flex-1 space-y-1.5">
                   <p className="flex items-center gap-1.5 text-[14px] font-semibold text-[var(--foreground)]">
@@ -190,6 +190,7 @@ export default function AgenceDemandesPage() {
               {/* Le formulaire aux quatre champs imposés */}
               {isOpen && !application && (
                 <form
+                  data-tour="demande-form"
                   className="mt-3 grid gap-3 border-t border-[var(--card-border)] pt-3 sm:grid-cols-2"
                   onSubmit={(e) => {
                     e.preventDefault();

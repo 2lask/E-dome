@@ -58,6 +58,7 @@ export function PersonaSwitcher() {
         aria-expanded={open}
         aria-label={`${personaPicker.youAre} ${actor.name}, ${actor.legend}. ${personaPicker.title}`}
         data-testid="persona-switcher"
+        data-tour="persona-switcher"
         className="flex min-w-0 items-center gap-1.5 rounded-lg border border-[var(--card-border)] bg-[var(--card)] py-0.5 pl-0.5 pr-2 text-left transition-colors hover:border-[var(--primary)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/50"
       >
         <img src={actor.avatar} alt="" className="h-6 w-6 shrink-0 rounded-md object-cover" />
@@ -76,6 +77,7 @@ export function PersonaSwitcher() {
       {open && (
         <div
           role="listbox"
+          data-tour="persona-list"
           aria-label={personaPicker.title}
           className="absolute right-0 top-full z-50 mt-2 max-h-[75vh] w-[min(22rem,calc(100vw-1.5rem))] overflow-y-auto rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-1.5 shadow-xl"
         >

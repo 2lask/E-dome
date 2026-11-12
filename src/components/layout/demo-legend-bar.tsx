@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { FlaskConical, HelpCircle } from "lucide-react";
+import { BookOpen, FlaskConical } from "lucide-react";
 import { STAGE_DOT, STAGE_LABEL, STAGE_HINT, STAGE_ORDER } from "@/lib/model/stage-ui";
 import { demoBar } from "@/content/common";
-import { explainMode as explainCopy } from "@/content/explain";
+import { tourUi } from "@/content/tour";
 import { useApp } from "@/lib/context";
 import { PersonaSwitcher } from "@/components/layout/role-switcher";
 
@@ -24,12 +24,17 @@ import { PersonaSwitcher } from "@/components/layout/role-switcher";
        le tableau de bord dont la chrome est différente.
 
    Couleurs de statut et libellés : `@/lib/model/stage-ui`, la même source que
-   `/demo`. Le composant n'écrit aucun statut en dur. */
+   `/demo`. Le composant n'écrit aucun statut en dur.
+
+   L'ancien interrupteur « Mode explicatif » est rétrogradé (chantier P5) :
+   c'est désormais le « Glossaire », un bouton secondaire. Il commande le même
+   état (`explainMode`) et les mêmes contenus (`content/explain.ts`) ; c'est le
+   tutoriel guidé qui porte maintenant la découverte. */
 
 export function DemoLegendBar() {
   const { explainMode, setExplainMode } = useApp();
   return (
-    <div className="w-full border-b border-[var(--primary)]/15 bg-[var(--primary)]/5">
+    <div data-tour="demo-banner" className="w-full border-b border-[var(--primary)]/15 bg-[var(--primary)]/5">
       <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-x-4 gap-y-1.5 px-3 py-1.5">
         {/* Mention */}
         <span className="flex items-center gap-1.5 text-[12px] text-[var(--primary)]">
@@ -48,25 +53,26 @@ export function DemoLegendBar() {
           ))}
         </ul>
 
-        {/* À droite : le mode explicatif, le lien d'explication, le sélecteur */}
+        {/* À droite : le glossaire, le lien d'explication, le sélecteur */}
         <div className="ml-auto flex items-center gap-2">
-          {/* Interrupteur du mode explicatif. Aria-pressed le rend lisible aux
-              lecteurs d'écran ; le « ? » qu'il commande apparaît sur les
-              éléments qui savent s'expliquer. */}
+          {/* Le glossaire : l'ancien mode explicatif, en bouton secondaire.
+              Aria-pressed le rend lisible aux lecteurs d'écran ; le « ? » qu'il
+              commande apparaît sur les éléments qui savent s'expliquer. */}
           <button
             type="button"
             onClick={() => setExplainMode(!explainMode)}
             aria-pressed={explainMode}
-            title={explainCopy.toggleHint}
+            aria-label={tourUi.glossaryLabel}
+            title={tourUi.glossaryHint}
             className={
-              "flex items-center gap-1 rounded-lg border px-2 py-1 text-[12px] transition-colors " +
+              "flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11.5px] transition-colors " +
               (explainMode
-                ? "border-[var(--primary)]/40 bg-[var(--primary)]/10 text-[var(--primary)]"
-                : "border-[var(--card-border)] bg-[var(--card)] text-[var(--text-muted)] hover:text-[var(--foreground)]")
+                ? "text-[var(--primary)]"
+                : "text-[var(--text-muted)] hover:text-[var(--foreground)]")
             }
           >
-            <HelpCircle size={13} aria-hidden />
-            <span className="hidden sm:inline">{explainCopy.toggleLabel}</span>
+            <BookOpen size={12} aria-hidden />
+            <span className="hidden sm:inline">{tourUi.glossaryLabel}</span>
           </button>
 
           <Link

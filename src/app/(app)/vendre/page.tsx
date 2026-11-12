@@ -34,7 +34,7 @@ export default function VendrePage() {
       </header>
 
       {/* Les deux cartes, alignées ligne à ligne */}
-      <div className="grid gap-3 md:grid-cols-2">
+      <div data-tour="sell-routes" className="grid gap-3 md:grid-cols-2">
         {s.routes.map((route) => (
           <section
             key={route.id}

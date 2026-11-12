@@ -114,6 +114,7 @@ export function AiAssistant() {
         <button
           onClick={() => setOpen(true)}
           aria-label="Ouvrir l'assistant IA"
+          data-tour="ai-assistant"
           className="fixed bottom-24 md:bottom-8 right-5 z-40 inline-flex items-center gap-2 h-12 px-4 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] shadow-xl hover:opacity-90 transition-opacity"
         >
           <Sparkles className="w-5 h-5" />

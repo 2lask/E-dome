@@ -38,7 +38,7 @@ export function SellerPrimeTracking() {
   if (book.rows.length === 0) return null;
 
   return (
-    <details open className="mb-8 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4" id="primes">
+    <details data-tour="seller-primes" open className="mb-8 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4" id="primes">
       <summary className="cursor-pointer list-none">
         <span className="text-base font-semibold text-[var(--foreground)]">Vos primes de mise en relation</span>
         <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-[var(--text-muted)]">

@@ -76,7 +76,7 @@ export default function AgenceAbonnementPage() {
       </section>
 
       {/* Fonctions réservées : ce que la formule ne couvre pas, et laquelle les couvre */}
-      <section className="mb-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
+      <section data-tour="abonnement-gated" className="mb-5 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
         <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">Les fonctions de réussite</h2>
         <ul className="space-y-2">
           {RESERVED.map((r) => {
@@ -108,7 +108,7 @@ export default function AgenceAbonnementPage() {
 
       {/* Changer de formule */}
       <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">Changer de formule</h2>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div data-tour="abonnement-plans" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {agencyPlans.map((p) => {
           const meta = PLAN_META[p.id];
           const active = p.id === planId;

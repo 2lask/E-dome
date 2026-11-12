@@ -67,13 +67,13 @@ export default function AccompagnementPage() {
       </header>
 
       {/* La note de confidentialité — le sens de circulation, qui est le point */}
-      <p className="mb-4 flex items-start gap-2 rounded-xl border border-[var(--primary)]/25 bg-[var(--primary)]/[0.05] px-3.5 py-2.5 text-[12.5px] leading-snug text-[var(--foreground)]">
+      <p data-tour="accomp-privacy" className="mb-4 flex items-start gap-2 rounded-xl border border-[var(--primary)]/25 bg-[var(--primary)]/[0.05] px-3.5 py-2.5 text-[12.5px] leading-snug text-[var(--foreground)]">
         <Lock size={15} className="mt-0.5 shrink-0 text-[var(--primary)]" aria-hidden />
         <span>{a.privacyNote}</span>
       </p>
 
       {/* Les trois propositions, champs alignés */}
-      <div className="grid gap-3 md:grid-cols-3">
+      <div data-tour="accomp-proposals" className="grid gap-3 md:grid-cols-3">
         {proposals.map((p) => {
           const isOpen = opened.has(p.id);
           return (

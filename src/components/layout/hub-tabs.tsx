@@ -43,6 +43,7 @@ export function HubTabs({ tabs, ariaLabel = "Onglets" }: HubTabsProps) {
 
   return (
     <nav
+      data-tour="hub-tabs"
       aria-label={ariaLabel}
       className="sticky top-16 z-20 -mx-4 md:-mx-6 mb-6"
       style={{

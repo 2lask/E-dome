@@ -333,7 +333,7 @@ export default function PublierPage() {
         )}
 
         {/* Steps indicator */}
-        <div className="flex items-center gap-2 mb-8">
+        <div data-tour="publish-steps" className="flex items-center gap-2 mb-8">
           {stepLabels.map((s, i) => (
             <React.Fragment key={i}>
               <button onClick={() => { if (i + 1 <= 1) { setStepErrors([]); setStep(1); return; } const errs = [...errorsForStep(1), ...(i + 1 > 2 ? errorsForStep(2) : [])]; setStepErrors(errs); if (errs.length === 0) setStep(i + 1); }} className={`px-3 py-2 rounded-full text-xs font-medium transition-colors ${step === i + 1 ? "bg-[var(--primary)] text-white" : step > i + 1 ? "bg-[var(--primary)]/20 text-[var(--primary)]" : "bg-[var(--card)] text-[var(--text-muted)]"}`}>

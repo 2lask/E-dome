@@ -468,6 +468,7 @@ function MessagesPageInner() {
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden animate-fade-in">
       {/* Conversation List */}
       <div
+        data-tour="messages-list"
         className={`${
           showList ? "flex" : "hidden"
         } md:flex flex-col w-full md:w-80 lg:w-96 border-r border-[var(--card-border)] bg-[var(--background)]`}
