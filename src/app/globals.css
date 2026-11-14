@@ -356,7 +356,10 @@ body {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-  .app-shell *:focus {
+  /* Accessibilité clavier : pas de contour au clic (focus souris). L'anneau
+     visible au clavier est défini plus bas, hors @layer, pour primer sur les
+     utilitaires Tailwind (`focus-visible:outline-none` posés sur des boutons). */
+  .app-shell *:focus:not(:focus-visible) {
     outline: none;
   }
   .app-shell {
@@ -871,3 +874,13 @@ body {
   background: color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
+
+/* ── Anneau de focus clavier, hors @layer ───────────────────────────────────
+   Placé en dehors de toute couche pour l'emporter sur les utilitaires Tailwind
+   (`focus-visible:outline-none`) que certains boutons portent. Au clavier,
+   chaque élément interactif de l'application montre un anneau net ; à la souris,
+   le reset ci-dessus (`:focus:not(:focus-visible)`) garde l'écran propre. */
+.app-shell *:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
