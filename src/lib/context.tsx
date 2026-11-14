@@ -47,11 +47,6 @@ interface AppContextValue {
   actorRoles: PlatformRole[];
   availableRoles: PlatformRole[];
   toggleAvailableRole: (role: PlatformRole) => void;
-  /* Le mode explicatif : les affordances « ? » qui expliquent un élément.
-     Actif par défaut — une démonstration se lit mieux commentée — mais on peut
-     l'éteindre pour voir la maquette nue. */
-  explainMode: boolean;
-  setExplainMode: (on: boolean) => void;
   favorites: Set<string>;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
@@ -149,7 +144,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const activeRole = actor.activeRole;
   const actorRoles = actor.roles;
   const [availableRoles, setAvailableRoles] = useState<PlatformRole[]>(DEFAULT_ROLES);
-  const [explainMode, setExplainModeState] = useState<boolean>(true);
   const [favoritesByActor, setFavoritesByActor] = useState<ByActor>({});
   const [followsByActor, setFollowsByActor] = useState<ByActor>({});
   const favorites = useMemo(
@@ -174,9 +168,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
          (« formateur », « client »…). On le convertit par la table de passage
          (`migrateLegacyRoles`) ; une valeur inconnue est ignorée et l'on
          retombe sur le défaut — réparable, là où un rôle fantôme ne l'est pas. */
-      const storedExplain = localStorage.getItem(`${STORAGE_PREFIX}explainMode`);
-      if (storedExplain === "0") setExplainModeState(false);
-
       const storedRoles = localStorage.getItem(`${STORAGE_PREFIX}availableRoles`);
       if (storedRoles) {
         const parsed: unknown = JSON.parse(storedRoles);
@@ -232,11 +223,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Persist effects (only after mount)
   useEffect(() => {
     if (!mounted) return;
-    persist("explainMode", explainMode ? "1" : "0");
-  }, [explainMode, mounted]);
-
-  useEffect(() => {
-    if (!mounted) return;
     persist("availableRoles", JSON.stringify(availableRoles));
   }, [availableRoles, mounted]);
 
@@ -276,8 +262,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [hiddenPosts, mounted]);
 
   // ── Actions ─────────────────────────────────────────────────────────────
-
-  const setExplainMode = useCallback((on: boolean) => setExplainModeState(on), []);
 
   const toggleAvailableRole = useCallback((role: PlatformRole) => {
     setAvailableRoles((prev) => {
@@ -402,8 +386,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       actorId,
       activeRole,
       actorRoles,
-      explainMode,
-      setExplainMode,
       availableRoles,
       toggleAvailableRole,
       favorites,
@@ -432,8 +414,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       actorId,
       activeRole,
       actorRoles,
-      explainMode,
-      setExplainMode,
       availableRoles,
       toggleAvailableRole,
       favorites,

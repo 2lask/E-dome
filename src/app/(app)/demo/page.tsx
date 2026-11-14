@@ -7,7 +7,6 @@ import {
   Building2, Rss, LayoutDashboard, ArrowRight, HelpCircle, X, type LucideIcon,
 } from "lucide-react";
 import { STAGE_DOT, STAGE_TEXT, STAGE_LABEL } from "@/lib/model/stage-ui";
-import { useApp } from "@/lib/context";
 import { demoScreen } from "@/content/demo";
 import { POLE_EXPLAIN, explainMode as explainCopy } from "@/content/explain";
 
@@ -31,9 +30,7 @@ const ICONS: Record<string, LucideIcon> = {
 
 export default function DemoPage() {
   const d = demoScreen;
-  const { explainMode } = useApp();
-  /* Un seul pôle expliqué à la fois — la contrainte « une seule bulle
-     ouverte » du mode explicatif. */
+  /* Un seul pôle expliqué à la fois — une seule bulle ouverte. */
   const [openPole, setOpenPole] = useState<string | null>(null);
   const explained = openPole ? POLE_EXPLAIN[openPole] : undefined;
   const openStage = openPole ? d.poles.find((p) => p.id === openPole)?.stage : undefined;
@@ -73,9 +70,9 @@ export default function DemoPage() {
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
           {d.poles.map((p) => {
             const Icon = ICONS[p.icon] ?? Home;
-            const canExplain = explainMode && !!POLE_EXPLAIN[p.id];
+            const canExplain = !!POLE_EXPLAIN[p.id];
             const isOpen = openPole === p.id;
-            /* En mode explicatif, un pôle est un bouton qui ouvre son panneau ;
+            /* Un pôle qui a une explication est un bouton qui ouvre son panneau ;
                sinon c'est une carte inerte. On ne rend pas un bouton quand il
                n'y a rien à ouvrir — un affordance qui ne fait rien ment. */
             const Tag = canExplain ? "button" : "li";
