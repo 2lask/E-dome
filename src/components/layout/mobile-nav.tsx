@@ -1,22 +1,16 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Home,
   Search,
   Plus,
   MessageCircle,
   User,
-  HomeIcon,
-  GraduationCap,
-  Radio,
-  CalendarPlus,
-  Wrench,
   type LucideIcon,
 } from "lucide-react";
-import { LottiePlayer } from "@/components/ui/lottie-player";
 import { useSession } from "@/lib/use-session";
 import { useActor } from "@/lib/use-actor";
 
@@ -27,29 +21,26 @@ interface MobileNavItem {
   isPrimary?: boolean;
 }
 
-/* 5 onglets : Accueil · Explorer · + Créer (centre) · Messages · Profil.
+/* 5 onglets : Accueil · Explorer · + Publier (centre) · Messages · Profil.
    Toutes les autres routes (Dashboard, Notifications, Paramètres, etc.)
-   sont accessibles depuis le Profil ou la sidebar overlay (hamburger header). */
+   sont accessibles depuis le Profil ou la sidebar overlay (hamburger header).
+
+   V1 « E-Dome Pro » (STRATEGIE.md / PLAN-V1.md, chantier C1) : le bouton
+   central mène directement à « Publier un bien », l'action de création du
+   parcours professionnel. L'ancien menu multi-pôles (formation, live,
+   événement, service) est retiré du premier plan — ces routes existent
+   toujours et restent atteignables, elles ne sont simplement plus mises en
+   avant au lancement. */
 const navItems: MobileNavItem[] = [
   { href: "/feed", icon: Home, label: "Accueil" },
   { href: "/explorer", icon: Search, label: "Explorer" },
-  { href: "/publier", icon: Plus, label: "Créer", isPrimary: true },
+  { href: "/publier", icon: Plus, label: "Publier", isPrimary: true },
   { href: "/messages", icon: MessageCircle, label: "Messages" },
   { href: "/profil", icon: User, label: "Profil" },
 ];
 
-const publishMenuItems: { icon: LucideIcon; label: string; href: string }[] = [
-  { icon: HomeIcon, label: "Publier un bien", href: "/publier" },
-  { icon: GraduationCap, label: "Créer une formation", href: "/formations/creer" },
-  { icon: Radio, label: "Programmer un live", href: "/live" },
-  { icon: CalendarPlus, label: "Créer un événement", href: "/evenements/creer" },
-  { icon: Wrench, label: "Proposer un service", href: "/services/proposer" },
-];
-
 export function MobileNav() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [menuOpen, setMenuOpen] = useState(false);
   /* Le compteur de messages non lus de la mémoire de session — le même que
      la barre latérale. Sur mobile, les notifications non lues sont portées
      par la cloche de l'en-tête et par le menu (barre latérale en tiroir),
@@ -58,24 +49,6 @@ export function MobileNav() {
   /* L'onglet Profil porte le visage de la personne incarnée (chantier P3). */
   const actor = useActor();
   const badgeFor = (href: string) => (href === "/messages" ? unreadMessages : 0);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // Close menu on click outside
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [menuOpen]);
-
-  // Close menu on route change
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
 
   return (
     <nav
@@ -97,64 +70,26 @@ export function MobileNav() {
 
         if (item.isPrimary) {
           return (
-            <div key={item.href} className="relative flex flex-col items-center gap-1" ref={menuRef}>
-              {/* Popup menu */}
-              {menuOpen && (
-                <div
-                  className="absolute bottom-14 left-1/2 -translate-x-1/2 w-56 rounded-xl border shadow-xl py-2 animate-fade-in"
-                  style={{
-                    background: "var(--card)",
-                    borderColor: "var(--card-border)",
-                  }}
-                >
-                  {publishMenuItems.map((mi) => {
-                    const ItemIcon = mi.icon;
-                    return (
-                      <button
-                        key={mi.href}
-                        onClick={() => {
-                          setMenuOpen(false);
-                          router.push(mi.href);
-                        }}
-                        className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 transition-colors"
-                        style={{ color: "var(--foreground)" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover-bg)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                      >
-                        <ItemIcon size={18} className="text-[var(--accent)]" />
-                        <span>{mi.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              <button
-                onClick={() => setMenuOpen((v) => !v)}
-                className="flex flex-col items-center gap-1"
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-label={item.label}
+              aria-current={active ? "page" : undefined}
+              className="relative flex flex-col items-center gap-1"
+            >
+              <div
+                className="w-11 h-11 rounded-full flex items-center justify-center -mt-4 transition-transform active:scale-95"
+                style={{
+                  background: "var(--primary)",
+                  boxShadow: "0 4px 12px rgba(245, 113, 50,0.25)",
+                }}
               >
-                <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center -mt-4 transition-transform"
-                  style={{
-                    background: "var(--primary)",
-                    boxShadow: "0 4px 12px rgba(245, 113, 50,0.25)",
-                    transform: menuOpen ? "rotate(45deg)" : "rotate(0deg)",
-                  }}
-                >
-                  {menuOpen ? (
-                    <LottiePlayer src="/lottie/lottieflow-menu-nav-09-000000-easey.json" width={24} height={24} />
-                  ) : (
-                    <Icon size={22} color="#ffffff" />
-                  )}
-                </div>
-                <span
-                  className="text-[10px]"
-                  style={{ color: "var(--primary)" }}
-                >
-                  {item.label}
-                </span>
-              </button>
-            </div>
+                <Icon size={22} color="#ffffff" />
+              </div>
+              <span className="text-[10px]" style={{ color: "var(--primary)" }}>
+                {item.label}
+              </span>
+            </Link>
           );
         }
 

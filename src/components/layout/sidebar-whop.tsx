@@ -45,7 +45,7 @@ export function SidebarWhop() {
 
   const navItems: NavItem[] = [
     { label: "Accueil", href: "/feed", icon: Home, matchPrefixes: ["/feed"] },
-    { label: "Explorer", href: "/explorer", icon: Search, matchPrefixes: ["/explorer", "/boutique", "/formations", "/services", "/live", "/evenements"] },
+    { label: "Explorer", href: "/explorer", icon: Search, matchPrefixes: ["/explorer", "/formations", "/services"] },
     { label: "Messages", href: "/messages", icon: MessageCircle, badge: unreadMessages > 0 ? unreadMessages : undefined, matchPrefixes: ["/messages"] },
     { label: "Notifications", href: "/notifications", icon: Bell, badge: unreadNotifications > 0 ? unreadNotifications : undefined, matchPrefixes: ["/notifications"] },
   ];

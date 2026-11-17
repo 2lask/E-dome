@@ -47,14 +47,9 @@ import { AiAssistant } from "@/components/ai/ai-assistant";
      de création qui restent dans le pôle. */
 const EXPLORER_PATHS = new Set([
   "/explorer",
-  "/boutique",
-  "/boutique/vendre",
   "/services",
   "/formations",
   "/formations/creer",
-  "/live",
-  "/evenements",
-  "/evenements/creer",
 ]);
 
 /* Note : le décalage du contenu central est écrit en dur (`md:ml-[220px]`
