@@ -46,14 +46,15 @@ export const explainMode = {
   stageBadge: (stage: FeatureStage) => stage,
 } as const;
 
-/* Les sept pôles. Les trois « au lancement » expliquent surtout leur modèle de
-   revenu ; les quatre « ensuite » disent ce qu'ils seront. */
+/* Les sept pôles. La V1 « E-Dome Pro » ouvre le pôle Biens côté professionnel
+   (vitrine publique, annonces, copilote IA, abonnement) ; les autres pôles
+   arrivent ensuite, et l'apporteur après validation juridique du modèle. */
 export const POLE_EXPLAIN: Record<string, Explanation> = {
   biens: {
-    what: "Publier et rechercher des biens à la vente ou à la location, avec une analyse de rentabilité sur chaque fiche.",
-    who: "Propriétaires, agences, et toute personne qui cherche à acheter, louer ou réserver.",
-    revenue: "Rien sur la vente ou la location d'un bien entre particuliers. Les professionnels démarrent gratuitement (plafond de biens généreux) et s'abonnent quand ils grandissent. Si un vendeur offre une prime de mise en relation à un apporteur, E-Dome en retient une part — à l'intérieur de la prime, jamais en plus.",
-    when: "Au lancement.",
+    what: "La vitrine publique d'un professionnel, la gestion de ses annonces (vente, location) et une analyse de rentabilité assistée par l'IA sur chaque fiche.",
+    who: "Agents et agences — et toute personne qui cherche à acheter ou louer.",
+    revenue: "Rien sur la vente ou la location d'un bien. Les professionnels démarrent gratuitement (plafond généreux) et s'abonnent quand ils grandissent : c'est le seul revenu du lancement. La prime versée à un apporteur vient ensuite, après validation juridique.",
+    when: "Au lancement (V1 « E-Dome Pro »).",
     insteadHref: "/explorer",
     insteadLabel: "Explorer les biens",
   },
@@ -61,7 +62,7 @@ export const POLE_EXPLAIN: Record<string, Explanation> = {
     what: "Trouver un photographe, un artisan, un home stager, et demander un devis.",
     who: "Propriétaires et agences qui préparent un bien ; prestataires qui proposent leurs services.",
     revenue: "Une commission de 5 à 10 % sur la prestation vendue via la plateforme, jamais ajoutée au prix payé.",
-    when: "Au lancement.",
+    when: "Ensuite — après le lancement.",
     insteadHref: "/services",
     insteadLabel: "Voir les services",
   },
@@ -69,7 +70,7 @@ export const POLE_EXPLAIN: Record<string, Explanation> = {
     what: "Recommander un bien ou une offre de la marketplace par un lien traçable, et voir son gain net avant de recommander.",
     who: "Quiconque a un réseau : un ancien client, un artisan, une voisine bien entourée. Le volet biens dépend du pays de l'apporteur ; la marketplace est ouverte partout.",
     revenue: "Deux mécaniques, jamais confondues. Biens : le vendeur offre une prime fixe en francs, payée quand il accepte le contact ; E-Dome en retient 12 % à l'intérieur. Marketplace : le vendeur reverse un pourcentage du prix, pris sur sa marge ; la commission d'E-Dome ne change pas. Abonnements apportés : une part de ce qu'encaisse E-Dome, 12 mois au plus. Jamais un supplément pour le client.",
-    when: "Au lancement.",
+    when: "Ensuite — après validation juridique du modèle.",
     insteadHref: "/apporteurs",
     insteadLabel: "Le réseau d'apporteurs",
   },

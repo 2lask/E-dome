@@ -49,24 +49,24 @@ export interface DemoDoor {
 }
 
 export const demoScreen = {
-  eyebrow: "La maquette, en un écran",
-  title: "E-Dome réunit tout l'immobilier sur une seule plateforme",
+  eyebrow: "Comprendre E-Dome en un écran",
+  title: "E-Dome réunit l'immobilier suisse — et commence par les professionnels",
   subtitle:
-    "Vente et location, services, formations, événements, apporteurs, boutique — les gens et l'argent au même endroit, sans intermédiaire imposé.",
+    "La version 1, « E-Dome Pro », donne aux agents et aux agences une vitrine publique, la gestion de leurs annonces et un copilote IA. Les autres pôles — services, formations, apporteurs, événements… — rejoignent la plateforme ensuite.",
 
   /* ── Bloc 1 : ce qu'est E-Dome, et ce qui existe déjà ───────────────────
      Les sept pôles avec leur statut. Trois sont ouverts au lancement, quatre
      viennent ensuite : c'est la réponse à « ce qui existe par rapport à ce
      qui viendra », lisible d'un coup d'œil grâce à la couleur du statut. */
-  polesTitle: "Sept pôles, un compte",
+  polesTitle: "Sept pôles, lancés par étapes",
   poles: [
-    { id: "biens", label: "Biens", icon: "Home", stage: "launch", line: "Vendre, louer, chercher — avec l'analyse de rentabilité." },
-    { id: "services", label: "Services", icon: "Wrench", stage: "launch", line: "Photographe, artisan, home stager : demander un devis." },
-    { id: "apporteurs", label: "Apporteurs", icon: "Handshake", stage: "launch", line: "Recommander par un lien traçable, et être rémunéré." },
+    { id: "biens", label: "Biens (Pro)", icon: "Home", stage: "launch", line: "Vitrine publique, gestion des annonces, analyse de rentabilité par l'IA." },
+    { id: "services", label: "Services", icon: "Wrench", stage: "later", line: "Photographe, artisan, home stager : demander un devis." },
+    { id: "apporteurs", label: "Apporteurs", icon: "Handshake", stage: "later", line: "Recommander par un lien traçable — après validation juridique." },
     { id: "formations", label: "Formations", icon: "GraduationCap", stage: "later", line: "Suivre ou publier des formations immobilières." },
     { id: "evenements", label: "Événements", icon: "CalendarDays", stage: "later", line: "Salons, ateliers et rencontres, en salle ou en ligne." },
     { id: "lives", label: "Lives", icon: "Radio", stage: "later", line: "Diffuser des visites en direct, revoir les rediffusions." },
-    { id: "boutique", label: "Boutique", icon: "ShoppingBag", stage: "later", line: "Acheter et vendre mobilier, matériaux et équipements." },
+    { id: "boutique", label: "Boutique", icon: "ShoppingBag", stage: "later", line: "Mobilier, matériaux et équipements, en affiliation." },
   ] satisfies DemoPole[],
 
   /* ── La légende des statuts, expliquée ici une fois pour toutes ─────────
@@ -95,10 +95,10 @@ export const demoScreen = {
   moneyHeadline: "0 CHF à E-Dome",
   moneyHeadlineHint: "sur la vente ou la location d'un bien entre particuliers",
   money: [
+    { who: "L'abonnement professionnel — le seul revenu du lancement", pays: "Gratuit pour démarrer ; une formule payante quand on grandit (volume, équipe, mise en avant, statistiques), de 19 à 290 CHF/mois." },
     { who: "Vendre ou louer un bien", pays: "Rien à E-Dome sur la transaction. Un tiers — notaire, régie — se paie à part." },
-    { who: "Services, formations, événements, lives", pays: "Une commission sur ce qui se vend, de 5 à 12 % selon le pôle." },
-    { who: "Apporteurs", pays: "Biens : une prime fixe en francs, offerte par le vendeur. Marketplace : un pourcentage pris sur la marge du vendeur. Jamais un supplément pour le client." },
-    { who: "Agences et propriétaires", pays: "Gratuit pour démarrer ; un abonnement quand on grandit (volume, équipe, statistiques), à partir de 19 CHF." },
+    { who: "Services, formations, événements, lives", pays: "Une commission sur ce qui se vend, de 5 à 12 % selon le pôle — ensuite, après le lancement." },
+    { who: "Apporteurs", pays: "Prime fixe en francs sur les biens, pourcentage sur la marge en marketplace — ensuite, après validation juridique. Jamais un supplément pour le client." },
   ] satisfies MoneyLine[],
   moneyFootnote:
     "Aucun prix affiché ici n'est un engagement : la tarification est en cours de validation.",
@@ -109,9 +109,9 @@ export const demoScreen = {
      répondre à « ce que c'est » ; en offrir six, c'est renoncer à guider. */
   doorsTitle: "Par où commencer",
   doors: [
-    { href: "/explorer", label: "Explorer les biens", hint: "La marketplace : vente, location, analyse.", icon: "Building2" },
-    { href: "/feed", label: "Le fil", hint: "Le réseau : publications, biens, formations.", icon: "Rss" },
-    { href: "/dashboard", label: "Le tableau de bord", hint: "Les revenus d'un membre, et d'où ils viennent.", icon: "LayoutDashboard" },
+    { href: "/profil", label: "Ma vitrine", hint: "La page publique d'un professionnel.", icon: "Building2" },
+    { href: "/publier", label: "Publier un bien", hint: "Créer et gérer une annonce.", icon: "Home" },
+    { href: "/dashboard", label: "Le tableau de bord", hint: "L'activité d'un professionnel, et d'où vient l'argent.", icon: "LayoutDashboard" },
   ] satisfies DemoDoor[],
 
   disclaimer:

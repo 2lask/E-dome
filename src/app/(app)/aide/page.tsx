@@ -164,6 +164,9 @@ export default function AidePage() {
       {/* Biens / Marketplace : le tableau comparatif */}
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-[var(--foreground)]">Apporteurs : deux mécaniques, jamais confondues</h2>
+        <p className="text-sm text-[var(--text-muted)]">
+          Le programme apporteurs ne fait pas partie de la version 1 « E-Dome Pro » : il rejoindra la plateforme après le lancement, et après validation juridique du modèle. Le détail ci-dessous décrit le fonctionnement prévu.
+        </p>
         <div className="overflow-x-auto rounded-xl border border-[var(--card-border)] bg-[var(--card)]">
           <table className="w-full min-w-[34rem] text-sm">
             <thead>
