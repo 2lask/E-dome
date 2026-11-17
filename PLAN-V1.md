@@ -35,6 +35,17 @@ Fait en trois commits (`21c900a`, `fb1e9d0`, `48cc23f`) :
 - Portes vertes à chaque commit (typecheck 0, lint 0 erreur, test:data 106/106,
   build OK).
 
+**Passe QA « tests utilisateurs simulés » du parcours pro** (sans backend) —
+incohérences trouvées et corrigées, un commit chacune :
+- `b545af9` : deux surfaces de nav oubliées par C1 (le tiroir mobile
+  `sidebar.tsx` et le hub horizontal de `/feed` `discover-hub.tsx`) mettaient
+  encore en avant les pôles parqués → recentrées. **Lien mort corrigé** : le hub
+  pointait vers `/statistiques`, route inexistante.
+- `eacc816` : le tunnel `/publier` proposait une étape « Apporteurs » + prime
+  (fonction parquée) → étape retirée du parcours V1.
+- `c644da7` : `/tarifs` présentait le programme apporteurs comme actif → annoncé
+  comme post-lancement.
+
 ### C2 — Provision Supabase  *(action du fondateur)*
 - Créer le projet, renseigner les 3 clés (local + Vercel), exécuter `leads.sql`
   puis `schema.sql`, activer Google. Guide : [BACKEND-SETUP.md](BACKEND-SETUP.md).
