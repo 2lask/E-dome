@@ -20,18 +20,20 @@ zéro affirmation de traction · aucun bouton mort · 360 px → grand écran ·
 
 ## Les chantiers, dans l'ordre des dépendances
 
-### C1 — Recentrage produit autour du Pro  *(sans backend, réversible — prêt)*
-- Navigation principale (`sidebar-whop`, `mobile-nav`, `header`) recentrée sur le
-  parcours pro : **Accueil · Ma vitrine · Mes annonces · Copilote IA · Abonnement**
-  (plus le réseau/feed minimal).
-- **Parquer hors nav principale** (code conservé, routes vivantes, marquées
-  « bientôt / démonstration ») : apporteurs, boutique, événements/lives, courte
-  durée. **Différer** sous une entrée « Bientôt » : formations, services,
-  investisseurs.
-- Bandeau de démonstration : nommer la V1 (« E-Dome Pro — démonstration »).
-- **Aucune suppression de fichier.** Tout est réversible par la nav.
-- *Livrable : 1 commit. Porte : gates vertes, parcours pro cohérent de bout en
-  bout en mode démo.*
+### C1 — Recentrage produit autour du Pro  *(sans backend, réversible — ✅ FAIT)*
+Fait en trois commits (`21c900a`, `fb1e9d0`, `48cc23f`) :
+- **C1** : navigation recentrée sur le parcours pro — hub Explorer (retrait des
+  onglets boutique/lives/événements), `EXPLORER_PATHS`, préfixes de la sidebar,
+  et bouton « + » mobile en lien direct vers « Publier un bien ».
+- **C1b** : note honnête « hors périmètre V1 » en tête des pôles parqués
+  (boutique, lives, événements, apporteurs), centralisée dans l'app-shell,
+  textes éditables dans `content/common.ts`.
+- **C1c** : `/demo` et `/aide` réalignés sur l'histoire « E-Dome Pro » (seul le
+  pôle Biens côté pro est « au lancement » ; le reste « ensuite » ; apporteurs
+  après validation juridique).
+- **Aucune suppression de fichier.** Tout est réversible ; routes conservées.
+- Portes vertes à chaque commit (typecheck 0, lint 0 erreur, test:data 106/106,
+  build OK).
 
 ### C2 — Provision Supabase  *(action du fondateur)*
 - Créer le projet, renseigner les 3 clés (local + Vercel), exécuter `leads.sql`
