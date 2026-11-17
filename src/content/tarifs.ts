@@ -32,8 +32,8 @@ export const tarifsPage = {
   proLaterNote: "Formule prévue, pas encore chiffrée : aucun prix n'est annoncé avant validation.",
   limitsNote: "Les plafonds gratuits sont des valeurs de catalogue, ajustées après nos entretiens avec les agences.",
   affiliationLine:
-    "Programme apporteurs : une prime fixe en francs sur les biens, un pourcentage sur la marketplace, une part des abonnements apportés.",
-  affiliationCta: "Voir l'espace apporteur",
+    "Programme apporteurs (après le lancement, et après validation juridique du modèle) : une prime fixe en francs sur les biens, un pourcentage sur la marketplace, une part des abonnements apportés.",
+  affiliationCta: "En savoir plus",
   billingMonthly: "par mois",
   billingYearly: "par an",
   yearlyHint: "deux mois offerts",
