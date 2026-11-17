@@ -4,9 +4,6 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useApp } from "@/lib/context";
 import type { TransactionType, PropertyType } from "@/lib/types";
 import { LottiePlayer } from "@/components/ui/lottie-player";
-import { PRIME_START_CHF } from "@/lib/pricing";
-import { PrimeActivation, primeDraftErrors, type PrimeDraft } from "@/components/business/prime-activation";
-import { SellerPrimeTracking } from "@/components/business/seller-prime-tracking";
 import { publierObligations } from "@/content/publier-obligations";
 import Link from "next/link";
 import { recordSessionEvent } from "@/lib/use-session";
@@ -40,11 +37,6 @@ interface PublishForm {
   etatGeneral: string;
   potentielPlusValue: number;
   tauxOccupation: number;
-  // Apporteurs (D14) : ouverture du bien aux apporteurs. Sur la vente et la
-  // location longue duree, le montant est une PRIME en francs reglee dans
-  // l'etat `prime` (jamais un pourcentage) ; en courte duree, affiliation
-  // marketplace.
-  autoriserApporteurs: boolean;
   // Options
   optionMiseEnAvant: boolean;
   optionPhotosPro: boolean;
@@ -89,7 +81,6 @@ const emptyForm: PublishForm = {
   photos: [], video: "", equipements: [], documents: [],
   rendementBrut: 0, dpe: "C", roi5ans: 0, roi10ans: 0, chargesAnnuelles: 0,
   anneeConstruction: 2000, etatGeneral: "Bon", potentielPlusValue: 0, tauxOccupation: 0,
-  autoriserApporteurs: true,
   optionMiseEnAvant: false, optionPhotosPro: false, optionVisite3D: false, termsAccepted: false,
 };
 
@@ -115,12 +106,12 @@ export default function PublierPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const isVente = form.transactionType === "vente";
-  const totalSteps = isVente ? 7 : 6;
+  /* V1 « E-Dome Pro » (STRATEGIE.md / PLAN-V1.md) : l'étape « Apporteurs » et
+     la prime de mise en relation sont retirées du tunnel — le programme
+     apporteurs est parqué (V3, après validation juridique). Les composants
+     restent dans le repo pour leur retour. */
+  const totalSteps = isVente ? 6 : 5;
   const [toastMsg, setToastMsg] = useState("");
-  /* La prime biens (D14) : tenue hors du brouillon persistant — un brouillon
-     ne garde jamais une carte, même simulée. */
-  const [prime, setPrime] = useState<PrimeDraft>({ active: false, amountChf: PRIME_START_CHF, budgetChf: PRIME_START_CHF * 3, cardLast4: "" });
-  const primeApplies = form.transactionType === "vente" || form.transactionType === "location-lt";
 
   // Load form + drafts
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -214,7 +205,7 @@ export default function PublierPage() {
   };
 
   const handlePublish = () => {
-    const errs = [...errorsForStep(1), ...errorsForStep(2), ...(primeApplies && form.autoriserApporteurs ? primeDraftErrors(prime) : [])];
+    const errs = [...errorsForStep(1), ...errorsForStep(2)];
     setStepErrors(errs);
     if (errs.length > 0 || !form.transactionType || !form.propertyType) return;
     /* L'annonce entre au journal de session : elle apparaît dans /explorer,
@@ -236,23 +227,10 @@ export default function PublierPage() {
         area: Math.max(0, Math.round(form.surface)),
         images: form.photos.filter((u) => /^https?:\/\//.test(u)),
         amenities: form.equipements,
-        openToReferrers: form.autoriserApporteurs,
+        openToReferrers: false,
       },
     });
     setPublishedId(listingIdOf(event.seq));
-    /* Prime activée : la carte est enregistrée, RIEN n'est prélevé. Le bien
-       entre dans l'espace des apporteurs, classé par prime. */
-    if (primeApplies && form.autoriserApporteurs && prime.active) {
-      recordSessionEvent({
-        kind: "prime.set",
-        data: {
-          propertyId: listingIdOf(event.seq),
-          amountChf: Math.round(prime.amountChf),
-          budgetChf: Math.round(prime.budgetChf),
-          cardLast4: prime.cardLast4,
-        },
-      });
-    }
     setShowConfetti(true);
     setToastMsg("Bien publié. Il est visible dans l'Explorer et dans « Mes annonces ».");
     setTimeout(() => { setPublished(true); try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ } }, 1200);
@@ -297,8 +275,8 @@ export default function PublierPage() {
   /* ── Step labels ─────────────────────────────────────────────────────── */
 
   const stepLabels = isVente
-    ? ["Type & Adresse", "Détails", "Médias", "Analytics", "Équipements", "Apporteurs", "Options & Publication"]
-    : ["Type & Adresse", "Détails", "Médias", "Équipements", "Apporteurs", "Options & Publication"];
+    ? ["Type & Adresse", "Détails", "Médias", "Analytics", "Équipements", "Options & Publication"]
+    : ["Type & Adresse", "Détails", "Médias", "Équipements", "Options & Publication"];
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -313,9 +291,6 @@ export default function PublierPage() {
             Sauvegarder brouillon
           </button>
         </div>
-
-        {/* Le suivi du vendeur : primes, contacts reçus, ce qu'il a payé */}
-        <SellerPrimeTracking />
 
         {/* Drafts */}
         {drafts.length > 0 && (
@@ -558,69 +533,6 @@ export default function PublierPage() {
           </div>
         )}
 
-        {/* ── Step 5/6: Apporteurs (non-vente=5, vente=6) ────────────── */}
-        {step === (isVente ? 6 : 5) && (
-          <div className="space-y-6 animate-fade-in">
-            <h2 className="text-xl font-semibold">Apporteurs d&apos;affaires</h2>
-            <p className="text-sm text-[var(--text-secondary)]">Permettez aux apporteurs d&apos;affaires de promouvoir votre bien et recevez plus de visibilité.</p>
-
-            {/* Toggle autoriser */}
-            <button
-              onClick={() => update("autoriserApporteurs", !form.autoriserApporteurs)}
-              className={`w-full flex items-center justify-between p-4 rounded-xl border transition-colors ${form.autoriserApporteurs ? "bg-[var(--primary)]/10 border-[var(--primary)]" : "bg-[var(--card)] border-[var(--card-border)] hover:border-[var(--primary)]/40"}`}
-            >
-              <div className="text-left">
-                <h3 className="font-medium">Autoriser les apporteurs</h3>
-                <p className="text-xs text-[var(--text-muted)]">Les apporteurs pourront partager votre annonce via leur lien personnel</p>
-              </div>
-              <div className={`w-12 h-6 rounded-full transition-colors relative ${form.autoriserApporteurs ? "bg-[var(--primary)]" : "bg-[var(--card-border)]"}`}>
-                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${form.autoriserApporteurs ? "translate-x-6" : "translate-x-0.5"}`} />
-              </div>
-            </button>
-
-            {/* Le vendeur règle lui-même sa prime (biens) — jamais un taux fixé par E-Dome. */}
-            {form.autoriserApporteurs && (
-              <div className="p-5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-5">
-                {/* Deux mécaniques (D14), jamais confondues. Biens (vente /
-                    location longue durée) : une prime fixe en francs, réglée
-                    par le vendeur, rien prélevé à l'activation. Courte durée :
-                    affiliation marketplace (pourcentage sur la marge). */}
-                {primeApplies ? (
-                  <PrimeActivation
-                    value={prime}
-                    onChange={setPrime}
-                    audience={form.transactionType === "vente" ? "acheteurs" : "locataires"}
-                  />
-                ) : (
-                  <div className="p-4 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 space-y-2">
-                    <span className="text-sm font-medium text-[var(--foreground)]">Affiliation marketplace</span>
-                    <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
-                      En courte durée, un affilié touche un pourcentage du prix, prélevé sur votre marge — jamais ajouté au prix payé par le voyageur, et sans diminuer la commission d&apos;E-Dome.
-                    </p>
-                  </div>
-                )}
-
-                {/* Tracking details */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-center">
-                    <p className="text-xs text-[var(--text-muted)] mb-1">Durée du cookie de tracking</p>
-                    <p className="text-sm font-semibold text-[var(--foreground)]">30 jours</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-center">
-                    <p className="text-xs text-[var(--text-muted)] mb-1">Attribution</p>
-                    <p className="text-sm font-semibold text-[var(--foreground)]">Premier clic</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="flex justify-between">
-              <button onClick={() => setStep(isVente ? 5 : 4)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={() => setStep(totalSteps)} className="px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-xl font-medium transition-colors">Suivant</button>
-            </div>
-          </div>
-        )}
-
         {/* ── Final Step: Frais de publication + Options + Preview + Publish ────── */}
         {step === totalSteps && (
           <div className="space-y-6 animate-fade-in">
@@ -705,7 +617,7 @@ export default function PublierPage() {
             </label>
 
             <div className="flex justify-between">
-              <button onClick={() => setStep(isVente ? 6 : 5)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
+              <button onClick={() => setStep(isVente ? 5 : 4)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
               <button onClick={handlePublish} disabled={!form.termsAccepted} className={`px-8 py-3 rounded-xl font-medium transition-colors ${form.termsAccepted ? "bg-[var(--primary)] hover:bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}>
                 Publier le bien
               </button>
