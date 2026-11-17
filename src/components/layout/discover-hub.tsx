@@ -4,14 +4,9 @@ import * as React from "react";
 import Link from "next/link";
 import {
   Building2,
-  ShoppingBag,
   GraduationCap,
   Briefcase,
-  Calendar,
-  Radio,
-  Handshake,
   LayoutGrid,
-  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 
@@ -21,7 +16,12 @@ import {
    sections de la plateforme sans avoir a ouvrir le hamburger.
 
    Cible : nouveaux utilisateurs qui arrivent sur /feed et ne savent pas
-   que E-Dome contient aussi Formations, Apporteurs, Dashboard, etc.
+   que E-Dome contient aussi Formations, Services, Dashboard, etc.
+
+   V1 « E-Dome Pro » (STRATEGIE.md / PLAN-V1.md, chantier C1) : le hub ne met
+   plus en avant les pôles parqués (boutique, événements, lives, apporteurs).
+   L'ancien item « Stats » pointait vers /statistiques, une route inexistante
+   (lien mort) — retiré ; le Dashboard couvre déjà les statistiques.
 
    Pattern : icone + label sous chaque item, scroll horizontal mobile
    (no-scrollbar), gap genereux. Au hover desktop : underline du label.
@@ -35,14 +35,9 @@ interface HubItem {
 
 const ITEMS: HubItem[] = [
   { href: "/explorer", icon: Building2, label: "Biens" },
-  { href: "/boutique", icon: ShoppingBag, label: "Boutique" },
   { href: "/formations", icon: GraduationCap, label: "Formations" },
   { href: "/services", icon: Briefcase, label: "Services" },
-  { href: "/evenements", icon: Calendar, label: "Événements" },
-  { href: "/live", icon: Radio, label: "Live" },
-  { href: "/apporteurs", icon: Handshake, label: "Apporteurs" },
   { href: "/dashboard", icon: LayoutGrid, label: "Dashboard" },
-  { href: "/statistiques", icon: BarChart3, label: "Stats" },
 ];
 
 export function DiscoverHub() {

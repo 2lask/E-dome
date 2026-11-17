@@ -14,10 +14,7 @@ import {
   LogOut,
   ChevronDown,
   Building2,
-  ShoppingBag,
   GraduationCap,
-  Video,
-  CalendarDays,
   Briefcase,
   Plus,
   type LucideIcon,
@@ -74,23 +71,21 @@ interface SidebarProps {
   forceExpanded?: boolean;
 }
 
+/* V1 « E-Dome Pro » (STRATEGIE.md / PLAN-V1.md, chantier C1) : le tiroir ne met
+   plus en avant les pôles parqués (boutique, lives, événements). Les routes
+   existent toujours ; elles ne sont simplement plus proposées ici. Biens reste
+   le cœur, Formations et Services restent atteignables (différés). */
 const EXPLORER_SUB: SubItem[] = [
   { label: "Biens", href: "/explorer", icon: Building2 },
-  { label: "Boutique", href: "/boutique", icon: ShoppingBag },
   { label: "Formations", href: "/formations", icon: GraduationCap },
   { label: "Services", href: "/services", icon: Briefcase },
-  { label: "Live", href: "/live", icon: Video },
-  { label: "Événements", href: "/evenements", icon: CalendarDays },
 ];
 
 const CREATE_SUB: SubItem[] = [
   { label: "Publier un bien", href: "/publier", icon: Building2 },
-  /* Plus de « Vendre un produit » : la boutique est en affiliation pure, et
-     aucune des seize personnes n'est un marchand. Les entreprises proposent
-     leurs produits depuis la boutique (/boutique/vendre). */
+  /* Les créations des pôles parqués (live, événement) ne sont plus proposées ;
+     la boutique est en affiliation pure (aucun marchand parmi les personnes). */
   { label: "Créer une formation", href: "/formations/creer", icon: GraduationCap },
-  { label: "Programmer un live", href: "/live", icon: Video },
-  { label: "Créer un événement", href: "/evenements/creer", icon: CalendarDays },
   { label: "Proposer un service", href: "/services", icon: Briefcase },
 ];
 
@@ -116,7 +111,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         label: "Explorer",
         href: "/explorer",
         icon: Search,
-        matchPrefixes: ["/explorer", "/boutique", "/formations", "/services", "/live", "/evenements"],
+        matchPrefixes: ["/explorer", "/formations", "/services"],
         subItems: EXPLORER_SUB,
       },
       {
@@ -144,7 +139,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
     icon: Plus,
     subItems: CREATE_SUB,
     accent: true,
-    matchPrefixes: ["/publier", "/formations/creer", "/evenements/creer"],
+    matchPrefixes: ["/publier", "/formations/creer"],
   };
 
   const isItemActive = (item: { href?: string; matchPrefixes?: string[] }) => {
