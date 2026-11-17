@@ -13,3 +13,29 @@ export const demoBar = {
   learnMoreHref: "/demo",
   legendTitle: "Statuts",
 } as const;
+
+/* ── Pôles hors périmètre du lancement V1 « E-Dome Pro » ─────────────────────
+
+   La V1 se concentre sur l'espace professionnel (vitrine publique + annonces +
+   copilote IA + abonnement). Les pôles ci-dessous existent dans la maquette
+   mais ne font PAS partie du lancement : ils rejoignent E-Dome plus tard
+   (roadmap V2→V5, voir `STRATEGIE.md` / `PLAN-V1.md`). On le dit honnêtement en
+   haut de ces écrans plutôt que de les présenter comme des fonctions de
+   lancement — l'honnêteté sur l'état d'une fonction prime. Textes éditables ici.
+
+   La correspondance se fait par préfixe de route, donc les sous-routes
+   (fiche, création) héritent de la même note. */
+
+export const PARKED_POLE_NOTE_DEFAULT =
+  "Aperçu de démonstration : ce pôle ne fait pas partie du lancement (V1 « E-Dome Pro », l'espace des professionnels de l'immobilier). Il rejoindra E-Dome plus tard. Rien ici n'est actif.";
+
+export const PARKED_POLES: readonly { prefix: string; label: string; note?: string }[] = [
+  { prefix: "/boutique", label: "La boutique" },
+  { prefix: "/live", label: "Les lives" },
+  { prefix: "/evenements", label: "Les événements" },
+  {
+    prefix: "/apporteurs",
+    label: "Le programme apporteurs",
+    note: "Aperçu de démonstration : le programme apporteurs rejoindra E-Dome après le lancement et après validation juridique du modèle. Il ne fait pas partie de la V1 « E-Dome Pro ».",
+  },
+] as const;

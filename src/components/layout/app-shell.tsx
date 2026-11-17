@@ -11,6 +11,8 @@ import { DemoLegendBar } from "@/components/layout/demo-legend-bar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ExplorerTabs } from "@/components/layout/explorer-tabs";
+import { PoleStatusNote } from "@/components/layout/pole-status-note";
+import { PARKED_POLES, PARKED_POLE_NOTE_DEFAULT } from "@/content/common";
 import { AiAssistant } from "@/components/ai/ai-assistant";
 
 /* ── Chrome applicative interactive ──────────────────────────────────────────
@@ -73,6 +75,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   /* /feed (et /) : pas de Header global pour matcher le layout Whop
      ou le contenu colle direct sous la banniere demo. */
   const isFeedRoute = pathname === "/feed" || pathname === "/";
+
+  /* Pôle hors périmètre du lancement V1 « E-Dome Pro » (STRATEGIE.md) : on
+     affiche une note de statut honnête en tête du contenu. Correspondance par
+     préfixe → les sous-routes (fiche, création) héritent de la note. */
+  const parkedPole = !isDashboardRoute
+    ? PARKED_POLES.find((p) => pathname.startsWith(p.prefix))
+    : undefined;
 
   /* Ferme automatiquement la sidebar overlay mobile dès qu'on
      change de route. */
@@ -165,6 +174,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 }
               >
                 {showExplorerTabs && <ExplorerTabs />}
+                {parkedPole && (
+                  <PoleStatusNote
+                    label={parkedPole.label}
+                    note={parkedPole.note ?? PARKED_POLE_NOTE_DEFAULT}
+                  />
+                )}
                 {children}
               </main>
             </div>
