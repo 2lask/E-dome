@@ -46,6 +46,24 @@ export interface MyProperty {
   };
 }
 
+/** Une prime apporteur posée sur un de MES biens (table `primes`). Montant fixe
+    en CHF (50–3000), jamais un % du prix — règle juridique (`MODELE.md`). */
+export interface MyPrime {
+  propertyId: string;
+  amountChf: number;
+  active: boolean;
+}
+
+/** Bornes de la prime fixe (CHF), alignées sur la contrainte SQL `primes`. */
+export const PRIME_MIN_CHF = 50;
+export const PRIME_MAX_CHF = 3000;
+
+/** Une prime n'a de sens que sur un bien à la vente ou en location longue durée
+    (la courte durée relève de la marketplace, pas de l'apport). */
+export function primeEligible(transactionType: TransactionType): boolean {
+  return transactionType === "vente" || transactionType === "location-lt";
+}
+
 /** Ce que le formulaire de publication envoie à la base. */
 export interface NewPropertyInput {
   title: string;

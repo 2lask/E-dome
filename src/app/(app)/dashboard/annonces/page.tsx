@@ -12,6 +12,9 @@ import {
   Plus,
   Search,
   PackageSearch,
+  Gift,
+  Check,
+  X as XIcon,
 } from "lucide-react";
 import {
   Card,
@@ -39,7 +42,16 @@ import { publishedBy, seqOfSessionId } from "@/lib/demo/session-views";
 import { sessionTime } from "@/lib/demo/session-store";
 import { frDate } from "@/lib/demo/showcase";
 import { listMyProperties } from "@/lib/supabase/property-actions";
-import { coverOf, type MyProperty } from "@/lib/my-property";
+import { setMyPrime, liftMyPrime, listMyPrimes } from "@/lib/supabase/prime-actions";
+import {
+  coverOf,
+  primeEligible,
+  PRIME_MIN_CHF,
+  PRIME_MAX_CHF,
+  type MyProperty,
+  type MyPrime,
+} from "@/lib/my-property";
+import { useToast } from "@/components/ui/toast";
 
 /* ── /dashboard/annonces — « Mes annonces », dérivé ─────────────────────────
 
@@ -387,7 +399,131 @@ function MesAnnoncesPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Primes apporteur (C5) — compte réel uniquement, sur les biens à la
+          vente ou en location longue durée. */}
+      {currentUser && dbLoaded && <PrimesPanel biens={dbProps} />}
     </div>
+  );
+}
+
+/* ── Primes apporteur ────────────────────────────────────────────────────────
+
+   « Ton réseau te rapporte » côté vendeur : poser une prime FIXE en CHF
+   (50–3000) sur un de ses biens, persistée en base (table `primes`). Elle est
+   due quand le vendeur accepte le contact qu'un apporteur lui amène — jamais un
+   % du prix, jamais conditionnée à la vente (règle `MODELE.md`). La découverte
+   par les apporteurs et la mise en relation arrivent à la tranche suivante. */
+function PrimesPanel({ biens }: { biens: MyProperty[] }) {
+  const { addToast } = useToast();
+  const [primes, setPrimes] = useState<Record<string, MyPrime>>({});
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    listMyPrimes().then((rows) => {
+      if (active) setPrimes(Object.fromEntries(rows.map((r) => [r.propertyId, r])));
+    });
+    return () => { active = false; };
+  }, []);
+
+  const eligible = biens.filter((b) => primeEligible(b.transactionType));
+  if (eligible.length === 0) return null;
+
+  const valueOf = (id: string) => drafts[id] ?? (primes[id]?.active ? String(primes[id].amountChf) : "");
+
+  const save = async (id: string) => {
+    const amount = Math.round(Number(valueOf(id)));
+    if (!Number.isFinite(amount) || amount < PRIME_MIN_CHF || amount > PRIME_MAX_CHF) {
+      addToast(`La prime doit être comprise entre ${PRIME_MIN_CHF} et ${PRIME_MAX_CHF} CHF.`, "error");
+      return;
+    }
+    setBusy(id);
+    const res = await setMyPrime(id, amount);
+    setBusy(null);
+    if (!res.ok) {
+      addToast("Impossible d'enregistrer la prime. Réessayez.", "error");
+      return;
+    }
+    setPrimes((p) => ({ ...p, [id]: { propertyId: id, amountChf: amount, active: true } }));
+    setDrafts((d) => { const n = { ...d }; delete n[id]; return n; });
+    addToast(`Prime de ${amount} CHF enregistrée.`, "success");
+  };
+
+  const lift = async (id: string) => {
+    setBusy(id);
+    const res = await liftMyPrime(id);
+    setBusy(null);
+    if (!res.ok) { addToast("Impossible de retirer la prime. Réessayez.", "error"); return; }
+    setPrimes((p) => ({ ...p, [id]: { propertyId: id, amountChf: p[id]?.amountChf ?? 0, active: false } }));
+    setDrafts((d) => { const n = { ...d }; delete n[id]; return n; });
+    addToast("Prime retirée.", "info");
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Gift className="h-4 w-4 text-[var(--primary)]" />
+          Primes apporteur
+        </CardTitle>
+        <CardDescription>
+          Offrez une prime fixe en CHF ({PRIME_MIN_CHF}–{PRIME_MAX_CHF}) à qui vous amène le bon contact.
+          Due à l&apos;acceptation du contact, jamais un % du prix, jamais conditionnée à la vente.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2.5">
+        {eligible.map((b) => {
+          const current = primes[b.id];
+          const activeChf = current?.active ? current.amountChf : null;
+          return (
+            <div
+              key={b.id}
+              className="flex flex-col gap-3 rounded-lg border bg-card p-3 sm:flex-row sm:items-center"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{b.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {b.city} · {b.transactionType === "vente" ? "Vente" : "Location longue durée"}
+                  {activeChf !== null ? (
+                    <span className="ml-1 font-medium text-emerald-600 dark:text-emerald-400">
+                      · prime active {activeChf} CHF
+                    </span>
+                  ) : (
+                    <span className="ml-1">· aucune prime</span>
+                  )}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Input
+                    type="number"
+                    min={PRIME_MIN_CHF}
+                    max={PRIME_MAX_CHF}
+                    step={10}
+                    value={valueOf(b.id)}
+                    onChange={(e) => setDrafts((d) => ({ ...d, [b.id]: e.target.value }))}
+                    placeholder="CHF"
+                    className="w-28"
+                  />
+                </div>
+                <Button size="sm" onClick={() => save(b.id)} disabled={busy === b.id}>
+                  <Check className="mr-1 h-3.5 w-3.5" />
+                  {activeChf !== null ? "Mettre à jour" : "Activer"}
+                </Button>
+                {activeChf !== null && (
+                  <Button size="sm" variant="outline" onClick={() => lift(b.id)} disabled={busy === b.id}>
+                    <XIcon className="mr-1 h-3.5 w-3.5" />
+                    Retirer
+                  </Button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 }
 
