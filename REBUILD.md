@@ -183,7 +183,39 @@ où l'argent qu'on gagne a sa couleur.
    textes, cohérence ; corrections.
 
 ## 7. Journal de la reconstruction
-*(mis à jour à chaque étape)*
+*(mis à jour à chaque étape — 2026-11-18)*
+
+| Étape | Commit | Ce qui a changé |
+|---|---|---|
+| 0 · Vision | `af5c4f6` | Ce document. |
+| 1 · Fondation | `f3f7f72` | Une couche de tokens (Encre/Léman/Laiton, papier chaud, sombre AA), Geist via `next/font`, primitives, code mort CSS retiré. |
+| 2 · Coquille | `1b6ff75` | Une seule coquille, 5 entrées, visiteur ≠ membre, ⌘K, menu du compte, marque, pôles parqués (307), routes de membre fermées. |
+| 3 · Demandes | `946a9eb` | **Faille RLS corrigée** (un apporteur pouvait s'auto-accepter), mise en relation anonyme → acceptation → coordonnées, boîte unique + pipeline + historique. *Migration 002 à appliquer.* |
+| 4 · Accueil | `9be3297` | Accueil visiteur (promesse, vrais biens) / membre (« À faire », checklist) ; auth honnête (fausse note retirée, e-mail de confirmation géré). |
+| 5 · Explorer & fiche | `1d74b4f` | Biens réels uniquement, filtre « Avec prime », fiche de conversion + module prime ; montants déterministes ; `maplibre-gl` retiré. |
+| 6 · Publier & Mes biens | `554cdf1` | **Vraies photos** (stockage, URL signées), formulaire en une page avec aperçu et qualité, modification, retrait (photos effacées, verrou si prime acceptée). |
+| 7 · Gagner | `c3b4889` | Page publique honnête (fin des gains fictifs), partage, espace apporteur aligné. |
+| 8 · Inspection | `3401cd2` | Aide et À propos réécrits (affirmations non vérifiées retirées), agences fictives parquées, nouvelle suite e2e. |
+
+**Vérifié** : typecheck, lint (0 erreur ; avertissements 156 → 114), 106 tests de données,
+build à froid, 32 tests e2e (routes, honnêteté, ⌘K), parcours réel de publication
+(compte → 3 photos → prime → modification → retrait → stockage nettoyé, 0 erreur JS),
+captures 390 px et 1440 px de chaque écran reconstruit, en visiteur et en membre.
+**Non vérifié visuellement** : le thème sombre (tokens définis, rendu non inspecté).
+
+### Ce qui reste — par ordre d'impact
+1. **Appliquer `supabase/migrations/002_demandes.sql`** (fondateur, 1 minute) : sans elle,
+   la boîte Demandes affiche « base à mettre à jour » et la faille RLS reste ouverte.
+2. **E-mails de notification** : un vendeur ne sait pas qu'une demande est arrivée tant
+   qu'il n'ouvre pas l'app. Prochain chantier (SMTP Supabase ou Resend).
+3. **Versement des primes** par un PSP agréé (Stripe Connect / Payrexx) — aujourd'hui la
+   prime acceptée est enregistrée et horodatée, réglée hors plateforme (dit dans l'aide).
+4. **Liens de recommandation traçables** (`referral_links` + redirection + attribution).
+5. **Tarifs pro** : `/tarifs` montre encore la grille de l'ancienne stratégie « Pro »
+   (Vitrine 89, Mandats 290…). Fixer ou retirer ces prix est une **décision du fondateur**.
+6. Profil public réel (`/profil/[id]` pour un vrai compte), favoris en base, profils vérifiés.
+7. Code des pôles parqués (fil, formations, boutique, lives, agence…) : conservé ; à
+   supprimer définitivement une fois la direction confirmée dans la durée.
 
 ---
 
