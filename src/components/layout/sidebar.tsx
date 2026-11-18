@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import {
   Home,
   Rss,
+  Handshake,
   Search,
   MessageCircle,
   Bell,
@@ -115,6 +116,12 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
         icon: Search,
         matchPrefixes: ["/explorer", "/formations", "/services"],
         subItems: EXPLORER_SUB,
+      },
+      {
+        label: "Apporteurs",
+        href: "/apporteurs",
+        icon: Handshake,
+        matchPrefixes: ["/apporteurs"],
       },
       {
         label: "Messages",

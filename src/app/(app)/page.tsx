@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {
   Search, Plus, Sparkles, Compass, LayoutDashboard, Store, MessageCircle,
-  ArrowRight, type LucideIcon,
+  Handshake, ArrowRight, type LucideIcon,
 } from "lucide-react";
 import { useActor } from "@/lib/use-actor";
 import { RecommendedCarousel } from "@/components/feed/recommended-carousel";
@@ -25,6 +25,7 @@ interface QuickTile {
 }
 
 const QUICK: QuickTile[] = [
+  { href: "/apporteurs", icon: Handshake, title: "Recommander & gagner", desc: "Amenez un acheteur, touchez une prime" },
   { href: "/explorer", icon: Compass, title: "Explorer les biens", desc: "Vente, location, analyse" },
   { href: "/dashboard", icon: LayoutDashboard, title: "Mon espace", desc: "Annonces, activité, stats" },
   { href: "/profil", icon: Store, title: "Ma vitrine", desc: "Ma page publique" },
@@ -105,7 +106,7 @@ export default function HomePage() {
       {/* ── Accès rapides ─────────────────────────────────────────────────── */}
       <section className="mb-6">
         <h2 className="mb-2.5 text-sm font-semibold text-[var(--foreground)]">Accès rapide</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {QUICK.map((t) => {
             const Icon = t.icon;
             return (

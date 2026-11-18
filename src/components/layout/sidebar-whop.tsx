@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home, Rss, Search, MessageCircle, Bell, Settings, HelpCircle,
-  Plus, Users as UsersIcon,
+  Plus, Users as UsersIcon, Handshake,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -47,6 +47,7 @@ export function SidebarWhop() {
     { label: "Accueil", href: "/", icon: Home },
     { label: "Fil", href: "/feed", icon: Rss, matchPrefixes: ["/feed"] },
     { label: "Explorer", href: "/explorer", icon: Search, matchPrefixes: ["/explorer", "/formations", "/services"] },
+    { label: "Apporteurs", href: "/apporteurs", icon: Handshake, matchPrefixes: ["/apporteurs"] },
     { label: "Messages", href: "/messages", icon: MessageCircle, badge: unreadMessages > 0 ? unreadMessages : undefined, matchPrefixes: ["/messages"] },
     { label: "Notifications", href: "/notifications", icon: Bell, badge: unreadNotifications > 0 ? unreadNotifications : undefined, matchPrefixes: ["/notifications"] },
   ];
