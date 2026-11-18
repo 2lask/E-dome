@@ -8,6 +8,7 @@ import { publierObligations } from "@/content/publier-obligations";
 import Link from "next/link";
 import { recordSessionEvent } from "@/lib/use-session";
 import { listingIdOf } from "@/lib/demo/session-store";
+import { createMyProperty } from "@/lib/supabase/property-actions";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -90,10 +91,12 @@ const labelCls = "block text-sm font-medium text-[var(--text-secondary)] mb-1.5"
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function PublierPage() {
-  const { formatPrice } = useApp();
+  const { formatPrice, currentUser } = useApp();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<PublishForm>(emptyForm);
   const [published, setPublished] = useState(false);
+  /* Écriture EN BASE en cours (compte réel connecté) : bloque le bouton. */
+  const [publishing, setPublishing] = useState(false);
   /* L'id de l'annonce créée dans la mémoire de session (« Voir l'annonce »
      mène à SA fiche, plus à /explorer en général). */
   const [publishedId, setPublishedId] = useState<string | null>(null);
@@ -204,37 +207,82 @@ export default function PublierPage() {
     if (errs.length === 0) setStep(to);
   };
 
-  const handlePublish = () => {
+  const confirmPublished = (id: string, message: string) => {
+    setPublishedId(id);
+    setShowConfetti(true);
+    setToastMsg(message);
+    setTimeout(() => { setPublished(true); try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ } }, 1200);
+    setTimeout(() => setToastMsg(""), 4000);
+  };
+
+  const handlePublish = async () => {
     const errs = [...errorsForStep(1), ...errorsForStep(2)];
     setStepErrors(errs);
-    if (errs.length > 0 || !form.transactionType || !form.propertyType) return;
-    /* L'annonce entre au journal de session : elle apparaît dans /explorer,
-       sur sa fiche, dans « Mes annonces », et une notification la confirme. */
+    if (errs.length > 0 || !form.transactionType || !form.propertyType || publishing) return;
+
+    const images = form.photos.filter((u) => /^https?:\/\//.test(u));
+    const base = {
+      title: form.titre.trim(),
+      description: form.description.trim(),
+      type: form.propertyType,
+      transactionType: form.transactionType,
+      price: Math.round(form.prix),
+      currency: "CHF" as const,
+      city: form.ville.trim(),
+      address: form.adresse.trim() || undefined,
+      bedrooms: Math.max(0, Math.round(form.chambres)),
+      bathrooms: Math.max(0, Math.round(form.sallesDeBain)),
+      area: Math.max(0, Math.round(form.surface)),
+      images,
+      amenities: form.equipements,
+    };
+
+    /* Compte RÉEL connecté : le bien est ÉCRIT EN BASE (table `properties`).
+       Il devient une vraie annonce — relisible dans « Mes annonces », sur la
+       vitrine, et dans l'Explorer — persistante au-delà de la session. */
+    if (currentUser) {
+      setPublishing(true);
+      const res = await createMyProperty({
+        ...base,
+        analytics: isVente
+          ? {
+              rendementBrut: form.rendementBrut,
+              dpe: form.dpe,
+              roi5ans: form.roi5ans,
+              roi10ans: form.roi10ans,
+              chargesAnnuelles: form.chargesAnnuelles,
+              anneeConstruction: form.anneeConstruction,
+              etatGeneral: form.etatGeneral,
+              potentielPlusValue: form.potentielPlusValue,
+              tauxOccupation: form.tauxOccupation,
+            }
+          : null,
+      });
+      setPublishing(false);
+      if (!res.ok || !res.id) {
+        setStepErrors([
+          res.error === "non-connecte"
+            ? "Votre session a expiré. Reconnectez-vous pour publier votre bien."
+            : "La publication a échoué. Vérifiez votre connexion et réessayez.",
+        ]);
+        return;
+      }
+      confirmPublished(res.id, "Bien publié. Il est en ligne dans l'Explorer et dans « Mes annonces ».");
+      return;
+    }
+
+    /* Mode démonstration (non connecté) : l'annonce entre au journal de
+       session — visible dans /explorer, sur sa fiche et dans « Mes annonces »
+       le temps de la visite. */
     const event = recordSessionEvent({
       kind: "listing.published",
       data: {
-        title: form.titre.trim(),
-        description: form.description.trim(),
-        type: form.propertyType,
-        transactionType: form.transactionType,
-        price: Math.round(form.prix),
-        currency: "CHF",
-        city: form.ville.trim(),
-        address: form.adresse.trim() || undefined,
+        ...base,
         postalCode: form.codePostal.trim() || undefined,
-        bedrooms: Math.max(0, Math.round(form.chambres)),
-        bathrooms: Math.max(0, Math.round(form.sallesDeBain)),
-        area: Math.max(0, Math.round(form.surface)),
-        images: form.photos.filter((u) => /^https?:\/\//.test(u)),
-        amenities: form.equipements,
         openToReferrers: false,
       },
     });
-    setPublishedId(listingIdOf(event.seq));
-    setShowConfetti(true);
-    setToastMsg("Bien publié. Il est visible dans l'Explorer et dans « Mes annonces ».");
-    setTimeout(() => { setPublished(true); try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ } }, 1200);
-    setTimeout(() => setToastMsg(""), 4000);
+    confirmPublished(listingIdOf(event.seq), "Bien publié. Il est visible dans l'Explorer et dans « Mes annonces ».");
   };
 
   /* ── Published success ──────────────────────────────────────────────── */
@@ -618,8 +666,8 @@ export default function PublierPage() {
 
             <div className="flex justify-between">
               <button onClick={() => setStep(isVente ? 5 : 4)} className="px-6 py-3 border border-[var(--card-border)] rounded-xl text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] transition-colors">Retour</button>
-              <button onClick={handlePublish} disabled={!form.termsAccepted} className={`px-8 py-3 rounded-xl font-medium transition-colors ${form.termsAccepted ? "bg-[var(--primary)] hover:bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}>
-                Publier le bien
+              <button onClick={handlePublish} disabled={!form.termsAccepted || publishing} className={`px-8 py-3 rounded-xl font-medium transition-colors ${form.termsAccepted && !publishing ? "bg-[var(--primary)] hover:bg-[var(--primary)] text-white" : "bg-[var(--card)] text-[var(--text-muted)] cursor-not-allowed"}`}>
+                {publishing ? "Publication…" : "Publier le bien"}
               </button>
             </div>
           </div>

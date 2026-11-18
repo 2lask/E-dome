@@ -17,6 +17,8 @@ import { AirbnbPropertyCard } from "@/components/ui/airbnb-property-card";
 import { useLockBodyScroll } from "@/lib/hooks/use-lock-body-scroll";
 import { properties as CATALOGUE, isAvailable } from "@/lib/mock-data";
 import { estimateYield, pctLabel } from "@/lib/explore/listing";
+import { listMyProperties } from "@/lib/supabase/property-actions";
+import { propertyFromMine, userFromSession } from "@/lib/my-property";
 
 /* Les biens proposés : un bien vendu (`soldTo`) reste consultable depuis
    un avis ou un profil, mais ne figure plus dans l'exploration. */
@@ -90,10 +92,29 @@ const compactPrice = (n: number) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function ExplorerPage() {
-  const { formatPrice, toggleFavorite, isFavorite, favorites } = useApp();
+  const { formatPrice, toggleFavorite, isFavorite, favorites, currentUser } = useApp();
   /* Un bien publié sur /publier apparaît ici, en tête du tri par défaut. */
   const { listings: sessionListings } = useSession();
-  const ALL_PROPERTIES = useMemo(() => [...sessionListings, ...BASE_PROPERTIES], [sessionListings]);
+
+  /* Compte RÉEL connecté : mes biens EN BASE (table `properties`) sont
+     fusionnés en tête — ils sont réellement explorables, pas seulement visibles
+     dans « Mes annonces ». */
+  const [dbBiens, setDbBiens] = useState<Property[]>([]);
+  useEffect(() => {
+    if (!currentUser) return;
+    let active = true;
+    const host = userFromSession(currentUser);
+    listMyProperties().then((rows) => {
+      if (!active) return;
+      setDbBiens(rows.filter((p) => !p.soldTo).map((p) => propertyFromMine(p, host)));
+    });
+    return () => { active = false; };
+  }, [currentUser]);
+
+  const ALL_PROPERTIES = useMemo(
+    () => [...dbBiens, ...sessionListings, ...BASE_PROPERTIES],
+    [dbBiens, sessionListings],
+  );
 
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<PropertyType | "">("");

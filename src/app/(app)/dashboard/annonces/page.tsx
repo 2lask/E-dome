@@ -1,7 +1,7 @@
 "use client";
 
 import { ActorGate } from "@/components/dashboard/actor-dashboard";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Building2,
@@ -34,9 +34,12 @@ import { formatNumber } from "@/lib/format";
 import { properties as CATALOGUE, formations as CATALOGUE_FORMATIONS } from "@/lib/mock-data";
 import { properties as DASH_PROPERTIES } from "@/lib/dashboard-data";
 import { useSession } from "@/lib/use-session";
+import { useApp } from "@/lib/context";
 import { publishedBy, seqOfSessionId } from "@/lib/demo/session-views";
 import { sessionTime } from "@/lib/demo/session-store";
 import { frDate } from "@/lib/demo/showcase";
+import { listMyProperties } from "@/lib/supabase/property-actions";
+import { coverOf, type MyProperty } from "@/lib/my-property";
 
 /* ── /dashboard/annonces — « Mes annonces », dérivé ─────────────────────────
 
@@ -111,8 +114,35 @@ function MesAnnoncesPage() {
   const [filter, setFilter] = useState<ListingType | "all">("all");
   const [search, setSearch] = useState("");
   const { state, actorId } = useSession();
+  const { currentUser } = useApp();
+
+  /* Compte RÉEL connecté : « Mes annonces » lit les biens EN BASE (table
+     `properties`), pas la démonstration. On les charge une fois, puis on les
+     affiche tels quels — aucune donnée fictive ne m'appartient. */
+  const [dbProps, setDbProps] = useState<MyProperty[]>([]);
+  const [dbLoaded, setDbLoaded] = useState(false);
+  useEffect(() => {
+    if (!currentUser) return;
+    let active = true;
+    listMyProperties().then((rows) => {
+      if (active) { setDbProps(rows); setDbLoaded(true); }
+    });
+    return () => { active = false; };
+  }, [currentUser]);
 
   const listings = useMemo<Listing[]>(() => {
+    if (currentUser) {
+      return dbProps.map((p) => ({
+        id: p.id,
+        type: "bien" as const,
+        title: p.title,
+        status: p.soldTo ? ("vendu" as const) : ("publie" as const),
+        cover: coverOf(p),
+        metric: `${priceMetric(p.price, p.currency, p.transactionType)} · ${p.city}`,
+        href: `/explorer/${p.id}`,
+        isNew: false,
+      }));
+    }
     const mine = publishedBy(state, actorId);
     const fromSession: Listing[] = [
       ...mine.listings.map((p) => ({
@@ -182,7 +212,7 @@ function MesAnnoncesPage() {
       })),
     ];
     return [...fromSession, ...fromCatalogue];
-  }, [state, actorId]);
+  }, [state, actorId, currentUser, dbProps]);
 
   const filtered = useMemo(() => {
     return listings.filter((l) => {

@@ -31,6 +31,8 @@ import { ReferralBanner } from "@/components/affiliate/referral-banner";
 import { REFERRAL_ID } from "@/lib/referral-links";
 import { useSession, recordSessionEvent } from "@/lib/use-session";
 import { isSessionId } from "@/lib/demo/session-views";
+import { getPublicProperty } from "@/lib/supabase/property-actions";
+import { propertyFromMine, isDbPropertyId } from "@/lib/my-property";
 import { DEMO_TODAY } from "@/lib/demo/clock";
 import { primeSettings, chfLabel } from "@/lib/demo/affiliation";
 import { primeChf } from "@/lib/pricing/catalog";
@@ -150,8 +152,28 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
      (premier rendu, identique au serveur), on affiche un chargement plutôt
      qu'un « introuvable » trompeur. */
   const { listings: sessionListings, hydrated: sessionHydrated, actorId, state: sessionState } = useSession();
-  const property = isSessionId(id) ? sessionListings.find((p) => p.id === id) : resolveProperty(id);
-  const waitingForSession = isSessionId(id) && !property && !sessionHydrated;
+
+  /* Un bien EN BASE (id UUID) : ni catalogue (`prop…`) ni session (`s-…`). On
+     l'interroge côté serveur (hôte joint) et on affiche un chargement le temps
+     de la réponse, plutôt qu'un « introuvable » trompeur. */
+  const [dbProperty, setDbProperty] = useState<Property | null>(null);
+  const [dbChecked, setDbChecked] = useState(false);
+  const baseProperty = isSessionId(id) ? sessionListings.find((p) => p.id === id) : resolveProperty(id);
+  useEffect(() => {
+    if (baseProperty || !isDbPropertyId(id)) return;
+    let active = true;
+    getPublicProperty(id).then((p) => {
+      if (!active) return;
+      setDbProperty(p ? propertyFromMine(p) : null);
+      setDbChecked(true);
+    });
+    return () => { active = false; };
+  }, [id, baseProperty]);
+
+  const property = baseProperty ?? dbProperty ?? undefined;
+  const waitingForSession =
+    (isSessionId(id) && !baseProperty && !sessionHydrated) ||
+    (!baseProperty && isDbPropertyId(id) && !dbChecked);
 
   // Load reviews from mock-data for this property
   const mockPropertyReviews = property

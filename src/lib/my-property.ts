@@ -1,0 +1,164 @@
+import type { Property, PropertyType, TransactionType, Currency, User } from "./types";
+import type { PlatformRole } from "./model/identity";
+import type { SessionUser } from "./session-user";
+import { initialsAvatar } from "./current-user-profile";
+
+/* ── Biens EN BASE (chantier C4) ─────────────────────────────────────────────
+
+   Le pont « table `properties` » → modèle d'affichage, côté client (aucune
+   dépendance serveur ni démo). `MyProperty` est la forme plate renvoyée par les
+   actions serveur (`property-actions.ts`) ; `propertyFromMine` l'habille en
+   `Property` complet (avec son hôte) pour l'Explorer et les fiches. */
+
+/** Une ligne de `properties`, mise à plat pour le client. */
+export interface MyProperty {
+  id: string;
+  title: string;
+  description: string;
+  type: PropertyType;
+  transactionType: TransactionType;
+  price: number;
+  currency: Currency;
+  city: string;
+  country: string;
+  address?: string;
+  lat?: number;
+  lng?: number;
+  images: string[];
+  videos: string[];
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  amenities: string[];
+  featured: boolean;
+  soldTo?: string | null;
+  createdAt: string;
+  /** L'hôte, si l'action a joint le profil (fiche publique). */
+  host?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+    city: string | null;
+    country: string;
+    roles: string[];
+    activeRole: string;
+  };
+}
+
+/** Ce que le formulaire de publication envoie à la base. */
+export interface NewPropertyInput {
+  title: string;
+  description: string;
+  type: PropertyType;
+  transactionType: TransactionType;
+  price: number;
+  currency?: Currency;
+  city: string;
+  country?: string;
+  address?: string;
+  images: string[];
+  videos?: string[];
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  amenities: string[];
+  analytics?: Record<string, unknown> | null;
+}
+
+/* Image de repli par type de bien, quand l'annonce n'a pas de photo — mêmes
+   visuels que les annonces publiées en démonstration, pour l'homogénéité. */
+const DEFAULT_IMAGE: Record<string, string> = {
+  appartement: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop",
+  studio: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop",
+  maison: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop",
+  villa: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
+  chalet: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&h=600&fit=crop",
+};
+export const FALLBACK_IMAGE = DEFAULT_IMAGE.appartement!;
+
+/** L'image de couverture d'un bien : sa 1re photo, sinon un visuel par défaut. */
+export function coverOf(m: Pick<MyProperty, "images" | "type">): string {
+  return m.images[0] ?? DEFAULT_IMAGE[m.type] ?? FALLBACK_IMAGE;
+}
+
+/** Un `User` d'affichage construit depuis le compte connecté (hôte d'un bien
+    que l'on vient de publier). Aucun chiffre inventé. */
+export function userFromSession(u: SessionUser): User {
+  const roles = (u.roles.length ? u.roles : ["particulier"]) as PlatformRole[];
+  return {
+    id: u.id,
+    firstName: u.firstName,
+    lastName: u.lastName,
+    email: u.email ?? "",
+    avatar: u.avatar || initialsAvatar(u.firstName, u.lastName),
+    city: u.city ?? "",
+    country: u.country,
+    roles,
+    activeRole: (u.activeRole || "particulier") as PlatformRole,
+    stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 },
+    bio: u.bio ?? "",
+  };
+}
+
+/** Un `User` d'affichage depuis l'hôte joint par l'action serveur. */
+function hostUser(h: NonNullable<MyProperty["host"]>): User {
+  return {
+    id: h.id,
+    firstName: h.firstName,
+    lastName: h.lastName,
+    email: "",
+    avatar: h.avatar || initialsAvatar(h.firstName, h.lastName),
+    city: h.city ?? "",
+    country: h.country,
+    roles: (h.roles.length ? h.roles : ["particulier"]) as PlatformRole[],
+    activeRole: (h.activeRole || "particulier") as PlatformRole,
+    stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 },
+    bio: "",
+  };
+}
+
+/** Habille un bien plat en `Property` complet. L'hôte vient, par ordre : de
+    l'argument `host`, sinon de l'hôte joint par l'action, sinon un hôte minimal
+    (fiche d'annuaire indisponible). Un bien RÉEL démarre sans note ni avis. */
+export function propertyFromMine(m: MyProperty, host?: User): Property {
+  const h: User =
+    host ??
+    (m.host ? hostUser(m.host) : {
+      id: "",
+      firstName: "", lastName: "", email: "",
+      avatar: initialsAvatar("", ""),
+      city: m.city, country: m.country,
+      roles: ["particulier"] as PlatformRole[],
+      activeRole: "particulier" as PlatformRole,
+      stats: { followers: 0, following: 0, properties: 0, reviews: 0, rating: 0, transactions: 0, revenue: 0 },
+      bio: "",
+    });
+  return {
+    id: m.id,
+    title: m.title,
+    description: m.description || "Annonce publiée sur E-Dome.",
+    type: m.type,
+    transactionType: m.transactionType,
+    price: m.price,
+    currency: m.currency,
+    location: { city: m.city, country: m.country, address: m.address, lat: m.lat, lng: m.lng },
+    images: m.images.length > 0 ? m.images : [coverOf(m)],
+    videos: m.videos,
+    host: h,
+    bedrooms: m.bedrooms,
+    bathrooms: m.bathrooms,
+    area: m.area,
+    amenities: m.amenities,
+    rating: 0,
+    reviewCount: 0,
+    featured: m.featured,
+    soldTo: m.soldTo ?? undefined,
+  };
+}
+
+/** Un id de bien EN BASE est un UUID (ni `prop…` du catalogue, ni `s-…` de
+    session). Sert aux écrans à décider s'ils doivent interroger la base. */
+export function isDbPropertyId(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}

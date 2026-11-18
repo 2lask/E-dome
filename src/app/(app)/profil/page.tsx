@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { CURRENT_USER_ID } from "@/lib/demo/identity";
+import { listMyProperties } from "@/lib/supabase/property-actions";
+import { coverOf, type MyProperty } from "@/lib/my-property";
 import { avisOf, biensOf, formationsOf } from "@/lib/demo/showcase";
 import { ProfileView } from "@/components/profile/profile-view";
 import type { ProfileData } from "@/components/profile/profile-showcase";
@@ -47,12 +49,29 @@ export default function ProfilPage() {
   const { profile, editable } = useActorProfile();
   const { currentUser } = useApp();
   const { state: sessionState, actorId } = useSession();
+
+  /* Compte RÉEL connecté : la vitrine est alimentée par les biens EN BASE
+     (table `properties`). Aucune donnée de démonstration ne lui appartient. */
+  const [myBiens, setMyBiens] = useState<MyProperty[]>([]);
+  useEffect(() => {
+    if (!currentUser) return;
+    let active = true;
+    listMyProperties().then((rows) => { if (active) setMyBiens(rows); });
+    return () => { active = false; };
+  }, [currentUser]);
+
   const showcase: ProfileData = useMemo(() => {
-    /* Compte RÉEL connecté : vitrine vide — aucune donnée de démonstration ne
-       lui appartient. Il la remplit en publiant (ses biens/annonces en base
-       arrivent à l'étape suivante). */
     if (currentUser) {
-      return { biens: [], produits: [], formations: [], services: [], lives: [], avis: [], ratingBreakdown: [], posts: [] };
+      const biens = myBiens.map((p) => ({
+        id: p.id,
+        title: p.title,
+        cover: coverOf(p),
+        price: p.price,
+        currency: p.currency,
+        unit: p.transactionType === "location-ct" ? "/nuit" : p.transactionType === "location-lt" ? "/mois" : "",
+        location: p.city,
+      }));
+      return { biens, produits: [], formations: [], services: [], lives: [], avis: [], ratingBreakdown: [], posts: [] };
     }
     const added = sessionShowcaseOf(sessionState, actorId);
     const { avis, ratingBreakdown } = avisOf(actorId);
@@ -67,7 +86,7 @@ export default function ProfilPage() {
       ratingBreakdown,
       posts: getMyPosts(profileToAuthor(profile)),
     };
-  }, [currentUser, profile, sessionState, actorId]);
+  }, [currentUser, myBiens, profile, sessionState, actorId]);
   const volume = !currentUser && profile.roles.some((r) => r === "agent" || r === "agence") ? gmvVolume(actorId, VOLUME_YEAR) : 0;
   return (
     <ProfileView
