@@ -2,27 +2,19 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from "./config";
 
-/* Session Supabase pour le proxy : rafraichit la session et redirige vers
-   /auth/connexion si l'utilisateur atteint une zone fermee sans etre
-   connecte.
+/* Session Supabase pour le proxy. Appelée sur TOUTES les routes (matcher large
+   dans `src/proxy.ts`), pour UNE raison : rafraîchir la session et synchroniser
+   les cookies partout, afin que `getCurrentUser()` (layout serveur) reconnaisse
+   la personne connectée sur tout le site — pas seulement sur /dashboard.
 
-   Depuis la migration vers `src/proxy.ts`, cette fonction n'est appelee que
-   sur `/admin/*` et `/dashboard/*` : le matcher fait desormais le gros du
-   filtrage. La liste ci-dessous n'a donc plus besoin d'enumerer /merci,
-   /confidentialite, les actifs statiques ni robots.txt — ces routes ne
-   passent tout simplement plus par ici.
+   Elle ne REDIRIGE vers /auth/connexion que sur les zones FERMÉES
+   (`PROTECTED_PREFIXES`) ; ailleurs elle laisse passer (navigation publique,
+   connecté ou non). Sans Supabase configuré, elle sort immédiatement. */
 
-   Il en reste une seule entree, et elle est essentielle. */
-const PUBLIC_PREFIXES = [
-  /* /admin/leads est sous /admin, donc filtree par le matcher, mais elle
-     porte sa PROPRE porte par mot de passe cote serveur. Sans cette
-     exemption, la console des inscriptions deviendrait inatteignable le jour
-     ou Supabase est branche — et son mot de passe ne servirait plus a rien.
-
-     Le suffixe "/" est ajoute a la comparaison pour qu'une future route
-     "/adminleads" ne soit pas exemptee par accident. */
-  "/admin/leads",
-];
+/* Zones fermées : redirection vers la connexion si non connecté. */
+const PROTECTED_PREFIXES = ["/admin", "/dashboard"];
+/* /admin/leads a sa PROPRE porte par mot de passe : exemptée du filtre Supabase. */
+const AUTH_EXEMPT = ["/admin/leads"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -57,9 +49,10 @@ export async function updateSession(request: NextRequest) {
      fonction. La garder donnerait l'illusion que la landing depend de ce
      filtre. */
   const pathname = request.nextUrl.pathname;
-  const isPublic = PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const isExempt = AUTH_EXEMPT.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
-  if (!user && !isPublic) {
+  if (!user && isProtected && !isExempt) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/connexion";
     url.searchParams.set("redirect", pathname);

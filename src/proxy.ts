@@ -48,5 +48,12 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*"],
+  /* Matcher LARGE : toutes les routes sauf les actifs statiques. Le proxy
+     rafraîchit la session Supabase PARTOUT (pour que la personne connectée soit
+     reconnue sur tout le site, pas seulement /dashboard) et ne REDIRIGE que les
+     zones fermées (/admin, /dashboard) — voir `updateSession`. Le reste se
+     parcourt librement. */
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)$).*)",
+  ],
 };

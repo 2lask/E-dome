@@ -8,7 +8,6 @@ import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/components/ui/toast";
 import { Sidebar } from "@/components/layout/sidebar";
 import { SidebarWhop } from "@/components/layout/sidebar-whop";
-import { DemoLegendBar } from "@/components/layout/demo-legend-bar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ExplorerTabs } from "@/components/layout/explorer-tabs";
@@ -159,12 +158,6 @@ export function AppShell({
                 isDashboardRoute ? "" : "md:ml-[220px]"
               }`}
             >
-              {/* Bandeau-légende permanent : mention « données d'exemple »,
-                  légende des statuts, et sélecteur de rôle. Ici plutôt que dans
-                  une sidebar parce que c'est le seul emplacement présent sur
-                  toutes les routes, tableau de bord compris. */}
-              <DemoLegendBar />
-
               {/* Header global : masque sur /dashboard/* et sur /feed (Whop). */}
               {!isDashboardRoute && !isFeedRoute && (
                 <Header onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} />

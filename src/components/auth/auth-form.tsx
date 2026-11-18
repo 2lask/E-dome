@@ -23,8 +23,8 @@ export function AuthForm({ mode }: AuthFormProps) {
   /* Chemin relatif uniquement : router.push() suit volontiers une URL absolue
      hors domaine. Sans ce garde, "?redirect=https://evil.com" ejecte
      l'utilisateur vers un site tiers juste apres une connexion reussie. */
-  const rawRedirect = searchParams.get("redirect") ?? "/feed";
-  const redirect = /^\/(?!\/)/.test(rawRedirect) ? rawRedirect : "/feed";
+  const rawRedirect = searchParams.get("redirect") ?? "/";
+  const redirect = /^\/(?!\/)/.test(rawRedirect) ? rawRedirect : "/";
   const supabase = createClient();
   const configured = isSupabaseConfigured();
 
