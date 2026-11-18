@@ -9,8 +9,8 @@ export const demoBar = {
      statuts et le sélecteur de rôle. */
   mention: "Maquette de démonstration",
   mentionHint: "Données d'exemple — rien ici n'est réel.",
-  learnMore: "En savoir plus",
-  learnMoreHref: "/demo",
+  learnMore: "Comment ça marche",
+  learnMoreHref: "/a-propos",
   legendTitle: "Statuts",
 } as const;
 
