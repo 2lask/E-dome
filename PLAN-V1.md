@@ -18,6 +18,40 @@ zéro affirmation de traction · aucun bouton mort · 360 px → grand écran ·
 
 ---
 
+## Journal d'exécution — plateforme réelle (backend Supabase)
+
+*Piste réelle ouverte après le branchement de Supabase (clé en main du
+fondateur). Chaque ligne = un commit poussé, portes vertes. Le mode démo
+(non connecté) reste intact en repli — aucune régression.*
+
+- **Backend branché & vérifié** — Supabase live (`profiles`, `properties`, …),
+  schéma appliqué, déclencheur inscription→profil testé de bout en bout.
+- **Compte réel (C3)** — `e4a3060` → `69991ae` : session reconnue partout
+  (proxy), sélecteur de persona retiré, **identité réelle** (nom, avatar à
+  initiales, rôles) dans le chrome + `/profil` + réglages, **réglages persistés
+  EN BASE** (action serveur `saveMyProfile`). Vitrine vide = compte neuf honnête.
+- **Biens EN BASE (C4 — `be631f0`)** — publier un bien l'**écrit dans
+  `properties`** (action serveur `createMyProperty`, RLS `host_id=auth.uid()`).
+  Relu par **Mes annonces**, **la vitrine du profil**, **l'Explorer (liste)** et
+  **la fiche `/explorer/[id]`** (`getPublicProperty`, hôte joint). Persistant.
+
+### Prochain — C5 : l'apport d'affaires EN BASE (le cœur du modèle)
+Brancher le moteur d'apport (aujourd'hui couplé à la mémoire de session :
+`primeListings(state)`, `apporteurBook()`, `canIntroduce`) sur les tables
+`primes` / `introductions` / `referral_links`, en miroir du pattern C4
+(connecté → base ; sinon → session). Tranches :
+1. **Primes** : un vendeur attache une prime fixe (CHF 50–3000) à SON bien →
+   `primes` ; relue sur la fiche et « Mes annonces ».
+2. **Découverte + mise en relation** : l'apporteur voit les biens à prime
+   (DB), propose un contact traçable → `introductions` ; le vendeur accepte
+   (prime due) ou refuse (rien dû).
+3. **Liens traçables** : `referral_links` persistés + route de redirection
+   publique qui compte les clics.
+*Règle juridique maintenue (`MODELE.md`) : prime fixe en CHF, jamais un % du
+prix, jamais conditionnée à la vente ; E-Dome ne custodie jamais les fonds.*
+
+---
+
 ## Les chantiers, dans l'ordre des dépendances
 
 ### C1 — Recentrage produit autour du Pro  *(sans backend, réversible — ✅ FAIT)*
