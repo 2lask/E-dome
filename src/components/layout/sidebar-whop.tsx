@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Search, MessageCircle, Bell, Settings, HelpCircle,
+  Home, Rss, Search, MessageCircle, Bell, Settings, HelpCircle,
   Plus, Users as UsersIcon,
   type LucideIcon,
 } from "lucide-react";
@@ -44,7 +44,8 @@ export function SidebarWhop() {
   const myGroups = useMemo(() => threads.filter((t) => t.isGroup).slice(0, 6), [threads]);
 
   const navItems: NavItem[] = [
-    { label: "Accueil", href: "/feed", icon: Home, matchPrefixes: ["/feed"] },
+    { label: "Accueil", href: "/", icon: Home },
+    { label: "Fil", href: "/feed", icon: Rss, matchPrefixes: ["/feed"] },
     { label: "Explorer", href: "/explorer", icon: Search, matchPrefixes: ["/explorer", "/formations", "/services"] },
     { label: "Messages", href: "/messages", icon: MessageCircle, badge: unreadMessages > 0 ? unreadMessages : undefined, matchPrefixes: ["/messages"] },
     { label: "Notifications", href: "/notifications", icon: Bell, badge: unreadNotifications > 0 ? unreadNotifications : undefined, matchPrefixes: ["/notifications"] },

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Home,
+  Rss,
   Search,
   MessageCircle,
   Bell,
@@ -106,7 +107,8 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
 
   const navItems: NavItem[] = useMemo(
     () => [
-      { label: "Accueil", href: "/feed", icon: Home, matchPrefixes: ["/feed", "/"] },
+      { label: "Accueil", href: "/", icon: Home, matchPrefixes: ["/"] },
+      { label: "Fil", href: "/feed", icon: Rss, matchPrefixes: ["/feed"] },
       {
         label: "Explorer",
         href: "/explorer",

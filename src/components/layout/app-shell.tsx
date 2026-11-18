@@ -72,9 +72,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
      une triple navigation sur ces pages. La banniere demo reste
      toujours visible (info essentielle). */
   const isDashboardRoute = pathname.startsWith("/dashboard");
-  /* /feed (et /) : pas de Header global pour matcher le layout Whop
-     ou le contenu colle direct sous la banniere demo. */
-  const isFeedRoute = pathname === "/feed" || pathname === "/";
+  /* /feed : pas de Header global (layout Whop plein cadre). La racine `/` est
+     désormais l'accueil de la plateforme et GARDE l'en-tête global. */
+  const isFeedRoute = pathname === "/feed";
 
   /* Pôle hors périmètre du lancement V1 « E-Dome Pro » (STRATEGIE.md) : on
      affiche une note de statut honnête en tête du contenu. Correspondance par

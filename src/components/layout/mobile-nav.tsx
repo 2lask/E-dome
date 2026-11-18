@@ -32,7 +32,7 @@ interface MobileNavItem {
    toujours et restent atteignables, elles ne sont simplement plus mises en
    avant au lancement. */
 const navItems: MobileNavItem[] = [
-  { href: "/feed", icon: Home, label: "Accueil" },
+  { href: "/", icon: Home, label: "Accueil" },
   { href: "/explorer", icon: Search, label: "Explorer" },
   { href: "/publier", icon: Plus, label: "Publier", isPrimary: true },
   { href: "/messages", icon: MessageCircle, label: "Messages" },
@@ -63,8 +63,8 @@ export function MobileNav() {
     >
       {navItems.map((item) => {
         const active =
-          item.href === "/feed"
-            ? pathname === "/feed" || pathname === "/"
+          item.href === "/"
+            ? pathname === "/"
             : pathname.startsWith(item.href);
         const Icon = item.icon;
 
