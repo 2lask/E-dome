@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "./server";
+import type { SessionUser } from "../session-user";
 
 /* ── La personne connectée ──────────────────────────────────────────────────
 
@@ -18,20 +19,7 @@ import { createClient } from "./server";
    qu'un écran n'est pas migré, il ignore ce helper et garde ses données
    fictives. Aucune régression pendant la migration. */
 
-export interface CurrentUser {
-  id: string;
-  email: string | null;
-  firstName: string;
-  lastName: string;
-  avatar: string | null;
-  city: string | null;
-  country: string;
-  bio: string | null;
-  roles: string[];
-  activeRole: string;
-  trades: string[];
-  interests: string[];
-}
+export type CurrentUser = SessionUser;
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const supabase = await createClient();

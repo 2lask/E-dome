@@ -5,6 +5,7 @@ import type { Currency, ReferralLink } from "./types";
 import type { PlatformRole } from "./model/identity";
 import { migrateLegacyRoles } from "./model/identity";
 import type { Profile } from "./profile-types";
+import type { SessionUser } from "./session-user";
 import { DEFAULT_PROFILE } from "./profile-data";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
 import { followingOf } from "./demo/social";
@@ -37,6 +38,10 @@ const CURRENCY_SYMBOLS: Record<Currency, string> = {
 // ─── Context shape ──────────────────────────────────────────────────────────
 
 interface AppContextValue {
+  /* La personne RÉELLEMENT connectée (chantier C3), ou `null` en mode démo /
+     visiteur anonyme. Fournie par le layout serveur via `getCurrentUser()`.
+     Quand elle existe, l'app peut l'afficher au lieu de la personne incarnée. */
+  currentUser: SessionUser | null;
   /* La personne incarnée (chantier P3, « être un profil ») : l'acteur de la
      mémoire de session. On ne visite plus « en tant que rôle » : le rôle sous
      lequel l'interface se présente (`activeRole`) et les rôles détenus
@@ -135,7 +140,13 @@ function persist(key: string, value: string) {
 
 // ─── Provider ───────────────────────────────────────────────────────────────
 
-export function AppProvider({ children }: { children: React.ReactNode }) {
+export function AppProvider({
+  children,
+  currentUser = null,
+}: {
+  children: React.ReactNode;
+  currentUser?: SessionUser | null;
+}) {
   const [mounted, setMounted] = useState(false);
   /* La personne incarnée : Léo au rendu serveur et pendant l'hydratation,
      puis celle mémorisée (relue par le magasin de session, après montage). */
@@ -383,6 +394,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<AppContextValue>(
     () => ({
+      currentUser,
       actorId,
       activeRole,
       actorRoles,
@@ -411,6 +423,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       hidePost,
     }),
     [
+      currentUser,
       actorId,
       activeRole,
       actorRoles,

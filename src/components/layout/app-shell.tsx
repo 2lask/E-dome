@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { AppProvider } from "@/lib/context";
+import type { SessionUser } from "@/lib/session-user";
 import { LanguageProvider } from "@/lib/i18n";
 import { ToastProvider } from "@/components/ui/toast";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -60,7 +61,13 @@ const EXPLORER_PATHS = new Set([
    faire ce lien mais n'était référencée nulle part — supprimée. Si la
    largeur de la sidebar change, il faut ajuster les deux endroits. */
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  currentUser = null,
+}: {
+  children: React.ReactNode;
+  currentUser?: SessionUser | null;
+}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -108,7 +115,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   return (
-    <AppProvider>
+    <AppProvider currentUser={currentUser}>
       <LanguageProvider>
         <ToastProvider>
           <div

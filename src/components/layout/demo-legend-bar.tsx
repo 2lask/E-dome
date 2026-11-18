@@ -1,6 +1,7 @@
 "use client";
 
 import { PersonaSwitcher } from "@/components/layout/role-switcher";
+import { useApp } from "@/lib/context";
 
 /* ── Barre « profil actif » ─────────────────────────────────────────────────
 
@@ -13,6 +14,10 @@ import { PersonaSwitcher } from "@/components/layout/role-switcher";
    Rendu dans `app-shell`, donc présent sur toutes les routes. */
 
 export function DemoLegendBar() {
+  const { currentUser } = useApp();
+  /* Connecté pour de vrai (chantier C3) → on est soi-même : pas de sélecteur de
+     personne, et la barre disparaît. Le sélecteur ne sert qu'en mode démo. */
+  if (currentUser) return null;
   return (
     <div className="w-full border-b border-[var(--card-border)]">
       <div className="mx-auto flex max-w-[1400px] items-center justify-end px-3 py-1">

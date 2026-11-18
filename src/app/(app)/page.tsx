@@ -6,6 +6,7 @@ import {
   Handshake, ArrowRight, type LucideIcon,
 } from "lucide-react";
 import { useActor } from "@/lib/use-actor";
+import { useApp } from "@/lib/context";
 import { RecommendedCarousel } from "@/components/feed/recommended-carousel";
 
 /* ── `/` — l'ACCUEIL de la plateforme (chantier B4) ─────────────────────────
@@ -34,6 +35,7 @@ const QUICK: QuickTile[] = [
 
 export default function HomePage() {
   const actor = useActor();
+  const { currentUser } = useApp();
 
   const openCopilot = () => {
     try {
@@ -49,7 +51,7 @@ export default function HomePage() {
       <section className="mb-7 sm:mb-9">
         <p className="text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">E-Dome</p>
         <h1 className="page-heading mt-1 text-3xl leading-tight sm:text-4xl">
-          Bonjour {actor.firstName || "👋"}
+          Bonjour {currentUser?.firstName || actor.firstName || "👋"}
         </h1>
         <p className="mt-2 max-w-2xl text-[15px] leading-snug text-[var(--text-muted)]">
           Votre espace immobilier : cherchez un bien, publiez le vôtre, suivez votre
