@@ -25,6 +25,8 @@ const PARKED_TO_HOME = [
   "/onboarding",
   "/demo",
   "/statistiques",
+  /* Simulation de paiement de l'ancienne fiche fictive : sans point d'entrée. */
+  "/paiement",
 ];
 
 const nextConfig: NextConfig = {
@@ -45,6 +47,8 @@ const nextConfig: NextConfig = {
          les favoris reviendront avec une vraie table. */
       { source: "/recherche", destination: "/explorer", permanent: false },
       { source: "/favoris", destination: "/explorer", permanent: false },
+      /* Propositions d'agences fictives : aucune agence n'est encore inscrite. */
+      { source: "/vendre/accompagnement", destination: "/vendre", permanent: false },
       ...PARKED_TO_HOME.map((source) => ({ source, destination: "/", permanent: false })),
     ];
   },

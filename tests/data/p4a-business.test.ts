@@ -172,10 +172,15 @@ test("P4a.6 — suivi des deux côtés : l'apporteur amène, le vendeur accepte,
 test("P4a.7 — une seule source : le même carnet pour /apporteurs et /dashboard/apporteurs, plus de 770 / 1 034 / 9 500", () => {
   const book = apporteurBook(emptySession(), LEO);
   assert.equal(book.totals.total, book.totals.bien + book.totals.marketplace + book.totals.abonnement);
+  /* Reconstruction (REBUILD.md §7) : /apporteurs lit la BASE réelle et ne
+     touche plus aucune donnée de démonstration ; /dashboard/apporteurs est
+     parqué (redirigé) mais garde son carnet unique. Aucun chiffre fabriqué,
+     nulle part. */
   const a = readFileSync("src/app/(app)/apporteurs/page.tsx", "utf8");
   const d = readFileSync("src/app/(app)/dashboard/apporteurs/page.tsx", "utf8");
+  assert.doesNotMatch(a, /useApporteurBook|lib\/demo\//);
+  assert.match(d, /useApporteurBook/);
   for (const src of [a, d]) {
-    assert.match(src, /useApporteurBook/);
     assert.doesNotMatch(src, /LEADERBOARD|leaderboard|MOCK_APPORTS|9500|1034/);
   }
   assert.doesNotMatch(readFileSync("src/lib/referral-links.ts", "utf8"), /earned: [1-9]/);

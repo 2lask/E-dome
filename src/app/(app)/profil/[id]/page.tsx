@@ -49,14 +49,14 @@ export default function ProfilByIdPage({ params }: { params: Promise<{ id: strin
       <div className="max-w-md mx-auto py-20 text-center animate-fade-in">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">Profil introuvable</h1>
         <p className="text-sm mt-2 text-[var(--text-muted)]">
-          Cet utilisateur n&apos;existe pas dans la maquette.
+          Ce profil n&apos;existe pas ou n&apos;est plus public.
         </p>
         <button
-          onClick={() => router.push("/feed")}
+          onClick={() => router.push("/explorer")}
           className="mt-6 px-4 py-2 text-sm font-medium rounded-xl transition-colors"
           style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
         >
-          Retour au feed
+          Explorer les biens
         </button>
       </div>
     );

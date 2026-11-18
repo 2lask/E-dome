@@ -67,16 +67,18 @@ export const sellPage = {
         sale: "Vous — les acheteurs vous contactent directement.",
         visits: "Vous les menez vous-même.",
         toEdome: "0 CHF. La publication est gratuite.",
-        toThird: "Rien d'obligatoire. En option : mise en avant, photographe, home staging.",
+        toThird: "Rien d'obligatoire. Une prime facultative si vous souhaitez que des apporteurs vous présentent des acheteurs.",
         idealFor: "Vous connaissez votre bien et vous avez le temps de gérer.",
       },
     },
     {
       id: "accompagne",
       label: "Accompagné",
-      tagline: "Une agence vérifiée s'en charge de bout en bout.",
-      cta: "Être accompagné",
-      ctaHref: "/vendre/accompagnement",
+      /* Bientôt : aucune agence n'est encore inscrite. L'ancienne page de
+         comparaison montrait des propositions d'agences fictives (REBUILD.md). */
+      tagline: "Bientôt — une agence vérifiée s'en chargera de bout en bout.",
+      cta: "Être prévenu du lancement",
+      ctaHref: "/contact",
       lines: {
         you: "Vous décrivez votre bien ; des agences vérifiées vous contactent ; vous en choisissez une.",
         sale: "L'agence que vous mandatez.",
@@ -91,10 +93,10 @@ export const sellPage = {
   /* Le bloc rattaché : à la carte. Il ne s'oppose pas aux deux routes — on
      prend un photographe qu'on vende seul ou accompagné. */
   alaCarte: {
-    title: "À la carte, dans les deux cas",
-    body: "Que vous vendiez seul ou accompagné, vous pouvez prendre des prestations ponctuelles sur la marketplace : photographe, home staging, diagnostic, visite virtuelle.",
-    cta: "Voir les services",
-    ctaHref: "/services",
+    title: "Faites-vous recommander, dans les deux cas",
+    body: "Ajoutez une prime à votre annonce : des apporteurs vous présenteront des acheteurs. Vous ne la payez que si vous acceptez un contact.",
+    cta: "Comment fonctionne la prime",
+    ctaHref: "/a-propos",
   },
 
   /* La phrase sans laquelle personne ne clique. */
