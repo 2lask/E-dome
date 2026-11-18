@@ -57,6 +57,30 @@ incohérences trouvées et corrigées, un commit chacune :
 navigation par persona, notifications de session) qui mènent déjà à des pages
 portant la note « bientôt » — non bloquants, dépriorisés.*
 
+---
+
+## Chantier D — Refonte design / UX (depuis 2026-11-18)
+
+*Recadrage du fondateur : les retraits/QA ne donnent « pas de changement clair »
+et la plateforme reste « visuellement mauvaise » ; on arrivait sur une page
+explicative. Objectif : une vraie app top-tier, claire, cohérente, qu'on comprend
+en l'utilisant. Voir la mémoire `real-app-ambition-feedback`.*
+
+- **D1 — Vraie entrée produit ✅** (`72e67d3`). `/demo` n'est plus l'explicatif
+  mais un **accueil produit** (salutation, recherche de biens, actions clés,
+  copilote IA, biens premium, accès rapides). L'explicatif → `/a-propos`
+  (`<AboutEdome/>`), lien discret. Landing figée non touchée.
+- **D2 — Chrome discrète ✅** (`2fd4b5b`). Le gros bandeau « Maquette de
+  démonstration » + légende des statuts → une strip fine « Démonstration ·
+  données fictives » (honnêteté gardée) + sélecteur de personne. Légende des
+  statuts reléguée à `/a-propos`.
+- **D3 — Refonte des écrans clés** (à venir) : explorer, feed, profil/vitrine,
+  dashboard, tarifs — hiérarchie, cartes premium, transitions, responsive
+  375→1400, micro-interactions. *Calibrer la direction sur un regard du
+  fondateur avant d'industrialiser.*
+- **D4 — Cohérence transverse** (à venir) : design system (radius, ombres, états
+  hover/focus/active, vides/chargement), accessibilité, polish partout.
+
 ### C2 — Provision Supabase  *(action du fondateur)*
 - Créer le projet, renseigner les 3 clés (local + Vercel), exécuter `leads.sql`
   puis `schema.sql`, activer Google. Guide : [BACKEND-SETUP.md](BACKEND-SETUP.md).
