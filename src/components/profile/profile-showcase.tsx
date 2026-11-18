@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  Building2, ShoppingBag, GraduationCap, Video, Briefcase, Star, Newspaper,
+  Building2, GraduationCap, Video, Briefcase, Star, Newspaper,
   Plus, ArrowRight, UserRound, Store,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
@@ -13,9 +13,9 @@ import type { SocialPost } from "@/lib/types";
 /* Vitrine du profil — 3 grands onglets (façon Instagram) :
    1. Parcours     : sections CV (fournies en prop).
    2. Publications : ce que la personne poste (feed + profil).
-   3. Vitrine      : tout ce qui est vendable/proposé, regroupé sur UNE page
-                     avec un sous-menu pour passer de biens → formations →
-                     produits → services → lives → avis.
+   3. Vitrine      : tout ce qui est proposé, regroupé sur UNE page avec un
+                     sous-menu pour passer de biens → formations → services →
+                     avis (les pôles parqués ne sont pas exposés au lancement).
    Chaque sous-section garde compteur, « Voir tout » et action de création. */
 
 // ─── Types (données de vitrine) ───────────────────────────────────────────
@@ -55,15 +55,14 @@ type TopTab = "parcours" | "publications" | "vitrine";
 type SubTab = "biens" | "formations" | "produits" | "services" | "lives" | "avis";
 type LinkKey = "publications" | SubTab;
 
-// Sous-onglets de la Vitrine, dans l'ordre.
+/* Sous-onglets de la Vitrine, dans l'ordre. V1 « E-Dome Pro » (STRATEGIE.md /
+   PLAN-V1.md) : la vitrine n'expose plus les pôles parqués (Recommandés/boutique
+   et Lives). Les données restent dans le type et les renderers vivent toujours ;
+   ils ne sont simplement plus présentés sur la vitrine au lancement. */
 const SUB_TABS: { key: SubTab; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
   { key: "biens", label: "Biens", icon: Building2 },
   { key: "formations", label: "Formations", icon: GraduationCap },
-  /* La boutique est en affiliation pure (P4b) : une personne n'y vend rien,
-     elle y RECOMMANDE des produits de marchands partenaires. */
-  { key: "produits", label: "Recommandés", icon: ShoppingBag },
   { key: "services", label: "Services", icon: Briefcase },
-  { key: "lives", label: "Lives", icon: Video },
   { key: "avis", label: "Avis", icon: Star },
 ];
 
@@ -157,7 +156,7 @@ export function ProfileShowcase({
     lives: data.lives.length,
     avis: data.avis.length,
   };
-  const vitrineTotal = data.biens.length + data.formations.length + data.produits.length + data.services.length + data.lives.length;
+  const vitrineTotal = data.biens.length + data.formations.length + data.services.length;
 
   const topTabs: { key: TopTab; label: string; icon: React.ComponentType<{ size?: number }>; count?: number }[] = [
     ...(parcours ? [{ key: "parcours" as const, label: "Parcours", icon: UserRound }] : []),
