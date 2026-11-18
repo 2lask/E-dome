@@ -8,6 +8,7 @@ import type { Profile } from "./profile-types";
 import type { SessionUser } from "./session-user";
 import { DEFAULT_PROFILE } from "./profile-data";
 import { profileFromCurrentUser } from "./current-user-profile";
+import { saveMyProfile } from "./supabase/profile-actions";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
 import { followingOf } from "./demo/social";
 import { actorSummary } from "./demo/actors";
@@ -266,6 +267,25 @@ export function AppProvider({
   useEffect(() => {
     if (!mounted) return;
     persist(currentUser ? `profile_${currentUser.id}` : "profile", JSON.stringify(profile));
+  }, [profile, mounted, currentUser]);
+
+  /* Connecté : on enregistre aussi le profil EN BASE (débattu), pour que les
+     réglages de compte soient sauvegardés sur le compte, pas seulement dans ce
+     navigateur. La RLS limite l'écriture à sa propre ligne. */
+  useEffect(() => {
+    if (!mounted || !currentUser) return;
+    const t = setTimeout(() => {
+      void saveMyProfile({
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        avatar: profile.avatar,
+        city: profile.location.city,
+        country: profile.location.country,
+        bio: profile.about,
+        roles: profile.roles,
+      });
+    }, 900);
+    return () => clearTimeout(t);
   }, [profile, mounted, currentUser]);
 
   useEffect(() => {
