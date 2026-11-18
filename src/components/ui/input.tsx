@@ -15,12 +15,15 @@ interface InputBaseProps
   trailingIcon?: React.ComponentType<{ className?: string }>;
   /** Element React custom a droite (button, etc.). */
   trailing?: React.ReactNode;
+  /** Classes du CONTENEUR quand il y a une icône ou un suffixe : c'est lui
+      qu'il faut limiter en largeur, sinon le suffixe s'éloigne du champ. */
+  containerClassName?: string;
 }
 
 export type InputProps = InputBaseProps;
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, leadingIcon: Leading, trailingIcon: Trailing, trailing, ...props }, ref) => {
+  ({ className, containerClassName, type, leadingIcon: Leading, trailingIcon: Trailing, trailing, ...props }, ref) => {
     const hasLeading = !!Leading;
     const hasTrailing = !!Trailing || !!trailing;
     const inputCls = cn(
@@ -39,7 +42,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       return <input type={type} ref={ref} className={inputCls} {...props} />;
     }
     return (
-      <div className="relative w-full">
+      <div className={cn("relative w-full", containerClassName)}>
         {Leading && (
           <Leading className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         )}

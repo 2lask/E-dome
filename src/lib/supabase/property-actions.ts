@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "./server";
+import { createAdminClient } from "./admin";
 import type { MyProperty, NewPropertyInput } from "../my-property";
 import type { PropertyType, TransactionType, Currency } from "../types";
 
@@ -139,6 +140,44 @@ export async function createMyProperty(
   return { ok: true, id: data.id };
 }
 
+/** Modifie un de MES biens (RLS : `host_id = auth.uid()`). */
+export async function updateMyProperty(
+  id: string,
+  input: NewPropertyInput,
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = await createClient();
+  if (!supabase) return { ok: false, error: "supabase-non-configure" };
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "non-connecte" };
+
+  const { data, error } = await supabase
+    .from("properties")
+    .update({
+      title: input.title,
+      description: input.description ?? "",
+      type: input.type,
+      transaction_type: input.transactionType,
+      price: Math.max(0, Math.round(input.price)),
+      city: input.city,
+      address: input.address || null,
+      images: input.images ?? [],
+      bedrooms: Math.max(0, Math.round(input.bedrooms)),
+      bathrooms: Math.max(0, Math.round(input.bathrooms)),
+      area: Math.max(0, Math.round(input.area)),
+      amenities: input.amenities ?? [],
+      analytics: input.analytics ?? null,
+    })
+    .eq("id", id)
+    .eq("host_id", user.id)
+    .select("id")
+    .maybeSingle();
+  if (error) return { ok: false, error: error.message };
+  if (!data) return { ok: false, error: "introuvable" };
+  return { ok: true };
+}
+
 /** Les biens de la personne connectée (« Mes annonces », vitrine), récents d'abord. */
 export async function listMyProperties(): Promise<MyProperty[]> {
   const supabase = await createClient();
@@ -200,6 +239,37 @@ export async function deleteMyProperty(id: string): Promise<{ ok: boolean; error
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "non-connecte" };
 
-  const { error } = await supabase.from("properties").delete().eq("id", id).eq("host_id", user.id);
-  return error ? { ok: false, error: error.message } : { ok: true };
+  /* Une mise en relation ACCEPTÉE est la preuve d'une prime due : la
+     suppression (en cascade) l'effacerait. On refuse dans ce cas. */
+  const { count: accepted } = await supabase
+    .from("introductions")
+    .select("id", { count: "exact", head: true })
+    .eq("property_id", id)
+    .eq("status", "acceptee");
+  if (accepted && accepted > 0) {
+    return { ok: false, error: "verrouille" };
+  }
+
+  const { data: gone, error } = await supabase
+    .from("properties")
+    .delete()
+    .eq("id", id)
+    .eq("host_id", user.id)
+    .select("images")
+    .maybeSingle();
+  if (error) return { ok: false, error: error.message };
+  if (!gone) return { ok: false, error: "introuvable" };
+
+  /* Les photos d'un logement sont des données personnelles : on retire aussi
+     les fichiers envoyés sur E-Dome (les liens externes ne sont pas à nous). */
+  const marker = "/storage/v1/object/public/property-images/";
+  const paths = ((gone.images as string[] | null) ?? [])
+    .filter((u) => u.includes(marker))
+    .map((u) => decodeURIComponent(u.slice(u.indexOf(marker) + marker.length)))
+    .filter((p) => p.startsWith(`${user.id}/`));
+  if (paths.length) {
+    const admin = createAdminClient();
+    await admin?.storage.from("property-images").remove(paths);
+  }
+  return { ok: true };
 }

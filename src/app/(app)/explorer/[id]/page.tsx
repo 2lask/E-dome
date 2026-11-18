@@ -55,10 +55,17 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function BienPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function BienPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ publie?: string; modifie?: string }>;
+}) {
+  const [{ id }, sp] = await Promise.all([params, searchParams]);
   const [p, user] = await Promise.all([load(id), getCurrentUser()]);
   if (!p) notFound();
+  const justSaved = sp.publie ? "publie" : sp.modifie ? "modifie" : null;
 
   const isOwner = !!user && user.id === p.hostId;
   const images = p.images.length > 0 ? p.images : [coverOf(p)];
@@ -84,15 +91,27 @@ export default async function BienPage({ params }: { params: Promise<{ id: strin
       </Link>
 
       {isOwner && (
-        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border bg-leman-soft/60 px-4 py-3 text-[13px]">
+        <div role={justSaved ? "status" : undefined} className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border bg-leman-soft/60 px-4 py-3 text-[13px]">
           <ShieldCheck className="h-4 w-4 text-leman" aria-hidden />
           <p className="flex-1">
-            <strong>C&apos;est votre annonce.</strong> Elle est visible de tous ; les demandes arrivent dans vos Demandes.
+            {justSaved === "publie" ? (
+              <strong>Votre annonce est en ligne. </strong>
+            ) : justSaved === "modifie" ? (
+              <strong>Modifications enregistrées. </strong>
+            ) : (
+              <strong>C&apos;est votre annonce. </strong>
+            )}
+            Elle est visible de tous ; les demandes arrivent dans vos Demandes.
             {p.activePrimeChf ? ` Prime active : ${formatNumber(p.activePrimeChf)} CHF.` : " Aucune prime : les apporteurs ne la recommandent pas encore."}
           </p>
-          <Button asChild size="sm" variant="outline">
-            <Link href="/mes-biens"><Settings2 className="h-4 w-4" aria-hidden /> Gérer</Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/publier?edit=${p.id}`}>Modifier</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/mes-biens"><Settings2 className="h-4 w-4" aria-hidden /> Mes biens</Link>
+            </Button>
+          </div>
         </div>
       )}
 
