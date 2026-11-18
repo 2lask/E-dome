@@ -33,7 +33,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "first_name, last_name, avatar, city, country, bio, roles, active_role, trades, interests",
+      "first_name, last_name, avatar, city, country, bio, roles, active_role, trades, interests, created_at",
     )
     .eq("id", user.id)
     .single();
@@ -55,6 +55,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     activeRole: profile?.active_role ?? "particulier",
     trades: profile?.trades ?? [],
     interests: profile?.interests ?? [],
+    createdAt: profile?.created_at ?? user.created_at ?? "",
   };
 }
 

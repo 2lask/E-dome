@@ -7,6 +7,7 @@ import { migrateLegacyRoles } from "./model/identity";
 import type { Profile } from "./profile-types";
 import type { SessionUser } from "./session-user";
 import { DEFAULT_PROFILE } from "./profile-data";
+import { profileFromCurrentUser } from "./current-user-profile";
 import { DEFAULT_REFERRAL_LINKS } from "./referral-links";
 import { followingOf } from "./demo/social";
 import { actorSummary } from "./demo/actors";
@@ -167,7 +168,11 @@ export function AppProvider({
   );
   const [currency, setCurrencyState] = useState<Currency>(DEFAULT_CURRENCY);
   const [referralLinks, setReferralLinks] = useState<ReferralLink[]>(DEFAULT_REFERRAL_LINKS);
-  const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
+  /* Connecté → le profil part de SON compte (identité réelle, sections vides) ;
+     sinon → le profil de démonstration. */
+  const [profile, setProfile] = useState<Profile>(() =>
+    currentUser ? profileFromCurrentUser(currentUser) : DEFAULT_PROFILE,
+  );
   const [pinnedPosts, setPinnedPosts] = useState<string[]>([]);
   const [hiddenPosts, setHiddenPosts] = useState<string[]>([]);
 
@@ -200,24 +205,25 @@ export function AppProvider({
         if (Array.isArray(parsed)) setReferralLinks(parsed);
       }
 
-      const storedProfile = localStorage.getItem(`${STORAGE_PREFIX}profile`);
+      /* Profil : pour un compte connecté, la base est SON compte (identité
+         réelle) et les édits sont stockés PAR UTILISATEUR ; sinon, la démo.
+         (La persistance serveur en base arrive à l'étape suivante.) */
+      const profileBase = currentUser ? profileFromCurrentUser(currentUser) : DEFAULT_PROFILE;
+      const profileKey = currentUser ? `profile_${currentUser.id}` : "profile";
+      const storedProfile = localStorage.getItem(`${STORAGE_PREFIX}${profileKey}`);
       if (storedProfile) {
         const parsed = JSON.parse(storedProfile) as Partial<Profile>;
-        /* Rôles relus par la table de passage : un profil stocké avant
-           l'étape 4a porte d'anciens rôles (« formateur »…). */
         const migratedRoles = Array.isArray(parsed.roles) ? migrateLegacyRoles(parsed.roles) : null;
-        /* Merge sur DEFAULT_PROFILE pour tolérer l'évolution du schéma :
-           un profil stocké avant l'ajout d'un champ reste valide. */
         setProfile({
-          ...DEFAULT_PROFILE,
+          ...profileBase,
           ...parsed,
-          roles: migratedRoles && migratedRoles.roles.length > 0 ? migratedRoles.roles : DEFAULT_PROFILE.roles,
-          trades: parsed.trades ?? (migratedRoles?.trades.length ? migratedRoles.trades : DEFAULT_PROFILE.trades),
-          interests: parsed.interests ?? (migratedRoles?.interests.length ? migratedRoles.interests : DEFAULT_PROFILE.interests),
-          location: { ...DEFAULT_PROFILE.location, ...(parsed.location ?? {}) },
-          visibility: { ...DEFAULT_PROFILE.visibility, ...(parsed.visibility ?? {}) },
-          meta: { ...DEFAULT_PROFILE.meta, ...(parsed.meta ?? {}) },
-          stats: { ...DEFAULT_PROFILE.stats, ...(parsed.stats ?? {}) },
+          roles: migratedRoles && migratedRoles.roles.length > 0 ? migratedRoles.roles : profileBase.roles,
+          trades: parsed.trades ?? (migratedRoles?.trades.length ? migratedRoles.trades : profileBase.trades),
+          interests: parsed.interests ?? (migratedRoles?.interests.length ? migratedRoles.interests : profileBase.interests),
+          location: { ...profileBase.location, ...(parsed.location ?? {}) },
+          visibility: { ...profileBase.visibility, ...(parsed.visibility ?? {}) },
+          meta: { ...profileBase.meta, ...(parsed.meta ?? {}) },
+          stats: { ...profileBase.stats, ...(parsed.stats ?? {}) },
         });
       }
 
@@ -259,8 +265,8 @@ export function AppProvider({
 
   useEffect(() => {
     if (!mounted) return;
-    persist("profile", JSON.stringify(profile));
-  }, [profile, mounted]);
+    persist(currentUser ? `profile_${currentUser.id}` : "profile", JSON.stringify(profile));
+  }, [profile, mounted, currentUser]);
 
   useEffect(() => {
     if (!mounted) return;

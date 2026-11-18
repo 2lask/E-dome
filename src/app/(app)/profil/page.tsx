@@ -8,6 +8,7 @@ import type { ProfileData } from "@/components/profile/profile-showcase";
 import { getMyPosts, profileToAuthor } from "@/lib/profile-posts";
 import { useSession } from "@/lib/use-session";
 import { useActorProfile } from "@/lib/use-actor";
+import { useApp } from "@/lib/context";
 import { sessionShowcaseOf } from "@/lib/demo/session-views";
 import { gmvVolume } from "@/lib/demo/derive";
 import { DEMO_TODAY } from "@/lib/demo/clock";
@@ -44,8 +45,15 @@ const VOLUME_YEAR = DEMO_TODAY.getUTCFullYear();
 
 export default function ProfilPage() {
   const { profile, editable } = useActorProfile();
+  const { currentUser } = useApp();
   const { state: sessionState, actorId } = useSession();
   const showcase: ProfileData = useMemo(() => {
+    /* Compte RÉEL connecté : vitrine vide — aucune donnée de démonstration ne
+       lui appartient. Il la remplit en publiant (ses biens/annonces en base
+       arrivent à l'étape suivante). */
+    if (currentUser) {
+      return { biens: [], produits: [], formations: [], services: [], lives: [], avis: [], ratingBreakdown: [], posts: [] };
+    }
     const added = sessionShowcaseOf(sessionState, actorId);
     const { avis, ratingBreakdown } = avisOf(actorId);
     const examples = actorId === CURRENT_USER_ID ? LEO_EXAMPLES : { produits: [], lives: [], services: [] };
@@ -59,8 +67,8 @@ export default function ProfilPage() {
       ratingBreakdown,
       posts: getMyPosts(profileToAuthor(profile)),
     };
-  }, [profile, sessionState, actorId]);
-  const volume = profile.roles.some((r) => r === "agent" || r === "agence") ? gmvVolume(actorId, VOLUME_YEAR) : 0;
+  }, [currentUser, profile, sessionState, actorId]);
+  const volume = !currentUser && profile.roles.some((r) => r === "agent" || r === "agence") ? gmvVolume(actorId, VOLUME_YEAR) : 0;
   return (
     <ProfileView
       key={actorId}

@@ -16,4 +16,6 @@ export interface SessionUser {
   activeRole: string;
   trades: string[];
   interests: string[];
+  /** Date d'inscription (ISO), pour « Membre depuis … ». */
+  createdAt: string;
 }

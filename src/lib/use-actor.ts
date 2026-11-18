@@ -11,6 +11,7 @@ import type { Profile } from "./profile-types";
 import type { User } from "./types";
 import type { PlatformRole } from "./model/identity";
 import type { SessionUser } from "./session-user";
+import { initialsAvatar } from "./current-user-profile";
 
 /* ── L'identité affichée par l'app ──────────────────────────────────────────
 
@@ -33,23 +34,11 @@ export interface Actor extends ActorSummary {
   user: User;
 }
 
-/* Avatar « à initiales » (façon Slack/Google) quand la personne n'a pas encore
-   de photo. Data-URI SVG : aucune requête réseau, jamais d'image cassée. */
-function initialsAvatar(initials: string): string {
-  const safe = (initials || "ME").slice(0, 2);
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">` +
-    `<rect width="96" height="96" rx="48" fill="#1e9df1"/>` +
-    `<text x="50%" y="50%" dy=".34em" text-anchor="middle" font-family="system-ui,sans-serif" font-size="40" font-weight="600" fill="#ffffff">${safe}</text>` +
-    `</svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
-
 /** Construit l'acteur à partir du vrai compte connecté. Aucune donnée fictive. */
 function actorFromCurrentUser(u: SessionUser): Actor {
   const name = `${u.firstName} ${u.lastName}`.trim() || u.email || "Mon compte";
   const initials = `${u.firstName[0] ?? ""}${u.lastName[0] ?? ""}`.toUpperCase() || "ME";
-  const avatar = u.avatar || initialsAvatar(initials);
+  const avatar = u.avatar || initialsAvatar(u.firstName, u.lastName);
   const roles = (u.roles.length ? u.roles : ["particulier"]) as PlatformRole[];
   const activeRole = (u.activeRole || "particulier") as PlatformRole;
   const city = u.city ?? "";
