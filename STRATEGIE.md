@@ -386,6 +386,7 @@ intégrés, premières conversions en payant (après Stripe + juridique).
 | 2026-11-17 | Parquer (sans supprimer) : apporteurs, boutique, événements/lives, courte durée ; différer formations/services/investisseurs | **[VALIDÉ, 2026-11-17]** |
 | 2026-11-17 | Valider d'abord la question juridique **étroite** (abonnement), pas tout le modèle apporteur | **[RECO]** |
 | (antérieur) | Backend = Supabase ; auth e-mail + Google ; paiements simulés d'abord | **[FAIT]** |
+| 2026-11-18 | **PIVOT confirmé** : fin du wedge « SaaS agents » ; cœur = **apport d'affaires + transaction directe + paiements** ; modèle lançable sans avocat (courtage libre en CH, monétisation portail en frais fixes, jamais dépositaire → PSP). Voir **`MODELE.md`** | **[VALIDÉ, 2026-11-18]** |
 
 ### Sources de marché (§2)
 - SMG / Swiss Marketplace Group, résultats 2025 et IPO : onlinemarketplaces.com, finanzen.ch, stockanalysis.com
