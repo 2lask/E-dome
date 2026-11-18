@@ -45,6 +45,17 @@ incohérences trouvées et corrigées, un commit chacune :
   (fonction parquée) → étape retirée du parcours V1.
 - `c644da7` : `/tarifs` présentait le programme apporteurs comme actif → annoncé
   comme post-lancement.
+- `c820eb6` : la **vitrine** du profil (artefact central V1) exposait des
+  sous-onglets « Recommandés » (boutique) et « Lives » → retirés ; la vitrine
+  présente Biens, Formations, Services, Avis.
+- `f64bb60` : le **fil** (accueil pro) et l'**onboarding** promouvaient le
+  programme apporteurs (slide carrousel « Rejoindre le réseau », carte
+  « Sponsorisé → Devenez apporteur », fonction de bienvenue) → retirés ou
+  repointés sur l'offre V1 (« Passez en Pro », copilote IA).
+
+*Reste des renvois mineurs/légitimes (pages des pôles parqués elles-mêmes,
+navigation par persona, notifications de session) qui mènent déjà à des pages
+portant la note « bientôt » — non bloquants, dépriorisés.*
 
 ### C2 — Provision Supabase  *(action du fondateur)*
 - Créer le projet, renseigner les 3 clés (local + Vercel), exécuter `leads.sql`
