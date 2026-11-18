@@ -584,3 +584,8 @@ kbd {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
+/* Exemption EXPLICITE, pour un champ qui porte déjà son propre repère de focus
+   (ex. la saisie du menu ⌘K, seul champ d'une boîte de dialogue). */
+[data-focus-ring="none"]:focus-visible {
+  outline: none;
+}

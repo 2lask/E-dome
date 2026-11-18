@@ -40,7 +40,10 @@ function useSessionId(): string {
   return id;
 }
 
-export function AiAssistant() {
+/* `hideTrigger` : la coquille de la nouvelle génération (REBUILD.md) ouvre le
+   copilote par le menu ⌘K, le menu du compte et des boutons en contexte — le
+   bouton flottant, qui chevauchait le contenu, n'est plus affiché. */
+export function AiAssistant({ hideTrigger = false }: { hideTrigger?: boolean } = {}) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -110,7 +113,7 @@ export function AiAssistant() {
   return (
     <>
       {/* Bouton flottant */}
-      {!open && (
+      {!open && !hideTrigger && (
         <button
           onClick={() => setOpen(true)}
           aria-label="Ouvrir l'assistant IA"

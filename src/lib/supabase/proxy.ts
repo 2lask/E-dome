@@ -11,8 +11,20 @@ import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from "./conf
    (`PROTECTED_PREFIXES`) ; ailleurs elle laisse passer (navigation publique,
    connecté ou non). Sans Supabase configuré, elle sort immédiatement. */
 
-/* Zones fermées : redirection vers la connexion si non connecté. */
-const PROTECTED_PREFIXES = ["/admin", "/dashboard"];
+/* Zones fermées : redirection vers la connexion si non connecté. Ce sont les
+   espaces d'un MEMBRE (REBUILD.md §3.3) : un visiteur n'a ni demandes, ni
+   biens, ni réglages — et publier crée une annonce à son nom. */
+const PROTECTED_PREFIXES = [
+  "/admin",
+  "/dashboard",
+  "/demandes",
+  "/mes-biens",
+  "/publier",
+  "/parametres",
+  "/favoris",
+];
+/* Correspondance EXACTE : `/profil` est MA fiche, `/profil/[id]` reste public. */
+const PROTECTED_EXACT = ["/profil"];
 /* /admin/leads a sa PROPRE porte par mot de passe : exemptée du filtre Supabase. */
 const AUTH_EXEMPT = ["/admin/leads"];
 
@@ -44,12 +56,10 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  /* La racine n'est plus testee ici : le matcher de `src/proxy.ts` ne fait
-     passer que /admin/* et /dashboard/*, donc `/` n'atteint jamais cette
-     fonction. La garder donnerait l'illusion que la landing depend de ce
-     filtre. */
   const pathname = request.nextUrl.pathname;
-  const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const isProtected =
+    PROTECTED_EXACT.includes(pathname) ||
+    PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   const isExempt = AUTH_EXEMPT.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   if (!user && isProtected && !isExempt) {
