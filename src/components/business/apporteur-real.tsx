@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { formatNumber } from "@/lib/format";
 import Link from "next/link";
 import { Building2, ShieldCheck, Gift, ExternalLink, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
@@ -22,7 +23,7 @@ import { apporteurNetChf, type PrimedProperty, type MyIntroduction } from "@/lib
    La marketplace et les abonnements apporteur restent à venir (parqués V1) :
    on le dit, on n'affiche pas de chiffres fictifs. */
 
-const chf = (n: number) => `${Math.round(n).toLocaleString("fr-CH")} CHF`;
+const chf = (n: number) => `${formatNumber(n)} CHF`;
 
 const EMPTY_FORM = { label: "", name: "", email: "", phone: "", consent: false };
 const FIELD =
@@ -68,6 +69,15 @@ export function ApporteurReal() {
       setOffers(o);
       setIntros(i);
       setLoaded(true);
+      /* Venu d'une fiche bien (« Recommander quelqu'un ») : on ouvre
+         directement le formulaire de ce bien. */
+      const bien = new URLSearchParams(window.location.search).get("bien");
+      if (bien && o.some((x) => x.propertyId === bien)) {
+        setOpenId(bien);
+        requestAnimationFrame(() =>
+          document.getElementById(`offer-${bien}`)?.scrollIntoView({ behavior: "smooth", block: "center" }),
+        );
+      }
     });
     return () => { active = false; };
   }, []);
@@ -138,7 +148,7 @@ export function ApporteurReal() {
               const net = apporteurNetChf(o.amountChf);
               const open = openId === o.propertyId;
               return (
-                <li key={o.primeId} className="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-3.5">
+                <li key={o.primeId} id={`offer-${o.propertyId}`} className="scroll-mt-24 rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-3.5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={o.cover} alt="" className="h-14 w-20 shrink-0 rounded-lg object-cover" />

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
-  Search, Plus, Sparkles, User, Settings, Heart, HelpCircle, LogIn, UserPlus,
+  Search, Plus, Sparkles, User, Settings, HelpCircle, LogIn, UserPlus,
   BookOpen, Tag, CornerDownLeft, type LucideIcon,
 } from "lucide-react";
 import { navFor, COMMAND_OPEN_EVENT, AI_OPEN_EVENT } from "@/lib/nav";
@@ -93,7 +93,6 @@ export function CommandMenu({ member }: { member: boolean }) {
     const account: Command[] = member
       ? [
           { id: "profil", label: "Mon profil public", icon: User, group: "Compte", run: go("/profil") },
-          { id: "favoris", label: "Mes favoris", icon: Heart, group: "Compte", run: go("/favoris") },
           { id: "reglages", label: "Réglages du compte", icon: Settings, group: "Compte", keywords: "parametres", run: go("/parametres") },
           { id: "aide", label: "Aide", icon: HelpCircle, group: "Compte", run: go("/aide") },
         ]
@@ -117,7 +116,7 @@ export function CommandMenu({ member }: { member: boolean }) {
       label: `Rechercher « ${query.trim()} » dans les biens`,
       icon: Search,
       group: "Recherche",
-      run: go(`/recherche?q=${encodeURIComponent(query.trim())}`),
+      run: go(`/explorer?q=${encodeURIComponent(query.trim())}`),
     };
     return [search, ...matched];
   }, [commands, query, go]);

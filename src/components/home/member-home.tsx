@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatNumber } from "@/lib/format";
 import {
   ArrowRight, Coins, Inbox, ImageOff, Gift, Check, Circle, Plus, Compass, Building2, UserRound,
 } from "lucide-react";
@@ -16,7 +17,7 @@ import { cn } from "@/lib/utils";
    faire maintenant, puis l'état réel du compte. Tout est calculé à partir de
    la base — un compte neuf voit des zéros et un chemin pour démarrer. */
 
-const chf = (n: number) => `${Math.round(n).toLocaleString("fr-CH")} CHF`;
+const chf = (n: number) => `${formatNumber(n)} CHF`;
 
 interface Todo {
   key: string;

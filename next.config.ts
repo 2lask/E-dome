@@ -40,6 +40,11 @@ const nextConfig: NextConfig = {
       /* Messages et notifications vivent désormais dans les Demandes. */
       { source: "/messages", destination: "/demandes", permanent: false },
       { source: "/notifications", destination: "/demandes", permanent: false },
+      /* Recherche et favoris reposaient sur le catalogue fictif : la
+         recherche passe à l'Explorer réel (la requête `?q=` est conservée) ;
+         les favoris reviendront avec une vraie table. */
+      { source: "/recherche", destination: "/explorer", permanent: false },
+      { source: "/favoris", destination: "/explorer", permanent: false },
       ...PARKED_TO_HOME.map((source) => ({ source, destination: "/", permanent: false })),
     ];
   },

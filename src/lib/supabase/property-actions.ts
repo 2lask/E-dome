@@ -15,7 +15,7 @@ import type { PropertyType, TransactionType, Currency } from "../types";
 
 /* Les colonnes lues, partagées par les deux lectures. */
 const COLS =
-  "id, host_id, title, description, type, transaction_type, price, currency, city, country, address, lat, lng, images, videos, bedrooms, bathrooms, area, amenities, featured, sold_to, created_at";
+  "id, host_id, title, description, type, transaction_type, price, currency, city, country, address, lat, lng, images, videos, bedrooms, bathrooms, area, amenities, featured, sold_to, analytics, created_at";
 
 /* La même chose + l'hôte joint (fiche publique). Deux FK vers profiles
    (host_id, sold_to) → on désambiguïse par la colonne. */
@@ -43,6 +43,7 @@ type Row = {
   amenities: string[] | null;
   featured: boolean | null;
   sold_to: string | null;
+  analytics: Record<string, unknown> | null;
   created_at: string;
   host?: {
     id: string;
@@ -80,6 +81,8 @@ function mapRow(r: Row): MyProperty {
     featured: r.featured ?? false,
     soldTo: r.sold_to,
     createdAt: r.created_at,
+    analytics: r.analytics ?? null,
+    hostId: r.host_id,
     activePrimeChf: (() => {
       const active = (r.primes ?? []).filter((p) => p.active).map((p) => Number(p.amount_chf));
       return active.length ? Math.max(...active) : null;

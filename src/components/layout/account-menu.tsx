@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronsUpDown, User, Heart, Settings, HelpCircle, Sparkles, LogOut } from "lucide-react";
+import { ChevronsUpDown, User, Building2, Settings, HelpCircle, Sparkles, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,7 +87,7 @@ export function AccountMenu({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <MenuLink href="/profil" icon={User}>Mon profil public</MenuLink>
-        <MenuLink href="/favoris" icon={Heart}>Mes favoris</MenuLink>
+        <MenuLink href="/mes-biens" icon={Building2}>Mes biens et primes</MenuLink>
         <MenuLink href="/parametres" icon={Settings}>Réglages du compte</MenuLink>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => window.dispatchEvent(new CustomEvent(AI_OPEN_EVENT))}>

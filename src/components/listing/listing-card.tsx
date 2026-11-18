@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatNumber } from "@/lib/format";
 import { coverOf, type MyProperty } from "@/lib/my-property";
 import type { TransactionType } from "@/lib/types";
 
@@ -22,9 +23,9 @@ export const PRICE_UNIT: Record<TransactionType, string> = {
   "location-ct": " / nuit",
 };
 
-/** « CHF 1’690’000 » — convention suisse (apostrophe typographique). */
+/** « CHF 1'690'000 » — convention suisse, format déterministe (identique serveur et navigateur). */
 export function chfPrice(n: number): string {
-  return `CHF ${Math.round(n).toLocaleString("fr-CH")}`;
+  return `CHF ${formatNumber(n)}`;
 }
 
 export function ListingCard({ p, priority = false }: { p: MyProperty; priority?: boolean }) {
@@ -49,7 +50,7 @@ export function ListingCard({ p, priority = false }: { p: MyProperty; priority?:
         </span>
         {p.activePrimeChf ? (
           <span className="absolute right-2.5 top-2.5 rounded-md border border-[#ead7ad] bg-[#f7edd6] px-2 py-0.5 text-[11.5px] font-semibold tabular-nums text-[#8a5d0c]">
-            Prime {Math.round(p.activePrimeChf).toLocaleString("fr-CH")} CHF
+            Prime {formatNumber(p.activePrimeChf)} CHF
           </span>
         ) : null}
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { formatNumber } from "@/lib/format";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -29,7 +30,7 @@ import { cn } from "@/lib/utils";
         coordonnées, le pipeline, les notes, l'historique horodaté.
    Aucun chiffre inventé : tout vient de la base. */
 
-const chf = (n: number) => `${Math.round(n).toLocaleString("fr-CH")} CHF`;
+const chf = (n: number) => `${formatNumber(n)} CHF`;
 
 type Filter = "ouvertes" | "toutes" | "closes";
 

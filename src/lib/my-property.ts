@@ -36,6 +36,10 @@ export interface MyProperty {
   createdAt: string;
   /** Prime apporteur active (CHF), si la lecture l'a jointe. */
   activePrimeChf?: number | null;
+  /** Données déclarées par le vendeur à la publication (rendement, DPE…). */
+  analytics?: Record<string, unknown> | null;
+  /** L'id du vendeur (toujours présent en lecture). */
+  hostId?: string;
   /** L'hôte, si l'action a joint le profil (fiche publique). */
   host?: {
     id: string;
