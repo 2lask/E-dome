@@ -31,6 +31,7 @@ import {
   type Mechanic,
 } from "@/lib/demo/affiliation";
 import { ApporteurTotals, PrimeCountryNotice } from "@/components/business/apporteur-summary";
+import { ApporteurReal } from "@/components/business/apporteur-real";
 
 /* ── `/apporteurs` — l'espace apporteur, refondu (P4a, D14) ──────────────────
 
@@ -56,9 +57,15 @@ const STATUS_LABEL: Record<ApportLine["status"], { label: string; cls: string }>
 };
 
 export default function ApporteursPage() {
+  const { currentUser } = useApp();
   const { state, actorId } = useSession();
   const book = useApporteurBook();
   const [tab, setTab] = useState<Tab>("biens");
+
+  /* Compte RÉEL connecté : l'espace apporteur branché sur la base (biens à
+     prime, mises en relation réelles). Le mode anonyme garde la démonstration
+     ci-dessous. Tous les hooks restent appelés avant ce branchement. */
+  if (currentUser) return <ApporteurReal />;
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 animate-fade-in">

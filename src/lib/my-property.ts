@@ -2,6 +2,7 @@ import type { Property, PropertyType, TransactionType, Currency, User } from "./
 import type { PlatformRole } from "./model/identity";
 import type { SessionUser } from "./session-user";
 import { initialsAvatar } from "./current-user-profile";
+import { EDOME_PRIME_SHARE, PRIME_FLOOR } from "./pricing/catalog";
 
 /* ── Biens EN BASE (chantier C4) ─────────────────────────────────────────────
 
@@ -62,6 +63,40 @@ export const PRIME_MAX_CHF = 3000;
     (la courte durée relève de la marketplace, pas de l'apport). */
 export function primeEligible(transactionType: TransactionType): boolean {
   return transactionType === "vente" || transactionType === "location-lt";
+}
+
+/** Le NET en CHF que touche l'apporteur sur une prime : E-Dome retient
+    `max(EDOME_PRIME_SHARE, PRIME_FLOOR)` à l'intérieur de la prime, le reste
+    revient à l'apporteur (même règle que le moteur `quote()` — jamais ajouté au
+    prix, jamais prélevé sur l'apporteur au-delà de cette part). */
+export function apporteurNetChf(amountChf: number): number {
+  const cents = Math.round(amountChf * 100);
+  const edomeCents = Math.max(Math.round(cents * EDOME_PRIME_SHARE), PRIME_FLOOR.cents);
+  return Math.max(0, cents - edomeCents) / 100;
+}
+
+/** Un bien à prime active, tel que le voit un apporteur (table `primes` jointe
+    au bien et à son vendeur). */
+export interface PrimedProperty {
+  primeId: string;
+  propertyId: string;
+  title: string;
+  city: string;
+  transactionType: TransactionType;
+  cover: string;
+  amountChf: number;
+  sellerId: string;
+  sellerName: string;
+}
+
+/** Une mise en relation que J'AI proposée (table `introductions`). */
+export interface MyIntroduction {
+  id: string;
+  propertyTitle: string;
+  contactLabel: string;
+  status: "proposee" | "acceptee" | "refusee" | "contestee";
+  amountChf: number;
+  createdAt: string;
 }
 
 /** Ce que le formulaire de publication envoie à la base. */
