@@ -19,7 +19,7 @@ const COLS =
 
 /* La même chose + l'hôte joint (fiche publique). Deux FK vers profiles
    (host_id, sold_to) → on désambiguïse par la colonne. */
-const COLS_WITH_HOST = `${COLS}, host:profiles!host_id (id, first_name, last_name, avatar, city, country, roles, active_role)`;
+const COLS_WITH_HOST = `${COLS}, host:profiles!host_id (id, first_name, last_name, avatar, city, country, roles, active_role), primes ( amount_chf, active )`;
 
 type Row = {
   id: string;
@@ -54,6 +54,7 @@ type Row = {
     roles: string[] | null;
     active_role: string | null;
   } | null;
+  primes?: { amount_chf: number; active: boolean }[] | null;
 };
 
 function mapRow(r: Row): MyProperty {
@@ -79,6 +80,10 @@ function mapRow(r: Row): MyProperty {
     featured: r.featured ?? false,
     soldTo: r.sold_to,
     createdAt: r.created_at,
+    activePrimeChf: (() => {
+      const active = (r.primes ?? []).filter((p) => p.active).map((p) => Number(p.amount_chf));
+      return active.length ? Math.max(...active) : null;
+    })(),
     host: r.host
       ? {
           id: r.host.id,
@@ -148,6 +153,21 @@ export async function listMyProperties(): Promise<MyProperty[]> {
     .order("created_at", { ascending: false });
   if (error || !data) return [];
   return (data as Row[]).map(mapRow);
+}
+
+/** Les biens publics RÉELS (tous vendeurs, hors vendus), récents d'abord, hôte
+    joint. Lecture publique (RLS `properties_read_all`) : visiteurs compris. */
+export async function listPublicProperties(limit = 60): Promise<MyProperty[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("properties")
+    .select(COLS_WITH_HOST)
+    .is("sold_to", null)
+    .order("created_at", { ascending: false })
+    .limit(Math.min(Math.max(limit, 1), 200));
+  if (error || !data) return [];
+  return (data as unknown as Row[]).map(mapRow);
 }
 
 /** Un bien public par son id, hôte joint (fiche de l'Explorer). `null` si

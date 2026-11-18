@@ -34,6 +34,8 @@ export interface MyProperty {
   featured: boolean;
   soldTo?: string | null;
   createdAt: string;
+  /** Prime apporteur active (CHF), si la lecture l'a jointe. */
+  activePrimeChf?: number | null;
   /** L'hôte, si l'action a joint le profil (fiche publique). */
   host?: {
     id: string;

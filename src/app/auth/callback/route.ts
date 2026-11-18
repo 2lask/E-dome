@@ -14,8 +14,8 @@ export async function GET(request: Request) {
      — la partie avant @ est lue comme userinfo et le navigateur atterrit
      sur evil.com, session valide en poche. Le refus de "//" bloque aussi
      la forme "//evil.com" (URL protocol-relative). */
-  const rawNext = searchParams.get("next") ?? "/feed";
-  const next = /^\/(?!\/)/.test(rawNext) ? rawNext : "/feed";
+  const rawNext = searchParams.get("next") ?? "/";
+  const next = /^\/(?!\/)/.test(rawNext) ? rawNext : "/";
 
   if (code) {
     const supabase = await createClient();
