@@ -15,3 +15,8 @@ export function getSupabaseAnonKey(): string | null {
 export function isSupabaseConfigured(): boolean {
   return Boolean(getSupabaseUrl() && getSupabaseAnonKey());
 }
+
+/* 2026-11-18 : reconstruction forcée de la préprod pour que Vercel ré-inline
+   les variables NEXT_PUBLIC_SUPABASE_* (gravées au build) après leur ajout —
+   l'ancien build caché gardait « mode démo ». Ce commentaire force la
+   recompilation de ce module avec les clés présentes. */
