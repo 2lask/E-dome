@@ -29,13 +29,11 @@ export const demoBar = {
 export const PARKED_POLE_NOTE_DEFAULT =
   "Aperçu de démonstration : ce pôle ne fait pas partie du lancement (V1 « E-Dome Pro », l'espace des professionnels de l'immobilier). Il rejoindra E-Dome plus tard. Rien ici n'est actif.";
 
+/* Pivot 2026-11-18 (`MODELE.md`) : l'apport d'affaires est désormais le CŒUR du
+   produit (plus parqué). Restent secondaires, et seulement eux : boutique, lives,
+   événements. */
 export const PARKED_POLES: readonly { prefix: string; label: string; note?: string }[] = [
   { prefix: "/boutique", label: "La boutique" },
   { prefix: "/live", label: "Les lives" },
   { prefix: "/evenements", label: "Les événements" },
-  {
-    prefix: "/apporteurs",
-    label: "Le programme apporteurs",
-    note: "Aperçu de démonstration : le programme apporteurs rejoindra E-Dome après le lancement et après validation juridique du modèle. Il ne fait pas partie de la V1 « E-Dome Pro ».",
-  },
 ] as const;

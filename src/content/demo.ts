@@ -50,9 +50,9 @@ export interface DemoDoor {
 
 export const demoScreen = {
   eyebrow: "Comprendre E-Dome en un écran",
-  title: "E-Dome réunit l'immobilier suisse — et commence par les professionnels",
+  title: "E-Dome — le réseau immobilier où ton réseau te rapporte",
   subtitle:
-    "La version 1, « E-Dome Pro », donne aux agents et aux agences une vitrine publique, la gestion de leurs annonces et un copilote IA. Les autres pôles — services, formations, apporteurs, événements… — rejoignent la plateforme ensuite.",
+    "Publiez ou trouvez un bien en direct, sans commission d'agence ; recommandez un bien par un lien traçable et touchez une prime ; et laissez le copilote IA estimer et rédiger. Services, formations et événements viennent ensuite.",
 
   /* ── Bloc 1 : ce qu'est E-Dome, et ce qui existe déjà ───────────────────
      Les sept pôles avec leur statut. Trois sont ouverts au lancement, quatre
@@ -62,7 +62,7 @@ export const demoScreen = {
   poles: [
     { id: "biens", label: "Biens (Pro)", icon: "Home", stage: "launch", line: "Vitrine publique, gestion des annonces, analyse de rentabilité par l'IA." },
     { id: "services", label: "Services", icon: "Wrench", stage: "later", line: "Photographe, artisan, home stager : demander un devis." },
-    { id: "apporteurs", label: "Apporteurs", icon: "Handshake", stage: "later", line: "Recommander par un lien traçable — après validation juridique." },
+    { id: "apporteurs", label: "Apporteurs", icon: "Handshake", stage: "launch", line: "Recommandez un bien par un lien traçable, et touchez une prime." },
     { id: "formations", label: "Formations", icon: "GraduationCap", stage: "later", line: "Suivre ou publier des formations immobilières." },
     { id: "evenements", label: "Événements", icon: "CalendarDays", stage: "later", line: "Salons, ateliers et rencontres, en salle ou en ligne." },
     { id: "lives", label: "Lives", icon: "Radio", stage: "later", line: "Diffuser des visites en direct, revoir les rediffusions." },
@@ -95,10 +95,10 @@ export const demoScreen = {
   moneyHeadline: "0 CHF à E-Dome",
   moneyHeadlineHint: "sur la vente ou la location d'un bien entre particuliers",
   money: [
-    { who: "L'abonnement professionnel — le seul revenu du lancement", pays: "Gratuit pour démarrer ; une formule payante quand on grandit (volume, équipe, mise en avant, statistiques), de 19 à 290 CHF/mois." },
     { who: "Vendre ou louer un bien", pays: "Rien à E-Dome sur la transaction. Un tiers — notaire, régie — se paie à part." },
-    { who: "Services, formations, événements, lives", pays: "Une commission sur ce qui se vend, de 5 à 12 % selon le pôle — ensuite, après le lancement." },
-    { who: "Apporteurs", pays: "Prime fixe en francs sur les biens, pourcentage sur la marge en marketplace — ensuite, après validation juridique. Jamais un supplément pour le client." },
+    { who: "Apporteurs", pays: "Une prime fixe en francs, offerte par le vendeur, versée sur une mise en relation acceptée — jamais un pourcentage du prix, jamais un supplément pour le client. E-Dome en retient une part fixe." },
+    { who: "Abonnements et mises en avant", pays: "Gratuit pour démarrer ; une formule payante quand on grandit (volume, équipe, mise en avant, statistiques), de 19 à 290 CHF/mois. E-Dome se rémunère en frais fixes, comme un portail — jamais un % de vente." },
+    { who: "Services, formations, événements", pays: "Une commission sur ce qui se vend, de 5 à 12 % selon le pôle — pôles secondaires, ensuite." },
   ] satisfies MoneyLine[],
   moneyFootnote:
     "Aucun prix affiché ici n'est un engagement : la tarification est en cours de validation.",
