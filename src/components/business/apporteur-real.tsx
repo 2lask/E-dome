@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatNumber } from "@/lib/format";
 import Link from "next/link";
-import { Building2, ShieldCheck, Gift, ExternalLink, Clock } from "lucide-react";
+import { Building2, ShieldCheck, ExternalLink, Clock, Share2 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import {
   listPrimedProperties,
@@ -86,6 +86,23 @@ export function ApporteurReal() {
   const accepted = intros.filter((i) => i.status === "acceptee");
   const dueNet = accepted.reduce((s, i) => s + apporteurNetChf(i.amountChf), 0);
 
+  /* Partager le bien à son contact (WhatsApp, SMS, e-mail…) pour vérifier son
+     intérêt AVANT de le présenter. Partage natif sur mobile, copie sinon. */
+  const share = async (o: PrimedProperty) => {
+    const url = `${window.location.origin}/explorer/${o.propertyId}`;
+    const text = `Ce bien pourrait t'intéresser : ${o.title} (${o.city})`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: o.title, text, url });
+        return;
+      }
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      addToast("Lien copié. Envoyez-le à votre contact.", "success");
+    } catch {
+      /* Partage annulé par l'utilisateur : rien à signaler. */
+    }
+  };
+
   const submit = async (o: PrimedProperty) => {
     if (!formValid || busy) return;
     setBusy(true);
@@ -111,13 +128,11 @@ export function ApporteurReal() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 animate-fade-in">
-      <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">Espace apporteur</p>
-        <h1 className="text-2xl page-heading text-[var(--foreground)] sm:text-3xl">
-          Recommandez le bon contact, touchez la prime
-        </h1>
-        <p className="max-w-3xl text-sm text-[var(--text-secondary)]">
+    <div className="mx-auto max-w-5xl space-y-8">
+      <header>
+        <p className="eyebrow">Espace apporteur</p>
+        <h1 className="page-heading mt-1.5 text-[30px]">Gagner</h1>
+        <p className="mt-1 max-w-3xl text-[14px] text-muted-foreground">
           Sur un <strong>bien</strong>, le vendeur offre une prime fixe en francs, payée quand il accepte le contact que
           vous lui amenez — jamais un pourcentage du prix, jamais conditionnée à la vente. Vous ne négociez rien, ne
           représentez personne.
@@ -164,13 +179,24 @@ export function ApporteurReal() {
                       <p className="text-lg font-bold tabular-nums text-[var(--foreground)]">{chf(net)}</p>
                       <p className="text-[11px] text-[var(--text-muted)]">net pour vous · prime {chf(o.amountChf)}</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => { setOpenId(open ? null : o.propertyId); setForm(EMPTY_FORM); setFormError(""); }}
-                      className="shrink-0 rounded-lg bg-[var(--foreground)] px-3 py-2 text-[12.5px] font-medium text-[var(--background)] hover:opacity-90"
-                    >
-                      Proposer un contact
-                    </button>
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void share(o)}
+                        aria-label={`Partager « ${o.title} » à un contact`}
+                        className="inline-flex items-center gap-1.5 rounded-lg border bg-card px-3 py-2 text-[12.5px] font-medium hover:border-foreground/25"
+                      >
+                        <Share2 className="h-3.5 w-3.5" aria-hidden /> Partager
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setOpenId(open ? null : o.propertyId); setForm(EMPTY_FORM); setFormError(""); }}
+                        aria-expanded={open}
+                        className="rounded-lg bg-primary px-3 py-2 text-[12.5px] font-medium text-primary-foreground hover:bg-primary/88"
+                      >
+                        Présenter un contact
+                      </button>
+                    </div>
                   </div>
                   {open && (
                     <form

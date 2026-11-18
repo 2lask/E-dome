@@ -31,8 +31,8 @@ type PrimeRow = {
   } | null;
 };
 
-/** Les biens à prime active que je peux recommander (pas les miens, pas les
-    biens déjà vendus), prime la plus rémunératrice d'abord. */
+/** Les biens à prime active (hors biens vendus), prime la plus rémunératrice
+    d'abord. Connecté : sans les miens. Visiteur : tous (lecture publique). */
 export async function listPrimedProperties(): Promise<PrimedProperty[]> {
   const supabase = await createClient();
   if (!supabase) return [];
@@ -40,15 +40,15 @@ export async function listPrimedProperties(): Promise<PrimedProperty[]> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return [];
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("primes")
     .select(
       "id, amount_chf, seller_id, property:properties!property_id ( id, title, city, type, transaction_type, images, sold_to, host:profiles!host_id ( first_name, last_name ) )",
     )
-    .eq("active", true)
-    .neq("seller_id", user.id);
+    .eq("active", true);
+  if (user) query = query.neq("seller_id", user.id);
+  const { data, error } = await query;
   if (error || !data) return [];
 
   const rows = data as unknown as PrimeRow[];
