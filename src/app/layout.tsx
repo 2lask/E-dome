@@ -1,22 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { PWARegister } from "@/components/pwa-register";
 import { AnalyticsScripts } from "@/components/analytics/analytics-scripts";
 
-/* Inter charge via next/font (preload + auto-self-host). Le CSS importe
-   aussi Inter via Google Fonts en fallback. */
-const inter = Inter({
+/* Une seule famille (REBUILD.md §4) : Geist pour l'interface, Geist Mono pour
+   les montants et références. Auto-hébergées par next/font : aucune requête
+   bloquante vers un service tiers, pas de texte invisible au chargement. */
+const geistSans = Geist({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-geist-sans",
+  display: "swap",
+});
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "E-Dome - Plateforme immobilière",
+  title: {
+    default: "E-Dome — le réseau immobilier où ton réseau te rapporte",
+    template: "%s · E-Dome",
+  },
   description:
-    "La plateforme immobilière tout-en-un pour la gestion, l'investissement et la location de biens.",
-  keywords: ["immobilier", "investissement", "location", "plateforme", "E-Dome"],
+    "Vendez ou louez sans commission d'agence, et gagnez une prime fixe en recommandant le bon contact. Le réseau immobilier suisse, transparent.",
+  keywords: ["immobilier", "apport d'affaires", "vendre sans agence", "prime", "Suisse romande", "E-Dome"],
   manifest: "/manifest.json",
   /* Aucune clé `icons` ici, et aucune balise écrite à la main dans un `<head>` :
      c'est volontaire. Next 16 émet lui-même `<link rel="icon">` et
@@ -66,8 +75,8 @@ export const viewport: Viewport = {
   userScalable: true,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
-    { color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#12110e" },
+    { color: "#faf9f6" },
   ],
 };
 
@@ -79,7 +88,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${inter.variable} bg-[var(--background)] antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-[var(--background)] antialiased`}
       >
         {children}
         <PWARegister />

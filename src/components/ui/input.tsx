@@ -24,13 +24,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const hasLeading = !!Leading;
     const hasTrailing = !!Trailing || !!trailing;
     const inputCls = cn(
-      "flex h-9 w-full rounded-md border bg-background px-3 py-1 text-sm shadow-sm transition-colors",
+      "flex h-10 w-full rounded-lg border border-input bg-card px-3 py-1 text-sm shadow-xs transition-[border-color,box-shadow]",
       "file:border-0 file:bg-transparent file:text-sm file:font-medium",
       "placeholder:text-muted-foreground",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+      "hover:border-foreground/25",
+      "focus-visible:outline-none focus-visible:border-leman focus-visible:ring-3 focus-visible:ring-leman/15",
       "disabled:cursor-not-allowed disabled:opacity-50",
-      hasLeading && "pl-8",
-      hasTrailing && "pr-8",
+      hasLeading && "pl-9",
+      hasTrailing && "pr-9",
       className,
     );
 
@@ -40,7 +41,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="relative w-full">
         {Leading && (
-          <Leading className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Leading className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         )}
         <input type={type} ref={ref} className={inputCls} {...props} />
         {Trailing && (

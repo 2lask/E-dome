@@ -12,7 +12,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
       ref={ref}
       data-slot="card"
       className={cn(
-        "rounded-lg border bg-card text-card-foreground",
+        "rounded-xl border bg-card text-card-foreground shadow-xs",
         className,
       )}
       {...props}
@@ -46,7 +46,7 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
     <h3
       ref={ref}
       data-slot="card-title"
-      className={cn("leading-none font-semibold", className)}
+      className={cn("leading-tight font-semibold tracking-[-0.01em]", className)}
       {...props}
     />
   ),

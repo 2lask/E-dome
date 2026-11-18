@@ -13,8 +13,8 @@ export function initialsAvatar(firstName: string, lastName: string): string {
   const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase() || "ME";
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">` +
-    `<rect width="96" height="96" rx="48" fill="#1e9df1"/>` +
-    `<text x="50%" y="50%" dy=".34em" text-anchor="middle" font-family="system-ui,sans-serif" font-size="40" font-weight="600" fill="#ffffff">${initials.slice(0, 2)}</text>` +
+    `<rect width="96" height="96" rx="48" fill="#0b5d57"/>` +
+    `<text x="50%" y="50%" dy=".34em" text-anchor="middle" font-family="system-ui,sans-serif" font-size="38" font-weight="600" letter-spacing="-1" fill="#faf9f6">${initials.slice(0, 2)}</text>` +
     `</svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }

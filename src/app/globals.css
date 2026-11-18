@@ -1,181 +1,170 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
-/* ─── Theme clair (mode par defaut) ────────────────────────────
-   Palette Zinc/neutral : background blanc, foreground noir, primary
-   noir (#18181b) pour boutons et CTA. Chart : orange/teal/dark-cyan/
-   amber. Mode sombre disponible via class .dark (mais le default
-   est CLAIR : <html> sans className="dark"). */
+/* ════════════════════════════════════════════════════════════════════════════
+   E-DOME — SYSTÈME DE DESIGN (une seule couche de tokens)
+   Voir REBUILD.md §4. « La précision suisse, chaude. »
+
+   Trois couleurs, trois rôles — jamais mélangés :
+     · ENCRE  : texte, boutons principaux (la force)
+     · LÉMAN  : sélection, liens, focus, navigation active (la confiance)
+     · LAITON : RÉSERVÉ à l'argent à gagner — primes, gains d'apporteur
+   Sur un fond « papier chaud ». Les noms shadcn (primary, background…) et les
+   alias historiques (--text-muted, --card-border…) pointent tous ici, pour que
+   l'application entière adopte l'identité d'un coup, sans casse.
+   ════════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  --card: #ffffff;
-  --ring: #d4d4d8;
-  --input: #d4d4d8;
-  --muted: #f4f4f5;
-  --accent: #f4f4f5;
-  --border: #e4e4e7;
+  /* ── Marque ─────────────────────────────────────────────────────────────── */
+  --ink: #15130f;
+  --paper: #faf9f6;
+  --surface: #ffffff;
+  --subtle: #f3f0ea;
+  --leman: #0b5d57;
+  --leman-hover: #094c47;
+  --leman-soft: #e3efec;
+  --laiton: #8a5d0c;
+  --laiton-soft: #f7edd6;
+  --laiton-border: #ead7ad;
+
+  /* ── Rôles (noms shadcn) ────────────────────────────────────────────────── */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: #faf9f6;
+  --secondary: var(--subtle);
+  --secondary-foreground: var(--ink);
+  --muted: var(--subtle);
+  --muted-foreground: #6b645a;
+  --accent: var(--subtle);
+  --accent-foreground: var(--ink);
+  --destructive: #c42b1c;
+  --destructive-foreground: #ffffff;
+  --border: #e7e2d9;
+  --input: #dcd6cb;
+  --ring: var(--leman);
   --radius: 0.625rem;
-  --chart-1: #ea580c;
-  --chart-2: #0d9488;
-  --chart-3: #164e63;
-  --chart-4: #fbbf24;
-  --chart-5: #f59e0b;
-  --popover: #ffffff;
-  --primary: #18181b;
-  --sidebar: #fafafa;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --secondary: #f4f4f5;
-  --background: #ffffff;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --foreground: #0a0a0a;
-  --destructive: #ef4444;
-  --sidebar-ring: #d4d4d8;
-  --sidebar-accent: #f4f4f5;
-  --sidebar-border: #e4e4e7;
-  --card-foreground: #0a0a0a;
-  --sidebar-primary: #18181b;
-  --muted-foreground: #71717a;
-  --accent-foreground: #18181b;
-  --popover-foreground: #0a0a0a;
-  --primary-foreground: #fafafa;
-  --sidebar-foreground: #0a0a0a;
-  --secondary-foreground: #18181b;
-  --destructive-foreground: #ef4444;
-  --sidebar-accent-foreground: #18181b;
-  --sidebar-primary-foreground: #fafafa;
 
-  /* Shadows : on garde tres legeres (style blueprint discipline). */
-  --shadow-2xs: 0 1px 0 0 rgb(0 0 0 / 0.02);
-  --shadow-xs: 0 1px 1px 0 rgb(0 0 0 / 0.03);
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
-  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.10);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.12);
-  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.18);
+  --sidebar: #f4f2ed;
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: #faf9f6;
+  --sidebar-accent: #eae6de;
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: #e7e2d9;
+  --sidebar-ring: var(--leman);
 
-  /* ─── Aliases LEGACY (compat) ────────────────────────────
-     Tokens utilises par les composants existants — mappes sur le
-     nouveau theme pour ne pas tout casser. */
-  --text-primary: var(--foreground);
-  --text-secondary: color-mix(in srgb, var(--foreground) 50%, var(--muted-foreground));
+  --chart-1: var(--leman);
+  --chart-2: #c08a2b;
+  --chart-3: #5b6b7a;
+  --chart-4: #a5523a;
+  --chart-5: #7d8f6a;
+
+  /* ── Sémantique (statuts) — versions lisibles (AA) sur fond clair ───────── */
+  --success: #17803d;
+  --success-soft: #e2f2e7;
+  --success-text: #14532d;
+  --warning: #b45309;
+  --warning-soft: #fbefd9;
+  --warning-text: #7a3a08;
+  --danger: var(--destructive);
+  --danger-soft: #fbe6e3;
+  --danger-text: #8f1d12;
+  --info-soft: #e5edf6;
+  --info-text: #1f4c84;
+  --rating: #c27c0e;
+  --tag: var(--leman);
+  --stage-later: #9a9387;
+  --stage-vision: #c9c3b8;
+
+  /* ── Texte ──────────────────────────────────────────────────────────────── */
+  --text-primary: var(--ink);
+  --text-secondary: #4a453d;
   --text-muted: var(--muted-foreground);
-  --text: var(--foreground);
-  /* Statuts de fonctionnalité (cf. src/lib/model/feature.ts). Deux gris
-     dédiés, distincts du texte atténué : « Ensuite » plus marqué que
-     « Vision ». Un seul endroit décide la couleur, sinon le gris redevient
-     une décision prise différemment à chaque écran. « Au lancement » n'a pas
-     de jeton — c'est l'emerald, porté par le composant. */
-  --stage-later: #9ca3af;
-  --stage-vision: #d1d5db;
+  --text: var(--ink);
+
+  /* ── Alias historiques (compat — ne pas utiliser dans du code neuf) ────── */
   --bg: var(--background);
   --bg-alt: var(--card);
   --bg-primary: var(--background);
   --bg-secondary: var(--card);
   --card-border: var(--border);
-  --hover-bg: rgba(0, 0, 0, 0.04);
   --divider: var(--border);
-  --input-bg: var(--input);
-  --input-border: var(--border);
-  --gold: var(--primary);
-  --gold-hover: var(--primary);
-  --accent-hover: var(--primary);
-  --shadow-card: var(--shadow-sm);
+  --input-bg: var(--surface);
+  --input-border: var(--input);
+  --hover-bg: rgba(21, 19, 15, 0.045);
+  --gold: var(--laiton);
+  --gold-hover: var(--laiton);
+  --accent-hover: var(--ink);
+
+  /* ── Profondeur : quasi nulle, la hiérarchie se fait par l'espace ──────── */
+  --shadow-2xs: 0 1px 0 0 rgb(21 19 15 / 0.03);
+  --shadow-xs: 0 1px 1px 0 rgb(21 19 15 / 0.04);
+  --shadow-sm: 0 1px 2px 0 rgb(21 19 15 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(21 19 15 / 0.07), 0 1px 2px -1px rgb(21 19 15 / 0.05);
+  --shadow-md: 0 4px 10px -2px rgb(21 19 15 / 0.08);
+  --shadow-lg: 0 12px 28px -8px rgb(21 19 15 / 0.14);
+  --shadow-xl: 0 24px 48px -12px rgb(21 19 15 / 0.18);
+  --shadow-2xl: 0 32px 64px -16px rgb(21 19 15 / 0.24);
+  --shadow-card: var(--shadow-xs);
   --shadow-soft: var(--shadow-xs);
 
-  /* Couleurs semantiques pour deltas/status/ratings.
-     Versions LISIBLES sur fond blanc : warning-text et success-text
-     plus fonces que les fills pour assurer le contraste WCAG. */
-  --rating: #f59e0b;
-  --warning: #d97706;
-  --warning-soft: #fef3c7;
-  --warning-text: #92400e;
-  --success: #059669;
-  --success-soft: #d1fae5;
-  --success-text: #065f46;
-  --danger: var(--destructive);
-  --danger-soft: #fee2e2;
-  --danger-text: #991b1b;
-  --info-soft: #dbeafe;
-  --info-text: #1e40af;
-  --tag: #7c3aed;
+  /* ── Mouvement ──────────────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 150ms;
+  --dur: 200ms;
 
-  /* ─── Landing E-Dome : accent teal real estate (ui-ux-pro-max) ─── */
+  /* ── Typographie (Geist via next/font, cf. src/app/layout.tsx) ─────────── */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  /* Une seule famille : `font-serif` (héritage) rend aussi Geist. */
+  --font-serif: var(--font-sans);
 }
 
 .dark {
-  --card: #0a0a0a;
-  --ring: #52525b;
-  --input: #27272a;
-  --muted: #18181b;
-  --accent: #18181b;
-  --border: #27272a;
-  --radius: 0.625rem;
-  --chart-1: #1d4ed8;
-  --chart-2: #10b981;
-  --chart-3: #f59e0b;
-  --chart-4: #8b5cf6;
-  --chart-5: #f43f5e;
-  --popover: #0a0a0a;
-  --primary: #fafafa;
-  --sidebar: #171717;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --secondary: #27272a;
-  --background: #0a0a0a;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --foreground: #fafafa;
-  --destructive: #7f1d1d;
-  --sidebar-ring: #52525b;
-  --sidebar-accent: #262626;
-  --sidebar-border: #27272a;
-  --card-foreground: #fafafa;
-  --sidebar-primary: #1d4ed8;
-  --muted-foreground: #a1a1aa;
-  --accent-foreground: #fafafa;
-  --popover-foreground: #fafafa;
-  --primary-foreground: #18181b;
-  --sidebar-foreground: #fafafa;
-  --secondary-foreground: #fafafa;
-  --destructive-foreground: #ef4444;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-primary-foreground: #fafafa;
+  --ink: #f2efe8;
+  --paper: #12110e;
+  --surface: #1a1916;
+  --subtle: #23211d;
+  --leman: #63bdb2;
+  --leman-hover: #7fcbc1;
+  --leman-soft: rgba(99, 189, 178, 0.14);
+  --laiton: #e3b85c;
+  --laiton-soft: rgba(227, 184, 92, 0.13);
+  --laiton-border: rgba(227, 184, 92, 0.3);
 
-  /* Aliases legacy dark mode */
-  --text-primary: var(--foreground);
-  --text-secondary: color-mix(in srgb, var(--foreground) 50%, var(--muted-foreground));
-  --text-muted: var(--muted-foreground);
-  /* Statuts, versions sombres : plus soutenus pour rester lisibles sur fond
-     noir. Voir le bloc clair pour le pourquoi. */
-  --stage-later: #6b7280;
-  --stage-vision: #4b5563;
-  --card-border: var(--border);
-  --hover-bg: rgba(255, 255, 255, 0.04);
-  --divider: var(--border);
-  --input-bg: var(--input);
-  --input-border: var(--border);
-  --accent-hover: var(--primary);
-  --gold-hover: var(--primary);
-  --shadow-card: var(--shadow-sm);
-  --shadow-soft: var(--shadow-xs);
+  --primary-foreground: #12110e;
+  --muted-foreground: #a39c90;
+  --destructive: #ef5a4a;
+  --border: #2e2b26;
+  --input: #3a362f;
 
-  /* Semantique en mode sombre : on inverse soft/text pour avoir
-     du contraste sur fond sombre. */
-  --rating: #fbbf24;
-  --warning: #fbbf24;
-  --warning-soft: rgba(217, 119, 6, 0.18);
-  --warning-text: #fcd34d;
-  --success: #10b981;
-  --success-soft: rgba(5, 150, 105, 0.18);
-  --success-text: #6ee7b7;
-  --danger: #ef4444;
-  --danger-soft: rgba(239, 68, 68, 0.18);
-  --danger-text: #fca5a5;
-  --info-soft: rgba(59, 130, 246, 0.18);
-  --info-text: #93c5fd;
-  --tag: #a78bfa;
+  --sidebar: #161512;
+  --sidebar-primary-foreground: #12110e;
+  --sidebar-accent: #25231f;
+  --sidebar-border: #2a2722;
+
+  --success: #34c27a;
+  --success-soft: rgba(52, 194, 122, 0.15);
+  --success-text: #86e2b1;
+  --warning: #f0a83a;
+  --warning-soft: rgba(240, 168, 58, 0.15);
+  --warning-text: #f7cd8a;
+  --danger-soft: rgba(239, 90, 74, 0.15);
+  --danger-text: #f6a59b;
+  --info-soft: rgba(96, 150, 220, 0.16);
+  --info-text: #a9c8f0;
+  --rating: #f0b445;
+  --stage-later: #7a7469;
+  --stage-vision: #57524a;
+
+  --text-secondary: #c9c3b8;
+  --hover-bg: rgba(242, 239, 232, 0.05);
 }
 
 @theme inline {
@@ -212,9 +201,18 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Tokens semantiques (success/warning/danger/rating) exposes a
-     Tailwind pour pouvoir ecrire bg-success, border-success/30,
-     text-warning, etc. */
+  /* Marque, utilisable en classes : bg-paper, text-leman, bg-laiton-soft… */
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-leman: var(--leman);
+  --color-leman-hover: var(--leman-hover);
+  --color-leman-soft: var(--leman-soft);
+  --color-laiton: var(--laiton);
+  --color-laiton-soft: var(--laiton-soft);
+  --color-laiton-border: var(--laiton-border);
+
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-warning: var(--warning);
@@ -229,6 +227,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
 
   --shadow-2xs: var(--shadow-2xs);
   --shadow-xs: var(--shadow-xs);
@@ -249,6 +248,10 @@
   }
 }
 
+/* ════════════════════════════════════════════════════════════════════════════
+   BASE
+   ════════════════════════════════════════════════════════════════════════════ */
+
 html {
   scroll-behavior: smooth;
 }
@@ -258,16 +261,27 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  /* Tabular numerals : aligne les chiffres dans les KPI/tables/prix. */
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Chiffres tabulaires : prix, montants et tableaux s'alignent. */
   font-feature-settings: "tnum";
-  /* Defense : assure que le body peut toujours scroller verticalement
-     sur desktop. */
   overflow-y: auto;
   min-height: 100vh;
 }
 
-/* Defense secondaire : si position:fixed est applique au body (lock
-   modal mal nettoye), on annule sur desktop. */
+.font-mono,
+code,
+pre,
+kbd {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--leman) 22%, transparent);
+}
+
+/* Défense : si un verrou de défilement de modale est mal nettoyé, on rétablit
+   le défilement sur bureau. */
 @media (hover: hover) and (pointer: fine) {
   html,
   body {
@@ -289,10 +303,30 @@ body {
     height: auto !important;
     max-height: none !important;
   }
+
+  /* Barre de défilement fine, visible sur fond clair comme sombre. */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--foreground) 14%, transparent);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--foreground) 26%, transparent);
+    background-clip: content-box;
+  }
 }
 
-/* ─── PWA app-feel : strip browser-isms sur le sous-arbre (app)/ ─── */
+/* ════════════════════════════════════════════════════════════════════════════
+   COQUILLE DE L'APPLICATION (sensation d'app native)
+   ════════════════════════════════════════════════════════════════════════════ */
+
 .app-shell {
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -311,23 +345,44 @@ body {
   -webkit-touch-callout: default;
 }
 
-.app-shell button:active,
-.app-shell a:active,
-.app-shell [role="button"]:active,
-.app-shell [role="tab"]:active,
-.app-shell [role="link"]:active {
-  opacity: 0.6;
-  transition: opacity 0s;
-}
 .app-shell button,
 .app-shell a,
 .app-shell [role="button"],
 .app-shell [role="tab"] {
-  transition: opacity 180ms ease-out, background-color 160ms ease-out,
-              transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity var(--dur-fast) ease-out,
+    background-color var(--dur-fast) ease-out,
+    border-color var(--dur-fast) ease-out,
+    color var(--dur-fast) ease-out,
+    transform var(--dur-fast) var(--ease-out);
 }
 
-/* Scrollbars masquees sur mobile (touch devices) ET en PWA standalone. */
+/* Retour tactile : légère compression au lieu d'un flash d'opacité. */
+.app-shell button:active:not(:disabled),
+.app-shell [role="button"]:active {
+  transform: scale(0.98);
+}
+
+.app-shell img,
+.app-shell video {
+  -webkit-touch-callout: none;
+  pointer-events: auto;
+}
+
+@media (max-width: 767px) {
+  .app-shell {
+    overflow-x: hidden;
+  }
+  .app-shell .app-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .app-shell main {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* Barres de défilement masquées sur écrans tactiles et en PWA. */
 @media (hover: none) and (pointer: coarse) {
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
@@ -356,207 +411,96 @@ body {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-  /* Accessibilité clavier : pas de contour au clic (focus souris). L'anneau
-     visible au clavier est défini plus bas, hors @layer, pour primer sur les
-     utilitaires Tailwind (`focus-visible:outline-none` posés sur des boutons). */
   .app-shell *:focus:not(:focus-visible) {
     outline: none;
   }
-  .app-shell {
-    --is-standalone: 1;
-  }
 }
 
-/* Page transitions */
-.app-page-enter {
-  animation: app-page-enter 220ms cubic-bezier(0.16, 1, 0.3, 1);
+/* ════════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHIE
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Titre de page : Geist, serré, affirmé. (Le nom de classe est historique —
+   il désignait un serif ; il porte désormais la voix unique d'E-Dome.) */
+.page-heading {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.08;
 }
-@keyframes app-page-enter {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .app-page-enter {
-    animation: none !important;
-  }
+.page-heading em {
+  font-style: normal;
+  color: var(--leman);
 }
 
-.app-shell img,
-.app-shell video {
-  -webkit-touch-callout: none;
-  pointer-events: auto;
+/* Sur-titre (eyebrow) : petites capitales espacées. */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
 }
 
-/* ─── Utility classes semantiques (toasts, chips, badges level) ─── */
+/* ════════════════════════════════════════════════════════════════════════════
+   UTILITAIRES SÉMANTIQUES
+   ════════════════════════════════════════════════════════════════════════════ */
+
 .toast-success {
   background: var(--success);
   color: #fff;
 }
-/* Chips semantiques : fond pastel + texte fonce pour bon contraste
-   en mode clair. En mode sombre, --success-soft / warning-soft /
-   danger-soft sont surcharges en rgba pour fond sombre approprie. */
-.chip-success-soft {
-  background: var(--success-soft);
-  color: var(--success-text);
-}
-.chip-warning-soft {
-  background: var(--warning-soft);
-  color: var(--warning-text);
-}
-.chip-danger-soft {
-  background: var(--danger-soft);
-  color: var(--danger-text);
-}
-.chip-info-soft {
-  background: var(--info-soft);
-  color: var(--info-text);
+.chip-success-soft { background: var(--success-soft); color: var(--success-text); }
+.chip-warning-soft { background: var(--warning-soft); color: var(--warning-text); }
+.chip-danger-soft  { background: var(--danger-soft);  color: var(--danger-text); }
+.chip-info-soft    { background: var(--info-soft);    color: var(--info-text); }
+
+/* La PRIME : seul endroit où le laiton apparaît. */
+.chip-prime {
+  background: var(--laiton-soft);
+  color: var(--laiton);
+  border: 1px solid var(--laiton-border);
 }
 
-/* Radix Dialog/Dropdown : transitions data-state simples (sans plugin
-   tailwindcss-animate). Opacity + scale legere pour eviter le pop brutal. */
+.badge-level-beginner     { background: var(--success-soft); color: var(--success-text); }
+.badge-level-intermediate { background: var(--warning-soft); color: var(--warning-text); }
+.badge-level-advanced     { background: var(--danger-soft);  color: var(--danger-text); }
+
+.text-rating       { color: var(--rating); }
+.fill-rating       { fill: var(--rating); }
+.text-success      { color: var(--success); }
+.text-success-soft { color: var(--success-text); }
+.text-danger       { color: var(--danger); }
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MOUVEMENT
+   ════════════════════════════════════════════════════════════════════════════ */
+
 [data-state="open"][data-slot="dialog-overlay"],
 [data-state="open"][data-slot="dialog-content"] {
-  animation: scale-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: scale-in 180ms var(--ease-out);
 }
 [data-state="closed"][data-slot="dialog-overlay"],
 [data-state="closed"][data-slot="dialog-content"] {
   animation: fade-in 120ms ease-out reverse;
 }
-.badge-level-beginner {
-  background: var(--success-soft);
-  color: var(--success-text);
-}
-.badge-level-intermediate {
-  background: var(--warning-soft);
-  color: var(--warning-text);
-}
-.badge-level-advanced {
-  background: var(--danger-soft);
-  color: var(--danger-text);
-}
-.text-rating    { color: var(--rating); }
-.fill-rating    { fill: var(--rating); }
-.text-success   { color: var(--success); }
-.text-success-soft { color: var(--success-text); }
-.text-danger    { color: var(--danger); }
 
-/* ─── Wrapper .app-shell : palette globale (mode clair par defaut,
-   bascule via .dark sur <html>). ─── */
-.app-shell {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  min-height: 100vh;
+.app-page-enter {
+  animation: app-page-enter 220ms var(--ease-out);
 }
 
-/* overflow-x:hidden uniquement sur mobile. */
-@media (max-width: 767px) {
-  .app-shell {
-    overflow-x: hidden;
-  }
+@keyframes app-page-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
-@media (max-width: 767px) {
-  .app-shell .app-content {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-  .app-shell main {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
-  }
-}
-.app-shell,
-.app-shell * {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-.app-shell .page-heading,
-.app-shell .page-heading * {
-  font-family: 'Source Serif 4', Georgia, serif;
-}
-.app-shell .font-mono,
-.app-shell code,
-.app-shell pre {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-}
-
-/* ─── (Ancien) Mode CLAIR app — conserve inactif ─── */
-.app-light {
-  --background: oklch(0.9383 0.0042 236.4993);
-  --foreground: oklch(0 0 0);
-  --card: oklch(0.9383 0.0042 236.4993);
-  --card-border: oklch(0 0 0);
-  --card-foreground: oklch(0 0 0);
-  --popover: oklch(0.9383 0.0042 236.4993);
-  --popover-foreground: oklch(0 0 0);
-  --foreground: oklch(0 0 0);
-  --text-primary: oklch(0 0 0);
-  --text-secondary: oklch(0.2400 0 0);
-  --text-muted: oklch(0.3867 0 0);
-  --primary: oklch(0.6602 0.2294 35.4025);
-  --primary-foreground: oklch(1.0000 0 0);
-  --accent: oklch(0.6602 0.2294 35.4025);
-  --accent-foreground: oklch(0 0 0);
-  --accent-hover: oklch(0.6602 0.2294 35.4025);
-  --ring: oklch(0.6602 0.2294 35.4025);
-  --input: oklch(0.9383 0.0042 236.4993);
-  --input-bg: oklch(0.9383 0.0042 236.4993);
-  --input-border: oklch(0 0 0);
-  --hover-bg: rgba(0, 0, 0, 0.06);
-  --divider: oklch(0 0 0);
-  --border: oklch(0 0 0);
-  --muted: oklch(0.9383 0.0042 236.4993);
-  --muted-foreground: oklch(0.3867 0 0);
-  --sidebar: oklch(0.9383 0.0042 236.4993);
-  --sidebar-foreground: oklch(0 0 0);
-  --sidebar-border: oklch(0 0 0);
-  --sidebar-accent: oklch(0.9383 0.0042 236.4993);
-  --sidebar-accent-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0.6602 0.2294 35.4025);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
-  --sidebar-ring: oklch(0.6602 0.2294 35.4025);
-  --gold: oklch(0.6602 0.2294 35.4025);
-  --gold-hover: oklch(0.6602 0.2294 35.4025);
-  --bg: oklch(0.9383 0.0042 236.4993);
-  --bg-alt: oklch(0.9383 0.0042 236.4993);
-  --bg-primary: oklch(0.9383 0.0042 236.4993);
-  --bg-secondary: oklch(0.9383 0.0042 236.4993);
-  --text: oklch(0 0 0);
-  --shadow-soft: none;
-  --shadow-card: none;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-.app-light,
-.app-light * {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-.app-light .page-heading,
-.app-light .page-heading * {
-  font-family: 'Source Serif 4', Georgia, serif;
-}
-.app-light .font-mono,
-.app-light code,
-.app-light pre {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-}
-
-.app-light ::selection {
-  background: color-mix(in srgb, var(--primary) 30%, transparent);
-}
-
-.app-light ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
-}
-
-/* ─── Animations & transitions globales ─── */
 @keyframes slide-in-right {
   from { transform: translateX(100%); opacity: 0; }
   to   { transform: translateX(0); opacity: 1; }
@@ -566,11 +510,11 @@ body {
   to   { transform: translateX(0); opacity: 1; }
 }
 @keyframes slide-in-bottom {
-  from { transform: translateY(20px); opacity: 0; }
+  from { transform: translateY(16px); opacity: 0; }
   to   { transform: translateY(0); opacity: 1; }
 }
 @keyframes scale-in {
-  from { transform: scale(0.96); opacity: 0; }
+  from { transform: scale(0.97); opacity: 0; }
   to   { transform: scale(1); opacity: 1; }
 }
 @keyframes fade-in {
@@ -579,38 +523,33 @@ body {
 }
 @keyframes pop {
   0%   { transform: scale(1); }
-  40%  { transform: scale(1.28); }
+  40%  { transform: scale(1.22); }
   100% { transform: scale(1); }
 }
 @keyframes shimmer {
   0%   { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }
-
-.animate-slide-in-right { animation: slide-in-right 240ms cubic-bezier(0.16, 1, 0.3, 1); }
-.animate-slide-in-left { animation: slide-in-left 240ms cubic-bezier(0.16, 1, 0.3, 1); }
-.animate-slide-in-bottom { animation: slide-in-bottom 240ms cubic-bezier(0.16, 1, 0.3, 1); }
-.animate-scale-in { animation: scale-in 180ms cubic-bezier(0.16, 1, 0.3, 1); }
-.animate-fade-in { animation: fade-in 180ms ease-out; }
-.animate-pop { animation: pop 320ms cubic-bezier(0.16, 1, 0.3, 1); }
-
-/* Marquee vertical (fil d'actus « En direct ») : la liste est dupliquee
-   deux fois dans la piste ; on translate de -50% pour une boucle sans
-   couture. La duree est pilotee par --marquee-duration. Pause au survol
-   via le conteneur .marquee-y-mask. */
 @keyframes marquee-y {
   0%   { transform: translateY(0); }
   100% { transform: translateY(-50%); }
 }
-.animate-marquee-y { animation: marquee-y var(--marquee-duration, 30s) linear infinite; }
+
+.animate-slide-in-right  { animation: slide-in-right 240ms var(--ease-out); }
+.animate-slide-in-left   { animation: slide-in-left 240ms var(--ease-out); }
+.animate-slide-in-bottom { animation: slide-in-bottom 240ms var(--ease-out); }
+.animate-scale-in        { animation: scale-in 180ms var(--ease-out); }
+.animate-fade-in         { animation: fade-in 180ms ease-out; }
+.animate-pop             { animation: pop 320ms var(--ease-out); }
+.animate-marquee-y       { animation: marquee-y var(--marquee-duration, 30s) linear infinite; }
 .marquee-y-mask:hover .animate-marquee-y { animation-play-state: paused; }
 
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    rgba(255, 255, 255, 0.10) 50%,
-    rgba(255, 255, 255, 0.04) 100%
+    color-mix(in srgb, var(--foreground) 4%, transparent) 0%,
+    color-mix(in srgb, var(--foreground) 9%, transparent) 50%,
+    color-mix(in srgb, var(--foreground) 4%, transparent) 100%
   );
   background-size: 800px 100%;
   animation: shimmer 1.4s linear infinite;
@@ -625,262 +564,23 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-slide-in-right,
-  .animate-slide-in-left,
-  .animate-slide-in-bottom,
-  .animate-scale-in,
-  .animate-fade-in,
-  .animate-pop,
-  .animate-marquee-y,
-  .skeleton,
-  .blur-up {
-    animation: none !important;
-    transition: none !important;
-    filter: none !important;
-  }
-}
-
-/* ─── Utilitaire : H1 / titre de page editorial ─── */
-.page-heading {
-  font-family: 'Source Serif 4', Georgia, serif;
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  line-height: 1.05;
-}
-
-.page-heading em {
-  font-style: italic;
-  color: var(--primary);
-  font-weight: 500;
-}
-
-::selection {
-  background: color-mix(in srgb, var(--primary) 30%, transparent);
-}
-
-/* ─── Scrollbar desktop fine custom ─── */
-@media (hover: hover) and (pointer: fine) {
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 0; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.24); }
-}
-
-/* ─── Mobile ─── */
-@media (max-width: 767px) {
-  .app-content { margin-left: 0 !important; width: 100% !important; }
-}
-
-@media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
+  .blur-up { filter: none !important; }
+  .app-shell button:active:not(:disabled),
+  .app-shell [role="button"]:active { transform: none; }
 }
 
-/* ─── 12-column grid container ─── */
-.grid-12 {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: 32px;
-  width: 100%;
-  max-width: 1440px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 80px;
-  padding-right: 80px;
-}
-@media (max-width: 1024px) {
-  .grid-12 {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
-}
-@media (max-width: 768px) {
-  .grid-12 {
-    padding-left: 24px;
-    padding-right: 24px;
-    column-gap: 16px;
-  }
-}
-
-/* ─── Chamfer utility (conserve mais radius 0 dans le theme brutalist
-   les rend equivalents a des coins carres ; les composants peuvent
-   forcer un radius via inline si besoin pour casser le pattern). ─── */
-.chamfer-xs { border-radius: 0; }
-.chamfer-sm { border-radius: 0; }
-.chamfer    { border-radius: 0; }
-.chamfer-lg { border-radius: 0; }
-
-
-
-
-
-
-
-
-
-/* ─── Loading screen (intro) ─── */
-.loading-root {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  overflow: hidden;
-  background: #000000;
-  opacity: 1;
-  transform: scale(1);
-  filter: blur(0px);
-  transition:
-    opacity 1.1s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 1.4s cubic-bezier(0.4, 0, 0.2, 1),
-    filter 1.1s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: opacity, transform, filter;
-}
-.loading-root.loading-exit {
-  opacity: 0;
-  transform: scale(1.04);
-  filter: blur(14px);
-  pointer-events: none;
-}
-.loading-bg {
-  position: absolute;
-  inset: 0;
-  background-image: url('/images/loading-bg.avif');
-  background-size: cover;
-  background-position: center;
-  transform: scale(1.12);
-  animation: loading-zoom-out 2.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform;
-}
-.loading-veil {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4));
-}
-.loading-content {
-  position: relative;
-  z-index: 1;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 1.5rem;
-}
-.loading-text {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 300;
-  color: #ffffff;
-  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-  line-height: 1.4;
-  letter-spacing: 0.5em;
-  text-align: center;
-  margin: 0;
-  padding-left: 0.5em;
-}
-.loading-line {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-}
-.loading-letter {
-  display: inline-block;
-  transform: translateY(110%);
-  animation: loading-letter-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform;
-}
-.loading-frame-wrap {
-  position: relative;
-  width: clamp(360px, 75vw, 680px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.75rem;
-}
-.loading-blueprint {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  max-height: 70vh;
-  pointer-events: none;
-  overflow: visible;
-}
-
-.bp-line {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation-name: bp-draw;
-  animation-duration: 1.0s;
-  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
-  animation-fill-mode: forwards;
-  vector-effect: non-scaling-stroke;
-}
-.bp-frame { animation-duration: 1.7s; animation-delay: 0.55s; }
-.bp-axis  { animation-duration: 1.0s; animation-delay: 0.4s; }
-
-.bp-label {
-  opacity: 0;
-  animation-name: bp-fade;
-  animation-duration: 0.5s;
-  animation-timing-function: ease-out;
-  animation-fill-mode: forwards;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-}
-
-@keyframes loading-zoom-out {
-  to { transform: scale(1); }
-}
-@keyframes loading-letter-reveal {
-  to { transform: translateY(0); }
-}
-@keyframes bp-draw {
-  to { stroke-dashoffset: 0; }
-}
-@keyframes bp-fade {
-  to { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .loading-bg,
-  .loading-letter,
-  .bp-line,
-  .bp-label {
-    animation-duration: 0.01s !important;
-    animation-delay: 0s !important;
-  }
-}
-
-/* Mode Reels du feed : masque la scrollbar sans casser le scroll snap. */
-.no-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* ─── Landing E-Dome : CTA + focus + hover utilities ────────────
-   Design system : Editorial Minimalism (ui-ux-pro-max recommandation).
-   Une seule couleur d'accent (teal) sur fond blanc + serif giant. */
-
-
-
-
-
-
-
-::selection {
-  background: color-mix(in srgb, var(--primary) 30%, transparent);
-}
-
-
-/* ── Anneau de focus clavier, hors @layer ───────────────────────────────────
-   Placé en dehors de toute couche pour l'emporter sur les utilitaires Tailwind
-   (`focus-visible:outline-none`) que certains boutons portent. Au clavier,
-   chaque élément interactif de l'application montre un anneau net ; à la souris,
-   le reset ci-dessus (`:focus:not(:focus-visible)`) garde l'écran propre. */
-.app-shell *:focus-visible {
-  outline: 2px solid var(--primary);
+/* ════════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITÉ — anneau de focus clavier (hors @layer pour primer sur les
+   utilitaires `focus-visible:outline-none`). Couleur Léman, partout.
+   ════════════════════════════════════════════════════════════════════════════ */
+.app-shell *:focus-visible,
+:focus-visible {
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
 }

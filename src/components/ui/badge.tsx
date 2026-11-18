@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
    shape (pill par defaut, square pour les chips brutalist). */
 
 const badgeVariants = cva(
-  "inline-flex items-center border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center gap-1 border px-2 py-0.5 text-[11.5px] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -22,6 +22,10 @@ const badgeVariants = cva(
         warning: "border-transparent chip-warning-soft",
         danger: "border-transparent chip-danger-soft",
         info: "border-transparent bg-muted text-muted-foreground",
+        /* L'argent à gagner : seule apparition du laiton. */
+        prime: "chip-prime",
+        /* État de confiance / sélection. */
+        leman: "border-transparent bg-leman-soft text-leman",
       },
       shape: {
         pill: "rounded-full",
