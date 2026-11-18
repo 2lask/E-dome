@@ -115,5 +115,5 @@ export const demoScreen = {
   ] satisfies DemoDoor[],
 
   disclaimer:
-    "Tout ce que montre la maquette est un exemple : biens, prix, profils, chiffres. Rien n'y est réel.",
+    "E-Dome — le réseau immobilier où ton réseau te rapporte. Ouverture d'abord en Suisse romande.",
 } as const;

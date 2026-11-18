@@ -226,7 +226,7 @@ export function personaIdForRole(role: PlatformRole): string {
 /* Les textes du sélecteur et du bandeau. */
 export const personaPicker = {
   title: "Entrer dans la peau de…",
-  hint: "Choisissez une personne : vous voyez la plateforme avec son compte, ses biens, ses messages et son tableau de bord. Aucun compte réel — c'est une démonstration.",
+  hint: "Choisissez une personne : vous voyez la plateforme avec son compte, ses biens, ses messages et son tableau de bord.",
   youAre: "Vous êtes",
   change: "changer",
   current: "Profil incarné",

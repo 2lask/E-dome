@@ -53,8 +53,8 @@ export const formationsText = {
     back: "Retour à la formation",
     notFound: "Leçon introuvable",
     notFoundBody: "Cette leçon n'existe pas dans cette formation.",
-    video: "Vidéo de démonstration — non disponible",
-    videoHint: "Cette maquette ne contient pas de vidéo. Le texte ci-dessous résume la leçon.",
+    video: "Vidéo — bientôt disponible",
+    videoHint: "La vidéo de cette leçon arrive bientôt. Le texte ci-dessous la résume.",
     of: (n: number, t: number) => `Leçon ${n} sur ${t}`,
     module: (i: number, title: string) => `Module ${i} · ${title}`,
     previous: "Précédente",
@@ -63,7 +63,7 @@ export const formationsText = {
     done: "Terminée",
     finish: "Voir mon certificat",
     sidebar: "Leçons",
-    demoNote: "Contenu de démonstration.",
+    demoNote: "Aperçu de la leçon.",
     summary: (author: string, title: string, moduleTitle: string, formation: string) =>
       `Dans cette leçon de « ${formation} », ${author} traite « ${title} », au sein du module « ${moduleTitle} ». Elle s'appuie sur des cas de Suisse romande et se termine par les points à retenir.`,
     keyPoints: "À retenir",
@@ -77,7 +77,7 @@ export const formationsText = {
   },
   certificate: {
     title: "Certificat de réussite",
-    demo: "Certificat de démonstration — sans valeur officielle",
+    demo: "Certificat — sans valeur officielle",
     certifies: "E-Dome atteste que",
     completed: "a suivi l'intégralité de la formation",
     author: (name: string) => `Formation conçue et donnée par ${name}`,

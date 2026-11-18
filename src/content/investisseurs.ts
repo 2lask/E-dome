@@ -65,7 +65,7 @@ export const investisseurs = {
     active: "Patrimoine est actif sur ce compte.",
     activated: "Formule Patrimoine activée. Elle figure dans vos réglages d'abonnement.",
     seePricing: "Voir les tarifs",
-    trialNote: "Démonstration : aucun paiement n'est prélevé.",
+    trialNote: "Aucun paiement réel n'est prélevé pour le moment.",
   },
   learn: {
     title: "Se former",

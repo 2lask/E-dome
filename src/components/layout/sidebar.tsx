@@ -480,7 +480,7 @@ export function Sidebar({ forceExpanded = false }: SidebarProps) {
               onClick={() => setAccountOpen(false)}
             >
               <LogOut size={14} />
-              <span>Quitter la maquette</span>
+              <span>Se déconnecter</span>
             </Link>
           </div>
         )}

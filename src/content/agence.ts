@@ -81,5 +81,5 @@ export const agencyStats = {
     { label: "Vues sur la vitrine (30 j)", value: "412" },
     { label: "Délai de vente médian", value: "6 semaines" },
   ],
-  note: "Exemple de tableau de bord. Les chiffres décrivent l'agence de démonstration, pas E-Dome.",
+  note: "Les chiffres décrivent cette agence, pas E-Dome.",
 };
