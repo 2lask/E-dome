@@ -41,16 +41,11 @@ type Slide = {
   subtitle?: string;
 };
 
-/* Slide promotionnelle : rejoindre le réseau d'apporteurs d'affaires. */
-const APPORTEUR_SLIDE: Slide = {
-  id: "apporteur-cta",
-  href: "/apporteurs",
-  kind: "apporteur",
-  badge: "Programme apporteurs",
-  title: "Commencez à toucher vos premières commissions",
-  subtitle: "Recommandez des biens, formations et événements — et touchez une commission sur chaque vente conclue via votre lien.",
-  cta: "Rejoindre le réseau",
-};
+/* V1 « E-Dome Pro » (STRATEGIE.md / PLAN-V1.md) : la slide promotionnelle du
+   programme apporteurs est retirée du carrousel — le programme est parqué (V3,
+   après validation juridique). Le carrousel ne met en avant que des biens et
+   des événements. La branche de rendu « apporteur » plus bas reste inerte,
+   prête pour le retour du programme. */
 
 const AUTOPLAY_MS = 5000;
 
@@ -100,9 +95,6 @@ export function RecommendedCarousel() {
       if (i === 1 && topEvents[0]) merged.push(eventSlide(topEvents[0]));
       if (i === 3 && topEvents[1]) merged.push(eventSlide(topEvents[1]));
     });
-    // Insère la promo apporteur en 2ᵉ position (visible tôt, sans voler la
-    // vedette au 1ᵉʳ bien de prestige).
-    merged.splice(1, 0, APPORTEUR_SLIDE);
     return merged;
   }, [formatPrice]);
 

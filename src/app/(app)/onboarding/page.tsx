@@ -20,7 +20,7 @@ import { PLATFORM_ROLE_LABELS } from "@/lib/model/role-labels";
 const WELCOME_FEATURES = [
   { icon: ShoppingBag, title: "Marketplace immobilière", desc: "Achetez, vendez ou louez des biens dans le monde entier." },
   { icon: MessageCircle, title: "Réseau social intégré", desc: "Publiez, échangez et développez votre réseau professionnel." },
-  { icon: Handshake, title: "Apporteurs d'affaires", desc: "Gagnez des commissions en recommandant des biens et services." },
+  { icon: Sparkles, title: "Copilote IA", desc: "Estimez un bien, rédigez vos annonces et gagnez du temps." },
   { icon: GraduationCap, title: "Formations certifiantes", desc: "Apprenez et obtenez des certifications reconnues." },
 ];
 

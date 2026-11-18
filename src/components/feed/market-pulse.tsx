@@ -160,28 +160,31 @@ function NewsList() {
 
 // ─── Pub sponsorisée ────────────────────────────────────────────────────────
 
+/* V1 « E-Dome Pro » (STRATEGIE.md / PLAN-V1.md) : cette carte promouvait le
+   programme apporteurs (parqué, V3) sous un label « Sponsorisé » trompeur — c'est
+   une promo interne, pas un annonceur payant. Elle met désormais en avant l'offre
+   du lancement, l'espace professionnel, et porte un label honnête. */
 function SponsoredCard() {
   return (
     <div className="mt-6">
       <p className="px-1 pb-2 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)] inline-flex items-center gap-1">
-        <Megaphone size={11} /> Sponsorisé
+        <Megaphone size={11} /> E-Dome Pro
       </p>
       <Link
-        href="/apporteurs"
+        href="/tarifs"
         className="group block rounded-2xl border border-[var(--primary)]/25 bg-gradient-to-br from-[var(--primary)]/[0.10] to-transparent p-4 hover:border-[var(--primary)]/45 transition-colors"
       >
         <span className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)]">
           <Handshake size={17} />
         </span>
-        <p className="text-sm font-bold text-[var(--foreground)] mt-2.5">Devenez apporteur</p>
+        <p className="text-sm font-bold text-[var(--foreground)] mt-2.5">Passez en Pro</p>
         <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">
-          Recommandez et touchez{" "}
-          <b className="text-[var(--primary)]">une prime fixe en francs</b> sur les
-          biens, ou <b className="text-[var(--primary)]">un pourcentage</b> sur la
-          marketplace — jamais un pourcentage du prix payé par le client.
+          Une <b className="text-[var(--primary)]">vitrine publique</b>, la gestion
+          de vos annonces et un <b className="text-[var(--primary)]">copilote IA</b>{" "}
+          pour les professionnels de l&apos;immobilier. Gratuit pour démarrer.
         </p>
         <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[var(--primary)]">
-          Comment ça marche
+          Voir les formules
           <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </span>
       </Link>
