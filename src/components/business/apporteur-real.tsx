@@ -24,6 +24,10 @@ import { apporteurNetChf, type PrimedProperty, type MyIntroduction } from "@/lib
 
 const chf = (n: number) => `${Math.round(n).toLocaleString("fr-CH")} CHF`;
 
+const EMPTY_FORM = { label: "", name: "", email: "", phone: "", consent: false };
+const FIELD =
+  "w-full rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--leman)]";
+
 const STATUS: Record<MyIntroduction["status"], { label: string; cls: string }> = {
   proposee: { label: "En attente du vendeur", cls: "chip-warning-soft" },
   acceptee: { label: "Acceptée · prime due", cls: "chip-success-soft" },
@@ -37,8 +41,15 @@ export function ApporteurReal() {
   const [intros, setIntros] = useState<MyIntroduction[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [contact, setContact] = useState("");
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState("");
   const [busy, setBusy] = useState(false);
+  const set = (k: keyof typeof EMPTY_FORM, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }));
+  const formValid =
+    form.label.trim().length >= 10 &&
+    form.name.trim().length >= 2 &&
+    (form.email.trim() || form.phone.trim()) &&
+    form.consent;
 
   const reload = useCallback(
     () =>
@@ -66,15 +77,24 @@ export function ApporteurReal() {
   const dueNet = accepted.reduce((s, i) => s + apporteurNetChf(i.amountChf), 0);
 
   const submit = async (o: PrimedProperty) => {
-    if (contact.trim().length < 3 || busy) return;
+    if (!formValid || busy) return;
     setBusy(true);
-    const res = await createIntroduction({ primeId: o.primeId, sellerId: o.sellerId, contactLabel: contact.trim() });
+    setFormError("");
+    const res = await createIntroduction({
+      primeId: o.primeId,
+      sellerId: o.sellerId,
+      contactLabel: form.label,
+      contactName: form.name,
+      contactEmail: form.email,
+      contactPhone: form.phone,
+      consent: form.consent,
+    });
     setBusy(false);
     if (!res.ok) {
-      addToast("Impossible d'envoyer le contact. Réessayez.", "error");
+      setFormError(res.error ?? "Impossible d'envoyer le contact. Réessayez.");
       return;
     }
-    setContact("");
+    setForm(EMPTY_FORM);
     setOpenId(null);
     addToast("Contact proposé. Le vendeur accepte (prime due) ou refuse (rien dû).", "success");
     void reload();
@@ -136,7 +156,7 @@ export function ApporteurReal() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => { setOpenId(open ? null : o.propertyId); setContact(""); }}
+                      onClick={() => { setOpenId(open ? null : o.propertyId); setForm(EMPTY_FORM); setFormError(""); }}
                       className="shrink-0 rounded-lg bg-[var(--foreground)] px-3 py-2 text-[12.5px] font-medium text-[var(--background)] hover:opacity-90"
                     >
                       Proposer un contact
@@ -144,21 +164,46 @@ export function ApporteurReal() {
                   </div>
                   {open && (
                     <form
-                      className="mt-3 flex flex-col gap-2 border-t border-[var(--card-border)] pt-3 sm:flex-row"
+                      className="mt-3 space-y-3 border-t border-[var(--card-border)] pt-3"
                       onSubmit={(e) => { e.preventDefault(); void submit(o); }}
                     >
-                      <input
-                        value={contact}
-                        onChange={(e) => setContact(e.target.value)}
-                        placeholder="Qui amenez-vous ? Ex. couple, cherche un 4,5 p. proche des écoles"
-                        className="flex-1 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-                      />
+                      <div>
+                        <label className="mb-1 block text-[12px] font-medium" htmlFor={`label-${o.primeId}`}>
+                          Son besoin <span className="font-normal text-[var(--text-muted)]">— ce que le vendeur voit avant d&apos;accepter</span>
+                        </label>
+                        <textarea
+                          id={`label-${o.primeId}`}
+                          value={form.label}
+                          onChange={(e) => set("label", e.target.value)}
+                          rows={2}
+                          placeholder="Ex. couple avec deux enfants, cherche un 4,5 p. proche des écoles, budget validé, achat d'ici 6 mois"
+                          className={FIELD}
+                        />
+                      </div>
+                      <div className="grid gap-2 sm:grid-cols-3">
+                        <input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Nom du contact" aria-label="Nom du contact" className={FIELD} />
+                        <input value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="E-mail" type="email" aria-label="E-mail du contact" className={FIELD} />
+                        <input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="Téléphone" type="tel" aria-label="Téléphone du contact" className={FIELD} />
+                      </div>
+                      <p className="text-[11.5px] text-[var(--text-muted)]">
+                        Les coordonnées ne sont révélées au vendeur qu&apos;<strong>après</strong> qu&apos;il a accepté — et donc que la prime est due.
+                      </p>
+                      <label className="flex items-start gap-2 text-[12.5px]">
+                        <input
+                          type="checkbox"
+                          checked={form.consent}
+                          onChange={(e) => set("consent", e.target.checked)}
+                          className="mt-0.5 h-4 w-4 accent-[var(--leman)]"
+                        />
+                        <span>Cette personne m&apos;a autorisé à transmettre ses coordonnées au vendeur de ce bien.</span>
+                      </label>
+                      {formError && <p role="alert" className="text-[12.5px] text-[var(--danger-text)]">{formError}</p>}
                       <button
                         type="submit"
-                        disabled={contact.trim().length < 3 || busy}
-                        className="rounded-lg bg-[var(--primary)] px-4 py-2 text-[13px] font-medium text-white disabled:opacity-50"
+                        disabled={!formValid || busy}
+                        className="rounded-lg bg-[var(--primary)] px-4 py-2 text-[13px] font-medium text-[var(--primary-foreground)] disabled:opacity-45"
                       >
-                        Envoyer au vendeur
+                        {busy ? "Envoi…" : "Envoyer au vendeur"}
                       </button>
                     </form>
                   )}
