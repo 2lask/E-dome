@@ -25,7 +25,7 @@ const PROTECTED_PREFIXES = [
   "/recherches/nouvelle",
 ];
 /* Correspondance EXACTE : `/profil` est MA fiche, `/profil/[id]` reste public. */
-const PROTECTED_EXACT = ["/profil", "/dossier"];
+const PROTECTED_EXACT = ["/profil", "/dossier", "/agence"];
 /* /admin/leads a sa PROPRE porte par mot de passe : exemptée du filtre Supabase. */
 const AUTH_EXEMPT = ["/admin/leads"];
 

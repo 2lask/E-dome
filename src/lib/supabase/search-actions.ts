@@ -75,6 +75,21 @@ export async function listPublicSearches(): Promise<{ searches: Search[]; ready:
   return { searches: ((data ?? []) as unknown as SearchRow[]).map(mapSearch), ready: true };
 }
 
+/** Les recherches actives d'UN auteur (page publique d'une agence). */
+export async function listActiveSearchesByAuthor(authorId: string): Promise<Search[]> {
+  if (!/^[0-9a-f-]{36}$/i.test(authorId)) return [];
+  const supabase = await createClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("searches")
+    .select(SEARCH_COLS)
+    .eq("author_id", authorId)
+    .eq("active", true)
+    .order("reward_chf", { ascending: false });
+  if (error || !data) return [];
+  return ((data ?? []) as unknown as SearchRow[]).map(mapSearch);
+}
+
 export async function getSearch(id: string): Promise<Search | null> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   const supabase = await createClient();

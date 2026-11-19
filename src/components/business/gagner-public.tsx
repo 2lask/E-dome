@@ -135,6 +135,15 @@ export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
         )}
       </section>
 
+      {/* Les programmes des agences */}
+      <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border bg-card p-6">
+        <div>
+          <p className="text-[16px] font-semibold">Des agences récompensent aussi votre réseau</p>
+          <p className="mt-1 text-[13.5px] text-muted-foreground">Présentez un propriétaire qui vend : chaque agence affiche son montant, fixe et dû à l&apos;acceptation.</p>
+        </div>
+        <Button asChild variant="outline"><Link href="/agences">Voir les agences <ArrowRight className="h-4 w-4" aria-hidden /></Link></Button>
+      </section>
+
       {/* Questions franches */}
       <section className="mt-12">
         <h2 className="text-[22px] font-semibold tracking-[-0.02em]">Questions fréquentes</h2>

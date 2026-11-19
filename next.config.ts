@@ -19,7 +19,6 @@ const PARKED_TO_HOME = [
   "/reunion/:path*",
   "/investisseurs",
   "/services/:path*",
-  "/agence/:path*",
   "/reseau",
   "/reservations",
   "/onboarding",
@@ -48,6 +47,8 @@ const nextConfig: NextConfig = {
       { source: "/recherche", destination: "/explorer", permanent: false },
       { source: "/favoris", destination: "/explorer", permanent: false },
       /* Propositions d'agences fictives : aucune agence n'est encore inscrite. */
+      /* Espace agence réel (/agence) ; les sous-pages de l'ancienne maquette y renvoient. */
+      { source: "/agence/:path+", destination: "/agence", permanent: false },
       { source: "/vendre/accompagnement", destination: "/vendre", permanent: false },
       ...PARKED_TO_HOME.map((source) => ({ source, destination: "/", permanent: false })),
     ];

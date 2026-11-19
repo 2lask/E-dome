@@ -52,7 +52,7 @@ export default async function TractionPage() {
   };
 
   const [
-    users, users7, props, primes, searches, inquiries, inquiries7, introsAcc, introsAll, answersAcc, answersAll, dossiers,
+    users, users7, props, primes, searches, inquiries, inquiries7, introsAcc, introsAll, answersAcc, answersAll, dossiers, agencies,
   ] = await Promise.all([
     count("profiles"),
     count("profiles", since7),
@@ -66,6 +66,7 @@ export default async function TractionPage() {
     admin.from("search_answers").select("reward_chf").eq("status", "acceptee"),
     count("search_answers"),
     count("rental_dossiers"),
+    count("agencies"),
   ]);
   const signups = await admin.from("profiles").select("created_at").gte("created_at", since56);
 
@@ -115,6 +116,7 @@ export default async function TractionPage() {
         <Kpi label="Mises en relation" value={fmt(introsAll)} sub={`${introsAcc.data?.length ?? 0} acceptées`} />
         <Kpi label="Propositions aux recherches" value={fmt(answersAll)} sub={`${answersAcc.data?.length ?? 0} acceptées`} />
         <Kpi label="Dossiers de location" value={fmt(dossiers)} sub="remplis par des locataires" />
+        <Kpi label="Agences" value={fmt(agencies)} sub="programmes d'apporteurs créés" />
       </section>
 
       <section className="mt-6 grid gap-3 md:grid-cols-2">

@@ -212,6 +212,22 @@ export async function listPublicProperties(limit = 60): Promise<MyProperty[]> {
   return (data as unknown as Row[]).map(mapRow);
 }
 
+/** Les biens publics d'UN hôte (page publique d'une agence). */
+export async function listPublicPropertiesByHost(hostId: string): Promise<MyProperty[]> {
+  if (!/^[0-9a-f-]{36}$/i.test(hostId)) return [];
+  const supabase = await createClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("properties")
+    .select(COLS_WITH_HOST)
+    .eq("host_id", hostId)
+    .is("sold_to", null)
+    .order("created_at", { ascending: false })
+    .limit(60);
+  if (error || !data) return [];
+  return (data as unknown as Row[]).map(mapRow);
+}
+
 /** Un bien public par son id, hôte joint (fiche de l'Explorer). `null` si
     absent ou base indisponible. */
 export async function getPublicProperty(id: string): Promise<MyProperty | null> {

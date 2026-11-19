@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronsUpDown, User, Building2, Settings, HelpCircle, Sparkles, LogOut, FileText } from "lucide-react";
+import { ChevronsUpDown, User, Building2, Settings, HelpCircle, Sparkles, LogOut, FileText, Briefcase } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -89,6 +89,7 @@ export function AccountMenu({
         <MenuLink href="/profil" icon={User}>Mon profil public</MenuLink>
         <MenuLink href="/mes-biens" icon={Building2}>Mes biens et primes</MenuLink>
         <MenuLink href="/dossier" icon={FileText}>Mon dossier de location</MenuLink>
+        <MenuLink href="/agence" icon={Briefcase}>Espace agence</MenuLink>
         <MenuLink href="/parametres" icon={Settings}>Réglages du compte</MenuLink>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => window.dispatchEvent(new CustomEvent(AI_OPEN_EVENT))}>

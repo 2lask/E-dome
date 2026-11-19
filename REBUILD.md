@@ -240,8 +240,10 @@ Lausanne**.
 | Étape | Commit | Ce qui a changé |
 |---|---|---|
 | L1 · Reprise de bail | `d1e50d6` | « Je remets mon bail » (art. 264 CO), onglet et villes dans l'Explorer, partage + aperçu généré (photo, prix, prime). |
-| L2 · Recherches à récompense | *ce commit* | Chercheurs de logement et agences en quête de vendeurs publient + récompense ; propositions avec coordonnées révélées après acceptation ; intégré à Demandes, Gagner, l'accueil, ⌘K ; aperçu partageable. *Migration 004.* |
+| L2 · Recherches à récompense | `8698ad4` | Chercheurs de logement et agences en quête de vendeurs publient + récompense ; propositions avec coordonnées révélées après acceptation ; intégré à Demandes, Gagner, l'accueil, ⌘K ; aperçu partageable. *Migration 004.* |
 
-**Suite prévue** : profil d'agence (mandats à prime, recherche de vendeurs),
-e-mails de notification, versement des récompenses via PSP, services du
-déménagement (nettoyage de fin de bail, déménageurs).
+| L3 · Dossier + traction | `1c789b7` | Dossier de location réutilisable (stockage privé, lien par annonce 30 jours), `/admin/traction`, `THESE.md`. *Migration 005.* |
+| L4 · Espace agence | *ce commit* | Le revenu B2B : programme d'apporteurs clé en main. `/agence` (fiche, récompenses vendeurs, suivi, biens à prime), page publique `/agences/<adresse>`, annuaire `/agences`, badge « vérifiée » réservé à E-Dome (déclencheur). Remplace la maquette ; ses sous-pages renvoient vers `/agence`. *Migration 006.* |
+
+**Suite prévue** : e-mails de notification, versement des récompenses via PSP,
+services du déménagement (nettoyage de fin de bail, déménageurs).
