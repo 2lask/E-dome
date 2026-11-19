@@ -58,6 +58,25 @@ export const publierObligations = {
     ] satisfies Obligation[],
   },
 
+  /* Reprise de bail : le locataire sortant présente un remplaçant (art. 264 CO). */
+  reprise: {
+    title: "Avant de publier une reprise de bail",
+    obligations: [
+      {
+        label: "Prévenez votre régie ou votre bailleur",
+        body: "C'est lui qui conclut le bail avec votre remplaçant. En règle générale, vous êtes libéré si vous présentez une personne solvable, que le bailleur peut raisonnablement accepter, prête à reprendre le bail aux mêmes conditions (art. 264 CO).",
+      },
+      {
+        label: "Mêmes conditions, aucune contrepartie cachée",
+        body: "N'exigez rien du repreneur pour vous céder le logement. Une reprise de mobilier éventuelle doit rester facultative et à un prix honnête.",
+      },
+      {
+        label: "La prime est la vôtre",
+        body: "Si vous offrez une prime, c'est vous qui la versez à qui vous présente votre remplaçant — jamais le repreneur. E-Dome ne détient jamais ces fonds.",
+      },
+    ] satisfies Obligation[],
+  },
+
   "location-ct": {
     title: "Location courte durée",
     obligations: [

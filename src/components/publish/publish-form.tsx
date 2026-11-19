@@ -11,7 +11,7 @@ import { ListingCard } from "@/components/listing/listing-card";
 import { uploadPropertyImage } from "@/lib/image-upload";
 import { createMyProperty, updateMyProperty } from "@/lib/supabase/property-actions";
 import { setMyPrime, liftMyPrime } from "@/lib/supabase/prime-actions";
-import { apporteurNetChf, PRIME_MAX_CHF, PRIME_MIN_CHF, type MyProperty } from "@/lib/my-property";
+import { apporteurNetChf, PRIME_MAX_CHF, PRIME_MIN_CHF, repriseOf, type MyProperty } from "@/lib/my-property";
 import { publierObligations } from "@/content/publier-obligations";
 import { AI_OPEN_EVENT } from "@/lib/nav";
 import { formatNumber } from "@/lib/format";
@@ -74,19 +74,34 @@ interface Draft {
   charges: string;
   primeOn: boolean;
   prime: string;
+  /** Reprise de bail : je quitte mon logement et cherche un remplaçant. */
+  reprise: boolean;
+  availableFrom: string;
+  regie: string;
 }
 
 const EMPTY: Draft = {
   tx: "vente", type: "", city: "", address: "", price: "", area: "", bedrooms: "", bathrooms: "",
   title: "", description: "", amenities: [], charges: "", primeOn: false, prime: "",
+  reprise: false, availableFrom: "", regie: "",
 };
+
+/* Les trois façons de publier, lisibles par tous. */
+const MODES = [
+  { key: "vente", label: "Je vends" },
+  { key: "location", label: "Je loue" },
+  { key: "reprise", label: "Je remets mon bail" },
+] as const;
 
 const digits = (s: string) => Number(s.replace(/[^\d]/g, "")) || 0;
 
 export function PublishForm({
   initial,
   initialPrime,
+  initialMode,
 }: {
+  /** Mode de départ en création (« Remettre son bail » depuis l'accueil). */
+  initialMode?: "reprise" | "location";
   /** Mode modification : le bien existant. */
   initial?: MyProperty | null;
   initialPrime?: number | null;
@@ -115,8 +130,15 @@ export function PublishForm({
           charges: initial.analytics?.chargesAnnuelles ? String(initial.analytics.chargesAnnuelles) : "",
           primeOn: !!initialPrime,
           prime: initialPrime ? String(initialPrime) : "",
+          reprise: !!repriseOf(initial),
+          availableFrom: repriseOf(initial)?.availableFrom ?? "",
+          regie: repriseOf(initial)?.regie ?? "",
         }
-      : EMPTY,
+      : initialMode === "reprise"
+        ? { ...EMPTY, tx: "location-lt", reprise: true }
+        : initialMode === "location"
+          ? { ...EMPTY, tx: "location-lt" }
+          : EMPTY,
   );
   const [photos, setPhotos] = useState<Photo[]>(() =>
     (initial?.images ?? []).map((url, i) => ({ key: `init-${i}`, url, status: "done" as const })),
@@ -131,10 +153,10 @@ export function PublishForm({
       const raw = localStorage.getItem(DRAFT_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw) as { d: Draft; photos: string[] };
-      if (saved?.d) setD({ ...EMPTY, ...saved.d });
+      if (saved?.d) setD({ ...EMPTY, ...saved.d, ...(initialMode === "reprise" ? { tx: "location-lt" as const, reprise: true } : {}) });
       if (Array.isArray(saved?.photos)) setPhotos(saved.photos.map((url, i) => ({ key: `draft-${i}`, url, status: "done" })));
     } catch { /* stockage indisponible : on repart d'un formulaire vide */ }
-  }, [editing]);
+  }, [editing, initialMode]);
   useEffect(() => {
     if (editing) return;
     try {
@@ -186,7 +208,8 @@ export function PublishForm({
   const price = digits(d.price);
   const primeAmount = digits(d.prime);
   const errors = useMemo(() => {
-    const e: Partial<Record<"type" | "city" | "price" | "title" | "prime", string>> = {};
+    const e: Partial<Record<"type" | "city" | "price" | "title" | "prime" | "availableFrom", string>> = {};
+    if (d.reprise && !/^\d{4}-\d{2}-\d{2}$/.test(d.availableFrom)) e.availableFrom = "Indiquez la date à laquelle le logement est libre.";
     if (!d.type) e.type = "Choisissez le type de bien.";
     if (d.city.trim().length < 2) e.city = "Indiquez la localité.";
     if (price <= 0) e.price = d.tx === "vente" ? "Indiquez le prix de vente." : "Indiquez le loyer mensuel.";
@@ -228,6 +251,7 @@ export function PublishForm({
     amenities: d.amenities,
     featured: false,
     createdAt: "",
+    analytics: d.reprise ? { reprise: true, availableFrom: d.availableFrom, regie: d.regie } : null,
     activePrimeChf: d.primeOn && primeAmount >= PRIME_MIN_CHF ? primeAmount : null,
   };
 
@@ -274,7 +298,9 @@ export function PublishForm({
         area: digits(d.area),
         images: photoUrls,
         amenities: d.amenities,
-        analytics: digits(d.charges) ? { chargesAnnuelles: digits(d.charges) } : null,
+        analytics: d.reprise
+          ? { reprise: true, availableFrom: d.availableFrom, regie: d.regie.trim() || null }
+          : digits(d.charges) ? { chargesAnnuelles: digits(d.charges) } : null,
       };
       let id = initial?.id ?? "";
       if (editing && id) {
@@ -301,7 +327,7 @@ export function PublishForm({
     });
   };
 
-  const obligations = publierObligations[d.tx];
+  const obligations = d.reprise ? publierObligations.reprise : publierObligations[d.tx];
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -317,14 +343,34 @@ export function PublishForm({
         <div className="min-w-0 space-y-6">
           {/* 1 · Le bien ────────────────────────────────────────────────── */}
           <Section n={1} title="Le bien">
-            <div role="radiogroup" aria-label="Vente ou location" className="grid grid-cols-2 rounded-xl border bg-subtle p-1">
-              {(["vente", "location-lt"] as const).map((t) => (
-                <button key={t} type="button" role="radio" aria-checked={d.tx === t} onClick={() => set("tx", t)}
-                  className={cn("h-10 rounded-lg text-[14px]", d.tx === t ? "bg-card font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground")}>
-                  {t === "vente" ? "Je vends" : "Je loue"}
-                </button>
-              ))}
+            <div role="radiogroup" aria-label="Vente, location ou reprise de bail" className="grid grid-cols-3 rounded-xl border bg-subtle p-1">
+              {MODES.map((m) => {
+                const on = m.key === "reprise" ? d.reprise : m.key === "vente" ? d.tx === "vente" && !d.reprise : d.tx === "location-lt" && !d.reprise;
+                return (
+                  <button key={m.key} type="button" role="radio" aria-checked={on}
+                    onClick={() => setD((s) => ({ ...s, tx: m.key === "vente" ? "vente" : "location-lt", reprise: m.key === "reprise" }))}
+                    className={cn("h-10 rounded-lg px-1 text-[13px] sm:text-[14px]", on ? "bg-card font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground")}>
+                    {m.label}
+                  </button>
+                );
+              })}
             </div>
+            {d.reprise && (
+              <div className="space-y-4 rounded-xl border bg-leman-soft/40 p-4">
+                <p className="text-[13px] leading-relaxed text-muted-foreground">
+                  Vous quittez votre logement avant la fin du bail ? Présenter un <strong className="text-foreground">locataire de remplacement</strong> solvable
+                  vous libère (art. 264 CO). Publiez-le ici, partagez le lien, et offrez une prime à qui vous trouve ce remplaçant.
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Libre dès le" error={shown.availableFrom}>
+                    <Input type="date" value={d.availableFrom} onChange={(e) => set("availableFrom", e.target.value)} />
+                  </Field>
+                  <Field label="Régie ou gérance" hint="Facultatif — aide les candidats à préparer leur dossier.">
+                    <Input value={d.regie} onChange={(e) => set("regie", e.target.value)} placeholder="Ex. Régie du Centre" />
+                  </Field>
+                </div>
+              </div>
+            )}
 
             <Field label="Type de bien" error={shown.type} group>
               <div className="flex flex-wrap gap-2">
@@ -443,7 +489,7 @@ export function PublishForm({
           {/* 4 · Prime ──────────────────────────────────────────────────── */}
           <Section n={4} title="Prime pour les apporteurs" aside="Facultatif" prime>
             <p className="-mt-1 text-[13.5px] leading-relaxed text-muted-foreground">
-              Offrez une prime fixe à qui vous présente le bon {d.tx === "vente" ? "acheteur" : "locataire"}. Vous ne la payez que si vous
+              Offrez une prime fixe à qui vous présente le bon {d.reprise ? "remplaçant" : d.tx === "vente" ? "acheteur" : "locataire"}. Vous ne la payez que si vous
               <strong className="text-foreground"> acceptez</strong> le contact — jamais un pourcentage du prix, jamais liée à la conclusion.
             </p>
             <label className="flex items-center gap-3">
@@ -488,7 +534,7 @@ export function PublishForm({
             <label className="flex items-start gap-3">
               <input type="checkbox" checked={attest} onChange={(e) => setAttest(e.target.checked)} className="mt-0.5 h-4.5 w-4.5 accent-[var(--leman)]" />
               <span className="text-[13.5px] leading-snug">
-                J&apos;atteste être en droit de {d.tx === "vente" ? "vendre" : "louer"} ce bien, que les informations sont exactes, et
+                J&apos;atteste {d.reprise ? "être le locataire actuel de ce logement" : `être en droit de ${d.tx === "vente" ? "vendre" : "louer"} ce bien`}, que les informations sont exactes, et
                 j&apos;accepte les <a href="/conditions" className="text-leman underline underline-offset-2">conditions d&apos;utilisation</a>.
               </span>
             </label>

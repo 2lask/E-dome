@@ -6,7 +6,7 @@ import { Search, Coins, SlidersHorizontal, X, Compass } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ListingCard, TX_LABEL } from "@/components/listing/listing-card";
-import type { MyProperty } from "@/lib/my-property";
+import { LAUNCH_CITIES, repriseOf, type MyProperty } from "@/lib/my-property";
 import type { PropertyType, TransactionType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +25,18 @@ const TYPE_LABEL: Record<PropertyType, string> = {
 
 type Sort = "recent" | "price-asc" | "price-desc" | "prime";
 
+type Kind = TransactionType | "reprise" | "all";
+
+/** Le « genre » d'une annonce pour le filtre : la reprise de bail est à part. */
+const kindOf = (b: MyProperty): Exclude<Kind, "all"> => (repriseOf(b) ? "reprise" : b.transactionType);
+
+const SEG_LABEL: Record<Exclude<Kind, "all">, string> = {
+  vente: "Acheter", "location-lt": "Louer", reprise: "Reprises de bail", "location-ct": "Courte durée",
+};
+const KIND_LABEL: Record<Exclude<Kind, "all">, string> = {
+  vente: TX_LABEL.vente, "location-lt": TX_LABEL["location-lt"], reprise: "Reprise de bail", "location-ct": TX_LABEL["location-ct"],
+};
+
 const normalize = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 const selectCls =
@@ -32,7 +44,9 @@ const selectCls =
 
 export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]; initialQuery?: string }) {
   const [q, setQ] = useState(initialQuery);
-  const [tx, setTx] = useState<TransactionType | "all">("all");
+  /* « reprise » : une location longue durée remise par son locataire. */
+  const [tx, setTx] = useState<Kind>("all");
+  const [city, setCity] = useState("");
   const [type, setType] = useState<PropertyType | "">("");
   const [maxPrice, setMaxPrice] = useState("");
   const [minRooms, setMinRooms] = useState(0);
@@ -41,7 +55,12 @@ export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   /* Ne proposer que ce qui existe réellement dans le catalogue. */
-  const txAvailable = useMemo(() => (["vente", "location-lt", "location-ct"] as const).filter((t) => biens.some((b) => b.transactionType === t)), [biens]);
+  const txAvailable = useMemo(() => (["vente", "location-lt", "reprise", "location-ct"] as const).filter((t) => biens.some((b) => kindOf(b) === t)), [biens]);
+  /* Villes présentes, les villes de lancement d'abord. */
+  const cities = useMemo(() => {
+    const present = [...new Set(biens.map((b) => b.city.trim()).filter(Boolean))];
+    return [...LAUNCH_CITIES.filter((c) => present.includes(c)), ...present.filter((c) => !LAUNCH_CITIES.includes(c)).sort((a, b) => a.localeCompare(b, "fr"))];
+  }, [biens]);
   const typesAvailable = useMemo(() => [...new Set(biens.map((b) => b.type))], [biens]);
   const primedCount = biens.filter((b) => b.activePrimeChf).length;
 
@@ -49,7 +68,8 @@ export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]
     const nq = normalize(q.trim());
     const max = Number(maxPrice.replace(/[^\d]/g, "")) || 0;
     const list = biens.filter((b) => {
-      if (tx !== "all" && b.transactionType !== tx) return false;
+      if (tx !== "all" && kindOf(b) !== tx) return false;
+      if (city && b.city.trim() !== city) return false;
       if (type && b.type !== type) return false;
       if (max && b.price > max) return false;
       if (minRooms && b.bedrooms < minRooms) return false;
@@ -63,10 +83,10 @@ export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]
     else if (sort === "prime") sorted.sort((a, b) => (b.activePrimeChf ?? 0) - (a.activePrimeChf ?? 0));
     else sorted.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     return sorted;
-  }, [biens, q, tx, type, maxPrice, minRooms, primeOnly, sort]);
+  }, [biens, q, tx, city, type, maxPrice, minRooms, primeOnly, sort]);
 
   const activeFilters = (type ? 1 : 0) + (maxPrice ? 1 : 0) + (minRooms ? 1 : 0) + (primeOnly ? 1 : 0);
-  const reset = () => { setQ(""); setTx("all"); setType(""); setMaxPrice(""); setMinRooms(0); setPrimeOnly(false); };
+  const reset = () => { setQ(""); setTx("all"); setCity(""); setType(""); setMaxPrice(""); setMinRooms(0); setPrimeOnly(false); };
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -108,6 +128,25 @@ export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]
               </Button>
             </div>
 
+            {cities.length > 1 && (
+              <div className="no-scrollbar -mx-1 mt-3 flex gap-1.5 overflow-x-auto px-1" role="group" aria-label="Villes">
+                {["", ...cities].map((c) => (
+                  <button
+                    key={c || "toutes"}
+                    type="button"
+                    aria-pressed={city === c}
+                    onClick={() => setCity(c)}
+                    className={cn(
+                      "h-8 shrink-0 rounded-full border px-3 text-[13px]",
+                      city === c ? "border-foreground bg-foreground text-background" : "bg-card hover:border-foreground/25",
+                    )}
+                  >
+                    {c || "Toutes les villes"}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className={cn("mt-3 flex-wrap items-center gap-2", filtersOpen ? "flex" : "hidden md:flex")}>
               {txAvailable.length > 1 && (
                 <div role="radiogroup" aria-label="Type de transaction" className="inline-flex rounded-lg border bg-subtle p-0.5">
@@ -123,7 +162,7 @@ export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]
                         tx === t ? "bg-card font-medium shadow-xs" : "text-muted-foreground hover:text-foreground",
                       )}
                     >
-                      {t === "all" ? "Tout" : t === "vente" ? "Acheter" : t === "location-lt" ? "Louer" : "Courte durée"}
+                      {t === "all" ? "Tout" : SEG_LABEL[t]}
                     </button>
                   ))}
                 </div>
@@ -176,7 +215,7 @@ export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]
                 {primedCount > 0 && <option value="prime">Prime la plus élevée</option>}
               </select>
 
-              {(activeFilters > 0 || q || tx !== "all") && (
+              {(activeFilters > 0 || q || tx !== "all" || city) && (
                 <button type="button" onClick={reset} className="inline-flex h-10 items-center gap-1 px-2 text-[13px] text-muted-foreground hover:text-foreground">
                   <X className="h-3.5 w-3.5" aria-hidden /> Effacer
                 </button>
@@ -187,7 +226,8 @@ export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]
           {/* ── Résultats ──────────────────────────────────────────────── */}
           <p className="mt-6 text-[13px] text-muted-foreground" aria-live="polite">
             {results.length} résultat{results.length > 1 ? "s" : ""}
-            {tx !== "all" ? ` · ${TX_LABEL[tx]}` : ""}
+            {tx !== "all" ? ` · ${KIND_LABEL[tx]}` : ""}
+            {city ? ` · ${city}` : ""}
           </p>
           {results.length > 0 ? (
             <div className="mt-3 grid gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">

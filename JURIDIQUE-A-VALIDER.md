@@ -431,3 +431,19 @@ structurants, pour que le conseil sache ce qui est **déjà** exclu :
 - du contenu sponsorisé non étiqueté, un classement modifié par paiement sans
   mention ;
 - tout écran suggérant qu'E-Dome détient, séquestre ou garantit des fonds.
+
+---
+
+## Ajout 2026-11-19 — reprise de bail et récompenses (lancement)
+
+1. **Prime offerte par un locataire sortant** à qui lui présente un locataire de
+   remplacement (art. 264 CO). Hypothèse : relève du courtage (activité libre en
+   Suisse, hors Tessin) ; montant fixe, dû à l'acceptation du contact, jamais un
+   pourcentage du loyer. **À confirmer**, en particulier pour **Genève et Vaud**,
+   qui encadrent certaines pratiques de location.
+2. **Recherches à récompense** (chantier suivant) : un chercheur de logement ou
+   une agence offre une récompense à qui lui trouve un bien ou un vendeur.
+   Vérifier qu'une récompense payée par un **locataire** n'entre pas dans une
+   interdiction cantonale de frais à la charge du locataire.
+3. Texte affiché au locataire sortant (« ne rien exiger du repreneur », reprise
+   de mobilier facultative) : relecture souhaitée.

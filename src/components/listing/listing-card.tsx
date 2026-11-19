@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { formatNumber } from "@/lib/format";
-import { coverOf, type MyProperty } from "@/lib/my-property";
+import { coverOf, frDay, repriseOf, type MyProperty } from "@/lib/my-property";
 import type { TransactionType } from "@/lib/types";
 
 /* ── La carte d'un bien (REBUILD.md §3) ──────────────────────────────────────
@@ -29,6 +29,7 @@ export function chfPrice(n: number): string {
 }
 
 export function ListingCard({ p, priority = false }: { p: MyProperty; priority?: boolean }) {
+  const reprise = repriseOf(p);
   const facts = [
     p.area > 0 ? `${p.area} m²` : null,
     p.bedrooms > 0 ? `${p.bedrooms} ch.` : null,
@@ -46,7 +47,7 @@ export function ListingCard({ p, priority = false }: { p: MyProperty; priority?:
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
         />
         <span className="absolute left-2.5 top-2.5 rounded-md bg-white/92 px-2 py-0.5 text-[11.5px] font-medium text-[#15130f] backdrop-blur">
-          {TX_LABEL[p.transactionType]}
+          {reprise ? "Reprise de bail" : TX_LABEL[p.transactionType]}
         </span>
         {p.activePrimeChf ? (
           <span className="absolute right-2.5 top-2.5 rounded-md border border-[#ead7ad] bg-[#f7edd6] px-2 py-0.5 text-[11.5px] font-semibold tabular-nums text-[#8a5d0c]">
@@ -61,6 +62,9 @@ export function ListingCard({ p, priority = false }: { p: MyProperty; priority?:
         </p>
         <p className="truncate text-[13.5px] text-foreground/90 group-hover:underline">{p.title}</p>
         <p className="truncate text-[12.5px] text-muted-foreground">{facts.join(" · ")}</p>
+        {reprise?.availableFrom && (
+          <p className="text-[12.5px] font-medium text-leman">Libre dès le {frDay(reprise.availableFrom)}</p>
+        )}
       </div>
     </Link>
   );

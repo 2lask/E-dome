@@ -65,7 +65,9 @@ export async function updateSession(request: NextRequest) {
   if (!user && isProtected && !isExempt) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/connexion";
-    url.searchParams.set("redirect", pathname);
+    /* Chemin ET paramètres (ex. /publier?mode=reprise) : rien ne se perd. */
+    url.search = "";
+    url.searchParams.set("redirect", pathname + request.nextUrl.search);
     return NextResponse.redirect(url);
   }
 

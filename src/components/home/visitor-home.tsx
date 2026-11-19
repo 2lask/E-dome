@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Tag, Coins, Compass, Check, ShieldCheck } from "lucide-react";
+import { ArrowRight, Tag, Coins, Compass, Check, ShieldCheck, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ListingCard } from "@/components/listing/listing-card";
 import { apporteurNetChf, type MyProperty } from "@/lib/my-property";
@@ -78,12 +78,18 @@ export function VisitorHome({ biens }: { biens: MyProperty[] }) {
       </section>
 
       {/* ── Trois portes ─────────────────────────────────────────────────── */}
-      <section aria-label="Par où commencer" className="grid gap-3 md:grid-cols-3">
+      <section aria-label="Par où commencer" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Door
           href="/vendre"
           icon={Tag}
           title="Vendre ou louer sans agence"
           text="Publiez gratuitement, recevez les demandes, gardez la main. 0 CHF de commission à E-Dome."
+        />
+        <Door
+          href="/auth/inscription?redirect=%2Fpublier%3Fmode%3Dreprise"
+          icon={KeyRound}
+          title="Remettre son bail"
+          text="Vous partez avant la fin du bail ? Trouvez votre remplaçant plus vite — et récompensez qui vous l'amène."
         />
         <Door
           href="/apporteurs"

@@ -7,12 +7,13 @@ import {
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { getPublicProperty } from "@/lib/supabase/property-actions";
-import { apporteurNetChf, coverOf, isDbPropertyId, type MyProperty } from "@/lib/my-property";
+import { apporteurNetChf, coverOf, frDay, isDbPropertyId, repriseOf, type MyProperty } from "@/lib/my-property";
 import { initialsAvatar } from "@/lib/current-user-profile";
 import { InquiryForm } from "@/components/listing/inquiry-form";
 import { CopilotButton } from "@/components/home/copilot-button";
 import { Button } from "@/components/ui/button";
 import { PRICE_UNIT, TX_LABEL, chfPrice } from "@/components/listing/listing-card";
+import { ShareButton } from "@/components/listing/share-button";
 
 /* ── /explorer/[id] — la fiche d'un bien (REBUILD.md §3) ─────────────────────
 
@@ -51,7 +52,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: `${p.title} — ${p.city}`,
     description: `${TX_LABEL[p.transactionType]} · ${chfPrice(p.price)}${PRICE_UNIT[p.transactionType]} · ${p.city}. ${p.description.slice(0, 140)}`,
-    openGraph: { images: [coverOf(p)] },
+    /* L'aperçu partagé est produit par opengraph-image.tsx (photo, prix, prime). */
   };
 }
 
@@ -68,6 +69,7 @@ export default async function BienPage({
   const justSaved = sp.publie ? "publie" : sp.modifie ? "modifie" : null;
 
   const isOwner = !!user && user.id === p.hostId;
+  const reprise = repriseOf(p);
   const images = p.images.length > 0 ? p.images : [coverOf(p)];
   const sellerName = p.host ? `${p.host.firstName} ${p.host.lastName}`.trim() || "Propriétaire" : "Propriétaire";
   const sellerAvatar = p.host?.avatar || initialsAvatar(p.host?.firstName ?? "", p.host?.lastName ?? "");
@@ -158,12 +160,36 @@ export default async function BienPage({
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
         {/* ── Contenu ──────────────────────────────────────────────────── */}
         <div className="min-w-0">
-          <p className="eyebrow">{TX_LABEL[p.transactionType]}</p>
+          <div className="flex items-start justify-between gap-3">
+            <p className="eyebrow">{reprise ? "Reprise de bail" : TX_LABEL[p.transactionType]}</p>
+            <ShareButton
+              path={`/explorer/${p.id}`}
+              title={p.title}
+              text={`${reprise ? "Reprise de bail" : TX_LABEL[p.transactionType]} à ${p.city} : ${p.title}${p.activePrimeChf ? ` — prime de ${formatNumber(p.activePrimeChf)} CHF pour qui trouve la bonne personne` : ""}`}
+            />
+          </div>
           <h1 className="page-heading mt-2 text-[30px] sm:text-[34px]">{p.title}</h1>
           <p className="mt-2 inline-flex items-center gap-1.5 text-[14px] text-muted-foreground">
             <MapPin className="h-4 w-4" aria-hidden />
             {[p.address, p.city].filter(Boolean).join(", ")}
           </p>
+
+          {reprise && (
+            <div className="mt-5 rounded-2xl border bg-leman-soft/50 p-4">
+              <div className="flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
+                {reprise.availableFrom && (
+                  <p><span className="text-muted-foreground">Libre dès le </span><strong>{frDay(reprise.availableFrom)}</strong></p>
+                )}
+                {reprise.regie && (
+                  <p><span className="text-muted-foreground">Régie : </span><strong>{reprise.regie}</strong></p>
+                )}
+              </div>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                Le locataire actuel part et cherche un remplaçant. Si votre dossier convient, le bail se conclut ensuite
+                directement avec la régie, aux mêmes conditions. Écrivez-lui ci-contre pour visiter.
+              </p>
+            </div>
+          )}
 
           <ul className="mt-5 flex flex-wrap gap-2">
             {facts.map((f) => (

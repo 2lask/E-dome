@@ -221,3 +221,34 @@ export function propertyFromMine(m: MyProperty, host?: User): Property {
 export function isDbPropertyId(id: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 }
+
+/* ── Reprise de bail (lancement 2026-11) ─────────────────────────────────────
+   Un locataire qui part cherche un locataire de remplacement (art. 264 CO).
+   Stockée comme une location longue durée, avec `analytics.reprise = true`,
+   la date de disponibilité et la régie — aucune migration nécessaire. */
+
+export interface RepriseInfo {
+  availableFrom: string | null;
+  regie: string | null;
+}
+
+export function repriseOf(m: Pick<MyProperty, "analytics" | "transactionType">): RepriseInfo | null {
+  const a = (m.analytics ?? {}) as Record<string, unknown>;
+  if (m.transactionType !== "location-lt" || a.reprise !== true) return null;
+  return {
+    availableFrom: typeof a.availableFrom === "string" && a.availableFrom ? a.availableFrom : null,
+    regie: typeof a.regie === "string" && a.regie.trim() ? a.regie.trim() : null,
+  };
+}
+
+const MOIS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+
+/** « 1er déc. 2026 » — format déterministe (identique serveur et navigateur). */
+export function frDay(iso: string): string {
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  return `${d === 1 ? "1er" : d} ${MOIS[m - 1]} ${y}`;
+}
+
+/** Les villes de lancement, proposées en premier dans l'Explorer. */
+export const LAUNCH_CITIES = ["Neuchâtel", "Lausanne"];

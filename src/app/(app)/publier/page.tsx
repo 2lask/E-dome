@@ -14,12 +14,12 @@ export const metadata: Metadata = { title: "Publier un bien" };
 export default async function PublierPage({
   searchParams,
 }: {
-  searchParams: Promise<{ edit?: string }>;
+  searchParams: Promise<{ edit?: string; mode?: string }>;
 }) {
-  const [{ edit }, user] = await Promise.all([searchParams, getCurrentUser()]);
-  if (!user) redirect(`/auth/connexion?redirect=${encodeURIComponent(edit ? `/publier?edit=${edit}` : "/publier")}`);
+  const [{ edit, mode }, user] = await Promise.all([searchParams, getCurrentUser()]);
+  if (!user) redirect(`/auth/connexion?redirect=${encodeURIComponent(edit ? `/publier?edit=${edit}` : mode ? `/publier?mode=${mode}` : "/publier")}`);
 
-  if (!edit) return <PublishForm />;
+  if (!edit) return <PublishForm initialMode={mode === "reprise" ? "reprise" : mode === "location" ? "location" : undefined} />;
 
   if (!isDbPropertyId(edit)) notFound();
   const [p, primes] = await Promise.all([getPublicProperty(edit), listMyPrimes()]);
