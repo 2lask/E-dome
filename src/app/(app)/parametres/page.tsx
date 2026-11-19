@@ -203,6 +203,10 @@ export default function ParametresPage() {
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 animate-fade-in">
       <h1 className="text-2xl page-heading text-[var(--foreground)] mb-6">Paramètres</h1>
+      <Link href="/parametres/notifications" className="mb-6 flex items-center justify-between rounded-2xl border bg-card px-5 py-4 text-[14px] hover:border-foreground/20">
+        <span><strong>Notifications par e-mail</strong><span className="block text-[12.5px] text-muted-foreground">Demandes, mises en relation, décisions</span></span>
+        <ArrowRight className="h-4 w-4" aria-hidden />
+      </Link>
 
       <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar */}

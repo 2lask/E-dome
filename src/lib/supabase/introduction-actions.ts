@@ -2,6 +2,7 @@
 
 import { createClient } from "./server";
 import { createAdminClient } from "./admin";
+import { notifyUser } from "../email/notify";
 import { coverOf, type PrimedProperty, type MyIntroduction } from "../my-property";
 import type { PropertyType, TransactionType } from "../types";
 
@@ -119,7 +120,7 @@ export async function createIntroduction(input: {
       contact_label: label.slice(0, 500),
       status: "proposee",
     })
-    .select("id")
+    .select("id, seller_id, amount_chf, property_id")
     .single();
   if (error || !intro) return { ok: false, error: "La mise en relation n'a pas pu être créée." };
 
@@ -137,6 +138,12 @@ export async function createIntroduction(input: {
     await admin?.from("introductions").delete().eq("id", intro.id);
     return { ok: false, error: "Les coordonnées n'ont pas pu être enregistrées." };
   }
+  const { data: p } = await supabase.from("properties").select("title").eq("id", intro.property_id ?? "").maybeSingle();
+  notifyUser(intro.seller_id ?? input.sellerId, {
+    kind: "mise-en-relation",
+    propertyTitle: p?.title ?? "votre bien",
+    amountChf: Number(intro.amount_chf ?? 0),
+  });
   return { ok: true };
 }
 

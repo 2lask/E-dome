@@ -3,6 +3,8 @@
 import { z } from "zod";
 import { createClient } from "./server";
 import { createAdminClient } from "./admin";
+import { notifyUser } from "../email/notify";
+import { apporteurNetChf } from "../my-property";
 import {
   REWARD_MAX_CHF,
   REWARD_MIN_CHF,
@@ -187,7 +189,7 @@ export async function answerSearch(input: {
   const { data: ans, error } = await supabase
     .from("search_answers")
     .insert({ search_id: input.searchId, author_id: user.id, pitch: pitch.slice(0, 1500), property_id: propertyId, status: "proposee" })
-    .select("id")
+    .select("id, searcher_id, reward_chf, search:searches!search_id ( kind, transaction, city, rooms_min )")
     .single();
   if (missing(error)) return { ok: false, error: "La base doit être mise à jour (migration 004)." };
   if (error || !ans) return { ok: false, error: "La proposition n'a pas pu être envoyée (recherche close ou la vôtre ?)." };
@@ -205,8 +207,16 @@ export async function answerSearch(input: {
       return { ok: false, error: "Les coordonnées n'ont pas pu être enregistrées." };
     }
   }
+  const sr = ans as unknown as { searcher_id: string | null; reward_chf: number | null; search: SearchTitleRow | SearchTitleRow[] | null };
+  notifyUser(sr.searcher_id, { kind: "proposition", searchTitle: titleOf(sr.search), rewardChf: Number(sr.reward_chf ?? 0) });
   return { ok: true };
 }
+
+type SearchTitleRow = { kind: Search["kind"]; transaction: Search["transaction"]; city: string; rooms_min: number | null };
+const titleOf = (r: SearchTitleRow | SearchTitleRow[] | null): string => {
+  const s = Array.isArray(r) ? r[0] : r;
+  return s ? searchTitle({ kind: s.kind, transaction: s.transaction, city: s.city, roomsMin: s.rooms_min }) : "votre recherche";
+};
 
 /* ── Propositions reçues / envoyées ─────────────────────────────────────── */
 
@@ -276,8 +286,15 @@ export async function decideAnswer(id: string, decision: "acceptee" | "refusee")
     .eq("id", id)
     .eq("searcher_id", user.id)
     .eq("status", "proposee")
-    .select("id")
+    .select("id, author_id, reward_chf, search:searches!search_id ( kind, transaction, city, rooms_min )")
     .maybeSingle();
   if (error || !data) return { ok: false, error: "Cette proposition n'est plus en attente." };
+  const d = data as unknown as { author_id: string; reward_chf: number | null; search: SearchTitleRow | SearchTitleRow[] | null };
+  notifyUser(d.author_id, {
+    kind: "decision-proposition",
+    searchTitle: titleOf(d.search),
+    accepted: decision === "acceptee",
+    netChf: apporteurNetChf(Number(d.reward_chf ?? 0)),
+  });
   return { ok: true };
 }

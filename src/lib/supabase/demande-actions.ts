@@ -1,5 +1,8 @@
 "use server";
 
+import { notifyUser } from "../email/notify";
+import { apporteurNetChf as netOf } from "../my-property";
+
 import { z } from "zod";
 import { createClient } from "./server";
 import { createAdminClient } from "./admin";
@@ -77,7 +80,7 @@ export async function createInquiry(raw: z.input<typeof InquiryInput>): Promise<
   const admin = createAdminClient();
   if (!admin) return { ok: false, error: "Service momentanément indisponible." };
 
-  const { data: prop } = await admin.from("properties").select("id, host_id").eq("id", v.propertyId).maybeSingle();
+  const { data: prop } = await admin.from("properties").select("id, host_id, title").eq("id", v.propertyId).maybeSingle();
   if (!prop) return { ok: false, error: "Ce bien n'existe plus." };
 
   const { user } = await me();
@@ -111,6 +114,7 @@ export async function createInquiry(raw: z.input<typeof InquiryInput>): Promise<
     kind: "creee",
     data: { kind: v.kind },
   });
+  notifyUser(prop.host_id, { kind: "demande", propertyTitle: prop.title ?? "votre bien", senderName: v.name, visit: v.kind === "visite" });
   return { ok: true };
 }
 
@@ -288,6 +292,15 @@ export async function decideIntroduction(id: string, decision: "acceptee" | "ref
     .select("id, property_id, seller_id, contact_label, amount_chf, apporteur_id")
     .maybeSingle();
   if (error || !updated) return { ok: false, error: "Cette mise en relation n'est plus en attente." };
+
+  /* Prévenir l'apporteur de la décision (après la réponse). */
+  const { data: p } = await supabase.from("properties").select("title").eq("id", updated.property_id ?? "").maybeSingle();
+  notifyUser(updated.apporteur_id, {
+    kind: "decision-relation",
+    propertyTitle: p?.title ?? "le bien",
+    accepted: decision === "acceptee",
+    netChf: netOf(Number(updated.amount_chf ?? 0)),
+  });
   if (decision === "refusee") return { ok: true };
 
   /* Acceptée : les coordonnées apportées deviennent une demande dans la boîte

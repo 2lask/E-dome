@@ -98,6 +98,7 @@ export function CommandMenu({ member }: { member: boolean }) {
           { id: "profil", label: "Mon profil public", icon: User, group: "Compte", run: go("/profil") },
           { id: "dossier", label: "Mon dossier de location", hint: "Rempli une fois, joint en un clic", icon: FileText, group: "Compte", keywords: "poursuites salaire candidature regie", run: go("/dossier") },
           { id: "agence", label: "Espace agence", hint: "Votre programme d'apporteurs", icon: Briefcase, group: "Compte", keywords: "agence regie mandats abonnement", run: go("/agence") },
+          { id: "notifications", label: "Notifications par e-mail", icon: Settings, group: "Compte", keywords: "email mail alertes desabonner", run: go("/parametres/notifications") },
           { id: "reglages", label: "Réglages du compte", icon: Settings, group: "Compte", keywords: "parametres", run: go("/parametres") },
           { id: "aide", label: "Aide", icon: HelpCircle, group: "Compte", run: go("/aide") },
         ]
