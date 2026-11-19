@@ -17,10 +17,13 @@ export function InquiryForm({
   propertyId,
   propertyTitle,
   defaults,
+  dossierPct = null,
 }: {
   propertyId: string;
   propertyTitle: string;
   defaults?: { name: string; email: string } | null;
+  /** Location + membre : complétude de son dossier (null = rien à joindre). */
+  dossierPct?: number | null;
 }) {
   const [kind, setKind] = useState<"contact" | "visite">("contact");
   const [name, setName] = useState(defaults?.name ?? "");
@@ -29,6 +32,7 @@ export function InquiryForm({
   const [date, setDate] = useState("");
   const [message, setMessage] = useState("");
   const [website, setWebsite] = useState("");
+  const [attach, setAttach] = useState(dossierPct !== null && dossierPct > 0);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -49,6 +53,7 @@ export function InquiryForm({
         message: message.trim() || (kind === "visite" ? "Je souhaite visiter ce bien." : `Ce bien m'intéresse : « ${propertyTitle} ».`),
         preferredDate: kind === "visite" ? date : "",
         website,
+        attachDossier: attach && dossierPct !== null && dossierPct > 0,
       });
       if (!res.ok) { setError(res.error); return; }
       setSent(true);
@@ -125,6 +130,19 @@ export function InquiryForm({
         name="website"
         className="absolute left-[-9999px] h-0 w-0 opacity-0"
       />
+
+      {dossierPct !== null && (
+        dossierPct > 0 ? (
+          <label className="flex items-start gap-2 rounded-lg border bg-leman-soft/40 px-3 py-2.5 text-[13px]">
+            <input type="checkbox" checked={attach} onChange={(e) => setAttach(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[var(--leman)]" />
+            <span>Joindre mon dossier de location <span className="text-muted-foreground">({dossierPct} % complet · lien personnel 30 jours)</span></span>
+          </label>
+        ) : (
+          <a href="/dossier" className="block rounded-lg border border-dashed px-3 py-2.5 text-[13px] text-muted-foreground hover:text-foreground">
+            Préparez votre dossier de location une fois, joignez-le en un clic →
+          </a>
+        )
+      )}
 
       {error && <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-[12.5px] text-[var(--danger-text)]">{error}</p>}
 

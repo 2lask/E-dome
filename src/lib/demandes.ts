@@ -52,6 +52,8 @@ export interface Demande {
   introduction: { apporteurName: string; amountChf: number } | null;
   createdAt: string;
   updatedAt: string;
+  /** Jeton du dossier de location joint (lien /dossier/partage/<jeton>). */
+  dossierToken?: string | null;
 }
 
 export interface PendingIntroduction {

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Inbox, ArrowLeft, Mail, Phone, CalendarDays, Coins, Check, X, Plus,
-  MessageSquareText, CircleDot, StickyNote, Building2, UserCheck, Database,
+  MessageSquareText, CircleDot, StickyNote, Building2, UserCheck, Database, FileCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
@@ -363,6 +363,13 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
               l&apos;apporteur en touche {chf(apporteurNetChf(d.introduction.amountChf))} net.
             </p>
           </div>
+        )}
+
+        {d.dossierToken && (
+          <a href={`/dossier/partage/${d.dossierToken}`} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2 rounded-xl border border-leman/25 bg-leman-soft/50 px-3.5 py-3 text-[13px] font-medium text-leman hover:underline">
+            <FileCheck className="h-4 w-4" aria-hidden /> Dossier de location joint — ouvrir
+          </a>
         )}
 
         {/* Le message */}

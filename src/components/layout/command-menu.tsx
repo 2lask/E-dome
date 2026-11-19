@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   Search, Plus, Sparkles, User, Settings, HelpCircle, LogIn, UserPlus,
-  BookOpen, Tag, CornerDownLeft, Radar, KeyRound, type LucideIcon,
+  BookOpen, Tag, CornerDownLeft, Radar, KeyRound, FileText, type LucideIcon,
 } from "lucide-react";
 import { navFor, COMMAND_OPEN_EVENT, AI_OPEN_EVENT } from "@/lib/nav";
 import { cn } from "@/lib/utils";
@@ -95,6 +95,7 @@ export function CommandMenu({ member }: { member: boolean }) {
     const account: Command[] = member
       ? [
           { id: "profil", label: "Mon profil public", icon: User, group: "Compte", run: go("/profil") },
+          { id: "dossier", label: "Mon dossier de location", hint: "Rempli une fois, joint en un clic", icon: FileText, group: "Compte", keywords: "poursuites salaire candidature regie", run: go("/dossier") },
           { id: "reglages", label: "Réglages du compte", icon: Settings, group: "Compte", keywords: "parametres", run: go("/parametres") },
           { id: "aide", label: "Aide", icon: HelpCircle, group: "Compte", run: go("/aide") },
         ]

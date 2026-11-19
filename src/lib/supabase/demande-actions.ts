@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { createClient } from "./server";
 import { createAdminClient } from "./admin";
+import { createDossierShareFor } from "./dossier-server";
 import { coverOf } from "../my-property";
 import type { PropertyType } from "../types";
 import type {
@@ -60,6 +61,8 @@ const InquiryInput = z
     preferredDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
     /** Pot de miel anti-robots : un humain ne remplit jamais ce champ caché. */
     website: z.string().optional(),
+    /** Joindre mon dossier de location (personne connectée uniquement). */
+    attachDossier: z.boolean().optional(),
   })
   .refine((v) => Boolean(v.email) || Boolean(v.phone), {
     message: "Laissez un e-mail ou un téléphone pour être recontacté.",
@@ -80,9 +83,14 @@ export async function createInquiry(raw: z.input<typeof InquiryInput>): Promise<
   const { user } = await me();
   if (user && user.id === prop.host_id) return { ok: false, error: "C'est votre propre bien." };
 
+  /* Dossier joint : jeton créé pour la personne CONNECTÉE elle-même, lié à ce
+     bien (la colonne n'est écrite que si le jeton existe : migration 005). */
+  const dossierToken = user && v.attachDossier ? await createDossierShareFor(user.id, prop.id) : null;
+
   const { data: inq, error } = await admin
     .from("inquiries")
     .insert({
+      ...(dossierToken ? { dossier_token: dossierToken } : {}),
       property_id: prop.id,
       seller_id: prop.host_id,
       sender_id: user?.id ?? null,
@@ -168,7 +176,16 @@ export async function listMyDemandes(): Promise<{
   const missing = (e: { code?: string } | null) => !!e && (e.code === "42P01" || e.code === "PGRST205" || e.code === "42703" || e.code === "PGRST200");
   if (missing(inq.error) || missing(intro.error)) return { demandes: [], pending: [], ready: false };
 
+  /* Dossiers joints (migration 005) : lecture séparée et tolérante. */
+  const tokens = new Map<string, string>();
+  const ids = ((inq.data ?? []) as { id: string }[]).map((r) => r.id);
+  if (ids.length) {
+    const { data: t, error: tErr } = await supabase.from("inquiries").select("id, dossier_token").in("id", ids);
+    if (!tErr) for (const row of (t ?? []) as { id: string; dossier_token: string | null }[]) if (row.dossier_token) tokens.set(row.id, row.dossier_token);
+  }
+
   const demandes: Demande[] = ((inq.data ?? []) as unknown as InquiryRow[]).map((r) => ({
+    dossierToken: tokens.get(r.id) ?? null,
     id: r.id,
     kind: r.kind,
     status: r.status,

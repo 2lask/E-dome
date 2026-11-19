@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { getPublicProperty } from "@/lib/supabase/property-actions";
+import { getMyDossier } from "@/lib/supabase/dossier-actions";
+import { dossierScore } from "@/lib/dossier";
 import { apporteurNetChf, coverOf, frDay, isDbPropertyId, repriseOf, type MyProperty } from "@/lib/my-property";
 import { initialsAvatar } from "@/lib/current-user-profile";
 import { InquiryForm } from "@/components/listing/inquiry-form";
@@ -70,6 +72,12 @@ export default async function BienPage({
 
   const isOwner = !!user && user.id === p.hostId;
   const reprise = repriseOf(p);
+  /* Location + membre (pas le propriétaire) : complétude de son dossier. */
+  let dossierPct: number | null = null;
+  if (user && !isOwner && p.transactionType !== "vente") {
+    const { dossier, docs, ready } = await getMyDossier();
+    if (ready) dossierPct = dossier.updatedAt ? dossierScore(dossier, docs).pct : 0;
+  }
   const images = p.images.length > 0 ? p.images : [coverOf(p)];
   const sellerName = p.host ? `${p.host.firstName} ${p.host.lastName}`.trim() || "Propriétaire" : "Propriétaire";
   const sellerAvatar = p.host?.avatar || initialsAvatar(p.host?.firstName ?? "", p.host?.lastName ?? "");
@@ -267,6 +275,7 @@ export default async function BienPage({
                 propertyId={p.id}
                 propertyTitle={p.title}
                 defaults={user ? { name: `${user.firstName} ${user.lastName}`.trim(), email: user.email ?? "" } : null}
+                dossierPct={dossierPct}
               />
             )}
           </div>
