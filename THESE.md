@@ -53,7 +53,7 @@ E-Dome ne détient jamais les fonds (voir `MODELE.md`).
 |---|---|---|
 | Part sur primes et récompenses | 12 % (3 CHF minimum) de chaque montant **accepté** | Codé ; encaissement via PSP agréé à brancher |
 | Agences | Abonnement à frais fixes : programme d'apporteurs clé en main (page publique, récompenses vendeurs, primes, suivi) | Espace agence codé (`/agence`, `/agences/<adresse>`) ; formule pilote gratuite, tarif à fixer avec les agences pilotes |
-| Services du déménagement | Contacts qualifiés vendus à prix fixe (nettoyage de fin de bail, déménageurs) | Planifié |
+| Services du déménagement | Contacts qualifiés vendus à prix fixe aux artisans (nettoyage de fin de bail, déménageurs, débarras) | Codé en conciergerie (`/demenagement`, `/admin/demenagement`) : l'équipe transmet, on mesure la demande ; prix par contact à fixer avec les artisans pilotes |
 | Dossier de location | Gratuit pour le locataire ; options payantes possibles (ex. commande d'extrait des poursuites) | Dossier codé ; options à étudier |
 
 ## Indicateurs suivis (dès le premier jour)
@@ -67,6 +67,7 @@ Publication avec vraies photos, reprise de bail, recherches à récompense,
 primes, mises en relation sécurisées (coordonnées révélées après acceptation),
 boîte de demandes avec historique horodaté, dossier de location réutilisable,
 espace agence (programme d'apporteurs à leur nom, badge vérifié par E-Dome),
+e-mails de notification, demandes de déménagement (conciergerie),
 aperçus partageables, espace apporteur, copilote IA. Stack : Next.js 16,
 Supabase (RLS partout), tests de bout en bout.
 

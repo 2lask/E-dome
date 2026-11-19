@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Eye, Pencil, Trash2, Inbox, Coins, Check, Circle, Building2 } from "lucide-react";
+import { Plus, Eye, Pencil, Trash2, Inbox, Coins, Check, Circle, Building2, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
@@ -88,6 +88,20 @@ export function MyListings({
           ))}
         </ul>
       )}
+
+      {/* Celui qui remet son bail déménage : le bon moment pour le nettoyage de fin de bail. */}
+      {(() => {
+        const leaving = biens.find((p) => p.analytics?.reprise === true);
+        if (!leaving) return null;
+        const href = `/demenagement?depuis=${encodeURIComponent(leaving.city)}&service=nettoyage,demenagement&bien=${leaving.id}`;
+        return (
+          <Link href={href} className="mt-6 flex items-center gap-3 rounded-2xl border bg-card p-4 hover:border-foreground/20">
+            <Truck className="h-5 w-5 shrink-0 text-leman" aria-hidden />
+            <span className="flex-1 text-[14px]"><strong>Vous déménagez ?</strong> Nettoyage de fin de bail, déménageurs : jusqu&apos;à trois devis gratuits.</span>
+            <span className="text-[13px] font-medium text-leman">Demander →</span>
+          </Link>
+        );
+      })()}
     </div>
   );
 }

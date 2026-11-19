@@ -9,7 +9,9 @@ export type Notice =
   | { kind: "mise-en-relation"; propertyTitle: string; amountChf: number }
   | { kind: "proposition"; searchTitle: string; rewardChf: number }
   | { kind: "decision-relation"; propertyTitle: string; accepted: boolean; netChf: number }
-  | { kind: "decision-proposition"; searchTitle: string; accepted: boolean; netChf: number };
+  | { kind: "decision-proposition"; searchTitle: string; accepted: boolean; netChf: number }
+  /* Équipe E-Dome : une demande de déménagement à transmettre (conciergerie). */
+  | { kind: "demenagement"; services: string[]; fromCity: string; moveDate: string | null };
 
 export interface Email {
   subject: string;
@@ -65,6 +67,11 @@ export function buildEmail(n: Notice, siteUrl: string): Email {
         ? [`Votre proposition pour « ${n.searchTitle} » a été acceptée.`, `Votre récompense nette : ${chf(n.netChf)} CHF.`]
         : [`Votre proposition pour « ${n.searchTitle} » n'a pas été retenue. Rien n'est dû.`, "D'autres recherches attendent une proposition."];
       cta = n.accepted ? "Voir mes gains" : "Voir les recherches"; path = n.accepted ? "/apporteurs" : "/recherches";
+      break;
+    case "demenagement":
+      subject = `Déménagement à transmettre · ${short(n.fromCity, 40)}`;
+      lines = [`Nouvelle demande : ${n.services.join(", ")} — ${n.fromCity}${n.moveDate ? `, le ${n.moveDate}` : ""}.`, "À transmettre à trois artisans au plus, avec l'accord déjà donné."];
+      cta = "Ouvrir la conciergerie"; path = "/admin/demenagement";
       break;
   }
 

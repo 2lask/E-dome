@@ -41,3 +41,10 @@ test("E4 · aucun e-mail ne contient de coordonnées (le modèle n'en reçoit pa
   const e = buildEmail({ kind: "mise-en-relation", propertyTitle: "Villa", amountChf: 800 }, SITE);
   assert.ok(!/@|\+41|\b0\d{2} ?\d{3}/.test(e.text.replace(/https?:\/\/\S+/g, "")));
 });
+
+test("E5 · la conciergerie reçoit un résumé sans coordonnées", () => {
+  const e = buildEmail({ kind: "demenagement", services: ["Nettoyage de fin de bail"], fromCity: "Neuchâtel", moveDate: "2026-12-31" }, SITE);
+  assert.ok(e.text.includes("/admin/demenagement"));
+  assert.ok(e.subject.includes("Neuchâtel"));
+  assert.ok(!e.text.replace(/https?:\/\/\S+/g, "").includes("@"));
+});

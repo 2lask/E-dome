@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isAdminEmail } from "@/lib/supabase/admin-guard";
 import { apporteurNetChf } from "@/lib/my-property";
 import { formatNumber } from "@/lib/format";
 
@@ -28,8 +29,7 @@ function clock() {
 export default async function TractionPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/connexion?redirect=%2Fadmin%2Ftraction");
-  const allowed = (process.env.EDOME_ADMIN_EMAILS ?? "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
-  if (!user.email || !allowed.includes(user.email.toLowerCase())) {
+  if (!isAdminEmail(user.email)) {
     return (
       <div className="mx-auto max-w-md py-20 text-center">
         <h1 className="text-[20px] font-semibold">Accès réservé</h1>
@@ -52,7 +52,7 @@ export default async function TractionPage() {
   };
 
   const [
-    users, users7, props, primes, searches, inquiries, inquiries7, introsAcc, introsAll, answersAcc, answersAll, dossiers, agencies,
+    users, users7, props, primes, searches, inquiries, inquiries7, introsAcc, introsAll, answersAcc, answersAll, dossiers, agencies, moves,
   ] = await Promise.all([
     count("profiles"),
     count("profiles", since7),
@@ -67,6 +67,7 @@ export default async function TractionPage() {
     count("search_answers"),
     count("rental_dossiers"),
     count("agencies"),
+    count("move_requests"),
   ]);
   const signups = await admin.from("profiles").select("created_at").gte("created_at", since56);
 
@@ -117,6 +118,7 @@ export default async function TractionPage() {
         <Kpi label="Propositions aux recherches" value={fmt(answersAll)} sub={`${answersAcc.data?.length ?? 0} acceptées`} />
         <Kpi label="Dossiers de location" value={fmt(dossiers)} sub="remplis par des locataires" />
         <Kpi label="Agences" value={fmt(agencies)} sub="programmes d'apporteurs créés" />
+        <Kpi label="Demandes de déménagement" value={fmt(moves)} sub="contacts à transmettre aux artisans" />
       </section>
 
       <section className="mt-6 grid gap-3 md:grid-cols-2">

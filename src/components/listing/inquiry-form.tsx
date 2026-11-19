@@ -69,6 +69,11 @@ export function InquiryForm({
           Le propriétaire la reçoit directement et vous répondra
           {email && phone ? " par e-mail ou par téléphone" : email ? " par e-mail" : " par téléphone"}.
         </p>
+        {dossierPct !== null && (
+          <a href="/demenagement?service=demenagement,nettoyage" className="mt-4 inline-block text-[13px] font-medium text-leman hover:underline">
+            Bientôt un déménagement ? Devis gratuits →
+          </a>
+        )}
       </div>
     );
   }

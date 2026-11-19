@@ -245,7 +245,9 @@ Lausanne**.
 | L3 · Dossier + traction | `1c789b7` | Dossier de location réutilisable (stockage privé, lien par annonce 30 jours), `/admin/traction`, `THESE.md`. *Migration 005.* |
 | L4 · Espace agence | `a7c5f31` | Le revenu B2B : programme d'apporteurs clé en main. `/agence` (fiche, récompenses vendeurs, suivi, biens à prime), page publique `/agences/<adresse>`, annuaire `/agences`, badge « vérifiée » réservé à E-Dome (déclencheur). Remplace la maquette ; ses sous-pages renvoient vers `/agence`. *Migration 006.* |
 
-| L5 · E-mails de notification | *ce commit* | Nouvelle demande, contact présenté, proposition reçue, décisions (acceptée/refusée) — envoyés après la réponse (`after`), via l'API Resend, adresse lue côté serveur, aucune coordonnée de tiers dans un e-mail. Préférence dans `/parametres/notifications` (métadonnées du compte). Inactif tant que `RESEND_API_KEY`, `EDOME_EMAIL_FROM` et `NEXT_PUBLIC_SITE_URL` ne sont pas définies. |
+| L5 · E-mails de notification | `10ec33e` | Nouvelle demande, contact présenté, proposition reçue, décisions (acceptée/refusée) — envoyés après la réponse (`after`), via l'API Resend, adresse lue côté serveur, aucune coordonnée de tiers dans un e-mail. Préférence dans `/parametres/notifications` (métadonnées du compte). Inactif tant que `RESEND_API_KEY`, `EDOME_EMAIL_FROM` et `NEXT_PUBLIC_SITE_URL` ne sont pas définies. |
 
-**Suite prévue** : versement des récompenses via PSP, services du déménagement
-(nettoyage de fin de bail, déménageurs).
+| L6 · Déménagement (conciergerie) | *ce commit* | `/demenagement` : une demande pour nettoyage de fin de bail, déménagement, débarras, peinture, garde-meubles ; accord de transmission à 3 artisans au plus ; proposé au bon moment (reprise de bail dans Mes biens, après une demande de location, dossier). `/admin/demenagement` : l'équipe transmet et suit (statut, note), prévenue par e-mail. Garde `isAdminEmail` partagé. *Migration 007.* |
+
+**Suite prévue** : versement des récompenses via PSP ; espace artisans quand le
+volume de déménagements le justifie.
