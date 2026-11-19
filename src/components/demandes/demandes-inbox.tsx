@@ -18,6 +18,8 @@ import {
   addDemandeNote, decideIntroduction, listDemandeEvents, setDemandeStatus,
 } from "@/lib/supabase/demande-actions";
 import { apporteurNetChf } from "@/lib/my-property";
+import { AnswersInbox } from "@/components/demandes/answers-inbox";
+import type { SearchAnswer } from "@/lib/recherches";
 import { cn } from "@/lib/utils";
 
 /* ── La boîte des demandes (REBUILD.md §3.4) ─────────────────────────────────
@@ -38,10 +40,13 @@ export function DemandesInbox({
   demandes,
   pending,
   ready,
+  answers = [],
 }: {
   demandes: Demande[];
   pending: PendingIntroduction[];
   ready: boolean;
+  /** Propositions reçues sur mes recherches à récompense. */
+  answers?: SearchAnswer[];
 }) {
   const [filter, setFilter] = useState<Filter>("ouvertes");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -80,8 +85,10 @@ export function DemandesInbox({
 
       {pending.length > 0 && <PendingSection pending={pending} />}
 
+      <AnswersInbox answers={answers} />
+
       {demandes.length === 0 && ready ? (
-        <EmptyInbox hasPending={pending.length > 0} />
+        <EmptyInbox hasPending={pending.length > 0 || answers.length > 0} />
       ) : demandes.length > 0 ? (
         <section aria-label="Boîte des demandes" className="overflow-hidden rounded-2xl border bg-card shadow-xs">
           <div className="flex items-center gap-1 border-b px-3 py-2">

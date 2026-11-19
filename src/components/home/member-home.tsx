@@ -35,6 +35,7 @@ export function MemberHome({
   demandes,
   pending,
   intros,
+  pendingAnswers = 0,
 }: {
   user: SessionUser;
   biens: MyProperty[];
@@ -42,6 +43,8 @@ export function MemberHome({
   demandes: Demande[];
   pending: PendingIntroduction[];
   intros: MyIntroduction[];
+  /** Propositions en attente sur mes recherches à récompense. */
+  pendingAnswers?: number;
 }) {
   const activePrimes = primes.filter((p) => p.active);
   const primed = new Set(activePrimes.map((p) => p.propertyId));
@@ -60,6 +63,12 @@ export function MemberHome({
       key: "decide", href: "/demandes", icon: Coins, prime: true,
       title: `${pending.length} mise${pending.length > 1 ? "s" : ""} en relation à décider`,
       hint: "Un apporteur vous présente un contact. Accepter rend la prime due ; refuser ne coûte rien.",
+    });
+  if (pendingAnswers > 0)
+    todos.push({
+      key: "answers", href: "/demandes", icon: Coins, prime: true,
+      title: `${pendingAnswers} proposition${pendingAnswers > 1 ? "s" : ""} sur vos recherches`,
+      hint: "Quelqu'un pense avoir trouvé ce que vous cherchez. Accepter rend la récompense due ; refuser ne coûte rien.",
     });
   if (newDemandes.length > 0)
     todos.push({

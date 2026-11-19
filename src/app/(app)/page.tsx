@@ -3,6 +3,7 @@ import { listMyProperties, listPublicProperties } from "@/lib/supabase/property-
 import { listMyPrimes } from "@/lib/supabase/prime-actions";
 import { listMyDemandes } from "@/lib/supabase/demande-actions";
 import { listMyIntroductions } from "@/lib/supabase/introduction-actions";
+import { listAnswersToMe } from "@/lib/supabase/search-actions";
 import { VisitorHome } from "@/components/home/visitor-home";
 import { MemberHome } from "@/components/home/member-home";
 
@@ -18,11 +19,12 @@ export default async function HomePage() {
     return <VisitorHome biens={biens} />;
   }
 
-  const [biens, primes, inbox, intros] = await Promise.all([
+  const [biens, primes, inbox, intros, answers] = await Promise.all([
     listMyProperties(),
     listMyPrimes(),
     listMyDemandes(),
     listMyIntroductions(),
+    listAnswersToMe(),
   ]);
 
   return (
@@ -33,6 +35,7 @@ export default async function HomePage() {
       demandes={inbox.demandes}
       pending={inbox.pending}
       intros={intros}
+      pendingAnswers={answers.filter((a) => a.status === "proposee").length}
     />
   );
 }

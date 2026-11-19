@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Coins, SlidersHorizontal, X, Compass } from "lucide-react";
+import { Search, Coins, SlidersHorizontal, X, Compass, Radar } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ListingCard, TX_LABEL } from "@/components/listing/listing-card";
@@ -99,6 +99,9 @@ export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]
               : `${biens.length} bien${biens.length > 1 ? "s" : ""} proposé${biens.length > 1 ? "s" : ""} directement par leurs propriétaires.`}
           </p>
         </div>
+        <Link href="/recherches" className="inline-flex items-center gap-1.5 rounded-lg border border-laiton-border bg-laiton-soft px-3 py-2 text-[13px] font-medium text-laiton hover:bg-laiton-soft/70">
+          <Radar className="h-4 w-4" aria-hidden /> Vous ne trouvez pas ? Publiez votre recherche avec récompense
+        </Link>
       </header>
 
       {biens.length === 0 ? (

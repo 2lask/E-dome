@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   Search, Plus, Sparkles, User, Settings, HelpCircle, LogIn, UserPlus,
-  BookOpen, Tag, CornerDownLeft, type LucideIcon,
+  BookOpen, Tag, CornerDownLeft, Radar, KeyRound, type LucideIcon,
 } from "lucide-react";
 import { navFor, COMMAND_OPEN_EVENT, AI_OPEN_EVENT } from "@/lib/nav";
 import { cn } from "@/lib/utils";
@@ -87,6 +87,8 @@ export function CommandMenu({ member }: { member: boolean }) {
         id: "copilote", label: "Demander au copilote IA", hint: "Estimer, rédiger, qualifier", icon: Sparkles, group: "Actions", keywords: "ia assistant estimation",
         run: () => { setOpen(false); window.dispatchEvent(new CustomEvent(AI_OPEN_EVENT)); },
       },
+      { id: "recherche", label: "Publier ma recherche avec récompense", hint: "Votre réseau cherche pour vous", icon: Radar, group: "Actions", keywords: "chercher appartement logement recompense agence vendeurs", run: go("/recherches/nouvelle") },
+      { id: "reprise", label: "Remettre mon bail", hint: "Trouver un remplaçant plus vite", icon: KeyRound, group: "Actions", keywords: "reprise bail demenager remplacant", run: go("/publier?mode=reprise") },
       { id: "vendre", label: "Vendre sans agence", hint: "Seul ou accompagné, 0 CHF à E-Dome", icon: Tag, group: "Actions", keywords: "vente proprietaire commission", run: go("/vendre") },
       { id: "apropos", label: "Comment fonctionne E-Dome", icon: BookOpen, group: "Actions", keywords: "aide fonctionnement regles prime", run: go("/a-propos") },
     ];

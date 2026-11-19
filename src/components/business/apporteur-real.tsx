@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatNumber } from "@/lib/format";
 import Link from "next/link";
-import { Building2, ShieldCheck, ExternalLink, Clock, Share2 } from "lucide-react";
+import { Building2, ShieldCheck, ExternalLink, Clock, Share2, Radar } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import {
   listPrimedProperties,
@@ -11,6 +11,9 @@ import {
   listMyIntroductions,
 } from "@/lib/supabase/introduction-actions";
 import { apporteurNetChf, type PrimedProperty, type MyIntroduction } from "@/lib/my-property";
+import { listMyAnswers, listPublicSearches } from "@/lib/supabase/search-actions";
+import { SearchCard } from "@/components/recherches/search-card";
+import type { Search, SearchAnswer } from "@/lib/recherches";
 
 /* ── Espace apporteur RÉEL (chantier C5, tranche 2) ──────────────────────────
 
@@ -40,6 +43,9 @@ export function ApporteurReal() {
   const { addToast } = useToast();
   const [offers, setOffers] = useState<PrimedProperty[]>([]);
   const [intros, setIntros] = useState<MyIntroduction[]>([]);
+  /* Le côté demande : recherches à récompense ouvertes + mes propositions. */
+  const [searches, setSearches] = useState<Search[]>([]);
+  const [answers, setAnswers] = useState<SearchAnswer[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -54,9 +60,10 @@ export function ApporteurReal() {
 
   const reload = useCallback(
     () =>
-      Promise.all([listPrimedProperties(), listMyIntroductions()]).then(([o, i]) => {
+      Promise.all([listPrimedProperties(), listMyIntroductions(), listMyAnswers()]).then(([o, i, a]) => {
         setOffers(o);
         setIntros(i);
+        setAnswers(a);
         setLoaded(true);
       }),
     [],
@@ -64,10 +71,12 @@ export function ApporteurReal() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([listPrimedProperties(), listMyIntroductions()]).then(([o, i]) => {
+    Promise.all([listPrimedProperties(), listMyIntroductions(), listMyAnswers(), listPublicSearches()]).then(([o, i, a, ps]) => {
       if (!active) return;
       setOffers(o);
       setIntros(i);
+      setAnswers(a);
+      setSearches(ps.searches);
       setLoaded(true);
       /* Venu d'une fiche bien (« Recommander quelqu'un ») : on ouvre
          directement le formulaire de ce bien. */
@@ -82,9 +91,13 @@ export function ApporteurReal() {
     return () => { active = false; };
   }, []);
 
-  const pending = intros.filter((i) => i.status === "proposee").length;
-  const accepted = intros.filter((i) => i.status === "acceptee");
-  const dueNet = accepted.reduce((s, i) => s + apporteurNetChf(i.amountChf), 0);
+  /* Totaux RÉELS : mises en relation (primes) + propositions (récompenses). */
+  const pending = intros.filter((i) => i.status === "proposee").length + answers.filter((a) => a.status === "proposee").length;
+  const accepted = [
+    ...intros.filter((i) => i.status === "acceptee").map((i) => i.amountChf),
+    ...answers.filter((a) => a.status === "acceptee").map((a) => a.rewardChf),
+  ];
+  const dueNet = accepted.reduce((s, amount) => s + apporteurNetChf(amount), 0);
 
   /* Partager le bien à son contact (WhatsApp, SMS, e-mail…) pour vérifier son
      intérêt AVANT de le présenter. Partage natif sur mobile, copie sinon. */
@@ -251,6 +264,39 @@ export function ApporteurReal() {
       </section>
 
       {/* Mes mises en relation */}
+      {/* Recherches à récompense : le côté demande */}
+      <section className="space-y-3" aria-label="Recherches à récompense">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <h2 className="flex items-center gap-2 text-lg font-semibold">
+            <Radar size={17} className="text-laiton" aria-hidden /> Recherches à récompense
+          </h2>
+          <Link href="/recherches" className="text-[13px] font-medium text-leman hover:underline">Toutes les recherches →</Link>
+        </div>
+        {searches.length === 0 ? (
+          <p className="rounded-xl border bg-card p-4 text-[12.5px] text-muted-foreground">
+            Aucune recherche ouverte pour l&apos;instant. Quand quelqu&apos;un cherche un logement ou un vendeur avec une récompense, elle apparaît ici.
+          </p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {searches.slice(0, 6).map((sr) => <SearchCard key={sr.id} s={sr} />)}
+          </div>
+        )}
+        {answers.length > 0 && (
+          <ul className="divide-y rounded-xl border bg-card">
+            {answers.map((a) => (
+              <li key={a.id} className="flex flex-col gap-1 p-3 text-[12.5px] sm:flex-row sm:items-center sm:gap-3">
+                <div className="min-w-0 flex-1">
+                  <Link href={`/recherches/${a.searchId}`} className="font-medium hover:underline">{a.searchTitle}</Link>
+                  <p className="truncate text-[11.5px] text-muted-foreground">{a.pitch}</p>
+                </div>
+                <span className={`self-start rounded-full px-2 py-0.5 text-[11px] font-medium sm:self-auto ${STATUS[a.status].cls}`}>{STATUS[a.status].label}</span>
+                <span className="w-24 text-right font-semibold tabular-nums">{a.status === "acceptee" ? chf(apporteurNetChf(a.rewardChf)) : "—"}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <section className="space-y-3" aria-label="Vos mises en relation">
         <h2 className="text-sm font-semibold text-[var(--foreground)]">Vos mises en relation</h2>
         {intros.length === 0 ? (

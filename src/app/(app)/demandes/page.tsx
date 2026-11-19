@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { listMyDemandes } from "@/lib/supabase/demande-actions";
+import { listAnswersToMe } from "@/lib/supabase/search-actions";
 import { DemandesInbox } from "@/components/demandes/demandes-inbox";
 
 export const metadata: Metadata = { title: "Demandes" };
@@ -13,6 +14,6 @@ export const metadata: Metadata = { title: "Demandes" };
 export default async function DemandesPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/connexion?redirect=/demandes");
-  const { demandes, pending, ready } = await listMyDemandes();
-  return <DemandesInbox demandes={demandes} pending={pending} ready={ready} />;
+  const [{ demandes, pending, ready }, answers] = await Promise.all([listMyDemandes(), listAnswersToMe()]);
+  return <DemandesInbox demandes={demandes} pending={pending} ready={ready} answers={answers} />;
 }

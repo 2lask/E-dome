@@ -229,3 +229,19 @@ captures 390 px et 1440 px de chaque écran reconstruit, en visiteur et en membr
 - Nestermind (seed, fonctions) : https://www.moneycab.com/finanz/nestermind-schliesst-siebenstellige-seed-finanzierungsrunde-ab/amp/ · https://www.maison.work/en/blog/ki-in-der-immobiliensuche-wo-die-schweizer-landschaft-heute-steht
 - Programmes d'apport en Suisse romande : https://leedy.ch/apporteur-affaires/ · https://www.milleniumproperties.ch/apporteur-affaires-immobilier/ · https://www.luxity.ch/apporteur-daffaires/ · https://www.swisssunvalais.ch/ssv/apporteur-d-affaires-bien-immobilier-agence-immobiliere-sion-sierre-martigny-monthey-valais-suisse-swiss-sun-valais-%C2%AE-1er-reseau-immobilier-valais-%C2%AE-meilleur
 - Dépôts : github.com/Shreyas-29/propease · Cyrus-CS/real-estate · ayyan656/Real-estate-SaaS-CRM · ahmedsaadawi13/splash-lead-router · java110/MicroCommunity · twentyhq/twenty · makeplane/plane · frappe/crm · pdovhomilja/nextcrm-app
+
+## 8. Lancement — le moteur de récompenses (2026-11-19)
+
+Recadrage du fondateur : lancer vite, toucher des utilisateurs, ne construire que
+pour des comportements qui existent déjà (argent, douleur réelle). Direction
+validée : **la récompense dans les deux sens**, villes de lancement **Neuchâtel et
+Lausanne**.
+
+| Étape | Commit | Ce qui a changé |
+|---|---|---|
+| L1 · Reprise de bail | `d1e50d6` | « Je remets mon bail » (art. 264 CO), onglet et villes dans l'Explorer, partage + aperçu généré (photo, prix, prime). |
+| L2 · Recherches à récompense | *ce commit* | Chercheurs de logement et agences en quête de vendeurs publient + récompense ; propositions avec coordonnées révélées après acceptation ; intégré à Demandes, Gagner, l'accueil, ⌘K ; aperçu partageable. *Migration 004.* |
+
+**Suite prévue** : profil d'agence (mandats à prime, recherche de vendeurs),
+e-mails de notification, versement des récompenses via PSP, services du
+déménagement (nettoyage de fin de bail, déménageurs).

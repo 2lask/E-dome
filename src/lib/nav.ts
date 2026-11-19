@@ -1,9 +1,10 @@
-import { Home, Compass, Inbox, Building2, Coins, type LucideIcon } from "lucide-react";
+import { Home, Compass, Inbox, Building2, Coins, Radar, type LucideIcon } from "lucide-react";
 
 /* ── La navigation d'E-Dome — source unique (REBUILD.md §3.2) ────────────────
 
-   Cinq entrées, pas une de plus. Chacune correspond à un moment de la boucle
-   Bien → Demande → Prime. La barre latérale, la barre mobile et le menu de
+   Six entrées. Chacune correspond à un moment du moteur de récompenses :
+   l'offre (Explorer, Mes biens), la demande (Recherches), la décision
+   (Demandes), le gain (Gagner). La barre latérale, la barre mobile et le menu de
    commande lisent TOUS cette liste : une entrée ajoutée ici apparaît partout,
    une entrée retirée disparaît partout.
 
@@ -11,7 +12,7 @@ import { Home, Compass, Inbox, Building2, Coins, type LucideIcon } from "lucide-
    biens). Les routes correspondantes sont aussi fermées par le proxy. */
 
 export interface NavEntry {
-  key: "accueil" | "explorer" | "demandes" | "mes-biens" | "gagner";
+  key: "accueil" | "explorer" | "recherches" | "demandes" | "mes-biens" | "gagner";
   label: string;
   href: string;
   icon: LucideIcon;
@@ -38,6 +39,14 @@ export const NAV: NavEntry[] = [
     icon: Compass,
     match: ["/explorer", "/recherche"],
     description: "Les biens à vendre et à louer",
+  },
+  {
+    key: "recherches",
+    label: "Recherches",
+    href: "/recherches",
+    icon: Radar,
+    match: ["/recherches"],
+    description: "Ce que les gens cherchent, et ce qu'ils offrent à qui le trouve",
   },
   {
     key: "demandes",

@@ -199,11 +199,13 @@ export async function listMyDemandes(): Promise<{
 export async function countMyPendingDemandes(): Promise<number> {
   const { supabase, user } = await me();
   if (!supabase || !user) return 0;
-  const [a, b] = await Promise.all([
+  const [a, b, c] = await Promise.all([
     supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("seller_id", user.id).eq("status", "nouvelle"),
     supabase.from("introductions").select("id", { count: "exact", head: true }).eq("seller_id", user.id).eq("status", "proposee"),
+    /* Propositions reçues sur mes recherches à récompense (migration 004). */
+    supabase.from("search_answers").select("id", { count: "exact", head: true }).eq("searcher_id", user.id).eq("status", "proposee"),
   ]);
-  return (a.error ? 0 : a.count ?? 0) + (b.error ? 0 : b.count ?? 0);
+  return (a.error ? 0 : a.count ?? 0) + (b.error ? 0 : b.count ?? 0) + (c.error ? 0 : c.count ?? 0);
 }
 
 /* ── Historique d'une demande ───────────────────────────────────────────── */

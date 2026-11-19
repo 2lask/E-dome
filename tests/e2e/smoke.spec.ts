@@ -6,8 +6,8 @@ import { test, expect } from "@playwright/test";
    routes de membre supposent Supabase configuré (.env.local) : sans lui, le
    proxy laisse tout passer (mode sans backend) et ces cas sont ignorés. */
 
-const PUBLIC = ["/", "/explorer", "/apporteurs", "/vendre", "/a-propos", "/aide", "/tarifs", "/auth/connexion", "/auth/inscription"];
-const MEMBER = ["/demandes", "/mes-biens", "/publier", "/parametres", "/profil"];
+const PUBLIC = ["/", "/explorer", "/recherches", "/apporteurs", "/vendre", "/a-propos", "/aide", "/tarifs", "/auth/connexion", "/auth/inscription"];
+const MEMBER = ["/demandes", "/mes-biens", "/publier", "/parametres", "/profil", "/recherches/nouvelle"];
 const PARKED: [string, string][] = [
   ["/feed", "/"],
   ["/formations", "/"],
