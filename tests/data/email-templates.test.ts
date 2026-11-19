@@ -18,7 +18,9 @@ test("E2 · chaque e-mail mène au bon endroit et propose de se désabonner", ()
     [{ kind: "demande", propertyTitle: "3 pièces", senderName: "Léa", visit: true }, "/demandes"],
     [{ kind: "mise-en-relation", propertyTitle: "Villa", amountChf: 1500 }, "/demandes"],
     [{ kind: "proposition", searchTitle: "Logement à louer · Lausanne", rewardChf: 500 }, "/demandes"],
-    [{ kind: "decision-relation", propertyTitle: "Villa", accepted: true, netChf: 1320 }, "/apporteurs"],
+    [{ kind: "decision-relation", propertyTitle: "Villa", accepted: true, netChf: 1320 }, "/reglements"],
+    [{ kind: "decision-relation", propertyTitle: "Villa", accepted: false, netChf: 1320 }, "/apporteurs"],
+    [{ kind: "paiement-declare", netChf: 440 }, "/reglements"],
     [{ kind: "decision-proposition", searchTitle: "Logement", accepted: false, netChf: 440 }, "/recherches"],
   ];
   for (const [n, path] of cases) {

@@ -11,7 +11,8 @@ export type Notice =
   | { kind: "decision-relation"; propertyTitle: string; accepted: boolean; netChf: number }
   | { kind: "decision-proposition"; searchTitle: string; accepted: boolean; netChf: number }
   /* Équipe E-Dome : une demande de déménagement à transmettre (conciergerie). */
-  | { kind: "demenagement"; services: string[]; fromCity: string; moveDate: string | null };
+  | { kind: "demenagement"; services: string[]; fromCity: string; moveDate: string | null }
+  | { kind: "paiement-declare"; netChf: number };
 
 export interface Email {
   subject: string;
@@ -57,16 +58,21 @@ export function buildEmail(n: Notice, siteUrl: string): Email {
     case "decision-relation":
       subject = n.accepted ? `Accepté : ${chf(n.netChf)} CHF pour vous` : `Mise en relation refusée · ${short(n.propertyTitle)}`;
       lines = n.accepted
-        ? [`Le vendeur de « ${n.propertyTitle} » a accepté votre contact.`, `Votre prime nette : ${chf(n.netChf)} CHF.`]
+        ? [`Le vendeur de « ${n.propertyTitle} » a accepté votre contact.`, `Votre prime nette : ${chf(n.netChf)} CHF. Indiquez votre IBAN ou TWINT pour être payé.`]
         : [`Le vendeur de « ${n.propertyTitle} » n'a pas retenu ce contact. Rien n'est dû.`, "D'autres biens ont une prime : votre réseau peut encore rapporter."];
-      cta = n.accepted ? "Voir mes gains" : "Voir les biens à prime"; path = "/apporteurs";
+      cta = n.accepted ? "Être payé" : "Voir les biens à prime"; path = n.accepted ? "/reglements" : "/apporteurs";
       break;
     case "decision-proposition":
       subject = n.accepted ? `Accepté : ${chf(n.netChf)} CHF pour vous` : `Proposition non retenue · ${short(n.searchTitle)}`;
       lines = n.accepted
-        ? [`Votre proposition pour « ${n.searchTitle} » a été acceptée.`, `Votre récompense nette : ${chf(n.netChf)} CHF.`]
+        ? [`Votre proposition pour « ${n.searchTitle} » a été acceptée.`, `Votre récompense nette : ${chf(n.netChf)} CHF. Indiquez votre IBAN ou TWINT pour être payé.`]
         : [`Votre proposition pour « ${n.searchTitle} » n'a pas été retenue. Rien n'est dû.`, "D'autres recherches attendent une proposition."];
-      cta = n.accepted ? "Voir mes gains" : "Voir les recherches"; path = n.accepted ? "/apporteurs" : "/recherches";
+      cta = n.accepted ? "Être payé" : "Voir les recherches"; path = n.accepted ? "/reglements" : "/recherches";
+      break;
+    case "paiement-declare":
+      subject = `Paiement de ${chf(n.netChf)} CHF à confirmer`;
+      lines = [`On vous annonce un versement de ${chf(n.netChf)} CHF.`, "Confirmez quand vous l'avez reçu, ou signalez un problème."];
+      cta = "Confirmer la réception"; path = "/reglements";
       break;
     case "demenagement":
       subject = `Déménagement à transmettre · ${short(n.fromCity, 40)}`;

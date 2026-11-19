@@ -52,7 +52,7 @@ export default async function TractionPage() {
   };
 
   const [
-    users, users7, props, primes, searches, inquiries, inquiries7, introsAcc, introsAll, answersAcc, answersAll, dossiers, agencies, moves,
+    users, users7, props, primes, searches, inquiries, inquiries7, introsAcc, introsAll, answersAcc, answersAll, dossiers, agencies, moves, settled,
   ] = await Promise.all([
     count("profiles"),
     count("profiles", since7),
@@ -68,6 +68,7 @@ export default async function TractionPage() {
     count("rental_dossiers"),
     count("agencies"),
     count("move_requests"),
+    admin.from("settlements").select("net_chf, fee_chf, status"),
   ]);
   const signups = await admin.from("profiles").select("created_at").gte("created_at", since56);
 
@@ -118,6 +119,12 @@ export default async function TractionPage() {
         <Kpi label="Propositions aux recherches" value={fmt(answersAll)} sub={`${answersAcc.data?.length ?? 0} acceptées`} />
         <Kpi label="Dossiers de location" value={fmt(dossiers)} sub="remplis par des locataires" />
         <Kpi label="Agences" value={fmt(agencies)} sub="programmes d'apporteurs créés" />
+        <Kpi
+          label="Règlements confirmés"
+          value={settled.error ? "—" : formatNumber(((settled.data ?? []) as { status: string }[]).filter((x) => x.status === "confirmed").length)}
+          sub={settled.error ? "migration 008 à appliquer" : `${formatNumber(((settled.data ?? []) as { status: string; net_chf: number }[]).filter((x) => x.status === "confirmed").reduce((t, x) => t + Number(x.net_chf), 0))} CHF versés aux apporteurs`}
+          prime
+        />
         <Kpi label="Demandes de déménagement" value={fmt(moves)} sub="contacts à transmettre aux artisans" />
       </section>
 

@@ -51,7 +51,7 @@ E-Dome ne détient jamais les fonds (voir `MODELE.md`).
 ## Modèle de revenus
 | Source | Mécanique | Statut |
 |---|---|---|
-| Part sur primes et récompenses | 12 % (3 CHF minimum) de chaque montant **accepté** | Codé ; encaissement via PSP agréé à brancher |
+| Part sur primes et récompenses | 12 % (3 CHF minimum) de chaque montant **accepté** | Codé, avec règlements suivis de bout en bout (`/reglements` : dû → payé → confirmé) ; encaissement de la part via PSP agréé à brancher |
 | Agences | Abonnement à frais fixes : programme d'apporteurs clé en main (page publique, récompenses vendeurs, primes, suivi) | Espace agence codé (`/agence`, `/agences/<adresse>`) ; formule pilote gratuite, tarif à fixer avec les agences pilotes |
 | Services du déménagement | Contacts qualifiés vendus à prix fixe aux artisans (nettoyage de fin de bail, déménageurs, débarras) | Codé en conciergerie (`/demenagement`, `/admin/demenagement`) : l'équipe transmet, on mesure la demande ; prix par contact à fixer avec les artisans pilotes |
 | Dossier de location | Gratuit pour le locataire ; options payantes possibles (ex. commande d'extrait des poursuites) | Dossier codé ; options à étudier |

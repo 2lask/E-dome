@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronsUpDown, User, Building2, Settings, HelpCircle, Sparkles, LogOut, FileText, Briefcase, Truck } from "lucide-react";
+import { ChevronsUpDown, User, Building2, Settings, HelpCircle, Sparkles, LogOut, FileText, Briefcase, Truck, Wallet } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -88,6 +88,7 @@ export function AccountMenu({
         <DropdownMenuSeparator />
         <MenuLink href="/profil" icon={User}>Mon profil public</MenuLink>
         <MenuLink href="/mes-biens" icon={Building2}>Mes biens et primes</MenuLink>
+        <MenuLink href="/reglements" icon={Wallet}>Règlements</MenuLink>
         <MenuLink href="/dossier" icon={FileText}>Mon dossier de location</MenuLink>
         <MenuLink href="/demenagement" icon={Truck}>Déménagement</MenuLink>
         <MenuLink href="/agence" icon={Briefcase}>Espace agence</MenuLink>

@@ -247,7 +247,10 @@ Lausanne**.
 
 | L5 · E-mails de notification | `10ec33e` | Nouvelle demande, contact présenté, proposition reçue, décisions (acceptée/refusée) — envoyés après la réponse (`after`), via l'API Resend, adresse lue côté serveur, aucune coordonnée de tiers dans un e-mail. Préférence dans `/parametres/notifications` (métadonnées du compte). Inactif tant que `RESEND_API_KEY`, `EDOME_EMAIL_FROM` et `NEXT_PUBLIC_SITE_URL` ne sont pas définies. |
 
-| L6 · Déménagement (conciergerie) | *ce commit* | `/demenagement` : une demande pour nettoyage de fin de bail, déménagement, débarras, peinture, garde-meubles ; accord de transmission à 3 artisans au plus ; proposé au bon moment (reprise de bail dans Mes biens, après une demande de location, dossier). `/admin/demenagement` : l'équipe transmet et suit (statut, note), prévenue par e-mail. Garde `isAdminEmail` partagé. *Migration 007.* |
+| L6 · Déménagement (conciergerie) | `c01ee10` | `/demenagement` : une demande pour nettoyage de fin de bail, déménagement, débarras, peinture, garde-meubles ; accord de transmission à 3 artisans au plus ; proposé au bon moment (reprise de bail dans Mes biens, après une demande de location, dossier). `/admin/demenagement` : l'équipe transmet et suit (statut, note), prévenue par e-mail. Garde `isAdminEmail` partagé. *Migration 007.* |
 
-**Suite prévue** : versement des récompenses via PSP ; espace artisans quand le
-volume de déménagements le justifie.
+| L7 · Règlements | *ce commit* | Chaque acceptation crée un règlement dû (déclencheurs, montants figés : brut, part E-Dome, net). `/reglements` : le payeur voit le TWINT/IBAN de l'apporteur (remis au seul payeur d'un règlement en cours), déclare « payé » ; l'apporteur confirme ou conteste ; transitions garanties en base. IBAN contrôlé (mod 97). E-mail « paiement à confirmer ». *Migration 008.* |
+
+**Suite prévue** : brancher le prestataire agréé à l'étape « payer » (choix du
+fondateur : Stripe Connect ou Payrexx) ; espace artisans quand le volume de
+déménagements le justifie.

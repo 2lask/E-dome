@@ -36,6 +36,7 @@ export function MemberHome({
   pending,
   intros,
   pendingAnswers = 0,
+  settlementTodos = 0,
 }: {
   user: SessionUser;
   biens: MyProperty[];
@@ -45,6 +46,8 @@ export function MemberHome({
   intros: MyIntroduction[];
   /** Propositions en attente sur mes recherches à récompense. */
   pendingAnswers?: number;
+  /** Règlements à payer ou à confirmer. */
+  settlementTodos?: number;
 }) {
   const activePrimes = primes.filter((p) => p.active);
   const primed = new Set(activePrimes.map((p) => p.propertyId));
@@ -63,6 +66,12 @@ export function MemberHome({
       key: "decide", href: "/demandes", icon: Coins, prime: true,
       title: `${pending.length} mise${pending.length > 1 ? "s" : ""} en relation à décider`,
       hint: "Un apporteur vous présente un contact. Accepter rend la prime due ; refuser ne coûte rien.",
+    });
+  if (settlementTodos > 0)
+    todos.push({
+      key: "settle", href: "/reglements", icon: Coins, prime: true,
+      title: `${settlementTodos} règlement${settlementTodos > 1 ? "s" : ""} à traiter`,
+      hint: "Une prime acceptée à verser, ou un paiement reçu à confirmer.",
     });
   if (pendingAnswers > 0)
     todos.push({

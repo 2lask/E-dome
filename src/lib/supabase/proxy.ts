@@ -23,6 +23,7 @@ const PROTECTED_PREFIXES = [
   "/parametres",
   "/favoris",
   "/recherches/nouvelle",
+  "/reglements",
 ];
 /* Correspondance EXACTE : `/profil` est MA fiche, `/profil/[id]` reste public. */
 const PROTECTED_EXACT = ["/profil", "/dossier", "/agence"];

@@ -1,3 +1,4 @@
+import { countMySettlementTodos } from "@/lib/supabase/settlement-actions";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { listMyProperties, listPublicProperties } from "@/lib/supabase/property-actions";
 import { listMyPrimes } from "@/lib/supabase/prime-actions";
@@ -19,12 +20,13 @@ export default async function HomePage() {
     return <VisitorHome biens={biens} />;
   }
 
-  const [biens, primes, inbox, intros, answers] = await Promise.all([
+  const [biens, primes, inbox, intros, answers, settlementTodos] = await Promise.all([
     listMyProperties(),
     listMyPrimes(),
     listMyDemandes(),
     listMyIntroductions(),
     listAnswersToMe(),
+    countMySettlementTodos(),
   ]);
 
   return (
@@ -36,6 +38,7 @@ export default async function HomePage() {
       pending={inbox.pending}
       intros={intros}
       pendingAnswers={answers.filter((a) => a.status === "proposee").length}
+      settlementTodos={settlementTodos}
     />
   );
 }

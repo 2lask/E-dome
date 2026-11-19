@@ -447,3 +447,18 @@ structurants, pour que le conseil sache ce qui est **déjà** exclu :
    interdiction cantonale de frais à la charge du locataire.
 3. Texte affiché au locataire sortant (« ne rien exiger du repreneur », reprise
    de mobilier facultative) : relecture souhaitée.
+
+## Règlements des primes et récompenses (migration 008) — à valider
+
+- **Pilote sans intermédiaire financier** : le payeur verse le montant net
+  directement à l'apporteur (TWINT, virement) ; E-Dome ne détient jamais les
+  fonds. À confirmer : cette organisation n'exige aucune autorisation (LBA /
+  intermédiation financière) tant qu'E-Dome ne touche pas l'argent.
+- **Part E-Dome** (12 %, 3 CHF min.) : enregistrée mais non encaissée pendant le
+  pilote. À décider : facturation (et TVA dès le seuil applicable) ou
+  encaissement via le prestataire agréé (Stripe Connect, Payrexx).
+- **Fiscalité et AVS des apporteurs** : les gains sont un revenu à déclarer ;
+  une activité régulière peut relever de l'activité indépendante (AVS). À
+  préciser dans l'aide et les conditions.
+- **Coordonnées bancaires** : visibles du seul payeur d'un règlement en cours ;
+  mentionner ce traitement dans la politique de confidentialité (nLPD).
