@@ -175,6 +175,8 @@ export function VisitorHome({ biens }: { biens: MyProperty[] }) {
       </section>
 
       <footer className="mt-14 flex flex-wrap gap-x-5 gap-y-2 border-t pt-6 text-[12.5px] text-muted-foreground">
+        <Link href="/ville/neuchatel" className="hover:text-foreground">Logement à Neuchâtel</Link>
+        <Link href="/ville/lausanne" className="hover:text-foreground">Logement à Lausanne</Link>
         <Link href="/a-propos" className="hover:text-foreground">Comment fonctionne E-Dome</Link>
         <Link href="/tarifs" className="hover:text-foreground">Tarifs</Link>
         <Link href="/aide" className="hover:text-foreground">Aide</Link>

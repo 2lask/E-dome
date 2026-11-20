@@ -249,7 +249,10 @@ Lausanne**.
 
 | L6 · Déménagement (conciergerie) | `c01ee10` | `/demenagement` : une demande pour nettoyage de fin de bail, déménagement, débarras, peinture, garde-meubles ; accord de transmission à 3 artisans au plus ; proposé au bon moment (reprise de bail dans Mes biens, après une demande de location, dossier). `/admin/demenagement` : l'équipe transmet et suit (statut, note), prévenue par e-mail. Garde `isAdminEmail` partagé. *Migration 007.* |
 
-| L7 · Règlements | *ce commit* | Chaque acceptation crée un règlement dû (déclencheurs, montants figés : brut, part E-Dome, net). `/reglements` : le payeur voit le TWINT/IBAN de l'apporteur (remis au seul payeur d'un règlement en cours), déclare « payé » ; l'apporteur confirme ou conteste ; transitions garanties en base. IBAN contrôlé (mod 97). E-mail « paiement à confirmer ». *Migration 008.* |
+| L7 · Règlements | `d47e0d3` | Chaque acceptation crée un règlement dû (déclencheurs, montants figés : brut, part E-Dome, net). `/reglements` : le payeur voit le TWINT/IBAN de l'apporteur (remis au seul payeur d'un règlement en cours), déclare « payé » ; l'apporteur confirme ou conteste ; transitions garanties en base. IBAN contrôlé (mod 97). E-mail « paiement à confirmer ». *Migration 008.* |
+
+| Outils base | `6a53b8e` | `supabase/APPLIQUER-TOUT.sql` (002→008 en un collage, `npm run db:build`) et `npm run db:check` (OK / MANQUE, sans afficher de clé). |
+| L8 · Pages villes + référencement | *ce commit* | `/ville/neuchatel`, `/ville/lausanne` : annonces, reprises, recherches à récompense, agences de la ville et des communes voisines ; état vide qui invite à publier. Plan du site refait (vraies pages, chaque bien, recherche et agence ; plus de pôles parqués) ; robots.txt ferme les espaces privés. |
 
 **Suite prévue** : brancher le prestataire agréé à l'étape « payer » (choix du
 fondateur : Stripe Connect ou Payrexx) ; espace artisans quand le volume de
