@@ -691,3 +691,11 @@ test("37 — le fil vivant : compteurs réels, seize voix, trois semaines (P2bis
     assert.deepEqual(mine, inFeed, `${u.id} : profil et fil divergent`);
   }
 });
+
+test("I-db · supabase/APPLIQUER-TOUT.sql est à jour avec les migrations (npm run db:build)", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const all = readFileSync("supabase/APPLIQUER-TOUT.sql", "utf8");
+  for (const f of readdirSync("supabase/migrations").filter((x) => x.endsWith(".sql")).sort()) {
+    assert.ok(all.includes(readFileSync(`supabase/migrations/${f}`, "utf8").trim()), `${f} : relancer npm run db:build`);
+  }
+});

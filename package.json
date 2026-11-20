@@ -12,7 +12,9 @@
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:data": "node --test --import ./tests/data/resolve-ts.mjs \"tests/data/*.test.ts\"",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "db:build": "node scripts/build-migrations.mjs",
+    "db:check": "node scripts/db-check.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
