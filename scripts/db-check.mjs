@@ -23,6 +23,7 @@ const CHECKS = [
   ["006", "Espace agence", ["agencies"]],
   ["007", "Déménagement", ["move_requests"]],
   ["008", "Règlements", ["settlements", "payout_profiles"]],
+  ["009", "Apport v2 (liens tracés, suivi temps réel)", ["apport_links", "property_events"]],
 ];
 
 async function exists(table) {
