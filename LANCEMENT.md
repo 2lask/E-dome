@@ -39,3 +39,29 @@ Sources : weka.ch (courtage immobilier), lawinside.ch (courtage d'indication), d
 - [ ] Publier 5 à 10 vrais biens (photos, vidéo si possible, commission).
 - [ ] Faire relire par un avocat : conditions de commission, `JURIDIQUE-A-VALIDER.md`.
 - [ ] Donner le feu vert pour **fusionner `feat/plateforme-v2` dans `master`** (= mise en production Vercel).
+
+## 4. État au 22.11.2026 (branche `feat/plateforme-v2`)
+
+| Étape | Commit | Livré |
+|---|---|---|
+| Plan, légal, commission v2, migration 009 | `b7afb3f` | `LANCEMENT.md`, `lib/commission.ts`, `009_apport.sql` |
+| Commission dans la publication et Mes biens | `ccb1ea7` | éditeur partagé, repli v1 tant que 009 n'est pas appliquée |
+| Liens tracés, suivi, vente conclue | `a7195ae` | `/api/track`, attribution 60 j, Demandes « Vendu » + prix final |
+| Tableau de bord temps réel | `be6a58c` | `/tableau-de-bord` vendeur + apporteur, Supabase Realtime |
+| Vitrine des biens | `13a1f84` | grand visuel vidéo/photo, galerie, vidéo, bloc apporteur |
+| Textes juridiques alignés | `d0c3ea7` | conditions, confidentialité (cookies), pages |
+
+Vérifié : types, lint (0 erreur), 133 tests de données, build, 44 tests de bout
+en bout ; captures avec un compte et un bien temporaires (supprimés).
+
+**Bloquant pour le lancement : la base.** Sans `APPLIQUER-TOUT.sql`, il n'y a ni
+Demandes, ni liens tracés, ni statistiques, ni règlements, et une commission en
+pourcentage ne peut pas être enregistrée.
+
+### Test de bout en bout à faire dès que la base est à jour
+1. Vendeur : publier un bien avec photos, vidéo et commission 1 %.
+2. Apporteur (2e compte) : « Obtenir mon lien » sur la fiche, ouvrir le lien
+   dans une fenêtre privée, envoyer une demande.
+3. Vendeur : la demande porte « Lead apporté par… » ; la faire avancer jusqu'à
+   « Vendu » avec un prix final → règlement créé dans `/reglements`.
+4. Tableau de bord des deux côtés : vues, lead, vente, commission en direct.

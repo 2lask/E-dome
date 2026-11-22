@@ -75,13 +75,13 @@ export function DashboardView({ data, period, titles }: { data: Dashboard; perio
           </GlowCard>
         </section>
       ) : tab === "ventes" && s ? (
-        <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           <Kpi icon={Eye} label="Vues" value={s.views} sub={`${formatNumber(s.visitors)} visiteurs uniques`} />
           <Kpi icon={Inbox} label="Leads" value={s.leads} sub={`${String(s.conversion).replace(".", ",")} % de conversion`} />
           <Kpi icon={Handshake} label="Ventes" value={s.sales} sub={`${s.visits} visites · ${s.offers} offres`} />
           <Kpi icon={Coins} label="Commissions apporteurs" value={s.commissions} money accent="laiton" sub={`${String(s.viaApporteurs).replace(".", ",")} % des vues via un apporteur`} />
 
-          <GlowCard className="sm:col-span-2 lg:col-span-3">
+          <GlowCard className="col-span-2 lg:col-span-3">
             <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-[14px] font-semibold">Vues et leads</p>
               <p className="flex items-center gap-3 text-[12.5px] text-muted-foreground">
@@ -92,11 +92,11 @@ export function DashboardView({ data, period, titles }: { data: Dashboard; perio
             <TrendChart series={s.series} />
           </GlowCard>
 
-          <GlowCard className="sm:col-span-2 lg:col-span-1 lg:row-span-2">
+          <GlowCard className="col-span-2 lg:col-span-1 lg:row-span-2">
             <LiveActivity titles={titles} linkIds={data.linkIds} />
           </GlowCard>
 
-          <GlowCard accent="laiton" className="sm:col-span-2 lg:col-span-3">
+          <GlowCard accent="laiton" className="col-span-2 lg:col-span-3">
             <p className="text-[14px] font-semibold">Chiffre d&apos;affaires</p>
             <div className="mt-3 grid grid-cols-2 gap-4 md:grid-cols-4">
               <Money label="Ventes conclues" value={s.revenue} />
@@ -106,12 +106,12 @@ export function DashboardView({ data, period, titles }: { data: Dashboard; perio
             </div>
           </GlowCard>
 
-          <GlowCard className="sm:col-span-2">
+          <GlowCard className="col-span-2">
             <p className="mb-3 text-[14px] font-semibold">Entonnoir de vente</p>
             <Funnel steps={s.funnel} />
           </GlowCard>
 
-          <GlowCard accent="laiton" className="sm:col-span-2">
+          <GlowCard accent="laiton" className="col-span-2">
             <p className="mb-3 text-[14px] font-semibold">Meilleurs apporteurs</p>
             {s.topApporteurs.length === 0 ? (
               <p className="text-[13px] text-muted-foreground">Aucun lead apporté sur la période. Une commission attractive fait venir les apporteurs.</p>
@@ -125,7 +125,7 @@ export function DashboardView({ data, period, titles }: { data: Dashboard; perio
             )}
           </GlowCard>
 
-          <GlowCard className="sm:col-span-2 lg:col-span-4">
+          <GlowCard className="col-span-2 lg:col-span-4">
             <div className="mb-3 flex items-center justify-between">
               <p className="text-[14px] font-semibold">Performance par bien</p>
               <Link href="/mes-biens" className="text-[13px] font-medium text-leman hover:underline">Mes biens →</Link>
@@ -156,21 +156,21 @@ export function DashboardView({ data, period, titles }: { data: Dashboard; perio
 
 function ApporteurPanel({ a, titles, linkIds }: { a: NonNullable<Dashboard["apporteur"]>; titles: Record<string, string>; linkIds: string[] }) {
   return (
-    <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       <Kpi icon={Link2} label="Clics sur mes liens" value={a.clicks} sub={`${formatNumber(a.visitors)} personnes`} />
       <Kpi icon={Inbox} label="Leads apportés" value={a.leads} sub="contacts reçus par les vendeurs" />
       <Kpi icon={Handshake} label="Ventes" value={a.sales} sub={`${chf(a.revenueGenerated)} de ventes générées`} />
       <Kpi icon={Coins} label="Commissions gagnées" value={a.commissionsEarned} money accent="laiton" sub={`≈ ${chf(a.commissionsPending)} en cours`} />
 
-      <GlowCard className="sm:col-span-2 lg:col-span-3">
+      <GlowCard className="col-span-2 lg:col-span-3">
         <p className="mb-3 text-[14px] font-semibold">Clics et leads de mes liens</p>
         <TrendChart series={a.series} viewsLabel="Clics" />
       </GlowCard>
-      <GlowCard className="sm:col-span-2 lg:col-span-1 lg:row-span-2">
+      <GlowCard className="col-span-2 lg:col-span-1 lg:row-span-2">
         <LiveActivity titles={titles} linkIds={linkIds} />
       </GlowCard>
 
-      <GlowCard accent="laiton" className="sm:col-span-2 lg:col-span-3">
+      <GlowCard accent="laiton" className="col-span-2 lg:col-span-3">
         <div className="mb-3 flex items-center justify-between">
           <p className="text-[14px] font-semibold">Mes liens</p>
           <Link href="/reglements" className="text-[13px] font-medium text-leman hover:underline">Mes règlements →</Link>
@@ -203,7 +203,7 @@ function Kpi({ icon: Icon, label, value, sub, money: isMoney = false, accent = "
   return (
     <GlowCard accent={accent} className={accent === "laiton" ? "bg-laiton-soft/40" : undefined}>
       <p className="flex items-center gap-1.5 text-[12.5px] text-muted-foreground"><Icon className="h-4 w-4" aria-hidden />{label}</p>
-      <p className={cn("mt-2 text-[30px] font-semibold leading-none tracking-[-0.02em]", accent === "laiton" && "text-laiton")}>
+      <p className={cn("mt-2 text-[24px] font-semibold leading-none tracking-[-0.02em] sm:text-[30px]", accent === "laiton" && "text-laiton")}>
         <AnimatedNumber value={value} />{isMoney && <span className="ml-1 text-[15px] font-medium">CHF</span>}
       </p>
       <p className="mt-2 text-[12px] text-muted-foreground">{sub}</p>
