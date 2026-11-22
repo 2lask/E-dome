@@ -11,6 +11,8 @@
    Tables : `inquiries`, `inquiry_events`, `introductions`,
    `introduction_contacts` (migration `supabase/migrations/002_demandes.sql`). */
 
+import type { CommissionTerms } from "./commission";
+
 export type DemandeKind = "contact" | "visite" | "apport";
 
 export type DemandeStatus = "nouvelle" | "en-cours" | "visite" | "offre" | "conclue" | "fermee";
@@ -21,8 +23,8 @@ export const STATUS_FLOW: { value: DemandeStatus; label: string; short: string }
   { value: "en-cours", label: "En discussion", short: "En cours" },
   { value: "visite", label: "Visite prévue", short: "Visite" },
   { value: "offre", label: "Offre reçue", short: "Offre" },
-  { value: "conclue", label: "Conclue", short: "Conclue" },
-  { value: "fermee", label: "Sans suite", short: "Fermée" },
+  { value: "conclue", label: "Vendu / signé", short: "Vendu" },
+  { value: "fermee", label: "Perdu, sans suite", short: "Perdu" },
 ];
 
 export const STATUS_LABEL: Record<DemandeStatus, string> = Object.fromEntries(
@@ -54,6 +56,10 @@ export interface Demande {
   updatedAt: string;
   /** Jeton du dossier de location joint (lien /dossier/partage/<jeton>). */
   dossierToken?: string | null;
+  /** Lead attribué à un apporteur (lien tracé ou mise en relation), conditions figées (009). */
+  attribution?: { apporteurName: string; terms: CommissionTerms } | null;
+  /** Prix final saisi à la conclusion. */
+  salePrice?: number | null;
 }
 
 export interface PendingIntroduction {

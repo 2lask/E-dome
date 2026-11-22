@@ -18,6 +18,8 @@ import {
   addDemandeNote, decideIntroduction, listDemandeEvents, setDemandeStatus,
 } from "@/lib/supabase/demande-actions";
 import { apporteurNetChf } from "@/lib/my-property";
+import { Input } from "@/components/ui/input";
+import { commissionChf, commissionLabel, dueLabel, netForApporteur } from "@/lib/commission";
 import { AnswersInbox } from "@/components/demandes/answers-inbox";
 import type { SearchAnswer } from "@/lib/recherches";
 import { cn } from "@/lib/utils";
@@ -290,7 +292,12 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
   const { addToast } = useToast();
   const [events, setEvents] = useState<DemandeEvent[] | null>(null);
   const [note, setNote] = useState("");
+  const [closing, setClosing] = useState(false);
+  const [salePrice, setSalePrice] = useState("");
   const [isPending, startTransition] = useTransition();
+  const priceNum = Number(salePrice.replace(/[^\d]/g, "")) || 0;
+  const terms = d.attribution?.terms ?? null;
+  const due = terms ? commissionChf(terms, priceNum || null) : null;
 
   useEffect(() => {
     let alive = true;
@@ -298,10 +305,14 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
     return () => { alive = false; };
   }, [d.id, d.status]);
 
-  const move = (status: DemandeStatus) =>
+  const move = (status: DemandeStatus, price?: number) =>
     startTransition(async () => {
-      const res = await setDemandeStatus(d.id, status);
+      const res = await setDemandeStatus(d.id, status, price ?? null);
       if (!res.ok) { addToast(res.error, "error"); return; }
+      if (status === "conclue") {
+        setClosing(false);
+        addToast(d.attribution ? "Vente conclue. La commission de l'apporteur est créée dans vos Règlements." : "Vente conclue. Félicitations !", "success");
+      }
       router.refresh();
     });
 
@@ -353,8 +364,20 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
           </Link>
         </div>
 
+        {/* Lead attribué à un apporteur (lien tracé ou mise en relation) */}
+        {d.attribution && terms && (
+          <div className="flex items-start gap-2.5 rounded-xl border border-laiton-border bg-laiton-soft/60 px-3.5 py-3 text-[13px]">
+            <Coins className="mt-0.5 h-4 w-4 shrink-0 text-laiton" aria-hidden />
+            <p>
+              Lead apporté par <strong>{d.attribution.apporteurName}</strong>. Commission promise :{" "}
+              <strong className="tabular-nums">{commissionLabel(terms)}</strong>, {dueLabel(terms)}.
+              {d.status === "conclue" && d.salePrice ? <> Vendu {chf(d.salePrice)} — commission {chf(commissionChf(terms, d.salePrice) ?? 0)}.</> : null}
+            </p>
+          </div>
+        )}
+
         {/* Apport */}
-        {d.introduction && (
+        {d.introduction && !d.attribution && (
           <div className="flex items-start gap-2.5 rounded-xl border border-laiton-border bg-laiton-soft/60 px-3.5 py-3 text-[13px]">
             <Coins className="mt-0.5 h-4 w-4 shrink-0 text-laiton" aria-hidden />
             <p>
@@ -396,7 +419,11 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
                 role="radio"
                 aria-checked={d.status === s.value}
                 disabled={isPending}
-                onClick={() => d.status !== s.value && move(s.value)}
+                onClick={() => {
+                  if (d.status === s.value || d.status === "conclue") return;
+                  if (s.value === "conclue") setClosing(true);
+                  else move(s.value);
+                }}
                 className={cn(
                   "h-8 rounded-full border px-3 text-[12.5px]",
                   d.status === s.value
@@ -409,6 +436,31 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
             ))}
           </div>
         </div>
+
+        {closing && d.status !== "conclue" && (
+          <div className="space-y-3 rounded-xl border border-leman/30 bg-leman-soft/40 p-4">
+            <p className="text-[14px] font-semibold">Conclure : {d.attribution ? "la commission est calculée sur le prix final" : "bravo !"}</p>
+            <label className="block">
+              <span className="mb-1.5 block text-[13px] font-medium">Prix final (vente ou loyer signé)</span>
+              <Input value={salePrice ? formatNumber(priceNum) : ""} onChange={(e) => setSalePrice(e.target.value)} inputMode="numeric"
+                placeholder="0" containerClassName="sm:max-w-[240px]" trailing={<span className="pr-2 text-[12.5px] text-muted-foreground">CHF</span>} />
+            </label>
+            {terms && (
+              <p className="text-[13px]">
+                Commission due à <strong>{d.attribution?.apporteurName}</strong> :{" "}
+                <strong className="tabular-nums text-laiton">{due !== null ? chf(due) : "indiquez le prix"}</strong>
+                {due !== null ? <span className="text-muted-foreground"> (dont 12 % E-Dome ; l&apos;apporteur touche {chf(netForApporteur(due))})</span> : null}
+              </p>
+            )}
+            <p className="text-[12px] text-muted-foreground">Définitif : une vente conclue ne peut plus être modifiée (correction sur demande).</p>
+            <div className="flex gap-2">
+              <Button size="sm" variant="accent" disabled={isPending || (terms?.kind === "pourcentage" && !priceNum)} onClick={() => move("conclue", priceNum || undefined)}>
+                Confirmer la vente
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setClosing(false)}>Annuler</Button>
+            </div>
+          </div>
+        )}
 
         {/* Note */}
         <div>

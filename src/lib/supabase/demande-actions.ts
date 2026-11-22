@@ -7,6 +7,7 @@ import { z } from "zod";
 import { createClient } from "./server";
 import { createAdminClient } from "./admin";
 import { createDossierShareFor } from "./dossier-server";
+import { attributionFor } from "./apport-server";
 import { coverOf } from "../my-property";
 import type { PropertyType } from "../types";
 import type {
@@ -90,9 +91,13 @@ export async function createInquiry(raw: z.input<typeof InquiryInput>): Promise<
      bien (la colonne n'est écrite que si le jeton existe : migration 005). */
   const dossierToken = user && v.attachDossier ? await createDossierShareFor(user.id, prop.id) : null;
 
-  const { data: inq, error } = await admin
+  /* Venu par le lien d'un apporteur ? Lead attribué, commission figée (009). */
+  const attribution = await attributionFor(prop.id, prop.host_id, user?.id ?? null);
+
+  const insertInquiry = (extra: Record<string, unknown>) => admin
     .from("inquiries")
     .insert({
+      ...extra,
       ...(dossierToken ? { dossier_token: dossierToken } : {}),
       property_id: prop.id,
       seller_id: prop.host_id,
@@ -106,7 +111,11 @@ export async function createInquiry(raw: z.input<typeof InquiryInput>): Promise<
     })
     .select("id")
     .single();
+  let { data: inq, error } = await insertInquiry(attribution ? { ...attribution } : {});
+  /* Base sans migration 009 : on enregistre la demande sans attribution. */
+  if (error && attribution && ["42703", "PGRST204"].includes(error.code ?? "")) ({ data: inq, error } = await insertInquiry({}));
   if (error || !inq) return { ok: false, error: "L'envoi a échoué. Réessayez." };
+  await admin.from("property_events").insert({ property_id: prop.id, kind: "lead", link_id: attribution?.link_id ?? null, visitor: "" });
 
   await admin.from("inquiry_events").insert({
     inquiry_id: inq.id,
@@ -188,7 +197,38 @@ export async function listMyDemandes(): Promise<{
     if (!tErr) for (const row of (t ?? []) as { id: string; dossier_token: string | null }[]) if (row.dossier_token) tokens.set(row.id, row.dossier_token);
   }
 
+  /* Attribution et prix de vente (migration 009) : lecture séparée et tolérante. */
+  type AttrRow = {
+    id: string; sale_price: number | null; commission_kind: string | null; commission_amount_chf: number | null;
+    commission_rate_pct: number | null; commission_due_on: string | null; apporteur: { first_name: string; last_name: string } | null;
+  };
+  const attr = new Map<string, AttrRow>();
+  if (ids.length) {
+    const { data: a, error: aErr } = await supabase
+      .from("inquiries")
+      .select("id, sale_price, commission_kind, commission_amount_chf, commission_rate_pct, commission_due_on, apporteur:profiles!apporteur_id ( first_name, last_name )")
+      .in("id", ids);
+    if (!aErr) for (const row of (a ?? []) as unknown as AttrRow[]) attr.set(row.id, row);
+  }
+
   const demandes: Demande[] = ((inq.data ?? []) as unknown as InquiryRow[]).map((r) => ({
+    ...(() => {
+      const a = attr.get(r.id);
+      return {
+        salePrice: a?.sale_price === null || a?.sale_price === undefined ? null : Number(a.sale_price),
+        attribution: a?.apporteur && a.commission_kind
+          ? {
+              apporteurName: nameOf(a.apporteur, "Un apporteur"),
+              terms: {
+                kind: a.commission_kind === "pourcentage" ? ("pourcentage" as const) : ("fixe" as const),
+                amountChf: a.commission_amount_chf === null ? null : Number(a.commission_amount_chf),
+                ratePct: a.commission_rate_pct === null ? null : Number(a.commission_rate_pct),
+                dueOn: a.commission_due_on === "acceptation" ? ("acceptation" as const) : ("conclusion" as const),
+              },
+            }
+          : null,
+      };
+    })(),
     dossierToken: tokens.get(r.id) ?? null,
     id: r.id,
     kind: r.kind,
@@ -253,11 +293,20 @@ export async function listDemandeEvents(inquiryId: string): Promise<DemandeEvent
 
 const STATUSES: DemandeStatus[] = ["nouvelle", "en-cours", "visite", "offre", "conclue", "fermee"];
 
-export async function setDemandeStatus(id: string, status: DemandeStatus): Promise<Ok> {
+export async function setDemandeStatus(id: string, status: DemandeStatus, salePrice?: number | null): Promise<Ok> {
   if (!STATUSES.includes(status)) return { ok: false, error: "Statut invalide." };
+  const price = salePrice && Number.isFinite(salePrice) && salePrice > 0 ? Math.round(salePrice) : null;
   const { supabase, user } = await me();
   if (!supabase || !user) return { ok: false, error: "Reconnectez-vous." };
-  const { error } = await supabase.from("inquiries").update({ status }).eq("id", id).eq("seller_id", user.id);
+  const patch: Record<string, unknown> = { status };
+  if (status === "conclue" && price) patch.sale_price = price;
+  let { error } = await supabase.from("inquiries").update(patch).eq("id", id).eq("seller_id", user.id);
+  /* Base sans migration 009 : la colonne n'existe pas, on enregistre le statut seul. */
+  if (error && patch.sale_price && ["42703", "PGRST204"].includes(error.code ?? "")) {
+    ({ error } = await supabase.from("inquiries").update({ status }).eq("id", id).eq("seller_id", user.id));
+  }
+  if (error?.message?.includes("prix de vente requis")) return { ok: false, error: "Indiquez le prix de vente final : la commission en dépend." };
+  if (error?.message?.includes("déjà conclue")) return { ok: false, error: "Cette vente est déjà conclue (définitif). Écrivez-nous pour corriger." };
   return error ? { ok: false, error: "La mise à jour a échoué." } : { ok: true };
 }
 
@@ -289,7 +338,7 @@ export async function decideIntroduction(id: string, decision: "acceptee" | "ref
     .eq("id", id)
     .eq("seller_id", user.id)
     .eq("status", "proposee")
-    .select("id, property_id, seller_id, contact_label, amount_chf, apporteur_id")
+    .select("*")
     .maybeSingle();
   if (error || !updated) return { ok: false, error: "Cette mise en relation n'est plus en attente." };
 
@@ -314,20 +363,27 @@ export async function decideIntroduction(id: string, decision: "acceptee" | "ref
     .maybeSingle();
   if (!contact || !updated.property_id) return { ok: true };
 
-  const { data: inq } = await admin
-    .from("inquiries")
-    .insert({
-      property_id: updated.property_id,
-      seller_id: updated.seller_id,
-      sender_name: contact.contact_name,
-      sender_email: contact.contact_email,
-      sender_phone: contact.contact_phone,
-      kind: "apport",
-      message: updated.contact_label,
-      introduction_id: id,
-    })
-    .select("id")
-    .single();
+  const base = {
+    property_id: updated.property_id,
+    seller_id: updated.seller_id,
+    sender_name: contact.contact_name,
+    sender_email: contact.contact_email,
+    sender_phone: contact.contact_phone,
+    kind: "apport",
+    message: updated.contact_label,
+    introduction_id: id,
+  };
+  /* La commission suit le lead jusqu'à la vente (figée à la mise en relation). */
+  const attributed = {
+    ...base,
+    apporteur_id: updated.apporteur_id,
+    commission_kind: updated.commission_kind ?? "fixe",
+    commission_amount_chf: updated.amount_chf ?? null,
+    commission_rate_pct: updated.rate_pct ?? null,
+    commission_due_on: updated.due_on ?? "acceptation",
+  };
+  let { data: inq, error: insErr } = await admin.from("inquiries").insert(attributed).select("id").single();
+  if (insErr && ["42703", "PGRST204"].includes(insErr.code ?? "")) ({ data: inq, error: insErr } = await admin.from("inquiries").insert(base).select("id").single());
   if (inq) {
     await admin.from("inquiry_events").insert({
       inquiry_id: inq.id,
