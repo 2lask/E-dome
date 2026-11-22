@@ -40,25 +40,35 @@ export function LiveActivity({ titles, linkIds }: { titles: Record<string, strin
       setItems((cur) => [{ id: `${Date.now()}-${Math.random()}`, kind, title: titlesRef.current[propertyId] ?? "Un de vos biens", at: Date.now() }, ...cur].slice(0, 12));
       refresh();
     };
-    const channel = supabase
-      .channel("tableau-de-bord")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "property_events" }, (p) => {
-        const row = p.new as { kind: string; property_id: string; link_id: string | null };
-        if (row.kind === "lead") return; // le lead arrive aussi par `inquiries`
-        push(row.kind, row.property_id);
-      })
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "inquiries" }, (p) => {
-        push("lead", (p.new as { property_id: string }).property_id);
-      })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "inquiries" }, (p) => {
-        const row = p.new as { status: string; property_id: string };
-        if (row.status === "conclue") push("vente", row.property_id);
-        else refresh();
-      })
-      .subscribe((status) => setConnected(status === "SUBSCRIBED"));
+    /* La session doit être chargée AVANT l'abonnement : sinon le temps réel
+       s'ouvre en anonyme et la RLS filtre tout (aucun événement reçu). */
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+    void (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (data.session) await supabase.realtime.setAuth(data.session.access_token);
+      channel = supabase
+        .channel("tableau-de-bord")
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "property_events" }, (p) => {
+          const row = p.new as { kind: string; property_id: string; link_id: string | null };
+          if (row.kind === "lead") return; // le lead arrive aussi par `inquiries`
+          push(row.kind, row.property_id);
+        })
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "inquiries" }, (p) => {
+          push("lead", (p.new as { property_id: string }).property_id);
+        })
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "inquiries" }, (p) => {
+          const row = p.new as { status: string; property_id: string };
+          if (row.status === "conclue") push("vente", row.property_id);
+          else refresh();
+        })
+        .subscribe((status) => setConnected(status === "SUBSCRIBED"));
+    })();
     return () => {
+      cancelled = true;
       if (timer.current) clearTimeout(timer.current);
-      void supabase.removeChannel(channel);
+      if (channel) void supabase.removeChannel(channel);
     };
   }, [router, linkIds.length]);
 

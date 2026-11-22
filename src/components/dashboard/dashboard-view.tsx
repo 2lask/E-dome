@@ -157,10 +157,10 @@ export function DashboardView({ data, period, titles }: { data: Dashboard; perio
 function ApporteurPanel({ a, titles, linkIds }: { a: NonNullable<Dashboard["apporteur"]>; titles: Record<string, string>; linkIds: string[] }) {
   return (
     <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-      <Kpi icon={Link2} label="Clics sur mes liens" value={a.clicks} sub={`${formatNumber(a.visitors)} personnes`} />
+      <Kpi icon={Link2} label="Clics sur mes liens" value={a.clicks} sub={`${formatNumber(a.visitors)} personne${a.visitors > 1 ? "s" : ""}`} />
       <Kpi icon={Inbox} label="Leads apportés" value={a.leads} sub="contacts reçus par les vendeurs" />
       <Kpi icon={Handshake} label="Ventes" value={a.sales} sub={`${chf(a.revenueGenerated)} de ventes générées`} />
-      <Kpi icon={Coins} label="Commissions gagnées" value={a.commissionsEarned} money accent="laiton" sub={`≈ ${chf(a.commissionsPending)} en cours`} />
+      <Kpi icon={Coins} label="Commissions gagnées (net)" value={a.commissionsEarned} money accent="laiton" sub={`≈ ${chf(a.commissionsPending)} net en cours`} />
 
       <GlowCard className="col-span-2 lg:col-span-3">
         <p className="mb-3 text-[14px] font-semibold">Clics et leads de mes liens</p>
@@ -177,7 +177,7 @@ function ApporteurPanel({ a, titles, linkIds }: { a: NonNullable<Dashboard["appo
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-[13px]">
-            <thead><tr className="text-left text-muted-foreground"><th className="pb-2 font-medium">Bien</th><th className="pb-2 text-right font-medium">Clics</th><th className="pb-2 text-right font-medium">Leads</th><th className="pb-2 text-right font-medium">Ventes</th><th className="pb-2 text-right font-medium">Gagné</th><th className="pb-2" /></tr></thead>
+            <thead><tr className="text-left text-muted-foreground"><th className="pb-2 font-medium">Bien</th><th className="pb-2 text-right font-medium">Clics</th><th className="pb-2 text-right font-medium">Leads</th><th className="pb-2 text-right font-medium">Ventes</th><th className="pb-2 text-right font-medium">Gagné (net)</th><th className="pb-2" /></tr></thead>
             <tbody>{a.links.map((l) => (
               <tr key={l.code} className="border-t">
                 <td className="py-2"><Link href={`/explorer/${l.propertyId}`} className="flex items-center gap-2.5 hover:underline">

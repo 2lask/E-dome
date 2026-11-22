@@ -65,3 +65,19 @@ pourcentage ne peut pas être enregistrée.
 3. Vendeur : la demande porte « Lead apporté par… » ; la faire avancer jusqu'à
    « Vendu » avec un prix final → règlement créé dans `/reglements`.
 4. Tableau de bord des deux côtés : vues, lead, vente, commission en direct.
+
+## 5. Test réel du 22.11.2026 — 21/21 contrôles réussis
+
+Base à jour (002 → 009). `npm run test:real` (serveur lancé sur le port 3002)
+rejoue toute la boucle avec trois comptes temporaires, supprimés ensuite :
+publication avec commission 1 % → lien d'apporteur → visite tracée par le lien
+→ demande du visiteur → lead attribué, commission figée → activité en direct
+reçue → vente conclue à 1'400'000 CHF → règlement automatique (14'000 brut,
+1'680 E-Dome, 12'320 net) → TWINT visible du payeur → paiement déclaré puis
+confirmé → tableaux de bord vendeur et apporteur justes.
+Sécurité vérifiée : le vendeur ne peut ni retirer l'apporteur, ni baisser la
+commission, ni modifier une vente conclue ; personne ne peut écrire de faux
+événements ; l'apporteur ne voit que les événements de son lien.
+Corrigé pendant le test : abonnement temps réel ouvert avant le chargement de la
+session (aucun événement reçu) ; l'apporteur voit désormais son gain NET ; les
+vues du propriétaire sur sa propre annonce ne sont plus comptées.

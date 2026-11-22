@@ -3,7 +3,7 @@
    leur avancement, lus sous la session de la personne (RLS). Sorties : les
    indicateurs d'un vendeur (ou d'une agence) et ceux d'un apporteur. */
 
-import { commissionChf, type CommissionTerms } from "./commission";
+import { commissionChf, netForApporteur, type CommissionTerms } from "./commission";
 
 export type Period = 7 | 30 | 90;
 export const PERIODS: Period[] = [7, 30, 90];
@@ -159,7 +159,8 @@ export function computeApporteur(
   const clicks = events.filter((e) => e.kind === "vue" && e.link_id && mine.has(e.link_id) && inRange(e.created_at));
   const ld = leads.filter((l) => inRange(l.created_at));
   const sold = leads.filter((l) => l.status === "conclue" && inRange(l.closed_at ?? l.created_at));
-  const commissionOf = (l: LeadRow) => (l.terms ? commissionChf(l.terms, l.sale_price) ?? 0 : 0);
+  /* L'apporteur voit ce qu'il TOUCHE : le net, part E-Dome déduite. */
+  const commissionOf = (l: LeadRow) => { const g = l.terms ? commissionChf(l.terms, l.sale_price) ?? 0 : 0; return g > 0 ? netForApporteur(g) : 0; };
   const open = leads.filter((l) => l.status !== "conclue" && l.status !== "fermee");
 
   const days = daysOf(period, now);
@@ -173,7 +174,8 @@ export function computeApporteur(
     /* Fixe : le montant ; pourcentage : estimé au prix demandé. */
     commissionsPending: open.reduce((t, l) => {
       const price = links.find((x) => x.property.id === l.property_id)?.property.price ?? 0;
-      return t + (l.terms ? commissionChf(l.terms, l.terms.kind === "pourcentage" ? price : null) ?? 0 : 0);
+      const g = l.terms ? commissionChf(l.terms, l.terms.kind === "pourcentage" ? price : null) ?? 0 : 0;
+      return t + (g > 0 ? netForApporteur(g) : 0);
     }, 0),
     series: days.map((day) => ({
       day,

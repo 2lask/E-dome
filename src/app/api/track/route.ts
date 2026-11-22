@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { REF_COOKIE, REF_DAYS, VISITOR_COOKIE, isRefCode, isTrackKind, isUuid, parseRefCookie, withRef } from "@/lib/tracking";
 
 /* ── POST /api/track — un événement sur une annonce ──────────────────────────
@@ -33,6 +34,14 @@ export async function POST(req: NextRequest) {
 
   const admin = createAdminClient();
   if (!admin) return res;
+
+  /* Le propriétaire qui regarde sa propre annonce ne gonfle pas ses statistiques. */
+  const session = await createClient();
+  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
+  if (user) {
+    const { data: prop } = await admin.from("properties").select("host_id").eq("id", propertyId).maybeSingle();
+    if (prop?.host_id === user.id) return res;
+  }
 
   /* Attribution : le code de l'URL prime sur le cookie (dernier lien suivi). */
   const refs = parseRefCookie(req.cookies.get(REF_COOKIE)?.value);

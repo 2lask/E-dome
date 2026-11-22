@@ -51,7 +51,7 @@ test("D-2 · la période filtre vraiment", () => {
   assert.equal(daysOf(7, NOW).at(-1), "2026-11-24");
 });
 
-test("D-3 · apporteur : clics de ses liens, ventes, commissions gagnées et en cours", () => {
+test("D-3 · apporteur : clics de ses liens, ventes, commissions NETTES gagnées et en cours", () => {
   const a = computeApporteur(30, NOW, [{ id: "L1", code: "abcd2345", property: P[0] }], events, [
     leads[0],
     { ...leads[2], id: "4", property_id: "a", apporteur_id: "u1", terms: pct1 },
@@ -59,7 +59,7 @@ test("D-3 · apporteur : clics de ses liens, ventes, commissions gagnées et en 
   assert.equal(a.clicks, 1);
   assert.equal(a.sales, 1);
   assert.equal(a.revenueGenerated, 950_000);
-  assert.equal(a.commissionsEarned, 9_500);
-  assert.equal(a.commissionsPending, 10_000, "estimé au prix demandé");
-  assert.equal(a.links[0].earned, 9_500);
+  assert.equal(a.commissionsEarned, 8_360, "9'500 brut − 12 % E-Dome");
+  assert.equal(a.commissionsPending, 8_800, "10'000 estimés au prix demandé, nets");
+  assert.equal(a.links[0].earned, 8_360);
 });

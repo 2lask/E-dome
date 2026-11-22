@@ -14,7 +14,8 @@
     "test:data": "node --test --import ./tests/data/resolve-ts.mjs \"tests/data/*.test.ts\"",
     "icons": "node scripts/generate-icons.mjs",
     "db:build": "node scripts/build-migrations.mjs",
-    "db:check": "node scripts/db-check.mjs"
+    "db:check": "node scripts/db-check.mjs",
+    "test:real": "node scripts/test-real.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
