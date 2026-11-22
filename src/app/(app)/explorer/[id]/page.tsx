@@ -3,13 +3,19 @@ import { formatNumber } from "@/lib/format";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowLeft, MapPin, Maximize, BedDouble, Bath, Home, Coins, ShieldCheck, Settings2, Images,
+  ArrowLeft, MapPin, Maximize, BedDouble, Bath, Home, ShieldCheck, Settings2, Eye, PlayCircle, Ruler, LayoutDashboard,
 } from "lucide-react";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { Gallery } from "@/components/listing/gallery";
+import { ApporteurCard } from "@/components/listing/apporteur-card";
+import { TrackedVideo } from "@/components/listing/tracked-video";
+import { TrackView } from "@/components/listing/track";
+import { commissionLabel } from "@/lib/commission";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { getPublicProperty } from "@/lib/supabase/property-actions";
 import { getMyDossier } from "@/lib/supabase/dossier-actions";
 import { dossierScore } from "@/lib/dossier";
-import { apporteurNetChf, coverOf, frDay, isDbPropertyId, repriseOf, type MyProperty } from "@/lib/my-property";
+import { coverOf, frDay, isDbPropertyId, repriseOf, type MyProperty } from "@/lib/my-property";
 import { initialsAvatar } from "@/lib/current-user-profile";
 import { InquiryForm } from "@/components/listing/inquiry-form";
 import { CopilotButton } from "@/components/home/copilot-button";
@@ -48,6 +54,14 @@ async function load(id: string): Promise<MyProperty | null> {
   return isDbPropertyId(id) ? getPublicProperty(id) : null;
 }
 
+/* Compteur de vues public (à la manière d'un profil gun.lol), lu par le serveur. */
+async function viewCount(id: string): Promise<number> {
+  const admin = createAdminClient();
+  if (!admin) return 0;
+  const { count, error } = await admin.from("property_events").select("id", { count: "exact", head: true }).eq("property_id", id).eq("kind", "vue");
+  return error ? 0 : count ?? 0;
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const p = await load((await params).id);
   if (!p) return { title: "Bien introuvable" };
@@ -66,8 +80,10 @@ export default async function BienPage({
   searchParams: Promise<{ publie?: string; modifie?: string }>;
 }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]);
-  const [p, user] = await Promise.all([load(id), getCurrentUser()]);
+  const [p, user, views] = await Promise.all([load(id), getCurrentUser(), isDbPropertyId(id) ? viewCount(id) : Promise.resolve(0)]);
   if (!p) notFound();
+  const video = p.videos[0] ?? null;
+  const pricePerM2 = p.transactionType === "vente" && p.area > 0 ? Math.round(p.price / p.area) : null;
   const justSaved = sp.publie ? "publie" : sp.modifie ? "modifie" : null;
 
   const isOwner = !!user && user.id === p.hostId;
@@ -79,6 +95,7 @@ export default async function BienPage({
     if (ready) dossierPct = dossier.updatedAt ? dossierScore(dossier, docs).pct : 0;
   }
   const images = p.images.length > 0 ? p.images : [coverOf(p)];
+  const cover = images[0];
   const sellerName = p.host ? `${p.host.firstName} ${p.host.lastName}`.trim() || "Propriétaire" : "Propriétaire";
   const sellerAvatar = p.host?.avatar || initialsAvatar(p.host?.firstName ?? "", p.host?.lastName ?? "");
   const declared = DECLARED
@@ -90,9 +107,6 @@ export default async function BienPage({
     p.bedrooms > 0 ? { icon: BedDouble, label: `${p.bedrooms} chambre${p.bedrooms > 1 ? "s" : ""}` } : null,
     p.bathrooms > 0 ? { icon: Bath, label: `${p.bathrooms} salle${p.bathrooms > 1 ? "s" : ""} d'eau` } : null,
   ].filter(Boolean) as { icon: typeof Home; label: string }[];
-  const recommendHref = user
-    ? `/apporteurs?bien=${p.id}`
-    : `/auth/inscription?redirect=${encodeURIComponent(`/apporteurs?bien=${p.id}`)}`;
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -112,11 +126,15 @@ export default async function BienPage({
               <strong>C&apos;est votre annonce. </strong>
             )}
             Elle est visible de tous ; les demandes arrivent dans vos Demandes.
-            {p.activePrimeChf ? ` Prime active : ${formatNumber(p.activePrimeChf)} CHF.` : " Aucune prime : les apporteurs ne la recommandent pas encore."}
+            {p.commission ? ` Commission : ${commissionLabel(p.commission)}.` : " Aucune commission : les apporteurs ne la recommandent pas encore."}
+            {views > 0 ? ` ${formatNumber(views)} vue${views > 1 ? "s" : ""}.` : ""}
           </p>
           <div className="flex gap-2">
             <Button asChild size="sm" variant="outline">
               <Link href={`/publier?edit=${p.id}`}>Modifier</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/tableau-de-bord"><LayoutDashboard className="h-4 w-4" aria-hidden /> Statistiques</Link>
             </Button>
             <Button asChild size="sm" variant="outline">
               <Link href="/mes-biens"><Settings2 className="h-4 w-4" aria-hidden /> Mes biens</Link>
@@ -125,65 +143,86 @@ export default async function BienPage({
         </div>
       )}
 
-      {/* ── Galerie ──────────────────────────────────────────────────────── */}
-      <section aria-label="Photos" className="relative mt-4">
-        {/* Mobile : défilement horizontal. Bureau : mise en page selon le
-            nombre de photos (1 pleine largeur · 2 côte à côte · 3+ principale
-            et deux vignettes), sans case vide. */}
-        <div
-          className={
-            images.length === 1
-              ? "overflow-hidden rounded-2xl"
-              : images.length === 2
-                ? "flex snap-x snap-mandatory gap-2 overflow-x-auto no-scrollbar md:grid md:grid-cols-2 md:overflow-hidden md:rounded-2xl"
-                : "flex snap-x snap-mandatory gap-2 overflow-x-auto no-scrollbar md:grid md:h-[460px] md:grid-cols-[2fr_1fr] md:grid-rows-2 md:overflow-hidden md:rounded-2xl"
-          }
-        >
-          {images.slice(0, images.length >= 3 ? 3 : images.length).map((src, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={src + i}
-              src={src}
-              alt={i === 0 ? p.title : ""}
-              loading={i === 0 ? "eager" : "lazy"}
-              className={
-                images.length === 1
-                  ? "aspect-[16/9] max-h-[520px] w-full object-cover"
-                  : images.length >= 3 && i === 0
-                    ? "aspect-[4/3] w-[88%] shrink-0 snap-start rounded-2xl object-cover md:row-span-2 md:aspect-auto md:h-full md:w-full md:rounded-none"
-                    : images.length >= 3
-                      ? "aspect-[4/3] w-[88%] shrink-0 snap-start rounded-2xl object-cover md:aspect-auto md:h-full md:w-full md:rounded-none"
-                      : "aspect-[4/3] w-[88%] shrink-0 snap-start rounded-2xl object-cover md:w-full md:rounded-none"
-              }
-            />
-          ))}
-        </div>
-        {images.length > 1 && (
-          <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-md bg-white/92 px-2 py-1 text-[12px] font-medium text-[#15130f]">
-            <Images className="h-3.5 w-3.5" aria-hidden /> {images.length} photo{images.length > 1 ? "s" : ""}
-          </span>
+      <TrackView propertyId={p.id} />
+
+      {/* ── Vitrine : vidéo ou photo en grand, l'essentiel par-dessus ─────── */}
+      <section aria-label={p.title} className="relative isolate mt-4 flex min-h-[460px] flex-col justify-between overflow-hidden rounded-3xl bg-ink p-5 text-white sm:p-7 md:min-h-[560px]">
+        {video ? (
+          <video src={video} poster={cover} autoPlay muted loop playsInline preload="metadata" aria-hidden className="absolute inset-0 -z-20 h-full w-full object-cover" />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={cover} alt="" className="hero-zoom absolute inset-0 -z-20 h-full w-full object-cover" />
         )}
+        <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-black/88 via-black/35 to-black/25" />
+        <div aria-hidden className="absolute -bottom-24 -left-24 -z-10 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgb(227_184_92/0.28),transparent_70%)]" />
+
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex flex-wrap gap-2">
+            <span className="glass-chip">{reprise ? "Reprise de bail" : TX_LABEL[p.transactionType]}</span>
+            {p.commission && p.activePrimeChf ? (
+              <span className="glass-chip glass-chip--gold">Commission {commissionLabel(p.commission)}</span>
+            ) : null}
+            {video && <span className="glass-chip"><PlayCircle className="h-3.5 w-3.5" aria-hidden /> Visite vidéo</span>}
+          </div>
+          <div className="flex items-center gap-2">
+            {views > 0 && (
+              <span className="glass-chip tabular-nums" title="Vues de l'annonce"><Eye className="h-3.5 w-3.5" aria-hidden /> {formatNumber(views)}</span>
+            )}
+            <ShareButton
+              path={`/explorer/${p.id}`}
+              title={p.title}
+              propertyId={p.id}
+              className="border-white/25 bg-white/10 text-white backdrop-blur hover:bg-white/20"
+              text={`${reprise ? "Reprise de bail" : TX_LABEL[p.transactionType]} à ${p.city} : ${p.title}`}
+            />
+          </div>
+        </div>
+
+        <div className="hero-rise max-w-3xl">
+          <p className="inline-flex items-center gap-1.5 text-[14px] text-white/80"><MapPin className="h-4 w-4" aria-hidden />{[p.address, p.city].filter(Boolean).join(", ")}</p>
+          <h1 className="mt-2 text-[30px] font-semibold leading-[1.08] tracking-[-0.025em] sm:text-[44px]">{p.title}</h1>
+          <div className="mt-4 flex flex-wrap items-end gap-x-6 gap-y-3">
+            <p className="text-[30px] font-semibold tabular-nums tracking-[-0.02em] sm:text-[36px]">
+              {chfPrice(p.price)}<span className="text-[16px] font-normal text-white/70">{PRICE_UNIT[p.transactionType]}</span>
+            </p>
+            <ul className="flex flex-wrap gap-2 pb-1.5">
+              {facts.map((f) => (
+                <li key={f.label} className="glass-chip"><f.icon className="h-3.5 w-3.5" aria-hidden /> {f.label}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </section>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
         {/* ── Contenu ──────────────────────────────────────────────────── */}
         <div className="min-w-0">
-          <div className="flex items-start justify-between gap-3">
-            <p className="eyebrow">{reprise ? "Reprise de bail" : TX_LABEL[p.transactionType]}</p>
-            <ShareButton
-              path={`/explorer/${p.id}`}
-              title={p.title}
-              text={`${reprise ? "Reprise de bail" : TX_LABEL[p.transactionType]} à ${p.city} : ${p.title}${p.activePrimeChf ? ` — prime de ${formatNumber(p.activePrimeChf)} CHF pour qui trouve la bonne personne` : ""}`}
-            />
-          </div>
-          <h1 className="page-heading mt-2 text-[30px] sm:text-[34px]">{p.title}</h1>
-          <p className="mt-2 inline-flex items-center gap-1.5 text-[14px] text-muted-foreground">
-            <MapPin className="h-4 w-4" aria-hidden />
-            {[p.address, p.city].filter(Boolean).join(", ")}
-          </p>
+          {/* Photos */}
+          <section aria-label="Photos">
+            <Gallery images={images} title={p.title} />
+          </section>
+
+          {video && (
+            <section className="mt-10">
+              <h2 className="text-[17px] font-semibold">Visite en vidéo</h2>
+              <div className="mt-3"><TrackedVideo src={video} poster={cover} propertyId={p.id} /></div>
+            </section>
+          )}
+
+          {/* Chiffres clés */}
+          <section className="mt-10">
+            <h2 className="text-[17px] font-semibold">En bref</h2>
+            <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+              <Fact label="Type" value={TYPE_LABEL[p.type] ?? p.type} />
+              {p.area > 0 && <Fact label="Surface" value={`${p.area} m²`} />}
+              {p.bedrooms > 0 && <Fact label="Chambres" value={String(p.bedrooms)} />}
+              {p.bathrooms > 0 && <Fact label="Salles d'eau" value={String(p.bathrooms)} />}
+              {pricePerM2 && <Fact label="Prix au m²" value={chfPrice(pricePerM2)} icon={<Ruler className="h-3.5 w-3.5" aria-hidden />} />}
+            </dl>
+          </section>
 
           {reprise && (
-            <div className="mt-5 rounded-2xl border bg-leman-soft/50 p-4">
+            <div className="mt-10 rounded-2xl border bg-leman-soft/50 p-4">
               <div className="flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
                 {reprise.availableFrom && (
                   <p><span className="text-muted-foreground">Libre dès le </span><strong>{frDay(reprise.availableFrom)}</strong></p>
@@ -199,13 +238,6 @@ export default async function BienPage({
             </div>
           )}
 
-          <ul className="mt-5 flex flex-wrap gap-2">
-            {facts.map((f) => (
-              <li key={f.label} className="inline-flex items-center gap-1.5 rounded-lg border bg-card px-3 py-1.5 text-[13px]">
-                <f.icon className="h-4 w-4 text-muted-foreground" aria-hidden /> {f.label}
-              </li>
-            ))}
-          </ul>
 
           {p.description && (
             <section className="mt-8">
@@ -263,7 +295,7 @@ export default async function BienPage({
               {chfPrice(p.price)}
               <span className="text-[15px] font-normal text-muted-foreground">{PRICE_UNIT[p.transactionType]}</span>
             </p>
-            <p className="mt-0.5 text-[12.5px] text-muted-foreground">Sans commission d&apos;agence</p>
+            <p className="mt-0.5 text-[12.5px] text-muted-foreground">{pricePerM2 ? `${chfPrice(pricePerM2)} / m² · ` : ""}Sans commission d&apos;agence</p>
             <div className="my-4 h-px bg-border" />
             {isOwner ? (
               <p className="text-[13px] text-muted-foreground">
@@ -280,24 +312,9 @@ export default async function BienPage({
             )}
           </div>
 
-          {p.activePrimeChf && !isOwner ? (
-            <div className="rounded-2xl border border-laiton-border bg-laiton-soft/70 p-5">
-              <div className="flex items-center gap-2">
-                <Coins className="h-4 w-4 text-laiton" aria-hidden />
-                <p className="text-[13px] font-semibold text-laiton">Prime pour qui recommande</p>
-              </div>
-              <p className="mt-2 text-[14px] leading-relaxed">
-                Vous connaissez quelqu&apos;un qui cherche ce type de bien ? Le propriétaire offre{" "}
-                <strong className="tabular-nums">{formatNumber(p.activePrimeChf)} CHF</strong> à qui lui présente
-                le bon contact.
-              </p>
-              <p className="mt-1 text-[13px] text-muted-foreground">
-                Vous touchez <strong className="tabular-nums text-foreground">{formatNumber(apporteurNetChf(p.activePrimeChf))} CHF</strong> net,
-                dès qu&apos;il accepte le contact — pas un % du prix, pas liée à la vente.
-              </p>
-              <Button asChild variant="prime" className="mt-4 w-full">
-                <Link href={recommendHref}>Recommander quelqu&apos;un</Link>
-              </Button>
+          {p.commission && p.activePrimeChf && !isOwner ? (
+            <div id="recommander" className="scroll-mt-6">
+              <ApporteurCard propertyId={p.id} title={p.title} city={p.city} terms={p.commission} estimateChf={p.activePrimeChf} member={!!user} />
             </div>
           ) : null}
 
@@ -311,6 +328,15 @@ export default async function BienPage({
           </div>
         </aside>
       </div>
+    </div>
+  );
+}
+
+function Fact({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border bg-card p-3.5">
+      <dt className="flex items-center gap-1.5 text-[12px] text-muted-foreground">{icon}{label}</dt>
+      <dd className="mt-1 text-[17px] font-semibold tabular-nums tracking-[-0.01em]">{value}</dd>
     </div>
   );
 }

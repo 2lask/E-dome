@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { createPropertyImageUpload } from "@/lib/supabase/storage-actions";
+import { createPropertyImageUpload, createPropertyVideoUpload } from "@/lib/supabase/storage-actions";
 
 /* ── Envoi d'une photo de bien (navigateur) ──────────────────────────────────
 
@@ -45,5 +45,19 @@ export async function uploadPropertyImage(file: File): Promise<{ ok: true; url: 
     .from("property-images")
     .uploadToSignedUrl(signed.path, signed.token, blob, { contentType: mime, cacheControl: "31536000" });
   if (error) return { ok: false, error: `« ${file.name} » n'a pas pu être envoyée.` };
+  return { ok: true, url: signed.publicUrl };
+}
+
+/** Envoie la vidéo d'un bien (50 Mo max) ; renvoie son URL publique. */
+export async function uploadPropertyVideo(file: File): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  if (!file.type.startsWith("video/")) return { ok: false, error: `« ${file.name} » n'est pas une vidéo.` };
+  const supabase = createClient();
+  if (!supabase) return { ok: false, error: "Service indisponible." };
+  const signed = await createPropertyVideoUpload(file.type, file.size);
+  if (!signed.ok) return signed;
+  const { error } = await supabase.storage
+    .from("property-videos")
+    .uploadToSignedUrl(signed.path, signed.token, file, { contentType: file.type, cacheControl: "31536000" });
+  if (error) return { ok: false, error: "La vidéo n'a pas pu être envoyée." };
   return { ok: true, url: signed.publicUrl };
 }

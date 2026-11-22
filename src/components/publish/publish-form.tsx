@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ImagePlus, Loader2, X, ArrowLeft, Star, Sparkles, Coins, Check, Circle, AlertCircle,
+  ImagePlus, Loader2, X, ArrowLeft, Star, Sparkles, Coins, Check, Circle, AlertCircle, Clapperboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ListingCard } from "@/components/listing/listing-card";
-import { uploadPropertyImage } from "@/lib/image-upload";
+import { uploadPropertyImage, uploadPropertyVideo } from "@/lib/image-upload";
 import { createMyProperty, updateMyProperty } from "@/lib/supabase/property-actions";
 import { setMyPrime, liftMyPrime } from "@/lib/supabase/prime-actions";
 import { repriseOf, type MyProperty } from "@/lib/my-property";
@@ -146,6 +146,19 @@ export function PublishForm({
     (initial?.images ?? []).map((url, i) => ({ key: `init-${i}`, url, status: "done" as const })),
   );
 
+  /* Vidéo (une, 50 Mo max) : visite filmée, mise en avant en grand sur l'annonce. */
+  const videoRef = useRef<HTMLInputElement>(null);
+  const [video, setVideo] = useState<{ url?: string; status: "idle" | "uploading" | "done" | "error"; error?: string }>(
+    initial?.videos?.[0] ? { url: initial.videos[0], status: "done" } : { status: "idle" },
+  );
+  const addVideo = async (files: FileList | null) => {
+    const f = files?.[0];
+    if (!f) return;
+    setVideo({ status: "uploading" });
+    const res = await uploadPropertyVideo(f);
+    setVideo(res.ok ? { url: res.url, status: "done" } : { status: "error", error: res.error });
+  };
+
   /* Brouillon local (création seulement) : on ne perd rien en quittant la page. */
   const restored = useRef(false);
   useEffect(() => {
@@ -203,7 +216,7 @@ export function PublishForm({
     const [ph] = next.splice(i, 1);
     return [ph, ...next];
   });
-  const uploading = photos.some((p) => p.status === "uploading");
+  const uploading = photos.some((p) => p.status === "uploading") || video.status === "uploading";
   const photoUrls = photos.filter((p) => p.status === "done" && p.url).map((p) => p.url!);
 
   /* ── Validation + qualité ─────────────────────────────────────────────── */
@@ -233,6 +246,7 @@ export function PublishForm({
     { ok: d.title.trim().length >= 20, label: "Un titre descriptif" },
     { ok: d.description.trim().length >= 250, label: "Une description de 250 caractères" },
     { ok: digits(d.area) > 0, label: "La surface" },
+    { ok: video.status === "done", label: "Une vidéo (visite filmée)" },
     { ok: d.primeOn && !termsError, label: "Une commission pour les apporteurs" },
   ];
   const qualityScore = quality.filter((q) => q.ok).length;
@@ -248,7 +262,7 @@ export function PublishForm({
     city: d.city.trim() || "Localité",
     country: "Suisse",
     images: photoUrls,
-    videos: [],
+    videos: video.status === "done" && video.url ? [video.url] : [],
     bedrooms: digits(d.bedrooms),
     bathrooms: digits(d.bathrooms),
     area: digits(d.area),
@@ -302,6 +316,7 @@ export function PublishForm({
         bathrooms: digits(d.bathrooms),
         area: digits(d.area),
         images: photoUrls,
+        videos: video.status === "done" && video.url ? [video.url] : [],
         amenities: d.amenities,
         analytics: d.reprise
           ? { reprise: true, availableFrom: d.availableFrom, regie: d.regie.trim() || null }
@@ -418,7 +433,7 @@ export function PublishForm({
           </Section>
 
           {/* 2 · Photos ─────────────────────────────────────────────────── */}
-          <Section n={2} title="Photos" aside={`${photoUrls.length}/${MAX_PHOTOS}`}>
+          <Section n={2} title="Photos et vidéo" aside={`${photoUrls.length}/${MAX_PHOTOS}`}>
             <p className="-mt-1 text-[13px] text-muted-foreground">La première est la couverture. Lumière du jour, pièces rangées, une photo par pièce.</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {photos.map((ph, i) => (
@@ -454,6 +469,29 @@ export function PublishForm({
             </div>
             <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden"
               onChange={(e) => { void addFiles(e.target.files); e.target.value = ""; }} />
+
+            <div className="rounded-xl border border-dashed p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <Clapperboard className="h-5 w-5 text-leman" aria-hidden />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[14px] font-medium">Vidéo de visite <span className="font-normal text-muted-foreground">(recommandé)</span></p>
+                  <p className="text-[12.5px] text-muted-foreground">30 à 60 secondes filmées au téléphone, à l&apos;horizontale. Elle passe en grand en haut de l&apos;annonce. MP4 ou MOV, 50 Mo max.</p>
+                </div>
+                {video.status === "done" ? (
+                  <Button type="button" size="sm" variant="ghost" onClick={() => setVideo({ status: "idle" })}><X className="h-4 w-4" aria-hidden /> Retirer</Button>
+                ) : (
+                  <Button type="button" size="sm" variant="outline" disabled={video.status === "uploading"} onClick={() => videoRef.current?.click()}>
+                    {video.status === "uploading" ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Envoi…</> : "Ajouter une vidéo"}
+                  </Button>
+                )}
+              </div>
+              {video.status === "done" && video.url && (
+                <video src={video.url} controls muted playsInline preload="metadata" className="mt-3 aspect-video w-full rounded-lg bg-black object-contain" />
+              )}
+              {video.status === "error" && <p className="mt-2 text-[12.5px] text-[var(--danger-text)]">{video.error}</p>}
+              <input ref={videoRef} type="file" accept="video/mp4,video/webm,video/quicktime" className="hidden"
+                onChange={(e) => { void addVideo(e.target.files); e.target.value = ""; }} />
+            </div>
           </Section>
 
           {/* 3 · L'annonce ──────────────────────────────────────────────── */}

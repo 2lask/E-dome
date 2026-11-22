@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { track } from "./track";
 
 /* ── Partager une annonce ────────────────────────────────────────────────────
    Le levier d'acquisition n°1 : les gens partagent déjà des logements sur
@@ -10,11 +11,12 @@ import { Button } from "@/components/ui/button";
    partage du téléphone), copie du lien sinon. L'aperçu (photo, prix, prime)
    est produit par `opengraph-image.tsx`. */
 
-export function ShareButton({ path, title, text }: { path: string; title: string; text: string }) {
+export function ShareButton({ path, title, text, propertyId, className }: { path: string; title: string; text: string; propertyId?: string; className?: string }) {
   const [copied, setCopied] = useState(false);
 
   const share = async () => {
     const url = `${window.location.origin}${path}`;
+    if (propertyId) track(propertyId, "partage");
     try {
       if (navigator.share) {
         await navigator.share({ title, text, url });
@@ -29,7 +31,7 @@ export function ShareButton({ path, title, text }: { path: string; title: string
   };
 
   return (
-    <Button variant="outline" size="sm" onClick={() => void share()} aria-live="polite">
+    <Button variant="outline" size="sm" onClick={() => void share()} aria-live="polite" className={className}>
       {copied ? <Check className="h-4 w-4 text-leman" aria-hidden /> : <Share2 className="h-4 w-4" aria-hidden />}
       {copied ? "Lien copié" : "Partager"}
     </Button>

@@ -181,6 +181,7 @@ export async function updateMyProperty(
       city: input.city,
       address: input.address || null,
       images: input.images ?? [],
+      ...(input.videos ? { videos: input.videos.slice(0, 3) } : {}),
       bedrooms: Math.max(0, Math.round(input.bedrooms)),
       bathrooms: Math.max(0, Math.round(input.bathrooms)),
       area: Math.max(0, Math.round(input.area)),

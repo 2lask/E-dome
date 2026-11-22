@@ -622,3 +622,25 @@ kbd {
   .live-dot, .live-in { animation: none; }
   .glow-card::after, .glow-card__halo { transition: none; }
 }
+
+/* ── Vitrine d'un bien : puces en verre, entrée douce ───────────────────── */
+.glass-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  background: rgb(255 255 255 / 0.12);
+  padding: 0.3rem 0.75rem;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #fff;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+@keyframes hero-rise { from { opacity: 0; transform: translateY(14px); } }
+.hero-rise { animation: hero-rise 0.8s cubic-bezier(.2,.7,.2,1) both 0.1s; }
+@keyframes hero-zoom { from { transform: scale(1.06); } }
+.hero-zoom { animation: hero-zoom 1.6s cubic-bezier(.2,.7,.2,1) both; }
+@media (prefers-reduced-motion: reduce) { .hero-rise, .hero-zoom { animation: none; } }
+.glass-chip--gold { border-color: rgb(227 184 92 / 0.6); background: rgb(227 184 92 / 0.22); color: #ffe7b0; }

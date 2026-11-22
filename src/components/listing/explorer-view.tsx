@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Coins, SlidersHorizontal, X, Compass, Radar } from "lucide-react";
+import { Search, Coins, SlidersHorizontal, X, Compass } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ListingCard, TX_LABEL } from "@/components/listing/listing-card";
@@ -99,8 +99,8 @@ export function ExplorerView({ biens, initialQuery = "", initialPrimeOnly = fals
               : `${biens.length} bien${biens.length > 1 ? "s" : ""} proposé${biens.length > 1 ? "s" : ""} directement par leurs propriétaires.`}
           </p>
         </div>
-        <Link href="/recherches" className="inline-flex items-center gap-1.5 rounded-lg border border-laiton-border bg-laiton-soft px-3 py-2 text-[13px] font-medium text-laiton hover:bg-laiton-soft/70">
-          <Radar className="h-4 w-4" aria-hidden /> Vous ne trouvez pas ? Publiez votre recherche avec récompense
+        <Link href="/apporteurs" className="inline-flex items-center gap-1.5 rounded-lg border border-laiton-border bg-laiton-soft px-3 py-2 text-[13px] font-medium text-laiton hover:bg-laiton-soft/70">
+          <Coins className="h-4 w-4" aria-hidden /> Recommandez un bien, touchez la commission
         </Link>
       </header>
 
@@ -206,7 +206,7 @@ export function ExplorerView({ biens, initialQuery = "", initialPrimeOnly = fals
                   )}
                 >
                   <Coins className="h-4 w-4" aria-hidden />
-                  Avec prime
+                  Avec commission
                   <span className="tabular-nums text-[12px] opacity-70">{primedCount}</span>
                 </button>
               )}
@@ -215,7 +215,7 @@ export function ExplorerView({ biens, initialQuery = "", initialPrimeOnly = fals
                 <option value="recent">Plus récents</option>
                 <option value="price-asc">Prix croissant</option>
                 <option value="price-desc">Prix décroissant</option>
-                {primedCount > 0 && <option value="prime">Prime la plus élevée</option>}
+                {primedCount > 0 && <option value="prime">Commission la plus élevée</option>}
               </select>
 
               {(activeFilters > 0 || q || tx !== "all" || city) && (
@@ -265,7 +265,7 @@ function EmptyCatalogue() {
           <Link href="/publier">Publier le premier bien</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/apporteurs">Comment gagner une prime</Link>
+          <Link href="/apporteurs">Comment gagner une commission</Link>
         </Button>
       </div>
     </section>

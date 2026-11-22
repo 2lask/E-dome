@@ -56,7 +56,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
 
           {p.activePrimeChf ? (
             <div style={{ display: "flex", flexDirection: "column", background: "#f7edd6", color: "#8a5d0c", borderRadius: 14, padding: "14px 17px" }}>
-              <div style={{ fontSize: 26, fontWeight: 700 }}>{`Prime ${formatNumber(p.activePrimeChf)} CHF`}</div>
+              <div style={{ fontSize: 26, fontWeight: 700 }}>{p.commission?.kind === "pourcentage" ? `Commission ${String(p.commission.ratePct).replace(".", ",")} %` : `Commission ${formatNumber(p.activePrimeChf)} CHF`}</div>
               <div style={{ fontSize: 16 }}>pour qui trouve la bonne personne</div>
             </div>
           ) : (
