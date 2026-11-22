@@ -591,3 +591,34 @@ kbd {
 [data-focus-ring="none"]:focus-visible {
   outline: none;
 }
+
+/* ── Tableau de bord : halo qui suit le pointeur, point « en direct » ─────── */
+.glow-card__halo {
+  background:
+    radial-gradient(420px circle at var(--gx, 50%) var(--gy, 50%), rgb(var(--glow) / 0.10), transparent 60%),
+    radial-gradient(220px circle at var(--gx, 50%) var(--gy, 50%), rgb(var(--glow) / 0.06), transparent 70%);
+}
+.glow-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), rgb(var(--glow) / 0.55), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+.glow-card:hover::after { opacity: 1; }
+@keyframes live-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.8); } }
+.live-dot { animation: live-pulse 1.6s ease-in-out infinite; }
+@keyframes live-in { from { opacity: 0; transform: translateY(-6px); background: color-mix(in oklab, var(--leman) 12%, transparent); } }
+.live-in { animation: live-in 0.6s cubic-bezier(.2,.7,.2,1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .live-dot, .live-in { animation: none; }
+  .glow-card::after, .glow-card__halo { transition: none; }
+}

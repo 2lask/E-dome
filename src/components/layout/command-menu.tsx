@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   Search, Plus, Sparkles, User, Settings, HelpCircle, LogIn, UserPlus,
-  BookOpen, Tag, CornerDownLeft, Radar, KeyRound, FileText, Briefcase, Truck, Wallet, type LucideIcon,
+  BookOpen, Tag, CornerDownLeft, KeyRound, Briefcase, Wallet, type LucideIcon,
 } from "lucide-react";
 import { navFor, COMMAND_OPEN_EVENT, AI_OPEN_EVENT } from "@/lib/nav";
 import { cn } from "@/lib/utils";
@@ -87,17 +87,14 @@ export function CommandMenu({ member }: { member: boolean }) {
         id: "copilote", label: "Demander au copilote IA", hint: "Estimer, rédiger, qualifier", icon: Sparkles, group: "Actions", keywords: "ia assistant estimation",
         run: () => { setOpen(false); window.dispatchEvent(new CustomEvent(AI_OPEN_EVENT)); },
       },
-      { id: "recherche", label: "Publier ma recherche avec récompense", hint: "Votre réseau cherche pour vous", icon: Radar, group: "Actions", keywords: "chercher appartement logement recompense agence vendeurs", run: go("/recherches/nouvelle") },
       { id: "reprise", label: "Remettre mon bail", hint: "Trouver un remplaçant plus vite", icon: KeyRound, group: "Actions", keywords: "reprise bail demenager remplacant", run: go("/publier?mode=reprise") },
       { id: "vendre", label: "Vendre sans agence", hint: "Seul ou accompagné, 0 CHF à E-Dome", icon: Tag, group: "Actions", keywords: "vente proprietaire commission", run: go("/vendre") },
-      { id: "demenagement", label: "Déménagement : devis gratuits", hint: "Nettoyage de fin de bail, déménageurs, débarras", icon: Truck, group: "Actions", keywords: "demenager nettoyage fin de bail etat des lieux demenageur debarras", run: go("/demenagement") },
       { id: "agences", label: "Agences qui récompensent les apporteurs", hint: "Présentez un vendeur, touchez une récompense", icon: Briefcase, group: "Actions", keywords: "agence regie programme apporteur mandat vendeur", run: go("/agences") },
       { id: "apropos", label: "Comment fonctionne E-Dome", icon: BookOpen, group: "Actions", keywords: "aide fonctionnement regles prime", run: go("/a-propos") },
     ];
     const account: Command[] = member
       ? [
           { id: "profil", label: "Mon profil public", icon: User, group: "Compte", run: go("/profil") },
-          { id: "dossier", label: "Mon dossier de location", hint: "Rempli une fois, joint en un clic", icon: FileText, group: "Compte", keywords: "poursuites salaire candidature regie", run: go("/dossier") },
           { id: "reglements", label: "Règlements : à payer, à recevoir", hint: "TWINT, IBAN, confirmations", icon: Wallet, group: "Compte", keywords: "payer paiement recevoir argent iban twint prime", run: go("/reglements") },
           { id: "agence", label: "Espace agence", hint: "Votre programme d'apporteurs", icon: Briefcase, group: "Compte", keywords: "agence regie mandats abonnement", run: go("/agence") },
           { id: "notifications", label: "Notifications par e-mail", icon: Settings, group: "Compte", keywords: "email mail alertes desabonner", run: go("/parametres/notifications") },

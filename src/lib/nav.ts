@@ -1,4 +1,4 @@
-import { Home, Compass, Inbox, Building2, Coins, Radar, type LucideIcon } from "lucide-react";
+import { Home, Compass, Inbox, Building2, Coins, LayoutDashboard, type LucideIcon } from "lucide-react";
 
 /* ── La navigation d'E-Dome — source unique (REBUILD.md §3.2) ────────────────
 
@@ -12,7 +12,7 @@ import { Home, Compass, Inbox, Building2, Coins, Radar, type LucideIcon } from "
    biens). Les routes correspondantes sont aussi fermées par le proxy. */
 
 export interface NavEntry {
-  key: "accueil" | "explorer" | "recherches" | "demandes" | "mes-biens" | "gagner";
+  key: "accueil" | "explorer" | "tableau" | "demandes" | "mes-biens" | "gagner";
   label: string;
   href: string;
   icon: LucideIcon;
@@ -41,12 +41,13 @@ export const NAV: NavEntry[] = [
     description: "Les biens à vendre et à louer",
   },
   {
-    key: "recherches",
-    label: "Recherches",
-    href: "/recherches",
-    icon: Radar,
-    match: ["/recherches"],
-    description: "Ce que les gens cherchent, et ce qu'ils offrent à qui le trouve",
+    key: "tableau",
+    label: "Tableau de bord",
+    href: "/tableau-de-bord",
+    icon: LayoutDashboard,
+    match: ["/tableau-de-bord"],
+    memberOnly: true,
+    description: "Vues, leads, ventes et commissions, en direct",
   },
   {
     key: "demandes",

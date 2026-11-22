@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 export default async function ExplorerPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; prime?: string }>;
 }) {
-  const [{ q }, biens] = await Promise.all([searchParams, listPublicProperties(200)]);
-  return <ExplorerView biens={biens} initialQuery={typeof q === "string" ? q.slice(0, 120) : ""} />;
+  const [{ q, prime }, biens] = await Promise.all([searchParams, listPublicProperties(200)]);
+  return <ExplorerView biens={biens} initialQuery={typeof q === "string" ? q.slice(0, 120) : ""} initialPrimeOnly={prime === "1"} />;
 }

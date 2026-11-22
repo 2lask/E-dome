@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
    proxy laisse tout passer (mode sans backend) et ces cas sont ignorés. */
 
 const PUBLIC = ["/", "/explorer", "/recherches", "/apporteurs", "/vendre", "/a-propos", "/aide", "/tarifs", "/agences", "/demenagement", "/ville/neuchatel", "/ville/lausanne", "/auth/connexion", "/auth/inscription"];
-const MEMBER = ["/demandes", "/mes-biens", "/publier", "/parametres", "/profil", "/recherches/nouvelle", "/agence", "/dossier", "/parametres/notifications", "/reglements"];
+const MEMBER = ["/demandes", "/mes-biens", "/publier", "/parametres", "/profil", "/recherches/nouvelle", "/agence", "/dossier", "/parametres/notifications", "/reglements", "/tableau-de-bord"];
 const PARKED: [string, string][] = [
   ["/feed", "/"],
   ["/formations", "/"],

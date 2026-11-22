@@ -42,7 +42,7 @@ const normalize = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLo
 const selectCls =
   "h-10 rounded-lg border border-input bg-card px-3 pr-8 text-[13.5px] shadow-xs outline-none hover:border-foreground/25 focus:border-leman";
 
-export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]; initialQuery?: string }) {
+export function ExplorerView({ biens, initialQuery = "", initialPrimeOnly = false }: { biens: MyProperty[]; initialQuery?: string; initialPrimeOnly?: boolean }) {
   const [q, setQ] = useState(initialQuery);
   /* « reprise » : une location longue durée remise par son locataire. */
   const [tx, setTx] = useState<Kind>("all");
@@ -50,7 +50,7 @@ export function ExplorerView({ biens, initialQuery = "" }: { biens: MyProperty[]
   const [type, setType] = useState<PropertyType | "">("");
   const [maxPrice, setMaxPrice] = useState("");
   const [minRooms, setMinRooms] = useState(0);
-  const [primeOnly, setPrimeOnly] = useState(false);
+  const [primeOnly, setPrimeOnly] = useState(initialPrimeOnly);
   const [sort, setSort] = useState<Sort>("recent");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
