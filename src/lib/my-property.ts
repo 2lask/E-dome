@@ -3,6 +3,7 @@ import type { PlatformRole } from "./model/identity";
 import type { SessionUser } from "./session-user";
 import { initialsAvatar } from "./current-user-profile";
 import { EDOME_PRIME_SHARE, PRIME_FLOOR } from "./pricing/catalog";
+import type { CommissionTerms } from "./commission";
 
 /* ── Biens EN BASE (chantier C4) ─────────────────────────────────────────────
 
@@ -34,8 +35,10 @@ export interface MyProperty {
   featured: boolean;
   soldTo?: string | null;
   createdAt: string;
-  /** Prime apporteur active (CHF), si la lecture l'a jointe. */
+  /** Commission active, en CHF (fixe, ou estimation au prix demandé si %). */
   activePrimeChf?: number | null;
+  /** Les conditions complètes de la commission active (v2), si jointes. */
+  commission?: CommissionTerms | null;
   /** Données déclarées par le vendeur à la publication (rendement, DPE…). */
   analytics?: Record<string, unknown> | null;
   /** L'id du vendeur (toujours présent en lecture). */
@@ -57,8 +60,10 @@ export interface MyProperty {
     en CHF (50–3000), jamais un % du prix — règle juridique (`MODELE.md`). */
 export interface MyPrime {
   propertyId: string;
+  /** Montant fixe, ou estimation au prix demandé pour un pourcentage. */
   amountChf: number;
   active: boolean;
+  terms: CommissionTerms;
 }
 
 /** Bornes de la prime fixe (CHF), alignées sur la contrainte SQL `primes`. */

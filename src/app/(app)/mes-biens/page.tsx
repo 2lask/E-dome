@@ -5,6 +5,7 @@ import { listMyProperties } from "@/lib/supabase/property-actions";
 import { listMyPrimes } from "@/lib/supabase/prime-actions";
 import { listMyDemandes } from "@/lib/supabase/demande-actions";
 import { MyListings, type ListingStats } from "@/components/publish/my-listings";
+import type { CommissionTerms } from "@/lib/commission";
 
 export const metadata: Metadata = { title: "Mes biens" };
 
@@ -18,8 +19,8 @@ export default async function MesBiensPage() {
 
   const [biens, primes, inbox] = await Promise.all([listMyProperties(), listMyPrimes(), listMyDemandes()]);
 
-  const primeBy: Record<string, number> = {};
-  for (const p of primes) if (p.active) primeBy[p.propertyId] = p.amountChf;
+  const primeBy: Record<string, CommissionTerms> = {};
+  for (const p of primes) if (p.active) primeBy[p.propertyId] = p.terms;
 
   const stats: Record<string, ListingStats> = {};
   const bump = (id: string, k: keyof ListingStats) => {

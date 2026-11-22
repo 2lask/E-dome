@@ -24,6 +24,6 @@ export default async function PublierPage({
   if (!isDbPropertyId(edit)) notFound();
   const [p, primes] = await Promise.all([getPublicProperty(edit), listMyPrimes()]);
   if (!p || p.hostId !== user.id) notFound();
-  const prime = primes.find((x) => x.propertyId === p.id && x.active)?.amountChf ?? null;
-  return <PublishForm initial={p} initialPrime={prime} />;
+  const commission = primes.find((x) => x.propertyId === p.id && x.active)?.terms ?? null;
+  return <PublishForm initial={p} initialCommission={commission} />;
 }

@@ -11,7 +11,9 @@ import { ListingCard } from "@/components/listing/listing-card";
 import { uploadPropertyImage } from "@/lib/image-upload";
 import { createMyProperty, updateMyProperty } from "@/lib/supabase/property-actions";
 import { setMyPrime, liftMyPrime } from "@/lib/supabase/prime-actions";
-import { apporteurNetChf, PRIME_MAX_CHF, PRIME_MIN_CHF, repriseOf, type MyProperty } from "@/lib/my-property";
+import { repriseOf, type MyProperty } from "@/lib/my-property";
+import { CommissionEditor } from "@/components/commission/commission-editor";
+import { defaultTerms, estimateChf, validateTerms, type CommissionTerms } from "@/lib/commission";
 import { publierObligations } from "@/content/publier-obligations";
 import { AI_OPEN_EVENT } from "@/lib/nav";
 import { formatNumber } from "@/lib/format";
@@ -46,7 +48,6 @@ const AMENITIES = [
   "Cheminée", "Lave-vaisselle", "Lave-linge", "Accès PMR", "Meublé", "Piscine", "Pompe à chaleur",
 ];
 
-const PRIME_PRESETS = [300, 500, 800, 1500];
 const MAX_PHOTOS = 15;
 const DRAFT_KEY = "edome_publish_v2";
 
@@ -73,7 +74,8 @@ interface Draft {
   amenities: string[];
   charges: string;
   primeOn: boolean;
-  prime: string;
+  /** Commission d'apport (v2). null : conditions par défaut selon le type. */
+  commission: CommissionTerms | null;
   /** Reprise de bail : je quitte mon logement et cherche un remplaçant. */
   reprise: boolean;
   availableFrom: string;
@@ -82,7 +84,7 @@ interface Draft {
 
 const EMPTY: Draft = {
   tx: "vente", type: "", city: "", address: "", price: "", area: "", bedrooms: "", bathrooms: "",
-  title: "", description: "", amenities: [], charges: "", primeOn: false, prime: "",
+  title: "", description: "", amenities: [], charges: "", primeOn: true, commission: null,
   reprise: false, availableFrom: "", regie: "",
 };
 
@@ -97,14 +99,14 @@ const digits = (s: string) => Number(s.replace(/[^\d]/g, "")) || 0;
 
 export function PublishForm({
   initial,
-  initialPrime,
+  initialCommission,
   initialMode,
 }: {
   /** Mode de départ en création (« Remettre son bail » depuis l'accueil). */
   initialMode?: "reprise" | "location";
   /** Mode modification : le bien existant. */
   initial?: MyProperty | null;
-  initialPrime?: number | null;
+  initialCommission?: CommissionTerms | null;
 }) {
   const router = useRouter();
   const editing = !!initial;
@@ -128,8 +130,8 @@ export function PublishForm({
           description: initial.description,
           amenities: initial.amenities,
           charges: initial.analytics?.chargesAnnuelles ? String(initial.analytics.chargesAnnuelles) : "",
-          primeOn: !!initialPrime,
-          prime: initialPrime ? String(initialPrime) : "",
+          primeOn: !!initialCommission,
+          commission: initialCommission ?? null,
           reprise: !!repriseOf(initial),
           availableFrom: repriseOf(initial)?.availableFrom ?? "",
           regie: repriseOf(initial)?.regie ?? "",
@@ -206,7 +208,9 @@ export function PublishForm({
 
   /* ── Validation + qualité ─────────────────────────────────────────────── */
   const price = digits(d.price);
-  const primeAmount = digits(d.prime);
+  const terms = d.commission ?? defaultTerms(d.tx, price);
+  const [termsOk, setTermsOk] = useState(editing && !!initialCommission);
+  const termsError = d.primeOn ? validateTerms(terms, d.tx) : null;
   const errors = useMemo(() => {
     const e: Partial<Record<"type" | "city" | "price" | "title" | "prime" | "availableFrom", string>> = {};
     if (d.reprise && !/^\d{4}-\d{2}-\d{2}$/.test(d.availableFrom)) e.availableFrom = "Indiquez la date à laquelle le logement est libre.";
@@ -214,10 +218,10 @@ export function PublishForm({
     if (d.city.trim().length < 2) e.city = "Indiquez la localité.";
     if (price <= 0) e.price = d.tx === "vente" ? "Indiquez le prix de vente." : "Indiquez le loyer mensuel.";
     if (d.title.trim().length < 8) e.title = "Un titre d'au moins 8 caractères.";
-    if (d.primeOn && (primeAmount < PRIME_MIN_CHF || primeAmount > PRIME_MAX_CHF))
-      e.prime = `La prime va de ${PRIME_MIN_CHF} à ${formatNumber(PRIME_MAX_CHF)} CHF.`;
+    if (d.primeOn && termsError) e.prime = termsError;
+    else if (d.primeOn && !termsOk) e.prime = "Acceptez les conditions de la commission (ou désactivez-la).";
     return e;
-  }, [d, price, primeAmount]);
+  }, [d, price, termsError, termsOk]);
   const valid = Object.keys(errors).length === 0;
   /* Les erreurs ne s'affichent qu'après une tentative d'envoi : un formulaire
      vide n'est pas « en erreur », il est à remplir. */
@@ -229,7 +233,7 @@ export function PublishForm({
     { ok: d.title.trim().length >= 20, label: "Un titre descriptif" },
     { ok: d.description.trim().length >= 250, label: "Une description de 250 caractères" },
     { ok: digits(d.area) > 0, label: "La surface" },
-    { ok: d.primeOn && primeAmount >= PRIME_MIN_CHF, label: "Une prime pour les apporteurs" },
+    { ok: d.primeOn && !termsError, label: "Une commission pour les apporteurs" },
   ];
   const qualityScore = quality.filter((q) => q.ok).length;
 
@@ -252,7 +256,8 @@ export function PublishForm({
     featured: false,
     createdAt: "",
     analytics: d.reprise ? { reprise: true, availableFrom: d.availableFrom, regie: d.regie } : null,
-    activePrimeChf: d.primeOn && primeAmount >= PRIME_MIN_CHF ? primeAmount : null,
+    activePrimeChf: d.primeOn && !termsError ? estimateChf(terms, price) : null,
+    commission: d.primeOn && !termsError ? terms : null,
   };
 
   /* ── Copilote : rédiger l'annonce ─────────────────────────────────────── */
@@ -314,11 +319,11 @@ export function PublishForm({
         }
         id = res.id;
       }
-      /* La prime : posée, ajustée ou retirée. */
+      /* La commission : posée, ajustée ou retirée. */
       if (d.primeOn) {
-        const pr = await setMyPrime(id, primeAmount);
-        if (!pr.ok) setError("L'annonce est enregistrée, mais la prime n'a pas pu l'être. Ajoutez-la depuis Mes biens.");
-      } else if (initialPrime) {
+        const pr = await setMyPrime(id, terms, termsOk);
+        if (!pr.ok) { setError(`L'annonce est enregistrée, mais pas la commission : ${pr.error ?? "réessayez depuis Mes biens."}`); return; }
+      } else if (initialCommission) {
         await liftMyPrime(id);
       }
       try { if (!editing) localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
@@ -348,7 +353,7 @@ export function PublishForm({
                 const on = m.key === "reprise" ? d.reprise : m.key === "vente" ? d.tx === "vente" && !d.reprise : d.tx === "location-lt" && !d.reprise;
                 return (
                   <button key={m.key} type="button" role="radio" aria-checked={on}
-                    onClick={() => setD((s) => ({ ...s, tx: m.key === "vente" ? "vente" : "location-lt", reprise: m.key === "reprise" }))}
+                    onClick={() => setD((s) => ({ ...s, tx: m.key === "vente" ? "vente" : "location-lt", reprise: m.key === "reprise", commission: (m.key === "vente") === (s.tx === "vente") ? s.commission : null }))}
                     className={cn("h-10 rounded-lg px-1 text-[13px] sm:text-[14px]", on ? "bg-card font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground")}>
                     {m.label}
                   </button>
@@ -486,37 +491,20 @@ export function PublishForm({
             )}
           </Section>
 
-          {/* 4 · Prime ──────────────────────────────────────────────────── */}
-          <Section n={4} title="Prime pour les apporteurs" aside="Facultatif" prime>
+          {/* 4 · Commission d'apport ────────────────────────────────────── */}
+          <Section n={4} title="Commission pour les apporteurs" aside="Recommandé" prime>
             <p className="-mt-1 text-[13.5px] leading-relaxed text-muted-foreground">
-              Offrez une prime fixe à qui vous présente le bon {d.reprise ? "remplaçant" : d.tx === "vente" ? "acheteur" : "locataire"}. Vous ne la payez que si vous
-              <strong className="text-foreground"> acceptez</strong> le contact — jamais un pourcentage du prix, jamais liée à la conclusion.
+              Chaque apporteur reçoit un lien personnel tracé vers votre annonce. S&apos;il vous amène l&apos;{d.reprise ? "repreneur" : d.tx === "vente" ? "acheteur" : "locataire"},
+              la commission est calculée et suivie automatiquement. <strong className="text-foreground">Sans vente, rien n&apos;est dû.</strong>
             </p>
             <label className="flex items-center gap-3">
               <input type="checkbox" checked={d.primeOn} onChange={(e) => set("primeOn", e.target.checked)} className="h-4.5 w-4.5 accent-[var(--laiton)]" />
-              <span className="text-[14px] font-medium">Activer une prime sur ce bien</span>
+              <span className="text-[14px] font-medium">Proposer une commission sur ce bien</span>
             </label>
             {d.primeOn && (
-              <div className="space-y-3 rounded-xl border border-laiton-border bg-laiton-soft/50 p-4">
-                <div className="flex flex-wrap gap-2">
-                  {PRIME_PRESETS.map((v) => (
-                    <button key={v} type="button" onClick={() => set("prime", String(v))} aria-pressed={primeAmount === v}
-                      className={cn("h-8 rounded-full border px-3 text-[13px] tabular-nums", primeAmount === v ? "border-laiton bg-card font-semibold text-laiton" : "border-laiton-border bg-card/60 hover:bg-card")}>
-                      {formatNumber(v)} CHF
-                    </button>
-                  ))}
-                </div>
-                <Field label="Montant" error={shown.prime}>
-                  <Input value={d.prime} onChange={(e) => set("prime", e.target.value.replace(/[^\d]/g, "").slice(0, 4))} inputMode="numeric"
-                    placeholder={`${PRIME_MIN_CHF} à ${formatNumber(PRIME_MAX_CHF)}`} containerClassName="sm:max-w-[200px]"
-                    trailing={<span className="pr-2 text-[12.5px] text-muted-foreground">CHF</span>} />
-                </Field>
-                {primeAmount >= PRIME_MIN_CHF && primeAmount <= PRIME_MAX_CHF && (
-                  <p className="text-[13px]">
-                    L&apos;apporteur touche <strong className="tabular-nums">{formatNumber(apporteurNetChf(primeAmount))} CHF</strong> net ;
-                    E-Dome retient {formatNumber(primeAmount - apporteurNetChf(primeAmount))} CHF pour la mise en relation, le suivi et le paiement.
-                  </p>
-                )}
+              <div className="rounded-xl border border-laiton-border bg-laiton-soft/50 p-4">
+                <CommissionEditor tx={d.tx} price={price} value={terms} onChange={(t) => set("commission", t)} accepted={termsOk} onAccept={setTermsOk} />
+                {shown.prime && <span data-field-error className="mt-2 block text-[12px] font-medium text-[var(--danger-text)]">{shown.prime}</span>}
               </div>
             )}
           </Section>

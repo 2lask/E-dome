@@ -5,13 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus, Eye, Pencil, Trash2, Inbox, Coins, Check, Circle, Building2, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { deleteMyProperty } from "@/lib/supabase/property-actions";
 import { setMyPrime, liftMyPrime } from "@/lib/supabase/prime-actions";
-import {
-  apporteurNetChf, coverOf, primeEligible, PRIME_MAX_CHF, PRIME_MIN_CHF, type MyProperty,
-} from "@/lib/my-property";
+import { coverOf, primeEligible, type MyProperty } from "@/lib/my-property";
+import { CommissionEditor } from "@/components/commission/commission-editor";
+import { commissionLabel, defaultTerms, dueLabel, estimateChf, netForApporteur, validateTerms, type CommissionTerms } from "@/lib/commission";
 import { PRICE_UNIT, TX_LABEL, chfPrice } from "@/components/listing/listing-card";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -27,13 +26,13 @@ export interface ListingStats {
   pending: number;
 }
 
-function qualityOf(p: MyProperty, prime: number | null) {
+function qualityOf(p: MyProperty, prime: CommissionTerms | null) {
   return [
     { ok: p.images.length >= 3, label: "3 photos" },
     { ok: p.title.trim().length >= 20, label: "Titre descriptif" },
     { ok: p.description.trim().length >= 250, label: "Description complète" },
     { ok: p.area > 0, label: "Surface" },
-    { ok: !primeEligible(p.transactionType) || !!prime, label: "Prime" },
+    { ok: !primeEligible(p.transactionType) || !!prime, label: "Commission" },
   ];
 }
 
@@ -43,7 +42,7 @@ export function MyListings({
   stats,
 }: {
   biens: MyProperty[];
-  primes: Record<string, number>;
+  primes: Record<string, CommissionTerms>;
   stats: Record<string, ListingStats>;
 }) {
   const activePrimes = Object.keys(primes).length;
@@ -57,7 +56,7 @@ export function MyListings({
           <p className="mt-1 text-[14px] text-muted-foreground">
             {biens.length === 0
               ? "Vos annonces, leur qualité et leurs primes."
-              : `${biens.length} annonce${biens.length > 1 ? "s" : ""} · ${activePrimes} prime${activePrimes > 1 ? "s" : ""} active${activePrimes > 1 ? "s" : ""} · ${openDemandes} demande${openDemandes > 1 ? "s" : ""} en cours`}
+              : `${biens.length} annonce${biens.length > 1 ? "s" : ""} · ${activePrimes} commission${activePrimes > 1 ? "s" : ""} active${activePrimes > 1 ? "s" : ""} · ${openDemandes} demande${openDemandes > 1 ? "s" : ""} en cours`}
           </p>
         </div>
         <Button asChild>
@@ -106,33 +105,33 @@ export function MyListings({
   );
 }
 
-function ListingRow({ p, prime, stats }: { p: MyProperty; prime: number | null; stats: ListingStats }) {
+function ListingRow({ p, prime, stats }: { p: MyProperty; prime: CommissionTerms | null; stats: ListingStats }) {
   const router = useRouter();
   const { addToast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [editingPrime, setEditingPrime] = useState(false);
-  const [amount, setAmount] = useState(prime ? String(prime) : "");
+  const [terms, setTerms] = useState<CommissionTerms>(prime ?? defaultTerms(p.transactionType, p.price));
+  const [accepted, setAccepted] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const quality = qualityOf(p, prime);
   const score = quality.filter((q) => q.ok).length;
   const eligible = primeEligible(p.transactionType);
-  const value = Number(amount) || 0;
-  const validAmount = value >= PRIME_MIN_CHF && value <= PRIME_MAX_CHF;
+  const estimate = prime ? estimateChf(prime, p.price) : null;
 
   const savePrime = () =>
     startTransition(async () => {
-      const res = await setMyPrime(p.id, value);
-      if (!res.ok) { addToast("La prime n'a pas pu être enregistrée.", "error"); return; }
-      addToast(`Prime de ${formatNumber(value)} CHF active.`, "success");
+      const res = await setMyPrime(p.id, terms, accepted);
+      if (!res.ok) { addToast(res.error ?? "La commission n'a pas pu être enregistrée.", "error"); return; }
+      addToast(`Commission active : ${commissionLabel(terms)}.`, "success");
       setEditingPrime(false);
+      setAccepted(false);
       router.refresh();
     });
   const removePrime = () =>
     startTransition(async () => {
       const res = await liftMyPrime(p.id);
-      if (!res.ok) { addToast("La prime n'a pas pu être retirée.", "error"); return; }
-      addToast("Prime retirée.", "info");
-      setAmount("");
+      if (!res.ok) { addToast("La commission n'a pas pu être retirée.", "error"); return; }
+      addToast("Commission retirée.", "info");
       router.refresh();
     });
   const remove = () =>
@@ -211,47 +210,38 @@ function ListingRow({ p, prime, stats }: { p: MyProperty; prime: number | null; 
         </div>
       )}
 
-      {/* Prime */}
+      {/* Commission */}
       {eligible && (
-        <div className={cn("flex flex-wrap items-center gap-3 border-t px-4 py-3", prime ? "bg-laiton-soft/40" : "")}>
-          <Coins className={cn("h-4 w-4", prime ? "text-laiton" : "text-muted-foreground")} aria-hidden />
-          {editingPrime || (!prime && amount) ? (
-            <div className="flex flex-1 flex-wrap items-center gap-2">
-              <Input
-                value={amount}
-                onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, "").slice(0, 4))}
-                inputMode="numeric"
-                aria-label="Montant de la prime en francs"
-                placeholder={`${PRIME_MIN_CHF} à ${formatNumber(PRIME_MAX_CHF)}`}
-                className="h-9" containerClassName="w-36"
-                trailing={<span className="pr-2 text-[12px] text-muted-foreground">CHF</span>}
-              />
-              <Button size="sm" variant="prime" disabled={!validAmount || isPending} onClick={savePrime}>
-                <Check className="h-4 w-4" aria-hidden /> {prime ? "Mettre à jour" : "Activer"}
-              </Button>
-              <Button size="sm" variant="ghost" onClick={() => { setEditingPrime(false); setAmount(prime ? String(prime) : ""); }}>Annuler</Button>
-              {validAmount && (
-                <span className="text-[12.5px] text-muted-foreground">
-                  L&apos;apporteur touche {formatNumber(apporteurNetChf(value))} CHF net
-                </span>
-              )}
+        <div className={cn("border-t px-4 py-3", prime ? "bg-laiton-soft/40" : "")}>
+          {editingPrime ? (
+            <div className="space-y-3 py-1">
+              <CommissionEditor tx={p.transactionType} price={p.price} value={terms} onChange={setTerms} accepted={accepted} onAccept={setAccepted} />
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="prime" disabled={!!validateTerms(terms, p.transactionType) || !accepted || isPending} onClick={savePrime}>
+                  <Check className="h-4 w-4" aria-hidden /> {prime ? "Mettre à jour" : "Activer la commission"}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => { setEditingPrime(false); setTerms(prime ?? defaultTerms(p.transactionType, p.price)); }}>Annuler</Button>
+              </div>
             </div>
           ) : prime ? (
-            <>
+            <div className="flex flex-wrap items-center gap-3">
+              <Coins className="h-4 w-4 text-laiton" aria-hidden />
               <p className="flex-1 text-[13px]">
-                Prime active <strong className="tabular-nums text-laiton">{formatNumber(prime)} CHF</strong>
-                <span className="text-muted-foreground"> — les apporteurs voient ce bien et peuvent vous présenter des contacts.</span>
+                Commission <strong className="tabular-nums text-laiton">{commissionLabel(prime)}</strong>
+                {prime.kind === "pourcentage" && estimate ? <span className="tabular-nums"> (≈ {formatNumber(Math.round(estimate))} CHF)</span> : null}
+                <span className="text-muted-foreground"> · {dueLabel(prime)} · l&apos;apporteur touche {estimate ? `${formatNumber(Math.round(netForApporteur(estimate)))} CHF net` : "88 %"}</span>
               </p>
               <Button size="sm" variant="ghost" onClick={() => setEditingPrime(true)}>Modifier</Button>
               <Button size="sm" variant="ghost" className="text-muted-foreground" disabled={isPending} onClick={removePrime}>Retirer</Button>
-            </>
+            </div>
           ) : (
-            <>
+            <div className="flex flex-wrap items-center gap-3">
+              <Coins className="h-4 w-4 text-muted-foreground" aria-hidden />
               <p className="flex-1 text-[13px] text-muted-foreground">
-                Sans prime, les apporteurs ne recommandent pas ce bien. Vous ne payez que si vous acceptez un contact.
+                Sans commission, les apporteurs ne recommandent pas ce bien. Rien n&apos;est dû sans vente.
               </p>
-              <Button size="sm" variant="prime" onClick={() => { setEditingPrime(true); setAmount("500"); }}>Ajouter une prime</Button>
-            </>
+              <Button size="sm" variant="prime" onClick={() => setEditingPrime(true)}>Proposer une commission</Button>
+            </div>
           )}
         </div>
       )}

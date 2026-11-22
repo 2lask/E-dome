@@ -50,10 +50,17 @@ export function ListingCard({ p, priority = false }: { p: MyProperty; priority?:
           {reprise ? "Reprise de bail" : TX_LABEL[p.transactionType]}
         </span>
         {p.activePrimeChf ? (
-          <span className="absolute right-2.5 top-2.5 rounded-md border border-[#ead7ad] bg-[#f7edd6] px-2 py-0.5 text-[11.5px] font-semibold tabular-nums text-[#8a5d0c]">
-            Prime {formatNumber(p.activePrimeChf)} CHF
+          <span className="absolute right-2.5 top-2.5 rounded-md border border-[#ead7ad] bg-[#f7edd6] px-2 py-0.5 text-[11.5px] font-semibold tabular-nums text-[#8a5d0c] shadow-sm">
+            {p.commission?.kind === "pourcentage"
+              ? `${String(p.commission.ratePct).replace(".", ",")} % · ≈ ${formatNumber(Math.round(p.activePrimeChf))} CHF`
+              : `Commission ${formatNumber(p.activePrimeChf)} CHF`}
           </span>
         ) : null}
+        {p.videos.length > 0 && (
+          <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-md bg-black/60 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur">
+            <svg viewBox="0 0 24 24" className="h-3 w-3 fill-current" aria-hidden><path d="M8 5v14l11-7z" /></svg> Vidéo
+          </span>
+        )}
       </div>
       <div className="mt-2.5 space-y-0.5">
         <p className="text-[15px] font-semibold tabular-nums tracking-[-0.01em]">

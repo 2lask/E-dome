@@ -3,6 +3,7 @@
 import { createClient } from "./server";
 import { createAdminClient } from "./admin";
 import type { MyProperty, NewPropertyInput } from "../my-property";
+import { estimateChf, type CommissionTerms } from "../commission";
 import type { PropertyType, TransactionType, Currency } from "../types";
 
 /* ── Actions serveur : les biens EN BASE (chantier C4) ───────────────────────
@@ -21,6 +22,15 @@ const COLS =
 /* La même chose + l'hôte joint (fiche publique). Deux FK vers profiles
    (host_id, sold_to) → on désambiguïse par la colonne. */
 const COLS_WITH_HOST = `${COLS}, host:profiles!host_id (id, first_name, last_name, avatar, city, country, roles, active_role), primes ( amount_chf, active )`;
+/* Commission v2 (migration 009). Sans elle, on retombe sur la lecture v1. */
+const COLS_WITH_HOST_V2 = `${COLS}, host:profiles!host_id (id, first_name, last_name, avatar, city, country, roles, active_role), primes ( amount_chf, active, commission_kind, rate_pct, due_on )`;
+
+type Res<T> = { data: T | null; error: { code?: string; message?: string } | null };
+async function withHost<T>(run: (cols: string) => PromiseLike<Res<T>>): Promise<Res<T>> {
+  const r = await run(COLS_WITH_HOST_V2);
+  if (r.error && ["42703", "PGRST200", "PGRST204"].includes(r.error.code ?? "")) return run(COLS_WITH_HOST);
+  return r;
+}
 
 type Row = {
   id: string;
@@ -56,7 +66,7 @@ type Row = {
     roles: string[] | null;
     active_role: string | null;
   } | null;
-  primes?: { amount_chf: number; active: boolean }[] | null;
+  primes?: { amount_chf: number | null; active: boolean; commission_kind?: string | null; rate_pct?: number | null; due_on?: string | null }[] | null;
 };
 
 function mapRow(r: Row): MyProperty {
@@ -84,9 +94,17 @@ function mapRow(r: Row): MyProperty {
     createdAt: r.created_at,
     analytics: r.analytics ?? null,
     hostId: r.host_id,
-    activePrimeChf: (() => {
-      const active = (r.primes ?? []).filter((p) => p.active).map((p) => Number(p.amount_chf));
-      return active.length ? Math.max(...active) : null;
+    ...(() => {
+      const active = (r.primes ?? []).filter((p) => p.active);
+      if (!active.length) return { activePrimeChf: null, commission: null };
+      const terms = active.map((p): CommissionTerms => ({
+        kind: p.commission_kind === "pourcentage" ? "pourcentage" : "fixe",
+        amountChf: p.amount_chf === null ? null : Number(p.amount_chf),
+        ratePct: p.rate_pct === null || p.rate_pct === undefined ? null : Number(p.rate_pct),
+        dueOn: p.due_on === "conclusion" ? "conclusion" : "acceptation",
+      }));
+      const withEst = terms.map((t) => ({ t, est: estimateChf(t, Number(r.price)) ?? 0 })).sort((a, b) => b.est - a.est);
+      return { activePrimeChf: withEst[0].est || null, commission: withEst[0].t };
     })(),
     host: r.host
       ? {
@@ -202,12 +220,9 @@ export async function listMyProperties(): Promise<MyProperty[]> {
 export async function listPublicProperties(limit = 60): Promise<MyProperty[]> {
   const supabase = await createClient();
   if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("properties")
-    .select(COLS_WITH_HOST)
-    .is("sold_to", null)
-    .order("created_at", { ascending: false })
-    .limit(Math.min(Math.max(limit, 1), 200));
+  const { data, error } = await withHost((cols) =>
+    supabase.from("properties").select(cols).is("sold_to", null).order("created_at", { ascending: false }).limit(Math.min(Math.max(limit, 1), 200)),
+  );
   if (error || !data) return [];
   return (data as unknown as Row[]).map(mapRow);
 }
@@ -217,13 +232,9 @@ export async function listPublicPropertiesByHost(hostId: string): Promise<MyProp
   if (!/^[0-9a-f-]{36}$/i.test(hostId)) return [];
   const supabase = await createClient();
   if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("properties")
-    .select(COLS_WITH_HOST)
-    .eq("host_id", hostId)
-    .is("sold_to", null)
-    .order("created_at", { ascending: false })
-    .limit(60);
+  const { data, error } = await withHost((cols) =>
+    supabase.from("properties").select(cols).eq("host_id", hostId).is("sold_to", null).order("created_at", { ascending: false }).limit(60),
+  );
   if (error || !data) return [];
   return (data as unknown as Row[]).map(mapRow);
 }
@@ -234,11 +245,7 @@ export async function getPublicProperty(id: string): Promise<MyProperty | null> 
   const supabase = await createClient();
   if (!supabase) return null;
 
-  const { data, error } = await supabase
-    .from("properties")
-    .select(COLS_WITH_HOST)
-    .eq("id", id)
-    .maybeSingle();
+  const { data, error } = await withHost((cols) => supabase.from("properties").select(cols).eq("id", id).maybeSingle());
   if (error || !data) return null;
   /* PostgREST infère l'hôte joint comme un tableau ; à l'exécution, une
      relation « plusieurs-à-un » renvoie bien un objet unique. */
