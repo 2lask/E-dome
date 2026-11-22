@@ -462,3 +462,28 @@ structurants, pour que le conseil sache ce qui est **déjà** exclu :
   préciser dans l'aide et les conditions.
 - **Coordonnées bancaires** : visibles du seul payeur d'un règlement en cours ;
   mentionner ce traitement dans la politique de confidentialité (nLPD).
+
+## Commission d'apport v2 (lancement du 25.11.2026) — À VALIDER EN PRIORITÉ
+
+Le modèle passe de la « prime fixe due à l'acceptation, jamais liée à la vente »
+à une **commission d'apport** (courtage d'indication, art. 412 ss CO) :
+fixe (50–50'000 CHF) ou **pourcentage du prix de vente final (0,1–3 %)**, due
+**à la conclusion** (art. 413 CO) ou, si fixe, dès l'acceptation du contact.
+
+Points à faire confirmer par un avocat avant d'annoncer publiquement les
+commissions en pourcentage :
+- **E-Dome perçoit une part (12 %) d'une commission liée à la conclusion** : E-Dome
+  devient-il lui-même courtier ou sous-courtier ? Aucune autorisation en NE et VD
+  selon la vérification rapide ; **Tessin exclu** (licence de fiduciaire
+  immobilier) ; **Genève** : projet PL 13732 (registre, inscription) à suivre.
+- **Forme du contrat** : l'acceptation en ligne et horodatée des conditions par
+  le vendeur suffit-elle comme contrat de courtage ? Faut-il un écrit séparé ?
+- **Preuve du lien de causalité** : lien tracé 60 jours + historique horodaté.
+  Durée de 60 jours raisonnable ? Que se passe-t-il si l'acheteur revient après ?
+- **Réduction judiciaire** (art. 417 CO) : plafond prudent de 3 % retenu.
+- **Location** : commission fixe à la charge du bailleur uniquement ; vérifier les
+  règles cantonales sur les frais facturés aux locataires.
+- **Suivi des visites** (nLPD) : identifiant aléatoire en cookie, pas d'adresse IP ;
+  mentionner le cookie et sa finalité dans la politique de confidentialité ;
+  faut-il un bandeau de consentement ? (cookie fonctionnel/statistique interne).
+- **TVA** sur la part E-Dome dès le seuil applicable.

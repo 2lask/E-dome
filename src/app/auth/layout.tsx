@@ -10,7 +10,7 @@ import { Brand } from "@/components/layout/brand";
 const RULES = [
   "Publier un bien est gratuit, sans commission d'agence.",
   "Recommandez le bon contact : le vendeur vous verse une prime fixe.",
-  "La prime est due à l'acceptation du contact — jamais un % du prix.",
+  "Recommandez un bien avec votre lien : la commission est suivie jusqu'au paiement.",
   "E-Dome ne détient jamais l'argent de la transaction.",
 ];
 

@@ -211,8 +211,8 @@ function PendingCard({ p }: { p: PendingIntroduction }) {
         {p.contactLabel}
       </blockquote>
       <p className="mt-2 text-[12px] leading-snug text-muted-foreground">
-        Coordonnées révélées si vous acceptez. La prime est fixe : due à l&apos;acceptation, quelle que soit
-        l&apos;issue — jamais un pourcentage du prix. {relativeFr(p.createdAt)}.
+        Coordonnées révélées si vous acceptez. La commission suit les conditions affichées sur votre annonce
+        (figées à la présentation du contact). {relativeFr(p.createdAt)}.
       </p>
 
       <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">

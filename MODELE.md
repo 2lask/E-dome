@@ -1,3 +1,5 @@
+> **Mise à jour du 22.11.2026 :** le modèle de rémunération des biens est remplacé par la **commission d'apport v2** (fixe ou % du prix de vente, due à la conclusion) — voir `LANCEMENT.md` et `JURIDIQUE-A-VALIDER.md`. Les sections ci-dessous sur la « prime fixe jamais liée à la vente » sont historiques.
+
 # MODÈLE E-DOME — le produit, le droit, l'argent (lançable sans avocat)
 
 *Document opératoire décidé le 2026-11-18, après confirmation de la direction par

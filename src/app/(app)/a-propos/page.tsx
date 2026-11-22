@@ -25,7 +25,7 @@ const ROLES = [
 const RULES = [
   { t: "E-Dome ne signe aucun mandat", d: "Ni de vente, ni de recherche. Le propriétaire reste maître de sa vente." },
   { t: "E-Dome ne négocie aucun prix", d: "Les parties s'entendent directement." },
-  { t: "Rien ne dépend de la vente", d: "Nos frais sont fixes ; la prime est due à l'acceptation du contact, jamais à la conclusion, jamais en pourcentage du prix." },
+  { t: "Une commission claire et tracée", d: "Le vendeur fixe la commission (en francs ou en % du prix) ; elle est due quand la vente est conclue grâce à l'apporteur, preuve à l'appui. E-Dome en retient 12 %." },
   { t: "E-Dome ne détient jamais vos fonds", d: "L'argent de la transaction ne passe pas par nous." },
 ];
 
@@ -33,7 +33,7 @@ const SOON = [
   "Le versement intégré des primes, par un prestataire de paiement agréé. Aujourd'hui, une prime acceptée est enregistrée et horodatée ; son règlement se fait encore hors de la plateforme.",
   "Les liens de recommandation traçables, pour partager un bien et être reconnu comme apporteur en un clic.",
   "Les favoris enregistrés sur votre compte, et les profils vérifiés.",
-  "Les formules pour les professionnels (agences, régies), à frais fixes — jamais un pourcentage de vente.",
+  "Les formules pour les professionnels (agences, régies), à frais fixes.",
 ];
 
 export default function AProposPage() {

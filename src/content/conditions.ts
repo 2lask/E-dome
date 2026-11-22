@@ -3,11 +3,7 @@ import {
   AFFILIATION_RATES,
   APPORTEUR_SUBSCRIPTION_SHARES,
   APPORTEUR_WINDOW_MONTHS,
-  EDOME_PRIME_SHARE,
   FREE_LIMITS,
-  PRIME_DISPUTE,
-  PRIME_MANUAL_REVIEW_ABOVE,
-  PRIME_RANGE_LABEL,
   RATES,
 } from "@/lib/pricing/catalog";
 
@@ -54,7 +50,6 @@ const affRange = (p: keyof typeof AFFILIATION_RATES) => {
   return r ? rateRange(r.min, r.max) : "—";
 };
 const subShares = `${pct(APPORTEUR_SUBSCRIPTION_SHARES.patrimoine ?? 0)} Patrimoine, ${pct(APPORTEUR_SUBSCRIPTION_SHARES.vitrine ?? 0)} Vitrine et Mandats, ${pct(APPORTEUR_SUBSCRIPTION_SHARES.regie ?? 0)} Régie`;
-const primeReview = `${PRIME_MANUAL_REVIEW_ABOVE.cents / 100} CHF`;
 
 const rateRows: string[][] = [
   ["Pôle", "Ce que prélève E-Dome", "Sur qui"],
@@ -100,9 +95,9 @@ export const SECTIONS: Section[] = [
       `- « Hôte » : Utilisateur qui propose un bien en location de courte durée. À la différence du vendeur, l'hôte réalise ses réservations sur la Plateforme, et une commission est prélevée sur lui à ce titre — jamais ajoutée au prix payé par le voyageur.\n` +
       `- « Client », « Voyageur » : Utilisateur qui achète, loue ou réserve.\n` +
       `- « Prestataire », « Créateur » : Utilisateur qui vend un service, une formation, un événement ou un live.\n` +
-      `- « Apporteur » : Utilisateur qui recommande par un lien traçable. Sa rémunération suit deux mécaniques, jamais confondues : une prime fixe en francs sur les biens (vente, location longue durée), ou un pourcentage du prix sur les pôles de la marketplace, prélevé sur la marge du vendeur — jamais un supplément ajouté au prix payé par le client.\n` +
-      `- « Prime de mise en relation » : somme fixe, en francs, qu'un Vendeur ou un Bailleur fixe librement et verse à l'Apporteur lorsqu'il accepte une mise en relation. Elle est indépendante de la conclusion d'une vente ou d'un bail, n'en est jamais un pourcentage, et n'est donc pas une commission au sens de la règle 3. E-Dome en retient une part paramétrable au titre du service rendu à l'Apporteur ; ce prélèvement porte sur la prime, jamais sur une commission d'agence sur une vente.\n` +
-      `- « Prix » et « Commission » : les sommes dues à E-Dome sont fixées à l'avance et dues indépendamment de la conclusion d'une vente ou d'un bail (règle 3). Le mot « commission » désigne, pour les seuls pôles de la marketplace, une part de ce que perçoit le prestataire ou l'hôte au titre d'une prestation vendue via la Plateforme — jamais un pourcentage du prix d'une vente ou d'un loyer immobilier, et à distinguer de la prime de mise en relation ci-dessus.`,
+      `- « Apporteur » : Utilisateur qui recommande un bien par un lien personnel traçable, ou présente un contact. Sur les biens, il reçoit la commission d'apport promise par le Vendeur ou le Bailleur ; sur les pôles de la marketplace, un pourcentage prélevé sur la marge du vendeur — jamais un supplément ajouté au prix payé par le client.\n` +
+      `- « Commission d'apport » : somme que le Vendeur ou le Bailleur promet, sur la Plateforme, à l'Apporteur qui lui amène l'acquéreur ou le locataire (contrat de courtage d'indication, art. 412 ss CO). Elle est fixée librement par le Vendeur : un montant fixe (de 50 à 50'000 CHF) ou un pourcentage du prix de vente final (de 0,1 % à 3 %, vente uniquement). Elle est due lorsque le contrat est conclu grâce à l'indication de l'Apporteur (art. 413 CO) ou, pour un montant fixe et si le Vendeur l'a choisi, dès qu'il accepte le contact présenté. Les conditions en vigueur au moment où le contact arrive sont figées pour ce contact. Le lien traçable et l'historique horodaté de la Plateforme servent de preuve de l'indication. En location, seule une commission fixe à la charge du Bailleur est possible.\n` +
+      `- « Part E-Dome » : E-Dome retient 12 % (3 CHF au minimum) de chaque commission d'apport due, à l'intérieur de celle-ci : le Vendeur ne paie jamais plus que la commission promise, et l'Apporteur reçoit le solde. Sur les pôles de la marketplace, le mot « commission » désigne une part de ce que perçoit le prestataire ou l'hôte au titre d'une prestation vendue via la Plateforme.`,
   },
   {
     id: "inscription",
@@ -120,12 +115,12 @@ export const SECTIONS: Section[] = [
     id: "remuneration",
     title: "6. Rémunération d'E-Dome et prix",
     content:
-      `E-Dome gagne sa vie du côté professionnel. Publier, chercher et vendre son propre bien est gratuit : il n'existe aucun frais de publication, et aucune somme due à E-Dome ne dépend de la conclusion d'une vente ou d'un bail. Les professionnels s'abonnent aux outils ; les pôles de la marketplace appliquent une commission sur la prestation vendue. Le barème ci-dessous reflète le catalogue en vigueur :`,
+      `Publier, chercher et vendre son propre bien est gratuit : il n'existe aucun frais de publication. Sur les biens, E-Dome se rémunère par sa part de la commission d'apport (12 %, 3 CHF minimum), retenue à l'intérieur de celle-ci et due seulement si une commission est due. Les professionnels s'abonnent aux outils ; les pôles de la marketplace appliquent une commission sur la prestation vendue. Le barème ci-dessous reflète le catalogue en vigueur :`,
     table: rateRows,
     contentAfter:
       `Freemium. Chacun peut utiliser la Plateforme gratuitement et y travailler : une agence ou un agent publie jusqu'à ${FREE_LIMITS.agence.activeListings} biens actifs avec ${FREE_LIMITS.agence.seats} utilisateur et ${FREE_LIMITS.agence.activeApplications} candidatures d'accompagnement actives à la fois ; un prestataire ${FREE_LIMITS.prestataire.activeServices} fiches de service, un créateur ${FREE_LIMITS.createur.activeFormations} formations, un hôte ${FREE_LIMITS.hote.activeShortStays} biens en courte durée ; un particulier ne paie jamais rien. Les fonctions liées à la croissance — volume illimité, équipe, mise en avant, statistiques complètes, automatisations — relèvent des formules payantes. Ces plafonds peuvent être ajustés ; tout changement est annoncé à l'avance.
 
-Les abonnements des agences et des propriétaires sont facturés au mois ou à l'année, sans engagement. Il n'existe pas de « revenue share » négocié de gré à gré : tous les Utilisateurs d'une même formule paient le même prix (règle 3). Sur les biens, un Vendeur peut offrir à un Apporteur une prime de mise en relation — une somme fixe en francs, indépendante de la conclusion : ce n'est pas une commission (la règle 3 vise la commission de succès d'une agence sur une transaction immobilière, pas cette prime), et E-Dome en retient une part paramétrable au titre du service rendu à l'Apporteur, jamais un prélèvement sur une commission d'agence.`,
+Les abonnements des agences et des propriétaires sont facturés au mois ou à l'année, sans engagement. Il n'existe pas de « revenue share » négocié de gré à gré : tous les Utilisateurs d'une même formule paient le même prix (règle 3). Sur les biens, un Vendeur peut promettre à un Apporteur une commission d'apport (voir la section 7) ; E-Dome en retient sa part, jamais un supplément ajouté au prix.`,
   },
   {
     id: "apporteurs",
@@ -134,7 +129,7 @@ Les abonnements des agences et des propriétaires sont facturés au mois ou à l
       `L'apporteur recommande par un lien traçable. Trois mécaniques distinctes, chacune avec son propre traitement, jamais confondues :
 
 ` +
-      `a) BIENS (vente, location longue durée) — prime de mise en relation. Le Vendeur ou le Bailleur fixe librement une prime en francs (${PRIME_RANGE_LABEL}), jamais un pourcentage du prix ni indexée sur lui. Elle n'est facturée que lorsqu'il accepte une mise en relation ; refuser est gratuit ; elle ne dépend jamais de la conclusion d'une vente ou d'un bail. Rien n'est prélevé à l'activation. E-Dome en retient ${pct(EDOME_PRIME_SHARE)}, à l'intérieur de la prime. Le Vendeur peut signaler un contact non sérieux dans les ${PRIME_DISPUTE.windowHours} heures suivant l'acceptation ; le remboursement est plafonné à ${PRIME_DISPUTE.maxRefundsPerMonth} contacts par mois, au-delà le signalement est examiné manuellement. Au-delà de ${primeReview}, la mise en relation fait l'objet d'une vérification renforcée et d'une validation manuelle. Un Apporteur contesté ${PRIME_DISPUTE.contestedLimit} fois perd l'accès à ce volet.
+      `a) BIENS (vente, location longue durée) — commission d'apport. Le Vendeur ou le Bailleur fixe librement la commission (définie à la section 3) et accepte ses conditions en ligne ; l'acceptation est horodatée. Chaque Apporteur obtient un lien personnel par bien : tout contact arrivé par ce lien dans les 60 jours lui est attribué, avec les conditions figées à son arrivée ; l'Apporteur peut aussi présenter un contact, avec son accord. Lorsque le Vendeur indique la vente (ou le bail) conclue et son prix final, la commission est calculée et un règlement dû est créé ; le Vendeur la verse directement à l'Apporteur (TWINT, virement), qui en confirme la réception. E-Dome ne détient jamais les fonds. Le Vendeur ne peut ni retirer l'Apporteur d'un contact attribué ni modifier la commission promise pour ce contact ; une vente indiquée conclue est définitive, sauf correction par E-Dome. Le juge peut réduire une commission excessive (art. 417 CO). En cas de désaccord, les parties peuvent saisir E-Dome, qui met l'historique à leur disposition, sans se prononcer sur le fond.
 
 ` +
       `b) MARKETPLACE (formations, lives, événements, services, location courte durée) — affiliation. Le vendeur ouvre son offre à l'affiliation et fixe un taux dans une fourchette par pôle (formations et lives ${affRange("formation")}, événements ${affRange("evenement")}, services ${affRange("service")}, courte durée ${affRange("location-ct")}), appliqué au prix et prélevé sur sa marge ; la commission d'E-Dome n'en est pas modifiée. L'Apporteur voit son gain net en francs avant de recommander.

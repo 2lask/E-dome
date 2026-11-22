@@ -69,7 +69,9 @@ Base légale : votre consentement, recueilli par une case à cocher non pré-rem
 
 Parrainage : si vous arrivez par un lien de parrainage, un cookie conservant le code du parrain est déposé pour une durée de 30 jours. Il nous permet d'attribuer votre inscription à la personne qui vous a orienté vers nous. Vous pouvez le supprimer à tout moment depuis les réglages de votre navigateur.
 
-Mesure d'audience : par défaut, aucun outil de mesure n'est chargé sur la page d'accueil et aucun cookie de mesure n'est déposé. Si un tel outil est activé à l'avenir, cette politique sera mise à jour avant sa mise en service.
+Mesure d'audience : aucun outil de mesure tiers n'est chargé et aucun cookie publicitaire n'est déposé.
+
+Statistiques des annonces et apport d'affaires : quand vous consultez une annonce, nous enregistrons l'événement (vue, partage, lecture de la vidéo) avec un identifiant aléatoire conservé dans un cookie « ed_vid » (12 mois). Il sert uniquement à compter des visiteurs uniques pour le tableau de bord du propriétaire ; votre adresse IP n'est pas enregistrée. Si vous arrivez par le lien personnel d'un apporteur, un cookie « ed_ref » conserve son code pendant 60 jours, pour lui attribuer le contact que vous prendriez avec le propriétaire (preuve de l'indication, art. 413 CO). Vous pouvez supprimer ces cookies à tout moment depuis les réglages de votre navigateur.
 
 Hébergement des données : l'application est hébergée par Vercel et les données du formulaire sont enregistrées chez Supabase, dans une région située en Europe. Seul le serveur accède à ces données ; la table est protégée par une sécurité au niveau des lignes qui n'autorise aucune lecture publique.
 

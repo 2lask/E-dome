@@ -146,9 +146,9 @@ export function ApporteurReal() {
         <p className="eyebrow">Espace apporteur</p>
         <h1 className="page-heading mt-1.5 text-[30px]">Gagner</h1>
         <p className="mt-1 max-w-3xl text-[14px] text-muted-foreground">
-          Sur un <strong>bien</strong>, le vendeur offre une prime fixe en francs, payée quand il accepte le contact que
-          vous lui amenez — jamais un pourcentage du prix, jamais conditionnée à la vente. Vous ne négociez rien, ne
-          représentez personne.
+          Sur chaque <strong>bien à commission</strong>, prenez votre lien personnel et partagez-le : tout contact venu par
+          ce lien vous est attribué 60 jours. Quand la vente est conclue, la commission promise par le vendeur (en francs
+          ou en % du prix) vous revient, moins 12 % pour E-Dome. Vous ne négociez rien, ne représentez personne.
         </p>
       </header>
 
@@ -340,7 +340,7 @@ export function ApporteurReal() {
         </h2>
         <ul className="space-y-1.5 text-[12.5px] leading-snug text-[var(--text-secondary)]">
           <li>· Aucune intermédiation : vous ne négociez aucun prix, ne signez aucun mandat, ne représentez aucune partie.</li>
-          <li>· La prime est fixe, en francs, définie par le vendeur, due à l&apos;acceptation du contact — jamais un % du prix, jamais conditionnée à la vente.</li>
+          <li>· La commission est fixée par le vendeur (en francs ou en % du prix de vente), figée au moment où votre contact arrive, et due à la conclusion (ou dès l&apos;acceptation du contact si le vendeur l&apos;a choisi).</li>
           <li>· E-Dome ne touche jamais l&apos;argent de la transaction : la prime transite par un prestataire de paiement agréé.</li>
         </ul>
         <Link href="/a-propos" className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-medium text-[var(--primary)] hover:underline">

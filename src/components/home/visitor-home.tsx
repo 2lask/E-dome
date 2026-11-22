@@ -53,7 +53,7 @@ export function VisitorHome({ biens }: { biens: MyProperty[] }) {
             <p className="text-[13px] text-muted-foreground">Vente entre particuliers · prime fixée par le vendeur</p>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div className="rounded-xl border border-laiton-border bg-laiton-soft p-3">
-                <p className="text-[11.5px] text-laiton">Prime du vendeur</p>
+                <p className="text-[11.5px] text-laiton">Commission du vendeur</p>
                 <p className="mt-0.5 text-[22px] font-semibold tabular-nums text-laiton">{EXAMPLE_PRIME} CHF</p>
               </div>
               <div className="rounded-xl border bg-background p-3">
@@ -63,9 +63,9 @@ export function VisitorHome({ biens }: { biens: MyProperty[] }) {
             </div>
             <ul className="mt-4 space-y-1.5 text-[13px]">
               {[
-                "Due quand le vendeur accepte votre contact",
-                "Pas un pourcentage du prix, pas liée à la vente",
-                "Vous ne négociez rien, ne représentez personne",
+                "Un lien personnel tracé pour chaque bien",
+                "Commission fixe ou en % du prix, fixée par le vendeur",
+                "Suivi en direct : clics, leads, vente, paiement",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-2">
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-leman" aria-hidden />
@@ -162,8 +162,8 @@ export function VisitorHome({ biens }: { biens: MyProperty[] }) {
         <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { t: "Publier est gratuit", d: "Aucune commission d'agence, aucun pourcentage sur votre vente." },
-            { t: "Prime fixe, en francs", d: "Fixée par le vendeur, connue d'avance — jamais un % du prix." },
-            { t: "Due à l'acceptation", d: "Pas conditionnée à la vente : le contact accepté suffit." },
+            { t: "Commission connue d'avance", d: "Fixée par le vendeur, en francs ou en % du prix, affichée sur l'annonce." },
+            { t: "Tout est tracé", d: "Lien personnel, contacts horodatés : qui a amené qui est prouvé." },
             { t: "Votre argent n'est pas chez nous", d: "E-Dome ne détient jamais les fonds de la transaction." },
           ].map((r) => (
             <div key={r.t}>
