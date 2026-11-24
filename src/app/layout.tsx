@@ -18,7 +18,14 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+/* Adresse absolue des aperçus partagés (og:image) : le domaine public en
+   production, l'URL du déploiement sur un aperçu Vercel, localhost sinon. */
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3002");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "E-Dome — le réseau immobilier où ton réseau te rapporte",
     template: "%s · E-Dome",
