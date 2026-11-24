@@ -19,6 +19,7 @@ import { coverOf, frDay, isDbPropertyId, repriseOf, type MyProperty } from "@/li
 import { initialsAvatar } from "@/lib/current-user-profile";
 import { InquiryForm } from "@/components/listing/inquiry-form";
 import { CopilotButton } from "@/components/home/copilot-button";
+import { AffordabilityCard } from "@/components/listing/affordability-card";
 import { Button } from "@/components/ui/button";
 import { PRICE_UNIT, TX_LABEL, chfPrice } from "@/components/listing/listing-card";
 import { ShareButton } from "@/components/listing/share-button";
@@ -270,6 +271,10 @@ export default async function BienPage({
               </dl>
               <p className="mt-2 text-[12px] text-muted-foreground">Chiffres déclarés par le propriétaire, non vérifiés par E-Dome.</p>
             </section>
+          )}
+
+          {p.transactionType === "vente" && p.price > 0 && !isOwner && (
+            <div className="mt-8"><AffordabilityCard price={p.price} /></div>
           )}
 
           <section className="mt-8 flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">

@@ -46,7 +46,7 @@ export const DEAL_STEPS: { key: DealStepKey; title: string; hint: string }[] = [
   {
     key: "financement",
     title: "Financement confirmé",
-    hint: "Demandez la confirmation écrite de la banque (ou la preuve des fonds propres). Pour une hypothèque, comptez en général 20 % de fonds propres.",
+    hint: "Demandez à l'acheteur une promesse de paiement irrévocable de sa banque (ou la preuve de ses fonds propres) : elle garantit le paiement et se remet au plus tard à la signature chez le notaire.",
   },
   {
     key: "projet-acte",
@@ -56,13 +56,24 @@ export const DEAL_STEPS: { key: DealStepKey; title: string; hint: string }[] = [
   {
     key: "reservation",
     title: "Réservation ou promesse signée",
-    hint: "Facultatif : une promesse de vente se signe aussi chez le notaire. Un simple accord écrit n'oblige personne à vendre.",
+    hint: "Facultatif : une promesse de vente authentique, chez le notaire. Un éventuel acompte reste déposé chez le notaire jusqu'à la vente. Un accord seulement écrit n'oblige personne.",
   },
   {
     key: "acte",
     title: "Acte authentique signé",
     hint: "Signature chez le notaire, puis inscription au registre foncier : la vente est conclue. Indiquez alors le prix final.",
   },
+];
+
+/** Documents que le notaire demande en général au vendeur (selon le bien et le canton). */
+export const SELLER_DOCUMENTS: string[] = [
+  "Extrait récent du registre foncier",
+  "Plan de situation (cadastre) et plans du logement avec les surfaces",
+  "Police d'assurance du bâtiment (ECA selon le canton)",
+  "En PPE : acte constitutif, règlement, procès-verbaux des dernières assemblées, état du fonds de rénovation",
+  "Certificat énergétique (CECB) s'il existe ou si le canton l'exige",
+  "Liste des travaux récents, garanties et factures importantes",
+  "Pièces d'identité de tous les vendeurs",
 ];
 
 /** L'offre de référence : l'acceptée, sinon la meilleure encore ouverte. */

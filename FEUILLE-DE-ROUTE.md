@@ -32,6 +32,27 @@ qui bloque (légal, partenaires, données). Mis à jour le 24.11.2026.
 | §16 Assurances | ⛔ | Intermédiation d'assurance : cadre LSA, inscription au registre FINMA selon le statut (à vérifier avec un juriste). |
 | §18 Économie « gig » | ✅ (apporteurs) | Les apporteurs gagnent une commission d'indication (art. 412 ss CO). Local Helpers : 🔜, après cadrage du statut (indépendant / travail sur appel). |
 
+## Alternatives aux points bloqués
+
+Pour chaque point ⛔, ce qui est faisable sans autorisation ni partenaire, et
+le partenaire qui le débloquera ensuite.
+
+| Point bloqué | Alternative livrée ou possible maintenant | Partenaire pour la suite |
+|---|---|---|
+| Estimation (§4) | Prix au m² sur l'annonce ; comparables E-Dome dès qu'il y aura assez de biens par ville | PriceHubble (API d'estimation et widget « Lead Generator », déjà utilisés par des banques suisses) ; indice IMPI de l'OFS pour les tendances (conditions « OPEN-BY-ASK » : demander l'autorisation à impi@bfs.admin.ch) |
+| Diffusion multi-portails (§5) | ✅ **Kit de diffusion** dans Mes biens : texte prêt à coller, newhome.ch (publication gratuite, portail des banques cantonales), Homegate, ImmoScout24, groupes locaux ; le lien E-Dome garde le suivi | Accord de diffusion (flux XML) avec un portail |
+| Séquestre / escrow (§14) | ✅ Les étapes suivent les mécanismes suisses existants : **promesse de paiement irrévocable** de la banque de l'acheteur, **acompte déposé chez le notaire** ; commission réglée en direct (TWINT, virement) et suivie | QR-facture suisse pour la commission (bibliothèque libre `swissqrbill` ; il faut ajouter NPA et localité au profil de paiement) ; prestataire de paiement agréé plus tard |
+| Courtage hypothécaire (§10) | ✅ **Calculateur « Puis-je me l'offrir ? »** sur chaque bien à vendre : règle usuelle des banques (taux théorique 5 %, amortissement et entretien ~1 %, charges ≤ 1/3 du revenu, 20 % de fonds propres) ; indicatif, rien n'est enregistré | Programme d'apport avec un intermédiaire hypothécaire autorisé : il conseille, E-Dome oriente |
+| Documents juridiques (§12) | ✅ **Liste des documents pour le notaire** dans le parcours de vente ; rappels art. 216 CO et Lex Koller | Signature électronique qualifiée (Skribble) pour les documents annexes |
+| KYC (§11) | E-mail vérifié ; le notaire vérifie l'identité de chaque partie à l'acte | Vérification d'identité (SwissID ou prestataire) avant tout flux financier |
+| Assurances (§16) | Aucune recommandation de produit (risque d'intermédiation) | Partenaire inscrit comme intermédiaire |
+
+Sources consultées le 24.11.2026 : UBS (capacité financière, fonds propres,
+promesses de paiement irrévocables), PostFinance (charges de 1 %), RealAdvisor
+et immobilier.ch (paiement et acompte chez le notaire), alle-immobilien.ch
+(newhome.ch gratuit), OFS (IMPI), PriceHubble (cas clients suisses), npm
+`swissqrbill`.
+
 ## Données de marché de la spécification
 
 Les chiffres de marché de la spécification (taille du marché, part FSBO, volumes

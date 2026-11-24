@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShareButton } from "@/components/listing/share-button";
+import { DiffusionKit } from "@/components/publish/diffusion-kit";
 import { Plus, Eye, Pencil, Trash2, Inbox, Coins, Check, Circle, Building2, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
@@ -247,6 +248,7 @@ function ListingRow({ p, prime, stats }: { p: MyProperty; prime: CommissionTerms
           )}
         </div>
       )}
+      <DiffusionKit p={p} />
     </article>
   );
 }

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { addOffer, getDeal, setDealStep, setOfferStatus } from "@/lib/supabase/deal-actions";
 import {
-  DEAL_STEPS, FINANCING_LABEL, OFFER_STATUS_LABEL, gapToAskingPct, isExpired, stepsDone, suggestedSalePrice,
+  DEAL_STEPS, SELLER_DOCUMENTS, FINANCING_LABEL, OFFER_STATUS_LABEL, gapToAskingPct, isExpired, stepsDone, suggestedSalePrice,
   type Deal, type DealOffer, type Financing,
 } from "@/lib/deal";
 import { formatNumber } from "@/lib/format";
@@ -186,6 +186,12 @@ export function DealPanel({
             Acte signé : confirmer la vente{accepted ? ` à ${chf(accepted)}` : ""}
           </Button>
         )}
+        <details className="mt-3 rounded-lg border bg-background px-3 py-2">
+          <summary className="cursor-pointer text-[13px] font-medium">Documents à réunir pour le notaire</summary>
+          <ul className="mt-2 space-y-1 pb-1 text-[12.5px] text-muted-foreground">
+            {SELLER_DOCUMENTS.map((d) => <li key={d} className="flex gap-2"><span aria-hidden>·</span>{d}</li>)}
+          </ul>
+        </details>
         <p className="mt-3 text-[11.5px] leading-relaxed text-muted-foreground">
           En Suisse, la vente d&apos;un bien immobilier n&apos;est valable que par acte authentique chez le notaire (art. 216 CO). E-Dome suit le parcours ; il ne détient aucun fonds et ne rédige pas l&apos;acte.
         </p>
