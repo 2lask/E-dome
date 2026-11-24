@@ -21,6 +21,7 @@ import { apporteurNetChf } from "@/lib/my-property";
 import { Input } from "@/components/ui/input";
 import { commissionChf, commissionLabel, dueLabel, netForApporteur } from "@/lib/commission";
 import { AnswersInbox } from "@/components/demandes/answers-inbox";
+import { DealPanel } from "@/components/demandes/deal-panel";
 import type { SearchAnswer } from "@/lib/recherches";
 import { cn } from "@/lib/utils";
 
@@ -493,6 +494,17 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
               <Button size="sm" variant="ghost" onClick={() => setClosing(false)}>Annuler</Button>
             </div>
           </div>
+        )}
+
+        {/* Offres et étapes jusqu'à l'acte (vente) */}
+        {d.property.transactionType === "vente" && ["en-cours", "visite", "offre", "conclue"].includes(d.status) && (
+          <DealPanel
+            inquiryId={d.id}
+            status={d.status}
+            askingPrice={d.property.price ?? 0}
+            onConclude={(price) => { if (price) setSalePrice(String(price)); setClosing(true); }}
+            onChanged={() => { router.refresh(); void listDemandeEvents(d.id).then(setEvents); }}
+          />
         )}
 
         {/* Note */}

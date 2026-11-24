@@ -34,7 +34,7 @@ Sources : weka.ch (courtage immobilier), lawinside.ch (courtage d'indication), d
 
 ## 3. Ce que le fondateur doit faire avant le 25
 
-- [ ] Coller `supabase/APPLIQUER-TOUT.sql` dans Supabase (inclut la migration 009), puis `npm run db:check`.
+- [ ] Coller `supabase/APPLIQUER-TOUT.sql` dans Supabase (inclut les migrations 009 et 010), puis `npm run db:check`.
 - [ ] Variables Vercel : `EDOME_ADMIN_EMAILS`, `NEXT_PUBLIC_SITE_URL`, et Resend (`RESEND_API_KEY`, `EDOME_EMAIL_FROM`).
 - [ ] Publier 5 à 10 vrais biens (photos, vidéo si possible, commission).
 - [ ] Faire relire par un avocat : conditions de commission, `JURIDIQUE-A-VALIDER.md`.
@@ -53,6 +53,7 @@ Sources : weka.ch (courtage immobilier), lawinside.ch (courtage d'indication), d
 | Espace apporteur, pages publiques v2 | `72581bb` | `/apporteurs` (lien en un geste, chiffres 30 j, simulateur), accueil refait |
 | Fiche de bien mobile | `eb5f249` | barre fixe Contacter / Recommander |
 | Parcours vendeur | `2fe39d9` | Demandes : Appeler / WhatsApp / e-mail, badge apporteur ; Partager dans Mes biens |
+| Parcours de vente (offres → acte) | à venir | migration 010, offres et étapes suisses jusqu'à l'acte dans Demandes |
 
 Vérifié : types, lint (0 erreur), 133 tests de données, build, 44 tests de bout
 en bout ; captures avec un compte et un bien temporaires (supprimés).

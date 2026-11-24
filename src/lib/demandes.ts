@@ -46,7 +46,7 @@ export interface Demande {
   id: string;
   kind: DemandeKind;
   status: DemandeStatus;
-  property: { id: string; title: string; city: string; cover: string };
+  property: { id: string; title: string; city: string; cover: string; price?: number; transactionType?: string };
   sender: { name: string; email: string | null; phone: string | null; hasAccount: boolean };
   message: string;
   preferredDate: string | null;
@@ -64,7 +64,7 @@ export interface Demande {
 
 export interface PendingIntroduction {
   id: string;
-  property: { id: string; title: string; city: string; cover: string };
+  property: { id: string; title: string; city: string; cover: string; price?: number; transactionType?: string };
   apporteurName: string;
   /** Description anonyme du contact (les coordonnées viennent après acceptation). */
   contactLabel: string;

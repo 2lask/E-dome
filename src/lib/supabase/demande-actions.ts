@@ -40,13 +40,15 @@ async function me() {
   return { supabase, user } as const;
 }
 
-type PropJoin = { id: string; title: string; city: string; type: string; images: string[] | null } | null;
+type PropJoin = { id: string; title: string; city: string; type: string; images: string[] | null; price?: number | null; transaction_type?: string | null } | null;
 
 const propOf = (p: PropJoin) => ({
   id: p?.id ?? "",
   title: p?.title ?? "Bien supprimé",
   city: p?.city ?? "",
   cover: coverOf({ images: p?.images ?? [], type: (p?.type ?? "appartement") as PropertyType }),
+  price: p?.price == null ? 0 : Number(p.price),
+  transactionType: p?.transaction_type ?? "vente",
 });
 
 const nameOf = (p: { first_name: string; last_name: string } | null | undefined, fallback: string) =>
@@ -170,14 +172,14 @@ export async function listMyDemandes(): Promise<{
     supabase
       .from("inquiries")
       .select(
-        "id, kind, status, sender_id, sender_name, sender_email, sender_phone, message, preferred_date, created_at, updated_at, property:properties!property_id ( id, title, city, type, images ), introduction:introductions!introduction_id ( amount_chf, apporteur:profiles!apporteur_id ( first_name, last_name ) )",
+        "id, kind, status, sender_id, sender_name, sender_email, sender_phone, message, preferred_date, created_at, updated_at, property:properties!property_id ( id, title, city, type, images, price, transaction_type ), introduction:introductions!introduction_id ( amount_chf, apporteur:profiles!apporteur_id ( first_name, last_name ) )",
       )
       .eq("seller_id", user.id)
       .order("created_at", { ascending: false }),
     supabase
       .from("introductions")
       .select(
-        "id, contact_label, amount_chf, created_at, property:properties!property_id ( id, title, city, type, images ), apporteur:profiles!apporteur_id ( first_name, last_name )",
+        "id, contact_label, amount_chf, created_at, property:properties!property_id ( id, title, city, type, images, price, transaction_type ), apporteur:profiles!apporteur_id ( first_name, last_name )",
       )
       .eq("seller_id", user.id)
       .eq("status", "proposee")
