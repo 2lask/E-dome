@@ -34,6 +34,7 @@ Sources : weka.ch (courtage immobilier), lawinside.ch (courtage d'indication), d
 
 ## 3. Ce que le fondateur doit faire avant le 25
 
+- [ ] **BLOQUANT — inscriptions** : sans SMTP personnalisé, Supabase n'envoie l'e-mail de confirmation qu'aux membres de l'équipe du projet (2/heure). Avant le lancement : soit désactiver « Confirm email » (Authentication → Sign In / Providers → Email), soit configurer un SMTP (Authentication → Emails → SMTP Settings ; Resend ou Brevo).
 - [ ] Coller `supabase/APPLIQUER-TOUT.sql` dans Supabase (inclut les migrations 009 et 010), puis `npm run db:check`.
 - [ ] Variables Vercel : `EDOME_ADMIN_EMAILS`, `NEXT_PUBLIC_SITE_URL`, et Resend (`RESEND_API_KEY`, `EDOME_EMAIL_FROM`).
 - [ ] Publier 5 à 10 vrais biens (photos, vidéo si possible, commission).
