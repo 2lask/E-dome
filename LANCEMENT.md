@@ -50,6 +50,9 @@ Sources : weka.ch (courtage immobilier), lawinside.ch (courtage d'indication), d
 | Tableau de bord temps réel | `be6a58c` | `/tableau-de-bord` vendeur + apporteur, Supabase Realtime |
 | Vitrine des biens | `13a1f84` | grand visuel vidéo/photo, galerie, vidéo, bloc apporteur |
 | Textes juridiques alignés | `d0c3ea7` | conditions, confidentialité (cookies), pages |
+| Espace apporteur, pages publiques v2 | `72581bb` | `/apporteurs` (lien en un geste, chiffres 30 j, simulateur), accueil refait |
+| Fiche de bien mobile | `eb5f249` | barre fixe Contacter / Recommander |
+| Parcours vendeur | `2fe39d9` | Demandes : Appeler / WhatsApp / e-mail, badge apporteur ; Partager dans Mes biens |
 
 Vérifié : types, lint (0 erreur), 133 tests de données, build, 44 tests de bout
 en bout ; captures avec un compte et un bien temporaires (supprimés).
