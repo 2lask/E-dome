@@ -90,18 +90,25 @@ export function ExplorerView({ biens, initialQuery = "", initialPrimeOnly = fals
 
   return (
     <div className="mx-auto max-w-6xl">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="page-heading text-[30px]">Explorer</h1>
-          <p className="mt-1 text-[14px] text-muted-foreground">
-            {biens.length === 0
-              ? "Les biens proposés directement par leurs propriétaires."
-              : `${biens.length} bien${biens.length > 1 ? "s" : ""} proposé${biens.length > 1 ? "s" : ""} directement par leurs propriétaires.`}
-          </p>
+      <header className="cine relative overflow-hidden rounded-3xl border border-white/10 px-6 py-8 md:px-10 md:py-10">
+        <div aria-hidden className="cine-aurora" />
+        <div aria-hidden className="cine-grid" />
+        <div className="relative flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <p className="text-[12.5px] font-medium uppercase tracking-[0.18em] text-[#e3b85c]">Explorer</p>
+            <h1 className="mt-2 text-[34px] font-semibold leading-[1.05] tracking-[-0.035em] sm:text-[44px]">
+              Des biens en direct <span className="cine-gold">de leurs propriétaires.</span>
+            </h1>
+            <p className="mt-2 text-[14.5px] text-white/65">
+              {biens.length === 0
+                ? "Sans frais d'agence. Les premiers biens arrivent."
+                : `${biens.length} bien${biens.length > 1 ? "s" : ""} en ligne · sans frais d'agence${biens.some((b) => b.activePrimeChf) ? " · commissions pour les apporteurs" : ""}`}
+            </p>
+          </div>
+          <Link href="/apporteurs" className="cine-btn-gold inline-flex h-11 items-center gap-2 rounded-xl px-5 text-[14px] font-semibold">
+            <Coins className="h-4 w-4" aria-hidden /> Recommander et gagner
+          </Link>
         </div>
-        <Link href="/apporteurs" className="inline-flex items-center gap-1.5 rounded-lg border border-laiton-border bg-laiton-soft px-3 py-2 text-[13px] font-medium text-laiton hover:bg-laiton-soft/70">
-          <Coins className="h-4 w-4" aria-hidden /> Recommandez un bien, touchez la commission
-        </Link>
       </header>
 
       {biens.length === 0 ? (

@@ -3,7 +3,6 @@ import { formatNumber } from "@/lib/format";
 import {
   ArrowRight, Coins, Inbox, ImageOff, Gift, Check, Circle, Plus, Compass, Building2, UserRound, BarChart3,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { CopilotButton } from "@/components/home/copilot-button";
 import { apporteurNetChf, primeEligible, type MyIntroduction, type MyPrime, type MyProperty } from "@/lib/my-property";
 import type { Demande, PendingIntroduction } from "@/lib/demandes";
@@ -109,23 +108,37 @@ export function MemberHome({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">
-            {new Date().toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}
-          </p>
-          <h1 className="page-heading mt-1.5 text-[30px]">Bonjour {user.firstName || "à vous"}</h1>
-          <p className="mt-1 text-[14px] text-muted-foreground">
-            {todos.length > 0
-              ? `${todos.length} chose${todos.length > 1 ? "s" : ""} demande${todos.length > 1 ? "nt" : ""} votre attention.`
-              : "Rien d'urgent pour l'instant."}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <CopilotButton />
-          <Button asChild>
-            <Link href="/publier"><Plus className="h-4 w-4" aria-hidden /> Publier un bien</Link>
-          </Button>
+      <header className="cine relative overflow-hidden rounded-3xl border border-white/10 p-6 md:p-8">
+        <div aria-hidden className="cine-aurora" />
+        <div aria-hidden className="cine-grid" />
+        <div className="relative">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-[12.5px] font-medium uppercase tracking-[0.16em] text-[#e3b85c]">
+                {new Date().toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}
+              </p>
+              <h1 className="mt-2 text-[34px] font-semibold leading-tight tracking-[-0.035em] sm:text-[42px]">
+                Bonjour <span className="cine-gold">{user.firstName || "à vous"}</span>
+              </h1>
+              <p className="mt-1 text-[14.5px] text-white/65">
+                {todos.length > 0
+                  ? `${todos.length} chose${todos.length > 1 ? "s" : ""} demande${todos.length > 1 ? "nt" : ""} votre attention.`
+                  : "Rien d'urgent pour l'instant."}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <CopilotButton />
+              <Link href="/publier" className="cine-btn-gold inline-flex h-10 items-center gap-2 rounded-xl px-4 text-[14px] font-semibold">
+                <Plus className="h-4 w-4" aria-hidden /> Publier un bien
+              </Link>
+            </div>
+          </div>
+          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <Stat href="/mes-biens" label="Biens en ligne" value={String(online.length)} />
+            <Stat href="/demandes" label="Demandes ouvertes" value={String(openDemandes.length)} />
+            <Stat href="/mes-biens" label="Commissions actives" value={String(activePrimes.length)} />
+            <Stat href="/tableau-de-bord?vue=apports" label="Gains apporteur" value={chf(dueNet)} prime={dueNet > 0} sub="net, mises en relation" />
+          </div>
         </div>
       </header>
 
@@ -170,13 +183,6 @@ export function MemberHome({
           )}
 
           {/* ── Chiffres RÉELS ───────────────────────────────────────── */}
-          <h2 className="mb-3 mt-8 text-[15px] font-semibold">Votre activité</h2>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Stat href="/mes-biens" label="Biens en ligne" value={String(online.length)} />
-            <Stat href="/demandes" label="Demandes ouvertes" value={String(openDemandes.length)} />
-            <Stat href="/mes-biens" label="Commissions actives" value={String(activePrimes.length)} />
-            <Stat href="/tableau-de-bord?vue=apports" label="Gains apporteur" value={chf(dueNet)} prime={dueNet > 0} sub="net, mises en relation" />
-          </div>
         </section>
 
         {/* ── Colonne : démarrage + raccourcis ─────────────────────────── */}
@@ -232,13 +238,13 @@ function Stat({ href, label, value, sub, prime = false }: { href: string; label:
     <Link
       href={href}
       className={cn(
-        "rounded-2xl border bg-card p-4 shadow-xs hover:border-foreground/20",
-        prime && "border-laiton-border bg-laiton-soft/50",
+        "rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur transition-colors hover:border-[rgb(227_184_92/0.45)]",
+        prime && "border-[#d9a441]/40 bg-[#d9a441]/10",
       )}
     >
-      <p className="text-[12px] text-muted-foreground">{label}</p>
-      <p className={cn("mt-1 text-[22px] font-semibold tabular-nums tracking-[-0.02em]", prime && "text-laiton")}>{value}</p>
-      {sub && <p className="text-[11.5px] text-muted-foreground">{sub}</p>}
+      <p className="text-[12px] text-white/55">{label}</p>
+      <p className={cn("mt-1 text-[26px] font-semibold tabular-nums tracking-[-0.02em] text-white", prime && "text-[#f7d488]")}>{value}</p>
+      {sub && <p className="text-[11.5px] text-white/50">{sub}</p>}
     </Link>
   );
 }

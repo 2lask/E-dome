@@ -37,37 +37,43 @@ export function ListingCard({ p, priority = false }: { p: MyProperty; priority?:
   ].filter(Boolean);
 
   return (
-    <Link href={`/explorer/${p.id}`} className="group block rounded-xl outline-offset-4">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-subtle">
+    <Link
+      href={`/explorer/${p.id}`}
+      className="group block overflow-hidden rounded-2xl border bg-card outline-offset-4 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-[rgb(227_184_92/0.45)] hover:shadow-[0_24px_60px_-24px_rgb(217_164_65/0.45)]"
+    >
+      <div className="relative aspect-[4/3] overflow-hidden bg-subtle">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={coverOf(p)}
           alt=""
           loading={priority ? "eager" : "lazy"}
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
         />
-        <span className="absolute left-2.5 top-2.5 rounded-md bg-white/92 px-2 py-0.5 text-[11.5px] font-medium text-[#15130f] backdrop-blur">
+        <div aria-hidden className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <span className="absolute left-3 top-3 rounded-md bg-white/92 px-2 py-0.5 text-[11.5px] font-medium text-[#15130f] backdrop-blur">
           {reprise ? "Reprise de bail" : TX_LABEL[p.transactionType]}
         </span>
         {p.activePrimeChf ? (
-          <span className="absolute right-2.5 top-2.5 rounded-md border border-[#ead7ad] bg-[#f7edd6] px-2 py-0.5 text-[11.5px] font-semibold tabular-nums text-[#8a5d0c] shadow-sm">
+          <span className="absolute right-3 top-3 rounded-md border border-[#f2c66b]/70 bg-[linear-gradient(180deg,#f7e2b0,#f2c66b)] px-2 py-0.5 text-[11.5px] font-semibold tabular-nums text-[#4a3206] shadow-[0_0_18px_-2px_rgb(242_198_107/0.7)]">
             {p.commission?.kind === "pourcentage"
               ? `${String(p.commission.ratePct).replace(".", ",")} % · ≈ ${formatNumber(Math.round(p.activePrimeChf))} CHF`
               : `Commission ${formatNumber(p.activePrimeChf)} CHF`}
           </span>
         ) : null}
-        {p.videos.length > 0 && (
-          <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-md bg-black/60 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur">
-            <svg viewBox="0 0 24 24" className="h-3 w-3 fill-current" aria-hidden><path d="M8 5v14l11-7z" /></svg> Vidéo
-          </span>
-        )}
+        <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2 text-white">
+          <p className="text-[20px] font-semibold tabular-nums leading-none tracking-[-0.02em] drop-shadow">
+            {chfPrice(p.price)}
+            <span className="text-[13px] font-normal text-white/75">{PRICE_UNIT[p.transactionType]}</span>
+          </p>
+          {p.videos.length > 0 && (
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-white/20 px-2 py-0.5 text-[11px] font-medium backdrop-blur">
+              <svg viewBox="0 0 24 24" className="h-3 w-3 fill-current" aria-hidden><path d="M8 5v14l11-7z" /></svg> Vidéo
+            </span>
+          )}
+        </div>
       </div>
-      <div className="mt-2.5 space-y-0.5">
-        <p className="text-[15px] font-semibold tabular-nums tracking-[-0.01em]">
-          {chfPrice(p.price)}
-          <span className="font-normal text-muted-foreground">{PRICE_UNIT[p.transactionType]}</span>
-        </p>
-        <p className="truncate text-[13.5px] text-foreground/90 group-hover:underline">{p.title}</p>
+      <div className="space-y-0.5 px-3.5 py-3">
+        <p className="truncate text-[14.5px] font-medium text-foreground">{p.title}</p>
         <p className="truncate text-[12.5px] text-muted-foreground">{facts.join(" · ")}</p>
         {reprise?.availableFrom && (
           <p className="text-[12.5px] font-medium text-leman">Libre dès le {frDay(reprise.availableFrom)}</p>

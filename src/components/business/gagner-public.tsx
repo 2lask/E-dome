@@ -41,27 +41,41 @@ const FAQ = [
 
 export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
   return (
-    <div className="mx-auto max-w-5xl">
-      <section className="hero-rise pb-10 pt-4 md:pt-8">
-        <p className="eyebrow">Programme apporteur</p>
-        <h1 className="page-heading mt-3 max-w-3xl text-[38px] sm:text-[52px]">
-          Votre réseau trouve l&apos;acheteur. <span className="text-laiton">Vous touchez la commission.</span>
-        </h1>
-        <p className="mt-5 max-w-2xl text-[16px] leading-relaxed text-foreground/80">
-          Des propriétaires proposent une commission à qui leur amène le bon acheteur ou locataire. Prenez votre lien
-          personnel, envoyez-le à qui cherche : visites, contacts et vente vous sont attribués, et la commission est
-          calculée automatiquement.
-        </p>
-        <div className="mt-7 flex flex-wrap gap-2.5">
-          <Button asChild size="lg" variant="prime"><Link href={SIGNUP}>Devenir apporteur — gratuit</Link></Button>
-          {offers.length > 0 && (
-            <Button asChild size="lg" variant="outline">
-              <a href="#biens">Voir les biens à commission <ArrowRight className="h-4 w-4" aria-hidden /></a>
-            </Button>
-          )}
+    <>
+      {/* ── Hero plein écran : promesse + simulateur en direct ── */}
+      <section className="cine relative -mx-4 -mt-6 overflow-hidden md:-mx-8 md:-mt-8">
+        <div aria-hidden className="cine-aurora" />
+        <div aria-hidden className="cine-grid" />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-14 md:px-8 md:pb-20 md:pt-20 lg:grid-cols-[1fr_1.05fr]">
+          <div className="hero-rise">
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[12.5px] text-white/80">
+              <Coins className="h-3.5 w-3.5 text-[#f2c66b]" aria-hidden /> Programme apporteur · gratuit
+            </p>
+            <h1 className="mt-6 text-[40px] font-semibold leading-[1.04] tracking-[-0.04em] sm:text-[54px] lg:text-[58px]">
+              Votre réseau trouve l&apos;acheteur.
+              <br />
+              <span className="cine-gold">Vous touchez la commission.</span>
+            </h1>
+            <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-white/70">
+              Des propriétaires proposent une commission à qui leur amène le bon acheteur ou locataire. Prenez votre lien,
+              envoyez-le à qui cherche : visites, contacts et vente vous sont attribués, la commission se calcule toute seule.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href={SIGNUP} className="cine-btn-gold inline-flex h-12 items-center gap-2 rounded-xl px-6 text-[15px] font-semibold">
+                Devenir apporteur — gratuit <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+              {offers.length > 0 && (
+                <a href="#biens" className="cine-btn-light inline-flex h-12 items-center rounded-xl px-6 text-[15px] font-semibold">
+                  Voir les {offers.length} bien{offers.length > 1 ? "s" : ""} à commission
+                </a>
+              )}
+            </div>
+          </div>
+          <Simulator className="cine-glass" stacked />
         </div>
       </section>
 
+    <div className="mx-auto mt-14 max-w-5xl">
       <section aria-label="Comment ça marche" className="grid gap-3 md:grid-cols-3">
         {[
           { icon: Coins, t: "Choisissez un bien", d: "Chaque bien affiche sa commission et ce que vous touchez, net, avant toute démarche." },
@@ -80,8 +94,6 @@ export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
           </div>
         ))}
       </section>
-
-      <Simulator />
 
       {/* Les vrais biens à commission */}
       <section id="biens" className="mt-12 scroll-mt-20">
@@ -151,11 +163,12 @@ export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
         <Button asChild variant="prime"><Link href={SIGNUP}>Devenir apporteur</Link></Button>
       </section>
     </div>
+    </>
   );
 }
 
 /* Simulateur : vente (prix × taux) ou location (montant fixe). */
-function Simulator() {
+function Simulator({ className = "", stacked = false }: { className?: string; stacked?: boolean }) {
   const [mode, setMode] = useState<"vente" | "location">("vente");
   const [price, setPrice] = useState(950_000);
   const [rate, setRate] = useState(1);
@@ -165,8 +178,8 @@ function Simulator() {
   const fee = Math.round((gross - net) * 100) / 100;
 
   return (
-    <section aria-labelledby="sim-title" className="mt-10 overflow-hidden rounded-3xl border bg-card">
-      <div className="grid md:grid-cols-[1.1fr_1fr]">
+    <section aria-labelledby="sim-title" className={`overflow-hidden rounded-3xl border bg-card ${className}`}>
+      <div className={stacked ? "grid" : "grid md:grid-cols-[1.1fr_1fr]"}>
         <div className="p-6 md:p-8">
           <div className="flex items-center justify-between gap-3">
             <h2 id="sim-title" className="text-[18px] font-semibold tracking-[-0.015em]">Combien pouvez-vous toucher ?</h2>
