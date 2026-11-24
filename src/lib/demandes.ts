@@ -92,3 +92,13 @@ export function relativeFr(iso: string, now: Date = new Date()): string {
   if (s < 604800) return `il y a ${Math.floor(s / 86400)} j`;
   return d.toLocaleDateString("fr-CH", { day: "numeric", month: "short" });
 }
+
+/** Numéro suisse saisi librement → format international pour wa.me
+    (« 079 123 45 67 » → « 41791234567 »). Null si le numéro est inexploitable. */
+export function swissToIntl(raw: string): string | null {
+  let n = raw.replace(/[^\d+]/g, "");
+  if (n.startsWith("+")) n = n.slice(1);
+  else if (n.startsWith("00")) n = n.slice(2);
+  else if (n.startsWith("0")) n = "41" + n.slice(1);
+  return /^\d{9,15}$/.test(n) ? n : null;
+}

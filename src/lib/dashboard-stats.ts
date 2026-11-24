@@ -92,7 +92,7 @@ export function computeSeller(
     .map((p) => {
       const v = views.filter((e) => e.property_id === p.id).length;
       const l = ld.filter((x) => x.property_id === p.id).length;
-      return { id: p.id, title: p.title, cover: p.cover, views: v, leads: l, conversion: pct(l, v) };
+      return { id: p.id, title: p.title, cover: p.cover, views: v, leads: l, conversion: pct(l, Math.max(v, l)) };
     })
     .sort((a, b) => b.leads - a.leads || b.views - a.views)
     .slice(0, 6);
@@ -118,11 +118,13 @@ export function computeSeller(
     revenue,
     commissions,
     net: revenue - commissions,
-    conversion: pct(ld.length, visitors || views.length),
+    /* Un lead est aussi un visiteur (même sans vue comptée : propriétaire,
+       déduplication) : la conversion ne dépasse jamais 100 %. */
+    conversion: pct(ld.length, Math.max(visitors || views.length, ld.length)),
     pipelineValue,
     series,
     funnel: [
-      { label: "Visiteurs", value: visitors },
+      { label: "Visiteurs", value: Math.max(visitors, ld.length) },
       { label: "Leads", value: ld.length },
       { label: "Visites", value: visits },
       { label: "Offres", value: offers },

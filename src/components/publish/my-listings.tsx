@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ShareButton } from "@/components/listing/share-button";
 import { Plus, Eye, Pencil, Trash2, Inbox, Coins, Check, Circle, Building2, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
@@ -186,6 +187,7 @@ function ListingRow({ p, prime, stats }: { p: MyProperty; prime: CommissionTerms
 
         <div className="flex shrink-0 gap-2 sm:flex-col sm:items-stretch">
           <Button asChild size="sm" variant="outline"><Link href={`/explorer/${p.id}`}><Eye className="h-4 w-4" aria-hidden /> Voir</Link></Button>
+          <ShareButton path={`/explorer/${p.id}`} title={p.title} text={`${p.title} à ${p.city}`} propertyId={p.id} />
           <Button asChild size="sm" variant="outline"><Link href={`/publier?edit=${p.id}`}><Pencil className="h-4 w-4" aria-hidden /> Modifier</Link></Button>
           {confirmDelete ? (
             <Button size="sm" variant="destructive" disabled={isPending} onClick={remove}>Confirmer le retrait</Button>

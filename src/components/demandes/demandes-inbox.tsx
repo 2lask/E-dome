@@ -5,13 +5,13 @@ import { formatNumber } from "@/lib/format";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Inbox, ArrowLeft, Mail, Phone, CalendarDays, Coins, Check, X, Plus,
+  Inbox, ArrowLeft, Mail, Phone, CalendarDays, Coins, Check, X, Plus, MessageCircle,
   MessageSquareText, CircleDot, StickyNote, Building2, UserCheck, Database, FileCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import {
-  KIND_LABEL, STATUS_FLOW, STATUS_LABEL, isOpen, relativeFr,
+  KIND_LABEL, STATUS_FLOW, STATUS_LABEL, isOpen, relativeFr, swissToIntl,
   type Demande, type DemandeEvent, type DemandeStatus, type PendingIntroduction,
 } from "@/lib/demandes";
 import {
@@ -280,6 +280,12 @@ function DemandeRow({ d, active, onClick }: { d: Demande; active: boolean; onCli
           {KIND_LABEL[d.kind]} · {d.property.title}
         </span>
         {d.message && <span className="mt-0.5 block truncate text-[12.5px] text-foreground/80">{d.message}</span>}
+        {d.attribution && (
+          <span className="mt-1.5 inline-flex max-w-full items-center gap-1 rounded-md border border-laiton-border bg-laiton-soft px-1.5 py-0.5 text-[11px] font-medium text-laiton">
+            <Coins className="h-3 w-3 shrink-0" aria-hidden />
+            <span className="truncate">Apporté par {d.attribution.apporteurName} · {commissionLabel(d.attribution.terms)}</span>
+          </span>
+        )}
       </span>
     </button>
   );
@@ -316,6 +322,12 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
       router.refresh();
     });
 
+  /* Contacter fait avancer le parcours : « Nouvelle » → « En cours ». */
+  const contacted = () => { if (d.status === "nouvelle") move("en-cours"); };
+  const firstName = d.sender.name.split(" ")[0] || d.sender.name;
+  const hello = `Bonjour ${firstName}, merci pour votre message au sujet de « ${d.property.title} ». `;
+  const waNumber = d.sender.phone ? swissToIntl(d.sender.phone) : null;
+
   const saveNote = () =>
     startTransition(async () => {
       const res = await addDemandeNote(d.id, note);
@@ -348,6 +360,27 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
                 <a href={`tel:${d.sender.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 text-leman hover:underline">
                   <Phone className="h-3.5 w-3.5" aria-hidden /> {d.sender.phone}
                 </a>
+              )}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {d.sender.phone && (
+                <Button asChild size="sm" variant="outline">
+                  <a href={`tel:${d.sender.phone.replace(/\s/g, "")}`} onClick={contacted}><Phone className="h-4 w-4" aria-hidden /> Appeler</a>
+                </Button>
+              )}
+              {waNumber && (
+                <Button asChild size="sm" className="bg-[#1f8f4e] text-white hover:bg-[#197a42]">
+                  <a href={`https://wa.me/${waNumber}?text=${encodeURIComponent(hello)}`} target="_blank" rel="noopener noreferrer" onClick={contacted}>
+                    <MessageCircle className="h-4 w-4" aria-hidden /> WhatsApp
+                  </a>
+                </Button>
+              )}
+              {d.sender.email && (
+                <Button asChild size="sm" variant="outline">
+                  <a href={`mailto:${d.sender.email}?subject=${encodeURIComponent(d.property.title)}&body=${encodeURIComponent(hello)}`} onClick={contacted}>
+                    <Mail className="h-4 w-4" aria-hidden /> Répondre par e-mail
+                  </a>
+                </Button>
               )}
             </div>
           </div>

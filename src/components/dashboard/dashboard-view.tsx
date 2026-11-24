@@ -228,7 +228,7 @@ function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
     <ol className="space-y-2">
       {steps.map((st, i) => {
         const prev = i > 0 ? steps[i - 1].value : 0;
-        const rate = i > 0 && prev > 0 ? Math.round((st.value / prev) * 100) : null;
+        const rate = i > 0 && prev > 0 ? Math.min(100, Math.round((st.value / prev) * 100)) : null;
         return (
           <li key={st.label} className="flex items-center gap-3 text-[13px]">
             <span className="w-20 shrink-0 text-muted-foreground">{st.label}</span>

@@ -63,3 +63,15 @@ test("D-3 · apporteur : clics de ses liens, ventes, commissions NETTES gagnées
   assert.equal(a.commissionsPending, 8_800, "10'000 estimés au prix demandé, nets");
   assert.equal(a.links[0].earned, 8_360);
 });
+
+test("D-4 · conversion plafonnée : plus de leads que de visiteurs comptés", () => {
+  const ev: EventRow[] = [{ property_id: "a", kind: "vue", link_id: null, visitor: "v1", created_at: ago(1) }];
+  const ld: LeadRow[] = [
+    { id: "x", property_id: "a", status: "nouvelle", created_at: ago(1), closed_at: null, sale_price: null, apporteur_id: null, apporteur_name: null, terms: null },
+    { id: "y", property_id: "a", status: "nouvelle", created_at: ago(1), closed_at: null, sale_price: null, apporteur_id: null, apporteur_name: null, terms: null },
+  ];
+  const s = computeSeller(30, NOW, P, ev, ld);
+  assert.equal(s.conversion, 100);
+  assert.equal(s.funnel[0].value, 2, "un lead est aussi un visiteur");
+  assert.ok(s.topListings.every((t) => t.conversion <= 100));
+});

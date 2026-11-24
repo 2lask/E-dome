@@ -35,8 +35,9 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient();
   if (!admin) return res;
 
-  /* Le propriétaire qui regarde sa propre annonce ne gonfle pas ses statistiques. */
-  const session = await createClient();
+  /* Le propriétaire qui regarde sa propre annonce ne gonfle pas ses statistiques.
+     Ses partages, eux, comptent : il est le premier diffuseur de son bien. */
+  const session = kind === "partage" ? null : await createClient();
   const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
   if (user) {
     const { data: prop } = await admin.from("properties").select("host_id").eq("id", propertyId).maybeSingle();
