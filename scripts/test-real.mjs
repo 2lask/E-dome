@@ -11,7 +11,8 @@ const env = Object.fromEntries(
 const SB = env.NEXT_PUBLIC_SUPABASE_URL;
 const KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 const ANON = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const APP = "http://localhost:3002";
+/* Cible : le serveur local, ou un déploiement (TEST_APP_URL=https://…). */
+const APP = (process.env.TEST_APP_URL || "http://localhost:3002").replace(/\/+$/, "");
 const H = { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json", "User-Agent": "edome-e2e-tests" };
 /* Usage : serveur lancé sur le port 3002 (npm run build && npm start), puis npm run test:real.
    Captures enregistrées dans le dossier temporaire du système (ou le dossier passé en argument). */

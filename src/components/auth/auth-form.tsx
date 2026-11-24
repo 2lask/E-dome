@@ -28,10 +28,18 @@ const ERRORS: [RegExp, string][] = [
   [/email not confirmed/i, "Confirmez d'abord votre adresse : un lien vous a été envoyé par e-mail."],
   [/user already registered/i, "Un compte existe déjà avec cet e-mail. Connectez-vous."],
   [/password should be at least/i, "Le mot de passe doit contenir au moins 8 caractères."],
+  /* Service d'e-mail de Supabase saturé ou refusé (pas de SMTP configuré). */
+  [/sending (confirmation|magic link)|email rate limit|error sending/i, "Nous n'avons pas pu envoyer l'e-mail de confirmation. Réessayez dans quelques minutes ou écrivez-nous via la page Contact."],
   [/rate limit|too many/i, "Trop de tentatives. Patientez une minute puis réessayez."],
   [/network|fetch/i, "Connexion impossible. Vérifiez votre réseau."],
 ];
 const translate = (m: string) => ERRORS.find(([re]) => re.test(m))?.[1] ?? "Une erreur s'est produite. Réessayez.";
+
+
+/* Le bouton Google n'apparaît que si le fournisseur est activé dans Supabase
+   (Authentication → Providers → Google) ET signalé ici : sinon le clic
+   finirait sur une erreur. Activer : NEXT_PUBLIC_AUTH_GOOGLE=1 dans Vercel. */
+const GOOGLE_ENABLED = process.env.NEXT_PUBLIC_AUTH_GOOGLE === "1";
 
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
@@ -148,6 +156,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         </div>
       )}
 
+      {GOOGLE_ENABLED && (<>
       <Button
         type="button"
         variant="outline"
@@ -171,8 +180,9 @@ export function AuthForm({ mode }: AuthFormProps) {
       <div className="my-5 flex items-center gap-3 text-[11.5px] text-muted-foreground">
         <span className="h-px flex-1 bg-border" /> ou par e-mail <span className="h-px flex-1 bg-border" />
       </div>
+      </>)}
 
-      <form onSubmit={handleSubmit} className="space-y-3.5">
+      <form onSubmit={handleSubmit} className={GOOGLE_ENABLED ? "space-y-3.5" : "mt-6 space-y-3.5"}>
         {mode === "signup" && (
           <div className="grid grid-cols-2 gap-2.5">
             <Field id="firstName" label="Prénom">
