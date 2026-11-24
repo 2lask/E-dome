@@ -5,6 +5,7 @@ import { createAdminClient } from "./admin";
 import { notifyUser } from "../email/notify";
 import { coverOf, type PrimedProperty, type MyIntroduction } from "../my-property";
 import type { PropertyType, TransactionType } from "../types";
+import { estimateChf, type CommissionTerms } from "../commission";
 
 /* ── Actions serveur : découverte & mise en relation apporteur (chantier C5) ──
 
@@ -18,22 +19,30 @@ import type { PropertyType, TransactionType } from "../types";
 
 type PrimeRow = {
   id: string;
-  amount_chf: number;
+  amount_chf: number | null;
   seller_id: string;
+  commission_kind?: string | null;
+  rate_pct?: number | null;
+  due_on?: string | null;
   property: {
     id: string;
     title: string;
     city: string;
     type: string;
     transaction_type: string;
+    price: number | null;
     images: string[] | null;
     sold_to: string | null;
     host: { first_name: string; last_name: string } | null;
   } | null;
 };
 
-/** Les biens à prime active (hors biens vendus), prime la plus rémunératrice
-    d'abord. Connecté : sans les miens. Visiteur : tous (lecture publique). */
+const PRIME_PROP = "property:properties!property_id ( id, title, city, type, transaction_type, price, images, sold_to, host:profiles!host_id ( first_name, last_name ) )";
+
+/** Les biens à commission active (hors biens vendus), la plus rémunératrice
+    d'abord. Connecté : sans les miens. Visiteur : tous (lecture publique).
+    Pourcentage : `amountChf` est l'ESTIMATION au prix demandé (tri, affichage
+    « ≈ »), les conditions exactes sont dans `terms`. */
 export async function listPrimedProperties(): Promise<PrimedProperty[]> {
   const supabase = await createClient();
   if (!supabase) return [];
@@ -42,17 +51,18 @@ export async function listPrimedProperties(): Promise<PrimedProperty[]> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let query = supabase
-    .from("primes")
-    .select(
-      "id, amount_chf, seller_id, property:properties!property_id ( id, title, city, type, transaction_type, images, sold_to, host:profiles!host_id ( first_name, last_name ) )",
-    )
-    .eq("active", true);
-  if (user) query = query.neq("seller_id", user.id);
-  const { data, error } = await query;
-  if (error || !data) return [];
+  const run = (cols: string) => {
+    let q = supabase.from("primes").select(cols).eq("active", true);
+    if (user) q = q.neq("seller_id", user.id);
+    return q;
+  };
+  let res = await run(`id, amount_chf, seller_id, commission_kind, rate_pct, due_on, ${PRIME_PROP}`);
+  if (res.error && ["42703", "PGRST204", "PGRST200"].includes(res.error.code ?? "")) {
+    res = await run(`id, amount_chf, seller_id, ${PRIME_PROP}`);
+  }
+  if (res.error || !res.data) return [];
 
-  const rows = data as unknown as PrimeRow[];
+  const rows = res.data as unknown as PrimeRow[];
   return rows
     .filter((r) => r.property && !r.property.sold_to)
     .map((r) => {
@@ -60,6 +70,13 @@ export async function listPrimedProperties(): Promise<PrimedProperty[]> {
       const sellerName = p.host
         ? `${p.host.first_name} ${p.host.last_name}`.trim() || "Vendeur"
         : "Vendeur";
+      const price = Number(p.price ?? 0);
+      const terms: CommissionTerms = {
+        kind: r.commission_kind === "pourcentage" ? "pourcentage" : "fixe",
+        amountChf: r.amount_chf == null ? null : Number(r.amount_chf),
+        ratePct: r.rate_pct == null ? null : Number(r.rate_pct),
+        dueOn: r.due_on === "conclusion" ? "conclusion" : "acceptation",
+      };
       return {
         primeId: r.id,
         propertyId: p.id,
@@ -67,11 +84,14 @@ export async function listPrimedProperties(): Promise<PrimedProperty[]> {
         city: p.city,
         transactionType: p.transaction_type as TransactionType,
         cover: coverOf({ images: p.images ?? [], type: p.type as PropertyType }),
-        amountChf: Number(r.amount_chf),
+        amountChf: Math.round(estimateChf(terms, price) ?? 0),
+        price,
+        terms,
         sellerId: r.seller_id,
         sellerName,
       };
     })
+    .filter((o) => o.amountChf > 0)
     .sort((a, b) => b.amountChf - a.amountChf);
 }
 

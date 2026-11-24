@@ -340,8 +340,8 @@ export function AdminConsole() {
             <h3 className="text-lg font-semibold text-[var(--foreground)]">Barème de rémunération</h3>
             <p className="text-xs text-[var(--text-muted)]">
               Vente et location longue durée : publication gratuite, aucun frais
-              fixe. L&apos;apporteur d&apos;un bien touche une prime fixe en francs
-              (50 à 3 000 CHF), définie par le vendeur — jamais un pourcentage du
+              fixe. L&apos;apporteur d&apos;un bien touche une commission fixée par le vendeur
+              (fixe de 50 à 50&apos;000 CHF, ou 0,1 à 3 % du prix de vente) — jamais ajoutée au
               prix. Courte durée, services, formations, événements et lives : une
               commission sur la transaction, prélevée sur le vendeur. Boutique :
               affiliation pure — E-Dome est rémunéré par le marchand, sans

@@ -95,7 +95,10 @@ export interface PrimedProperty {
   city: string;
   transactionType: TransactionType;
   cover: string;
+  /** Commission brute : le montant fixe, ou l'estimation au prix demandé. */
   amountChf: number;
+  price: number;
+  terms: CommissionTerms;
   sellerId: string;
   sellerName: string;
 }

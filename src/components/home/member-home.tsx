@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { formatNumber } from "@/lib/format";
 import {
-  ArrowRight, Coins, Inbox, ImageOff, Gift, Check, Circle, Plus, Compass, Building2, UserRound,
+  ArrowRight, Coins, Inbox, ImageOff, Gift, Check, Circle, Plus, Compass, Building2, UserRound, BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CopilotButton } from "@/components/home/copilot-button";
@@ -65,13 +65,13 @@ export function MemberHome({
     todos.push({
       key: "decide", href: "/demandes", icon: Coins, prime: true,
       title: `${pending.length} mise${pending.length > 1 ? "s" : ""} en relation à décider`,
-      hint: "Un apporteur vous présente un contact. Accepter rend la prime due ; refuser ne coûte rien.",
+      hint: "Un apporteur vous présente un contact. Acceptez pour recevoir ses coordonnées ; la commission suit les conditions de votre annonce.",
     });
   if (settlementTodos > 0)
     todos.push({
       key: "settle", href: "/reglements", icon: Coins, prime: true,
       title: `${settlementTodos} règlement${settlementTodos > 1 ? "s" : ""} à traiter`,
-      hint: "Une prime acceptée à verser, ou un paiement reçu à confirmer.",
+      hint: "Une commission à verser, ou un paiement reçu à confirmer.",
     });
   if (pendingAnswers > 0)
     todos.push({
@@ -94,16 +94,16 @@ export function MemberHome({
   for (const b of unprimed.slice(0, 2))
     todos.push({
       key: `prime-${b.id}`, href: "/mes-biens", icon: Gift, prime: true,
-      title: `Ajoutez une prime à « ${b.title} »`,
-      hint: "Les apporteurs ne recommandent que les biens à prime. Vous ne payez que si vous acceptez un contact.",
+      title: `Proposez une commission sur « ${b.title} »`,
+      hint: "Les apporteurs recommandent les biens à commission. Par défaut, vous ne payez que si la vente est conclue grâce à eux.",
     });
 
   /* ── Bien démarrer (checklist d'activation) ───────────────────────────── */
   const steps = [
     { done: Boolean(user.bio && user.city), label: "Compléter mon profil", href: "/profil", icon: UserRound },
     { done: online.length > 0, label: "Publier mon premier bien", href: "/publier", icon: Plus },
-    { done: activePrimes.length > 0, label: "Poser une prime sur un bien", href: "/mes-biens", icon: Gift },
-    { done: intros.length > 0, label: "Recommander un premier contact", href: "/apporteurs", icon: Coins },
+    { done: activePrimes.length > 0, label: "Proposer une commission sur un bien", href: "/mes-biens", icon: Gift },
+    { done: intros.length > 0, label: "Partager un premier lien d'apporteur", href: "/apporteurs", icon: Coins },
   ];
   const doneCount = steps.filter((s) => s.done).length;
 
@@ -174,8 +174,8 @@ export function MemberHome({
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <Stat href="/mes-biens" label="Biens en ligne" value={String(online.length)} />
             <Stat href="/demandes" label="Demandes ouvertes" value={String(openDemandes.length)} />
-            <Stat href="/mes-biens" label="Primes actives" value={String(activePrimes.length)} />
-            <Stat href="/apporteurs" label="Gains apporteur" value={chf(dueNet)} prime={dueNet > 0} sub="net, primes dues" />
+            <Stat href="/mes-biens" label="Commissions actives" value={String(activePrimes.length)} />
+            <Stat href="/tableau-de-bord?vue=apports" label="Gains apporteur" value={chf(dueNet)} prime={dueNet > 0} sub="net, mises en relation" />
           </div>
         </section>
 
@@ -216,8 +216,9 @@ export function MemberHome({
           )}
 
           <section aria-label="Raccourcis" className="rounded-2xl border bg-card p-2 shadow-xs">
+            <Shortcut href="/tableau-de-bord" icon={BarChart3} label="Tableau de bord en direct" />
             <Shortcut href="/explorer" icon={Compass} label="Explorer les biens" />
-            <Shortcut href="/mes-biens" icon={Building2} label="Mes biens et primes" />
+            <Shortcut href="/mes-biens" icon={Building2} label="Mes biens et commissions" />
             <Shortcut href="/apporteurs" icon={Coins} label="Recommander et gagner" />
           </section>
         </aside>

@@ -21,8 +21,8 @@ import { cn } from "@/lib/utils";
 const chf = (n: number) => `${formatNumber(Math.round(n))} CHF`;
 const money = (n: number) => formatNumber(Math.round(n));
 
-export function DashboardView({ data, period, titles }: { data: Dashboard; period: Period; titles: Record<string, string> }) {
-  const [tab, setTab] = useState<"ventes" | "apports">(data.seller ? "ventes" : "apports");
+export function DashboardView({ data, period, titles, initialTab }: { data: Dashboard; period: Period; titles: Record<string, string>; initialTab?: "apports" }) {
+  const [tab, setTab] = useState<"ventes" | "apports">(initialTab === "apports" && data.apporteur ? "apports" : data.seller ? "ventes" : "apports");
   const s = data.seller;
   const a = data.apporteur;
 

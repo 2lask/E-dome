@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s · E-Dome",
   },
   description:
-    "Vendez ou louez sans commission d'agence, et gagnez une prime fixe en recommandant le bon contact. Le réseau immobilier suisse, transparent.",
+    "Vendez ou louez sans agence, recommandé par tout un réseau. Liens d'apporteurs tracés, suivi en temps réel, commission calculée à la vente. Le réseau immobilier suisse, transparent.",
   keywords: ["immobilier", "apport d'affaires", "vendre sans agence", "prime", "Suisse romande", "E-Dome"],
   manifest: "/manifest.json",
   /* Aucune clé `icons` ici, et aucune balise écrite à la main dans un `<head>` :

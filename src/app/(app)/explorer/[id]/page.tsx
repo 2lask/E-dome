@@ -314,7 +314,7 @@ export default async function BienPage({
 
           {p.commission && p.activePrimeChf && !isOwner ? (
             <div id="recommander" className="scroll-mt-6">
-              <ApporteurCard propertyId={p.id} title={p.title} city={p.city} terms={p.commission} estimateChf={p.activePrimeChf} member={!!user} />
+              <ApporteurCard propertyId={p.id} title={p.title} city={p.city} terms={p.commission} estimateChf={p.activePrimeChf} member={!!user} transactionType={p.transactionType} />
             </div>
           ) : null}
 

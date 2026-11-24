@@ -10,13 +10,14 @@ export const metadata: Metadata = { title: "Tableau de bord", robots: { index: f
 export const dynamic = "force-dynamic";
 
 /* ── /tableau-de-bord — leads, ventes, chiffre d'affaires, en direct ───────── */
-export default async function TableauDeBordPage({ searchParams }: { searchParams: Promise<{ p?: string }> }) {
+export default async function TableauDeBordPage({ searchParams }: { searchParams: Promise<{ p?: string; vue?: string }> }) {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/connexion?redirect=%2Ftableau-de-bord");
-  const p = Number((await searchParams).p);
+  const sp = await searchParams;
+  const p = Number(sp.p);
   const period: Period = (PERIODS as number[]).includes(p) ? (p as Period) : 30;
   const [data, mine] = await Promise.all([getDashboard(period), listMyProperties()]);
   if (!data) redirect("/auth/connexion?redirect=%2Ftableau-de-bord");
   const titles = Object.fromEntries(mine.map((b) => [b.id, b.title]));
-  return <DashboardView data={data} period={period} titles={titles} />;
+  return <DashboardView data={data} period={period} titles={titles} initialTab={sp.vue === "apports" ? "apports" : undefined} />;
 }

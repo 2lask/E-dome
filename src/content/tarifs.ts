@@ -32,7 +32,7 @@ export const tarifsPage = {
   proLaterNote: "Formule prévue, pas encore chiffrée : aucun prix n'est annoncé avant validation.",
   limitsNote: "Les plafonds gratuits sont des valeurs de catalogue, ajustées après nos entretiens avec les agences.",
   affiliationLine:
-    "Programme apporteurs : une prime fixe en francs, offerte par le vendeur, versée sur une mise en relation acceptée — jamais un pourcentage du prix. C'est le cœur d'E-Dome.",
+    "Programme apporteurs : une commission fixée par le vendeur (montant fixe ou % du prix de vente), due quand la vente est conclue grâce au lien de l'apporteur — jamais ajoutée au prix payé. C'est le cœur d'E-Dome.",
   affiliationCta: "Voir l'espace apporteur",
   billingMonthly: "par mois",
   billingYearly: "par an",

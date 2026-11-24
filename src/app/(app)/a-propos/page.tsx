@@ -7,7 +7,7 @@ import { apporteurNetChf } from "@/lib/my-property";
 
 export const metadata: Metadata = {
   title: "Comment fonctionne E-Dome",
-  description: "Vendre ou louer sans commission d'agence, recommander et toucher une prime fixe : les règles d'E-Dome.",
+  description: "Vendre ou louer sans agence, recommander un bien avec son lien et toucher la commission d'apport : les règles d'E-Dome.",
 };
 
 /* ── /a-propos — comment fonctionne E-Dome (REBUILD.md) ──────────────────────
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
    franchement. */
 
 const ROLES = [
-  { icon: Tag, t: "Vous vendez ou louez", d: "Publiez gratuitement, recevez les demandes dans une boîte unique, gardez la main sur la vente. Si vous le souhaitez, offrez une prime fixe à qui vous présente le bon acheteur." },
-  { icon: Coins, t: "Vous connaissez quelqu'un", d: "Présentez une personne qui cherche, avec son accord. Si le vendeur accepte le contact, la prime est due — vous ne négociez rien, ne représentez personne." },
+  { icon: Tag, t: "Vous vendez ou louez", d: "Publiez gratuitement avec photos et vidéo, recevez les demandes dans une boîte unique, gardez la main sur la vente. Si vous le souhaitez, offrez une commission à qui vous amène le bon acheteur." },
+  { icon: Coins, t: "Vous connaissez quelqu'un", d: "Partagez votre lien personnel à qui cherche. Si la vente se conclut grâce à votre contact, la commission est due — vous ne négociez rien, ne représentez personne." },
   { icon: Compass, t: "Vous cherchez", d: "Des biens proposés directement par leurs propriétaires. Écrivez ou demandez une visite : votre message arrive chez le propriétaire, sans intermédiaire." },
 ];
 
@@ -65,9 +65,9 @@ export default function AProposPage() {
             <dd className="text-[14px] text-muted-foreground"><strong className="text-foreground">0 CHF à E-Dome</strong> sur la transaction. Publier et recevoir des demandes est gratuit.</dd>
           </div>
           <div className="grid gap-1 p-5 sm:grid-cols-[220px_1fr]">
-            <dt className="text-[14px] font-semibold">La prime (facultative)</dt>
+            <dt className="text-[14px] font-semibold">La commission d&apos;apport (facultative)</dt>
             <dd className="text-[14px] text-muted-foreground">
-              Fixée par le vendeur, de 50 à 3&apos;000 CHF, due s&apos;il accepte un contact présenté. Sur une prime de {formatNumber(example)} CHF,
+              Fixée par le vendeur : un montant fixe, ou de 0,1 % à 3 % du prix de vente. Due quand la vente est conclue grâce à l&apos;apporteur (ou, pour un montant fixe, dès l&apos;acceptation du contact si le vendeur l&apos;a choisi). Sur une commission de {formatNumber(example)} CHF,
               l&apos;apporteur reçoit <strong className="text-foreground">{formatNumber(apporteurNetChf(example))} CHF</strong> ; E-Dome retient 12 % (3 CHF au minimum).
             </dd>
           </div>

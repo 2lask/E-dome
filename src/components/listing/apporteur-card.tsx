@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { getOrCreateMyLink } from "@/lib/supabase/apport-actions";
 import { commissionLabel, dueLabel, netForApporteur, type CommissionTerms } from "@/lib/commission";
 import { formatNumber } from "@/lib/format";
+import type { TransactionType } from "@/lib/types";
 import { track } from "./track";
 
 /* ── « Recommandez ce bien, touchez la commission » ──────────────────────────
@@ -15,7 +16,7 @@ import { track } from "./track";
    lead arrivé par ce lien est attribué à l'apporteur pendant 60 jours. */
 
 export function ApporteurCard({
-  propertyId, title, city, terms, estimateChf, member,
+  propertyId, title, city, terms, estimateChf, member, transactionType,
 }: {
   propertyId: string;
   title: string;
@@ -23,6 +24,7 @@ export function ApporteurCard({
   terms: CommissionTerms;
   estimateChf: number;
   member: boolean;
+  transactionType?: TransactionType;
 }) {
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -64,7 +66,7 @@ export function ApporteurCard({
           {terms.kind === "pourcentage" ? "≈ " : ""}{formatNumber(net)} CHF
         </p>
         <p className="text-[12.5px] text-muted-foreground">
-          Commission {commissionLabel(terms)}, {dueLabel(terms)} · net après la part E-Dome (12 %)
+          Commission {commissionLabel(terms)}, {dueLabel(terms, transactionType)} · net après la part E-Dome (12 %)
         </p>
 
         {!member ? (

@@ -229,7 +229,7 @@ function ListingRow({ p, prime, stats }: { p: MyProperty; prime: CommissionTerms
               <p className="flex-1 text-[13px]">
                 Commission <strong className="tabular-nums text-laiton">{commissionLabel(prime)}</strong>
                 {prime.kind === "pourcentage" && estimate ? <span className="tabular-nums"> (≈ {formatNumber(Math.round(estimate))} CHF)</span> : null}
-                <span className="text-muted-foreground"> · {dueLabel(prime)} · l&apos;apporteur touche {estimate ? `${formatNumber(Math.round(netForApporteur(estimate)))} CHF net` : "88 %"}</span>
+                <span className="text-muted-foreground"> · {dueLabel(prime, p.transactionType)} · l&apos;apporteur touche {estimate ? `${formatNumber(Math.round(netForApporteur(estimate)))} CHF net` : "88 %"}</span>
               </p>
               <Button size="sm" variant="ghost" onClick={() => setEditingPrime(true)}>Modifier</Button>
               <Button size="sm" variant="ghost" className="text-muted-foreground" disabled={isPending} onClick={removePrime}>Retirer</Button>

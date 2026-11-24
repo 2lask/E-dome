@@ -1,59 +1,62 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Coins, MessageCircle, UserCheck, ShieldCheck } from "lucide-react";
+import { ArrowRight, Coins, Link2, Handshake, ShieldCheck, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apporteurNetChf, type PrimedProperty } from "@/lib/my-property";
+import { commissionLabel, netForApporteur } from "@/lib/commission";
 import { formatNumber } from "@/lib/format";
 
-/* ── « Gagner » pour un VISITEUR (REBUILD.md §3.3) ───────────────────────────
-
-   Remplace l'ancienne vue de démonstration (biens fictifs, gains inventés au
-   nom d'un compte « Léo »). Ici : la promesse, le calcul réel du net, les VRAIS
-   biens à prime, et des réponses franches. Le seul chiffre d'illustration est
-   marqué comme tel. */
+/* ── « Gagner » pour un VISITEUR ─────────────────────────────────────────────
+   Le modèle de commission v2 (courtage d'indication, art. 412 ss CO) :
+   lien personnel tracé, commission fixe ou en % fixée par le vendeur, due à la
+   conclusion par défaut. Les VRAIS biens à commission, un simulateur marqué
+   comme tel, et des réponses franches. Aucun chiffre de traction inventé. */
 
 const SIGNUP = "/auth/inscription?redirect=/apporteurs";
 
 const FAQ = [
   {
     q: "Qui peut recommander ?",
-    a: "Toute personne majeure résidant en Suisse (hors Tessin, où l'activité est réglementée). Pas besoin d'être un professionnel de l'immobilier.",
+    a: "Toute personne majeure résidant en Suisse (hors Tessin, où le courtage immobilier est soumis à autorisation). Pas besoin d'être un professionnel de l'immobilier.",
   },
   {
-    q: "Quand la prime est-elle due ?",
-    a: "Dès que le vendeur accepte le contact que vous lui présentez. Elle ne dépend ni de la vente, ni de la signature d'un bail.",
+    q: "Comment le contact m'est-il attribué ?",
+    a: "Par votre lien personnel. Toute personne qui l'ouvre puis contacte le vendeur dans les 60 jours vous est attribuée automatiquement, et la commission est figée au moment du contact.",
   },
   {
-    q: "Pourquoi une prime fixe et pas un pourcentage ?",
-    a: "Parce que vous ne négociez rien et ne représentez personne : vous présentez quelqu'un. Un montant fixe, connu d'avance, est plus clair pour tout le monde.",
+    q: "Quand la commission est-elle due ?",
+    a: "Par défaut, quand la vente ou le bail est conclu grâce à la personne que vous avez amenée. Certains vendeurs offrant un montant fixe la versent dès qu'ils acceptent le contact : c'est indiqué sur l'annonce.",
   },
   {
-    q: "Que voit le vendeur ?",
-    a: "D'abord le besoin de votre contact (sans nom). S'il accepte, il reçoit ses coordonnées — que votre contact vous a autorisé à transmettre.",
+    q: "Combien puis-je toucher ?",
+    a: "Le vendeur fixe la commission : un montant fixe, ou de 0,1 % à 3 % du prix de vente. E-Dome retient 12 % de la commission (au minimum 3 CHF) ; le reste est pour vous. Rien n'est ajouté au prix payé par l'acheteur.",
   },
   {
-    q: "Et si le vendeur refuse ?",
-    a: "Rien n'est dû, et vos coordonnées comme celles de votre contact ne lui sont pas transmises.",
+    q: "Comment suis-je payé ?",
+    a: "Directement par le vendeur, par TWINT ou virement. Le règlement est créé automatiquement à la vente et suivi jusqu'à votre confirmation. E-Dome ne détient jamais l'argent.",
   },
 ];
 
 export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
-  const example = 800;
   return (
     <div className="mx-auto max-w-5xl">
-      <section className="pb-12 pt-4 md:pt-8">
+      <section className="hero-rise pb-10 pt-4 md:pt-8">
         <p className="eyebrow">Programme apporteur</p>
-        <h1 className="page-heading mt-3 max-w-3xl text-[38px] sm:text-[48px]">
-          Vous connaissez quelqu&apos;un qui cherche ? <span className="text-laiton">Présentez-le.</span>
+        <h1 className="page-heading mt-3 max-w-3xl text-[38px] sm:text-[52px]">
+          Votre réseau trouve l&apos;acheteur. <span className="text-laiton">Vous touchez la commission.</span>
         </h1>
         <p className="mt-5 max-w-2xl text-[16px] leading-relaxed text-foreground/80">
-          Sur E-Dome, des propriétaires offrent une prime fixe à qui leur amène le bon acheteur ou le bon locataire. Vous
-          la touchez dès qu&apos;ils acceptent votre contact — pas à la vente.
+          Des propriétaires proposent une commission à qui leur amène le bon acheteur ou locataire. Prenez votre lien
+          personnel, envoyez-le à qui cherche : visites, contacts et vente vous sont attribués, et la commission est
+          calculée automatiquement.
         </p>
         <div className="mt-7 flex flex-wrap gap-2.5">
-          <Button asChild size="lg"><Link href={SIGNUP}>Devenir apporteur — gratuit</Link></Button>
+          <Button asChild size="lg" variant="prime"><Link href={SIGNUP}>Devenir apporteur — gratuit</Link></Button>
           {offers.length > 0 && (
             <Button asChild size="lg" variant="outline">
-              <a href="#biens">Voir les biens à prime <ArrowRight className="h-4 w-4" aria-hidden /></a>
+              <a href="#biens">Voir les biens à commission <ArrowRight className="h-4 w-4" aria-hidden /></a>
             </Button>
           )}
         </div>
@@ -61,9 +64,9 @@ export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
 
       <section aria-label="Comment ça marche" className="grid gap-3 md:grid-cols-3">
         {[
-          { icon: Coins, t: "Choisissez un bien à prime", d: "Chaque bien affiche sa prime et ce que vous touchez, net, avant toute démarche." },
-          { icon: MessageCircle, t: "Présentez votre contact", d: "Avec son accord : son besoin, son budget, son délai, et ses coordonnées." },
-          { icon: UserCheck, t: "Le vendeur accepte", d: "La prime est due. Tout est horodaté : qui a présenté qui, et quand." },
+          { icon: Coins, t: "Choisissez un bien", d: "Chaque bien affiche sa commission et ce que vous touchez, net, avant toute démarche." },
+          { icon: Link2, t: "Partagez votre lien", d: "Un lien personnel par bien. WhatsApp, SMS, e-mail : chaque visite et chaque contact sont suivis en direct." },
+          { icon: Handshake, t: "Vente conclue, vous êtes payé", d: "La commission est calculée sur le prix final et réglée par le vendeur. Tout est horodaté." },
         ].map((s, i) => (
           <div key={s.t} className="rounded-2xl border bg-card p-5 shadow-xs">
             <div className="flex items-center gap-2.5">
@@ -78,55 +81,36 @@ export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
         ))}
       </section>
 
-      {/* Le calcul, en clair */}
-      <section className="mt-10 grid items-center gap-6 rounded-2xl border bg-card p-6 md:grid-cols-[1fr_auto] md:p-8">
-        <div>
-          <h2 className="text-[18px] font-semibold tracking-[-0.015em]">Ce que vous touchez, en clair</h2>
-          <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-muted-foreground">
-            E-Dome retient 12 % de la prime (au minimum 3 CHF) pour la mise en relation, la traçabilité et le paiement.
-            Le reste est pour vous — rien n&apos;est ajouté au prix payé par l&apos;acheteur.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl border border-laiton-border bg-laiton-soft px-4 py-3 text-center">
-            <p className="text-[11.5px] text-laiton">Prime</p>
-            <p className="text-[22px] font-semibold tabular-nums text-laiton">{formatNumber(example)} CHF</p>
-          </div>
-          <ArrowRight className="h-5 w-5 text-muted-foreground" aria-hidden />
-          <div className="rounded-xl border bg-background px-4 py-3 text-center">
-            <p className="text-[11.5px] text-muted-foreground">Pour vous, net</p>
-            <p className="text-[22px] font-semibold tabular-nums">{formatNumber(apporteurNetChf(example))} CHF</p>
-          </div>
-        </div>
-        <p className="text-[11.5px] text-muted-foreground md:col-span-2">Exemple de calcul. Chaque vendeur fixe sa prime, de 50 à 3&apos;000 CHF.</p>
-      </section>
+      <Simulator />
 
-      {/* Les vrais biens à prime */}
+      {/* Les vrais biens à commission */}
       <section id="biens" className="mt-12 scroll-mt-20">
-        <h2 className="text-[22px] font-semibold tracking-[-0.02em]">Biens à prime</h2>
+        <h2 className="text-[22px] font-semibold tracking-[-0.02em]">Biens à commission</h2>
         {offers.length === 0 ? (
           <div className="mt-4 rounded-2xl border border-dashed bg-card px-6 py-10 text-center">
-            <p className="text-[15px] font-medium">Les premières primes arrivent</p>
+            <p className="text-[15px] font-medium">Les premiers biens à commission arrivent</p>
             <p className="mx-auto mt-1 max-w-md text-[13.5px] text-muted-foreground">
-              E-Dome vient d&apos;ouvrir. Créez votre compte : vous verrez les biens à prime dès leur publication.
+              E-Dome vient d&apos;ouvrir. Créez votre compte : vous verrez les biens à commission dès leur publication.
             </p>
           </div>
         ) : (
-          <ul className="mt-4 space-y-2.5">
-            {offers.map((o) => (
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {offers.slice(0, 8).map((o) => (
               <li key={o.primeId}>
-                <Link href={`/explorer/${o.propertyId}`} className="flex items-center gap-4 rounded-2xl border bg-card p-3.5 shadow-xs hover:border-foreground/20">
+                <Link href={`/explorer/${o.propertyId}`} className="flex items-center gap-4 rounded-2xl border bg-card p-3.5 shadow-xs transition-colors hover:border-foreground/20">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={o.cover} alt="" className="h-14 w-20 shrink-0 rounded-lg object-cover" />
+                  <img src={o.cover} alt="" className="h-16 w-20 shrink-0 rounded-lg object-cover" loading="lazy" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[14px] font-semibold">{o.title}</span>
                     <span className="block text-[12.5px] text-muted-foreground">
-                      {o.city} · {o.transactionType === "vente" ? "Vente" : "Location"}
+                      {o.city} · {o.transactionType === "vente" ? "Vente" : "Location"} · {commissionLabel(o.terms)}
                     </span>
                   </span>
                   <span className="text-right">
-                    <span className="block text-[17px] font-semibold tabular-nums">{formatNumber(apporteurNetChf(o.amountChf))} CHF</span>
-                    <span className="block text-[11.5px] text-muted-foreground">net · prime {formatNumber(o.amountChf)} CHF</span>
+                    <span className="block text-[17px] font-semibold tabular-nums text-laiton">
+                      {o.terms.kind === "pourcentage" ? "≈ " : ""}{formatNumber(Math.round(netForApporteur(o.amountChf)))} CHF
+                    </span>
+                    <span className="block text-[11.5px] text-muted-foreground">net pour vous</span>
                   </span>
                 </Link>
               </li>
@@ -135,16 +119,20 @@ export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
         )}
       </section>
 
-      {/* Les programmes des agences */}
-      <section className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border bg-card p-6">
-        <div>
-          <p className="text-[16px] font-semibold">Des agences récompensent aussi votre réseau</p>
-          <p className="mt-1 text-[13.5px] text-muted-foreground">Présentez un propriétaire qui vend : chaque agence affiche son montant, fixe et dû à l&apos;acceptation.</p>
-        </div>
-        <Button asChild variant="outline"><Link href="/agences">Voir les agences <ArrowRight className="h-4 w-4" aria-hidden /></Link></Button>
+      <section className="mt-12 grid gap-3 md:grid-cols-3">
+        {[
+          { icon: Activity, t: "Suivi en temps réel", d: "Clics, contacts et ventes de vos liens s'affichent à l'instant dans votre tableau de bord." },
+          { icon: ShieldCheck, t: "Un cadre légal clair", d: "Courtage d'indication (art. 412 ss CO) : conditions acceptées en ligne par le vendeur et horodatées." },
+          { icon: Coins, t: "Votre argent, en direct", d: "Le vendeur vous paie directement. E-Dome suit le règlement, sans jamais détenir les fonds." },
+        ].map((c) => (
+          <div key={c.t} className="rounded-2xl border bg-card p-5">
+            <c.icon className="h-5 w-5 text-leman" aria-hidden />
+            <p className="mt-3 text-[15px] font-semibold">{c.t}</p>
+            <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">{c.d}</p>
+          </div>
+        ))}
       </section>
 
-      {/* Questions franches */}
       <section className="mt-12">
         <h2 className="text-[22px] font-semibold tracking-[-0.02em]">Questions fréquentes</h2>
         <dl className="mt-4 divide-y rounded-2xl border bg-card">
@@ -157,11 +145,82 @@ export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
         </dl>
       </section>
 
-      <section className="mt-10 flex flex-wrap items-center gap-4 rounded-2xl bg-ink p-6 text-paper md:p-8 dark:bg-card dark:text-foreground">
+      <section className="mt-10 flex flex-col items-start gap-4 rounded-2xl bg-ink p-6 text-paper sm:flex-row sm:items-center md:p-8 dark:bg-card dark:text-foreground">
         <ShieldCheck className="h-6 w-6 text-[#e3b85c]" aria-hidden />
         <p className="flex-1 text-[15px] font-medium">Votre réseau vaut de l&apos;argent. Créer un compte est gratuit.</p>
         <Button asChild variant="prime"><Link href={SIGNUP}>Devenir apporteur</Link></Button>
       </section>
     </div>
+  );
+}
+
+/* Simulateur : vente (prix × taux) ou location (montant fixe). */
+function Simulator() {
+  const [mode, setMode] = useState<"vente" | "location">("vente");
+  const [price, setPrice] = useState(950_000);
+  const [rate, setRate] = useState(1);
+  const [fixed, setFixed] = useState(800);
+  const gross = mode === "vente" ? Math.round(price * rate) / 100 : fixed;
+  const net = apporteurNetChf(gross);
+  const fee = Math.round((gross - net) * 100) / 100;
+
+  return (
+    <section aria-labelledby="sim-title" className="mt-10 overflow-hidden rounded-3xl border bg-card">
+      <div className="grid md:grid-cols-[1.1fr_1fr]">
+        <div className="p-6 md:p-8">
+          <div className="flex items-center justify-between gap-3">
+            <h2 id="sim-title" className="text-[18px] font-semibold tracking-[-0.015em]">Combien pouvez-vous toucher ?</h2>
+            <span className="rounded-full bg-subtle px-2.5 py-1 text-[11.5px] text-muted-foreground">simulation</span>
+          </div>
+          <div role="tablist" aria-label="Type de transaction" className="mt-5 inline-flex rounded-xl border bg-background p-1">
+            {(["vente", "location"] as const).map((m) => (
+              <button key={m} role="tab" aria-selected={mode === m} onClick={() => setMode(m)}
+                className={`rounded-lg px-4 py-1.5 text-[13.5px] font-medium transition-colors ${mode === m ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}>
+                {m === "vente" ? "Vente" : "Location"}
+              </button>
+            ))}
+          </div>
+
+          {mode === "vente" ? (
+            <div className="mt-6 space-y-6">
+              <Range label="Prix de vente" value={`${formatNumber(price)} CHF`} min={200_000} max={4_000_000} step={10_000} v={price} on={setPrice} />
+              <Range label="Commission fixée par le vendeur" value={`${String(rate).replace(".", ",")} %`} min={0.1} max={3} step={0.1} v={rate} on={(n) => setRate(Math.round(n * 10) / 10)} />
+            </div>
+          ) : (
+            <div className="mt-6">
+              <Range label="Montant fixe offert par le propriétaire" value={`${formatNumber(fixed)} CHF`} min={100} max={3000} step={50} v={fixed} on={setFixed} />
+            </div>
+          )}
+        </div>
+
+        <div className="relative flex flex-col justify-center gap-3 bg-gradient-to-br from-laiton-soft via-laiton-soft/60 to-card p-6 md:p-8">
+          <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgb(176_122_26/0.22),transparent_70%)]" />
+          <p className="relative text-[13px] text-laiton">Vous touchez, net</p>
+          <p className="relative text-[44px] font-semibold leading-none tracking-[-0.03em] tabular-nums text-laiton" aria-live="polite">
+            {formatNumber(Math.round(net))} CHF
+          </p>
+          <dl className="relative mt-2 space-y-1 text-[13px] text-muted-foreground">
+            <div className="flex justify-between"><dt>Commission payée par le vendeur</dt><dd className="tabular-nums">{formatNumber(Math.round(gross))} CHF</dd></div>
+            <div className="flex justify-between"><dt>Part E-Dome (12 %)</dt><dd className="tabular-nums">− {formatNumber(Math.round(fee))} CHF</dd></div>
+          </dl>
+          <p className="relative mt-1 text-[11.5px] text-muted-foreground">Exemple de calcul. Chaque vendeur fixe sa commission ; elle est due quand la vente ou le bail est conclu.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Range({ label, value, min, max, step, v, on }: {
+  label: string; value: string; min: number; max: number; step: number; v: number; on: (n: number) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="flex items-baseline justify-between gap-3">
+        <span className="text-[13.5px] text-muted-foreground">{label}</span>
+        <span className="text-[16px] font-semibold tabular-nums">{value}</span>
+      </span>
+      <input type="range" min={min} max={max} step={step} value={v} onChange={(e) => on(Number(e.target.value))}
+        className="mt-2.5 w-full accent-[var(--laiton)]" />
+    </label>
   );
 }

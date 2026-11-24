@@ -49,8 +49,9 @@ export function commissionLabel(t: CommissionTerms): string {
   return `${String(t.ratePct ?? 0).replace(".", ",")} % du prix`;
 }
 
-export function dueLabel(t: CommissionTerms): string {
-  return t.dueOn === "acceptation" ? "due dès que le contact est accepté" : "due à la signature de la vente";
+export function dueLabel(t: CommissionTerms, tx?: TransactionType): string {
+  if (t.dueOn === "acceptation") return "due dès que le contact est accepté";
+  return tx && tx !== "vente" ? "due à la signature du bail" : "due à la signature de la vente";
 }
 
 /** Contrôle des conditions ; renvoie un message d'erreur ou null. */

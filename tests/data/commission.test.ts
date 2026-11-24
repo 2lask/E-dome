@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
 
-import { commissionChf, commissionLabel, defaultTerms, estimateChf, netForApporteur, validateTerms } from "@/lib/commission";
+import { commissionChf, commissionLabel, defaultTerms, dueLabel, estimateChf, netForApporteur, validateTerms } from "@/lib/commission";
 
 test("C1 · fixe : le montant, quel que soit le prix", () => {
   const t = { kind: "fixe" as const, amountChf: 2000, ratePct: null, dueOn: "conclusion" as const };
@@ -41,4 +41,12 @@ test("C4 · la base applique les mêmes règles que le code", () => {
   assert.ok(sql.includes("prix de vente requis"));
   assert.ok(sql.includes("new.apporteur_id is distinct from old.apporteur_id"), "le vendeur ne peut pas retirer l'apporteur");
   assert.ok(sql.includes("vente déjà conclue"));
+});
+
+test("C5 · échéance : vente, bail, acceptation", () => {
+  const conc = { kind: "fixe" as const, amountChf: 800, ratePct: null, dueOn: "conclusion" as const };
+  assert.equal(dueLabel(conc), "due à la signature de la vente");
+  assert.equal(dueLabel(conc, "vente"), "due à la signature de la vente");
+  assert.equal(dueLabel(conc, "location-lt"), "due à la signature du bail");
+  assert.equal(dueLabel({ ...conc, dueOn: "acceptation" }, "location-lt"), "due dès que le contact est accepté");
 });
