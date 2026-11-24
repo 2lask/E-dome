@@ -36,7 +36,9 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
         {tiles.map((src, i) => (
           <button key={src + i} type="button" onClick={() => setOpen(i)} aria-label={`Agrandir la photo ${i + 1} sur ${n}`}
             className={cn("group relative overflow-hidden rounded-xl bg-subtle",
-              n >= 3 && i === 0 ? "col-span-4 row-span-2 aspect-[4/3] md:col-span-2 md:aspect-auto" : n >= 3 ? "hidden md:block" : "aspect-[4/3]")}>
+              n >= 3 && i === 0 ? "col-span-4 row-span-2 aspect-[4/3] md:col-span-2 md:aspect-auto" : n >= 3 ? "hidden md:block" : "aspect-[4/3]",
+              /* 3 ou 4 photos : les dernières tuiles s'élargissent, aucune case vide. */
+              n >= 3 && i > 0 && (tiles.length === 3 || (tiles.length === 4 && i === 3)) && "md:col-span-2")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={src} alt={i === 0 ? title : ""} loading={i === 0 ? "eager" : "lazy"} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
             {i === tiles.length - 1 && n > tiles.length && (

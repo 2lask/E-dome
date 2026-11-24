@@ -77,7 +77,7 @@ export function AppSidebar({
           <div className="rounded-xl border bg-card p-3">
             <p className="text-[13px] font-medium leading-snug">Votre réseau vaut de l&apos;argent.</p>
             <p className="mt-1 text-[12px] leading-snug text-muted-foreground">
-              Créez un compte pour publier gratuitement et toucher des primes.
+              Créez un compte pour publier gratuitement et toucher des commissions.
             </p>
             <div className="mt-3 grid gap-1.5">
               <Link

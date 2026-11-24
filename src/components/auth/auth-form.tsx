@@ -57,7 +57,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     redirect.startsWith("/publier")
       ? "Pour publier votre bien, gratuitement."
       : redirect.startsWith("/apporteurs")
-        ? "Pour recommander des contacts et toucher des primes."
+        ? "Pour recommander des biens avec votre lien et toucher des commissions."
         : null;
 
   const handleSubmit = async (e: React.FormEvent) => {

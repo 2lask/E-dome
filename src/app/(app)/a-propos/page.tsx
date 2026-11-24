@@ -30,7 +30,7 @@ const RULES = [
 ];
 
 const SOON = [
-  "Le versement intégré des primes, par un prestataire de paiement agréé. Aujourd'hui, une prime acceptée est enregistrée et horodatée ; son règlement se fait encore hors de la plateforme.",
+  "Le versement intégré des commissions, par un prestataire de paiement agréé. Aujourd'hui, une commission due est enregistrée, horodatée et suivie ; son paiement se fait directement entre les parties (TWINT, virement).",
   "Les liens de recommandation traçables, pour partager un bien et être reconnu comme apporteur en un clic.",
   "Les favoris enregistrés sur votre compte, et les profils vérifiés.",
   "Les formules pour les professionnels (agences, régies), à frais fixes.",

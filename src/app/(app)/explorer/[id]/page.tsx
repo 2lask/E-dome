@@ -212,7 +212,7 @@ export default async function BienPage({
           {/* Chiffres clés */}
           <section className="mt-10">
             <h2 className="text-[17px] font-semibold">En bref</h2>
-            <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
               <Fact label="Type" value={TYPE_LABEL[p.type] ?? p.type} />
               {p.area > 0 && <Fact label="Surface" value={`${p.area} m²`} />}
               {p.bedrooms > 0 && <Fact label="Chambres" value={String(p.bedrooms)} />}
@@ -290,7 +290,7 @@ export default async function BienPage({
 
         {/* ── Colonne d'action ─────────────────────────────────────────── */}
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-          <div className="rounded-2xl border bg-card p-5 shadow-sm">
+          <div id="contact" className="scroll-mt-6 rounded-2xl border bg-card p-5 shadow-sm">
             <p className="text-[26px] font-semibold tabular-nums tracking-[-0.02em]">
               {chfPrice(p.price)}
               <span className="text-[15px] font-normal text-muted-foreground">{PRICE_UNIT[p.transactionType]}</span>
@@ -328,6 +328,37 @@ export default async function BienPage({
           </div>
         </aside>
       </div>
+
+      {/* ── Mobile : l'action toujours à portée de pouce ───────────────────
+          Un lien reçu par WhatsApp s'ouvre sur téléphone : le formulaire est
+          en bas de page, la barre y mène en un geste. Posée au-dessus de la
+          barre de navigation mobile. */}
+      {!isOwner && (
+        <>
+          <div aria-hidden className="h-20 md:hidden" />
+          <div
+            className="fixed inset-x-0 z-30 border-t bg-card/95 px-4 py-2.5 backdrop-blur-md md:hidden"
+            style={{ bottom: "calc(62px + env(safe-area-inset-bottom))" }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[16px] font-semibold tabular-nums leading-tight">
+                  {chfPrice(p.price)}<span className="text-[12.5px] font-normal text-muted-foreground">{PRICE_UNIT[p.transactionType]}</span>
+                </p>
+                <p className="truncate text-[11.5px] text-muted-foreground">{p.city} · sans commission d&apos;agence</p>
+              </div>
+              {p.commission && p.activePrimeChf ? (
+                <a href="#recommander" className="inline-flex h-10 items-center rounded-xl border border-laiton-border bg-laiton-soft px-3 text-[13px] font-semibold text-laiton">
+                  Recommander
+                </a>
+              ) : null}
+              <a href="#contact" className="inline-flex h-10 items-center rounded-xl bg-leman px-4 text-[13.5px] font-semibold text-white dark:text-[#0d1513]">
+                Contacter
+              </a>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
