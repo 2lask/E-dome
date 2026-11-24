@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { addOffer, getDeal, setDealStep, setOfferStatus } from "@/lib/supabase/deal-actions";
 import {
-  DEAL_STEPS, SELLER_DOCUMENTS, FINANCING_LABEL, OFFER_STATUS_LABEL, gapToAskingPct, isExpired, stepsDone, suggestedSalePrice,
+  DEAL_STEPS, SELLER_DOCUMENTS, FINANCING_LABEL, OFFER_STATUS_LABEL, gapToAskingPct, isExpired, offersAnalysisPrompt, stepsDone, suggestedSalePrice,
   type Deal, type DealOffer, type Financing,
 } from "@/lib/deal";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { CopilotButton } from "@/components/home/copilot-button";
 
 /* ── Parcours de vente : offres et étapes jusqu'à l'acte ─────────────────────
    Sous une demande (vente) : le vendeur note chaque offre reçue, l'accepte,
@@ -24,9 +25,10 @@ const today = () => new Date().toISOString().slice(0, 10);
 const EMPTY = { amount: "", financing: "inconnu" as Financing, conditions: "", validUntil: "" };
 
 export function DealPanel({
-  inquiryId, status, askingPrice, onConclude, onChanged,
+  inquiryId, title, status, askingPrice, onConclude, onChanged,
 }: {
   inquiryId: string;
+  title: string;
   status: string;
   askingPrice: number;
   onConclude: (price: number | null) => void;
@@ -70,6 +72,7 @@ export function DealPanel({
   const counterNum = Number(counter.replace(/[^\d]/g, "")) || 0;
   const accepted = suggestedSalePrice(deal.offers);
   const done = stepsDone(deal.steps);
+  const openOffers = deal.offers.filter((o) => o.status === "en-attente" || o.status === "contre-offre");
 
   const submitOffer = () =>
     run(async () => {
@@ -146,6 +149,12 @@ export function DealPanel({
                 }, st === "acceptee" ? "Offre acceptée. Passez aux étapes chez le notaire." : undefined)} />
             ))}
           </ul>
+        )}
+        {!closed && openOffers.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <CopilotButton label={openOffers.length > 1 ? "Comparer les offres avec le copilote" : "Analyser l'offre avec le copilote"} prompt={offersAnalysisPrompt(title, askingPrice, deal.offers)} />
+            <span className="text-[11.5px] text-muted-foreground">Analyse neutre ; le nom de l&apos;acheteur n&apos;est pas transmis.</span>
+          </div>
         )}
       </div>
 

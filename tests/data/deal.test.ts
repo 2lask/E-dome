@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
 
-import { gapToAskingPct, isExpired, referenceOffer, stepsDone, suggestedSalePrice, validateOffer, type DealOffer } from "@/lib/deal";
+import { gapToAskingPct, isExpired, offersAnalysisPrompt, referenceOffer, stepsDone, suggestedSalePrice, validateOffer, type DealOffer } from "@/lib/deal";
 
 const o = (id: string, amountChf: number, status: DealOffer["status"], extra: Partial<DealOffer> = {}): DealOffer => ({
   id, amountChf, status, financing: "inconnu", conditions: "", validUntil: null, counterAmountChf: null, createdAt: "2026-11-24T10:00:00Z", ...extra,
@@ -44,4 +44,18 @@ test("V5 · migration 010 : RLS active, vendeur seul en écriture, vente conclue
   assert.match(sql, /deal_offers_insert_seller[\s\S]*q\.seller_id = auth\.uid\(\) and q\.status <> 'conclue'/);
   assert.match(sql, /offre : vente déjà conclue/);
   assert.doesNotMatch(sql, /for (insert|update|delete)[^;]*sender_id/, "l'acheteur ne peut jamais écrire");
+});
+
+
+test("V6 · demande d'analyse IA : offres ouvertes seulement, écart, financement, sans coordonnées", () => {
+  const p = offersAnalysisPrompt("Attique vue lac", 1_490_000, [
+    o("a", 1_400_000, "en-attente", { financing: "hypotheque-en-cours", validUntil: "2026-12-01", conditions: "Entrée au 1er avril" }),
+    o("b", 1_450_000, "contre-offre", { counterAmountChf: 1_480_000 }),
+    o("c", 1_300_000, "refusee"),
+  ]);
+  assert.match(p, /prix demandé de CHF 1'490'000/);
+  assert.match(p, /Offre 1 : CHF 1'400'000 · -6 % vs prix demandé · hypothèque en cours · valable jusqu'au 2026-12-01 · conditions : Entrée au 1er avril/);
+  assert.match(p, /ma contre-offre : CHF 1'480'000/);
+  assert.doesNotMatch(p, /1'300'000/, "une offre refusée n'est pas analysée");
+  assert.match(p, /pas un conseil juridique/);
 });

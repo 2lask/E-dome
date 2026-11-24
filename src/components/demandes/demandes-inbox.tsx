@@ -500,6 +500,7 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
         {d.property.transactionType === "vente" && ["en-cours", "visite", "offre", "conclue"].includes(d.status) && (
           <DealPanel
             inquiryId={d.id}
+            title={d.property.title}
             status={d.status}
             askingPrice={d.property.price ?? 0}
             onConclude={(price) => { if (price) setSalePrice(String(price)); setClosing(true); }}

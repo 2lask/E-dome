@@ -116,3 +116,28 @@ export function validateOffer(input: { amountChf: number; validUntil: string | n
 export function stepsDone(steps: Deal["steps"]): number {
   return DEAL_STEPS.filter((s) => steps[s.key]).length;
 }
+
+/** Demande d'analyse pour le copilote IA : les offres, sans nom ni coordonnée
+    de l'acheteur. Neutre : comparer, repérer les risques, proposer une
+    stratégie ; ni conseil juridique, ni pression pour conclure. */
+export function offersAnalysisPrompt(title: string, askingPrice: number, offers: DealOffer[]): string {
+  const fmt = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+  const lines = offers
+    .filter((o) => o.status === "en-attente" || o.status === "contre-offre")
+    .map((o, i) => {
+      const gap = gapToAskingPct(o.amountChf, askingPrice);
+      return [
+        `Offre ${i + 1} : CHF ${fmt(o.amountChf)}`,
+        gap === null ? null : `${gap > 0 ? "+" : ""}${String(gap).replace(".", ",")} % vs prix demandé`,
+        FINANCING_LABEL[o.financing].toLowerCase(),
+        o.validUntil ? `valable jusqu'au ${o.validUntil}` : null,
+        o.status === "contre-offre" && o.counterAmountChf ? `ma contre-offre : CHF ${fmt(o.counterAmountChf)}` : null,
+        o.conditions ? `conditions : ${o.conditions.slice(0, 300)}` : null,
+      ].filter(Boolean).join(" · ");
+    });
+  return [
+    `Je vends « ${title} »${askingPrice > 0 ? ` au prix demandé de CHF ${fmt(askingPrice)}` : ""} et j'ai reçu ces offres :`,
+    ...lines,
+    "Compare-les de façon neutre (prix, sécurité du financement, conditions, délais), signale les risques, et propose une stratégie : accepter, contre-proposer (à quel montant et pourquoi) ou attendre. Rappelle ce qu'il faut demander avant de signer chez le notaire. Ce n'est pas un conseil juridique.",
+  ].join("\n");
+}

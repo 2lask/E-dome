@@ -4,14 +4,14 @@ import Anthropic from "@anthropic-ai/sdk";
 import { isAiConfigured, runAssistant, type ChatMessage } from "@/lib/ai/provider";
 import { checkAndConsume } from "@/lib/ai/entitlements";
 import { contextBlock } from "@/lib/ai/prompt";
+import { createClient } from "@/lib/supabase/server";
 
 /* Route de l'assistant IA. Ordre : validation → quota (server-side) →
    LLM + outils. La clé API reste server-only ; si elle est absente, on
    renvoie une réponse claire (200) pour que la démo continue de fonctionner.
 
-   Clé de quota : `sessionId` fourni par le client (démo). En Phase 3, on la
-   remplace par l'user_id Supabase issu de la session authentifiée — sans
-   changer la logique d'application des quotas. */
+   Clé de quota : l'identifiant du compte connecté (session obligatoire en
+   production) ; `sessionId` seulement en démo locale sans Supabase. */
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,12 +38,24 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Requête invalide" }, { status: 400 });
   }
 
-  /* TODO(auth) : remplacer par l'utilisateur authentifie —
-     key = user.id et plan = lecture de la table subscriptions.
-     Tant que la route est anonyme, sessionId reste contournable
-     (nouvel identifiant = compteur remis a zero) : le vrai garde-fou
-     devra etre un rate limit par IP + une session obligatoire. */
-  const key = body.sessionId ?? "anon";
+  /* Session OBLIGATOIRE dès que Supabase est configuré (production) : la clé
+     Anthropic est réelle, une route anonyme laisserait n'importe qui
+     consommer les crédits en changeant de `sessionId`. Le quota est compté
+     par compte. Sans Supabase (démo locale), l'ancien comportement reste.
+     TODO : formule lue dans `subscriptions` ; compteur durable (Supabase)
+     au lieu de la mémoire de l'instance. */
+  const supabase = await createClient();
+  let key = body.sessionId ?? "anon";
+  if (supabase) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "auth_required", message: "Connectez-vous (c'est gratuit) pour utiliser le copilote IA : il analyse les biens, les offres et les rendements avec vous." },
+        { status: 401 },
+      );
+    }
+    key = `user:${user.id}`;
+  }
   const plan = "free" as const;
 
   // Quota appliqué côté serveur, avant tout appel LLM.

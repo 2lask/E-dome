@@ -61,3 +61,12 @@ test("le menu de commande s'ouvre au clavier et cherche dans l'Explorer", async 
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/explorer\?q=Neuch%C3%A2tel/);
 });
+
+test("l'IA refuse un visiteur anonyme (crédits protégés)", async ({ request }) => {
+  test.skip(!backend, "sans Supabase, la démo locale reste ouverte");
+  for (const sessionId of ["a", "b"]) {
+    const res = await request.post("/api/ai/chat", { data: { messages: [{ role: "user", content: "Bonjour" }], sessionId } });
+    expect(res.status()).toBe(401);
+    expect((await res.json()).error).toBe("auth_required");
+  }
+});
