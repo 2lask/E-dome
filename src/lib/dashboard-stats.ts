@@ -146,6 +146,8 @@ export interface ApporteurStats {
   commissionsPending: number;
   series: DayPoint[];
   links: { propertyId: string; title: string; cover: string; code: string; clicks: number; leads: number; sales: number; earned: number }[];
+  /** Mes leads, sans aucune donnée de l'acheteur : bien, étape, gain (net, estimé si pas encore vendu). */
+  leadList: { id: string; propertyId: string; title: string; cover: string; status: string; createdAt: string; netChf: number; final: boolean }[];
 }
 
 export function computeApporteur(
@@ -197,5 +199,23 @@ export function computeApporteur(
         earned: s.filter((x) => x.status === "conclue").reduce((t, x) => t + commissionOf(x), 0),
       };
     }).sort((a, b) => b.earned - a.earned || b.leads - a.leads || b.clicks - a.clicks),
+    leadList: [...leads]
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .slice(0, 50)
+      .map((l) => {
+        const prop = links.find((x) => x.property.id === l.property_id)?.property;
+        const final = l.status === "conclue";
+        const g = l.terms ? commissionChf(l.terms, final ? l.sale_price : l.terms.kind === "pourcentage" ? prop?.price ?? null : null) ?? 0 : 0;
+        return {
+          id: l.id,
+          propertyId: l.property_id,
+          title: prop?.title ?? "Bien",
+          cover: prop?.cover ?? "",
+          status: l.status,
+          createdAt: l.created_at,
+          netChf: l.status === "fermee" ? 0 : g > 0 ? netForApporteur(g) : 0,
+          final,
+        };
+      }),
   };
 }

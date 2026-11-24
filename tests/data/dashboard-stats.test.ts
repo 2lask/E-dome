@@ -75,3 +75,20 @@ test("D-4 · conversion plafonnée : plus de leads que de visiteurs comptés", (
   assert.equal(s.funnel[0].value, 2, "un lead est aussi un visiteur");
   assert.ok(s.topListings.every((t) => t.conversion <= 100));
 });
+
+test("D-5 · apporteur : ses leads étape par étape, gain net (final si vendu, estimé sinon)", () => {
+  const a = computeApporteur(30, NOW, [{ id: "L1", code: "abcd2345", property: P[0] }], events, [
+    leads[0],
+    { ...leads[2], id: "4", property_id: "a", apporteur_id: "u1", terms: pct1 },
+    { ...leads[2], id: "5", property_id: "a", status: "fermee", created_at: ago(9), apporteur_id: "u1", terms: pct1 },
+  ]);
+  const byId = Object.fromEntries(a.leadList.map((l) => [l.id, l]));
+  assert.deepEqual(a.leadList.map((l) => l.id), ["4", "1", "5"], "le plus récent d'abord");
+  assert.equal(byId["1"].final, true);
+  assert.equal(byId["1"].netChf, 8_360, "vendu : sur le prix FINAL");
+  assert.equal(byId["4"].final, false);
+  assert.equal(byId["4"].netChf, 8_800, "en cours : estimé au prix demandé");
+  assert.equal(byId["5"].netChf, 0, "sans suite : rien");
+  assert.equal(byId["4"].title, "Villa A");
+  for (const l of a.leadList) assert.deepEqual(Object.keys(l).sort(), ["cover", "createdAt", "final", "id", "netChf", "propertyId", "status", "title"], "aucune donnée de l'acheteur");
+});

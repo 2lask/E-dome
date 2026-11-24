@@ -124,6 +124,18 @@ try {
   const peek = await fetch(`${SB}/rest/v1/property_events?property_id=eq.${propId}&select=id`, { headers: { apikey: ANON, Authorization: `Bearer ${appJwt}`, "User-Agent": "edome-e2e-tests" } });
   const peekRows = await peek.json();
   check("l'apporteur ne voit que les événements de SON lien", Array.isArray(peekRows) && peekRows.length === vueLink.length + (ev.data ?? []).filter((e) => e.kind !== "vue" && e.link_id).length, `${peekRows.length} visibles`);
+  /* nLPD (migration 010) : l'apporteur ne lit pas la demande de l'acheteur,
+     seulement l'étape et la commission par `my_apport_leads`. */
+  const appH = { apikey: ANON, Authorization: `Bearer ${appJwt}`, "Content-Type": "application/json", "User-Agent": "edome-e2e-tests" };
+  const rpc = await fetch(`${SB}/rest/v1/rpc/my_apport_leads`, { method: "POST", headers: appH, body: "{}" });
+  if (rpc.ok) {
+    const mine = await rpc.json();
+    const direct = await (await fetch(`${SB}/rest/v1/inquiries?id=eq.${q.id}&select=sender_name,sender_email,sender_phone,message`, { headers: appH })).json();
+    check("nLPD : l'apporteur ne lit pas les coordonnées de l'acheteur", Array.isArray(direct) && direct.length === 0, `${Array.isArray(direct) ? direct.length : "?"} ligne(s)`);
+    check("nLPD : l'apporteur suit l'étape de son lead, sans donnée personnelle", mine.some((r) => r.id === q.id) && mine.every((r) => !("sender_email" in r) && !("sender_name" in r)), `${mine.length} lead(s)`);
+  } else {
+    console.log("—      nLPD : migration 010 non appliquée, contrôle ignoré");
+  }
 
   /* 5. Le vendeur conclut la vente dans ses Demandes. */
   await sp.goto(`${APP}/demandes`);

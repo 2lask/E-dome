@@ -59,3 +59,15 @@ test("V6 · demande d'analyse IA : offres ouvertes seulement, écart, financemen
   assert.doesNotMatch(p, /1'300'000/, "une offre refusée n'est pas analysée");
   assert.match(p, /pas un conseil juridique/);
 });
+
+test("V7 · nLPD : l'apporteur ne lit plus les demandes ; sa fonction ne renvoie aucune donnée de l'acheteur", () => {
+  const sql = readFileSync("supabase/migrations/010_parcours_vente.sql", "utf8");
+  const policy = sql.match(/create policy "inquiries_select_parties"[\s\S]*?;/)?.[0] ?? "";
+  assert.ok(policy, "politique redéfinie en 010");
+  assert.doesNotMatch(policy, /apporteur_id/);
+  const fn = sql.match(/create or replace function public\.my_apport_leads\(\)[\s\S]*?\$\$;/)?.[0] ?? "";
+  assert.match(fn, /security definer/);
+  assert.match(fn, /where q\.apporteur_id = auth\.uid\(\)/);
+  assert.doesNotMatch(fn, /sender_|message|dossier/, "ni nom, ni e-mail, ni téléphone, ni message");
+  assert.match(sql, /revoke all on function public\.my_apport_leads\(\) from public, anon;/);
+});

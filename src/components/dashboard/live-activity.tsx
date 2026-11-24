@@ -28,6 +28,8 @@ export function LiveActivity({ titles, linkIds }: { titles: Record<string, strin
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const titlesRef = useRef(titles);
   useEffect(() => { titlesRef.current = titles; }, [titles]);
+  const linkIdsRef = useRef(linkIds);
+  useEffect(() => { linkIdsRef.current = linkIds; }, [linkIds]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -52,7 +54,9 @@ export function LiveActivity({ titles, linkIds }: { titles: Record<string, strin
         .channel("tableau-de-bord")
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "property_events" }, (p) => {
           const row = p.new as { kind: string; property_id: string; link_id: string | null };
-          if (row.kind === "lead") return; // le lead arrive aussi par `inquiries`
+          /* Lead : le vendeur le reçoit par `inquiries` ; l'apporteur (qui ne lit
+             pas les demandes, nLPD) le voit par l'événement de SON lien. */
+          if (row.kind === "lead" && !(row.link_id && linkIdsRef.current.includes(row.link_id) && !titlesRef.current[row.property_id])) return;
           push(row.kind, row.property_id);
         })
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "inquiries" }, (p) => {

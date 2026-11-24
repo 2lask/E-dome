@@ -193,7 +193,59 @@ function ApporteurPanel({ a, titles, linkIds }: { a: NonNullable<Dashboard["appo
           </table>
         </div>
       </GlowCard>
+
+      <GlowCard className="col-span-2 lg:col-span-4">
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+          <p className="text-[14px] font-semibold">Mes leads, étape par étape</p>
+          <p className="text-[12px] text-muted-foreground">Le vendeur fait avancer chaque lead ; l&apos;identité de l&apos;acheteur reste entre lui et le vendeur.</p>
+        </div>
+        {a.leadList.length === 0 ? (
+          <p className="text-[13px] text-muted-foreground">Aucun lead pour l&apos;instant. Partagez vos liens : chaque contact reçu par un vendeur apparaîtra ici avec son étape.</p>
+        ) : (
+          <ul className="divide-y">
+            {a.leadList.map((l) => (
+              <li key={l.id} className="flex flex-wrap items-center gap-3 py-2.5 text-[13px]">
+                {l.cover ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={l.cover} alt="" className="h-8 w-11 shrink-0 rounded-md object-cover" />
+                ) : null}
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-medium">{l.title}</span>
+                  <span className="block text-[11.5px] text-muted-foreground">Lead du {new Date(l.createdAt).toLocaleDateString("fr-CH")}</span>
+                </span>
+                <LeadSteps status={l.status} />
+                <span className={cn("w-28 text-right tabular-nums", l.final ? "font-semibold text-laiton" : "text-muted-foreground")}>
+                  {l.status === "fermee" ? "—" : `${l.final ? "" : "≈ "}${chf(l.netChf)}`}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </GlowCard>
     </section>
+  );
+}
+
+/* Les étapes d'un lead, en pastilles : franchies, en cours, à venir (ou perdu). */
+const LEAD_STEPS: { key: string; label: string }[] = [
+  { key: "nouvelle", label: "Contact" },
+  { key: "en-cours", label: "Échange" },
+  { key: "visite", label: "Visite" },
+  { key: "offre", label: "Offre" },
+  { key: "conclue", label: "Vendu" },
+];
+function LeadSteps({ status }: { status: string }) {
+  if (status === "fermee") return <span className="rounded-md bg-subtle px-2 py-0.5 text-[11.5px] text-muted-foreground">Sans suite</span>;
+  const at = LEAD_STEPS.findIndex((s) => s.key === status);
+  return (
+    <ol className="flex items-center gap-1" aria-label={`Étape : ${LEAD_STEPS[Math.max(0, at)]?.label}`}>
+      {LEAD_STEPS.map((s, i) => (
+        <li key={s.key} className={cn(
+          "rounded-md px-1.5 py-0.5 text-[11px]",
+          i < at ? "bg-leman-soft text-leman" : i === at ? (s.key === "conclue" ? "bg-laiton-soft font-semibold text-laiton" : "bg-leman font-semibold text-white dark:text-[#0d1513]") : "bg-subtle text-muted-foreground/70",
+        )}>{s.label}</li>
+      ))}
+    </ol>
   );
 }
 

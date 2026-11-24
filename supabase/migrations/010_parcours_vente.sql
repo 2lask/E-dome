@@ -103,3 +103,29 @@ create policy "deal_steps_delete_seller" on public.deal_steps
   for delete using (
     exists (select 1 from public.inquiries q where q.id = inquiry_id and q.seller_id = auth.uid() and q.status <> 'conclue')
   );
+
+-- ── 3. Confidentialité des leads vis-à-vis de l'apporteur (nLPD) ───────────
+-- En 009, l'apporteur pouvait lire la LIGNE entière des leads qu'il a apportés
+-- (nom, e-mail, téléphone, message de l'acheteur), y compris par le temps
+-- réel. L'acheteur écrit au vendeur, pas à l'apporteur : la lecture directe
+-- est retirée ; l'apporteur passe par une fonction qui ne renvoie que des
+-- champs sans donnée personnelle (étape, dates, prix final, commission).
+drop policy if exists "inquiries_select_parties" on public.inquiries;
+create policy "inquiries_select_parties" on public.inquiries
+  for select using (auth.uid() = seller_id or auth.uid() = sender_id);
+
+create or replace function public.my_apport_leads()
+returns table (
+  id uuid, property_id uuid, status text, created_at timestamptz, closed_at timestamptz, sale_price numeric,
+  commission_kind text, commission_amount_chf numeric, commission_rate_pct numeric, commission_due_on text
+)
+language sql stable security definer set search_path = public as $$
+  select q.id, q.property_id, q.status, q.created_at, q.closed_at, q.sale_price,
+         q.commission_kind, q.commission_amount_chf, q.commission_rate_pct, q.commission_due_on
+  from public.inquiries q
+  where q.apporteur_id = auth.uid()
+  order by q.created_at desc
+  limit 5000
+$$;
+revoke all on function public.my_apport_leads() from public, anon;
+grant execute on function public.my_apport_leads() to authenticated;

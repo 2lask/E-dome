@@ -63,6 +63,15 @@ const propRow = (p: PropDb): PropRow => ({
   cover: coverOf({ images: p.images ?? [], type: p.type as PropertyType }),
 });
 
+/* Leads apportés, SANS donnée de l'acheteur : fonction `my_apport_leads`
+   (migration 010). Base sans 010 : lecture restreinte aux mêmes colonnes. */
+const SAFE = "id, property_id, status, created_at, closed_at, sale_price, commission_kind, commission_amount_chf, commission_rate_pct, commission_due_on";
+async function apporteurLeads(supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>, userId: string) {
+  const rpc = await supabase.rpc("my_apport_leads");
+  if (!rpc.error) return rpc;
+  return supabase.from("inquiries").select(SAFE).eq("apporteur_id", userId).limit(5000);
+}
+
 export async function getDashboard(period: Period): Promise<Dashboard | null> {
   const supabase = await createClient();
   if (!supabase) return null;
@@ -114,7 +123,7 @@ export async function getDashboard(period: Period): Promise<Dashboard | null> {
     linkIds = links.map((l) => l.id);
     const [ev, ld] = await Promise.all([
       supabase.from("property_events").select("property_id, kind, link_id, visitor, created_at").in("link_id", linkIds).gte("created_at", since).limit(20000),
-      supabase.from("inquiries").select(V2).eq("apporteur_id", user.id).limit(5000),
+      apporteurLeads(supabase, user.id),
     ]);
     apporteur = computeApporteur(
       period, now, links,
