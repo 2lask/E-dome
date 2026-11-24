@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, Tag, Coins, Compass, Check, ShieldCheck, Eye, Inbox, Handshake, PlayCircle, Link2, Activity } from "lucide-react";
+import { ArrowRight, Tag, Coins, Compass, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ListingCard } from "@/components/listing/listing-card";
-import { apporteurNetChf, type MyProperty } from "@/lib/my-property";
-import { formatNumber } from "@/lib/format";
-import { cn } from "@/lib/utils";
+import type { MyProperty } from "@/lib/my-property";
+import { CinematicHero } from "./cinematic-hero";
+import { CineBento } from "./cine-bento";
 
 /* ── Accueil VISITEUR ────────────────────────────────────────────────────────
 
@@ -13,106 +13,14 @@ import { cn } from "@/lib/utils";
    suivie en direct, une commission calculée. Aucun chiffre de traction
    inventé : l'aperçu du produit est étiqueté « illustration ». */
 
-const EXAMPLE = { price: 1_250_000, rate: 1 };
-
 export function VisitorHome({ biens }: { biens: MyProperty[] }) {
-  const gross = (EXAMPLE.price * EXAMPLE.rate) / 100;
   return (
     <div className="mx-auto max-w-6xl">
-      {/* ── Promesse ─────────────────────────────────────────────────────── */}
-      <section className="grid items-center gap-10 pb-14 pt-4 md:grid-cols-[1.1fr_1fr] md:pt-10">
-        <div className="hero-rise">
-          <p className="eyebrow">Immobilier · Suisse romande</p>
-          <h1 className="page-heading mt-3 text-[40px] sm:text-[54px]">
-            Votre bien, recommandé
-            <br />
-            <span className="text-laiton">par tout un réseau.</span>
-          </h1>
-          <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-foreground/80">
-            Publiez gratuitement avec photos et vidéo, proposez une commission d&apos;apport. Chacun peut recommander
-            votre bien avec son lien personnel : visites, contacts et vente sont suivis en temps réel, et la commission
-            se calcule toute seule.
-          </p>
-          <div className="mt-7 flex flex-wrap gap-2.5">
-            <Button asChild size="lg">
-              <Link href="/auth/inscription?redirect=/publier">Publier mon bien — gratuit</Link>
-            </Button>
-            <Button asChild size="lg" variant="prime">
-              <Link href="/apporteurs">
-                Gagner en recommandant <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
-            </Button>
-          </div>
-          <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] text-muted-foreground">
-            {["0 CHF pour publier", "Aucun frais d'agence", "Neuchâtel · Vaud"].map((t) => (
-              <span key={t} className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-leman" aria-hidden />{t}</span>
-            ))}
-          </p>
-        </div>
-
-        {/* Aperçu du produit, étiqueté : ce que voit un vendeur. */}
-        <div className="relative">
-          <div aria-hidden className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-[radial-gradient(60%_60%_at_70%_20%,rgb(176_122_26/0.16),transparent_70%),radial-gradient(50%_50%_at_20%_90%,rgb(11_93_87/0.14),transparent_70%)]" />
-          <div className="relative rounded-2xl border bg-card p-5 shadow-lg">
-            <div className="flex items-center justify-between gap-2">
-              <span className="truncate text-[13px] font-semibold">Villa à Corcelles · tableau de bord</span>
-              <span className="shrink-0 rounded-md bg-subtle px-2 py-0.5 text-[11px] text-muted-foreground">illustration</span>
-            </div>
-            <div className="mt-4 grid grid-cols-3 gap-2.5">
-              {[
-                { l: "Vues", v: "1'284" },
-                { l: "Leads", v: "23" },
-                { l: "Via apporteurs", v: "61 %" },
-              ].map((k) => (
-                <div key={k.l} className="rounded-xl border bg-background p-3">
-                  <p className="truncate text-[11px] text-muted-foreground">{k.l}</p>
-                  <p className="mt-0.5 text-[19px] font-semibold tabular-nums">{k.v}</p>
-                </div>
-              ))}
-            </div>
-            <ul className="mt-4 space-y-1.5" aria-label="Activité en direct (exemple)">
-              {[
-                { icon: Eye, t: "Nouvelle visite via le lien de Sarah", tone: "leman" },
-                { icon: Inbox, t: "Nouveau lead · apporté par Marc", tone: "laiton" },
-                { icon: Handshake, t: "Vente conclue · commission calculée", tone: "laiton" },
-              ].map((it, i) => (
-                <li key={it.t} className="live-in flex items-center gap-2.5 rounded-lg px-1 py-1 text-[13px]" style={{ animationDelay: `${300 + i * 350}ms` }}>
-                  <span className={it.tone === "leman" ? "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-leman-soft text-leman" : "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-laiton-soft text-laiton"}>
-                    <it.icon className="h-3.5 w-3.5" aria-hidden />
-                  </span>
-                  <span className="min-w-0 flex-1 truncate">{it.t}</span>
-                  {i === 0 && <span className="live-dot h-1.5 w-1.5 rounded-full bg-leman" aria-hidden />}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 grid grid-cols-2 gap-2.5 border-t pt-4">
-              <div className="rounded-xl border border-laiton-border bg-laiton-soft p-3">
-                <p className="truncate text-[11px] text-laiton">Commission {EXAMPLE.rate} % du prix</p>
-                <p className="mt-0.5 text-[20px] font-semibold tabular-nums text-laiton">{formatNumber(gross)} CHF</p>
-              </div>
-              <div className="rounded-xl border bg-background p-3">
-                <p className="truncate text-[11px] text-muted-foreground">L&apos;apporteur touche, net</p>
-                <p className="mt-0.5 text-[20px] font-semibold tabular-nums">{formatNumber(apporteurNetChf(gross))} CHF</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Ce que fait E-Dome (bento) ───────────────────────────────────── */}
-      <section aria-label="Ce que fait E-Dome" className="grid gap-3 md:grid-cols-6">
-        <Feature className="md:col-span-4" icon={PlayCircle} title="Une annonce qui donne envie"
-          text="Grand visuel ou vidéo en fond, galerie plein écran, chiffres clés, carte. Votre bien présenté comme il le mérite, sur mobile d'abord." />
-        <Feature className="md:col-span-2" prime icon={Link2} title="Un lien tracé par apporteur"
-          text="Chaque recommandation porte son lien : qui a amené qui est prouvé, pendant 60 jours." />
-        <Feature className="md:col-span-2" icon={Activity} title="Tout en temps réel"
-          text="Vues, visiteurs, leads, conversion : votre tableau de bord bouge à l'instant." />
-        <Feature className="md:col-span-4" prime icon={Coins} title="Une commission calculée, suivie jusqu'au paiement"
-          text="Fixe ou en % du prix, fixée par vous. À la vente, le montant est calculé sur le prix final, le règlement est créé et suivi jusqu'à sa confirmation." />
-      </section>
+      <CinematicHero />
+      <CineBento />
 
       {/* ── Comment ça marche ────────────────────────────────────────────── */}
-      <section className="mt-16">
+      <section className="mt-14">
         <h2 className="text-[22px] font-semibold tracking-[-0.02em]">Comment ça marche</h2>
         <ol className="mt-6 grid gap-6 md:grid-cols-3">
           {[
@@ -240,26 +148,3 @@ function Door({
   );
 }
 
-function Feature({ icon: Icon, title, text, prime = false, className }: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  text: string;
-  prime?: boolean;
-  className?: string;
-}) {
-  return (
-    <div className={cn(
-      "relative overflow-hidden rounded-2xl border p-6 transition-[border-color,box-shadow] duration-300 hover:shadow-md",
-      prime ? "border-laiton-border bg-gradient-to-br from-laiton-soft via-laiton-soft/50 to-card" : "bg-card hover:border-foreground/15",
-      className,
-    )}>
-      <span className={prime
-        ? "flex h-10 w-10 items-center justify-center rounded-xl border border-laiton-border bg-card/70 text-laiton"
-        : "flex h-10 w-10 items-center justify-center rounded-xl bg-leman-soft text-leman"}>
-        <Icon className="h-5 w-5" aria-hidden />
-      </span>
-      <h3 className="mt-4 text-[17px] font-semibold tracking-[-0.01em]">{title}</h3>
-      <p className="mt-1.5 max-w-xl text-[14px] leading-relaxed text-muted-foreground">{text}</p>
-    </div>
-  );
-}

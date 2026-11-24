@@ -73,18 +73,15 @@ export const metadata: Metadata = {
 /* Viewport (recommandé Next.js 16) :
    - viewportFit: "cover" : safe-area-inset (notch/home indicator)
    - maximumScale=5 + userScalable=true : zoom mobile autorise (WCAG)
-   - themeColor : barre Chrome + chip PWA. Default mode CLAIR -> blanc.
-     Mode sombre prefere systeme -> #0a0a0a coherent avec --background. */
+   - themeColor : barre Chrome + chip PWA, assortie au thème sombre par défaut. */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#12110e" },
-    { color: "#faf9f6" },
-  ],
+  /* Thème sombre par défaut (classe `dark` sur <html>) : barre du navigateur assortie. */
+  themeColor: "#12110e",
 };
 
 export default function RootLayout({
@@ -93,7 +90,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang="fr" className="dark" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-[var(--background)] antialiased`}
       >

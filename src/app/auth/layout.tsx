@@ -10,7 +10,7 @@ import { Brand } from "@/components/layout/brand";
 const RULES = [
   "Publier un bien est gratuit, sans commission d'agence.",
   "Recommandez un bien avec votre lien : la vente conclue, vous touchez la commission.",
-  "Recommandez un bien avec votre lien : la commission est suivie jusqu'au paiement.",
+  "Vues, leads et ventes suivis en temps réel dans votre tableau de bord.",
   "E-Dome ne détient jamais l'argent de la transaction.",
 ];
 

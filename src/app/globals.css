@@ -644,3 +644,74 @@ kbd {
 .hero-zoom { animation: hero-zoom 1.6s cubic-bezier(.2,.7,.2,1) both; }
 @media (prefers-reduced-motion: reduce) { .hero-rise, .hero-zoom { animation: none; } }
 .glass-chip--gold { border-color: rgb(227 184 92 / 0.6); background: rgb(227 184 92 / 0.22); color: #ffe7b0; }
+
+/* ── Hero cinématographique (accueil visiteur) ─────────────────────────────
+   Toujours sombre, quel que soit le thème : couleurs fixes, pas de jetons.
+   Lumières animées (aurore), grille masquée, titre en dégradé or, bandeau
+   défilant. Tout s'arrête si l'on préfère un mouvement réduit. */
+.cine { background: #0b0a08; color: #f5f2ec; }
+.cine-aurora {
+  position: absolute; inset: -20%;
+  background:
+    radial-gradient(40% 35% at 25% 30%, rgb(217 164 65 / 0.30), transparent 70%),
+    radial-gradient(35% 30% at 75% 20%, rgb(45 170 156 / 0.26), transparent 70%),
+    radial-gradient(45% 40% at 60% 85%, rgb(176 122 26 / 0.18), transparent 70%);
+  filter: blur(40px);
+  animation: cine-aurora 18s ease-in-out infinite alternate;
+}
+@keyframes cine-aurora {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  50% { transform: translate3d(3%, -2%, 0) rotate(8deg) scale(1.08); }
+  100% { transform: translate3d(-3%, 2%, 0) rotate(-6deg) scale(1.02); }
+}
+.cine-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(70% 60% at 50% 35%, #000 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(70% 60% at 50% 35%, #000 30%, transparent 75%);
+}
+.cine-gold {
+  background: linear-gradient(100deg, #f7d488 0%, #e3b85c 30%, #fff1cf 50%, #d9a441 70%, #f7d488 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: cine-shine 6s linear infinite;
+}
+@keyframes cine-shine { to { background-position: 200% center; } }
+.cine-glass {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.03));
+  border: 1px solid rgb(255 255 255 / 0.12);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+.cine-btn-gold {
+  background: linear-gradient(180deg, #f2c66b, #d9a441);
+  color: #1a1307;
+  box-shadow: 0 0 0 1px rgb(255 214 130 / 0.5), 0 10px 40px -8px rgb(217 164 65 / 0.7);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.cine-btn-gold:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgb(255 214 130 / 0.7), 0 14px 50px -6px rgb(217 164 65 / 0.9); }
+.cine-btn-light { background: #f5f2ec; color: #0b0a08; transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s; }
+.cine-btn-light:hover { transform: translateY(-1px); background: #ffffff; }
+.cine-marquee { display: flex; width: max-content; animation: cine-marquee 40s linear infinite; }
+@keyframes cine-marquee { to { transform: translateX(-50%); } }
+.cine-card {
+  position: relative; overflow: hidden; border-radius: 1.25rem;
+  background: #12100c; border: 1px solid rgb(255 255 255 / 0.09);
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.cine-card::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(227 184 92 / 0.14), transparent 45%);
+}
+.cine-card:hover { border-color: rgb(227 184 92 / 0.35); transform: translateY(-2px); }
+.cine-card:hover::before { opacity: 1; }
+.cine-draw { stroke-dasharray: 600; stroke-dashoffset: 600; animation: cine-draw 2.4s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
+@keyframes cine-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .cine-aurora, .cine-gold, .cine-marquee { animation: none; }
+  .cine-draw { animation: none; stroke-dashoffset: 0; }
+  .cine-card, .cine-btn-gold, .cine-btn-light { transition: none; }
+}

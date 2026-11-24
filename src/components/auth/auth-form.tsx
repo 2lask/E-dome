@@ -139,7 +139,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     <div>
       <h1 className="page-heading text-[28px]">{mode === "login" ? "Se connecter" : "Créer un compte"}</h1>
       <p className="mt-1.5 text-[14px] text-muted-foreground">
-        {context ?? (mode === "login" ? "Retrouvez vos biens, vos demandes et vos primes." : "Gratuit, sans carte bancaire.")}
+        {context ?? (mode === "login" ? "Retrouvez vos biens, vos demandes et vos commissions." : "Gratuit, sans carte bancaire.")}
       </p>
 
       {!configured && (
