@@ -1,5 +1,6 @@
 "use client";
 
+import { LeadAlerts } from "./lead-alerts";
 import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { AppProvider } from "@/lib/context";
@@ -68,6 +69,7 @@ export function AppShell({
             <MobileTabBar user={currentUser} counts={counts} />
             <CommandMenu member={!!currentUser} />
             <AiAssistant hideTrigger />
+            {currentUser && <LeadAlerts userId={currentUser.id} />}
           </div>
         </ToastProvider>
       </LanguageProvider>

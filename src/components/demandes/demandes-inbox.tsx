@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { commissionChf, commissionLabel, dueLabel, netForApporteur } from "@/lib/commission";
 import { AnswersInbox } from "@/components/demandes/answers-inbox";
 import { DealPanel } from "@/components/demandes/deal-panel";
+import { BrowserAlertsButton } from "@/components/layout/lead-alerts";
 import type { SearchAnswer } from "@/lib/recherches";
 import { cn } from "@/lib/utils";
 
@@ -82,6 +83,7 @@ export function DemandesInbox({
             Tout ce qui arrive sur vos biens : contacts, demandes de visite, mises en relation.
           </p>
         </div>
+        <BrowserAlertsButton />
       </header>
 
       {!ready && <MigrationNotice />}
