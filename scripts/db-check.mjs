@@ -25,10 +25,13 @@ const CHECKS = [
   ["008", "Règlements", ["settlements", "payout_profiles"]],
   ["009", "Apport v2 (liens tracés, suivi temps réel)", ["apport_links", "property_events"]],
   ["010", "Parcours de vente (offres, étapes jusqu'à l'acte)", ["deal_offers", "deal_steps"]],
+  ["011", "Sources du trafic (WhatsApp, QR code, e-mail…)", ["property_events:source"]],
 ];
 
-async function exists(table) {
-  const res = await fetch(`${url}/rest/v1/${table}?select=*&limit=0`, {
+/* « table » ou « table:colonne » (colonne ajoutée par une migration). */
+async function exists(target) {
+  const [table, column = "*"] = target.split(":");
+  const res = await fetch(`${url}/rest/v1/${table}?select=${column}&limit=0`, {
     headers: { apikey: key, Authorization: `Bearer ${key}`, "User-Agent": "edome-db-check" },
   });
   return res.ok;

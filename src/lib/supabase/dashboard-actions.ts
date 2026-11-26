@@ -72,6 +72,8 @@ async function apporteurLeads(supabase: NonNullable<Awaited<ReturnType<typeof cr
   return supabase.from("inquiries").select(SAFE).eq("apporteur_id", userId).limit(5000);
 }
 
+const EV_COLS = "property_id, kind, link_id, visitor, created_at";
+
 export async function getDashboard(period: Period): Promise<Dashboard | null> {
   const supabase = await createClient();
   if (!supabase) return null;
@@ -88,15 +90,18 @@ export async function getDashboard(period: Period): Promise<Dashboard | null> {
   let ready = true;
   let events: EventRow[] = [];
   if (ids.length) {
-    const ev = await supabase
+    const q = (cols: string) => supabase
       .from("property_events")
-      .select("property_id, kind, link_id, visitor, created_at")
+      .select(cols)
       .in("property_id", ids)
       .gte("created_at", since)
       .order("created_at", { ascending: false })
       .limit(20000);
+    /* `source` arrive avec la migration 011 : sans elle, on lit sans. */
+    let ev = await q(`${EV_COLS}, source`);
+    if (ev.error) ev = await q(EV_COLS);
     if (ev.error) ready = false;
-    else events = (ev.data ?? []) as EventRow[];
+    else events = (ev.data ?? []) as unknown as EventRow[];
   }
 
   let leadsRes = await supabase.from("inquiries").select(V2).eq("seller_id", user.id).gte("created_at", since).limit(5000);
@@ -122,12 +127,16 @@ export async function getDashboard(period: Period): Promise<Dashboard | null> {
       .map((l) => ({ id: l.id, code: l.code, property: propRow(l.prop) }));
     linkIds = links.map((l) => l.id);
     const [ev, ld] = await Promise.all([
-      supabase.from("property_events").select("property_id, kind, link_id, visitor, created_at").in("link_id", linkIds).gte("created_at", since).limit(20000),
+      (async () => {
+        const q = (cols: string) => supabase.from("property_events").select(cols).in("link_id", linkIds).gte("created_at", since).limit(20000);
+        const r = await q(`${EV_COLS}, source`);
+        return r.error ? q(EV_COLS) : r;
+      })(),
       apporteurLeads(supabase, user.id),
     ]);
     apporteur = computeApporteur(
       period, now, links,
-      ev.error ? [] : ((ev.data ?? []) as EventRow[]),
+      ev.error ? [] : ((ev.data ?? []) as unknown as EventRow[]),
       ld.error ? [] : ((ld.data ?? []) as unknown as InqRow[]).map(toLead),
     );
   }

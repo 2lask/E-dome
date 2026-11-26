@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShareButton } from "@/components/listing/share-button";
 import { DiffusionKit } from "@/components/publish/diffusion-kit";
-import { Plus, Eye, Pencil, Trash2, Inbox, Coins, Check, Circle, Building2, Truck } from "lucide-react";
+import { ShareKit } from "@/components/share/share-kit";
+import { Plus, Eye, Pencil, Trash2, Inbox, Coins, Check, Circle, Building2, Truck, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { deleteMyProperty } from "@/lib/supabase/property-actions";
@@ -115,6 +116,7 @@ function ListingRow({ p, prime, stats }: { p: MyProperty; prime: CommissionTerms
   const [terms, setTerms] = useState<CommissionTerms>(prime ?? defaultTerms(p.transactionType, p.price));
   const [accepted, setAccepted] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [kitOpen, setKitOpen] = useState(false);
   const quality = qualityOf(p, prime);
   const score = quality.filter((q) => q.ok).length;
   const eligible = primeEligible(p.transactionType);
@@ -189,6 +191,13 @@ function ListingRow({ p, prime, stats }: { p: MyProperty; prime: CommissionTerms
         <div className="flex shrink-0 gap-2 sm:flex-col sm:items-stretch">
           <Button asChild size="sm" variant="outline"><Link href={`/explorer/${p.id}`}><Eye className="h-4 w-4" aria-hidden /> Voir</Link></Button>
           <ShareButton path={`/explorer/${p.id}`} title={p.title} text={`${p.title} à ${p.city}`} propertyId={p.id} />
+          <Button size="sm" variant="outline" onClick={() => setKitOpen(true)}><QrCode className="h-4 w-4" aria-hidden /> QR et messages</Button>
+          {kitOpen && (
+            <ShareKit open={kitOpen} onOpenChange={setKitOpen} propertyId={p.id} url={`${window.location.origin}/explorer/${p.id}`}
+              title={p.title} city={p.city} cover={coverOf(p)}
+              priceLabel={`${chfPrice(p.price)}${PRICE_UNIT[p.transactionType]}`}
+              facts={[p.bedrooms > 0 ? `${p.bedrooms} chambre${p.bedrooms > 1 ? "s" : ""}` : "", p.area > 0 ? `${p.area} m²` : ""].filter(Boolean).join(" · ") || undefined} />
+          )}
           <Button asChild size="sm" variant="outline"><Link href={`/publier?edit=${p.id}`}><Pencil className="h-4 w-4" aria-hidden /> Modifier</Link></Button>
           {confirmDelete ? (
             <Button size="sm" variant="destructive" disabled={isPending} onClick={remove}>Confirmer le retrait</Button>

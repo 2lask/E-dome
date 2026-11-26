@@ -7,7 +7,7 @@
 -- ║  Idempotent : peut être rejoué sans risque. Fichier GÉNÉRÉ par            ║
 -- ║  scripts/build-migrations.mjs — modifier les migrations, pas ce fichier.  ║
 -- ╚══════════════════════════════════════════════════════════════════════════╝
--- Contenu : 002_demandes.sql, 003_storage.sql, 004_recherches.sql, 005_dossier.sql, 006_agences.sql, 007_demenagement.sql, 008_reglements.sql, 009_apport.sql, 010_parcours_vente.sql
+-- Contenu : 002_demandes.sql, 003_storage.sql, 004_recherches.sql, 005_dossier.sql, 006_agences.sql, 007_demenagement.sql, 008_reglements.sql, 009_apport.sql, 010_parcours_vente.sql, 011_sources_trafic.sql
 
 -- ════════ 002_demandes.sql ════════
 -- ╔══════════════════════════════════════════════════════════════════════════╗
@@ -1123,3 +1123,19 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.my_apport_leads() from public, anon;
 grant execute on function public.my_apport_leads() to authenticated;
+
+-- ════════ 011_sources_trafic.sql ════════
+-- ╔══════════════════════════════════════════════════════════════════════════╗
+-- ║  E-DOME — Migration 011 : SOURCES DU TRAFIC                               ║
+-- ╠══════════════════════════════════════════════════════════════════════════╣
+-- ║  À exécuter après 009. Idempotente.                                       ║
+-- ║  Chaque vue d'annonce garde sa provenance (WhatsApp, QR code, e-mail,     ║
+-- ║  Facebook, moteur de recherche, direct…), normalisée par le serveur.      ║
+-- ║  Aucune adresse IP, aucune URL complète : une étiquette courte.           ║
+-- ╚══════════════════════════════════════════════════════════════════════════╝
+
+alter table public.property_events add column if not exists source text;
+
+alter table public.property_events drop constraint if exists property_events_source_check;
+alter table public.property_events add constraint property_events_source_check
+  check (source is null or source ~ '^[a-z-]{1,20}$');

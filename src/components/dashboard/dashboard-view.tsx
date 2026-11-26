@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, Inbox, Handshake, Coins, Share2, PlayCircle, Link2, Copy, Check, Plus, Megaphone } from "lucide-react";
+import { Eye, Inbox, Handshake, Coins, Share2, PlayCircle, Link2, Copy, Check, Plus, Megaphone, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlowCard, AnimatedNumber } from "./glow-card";
 import { TrendChart } from "./trend-chart";
 import { LiveActivity } from "./live-activity";
+import { LiveNow, SourcesCard } from "./sources-card";
 import type { Dashboard } from "@/lib/supabase/dashboard-actions";
 import type { Period } from "@/lib/dashboard-stats";
 import { PERIODS } from "@/lib/dashboard-stats";
@@ -35,6 +36,11 @@ export function DashboardView({ data, period, titles, initialTab }: { data: Dash
           <div className="min-w-0">
             <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#e3b85c]">Tableau de bord · {period} derniers jours</p>
             <Headline tab={tab} s={s} a={a} />
+            {(tab === "apports" || !s) && a ? (
+              <div className="mt-4"><LiveNow count={a.liveNow} what="sur vos liens" /></div>
+            ) : s ? (
+              <div className="mt-4"><LiveNow count={s.liveNow} what="sur vos annonces" /></div>
+            ) : null}
             <div className="mt-5 flex flex-wrap gap-2.5">
               {tab === "apports" || !s ? (
                 <>
@@ -95,7 +101,7 @@ export function DashboardView({ data, period, titles, initialTab }: { data: Dash
         <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           <Kpi icon={Eye} label="Vues" value={s.views} sub={`${formatNumber(s.visitors)} visiteurs uniques`} />
           <Kpi icon={Inbox} label="Leads" value={s.leads} sub={`${String(s.conversion).replace(".", ",")} % de conversion`} />
-          <Kpi icon={Handshake} label="Ventes" value={s.sales} sub={`${s.visits} visites · ${s.offers} offres`} />
+          <Kpi icon={Handshake} label="Ventes" value={s.sales} sub={`${s.visits} visite${s.visits > 1 ? "s" : ""} · ${s.offers} offre${s.offers > 1 ? "s" : ""}`} />
           <Kpi icon={Coins} label="Commissions apporteurs" value={s.commissions} money accent="laiton" sub={`${String(s.viaApporteurs).replace(".", ",")} % des vues via un apporteur`} />
 
           <GlowCard className="col-span-2 lg:col-span-3">
@@ -128,6 +134,11 @@ export function DashboardView({ data, period, titles, initialTab }: { data: Dash
             <Funnel steps={s.funnel} />
           </GlowCard>
 
+          <GlowCard className="col-span-2">
+            <SourcesCard sources={s.sources} title="D'où viennent vos visiteurs"
+              empty="La provenance des visites (WhatsApp, QR code, e-mail, Facebook, recherche…) s'affiche ici dès les prochaines visites. Partagez avec les boutons d'E-Dome : chaque canal est reconnu." />
+          </GlowCard>
+
           <GlowCard accent="laiton" className="col-span-2">
             <p className="mb-3 text-[14px] font-semibold">Meilleurs apporteurs</p>
             {s.topApporteurs.length === 0 ? (
@@ -142,19 +153,19 @@ export function DashboardView({ data, period, titles, initialTab }: { data: Dash
             )}
           </GlowCard>
 
-          <GlowCard className="col-span-2 lg:col-span-4">
+          <GlowCard className="col-span-2">
             <div className="mb-3 flex items-center justify-between">
               <p className="text-[14px] font-semibold">Performance par bien</p>
               <Link href="/mes-biens" className="text-[13px] font-medium text-leman hover:underline">Mes biens →</Link>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[520px] text-[13px]">
-                <thead><tr className="text-left text-muted-foreground"><th className="pb-2 font-medium">Bien</th><th className="pb-2 text-right font-medium">Vues</th><th className="pb-2 text-right font-medium">Leads</th><th className="pb-2 text-right font-medium">Conversion</th></tr></thead>
+              <table className="w-full min-w-[360px] text-[13px]">
+                <thead><tr className="text-left text-muted-foreground"><th className="pb-2 font-medium">Bien</th><th className="pb-2 pl-3 text-right font-medium">Vues</th><th className="pb-2 pl-3 text-right font-medium">Leads</th><th className="pb-2 pl-3 text-right font-medium" title="Conversion">Conv.</th></tr></thead>
                 <tbody>{s.topListings.map((p) => (
                   <tr key={p.id} className="border-t">
                     <td className="py-2"><Link href={`/explorer/${p.id}`} className="flex items-center gap-2.5 hover:underline">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={p.cover} alt="" className="h-8 w-11 rounded-md object-cover" /><span className="truncate">{p.title}</span></Link></td>
+                      <img src={p.cover} alt="" className="h-8 w-11 shrink-0 rounded-md object-cover" /><span className="line-clamp-2">{p.title}</span></Link></td>
                     <td className="py-2 text-right tabular-nums">{p.views}</td>
                     <td className="py-2 text-right tabular-nums">{p.leads}</td>
                     <td className="py-2 text-right tabular-nums">{String(p.conversion).replace(".", ",")} %</td>
@@ -237,6 +248,23 @@ function ApporteurPanel({ a, titles, linkIds }: { a: NonNullable<Dashboard["appo
             ))}</tbody>
           </table>
         </div>
+      </GlowCard>
+
+      <GlowCard className="col-span-2">
+        <SourcesCard sources={a.sources} title="Où vos liens fonctionnent"
+          empty="Dès les prochains clics, vous verrez ici d'où ils viennent : WhatsApp, QR code, e-mail, réseaux sociaux. Partagez depuis votre kit pour que chaque canal soit reconnu." />
+      </GlowCard>
+      <GlowCard accent="laiton" className="col-span-2 flex flex-col justify-between gap-4">
+        <div>
+          <p className="flex items-center gap-2 text-[14px] font-semibold"><QrCode className="h-4 w-4 text-laiton" aria-hidden />Votre kit de partage</p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
+            Pour chaque bien : le QR code de votre lien (affiche, carte de visite, écran du téléphone), des messages prêts
+            à envoyer et un bouton par canal. Chaque scan et chaque clic vous sont attribués.
+          </p>
+        </div>
+        <Link href="/apporteurs#biens" className="inline-flex h-10 w-fit items-center gap-2 rounded-xl bg-laiton px-4 text-[13.5px] font-semibold text-white dark:text-[#1a1408]">
+          <QrCode className="h-4 w-4" aria-hidden />Ouvrir mes kits
+        </Link>
       </GlowCard>
 
       <GlowCard className="col-span-2 lg:col-span-4">

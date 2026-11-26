@@ -41,3 +41,59 @@ export function newRefCode(rand: () => number = Math.random): string {
   const alphabet = "abcdefghijkmnpqrstuvwxyz23456789";
   return Array.from({ length: 8 }, () => alphabet[Math.floor(rand() * alphabet.length)]).join("");
 }
+
+/* ── Sources du trafic ───────────────────────────────────────────────────────
+   D'où vient une visite : le paramètre `src` posé par nos boutons de partage
+   (WhatsApp, QR code, e-mail…) prime ; à défaut, le seul NOM D'HÔTE du site
+   précédent (jamais l'adresse complète, jamais l'IP). Normalisé côté serveur :
+   le navigateur ne peut écrire qu'une valeur de cette liste. */
+
+export const SOURCES = {
+  whatsapp: "WhatsApp",
+  qr: "QR code",
+  email: "E-mail",
+  sms: "SMS",
+  facebook: "Facebook",
+  instagram: "Instagram",
+  linkedin: "LinkedIn",
+  x: "X (Twitter)",
+  telegram: "Telegram",
+  recherche: "Moteur de recherche",
+  "e-dome": "E-Dome (navigation)",
+  direct: "Direct ou lien copié",
+  autre: "Autre site",
+} as const;
+export type SourceKey = keyof typeof SOURCES;
+export const isSource = (s: unknown): s is SourceKey => typeof s === "string" && Object.prototype.hasOwnProperty.call(SOURCES, s);
+
+const HOST_RULES: [RegExp, SourceKey][] = [
+  [/(^|\.)(whatsapp\.com|wa\.me)$/, "whatsapp"],
+  [/(^|\.)(facebook\.com|fb\.com|fb\.me|messenger\.com)$/, "facebook"],
+  [/(^|\.)instagram\.com$/, "instagram"],
+  [/(^|\.)(linkedin\.com|lnkd\.in)$/, "linkedin"],
+  [/(^|\.)(t\.co|twitter\.com|x\.com)$/, "x"],
+  [/(^|\.)(t\.me|telegram\.org|telegram\.me)$/, "telegram"],
+  [/(^|\.)(mail\.google\.com|outlook\.live\.com|outlook\.office\.com|mail\.yahoo\.com|mail\.proton\.me|bluewin\.ch)$/, "email"],
+  [/(^|\.)(google\.[a-z.]+|bing\.com|duckduckgo\.com|search\.brave\.com|ecosia\.org|qwant\.com|yahoo\.com|search\.ch)$/, "recherche"],
+];
+
+/** `src` explicite, sinon déduit de l'hôte précédent ; `selfHost` = notre domaine. */
+export function normalizeSource(src: unknown, refHost: unknown, selfHost?: string | null): SourceKey {
+  if (isSource(src)) return src;
+  const h = typeof refHost === "string" ? refHost.trim().toLowerCase().replace(/^www\./, "").slice(0, 200) : "";
+  if (!h) return "direct";
+  if (selfHost && h === selfHost.toLowerCase().replace(/^www\./, "")) return "e-dome";
+  for (const [re, key] of HOST_RULES) if (re.test(h)) return key;
+  return "autre";
+}
+
+/** Ajoute `src` à un lien (partage) sans casser ses autres paramètres. */
+export function withSource(url: string, src: SourceKey): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.set("src", src);
+    return u.toString();
+  } catch {
+    return url;
+  }
+}

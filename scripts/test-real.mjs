@@ -86,10 +86,19 @@ try {
   check("lien d'apporteur créé", !!code, linkText ?? "");
   await ap.screenshot({ path: `${out}/real-apporteur-lien.png` });
 
+  /* Kit de partage : QR code du lien et messages prêts, depuis l'espace apporteur. */
+  await ap.goto(`${APP}/apporteurs`);
+  await ap.locator("li", { hasText: "Attique 5,5 pièces avec terrasse" }).getByRole("button", { name: /Kit de partage/ }).click();
+  const kitQr = await ap.locator('svg[aria-label="QR code de votre lien"] path').first().getAttribute("d", { timeout: 10000 }).catch(() => null);
+  const kitMsg = await ap.locator("textarea").first().inputValue().catch(() => "");
+  check("kit de partage : QR code et message avec le lien", !!kitQr && kitQr.length > 500 && kitMsg.includes(`ref=${code}`));
+  await ap.screenshot({ path: `${out}/real-kit-partage.png` });
+  await ap.keyboard.press("Escape");
+
   /* 3. Un visiteur arrive par le lien et écrit au vendeur. */
   const vctx = await browser.newContext({ viewport: { width: 1360, height: 950 } });
   const vp = await vctx.newPage();
-  await vp.goto(`${APP}/explorer/${propId}?ref=${code}`);
+  await vp.goto(`${APP}/explorer/${propId}?ref=${code}&src=qr`);
   await vp.waitForTimeout(2500);
   await vp.getByLabel("Votre nom").fill("Visiteur Acheteur");
   await vp.getByLabel("Votre e-mail").fill("acheteur.test@example.com");
@@ -102,6 +111,10 @@ try {
   const vueLink = (ev.data ?? []).filter((e) => e.kind === "vue" && e.link_id);
   check("vue enregistrée et rattachée au lien", vueLink.length >= 1 && vueLink.every((e) => /^[0-9a-f-]{36}$/.test(e.visitor)), `${(ev.data ?? []).length} événements`);
   check("événement « lead » enregistré", (ev.data ?? []).some((e) => e.kind === "lead" && e.link_id));
+  /* Source du trafic (migration 011) : la visite par QR code est reconnue. */
+  const src = await rest(`property_events?property_id=eq.${propId}&kind=eq.vue&select=source`);
+  if (src.status === 200) check("source de la visite : QR code", (src.data ?? []).some((e) => e.source === "qr"));
+  else console.log("—      sources : migration 011 non appliquée, contrôle ignoré");
   const inq = await rest(`inquiries?property_id=eq.${propId}&select=id,apporteur_id,commission_kind,commission_rate_pct,commission_due_on,status`);
   const q = inq.data?.[0];
   check("lead attribué à l'apporteur, commission figée", q?.apporteur_id === app.id && q?.commission_kind === "pourcentage" && Number(q?.commission_rate_pct) === 1 && q?.commission_due_on === "conclusion", JSON.stringify({ ...q, id: undefined }));

@@ -3,8 +3,10 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight, Check, Coins, Copy, Eye, Handshake, Inbox, Loader2, MessageCircle, MousePointerClick, Search, Sparkles,
+  ArrowRight, Check, Coins, Copy, Eye, Handshake, Inbox, Loader2, MessageCircle, MousePointerClick, QrCode, Search, Sparkles,
 } from "lucide-react";
+import { ShareKit } from "@/components/share/share-kit";
+import { withSource } from "@/lib/tracking";
 import { Button } from "@/components/ui/button";
 import { GlowCard, AnimatedNumber } from "@/components/dashboard/glow-card";
 import { getOrCreateMyLink } from "@/lib/supabase/apport-actions";
@@ -36,20 +38,30 @@ export function ApporteurHub({ offers, stats }: { offers: PrimedProperty[]; stat
 
   return (
     <div className="mx-auto max-w-6xl">
-      <header className="flex flex-wrap items-end justify-between gap-4 pt-2">
-        <div>
-          <p className="eyebrow">Espace apporteur</p>
-          <h1 className="page-heading mt-2 text-[32px] sm:text-[40px]">
-            Recommandez. <span className="text-laiton">Encaissez.</span>
-          </h1>
-          <p className="mt-2 max-w-xl text-[14.5px] leading-relaxed text-muted-foreground">
-            Prenez votre lien sur un bien, envoyez-le à qui cherche. Chaque visite, lead et vente venus de votre lien vous
-            sont attribués 60 jours, et la commission est calculée automatiquement.
-          </p>
+      <header className="cine relative overflow-hidden rounded-3xl border border-white/10 px-5 py-8 md:px-9 md:py-10">
+        <div aria-hidden className="cine-aurora" />
+        <div aria-hidden className="cine-grid" />
+        <div className="relative flex flex-wrap items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#e3b85c]">Espace apporteur</p>
+            <h1 className="mt-3 text-[34px] font-semibold leading-[1.04] tracking-[-0.035em] text-white sm:text-[46px]">
+              Recommandez. <span className="cine-gold">Encaissez.</span>
+            </h1>
+            <p className="mt-3 text-[15px] leading-relaxed text-white/65">
+              Prenez votre lien sur un bien, envoyez-le à qui cherche : par message, par e-mail ou avec votre QR code.
+              Chaque visite, lead et vente venus de votre lien vous sont attribués 60 jours, et la commission est
+              calculée automatiquement.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2.5">
+            <a href="#biens" className="cine-btn-gold inline-flex h-11 items-center gap-2 rounded-xl px-5 text-[14px] font-semibold">
+              <Coins className="h-4 w-4" aria-hidden />Voir les biens
+            </a>
+            <Link href="/tableau-de-bord?vue=apports" className="inline-flex h-11 items-center gap-2 rounded-xl border border-white/20 px-5 text-[14px] font-semibold text-white/90 hover:bg-white/5">
+              Mon tableau de bord <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
         </div>
-        <Button asChild variant="outline">
-          <Link href="/tableau-de-bord?vue=apports">Mon tableau de bord <ArrowRight className="h-4 w-4" aria-hidden /></Link>
-        </Button>
       </header>
 
       <section aria-label="Mes chiffres sur 30 jours" className="mt-7 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -156,6 +168,7 @@ function OfferCard({ offer: o, link }: { offer: PrimedProperty; link?: LinkStat 
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
+  const [kitOpen, setKitOpen] = useState(false);
   const net = Math.round(netForApporteur(o.amountChf));
   const pct = o.terms.kind === "pourcentage";
   const urlOf = (c: string) => `${window.location.origin}/explorer/${o.propertyId}?ref=${c}`;
@@ -187,7 +200,7 @@ function OfferCard({ offer: o, link }: { offer: PrimedProperty; link?: LinkStat 
     const url = await ensure();
     if (!url) { w?.close(); return; }
     track(o.propertyId, "partage");
-    const text = `${o.title} à ${o.city} — je pense que ça peut t'intéresser : ${url}`;
+    const text = `${o.title} à ${o.city} — je pense que ça peut t'intéresser : ${withSource(url, "whatsapp")}`;
     const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
     if (w) w.location.href = wa; else window.location.href = wa;
   };
@@ -222,7 +235,7 @@ function OfferCard({ offer: o, link }: { offer: PrimedProperty; link?: LinkStat 
           </p>
         )}
 
-        <div className="mt-auto grid grid-cols-2 gap-2 pt-3">
+        <div className="mt-auto grid grid-cols-[1fr_1fr_auto] gap-2 pt-3">
           <Button size="sm" variant="prime" onClick={() => void copy()} disabled={busy}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : copied ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
             {copied ? "Copié" : code ? "Copier mon lien" : "Mon lien"}
@@ -230,7 +243,17 @@ function OfferCard({ offer: o, link }: { offer: PrimedProperty; link?: LinkStat 
           <Button size="sm" className="bg-[#1f8f4e] text-white hover:bg-[#197a42]" onClick={() => void whatsapp()} disabled={busy}>
             <MessageCircle className="h-4 w-4" aria-hidden /> WhatsApp
           </Button>
+          <Button size="sm" variant="outline" aria-label="Kit de partage : QR code et messages" title="QR code et messages"
+            onClick={async () => { if (await ensure()) setKitOpen(true); }} disabled={busy}>
+            <QrCode className="h-4 w-4" aria-hidden />
+          </Button>
         </div>
+        {code && kitOpen && (
+          <ShareKit open={kitOpen} onOpenChange={setKitOpen} propertyId={o.propertyId} url={urlOf(code)}
+            title={o.title} city={o.city} cover={o.cover}
+            priceLabel={o.price > 0 ? `${formatNumber(o.price)} CHF${o.transactionType !== "vente" ? "/mois" : ""}` : undefined}
+            gainLine={`Vous touchez ${pct ? "≈ " : ""}${formatNumber(net)} CHF net`} />
+        )}
         {error && <p role="alert" className="mt-2 text-[12px] text-[var(--danger-text)]">{error}</p>}
       </div>
     </li>

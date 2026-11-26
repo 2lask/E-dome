@@ -4,11 +4,33 @@
    indicateurs d'un vendeur (ou d'une agence) et ceux d'un apporteur. */
 
 import { commissionChf, netForApporteur, type CommissionTerms } from "./commission";
+import { SOURCES } from "./tracking";
 
 export type Period = 7 | 30 | 90;
 export const PERIODS: Period[] = [7, 30, 90];
 
-export interface EventRow { property_id: string; kind: string; link_id: string | null; visitor: string; created_at: string }
+export interface EventRow { property_id: string; kind: string; link_id: string | null; visitor: string; created_at: string; source?: string | null }
+
+/** Provenance des vues, de la plus fréquente à la plus rare. */
+export interface SourceStat { key: string; label: string; value: number; pct: number }
+
+/* Regroupe les vues par source. Vues antérieures à la migration 011 (source
+   nulle) : écartées, pour ne pas gonfler « Direct ». `null` si aucune vue
+   n'a de source : l'écran explique alors que le suivi démarre. */
+export function sourcesOf(views: EventRow[]): SourceStat[] | null {
+  const known = views.filter((v) => typeof v.source === "string" && v.source);
+  if (known.length === 0) return null;
+  const count = new Map<string, number>();
+  for (const v of known) count.set(v.source as string, (count.get(v.source as string) ?? 0) + 1);
+  return [...count.entries()]
+    .map(([key, value]) => ({ key, label: (SOURCES as Record<string, string>)[key] ?? "Autre", value, pct: Math.round((value / known.length) * 100) }))
+    .sort((a, b) => b.value - a.value);
+}
+
+/** Visiteurs distincts actifs dans les 5 dernières minutes (« en ce moment »). */
+export function liveVisitors(events: EventRow[], now: number, windowMs = 5 * 60_000): number {
+  return new Set(events.filter((e) => now - new Date(e.created_at).getTime() <= windowMs).map((e) => e.visitor || `#${e.created_at}`)).size;
+}
 export interface LeadRow {
   id: string;
   property_id: string;
@@ -44,6 +66,8 @@ export interface SellerStats {
   topApporteurs: { name: string; leads: number; sales: number; commissions: number }[];
   /** Part des vues venues d'un lien d'apporteur. */
   viaApporteurs: number;
+  sources: SourceStat[] | null;
+  liveNow: number;
 }
 
 const ADVANCED = new Set(["visite", "offre", "conclue"]);
@@ -133,6 +157,8 @@ export function computeSeller(
     topListings,
     topApporteurs: [...byApp.values()].filter((a) => a.leads || a.sales).sort((a, b) => b.commissions - a.commissions || b.leads - a.leads).slice(0, 6),
     viaApporteurs: pct(views.filter((v) => v.link_id).length, views.length),
+    sources: sourcesOf(views),
+    liveNow: liveVisitors(events.filter((e) => e.kind === "vue"), now),
   };
 }
 
@@ -148,6 +174,8 @@ export interface ApporteurStats {
   links: { propertyId: string; title: string; cover: string; code: string; clicks: number; leads: number; sales: number; earned: number }[];
   /** Mes leads, sans aucune donnée de l'acheteur : bien, étape, gain (net, estimé si pas encore vendu). */
   leadList: { id: string; propertyId: string; title: string; cover: string; status: string; createdAt: string; netChf: number; final: boolean }[];
+  sources: SourceStat[] | null;
+  liveNow: number;
 }
 
 export function computeApporteur(
@@ -169,6 +197,8 @@ export function computeApporteur(
 
   const days = daysOf(period, now);
   return {
+    sources: sourcesOf(clicks),
+    liveNow: liveVisitors(events.filter((e) => e.kind === "vue" && e.link_id && mine.has(e.link_id)), now),
     clicks: clicks.length,
     visitors: new Set(clicks.map((c) => c.visitor).filter(Boolean)).size,
     leads: ld.length,

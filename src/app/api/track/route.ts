@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { REF_COOKIE, REF_DAYS, VISITOR_COOKIE, isRefCode, isTrackKind, isUuid, parseRefCookie, withRef } from "@/lib/tracking";
+import { REF_COOKIE, REF_DAYS, VISITOR_COOKIE, isRefCode, isTrackKind, isUuid, normalizeSource, parseRefCookie, withRef } from "@/lib/tracking";
 
 /* ── POST /api/track — un événement sur une annonce ──────────────────────────
-   Corps : { p: <id du bien>, k: "vue"|"partage"|"video"|"contact", ref?: <code> }.
+   Corps : { p: <id du bien>, k: "vue"|"partage"|"video"|"contact", ref?: <code>,
+   s?: <source déclarée>, r?: <nom d'hôte précédent> }.
    · visiteur identifié par un cookie aléatoire (jamais l'adresse IP) ;
    · une vue n'est comptée qu'une fois par visiteur et par bien en 30 minutes ;
    · `ref` (ou le cookie d'attribution) rattache l'événement au lien de
@@ -13,7 +14,7 @@ import { REF_COOKIE, REF_DAYS, VISITOR_COOKIE, isRefCode, isTrackKind, isUuid, p
    Tolérant : base non migrée ou erreur → 204, la page n'en souffre jamais. */
 
 export async function POST(req: NextRequest) {
-  let body: { p?: unknown; k?: unknown; ref?: unknown };
+  let body: { p?: unknown; k?: unknown; ref?: unknown; s?: unknown; r?: unknown };
   try {
     body = (await req.json()) as typeof body;
   } catch {
@@ -70,6 +71,14 @@ export async function POST(req: NextRequest) {
     if ((count ?? 0) > 0) return res;
   }
 
-  await admin.from("property_events").insert({ property_id: propertyId, kind, link_id: linkId, visitor });
+  /* La source n'a de sens que pour une vue ; base sans la colonne (migration
+     011 pas encore appliquée) → on réessaie sans elle. */
+  const row = { property_id: propertyId, kind, link_id: linkId, visitor };
+  if (kind === "vue") {
+    const source = normalizeSource(body.s, body.r, req.nextUrl.hostname);
+    const { error } = await admin.from("property_events").insert({ ...row, source });
+    if (!error) return res;
+  }
+  await admin.from("property_events").insert(row);
   return res;
 }
