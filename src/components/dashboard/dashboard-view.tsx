@@ -28,30 +28,47 @@ export function DashboardView({ data, period, titles, initialTab }: { data: Dash
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">Pilotage</p>
-          <h1 className="page-heading mt-1.5 text-[30px] sm:text-[34px]">Tableau de bord</h1>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {(s && a) && (
-            <div role="tablist" aria-label="Vue" className="flex rounded-xl border bg-card p-1">
-              {([["ventes", "Mes ventes"], ["apports", "Mes apports"]] as const).map(([k, l]) => (
-                <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
-                  className={cn("h-8 rounded-lg px-3 text-[13px]", tab === k ? "bg-ink font-medium text-paper dark:bg-foreground dark:text-background" : "text-muted-foreground hover:text-foreground")}>{l}</button>
-              ))}
+      <header className="cine relative overflow-hidden rounded-3xl border border-white/10 px-5 py-7 md:px-8 md:py-9">
+        <div aria-hidden className="cine-aurora" />
+        <div aria-hidden className="cine-grid" />
+        <div className="relative flex flex-wrap items-end justify-between gap-6">
+          <div className="min-w-0">
+            <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#e3b85c]">Tableau de bord · {period} derniers jours</p>
+            <Headline tab={tab} s={s} a={a} />
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              {tab === "apports" || !s ? (
+                <>
+                  <Link href="/explorer?prime=1" className="cine-btn-gold inline-flex h-10 items-center gap-2 rounded-xl px-4 text-[13.5px] font-semibold"><Link2 className="h-4 w-4" aria-hidden />Recommander un bien</Link>
+                  <Link href="/reglements" className="inline-flex h-10 items-center rounded-xl border border-white/20 px-4 text-[13.5px] font-semibold text-white/90 hover:bg-white/5">Mes règlements</Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/demandes" className="cine-btn-light inline-flex h-10 items-center gap-2 rounded-xl px-4 text-[13.5px] font-semibold"><Inbox className="h-4 w-4" aria-hidden />Mes demandes</Link>
+                  <Link href="/publier" className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/20 px-4 text-[13.5px] font-semibold text-white/90 hover:bg-white/5"><Plus className="h-4 w-4" aria-hidden />Publier un bien</Link>
+                </>
+              )}
             </div>
-          )}
-          <nav aria-label="Période" className="flex rounded-xl border bg-card p-1">
-            {PERIODS.map((p) => (
-              <Link key={p} href={`/tableau-de-bord?p=${p}`} scroll={false} aria-current={p === period ? "page" : undefined}
-                className={cn("h-8 rounded-lg px-3 text-[13px] leading-8", p === period ? "bg-leman-soft font-medium text-leman" : "text-muted-foreground hover:text-foreground")}>
-                {p} j
-              </Link>
-            ))}
-          </nav>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {(s && a) && (
+              <div role="tablist" aria-label="Vue" className="flex rounded-xl border border-white/15 bg-white/5 p-1 backdrop-blur">
+                {([["ventes", "Mes ventes"], ["apports", "Mes apports"]] as const).map(([k, l]) => (
+                  <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
+                    className={cn("h-8 rounded-lg px-3 text-[13px] transition-colors", tab === k ? "bg-white font-medium text-[#12110e]" : "text-white/65 hover:text-white")}>{l}</button>
+                ))}
+              </div>
+            )}
+            <nav aria-label="Période" className="flex rounded-xl border border-white/15 bg-white/5 p-1 backdrop-blur">
+              {PERIODS.map((p) => (
+                <Link key={p} href={`/tableau-de-bord?p=${p}${tab === "apports" ? "&vue=apports" : ""}`} scroll={false} aria-current={p === period ? "page" : undefined}
+                  className={cn("h-8 rounded-lg px-3 text-[13px] leading-8 transition-colors", p === period ? "bg-[rgb(227_184_92/0.18)] font-medium text-[#e3b85c]" : "text-white/65 hover:text-white")}>
+                  {p} j
+                </Link>
+              ))}
+            </nav>
+          </div>
         </div>
-      </div>
+      </header>
 
       {!data.ready && (
         <p role="status" className="mt-5 rounded-xl bg-warning-soft px-4 py-3 text-[13px]">
@@ -152,6 +169,34 @@ export function DashboardView({ data, period, titles, initialTab }: { data: Dash
       ) : null}
     </div>
   );
+}
+
+/* La phrase d'en-tête : le chiffre qui compte, selon la casquette. */
+function Headline({ tab, s, a }: { tab: "ventes" | "apports"; s: Dashboard["seller"]; a: Dashboard["apporteur"] }) {
+  const cls = "mt-3 text-[28px] font-semibold leading-[1.08] tracking-[-0.03em] text-white sm:text-[38px]";
+  if ((tab === "apports" || !s) && a) {
+    return (
+      <h1 className={cls}>
+        <span className="cine-gold tabular-nums">{chf(a.commissionsEarned)}</span> gagnés
+        <span className="mt-2 block text-[15px] font-normal tracking-normal text-white/65">
+          {a.leads} lead{a.leads > 1 ? "s" : ""} apporté{a.leads > 1 ? "s" : ""} · {a.clicks} clic{a.clicks > 1 ? "s" : ""} sur vos liens
+          {a.commissionsPending > 0 ? ` · ≈ ${chf(a.commissionsPending)} en cours` : ""}
+        </span>
+      </h1>
+    );
+  }
+  if (s) {
+    return (
+      <h1 className={cls}>
+        <span className="cine-gold tabular-nums">{formatNumber(s.leads)}</span> lead{s.leads > 1 ? "s" : ""} reçu{s.leads > 1 ? "s" : ""}
+        <span className="mt-2 block text-[15px] font-normal tracking-normal text-white/65">
+          {formatNumber(s.views)} vue{s.views > 1 ? "s" : ""} · {s.sales} vente{s.sales > 1 ? "s" : ""} conclue{s.sales > 1 ? "s" : ""}
+          {s.pipelineValue > 0 ? ` · ${chf(s.pipelineValue)} en négociation` : ""}
+        </span>
+      </h1>
+    );
+  }
+  return <h1 className={cls}>Votre tableau de bord</h1>;
 }
 
 function ApporteurPanel({ a, titles, linkIds }: { a: NonNullable<Dashboard["apporteur"]>; titles: Record<string, string>; linkIds: string[] }) {

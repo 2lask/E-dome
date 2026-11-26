@@ -90,6 +90,8 @@ const EMPTY: Draft = {
 };
 
 /* Les trois façons de publier, lisibles par tous. */
+const SECTION_TITLES = ["Le bien", "Photos", "Annonce", "Commission", "Publication"];
+
 const MODES = [
   { key: "vente", label: "Je vends" },
   { key: "location", label: "Je loue" },
@@ -213,6 +215,7 @@ export function PublishForm({
       }),
     );
   };
+  const [dragging, setDragging] = useState(false);
   const removePhoto = (key: string) => setPhotos((p) => p.filter((x) => x.key !== key));
   const makeCover = (key: string) => setPhotos((p) => {
     const i = p.findIndex((x) => x.key === key);
@@ -257,6 +260,18 @@ export function PublishForm({
     { ok: d.primeOn && !termsError, label: "Une commission pour les apporteurs" },
   ];
   const qualityScore = quality.filter((q) => q.ok).length;
+
+  /* Avancement par section (bandeau d'étapes) : indicatif, la validation
+     reste celle de `errors`. La commission étant facultative, la section 4
+     est « faite » tant qu'elle ne contient pas d'erreur. */
+  const sectionsDone = [
+    !errors.type && !errors.city && !errors.price && !errors.availableFrom,
+    photoUrls.length > 0,
+    !errors.title && d.description.trim().length >= 50,
+    !errors.prime,
+    attest,
+  ];
+  const doneCount = sectionsDone.filter(Boolean).length;
 
   const preview: MyProperty = {
     id: initial?.id ?? "apercu",
@@ -361,15 +376,36 @@ export function PublishForm({
       <button type="button" onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" aria-hidden /> Retour
       </button>
-      <h1 className="page-heading mt-3 text-[30px]">{editing ? "Modifier l'annonce" : "Publier un bien"}</h1>
-      <p className="mt-1 text-[14px] text-muted-foreground">
-        {editing ? "Les changements sont visibles dès l'enregistrement." : "Gratuit, sans commission d'agence. Comptez cinq minutes."}
-      </p>
+      <header className="cine relative mt-3 overflow-hidden rounded-3xl border border-white/10 px-5 py-7 md:px-8">
+        <div aria-hidden className="cine-aurora" />
+        <div aria-hidden className="cine-grid" />
+        <div className="relative">
+          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#e3b85c]">{editing ? "Modifier" : "Publier"} · {doneCount}/5 étapes</p>
+          <h1 className="mt-2 text-[28px] font-semibold leading-[1.08] tracking-[-0.03em] text-white sm:text-[36px]">
+            {editing ? "Modifier l'annonce" : <>Votre bien en ligne <span className="cine-gold">en cinq minutes.</span></>}
+          </h1>
+          <p className="mt-2 text-[14.5px] text-white/65">
+            {editing ? "Les changements sont visibles dès l'enregistrement." : "Gratuit, aucun pourcentage sur votre prix. L'aperçu se met à jour pendant que vous écrivez."}
+          </p>
+          <ol className="mt-5 flex flex-wrap gap-2" aria-label="Étapes">
+            {SECTION_TITLES.map((t, i) => (
+              <li key={t}>
+                <a href={`#sec-${i + 1}`} className={cn("inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[12.5px] transition-colors",
+                  sectionsDone[i] ? "border-[rgb(227_184_92/0.5)] bg-[rgb(227_184_92/0.14)] text-[#f0d79a]" : "border-white/15 bg-white/5 text-white/70 hover:text-white")}>
+                  {sectionsDone[i] ? <Check className="h-3.5 w-3.5" aria-hidden /> : <span className="font-mono text-[11px]">{i + 1}</span>}
+                  {t}
+                  <span className="sr-only">{sectionsDone[i] ? " (complété)" : " (à compléter)"}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </header>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_340px]">
         <div className="min-w-0 space-y-6">
           {/* 1 · Le bien ────────────────────────────────────────────────── */}
-          <Section n={1} title="Le bien">
+          <Section n={1} title="Le bien" done={sectionsDone[0]}>
             <div role="radiogroup" aria-label="Vente, location ou reprise de bail" className="grid grid-cols-3 rounded-xl border bg-subtle p-1">
               {MODES.map((m) => {
                 const on = m.key === "reprise" ? d.reprise : m.key === "vente" ? d.tx === "vente" && !d.reprise : d.tx === "location-lt" && !d.reprise;
@@ -440,9 +476,13 @@ export function PublishForm({
           </Section>
 
           {/* 2 · Photos ─────────────────────────────────────────────────── */}
-          <Section n={2} title="Photos et vidéo" aside={`${photoUrls.length}/${MAX_PHOTOS}`}>
+          <Section n={2} title="Photos et vidéo" aside={`${photoUrls.length}/${MAX_PHOTOS}`} done={sectionsDone[1]}>
             <p className="-mt-1 text-[13px] text-muted-foreground">La première est la couverture. Lumière du jour, pièces rangées, une photo par pièce.</p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div
+              onDragOver={(e) => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); setDragging(true); } }}
+              onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragging(false); }}
+              onDrop={(e) => { e.preventDefault(); setDragging(false); void addFiles(e.dataTransfer.files); }}
+              className={cn("grid grid-cols-2 gap-3 rounded-xl transition-shadow sm:grid-cols-3", dragging && "ring-2 ring-leman ring-offset-4 ring-offset-card")}>
               {photos.map((ph, i) => (
                 <div key={ph.key} className="group relative aspect-[4/3] overflow-hidden rounded-xl border bg-subtle">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -470,7 +510,8 @@ export function PublishForm({
                 <button type="button" onClick={() => fileRef.current?.click()}
                   className="flex aspect-[4/3] flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed bg-card text-[13px] text-muted-foreground hover:border-foreground/30 hover:text-foreground">
                   <ImagePlus className="h-6 w-6" aria-hidden />
-                  Ajouter des photos
+                  {dragging ? "Déposez ici" : "Ajouter des photos"}
+                  <span className="hidden text-[11.5px] sm:block">ou glissez-les ici</span>
                 </button>
               )}
             </div>
@@ -502,7 +543,7 @@ export function PublishForm({
           </Section>
 
           {/* 3 · L'annonce ──────────────────────────────────────────────── */}
-          <Section n={3} title="L'annonce">
+          <Section n={3} title="L'annonce" done={sectionsDone[2]}>
             <Field label="Titre" error={shown.title} hint={`${d.title.length}/90 — ce que l'on lit en premier.`}>
               <Input value={d.title} maxLength={90} onChange={(e) => set("title", e.target.value)} placeholder="Ex. 4,5 pièces lumineux avec balcon, à 5 min de la gare" />
             </Field>
@@ -555,7 +596,7 @@ export function PublishForm({
           </Section>
 
           {/* 5 · Publication ────────────────────────────────────────────── */}
-          <Section n={5} title={obligations.title}>
+          <Section n={5} title={obligations.title} done={sectionsDone[4]}>
             <ul className="space-y-2.5">
               {obligations.obligations.map((o) => (
                 <li key={o.label} className="rounded-xl border bg-card p-3.5">
@@ -635,15 +676,15 @@ export function PublishForm({
   );
 }
 
-function Section({ n, title, aside, prime = false, children }: { n: number; title: string; aside?: string; prime?: boolean; children: React.ReactNode }) {
+function Section({ n, title, aside, prime = false, done = false, children }: { n: number; title: string; aside?: string; prime?: boolean; done?: boolean; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border bg-card p-5 shadow-xs sm:p-6" aria-labelledby={`sec-${n}`}>
+    <section id={`sec-${n}`} className="scroll-mt-24 rounded-2xl border bg-card p-5 shadow-xs sm:p-6" aria-labelledby={`sec-${n}-t`}>
       <div className="mb-4 flex items-center gap-3">
-        <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-[12.5px] font-semibold",
-          prime ? "border border-laiton-border bg-laiton-soft text-laiton" : "bg-subtle")}>
-          {prime ? <Coins className="h-3.5 w-3.5" aria-hidden /> : n}
+        <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-[12.5px] font-semibold transition-colors",
+          prime ? "border border-laiton-border bg-laiton-soft text-laiton" : done ? "bg-leman text-white dark:text-[#0d1513]" : "bg-subtle")}>
+          {prime ? <Coins className="h-3.5 w-3.5" aria-hidden /> : done ? <Check className="h-3.5 w-3.5" aria-label="Complété" /> : n}
         </span>
-        <h2 id={`sec-${n}`} className="flex-1 text-[16px] font-semibold tracking-[-0.01em]">{title}</h2>
+        <h2 id={`sec-${n}-t`} className="flex-1 text-[16px] font-semibold tracking-[-0.01em]">{title}</h2>
         {aside && <span className="text-[12.5px] text-muted-foreground">{aside}</span>}
       </div>
       <div className="space-y-4">{children}</div>
