@@ -55,12 +55,20 @@ export function dueLabel(t: CommissionTerms, tx?: TransactionType): string {
 }
 
 /** Contrôle des conditions ; renvoie un message d'erreur ou null. */
-export function validateTerms(t: CommissionTerms, tx: TransactionType): string | null {
+export function validateTerms(t: CommissionTerms, tx: TransactionType, price?: number): string | null {
   if (tx === "location-ct") return "Pas de commission sur la location courte durée.";
   if (t.kind === "fixe") {
     const a = t.amountChf ?? NaN;
     if (!Number.isFinite(a) || a < FIXE_MIN_CHF || a > FIXE_MAX_CHF)
       return `Montant fixe de ${formatNumber(FIXE_MIN_CHF)} à ${formatNumber(FIXE_MAX_CHF)} CHF.`;
+    /* Proportion au prix (art. 417 CO : le juge réduit une commission
+       excessive) : vente, au plus 3 % du prix comme pour un pourcentage ;
+       location, au plus deux loyers mensuels. */
+    const cap = fixedCap(tx, price);
+    if (cap !== null && a > cap)
+      return tx === "vente"
+        ? `Au plus 3 % du prix de vente, soit ${formatNumber(cap)} CHF.`
+        : `Au plus deux loyers mensuels, soit ${formatNumber(cap)} CHF.`;
     return null;
   }
   if (tx !== "vente") return "Le pourcentage n'est possible que pour une vente.";
@@ -69,6 +77,13 @@ export function validateTerms(t: CommissionTerms, tx: TransactionType): string |
   if (!Number.isFinite(r) || r < RATE_MIN_PCT || r > RATE_MAX_PCT)
     return `Pourcentage de ${String(RATE_MIN_PCT).replace(".", ",")} % à ${RATE_MAX_PCT} % du prix de vente.`;
   return null;
+}
+
+/** Plafond d'un montant fixe selon le prix (null si le prix est inconnu). */
+export function fixedCap(tx: TransactionType, price?: number): number | null {
+  if (!price || !Number.isFinite(price) || price <= 0) return null;
+  const cap = tx === "vente" ? Math.floor((price * RATE_MAX_PCT) / 100) : Math.floor(price * 2);
+  return Math.max(FIXE_MIN_CHF, Math.min(FIXE_MAX_CHF, cap));
 }
 
 /** Conditions par défaut proposées selon le type d'annonce. */

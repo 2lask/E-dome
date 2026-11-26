@@ -33,7 +33,7 @@ export function CommissionEditor({
   onAccept: (v: boolean) => void;
 }) {
   const sale = tx === "vente";
-  const error = validateTerms(value, tx);
+  const error = validateTerms(value, tx, price);
   const estimate = commissionChf(value, value.kind === "pourcentage" ? price : null);
   const set = (patch: Partial<CommissionTerms>) => onChange({ ...value, ...patch });
 

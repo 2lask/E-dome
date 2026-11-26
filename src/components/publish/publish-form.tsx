@@ -14,6 +14,7 @@ import { setMyPrime, liftMyPrime } from "@/lib/supabase/prime-actions";
 import { repriseOf, type MyProperty } from "@/lib/my-property";
 import { CommissionEditor } from "@/components/commission/commission-editor";
 import { defaultTerms, estimateChf, validateTerms, type CommissionTerms } from "@/lib/commission";
+import { propertySanity } from "@/lib/property-sanity";
 import { publierObligations } from "@/content/publier-obligations";
 import { AI_OPEN_EVENT } from "@/lib/nav";
 import { formatNumber } from "@/lib/format";
@@ -96,6 +97,10 @@ const MODES = [
 ] as const;
 
 const digits = (s: string) => Number(s.replace(/[^\d]/g, "")) || 0;
+
+
+/* Un refus du serveur rédigé pour l'utilisateur (vraisemblance) est montré tel quel. */
+const readable = (e?: string) => (e && /^(Vérifiez|La surface)/.test(e) ? e : null);
 
 export function PublishForm({
   initial,
@@ -223,7 +228,7 @@ export function PublishForm({
   const price = digits(d.price);
   const terms = d.commission ?? defaultTerms(d.tx, price);
   const [termsOk, setTermsOk] = useState(editing && !!initialCommission);
-  const termsError = d.primeOn ? validateTerms(terms, d.tx) : null;
+  const termsError = d.primeOn ? validateTerms(terms, d.tx, price) : null;
   const errors = useMemo(() => {
     const e: Partial<Record<"type" | "city" | "price" | "title" | "prime" | "availableFrom", string>> = {};
     if (d.reprise && !/^\d{4}-\d{2}-\d{2}$/.test(d.availableFrom)) e.availableFrom = "Indiquez la date à laquelle le logement est libre.";
@@ -231,6 +236,8 @@ export function PublishForm({
     if (d.city.trim().length < 2) e.city = "Indiquez la localité.";
     if (price <= 0) e.price = d.tx === "vente" ? "Indiquez le prix de vente." : "Indiquez le loyer mensuel.";
     if (d.title.trim().length < 8) e.title = "Un titre d'au moins 8 caractères.";
+    const sanity = propertySanity({ tx: d.tx, price, area: digits(d.area), bedrooms: digits(d.bedrooms), bathrooms: digits(d.bathrooms) });
+    if (sanity && !e.price) e.price = sanity.message;
     if (d.primeOn && termsError) e.prime = termsError;
     else if (d.primeOn && !termsOk) e.prime = "Acceptez les conditions de la commission (ou désactivez-la).";
     return e;
@@ -325,11 +332,11 @@ export function PublishForm({
       let id = initial?.id ?? "";
       if (editing && id) {
         const res = await updateMyProperty(id, input);
-        if (!res.ok) { setError("La modification a échoué. Réessayez."); return; }
+        if (!res.ok) { setError(readable(res.error) ?? "La modification a échoué. Réessayez."); return; }
       } else {
         const res = await createMyProperty(input);
         if (!res.ok || !res.id) {
-          setError(res.error === "non-connecte" ? "Votre session a expiré : reconnectez-vous." : "La publication a échoué. Réessayez.");
+          setError(res.error === "non-connecte" ? "Votre session a expiré : reconnectez-vous." : readable(res.error) ?? "La publication a échoué. Réessayez.");
           return;
         }
         id = res.id;

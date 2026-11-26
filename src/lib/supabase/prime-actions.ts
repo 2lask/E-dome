@@ -29,7 +29,7 @@ export async function setMyPrime(propertyId: string, terms: CommissionTerms, acc
 
   const { data: prop } = await supabase
     .from("properties")
-    .select("id, host_id, transaction_type")
+    .select("id, host_id, transaction_type, price")
     .eq("id", propertyId)
     .maybeSingle();
   if (!prop || prop.host_id !== user.id) return { ok: false, error: "Ce bien n'est pas le vôtre." };
@@ -40,7 +40,7 @@ export async function setMyPrime(propertyId: string, terms: CommissionTerms, acc
     ratePct: terms.kind === "pourcentage" && terms.ratePct ? Math.round(terms.ratePct * 100) / 100 : null,
     dueOn: terms.kind === "pourcentage" ? "conclusion" : terms.dueOn === "acceptation" ? "acceptation" : "conclusion",
   };
-  const invalid = validateTerms(t, prop.transaction_type as TransactionType);
+  const invalid = validateTerms(t, prop.transaction_type as TransactionType, Number(prop.price ?? 0));
   if (invalid) return { ok: false, error: invalid };
 
   const row = {

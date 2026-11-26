@@ -220,7 +220,7 @@ function ListingRow({ p, prime, stats }: { p: MyProperty; prime: CommissionTerms
             <div className="space-y-3 py-1">
               <CommissionEditor tx={p.transactionType} price={p.price} value={terms} onChange={setTerms} accepted={accepted} onAccept={setAccepted} />
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="prime" disabled={!!validateTerms(terms, p.transactionType) || !accepted || isPending} onClick={savePrime}>
+                <Button size="sm" variant="prime" disabled={!!validateTerms(terms, p.transactionType, p.price) || !accepted || isPending} onClick={savePrime}>
                   <Check className="h-4 w-4" aria-hidden /> {prime ? "Mettre à jour" : "Activer la commission"}
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => { setEditingPrime(false); setTerms(prime ?? defaultTerms(p.transactionType, p.price)); }}>Annuler</Button>

@@ -1,5 +1,6 @@
 "use server";
 
+import { propertySanity } from "../property-sanity";
 import { createClient } from "./server";
 import { createAdminClient } from "./admin";
 import type { MyProperty, NewPropertyInput } from "../my-property";
@@ -133,6 +134,9 @@ export async function createMyProperty(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "non-connecte" };
 
+  const insane = propertySanity({ tx: input.transactionType, price: input.price, area: input.area, bedrooms: input.bedrooms, bathrooms: input.bathrooms });
+  if (insane) return { ok: false, error: insane.message };
+
   const row = {
     host_id: user.id,
     title: input.title,
@@ -169,6 +173,9 @@ export async function updateMyProperty(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "non-connecte" };
+
+  const insane = propertySanity({ tx: input.transactionType, price: input.price, area: input.area, bedrooms: input.bedrooms, bathrooms: input.bathrooms });
+  if (insane) return { ok: false, error: insane.message };
 
   const { data, error } = await supabase
     .from("properties")

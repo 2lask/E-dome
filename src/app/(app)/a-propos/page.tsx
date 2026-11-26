@@ -31,7 +31,8 @@ const RULES = [
 
 const SOON = [
   "Le versement intégré des commissions, par un prestataire de paiement agréé. Aujourd'hui, une commission due est enregistrée, horodatée et suivie ; son paiement se fait directement entre les parties (TWINT, virement).",
-  "Les liens de recommandation traçables, pour partager un bien et être reconnu comme apporteur en un clic.",
+  "Les notifications par e-mail (aujourd'hui : alerte en direct dans l'application et notifications du navigateur).",
+  "La QR-facture suisse pour régler une commission en un scan.",
   "Les favoris enregistrés sur votre compte, et les profils vérifiés.",
   "Les formules pour les professionnels (agences, régies), à frais fixes.",
 ];
