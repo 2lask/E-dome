@@ -84,35 +84,35 @@ export const PLATFORM_RULES: readonly [PlatformRule, PlatformRule, PlatformRule,
   {
     id: "remuneration",
     number: 3,
-    short: "Aucune rémunération conditionnée à une vente ou à un bail.",
+    short: "Aucune commission sur le prix de vente ou le loyer.",
+    /* Commission v2 (lancement du 25.11.2026) : la règle dit ce qui est VRAI.
+       E-Dome ne prend rien sur le prix ; sa seule rémunération sur les biens
+       est une part de la commission d'apport, due seulement si celle-ci l'est.
+       Que cette part, liée à la conclusion, laisse E-Dome hors du champ du
+       courtage est la question n°1 soumise à l'avocat
+       (JURIDIQUE-A-VALIDER.md). */
     full:
-      "E-Dome ne perçoit aucune rémunération dont le montant ou l'exigibilité " +
-      "dépend de la conclusion d'une vente ou d'un bail d'habitation ou de " +
-      "locaux commerciaux. Ses prix sont fixés à l'avance, dus indépendamment " +
-      "du résultat, et identiques pour tous les utilisateurs d'une même formule.",
-    basis: "art. 413 CO — le droit au salaire du courtier naît de la conclusion",
+      "E-Dome ne perçoit aucune commission sur le prix d'une vente ni sur un " +
+      "loyer, et ne facture aucun frais d'annonce. Sur les biens, sa seule " +
+      "rémunération est une part de 12 % (3 CHF au minimum) de la commission " +
+      "d'apport convenue entre le vendeur et l'apporteur : cette part n'est due " +
+      "que si la commission l'est, elle est comprise dans celle-ci et n'est " +
+      "jamais ajoutée au prix payé par l'acheteur ou le locataire.",
+    basis: "art. 412 ss CO — la commission d'apport est un courtage d'indication convenu entre le vendeur et l'apporteur",
     why:
-      "Un honoraire de succès trahit l'intérêt au résultat. La formulation couvre " +
-      "aussi le forfait conditionné, que la version « jamais un pourcentage » laissait passer. " +
-      "À l'inverse, une prime de mise en relation — fixe, en francs, due à l'acceptation du " +
-      "contact et indépendante de la conclusion — n'est pas une commission : elle ne dépend " +
-      "d'aucune vente ni d'aucun bail. Ce garde-fou vise la commission de succès d'une agence " +
-      "sur une transaction immobilière, jamais cette prime.",
+      "Transparence : le vendeur connaît d'avance ce que touche E-Dome, l'acheteur ne paie rien de plus, " +
+      "et aucune vente sans apporteur ne rapporte quoi que ce soit à E-Dome.",
   },
   {
     id: "fonds",
     number: 4,
     short: "E-Dome n'est jamais dépositaire des fonds de ses utilisateurs.",
-    /* Formulation exacte plutôt que catégorique : « E-Dome ne détient jamais
-       les fonds » est vrai ou faux selon le schéma d'encaissement retenu, et
-       cet arbitrage est réservé à l'avocat (JURIDIQUE-A-VALIDER.md §2). Cette
-       version est vraie dans les deux schémas. */
     full:
-      "E-Dome n'est jamais dépositaire des fonds de ses utilisateurs. Les " +
-      "paiements sont exécutés par un prestataire agréé. E-Dome ne dispose " +
-      "librement d'aucune somme appartenant à un utilisateur, ne verse aucun " +
-      "intérêt et ne conserve aucun solde : tout montant destiné à un tiers " +
-      "lui est reversé sans délai.",
+      "E-Dome n'est jamais dépositaire des fonds de ses utilisateurs. La " +
+      "commission d'apport est payée directement par le vendeur à l'apporteur " +
+      "(TWINT, virement) ; seule la part E-Dome est versée à E-Dome. E-Dome ne " +
+      "dispose librement d'aucune somme appartenant à un utilisateur, ne verse " +
+      "aucun intérêt et ne conserve aucun solde pour le compte d'un tiers.",
     basis: "ordonnance sur les banques, art. 5 al. 3 let. c — aucun intérêt, exécution sous 60 jours",
     why: "Détenir des fonds du public exigerait une autorisation d'intermédiaire financier.",
   },

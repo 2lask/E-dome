@@ -10,7 +10,7 @@ export type PayMethod = "twint" | "virement" | "autre";
 export interface Settlement {
   id: string;
   role: "payer" | "payee";
-  sourceKind: "introduction" | "answer";
+  sourceKind: "introduction" | "answer" | "vente";
   label: string;
   counterpartName: string;
   grossChf: number;

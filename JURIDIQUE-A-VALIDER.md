@@ -16,9 +16,28 @@ règles fondent le modèle :
 
 1. E-Dome ne signe aucun mandat.
 2. E-Dome ne négocie aucun prix.
-3. E-Dome ne perçoit aucune rémunération dont le montant ou l'exigibilité
-   dépend de la conclusion d'une vente ou d'un bail.
-4. E-Dome n'est jamais dépositaire des fonds de ses utilisateurs.
+3. E-Dome ne perçoit aucune commission sur le prix d'une vente ni sur un
+   loyer ; sa seule rémunération sur les biens est une part de 12 % de la
+   commission d'apport, due seulement si celle-ci l'est. *(reformulée le
+   26.11.2026, voir ci-dessous)*
+4. E-Dome n'est jamais dépositaire des fonds de ses utilisateurs ; la
+   commission est payée directement par le vendeur à l'apporteur, seule la
+   part E-Dome est versée à E-Dome. *(reformulée le 26.11.2026)*
+
+> **Mise à jour du 26.11.2026 — à relire en premier.** Avec la commission v2
+> (fixe ou %, due par défaut à la conclusion), l'ancienne règle 3 (« aucune
+> rémunération dont l'exigibilité dépend de la conclusion ») était devenue
+> FAUSSE : la part E-Dome (12 %) d'une commission due à la vente dépend de la
+> conclusion. Elle a été réécrite pour dire ce qui est vrai, dans l'interface
+> et dans les conditions (§2, généré depuis `src/lib/model/rules.ts`).
+> **Questions :** (a) cette part, liée à la conclusion, fait-elle d'E-Dome un
+> courtier au sens de l'art. 412 CO (avec les conséquences cantonales, p. ex.
+> Tessin, et le projet genevois PL 13732) ? (b) la règle 2 (« n'indique à
+> personne une occasion de conclure en échange d'une rémunération ») reste-t-elle
+> exacte alors que la plateforme présente les biens aux apporteurs et perçoit
+> cette part ? (c) si la réponse inquiète : repli possible sur une part E-Dome
+> forfaitaire et non conditionnée (abonnement apporteur ou frais fixes vendeur),
+> ou sur des commissions fixes dues à l'acceptation uniquement.
 
 ---
 

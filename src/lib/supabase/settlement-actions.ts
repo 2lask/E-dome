@@ -139,6 +139,15 @@ export async function getPayeeDetails(settlementId: string): Promise<Ok<{ detail
   return { ok: true, details: { holderName: p.holder_name, iban: p.iban, twintPhone: p.twint_phone } };
 }
 
+/** Coordonnées d'E-Dome pour sa part (12 %) : variables serveur, publiques par
+    nature (un IBAN d'entreprise figure sur chaque facture). Absentes : null,
+    E-Dome envoie alors sa facture par e-mail. */
+export async function getEdomePayment(): Promise<{ iban: string; holder: string } | null> {
+  const iban = (process.env.EDOME_PAYOUT_IBAN ?? "").trim();
+  const holder = (process.env.EDOME_PAYOUT_HOLDER ?? "").trim();
+  return iban && holder ? { iban, holder } : null;
+}
+
 /* ── Mes coordonnées de versement ───────────────────────────────────────── */
 
 export async function getMyPayout(): Promise<PayoutProfile | null> {

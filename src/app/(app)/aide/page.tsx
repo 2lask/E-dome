@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { formatNumber } from "@/lib/format";
-import { apporteurNetChf, PRIME_MAX_CHF, PRIME_MIN_CHF } from "@/lib/my-property";
+import { apporteurNetChf } from "@/lib/my-property";
 
-export const metadata: Metadata = { title: "Aide", description: "Réponses aux questions sur E-Dome : publier, recevoir des demandes, la prime, la confidentialité." };
+export const metadata: Metadata = { title: "Aide", description: "Réponses aux questions sur E-Dome : publier, vendre, la commission d'apport, la confidentialité." };
 
 /* ── /aide — le centre d'aide (REBUILD.md §8) ────────────────────────────────
 
@@ -14,7 +14,8 @@ export const metadata: Metadata = { title: "Aide", description: "Réponses aux q
    27001 »). Chaque réponse ci-dessous décrit ce que fait VRAIMENT E-Dome
    aujourd'hui — et dit ce qui n'est pas encore en place. */
 
-const EX = 500;
+const EX_PRICE = 1_200_000;
+const EX_GROSS = EX_PRICE / 100;
 
 const SECTIONS: { title: string; items: { q: string; a: React.ReactNode }[] }[] = [
   {
@@ -22,57 +23,61 @@ const SECTIONS: { title: string; items: { q: string; a: React.ReactNode }[] }[] 
     items: [
       {
         q: "Est-ce gratuit ?",
-        a: <>Oui. Publier un bien, chercher, contacter un propriétaire et recommander sont gratuits. E-Dome ne prend rien sur une vente ou une location. Seule exception : quand un vendeur accepte un contact présenté par un apporteur, E-Dome retient 12 % de la prime (3 CHF au minimum).</>,
+        a: <>Oui. Publier un bien, chercher, contacter un propriétaire et recommander sont gratuits. E-Dome ne prend rien sur le prix de vente. Seule rémunération : 12 % de la commission d&apos;apport (3 CHF au minimum), et seulement si une commission est effectivement due à un apporteur.</>,
       },
       {
         q: "Comment créer un compte ?",
-        a: <>Cliquez sur « Créer un compte » : e-mail et mot de passe, ou votre compte Google. Selon les réglages, un e-mail de confirmation peut vous être envoyé — ouvrez le lien pour activer votre compte.</>,
+        a: <>Cliquez sur « Créer un compte » : prénom, nom, e-mail et mot de passe. Si une confirmation est demandée, ouvrez le lien reçu par e-mail pour activer votre compte.</>,
       },
     ],
   },
   {
-    title: "Publier et recevoir des demandes",
+    title: "Publier et vendre",
     items: [
       {
         q: "Comment publier un bien ?",
-        a: <>« Publier un bien » : le bien, les photos, l&apos;annonce, la prime (facultative), puis l&apos;attestation. L&apos;annonce est en ligne immédiatement, sans délai d&apos;examen.</>,
+        a: <>« Publier un bien » : le bien, les photos et la vidéo, l&apos;annonce, la commission pour les apporteurs (facultative), puis l&apos;attestation. L&apos;annonce est en ligne immédiatement.</>,
       },
       {
-        q: "Combien de photos puis-je ajouter ?",
-        a: <>Jusqu&apos;à 15 (JPEG, PNG ou WebP). Elles sont redimensionnées automatiquement avant l&apos;envoi. La première sert de couverture ; vous pouvez en choisir une autre.</>,
+        q: "Combien de photos et de vidéos ?",
+        a: <>Jusqu&apos;à 15 photos (JPEG, PNG ou WebP), redimensionnées automatiquement, et une vidéo de visite (MP4 ou MOV, 50 Mo au plus). La vidéo passe en grand en haut de l&apos;annonce.</>,
       },
       {
-        q: "Où arrivent les messages des intéressés ?",
-        a: <>Dans « Demandes » : les contacts, les demandes de visite et les mises en relation des apporteurs, au même endroit. Pour chaque demande : le message, les coordonnées, l&apos;avancement et un historique horodaté.</>,
+        q: "Où arrivent les demandes ?",
+        a: <>Dans « Demandes », avec le message, les coordonnées et, si la personne vient du lien d&apos;un apporteur, la mention « Apporté par… ». Une alerte s&apos;affiche aussi en direct sur toutes les pages ; vous pouvez activer les notifications du navigateur depuis « Demandes ».</>,
+      },
+      {
+        q: "Comment suivre une vente jusqu'à l'acte ?",
+        a: <>Dans chaque demande : faites avancer l&apos;étape (échange, visite, offre), notez les offres reçues (montant, financement, conditions), acceptez, refusez ou contre-proposez, puis cochez les étapes jusqu&apos;à l&apos;acte authentique chez le notaire. À la vente, indiquez le prix final : la commission de l&apos;apporteur est calculée automatiquement.</>,
       },
       {
         q: "Puis-je modifier ou retirer une annonce ?",
-        a: <>Oui, depuis « Mes biens ». Retirer une annonce la supprime avec ses photos. Une annonce pour laquelle vous avez accepté une mise en relation est toutefois conservée : c&apos;est la preuve de la prime due. Écrivez-nous pour la clore.</>,
+        a: <>Oui, depuis « Mes biens ». Une annonce liée à une commission déjà due est conservée comme preuve : écrivez-nous pour la clore.</>,
       },
     ],
   },
   {
-    title: "La prime et les apporteurs",
+    title: "La commission et les apporteurs",
     items: [
       {
-        q: "Qu'est-ce que la prime ?",
-        a: <>Un montant fixe en francs (de {PRIME_MIN_CHF} à {formatNumber(PRIME_MAX_CHF)} CHF), que le vendeur offre à qui lui présente le bon acheteur ou locataire. Jamais un pourcentage du prix. Exemple : sur une prime de {EX} CHF, l&apos;apporteur reçoit {formatNumber(apporteurNetChf(EX))} CHF.</>,
+        q: "Qu'est-ce que la commission d'apport ?",
+        a: <>Un montant que le vendeur promet à qui lui amène l&apos;acheteur ou le locataire : soit un montant fixe, soit un pourcentage du prix de vente (0,1 % à 3 %). Exemple : une vente à {formatNumber(EX_PRICE)} CHF avec 1 % donne {formatNumber(EX_GROSS)} CHF de commission ; l&apos;apporteur reçoit {formatNumber(apporteurNetChf(EX_GROSS))} CHF, E-Dome {formatNumber(EX_GROSS - apporteurNetChf(EX_GROSS))} CHF.</>,
       },
       {
-        q: "Quand la prime est-elle due ?",
-        a: <>Dès que le vendeur accepte le contact présenté. Elle ne dépend pas de la vente ni de la signature d&apos;un bail. S&apos;il refuse, rien n&apos;est dû.</>,
+        q: "Quand est-elle due ?",
+        a: <>Par défaut, quand la vente ou le bail est conclu grâce à la personne amenée (courtage d&apos;indication, art. 412 ss CO). Pour un montant fixe, le vendeur peut choisir qu&apos;elle soit due dès qu&apos;il accepte le contact ; c&apos;est alors indiqué sur l&apos;annonce.</>,
       },
       {
-        q: "Comment la prime est-elle versée ?",
-        a: <>Le versement intégré, par un prestataire de paiement agréé, est en cours de mise en place. Aujourd&apos;hui, une prime acceptée est enregistrée et horodatée dans vos comptes respectifs ; son règlement se fait encore hors de la plateforme. E-Dome ne détient jamais les fonds de la transaction.</>,
+        q: "Comment le contact est-il attribué à l'apporteur ?",
+        a: <>Par son lien personnel. Toute personne qui l&apos;ouvre puis écrit au vendeur dans les 60 jours lui est attribuée, et les conditions de la commission sont figées à ce moment-là.</>,
+      },
+      {
+        q: "Comment la commission est-elle versée ?",
+        a: <>Directement par le vendeur à l&apos;apporteur, par TWINT ou virement. À la vente, un règlement est créé automatiquement dans « Règlements » : le vendeur déclare le paiement, l&apos;apporteur le confirme. E-Dome ne détient jamais les fonds.</>,
       },
       {
         q: "Qui peut être apporteur ?",
-        a: <>Toute personne majeure résidant en Suisse, hors Tessin (où l&apos;activité est réglementée). Aucune formation immobilière n&apos;est nécessaire : vous présentez quelqu&apos;un, vous ne négociez rien et ne représentez personne.</>,
-      },
-      {
-        q: "Comment présenter un contact ?",
-        a: <>Dans « Gagner », choisissez un bien à prime, puis « Présenter un contact » : le besoin de la personne, ses coordonnées, et la confirmation qu&apos;elle vous a autorisé à les transmettre.</>,
+        a: <>Toute personne majeure résidant en Suisse, hors Tessin (où le courtage immobilier est soumis à autorisation). Aucune formation n&apos;est nécessaire : vous signalez une occasion, vous ne négociez rien et ne représentez personne.</>,
       },
     ],
   },
@@ -81,11 +86,15 @@ const SECTIONS: { title: string; items: { q: string; a: React.ReactNode }[] }[] 
     items: [
       {
         q: "Qui voit mes coordonnées ?",
-        a: <>Quand vous écrivez à propos d&apos;un bien, seul son propriétaire les reçoit. Pour une mise en relation, le vendeur voit d&apos;abord le besoin, sans nom ; les coordonnées ne lui sont transmises que s&apos;il accepte.</>,
+        a: <>Quand vous écrivez à propos d&apos;un bien, seul son propriétaire les reçoit. L&apos;apporteur dont vous avez suivi le lien voit seulement l&apos;étape de la demande et sa commission, jamais votre nom ni vos coordonnées.</>,
+      },
+      {
+        q: "Les visites sont-elles suivies ?",
+        a: <>Oui, de façon anonyme : un identifiant aléatoire (jamais l&apos;adresse IP) compte les visites et rattache un contact au lien d&apos;un apporteur. Détails dans la <Link href="/confidentialite" className="text-leman underline underline-offset-2">politique de confidentialité</Link>.</>,
       },
       {
         q: "Comment supprimer mon compte ?",
-        a: <>Écrivez-nous depuis la page <Link href="/contact" className="text-leman underline underline-offset-2">Contact</Link> : nous supprimons votre compte et vos données, sous réserve de ce que la loi nous oblige à conserver. Détails dans la <Link href="/confidentialite" className="text-leman underline underline-offset-2">politique de confidentialité</Link>.</>,
+        a: <>Écrivez-nous depuis la page <Link href="/contact" className="text-leman underline underline-offset-2">Contact</Link> : nous supprimons votre compte et vos données, sous réserve de ce que la loi nous oblige à conserver.</>,
       },
     ],
   },

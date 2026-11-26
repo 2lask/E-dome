@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Copy, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { answerPayment, declarePaid, getPayeeDetails } from "@/lib/supabase/settlement-actions";
+import { answerPayment, declarePaid, getEdomePayment, getPayeeDetails } from "@/lib/supabase/settlement-actions";
 import { METHOD_LABEL, STATUS_LABEL, type PayMethod, type PayoutProfile, type Settlement } from "@/lib/reglements";
 import { formatNumber } from "@/lib/format";
 import { frDay } from "@/lib/my-property";
@@ -12,8 +12,16 @@ import { cn } from "@/lib/utils";
 
 /* ── Une ligne de règlement ──────────────────────────────────────────────────
    Payeur : voir où verser (IBAN / TWINT de l'apporteur), puis « J'ai payé ».
-   Apporteur : « Reçu » ou « Problème ». Le montant affiché est TOUJOURS le
-   net à verser : la part E-Dome n'est pas ajoutée au prix. */
+   Apporteur : « Reçu » ou « Problème ». Le montant en grand est le net dû à
+   l'apporteur ; la part E-Dome (12 %, comprise dans la commission promise)
+   est indiquée à part, avec les coordonnées d'E-Dome si elles sont
+   configurées (EDOME_PAYOUT_IBAN, EDOME_PAYOUT_HOLDER). */
+
+const SOURCE_LABEL: Record<string, string> = {
+  vente: "vente conclue",
+  introduction: "mise en relation acceptée",
+  answer: "récompense acceptée",
+};
 
 function CopyLine({ label, value }: { label: string; value: string }) {
   const [done, setDone] = useState(false);
@@ -31,6 +39,7 @@ function CopyLine({ label, value }: { label: string; value: string }) {
 export function SettlementCard({ s }: { s: Settlement }) {
   const router = useRouter();
   const [details, setDetails] = useState<PayoutProfile | null | undefined>(undefined);
+  const [edome, setEdome] = useState<{ iban: string; holder: string } | null>(null);
   const [method, setMethod] = useState<PayMethod>("twint");
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -47,9 +56,10 @@ export function SettlementCard({ s }: { s: Settlement }) {
 
   const showDetails = () =>
     startTransition(async () => {
-      const res = await getPayeeDetails(s.id);
+      const [res, ed] = await Promise.all([getPayeeDetails(s.id), getEdomePayment()]);
       if (!res.ok) { setError(res.error); return; }
       setDetails(res.details);
+      setEdome(ed);
       if (res.details && !res.details.twintPhone) setMethod("virement");
     });
 
@@ -59,7 +69,7 @@ export function SettlementCard({ s }: { s: Settlement }) {
         <div className="min-w-0">
           <p className="text-[14px] font-semibold">
             {s.role === "payer" ? `À ${s.counterpartName}` : `De ${s.counterpartName}`}
-            <span className="ml-2 font-normal text-muted-foreground">· {s.sourceKind === "introduction" ? "prime" : "récompense"} acceptée le {frDay(s.createdAt)}</span>
+            <span className="ml-2 font-normal text-muted-foreground">· {SOURCE_LABEL[s.sourceKind] ?? "commission due"} le {frDay(s.createdAt)}</span>
           </p>
           {s.label && <p className="mt-0.5 line-clamp-1 text-[13px] text-muted-foreground">{s.label}</p>}
         </div>
@@ -85,6 +95,19 @@ export function SettlementCard({ s }: { s: Settlement }) {
               {details.twintPhone && <CopyLine label="TWINT" value={details.twintPhone} />}
               {details.iban && <CopyLine label="IBAN" value={details.iban} />}
               {details.holderName && <p className="text-[12.5px] text-muted-foreground">Titulaire : {details.holderName} · Communication : « E-Dome {s.id.slice(0, 8)} »</p>}
+            </div>
+          )}
+          {details !== undefined && s.feeChf > 0 && (
+            <div className="space-y-2 rounded-xl border border-dashed p-3">
+              <p className="text-[13px]"><span className="font-semibold">Part E-Dome : {formatNumber(s.feeChf)} CHF</span> <span className="text-muted-foreground">(12 % de la commission de {formatNumber(s.grossChf)} CHF, déjà comprise dans le montant promis)</span></p>
+              {edome ? (
+                <>
+                  <CopyLine label="IBAN E-Dome" value={edome.iban} />
+                  <p className="text-[12.5px] text-muted-foreground">Titulaire : {edome.holder} · Communication : « Part E-Dome {s.id.slice(0, 8)} »</p>
+                </>
+              ) : (
+                <p className="text-[12.5px] text-muted-foreground">E-Dome vous envoie sa facture par e-mail avec ses coordonnées de paiement.</p>
+              )}
             </div>
           )}
           <div className="flex flex-wrap items-center gap-2">

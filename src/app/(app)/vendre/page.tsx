@@ -1,120 +1,92 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, RefreshCw } from "lucide-react";
-import { sellPage } from "@/content/offer";
+import { ArrowRight, Camera, Coins, FileSignature, Gavel, Link2, LineChart } from "lucide-react";
 import { PlatformRules } from "@/components/legal/platform-rules";
 
-/* ── `/vendre` — le cœur de la démonstration côté vendeur ────────────────────
+export const metadata: Metadata = {
+  title: "Vendre son bien",
+  description: "Vendez sans agence : annonce avec photos et vidéo, commission d'apport facultative, leads suivis en temps réel, offres et étapes jusqu'à l'acte.",
+};
 
-   Deux routes qui s'excluent (seul / accompagné) en deux cartes portant les
-   MÊMES SIX LIGNES dans le même ordre, pour que l'œil compare des lignes
-   alignées. « À la carte » n'est pas une troisième carte mais un bloc rattaché,
-   parce qu'il ne s'oppose pas aux deux autres. Voir l'en-tête de `offer.ts`.
+/* ── /vendre — le parcours du vendeur, tel qu'il existe ──────────────────────
+   Six étapes réelles (toutes livrées), puis ce qu'E-Dome fait et ne fait pas.
+   Remplace l'ancienne page « seul / accompagné » : la route accompagnée par
+   une agence n'existe pas au lancement, et ses règles 3 et 4 décrivaient
+   l'ancien modèle. Les quatre règles affichées viennent de `PLATFORM_RULES`,
+   la même source que les conditions. */
 
-   Le point contre-intuitif reçoit le plus gros caractère de l'écran :
-   « 0 CHF à E-Dome », des deux côtés. Le pied porte les QUATRE règles, jamais
-   la seule règle 3 — le composant ne sait pas en montrer moins. */
-
-const LINE_ORDER = ["you", "sale", "visits", "toEdome", "toThird", "idealFor"] as const;
+const STEPS = [
+  { icon: Camera, t: "Publiez en cinq minutes", d: "Photos, vidéo de visite, informations clés. L'annonce est en ligne aussitôt, pensée pour le téléphone." },
+  { icon: Coins, t: "Proposez une commission (facultatif)", d: "Montant fixe ou % du prix de vente, fixé par vous. Sans vente grâce à un apporteur, rien n'est dû." },
+  { icon: Link2, t: "Le réseau recommande", d: "Chacun prend son lien personnel et partage votre bien. Vous aussi : bouton Partager et kit de diffusion." },
+  { icon: LineChart, t: "Suivez tout en direct", d: "Vues, visiteurs, leads, d'où ils viennent : le tableau de bord bouge à l'instant, une alerte signale chaque lead." },
+  { icon: Gavel, t: "Négociez avec méthode", d: "Notez les offres, comparez-les à votre prix, acceptez ou contre-proposez ; le copilote les analyse avec vous." },
+  { icon: FileSignature, t: "Jusqu'à l'acte", d: "Financement confirmé, projet d'acte du notaire, signature : à la vente, la commission se calcule sur le prix final." },
+];
 
 export default function VendrePage() {
-  const s = sellPage;
-
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:py-8">
-      <header className="mb-5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
-          {s.eyebrow}
-        </p>
-        <h1 className="mt-1 text-xl font-bold leading-tight text-[var(--foreground)] sm:text-2xl">
-          {s.title}
-        </h1>
-        <p className="mt-1.5 text-sm leading-snug text-[var(--text-muted)]">{s.subtitle}</p>
+    <div className="mx-auto max-w-5xl">
+      <header className="cine relative overflow-hidden rounded-3xl border border-white/10 px-6 py-10 md:px-10 md:py-12">
+        <div aria-hidden className="cine-aurora" />
+        <div aria-hidden className="cine-grid" />
+        <div className="relative max-w-3xl">
+          <p className="text-[12.5px] font-medium uppercase tracking-[0.18em] text-[#e3b85c]">Vendre son bien</p>
+          <h1 className="mt-3 text-[36px] font-semibold leading-[1.05] tracking-[-0.035em] sm:text-[48px]">
+            Vendez sans agence, <span className="cine-gold">avec tout un réseau derrière vous.</span>
+          </h1>
+          <p className="mt-4 text-[16px] leading-relaxed text-white/70">
+            Publication gratuite, aucun pourcentage sur votre prix. Vous gardez la main sur chaque visite et chaque
+            offre ; le réseau d&apos;apporteurs vous amène des acheteurs.
+          </p>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link href="/auth/inscription?redirect=/publier" className="cine-btn-light inline-flex h-12 items-center rounded-xl px-6 text-[15px] font-semibold">
+              Publier mon bien — gratuit
+            </Link>
+            <Link href="/tarifs" className="inline-flex h-12 items-center gap-2 rounded-xl border border-white/20 px-6 text-[15px] font-semibold text-white/90 hover:bg-white/5">
+              Voir les tarifs <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
+        </div>
       </header>
 
-      {/* Les deux cartes, alignées ligne à ligne */}
-      <div data-tour="sell-routes" className="grid gap-3 md:grid-cols-2">
-        {s.routes.map((route) => (
-          <section
-            key={route.id}
-            className="flex flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4"
-          >
-            <div className="mb-1 flex items-baseline justify-between gap-2">
-              <h2 className="text-base font-bold text-[var(--foreground)]">{route.label}</h2>
+      <section aria-label="Le parcours" className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {STEPS.map((s, i) => (
+          <div key={s.t} className="rounded-2xl border bg-card p-5">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-leman-soft text-leman"><s.icon className="h-[18px] w-[18px]" aria-hidden /></span>
+              <span className="font-mono text-[12px] text-muted-foreground">0{i + 1}</span>
             </div>
-            <p className="mb-3 text-[12.5px] leading-snug text-[var(--text-muted)]">{route.tagline}</p>
-
-            {/* Le point contre-intuitif, le plus gros de la carte */}
-            <p className="mb-3 leading-none">
-              <span className="text-2xl font-extrabold tracking-tight text-[var(--primary)] sm:text-3xl">
-                {s.headline}
-              </span>
-            </p>
-
-            {/* Les six lignes, dans l'ordre, mêmes libellés que l'autre carte */}
-            <dl className="flex-1 divide-y divide-[var(--card-border)]">
-              {LINE_ORDER.map((key) => (
-                <div key={key} className="grid grid-cols-[7.5rem_1fr] gap-2 py-2">
-                  <dt className="text-[11.5px] font-medium text-[var(--text-muted)]">
-                    {s.lineLabels[key]}
-                  </dt>
-                  <dd
-                    className={
-                      "text-[12.5px] leading-snug " +
-                      (key === "toEdome"
-                        ? "font-semibold text-[var(--foreground)]"
-                        : "text-[var(--foreground)]")
-                    }
-                  >
-                    {route.lines[key]}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-
-            <Link
-              href={route.ctaHref}
-              className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--foreground)] px-4 py-2.5 text-[13.5px] font-medium text-[var(--background)] transition-opacity hover:opacity-90"
-            >
-              {route.cta}
-              <ArrowRight size={15} aria-hidden />
-            </Link>
-          </section>
+            <h2 className="mt-4 text-[15.5px] font-semibold">{s.t}</h2>
+            <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">{s.d}</p>
+          </div>
         ))}
-      </div>
-
-      {/* Vous pouvez changer d'avis — la phrase sans laquelle personne ne clique */}
-      <p className="mt-3 flex items-start gap-2 rounded-xl border border-[var(--card-border)] bg-[var(--card)] px-3.5 py-2.5 text-[12.5px] leading-snug text-[var(--text-muted)]">
-        <RefreshCw size={15} className="mt-0.5 shrink-0 text-[var(--primary)]" aria-hidden />
-        <span>{s.reassurance}</span>
-      </p>
-
-      {/* À la carte : bloc rattaché, pas une troisième carte */}
-      <section className="mt-3 flex flex-col gap-2 rounded-xl border border-dashed border-[var(--card-border)] px-4 py-3 sm:flex-row sm:items-center">
-        <div className="flex-1">
-          <h2 className="flex items-center gap-1.5 text-[13.5px] font-semibold text-[var(--foreground)]">
-            <Check size={15} className="text-[var(--primary)]" aria-hidden />
-            {s.alaCarte.title}
-          </h2>
-          <p className="mt-0.5 text-[12.5px] leading-snug text-[var(--text-muted)]">{s.alaCarte.body}</p>
-        </div>
-        <Link
-          href={s.alaCarte.ctaHref}
-          className="inline-flex shrink-0 items-center gap-1 self-start rounded-lg border border-[var(--card-border)] px-3 py-2 text-[12.5px] font-medium text-[var(--foreground)] transition-colors hover:border-[var(--primary)]/40 sm:self-auto"
-        >
-          {s.alaCarte.cta}
-          <ArrowRight size={14} aria-hidden />
-        </Link>
       </section>
 
-      {/* Les quatre règles, ensemble */}
-      <section className="mt-6">
-        <h2 className="text-sm font-semibold text-[var(--foreground)]">{s.rulesTitle}</h2>
-        <p className="mt-1 mb-3 max-w-2xl text-[12.5px] leading-snug text-[var(--text-muted)]">
-          {s.rulesIntro}
-        </p>
-        <PlatformRules variant="full" />
+      <section className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="rounded-2xl border border-laiton-border bg-gradient-to-br from-laiton-soft via-laiton-soft/40 to-card p-6">
+          <p className="text-[15px] font-semibold">Ce que vous payez</p>
+          <p className="mt-2 text-[13.5px] leading-relaxed text-muted-foreground">
+            Rien pour publier. Si un apporteur vous amène l&apos;acheteur, vous versez la commission que vous avez fixée :
+            88 % à l&apos;apporteur, 12 % à E-Dome, comprise dans le montant promis. Sans apporteur, E-Dome ne touche rien.
+          </p>
+          <Link href="/tarifs" className="mt-3 inline-flex items-center gap-1 text-[13.5px] font-medium text-leman hover:underline">Exemple chiffré <ArrowRight className="h-3.5 w-3.5" aria-hidden /></Link>
+        </div>
+        <div className="rounded-2xl border bg-card p-6">
+          <p className="text-[15px] font-semibold">Ce que vous gardez en main</p>
+          <p className="mt-2 text-[13.5px] leading-relaxed text-muted-foreground">
+            Le prix, les visites, le choix de l&apos;acheteur et la négociation. La vente se signe chez le notaire, par acte
+            authentique (art. 216 CO) ; E-Dome vous guide jusque-là et vous rappelle les documents à réunir.
+          </p>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-[20px] font-semibold tracking-[-0.02em]">Ce qu&apos;E-Dome ne fait jamais</h2>
+        <p className="mt-1 max-w-3xl text-[13.5px] text-muted-foreground">Quatre règles, reprises telles quelles dans les conditions d&apos;utilisation.</p>
+        <div className="mt-4">
+          <PlatformRules variant="full" />
+        </div>
       </section>
     </div>
   );
