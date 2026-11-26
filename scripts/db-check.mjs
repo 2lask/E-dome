@@ -26,6 +26,7 @@ const CHECKS = [
   ["009", "Apport v2 (liens tracés, suivi temps réel)", ["apport_links", "property_events"]],
   ["010", "Parcours de vente (offres, étapes jusqu'à l'acte)", ["deal_offers", "deal_steps"]],
   ["011", "Sources du trafic (WhatsApp, QR code, e-mail…)", ["property_events:source"]],
+  ["012", "Messages vendeur ↔ apporteur", ["link_messages"]],
 ];
 
 /* « table » ou « table:colonne » (colonne ajoutée par une migration). */

@@ -49,6 +49,8 @@ export function AuthForm({ mode }: AuthFormProps) {
   const rawRedirect = searchParams.get("redirect") ?? "/";
   const redirect = /^\/(?!\/)/.test(rawRedirect) ? rawRedirect : "/";
   const keep = redirect !== "/" ? `?redirect=${encodeURIComponent(redirect)}` : "";
+  /* Un nouveau membre sans destination précise passe par l'accueil. */
+  const afterSignup = redirect === "/" ? "/bienvenue" : redirect;
   const supabase = createClient();
   const configured = isSupabaseConfigured();
 
@@ -89,12 +91,12 @@ export function AuthForm({ mode }: AuthFormProps) {
         password,
         options: {
           data: { firstName: firstName.trim(), lastName: lastName.trim() },
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(afterSignup)}`,
         },
       });
       if (err) throw err;
       if (data.session) {
-        router.push(redirect);
+        router.push(afterSignup);
         router.refresh();
       } else {
         setSentTo(email);

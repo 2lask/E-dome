@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import { ShareKit } from "@/components/share/share-kit";
 import { withSource } from "@/lib/tracking";
+import { PayoutForm } from "@/components/reglements/payout-form";
+import type { PayoutProfile } from "@/lib/reglements";
 import { Button } from "@/components/ui/button";
 import { GlowCard, AnimatedNumber } from "@/components/dashboard/glow-card";
 import { getOrCreateMyLink } from "@/lib/supabase/apport-actions";
@@ -24,7 +26,7 @@ import { track } from "@/components/listing/track";
 
 type LinkStat = ApporteurStats["links"][number];
 
-export function ApporteurHub({ offers, stats }: { offers: PrimedProperty[]; stats: ApporteurStats | null }) {
+export function ApporteurHub({ offers, stats, payout = null }: { offers: PrimedProperty[]; stats: ApporteurStats | null; payout?: PayoutProfile | null }) {
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<"tous" | "vente" | "location">("tous");
   const byProperty = useMemo(() => new Map((stats?.links ?? []).map((l) => [l.propertyId, l])), [stats]);
@@ -63,6 +65,8 @@ export function ApporteurHub({ offers, stats }: { offers: PrimedProperty[]; stat
           </div>
         </div>
       </header>
+
+      {!(payout?.iban || payout?.twintPhone) && <PayoutBanner payout={payout} />}
 
       <section aria-label="Mes chiffres sur 30 jours" className="mt-7 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <Stat icon={MousePointerClick} label="Clics sur mes liens" value={stats?.clicks ?? 0} sub={`${formatNumber(stats?.visitors ?? 0)} personnes`} />
@@ -141,6 +145,27 @@ export function ApporteurHub({ offers, stats }: { offers: PrimedProperty[]; stat
         ))}
       </section>
     </div>
+  );
+}
+
+/* Sans TWINT ni IBAN, un vendeur ne peut pas payer l'apporteur : on le dit
+   en tête, avec le formulaire sur place. */
+function PayoutBanner({ payout }: { payout: PayoutProfile | null }) {
+  const [open, setOpen] = useState(false);
+  const [done, setDone] = useState(false);
+  if (done) return null;
+  return (
+    <section aria-label="Coordonnées de paiement" className="mt-5 rounded-2xl border border-laiton-border bg-gradient-to-br from-laiton-soft via-laiton-soft/40 to-card p-5">
+      <div className="flex flex-wrap items-center gap-4">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-card/60 text-laiton"><Coins className="h-5 w-5" aria-hidden /></span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[15px] font-semibold">Une étape pour être payé</p>
+          <p className="text-[13px] leading-relaxed text-muted-foreground">Ajoutez votre TWINT ou votre IBAN : le vendeur vous paie directement à la vente, E-Dome ne touche jamais l&apos;argent.</p>
+        </div>
+        {!open && <Button size="sm" variant="prime" onClick={() => setOpen(true)}>Ajouter maintenant</Button>}
+      </div>
+      {open && <div className="mt-4 max-w-2xl"><PayoutForm initial={payout} onSaved={() => setDone(true)} submitLabel="Enregistrer mes coordonnées" /></div>}
+    </section>
   );
 }
 
@@ -232,6 +257,7 @@ function OfferCard({ offer: o, link }: { offer: PrimedProperty; link?: LinkStat 
             <span className="inline-flex items-center gap-1"><Eye className="h-3.5 w-3.5" aria-hidden />{link.clicks} clics</span>
             <span className="inline-flex items-center gap-1"><Inbox className="h-3.5 w-3.5" aria-hidden />{link.leads} leads</span>
             {link.sales > 0 && <span className="inline-flex items-center gap-1 text-leman"><Handshake className="h-3.5 w-3.5" aria-hidden />{link.sales} vente{link.sales > 1 ? "s" : ""}</span>}
+            <Link href={`/messages?l=${link.linkId}`} className="ml-auto inline-flex items-center gap-1 font-medium text-leman hover:underline"><MessageCircle className="h-3.5 w-3.5" aria-hidden />Écrire</Link>
           </p>
         )}
 

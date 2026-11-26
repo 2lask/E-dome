@@ -12,7 +12,10 @@ export type Notice =
   | { kind: "decision-proposition"; searchTitle: string; accepted: boolean; netChf: number }
   /* Équipe E-Dome : une demande de déménagement à transmettre (conciergerie). */
   | { kind: "demenagement"; services: string[]; fromCity: string; moveDate: string | null }
-  | { kind: "paiement-declare"; netChf: number };
+  | { kind: "paiement-declare"; netChf: number }
+  /* Message entre vendeur et apporteur, sur un lien : le contenu n'est PAS
+     recopié dans l'e-mail (il reste sur E-Dome). */
+  | { kind: "message"; propertyTitle: string };
 
 export interface Email {
   subject: string;
@@ -73,6 +76,11 @@ export function buildEmail(n: Notice, siteUrl: string): Email {
       subject = `Paiement de ${chf(n.netChf)} CHF à confirmer`;
       lines = [`On vous annonce un versement de ${chf(n.netChf)} CHF.`, "Confirmez quand vous l'avez reçu, ou signalez un problème."];
       cta = "Confirmer la réception"; path = "/reglements";
+      break;
+    case "message":
+      subject = `Nouveau message · ${short(n.propertyTitle)}`;
+      lines = [`Vous avez reçu un message à propos de « ${n.propertyTitle} ».`, "Répondez depuis E-Dome : la conversation reste entre vous deux."];
+      cta = "Lire le message"; path = "/messages";
       break;
     case "demenagement":
       subject = `Déménagement à transmettre · ${short(n.fromCity, 40)}`;

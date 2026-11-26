@@ -95,6 +95,31 @@ try {
   await ap.screenshot({ path: `${out}/real-kit-partage.png` });
   await ap.keyboard.press("Escape");
 
+  /* Accueil d'un nouveau membre : intention, règles de l'apporteur, paiement. */
+  await ap.goto(`${APP}/bienvenue`);
+  await ap.getByRole("button", { name: /Recommander et toucher des commissions/ }).click();
+  await ap.getByRole("button", { name: "Continuer" }).click();
+  const welcomeOk = await ap.getByText("Où recevoir vos commissions ?").isVisible({ timeout: 10000 }).catch(() => false);
+  check("accueil : étape « être payé » pour un apporteur", welcomeOk);
+  await ap.screenshot({ path: `${out}/real-bienvenue.png`, fullPage: true });
+
+  /* Messages vendeur ↔ apporteur (migration 012). */
+  const lm = await rest("link_messages?select=id&limit=0");
+  if (lm.status === 200) {
+    const { data: lk } = await rest(`apport_links?code=eq.${code}&select=id`);
+    const linkId = lk?.[0]?.id;
+    await ap.goto(`${APP}/messages?l=${linkId}`);
+    await ap.getByPlaceholder("Écrire un message…").fill("Bonjour, des visites sont-elles possibles samedi ?");
+    await ap.getByRole("button", { name: "Envoyer" }).click();
+    await ap.getByText("Bonjour, des visites sont-elles possibles samedi ?").first().waitFor({ timeout: 10000 });
+    const sm = await sctx.newPage();
+    await sm.goto(`${APP}/messages`);
+    const sellerSees = await sm.getByText("Bonjour, des visites sont-elles possibles samedi ?").first().isVisible({ timeout: 10000 }).catch(() => false);
+    check("message de l'apporteur reçu par le vendeur", sellerSees);
+    await sm.screenshot({ path: `${out}/real-messages.png` });
+    await sm.close();
+  } else console.log("—      messages : migration 012 non appliquée, contrôle ignoré");
+
   /* 3. Un visiteur arrive par le lien et écrit au vendeur. */
   const vctx = await browser.newContext({ viewport: { width: 1360, height: 950 } });
   const vp = await vctx.newPage();

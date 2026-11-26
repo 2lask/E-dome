@@ -171,7 +171,7 @@ export interface ApporteurStats {
   commissionsEarned: number;
   commissionsPending: number;
   series: DayPoint[];
-  links: { propertyId: string; title: string; cover: string; code: string; clicks: number; leads: number; sales: number; earned: number }[];
+  links: { linkId: string; propertyId: string; title: string; cover: string; code: string; clicks: number; leads: number; sales: number; earned: number }[];
   /** Mes leads, sans aucune donnée de l'acheteur : bien, étape, gain (net, estimé si pas encore vendu). */
   leadList: { id: string; propertyId: string; title: string; cover: string; status: string; createdAt: string; netChf: number; final: boolean }[];
   sources: SourceStat[] | null;
@@ -219,6 +219,7 @@ export function computeApporteur(
     links: links.map((l) => {
       const s = leads.filter((x) => x.property_id === l.property.id);
       return {
+        linkId: l.id,
         propertyId: l.property.id,
         title: l.property.title,
         cover: l.property.cover,

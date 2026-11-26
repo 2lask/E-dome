@@ -8,7 +8,7 @@ import { saveMyPayout } from "@/lib/supabase/settlement-actions";
 import { isValidIban, normalizeSwissMobile, type PayoutProfile } from "@/lib/reglements";
 
 /* Mes coordonnées pour être payé : remises uniquement à qui me doit une prime. */
-export function PayoutForm({ initial }: { initial: PayoutProfile | null }) {
+export function PayoutForm({ initial, onSaved, submitLabel = "Enregistrer" }: { initial: PayoutProfile | null; onSaved?: () => void; submitLabel?: string }) {
   const router = useRouter();
   const [holderName, setHolderName] = useState(initial?.holderName ?? "");
   const [iban, setIban] = useState(initial?.iban ?? "");
@@ -24,7 +24,7 @@ export function PayoutForm({ initial }: { initial: PayoutProfile | null }) {
     startTransition(async () => {
       const res = await saveMyPayout({ holderName, iban, twintPhone });
       setMsg(res.ok ? { ok: true, text: "Enregistré." } : { ok: false, text: res.error });
-      if (res.ok) router.refresh();
+      if (res.ok) { router.refresh(); onSaved?.(); }
     });
   };
 
@@ -43,9 +43,9 @@ export function PayoutForm({ initial }: { initial: PayoutProfile | null }) {
         <Input value={iban} onChange={(e) => setIban(e.target.value)} placeholder="CH93 0076 2011 6238 5295 7" maxLength={42} className="font-mono" aria-invalid={ibanBad} />
         {ibanBad && <span className="mt-1 block text-[12px] text-[var(--danger-text)]">IBAN invalide : vérifiez les chiffres.</span>}
       </label>
-      <p className="text-[12px] text-muted-foreground">Visibles seulement par une personne qui vous doit une prime ou une récompense acceptée, le temps du paiement.</p>
+      <p className="text-[12px] text-muted-foreground">Un seul des deux suffit. Visibles seulement par un vendeur qui vous doit une commission, le temps du paiement.</p>
       {msg && <p role={msg.ok ? "status" : "alert"} className={msg.ok ? "text-[13px] text-leman" : "text-[13px] text-[var(--danger-text)]"}>{msg.text}</p>}
-      <Button type="submit" size="sm" variant="accent" disabled={isPending}>Enregistrer</Button>
+      <Button type="submit" size="sm" variant="accent" disabled={isPending}>{submitLabel}</Button>
     </form>
   );
 }

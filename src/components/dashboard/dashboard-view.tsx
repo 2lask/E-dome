@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, Inbox, Handshake, Coins, Share2, PlayCircle, Link2, Copy, Check, Plus, Megaphone, QrCode } from "lucide-react";
+import { Eye, Inbox, Handshake, Coins, Share2, PlayCircle, Link2, Copy, Check, Plus, Megaphone, QrCode, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlowCard, AnimatedNumber } from "./glow-card";
 import { TrendChart } from "./trend-chart";
@@ -243,7 +243,14 @@ function ApporteurPanel({ a, titles, linkIds }: { a: NonNullable<Dashboard["appo
                 <td className="py-2 text-right tabular-nums">{l.leads}</td>
                 <td className="py-2 text-right tabular-nums">{l.sales}</td>
                 <td className="py-2 text-right tabular-nums text-laiton">{chf(l.earned)}</td>
-                <td className="py-2 pl-3 text-right"><CopyLink path={`/explorer/${l.propertyId}?ref=${l.code}`} /></td>
+                <td className="py-2 pl-3 text-right">
+                  <span className="inline-flex gap-1.5">
+                    <Link href={`/messages?l=${l.linkId}`} className="inline-flex h-7 items-center gap-1 rounded-md border px-2 text-[12px] hover:border-foreground/25" title="Écrire au propriétaire">
+                      <MessageSquare className="h-3.5 w-3.5" aria-hidden />Écrire
+                    </Link>
+                    <CopyLink path={`/explorer/${l.propertyId}?ref=${l.code}`} />
+                  </span>
+                </td>
               </tr>
             ))}</tbody>
           </table>

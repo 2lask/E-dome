@@ -2,6 +2,7 @@ import React from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { countMyPendingDemandes } from "@/lib/supabase/demande-actions";
+import { countUnreadLinkMessages } from "@/lib/supabase/link-message-actions";
 
 /* ── Layout du groupe (app) — SERVER COMPONENT ───────────────────────────────
 
@@ -15,9 +16,9 @@ import { countMyPendingDemandes } from "@/lib/supabase/demande-actions";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const currentUser = await getCurrentUser();
-  const demandes = currentUser ? await countMyPendingDemandes() : 0;
+  const [demandes, messages] = currentUser ? await Promise.all([countMyPendingDemandes(), countUnreadLinkMessages()]) : [0, 0];
   return (
-    <AppShell currentUser={currentUser} counts={{ demandes }}>
+    <AppShell currentUser={currentUser} counts={{ demandes, messages }}>
       {children}
     </AppShell>
   );

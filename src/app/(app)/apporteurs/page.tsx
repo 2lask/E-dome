@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { listPrimedProperties } from "@/lib/supabase/introduction-actions";
 import { getDashboard } from "@/lib/supabase/dashboard-actions";
+import { getMyPayout } from "@/lib/supabase/settlement-actions";
 import { ApporteurHub } from "@/components/business/apporteur-hub";
 import { GagnerPublic } from "@/components/business/gagner-public";
 
@@ -20,8 +21,8 @@ export default async function GagnerPage() {
   const user = await getCurrentUser();
   const offers = await listPrimedProperties();
   if (user) {
-    const dash = await getDashboard(30);
-    return <ApporteurHub offers={offers} stats={dash?.apporteur ?? null} />;
+    const [dash, payout] = await Promise.all([getDashboard(30), getMyPayout()]);
+    return <ApporteurHub offers={offers} stats={dash?.apporteur ?? null} payout={payout} />;
   }
   return <GagnerPublic offers={offers} />;
 }

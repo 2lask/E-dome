@@ -58,7 +58,7 @@ export function MobileTabBar({
   const pathname = usePathname();
   /* Cinq onglets au plus : « Mes biens » et « Recherches » passent par l'accueil,
      l'Explorer et le menu de recherche. */
-  const nav = navFor(!!user).filter((e) => e.key !== "mes-biens" && e.key !== "tableau");
+  const nav = navFor(!!user).filter((e) => e.key !== "mes-biens" && e.key !== "tableau" && e.key !== "messages");
   /* Les deux premiers onglets, Publier au centre, puis le reste. */
   const left = nav.slice(0, 2);
   const right = nav.slice(2);

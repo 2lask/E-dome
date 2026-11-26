@@ -38,8 +38,8 @@ const nextConfig: NextConfig = {
       { source: "/dashboard/annonces", destination: "/mes-biens", permanent: false },
       { source: "/dashboard/apporteurs", destination: "/apporteurs", permanent: false },
       { source: "/dashboard/:path*", destination: "/", permanent: false },
-      /* Messages et notifications vivent désormais dans les Demandes. */
-      { source: "/messages", destination: "/demandes", permanent: false },
+      /* Les notifications vivent dans les Demandes ; /messages est la
+         messagerie vendeur ↔ apporteur. */
       { source: "/notifications", destination: "/demandes", permanent: false },
       /* Recherche et favoris reposaient sur le catalogue fictif : la
          recherche passe à l'Explorer réel (la requête `?q=` est conservée) ;

@@ -25,6 +25,8 @@ const PROTECTED_PREFIXES = [
   "/recherches/nouvelle",
   "/reglements",
   "/tableau-de-bord",
+  "/messages",
+  "/bienvenue",
 ];
 /* Correspondance EXACTE : `/profil` est MA fiche, `/profil/[id]` reste public. */
 const PROTECTED_EXACT = ["/profil", "/dossier", "/agence"];
