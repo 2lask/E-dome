@@ -8,6 +8,8 @@ import { apporteurNetChf, primeEligible, type MyIntroduction, type MyPrime, type
 import type { Demande, PendingIntroduction } from "@/lib/demandes";
 import type { SessionUser } from "@/lib/session-user";
 import { cn } from "@/lib/utils";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/motion/reveal";
+import { SpotlightCard } from "@/components/ui/motion/spotlight";
 
 /* ── Accueil MEMBRE : « ce qui demande votre attention » (REBUILD.md §3.2) ───
 
@@ -108,16 +110,19 @@ export function MemberHome({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <header className="cine relative overflow-hidden rounded-3xl border border-white/10 p-6 md:p-8">
+      <Reveal as="header" y={10} className="v3-beam v3-beam--cine rounded-3xl shadow-[0_30px_90px_-30px_rgb(0_0_0/0.7)]">
+      <div className="v3-beam__inner cine v3-grain relative rounded-3xl p-6 md:p-8">
         <div aria-hidden className="cine-aurora" />
         <div aria-hidden className="cine-grid" />
+        <div aria-hidden className="v3-orb v3-orb--gold -left-16 -top-20 h-64 w-64" />
+        <div aria-hidden className="v3-orb v3-orb--leman -right-10 bottom-0 h-64 w-64" />
         <div className="relative">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-[12.5px] font-medium uppercase tracking-[0.16em] text-[#e3b85c]">
+              <p className="v3-eyebrow v3-eyebrow--cine">
                 {new Date().toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}
               </p>
-              <h1 className="mt-2 text-[34px] font-semibold leading-tight tracking-[-0.035em] sm:text-[42px]">
+              <h1 className="mt-4 text-[36px] font-semibold leading-[1.05] tracking-[-0.04em] sm:text-[48px]">
                 Bonjour <span className="cine-gold">{user.firstName || "à vous"}</span>
               </h1>
               <p className="mt-1 text-[14.5px] text-white/65">
@@ -128,73 +133,83 @@ export function MemberHome({
             </div>
             <div className="flex flex-wrap gap-2">
               <CopilotButton />
-              <Link href="/publier" className="cine-btn-gold inline-flex h-10 items-center gap-2 rounded-xl px-4 text-[14px] font-semibold">
+              <Link href="/publier" className="cine-btn-gold v3-sheen inline-flex h-11 items-center gap-2 rounded-xl px-5 text-[14px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c66b]">
                 <Plus className="h-4 w-4" aria-hidden /> Publier un bien
               </Link>
             </div>
           </div>
-          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Stat href="/mes-biens" label="Biens en ligne" value={String(online.length)} />
-            <Stat href="/demandes" label="Demandes ouvertes" value={String(openDemandes.length)} />
-            <Stat href="/mes-biens" label="Commissions actives" value={String(activePrimes.length)} />
-            <Stat href="/tableau-de-bord?vue=apports" label="Gains apporteur" value={chf(dueNet)} prime={dueNet > 0} sub="net, mises en relation" />
+          <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <Stat href="/mes-biens" icon={Building2} label="Biens en ligne" value={String(online.length)} />
+            <Stat href="/demandes" icon={Inbox} label="Demandes ouvertes" value={String(openDemandes.length)} />
+            <Stat href="/mes-biens" icon={Gift} label="Commissions actives" value={String(activePrimes.length)} />
+            <Stat href="/tableau-de-bord?vue=apports" icon={Coins} label="Gains apporteur" value={chf(dueNet)} prime={dueNet > 0} sub="net, mises en relation" />
           </div>
         </div>
-      </header>
+      </div>
+      </Reveal>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_320px]">
         {/* ── À faire ──────────────────────────────────────────────────── */}
-        <section aria-label="À faire" className="min-w-0">
-          <h2 className="mb-3 text-[15px] font-semibold">À faire</h2>
+        <Reveal as="section" delay={0.08} className="min-w-0">
+          <h2 className="mb-3 flex items-center gap-2 text-[15px] font-semibold">
+            À faire
+            {todos.length > 0 && (
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-laiton-soft px-1.5 text-[11px] font-semibold tabular-nums text-laiton ring-1 ring-laiton-border">
+                {todos.length}
+              </span>
+            )}
+          </h2>
           {todos.length === 0 ? (
-            <div className="rounded-2xl border bg-card px-5 py-8 text-center">
-              <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-leman-soft text-leman">
+            <SpotlightCard className="v3-card--static relative px-5 py-10 text-center">
+              <div aria-hidden className="v3-dots" />
+              <span className="v3-icon relative mx-auto h-11 w-11">
                 <Check className="h-5 w-5" aria-hidden />
               </span>
-              <p className="mt-3 text-[14.5px] font-medium">Rien en attente</p>
-              <p className="mt-1 text-[13px] text-muted-foreground">
+              <p className="relative mt-4 text-[15px] font-semibold">Rien en attente</p>
+              <p className="relative mx-auto mt-1 max-w-sm text-[13px] text-muted-foreground">
                 {doneCount < steps.length
                   ? "Pour démarrer, suivez la liste « Bien démarrer ». Les demandes et mises en relation apparaîtront ici."
                   : "Les nouvelles demandes et les mises en relation apparaîtront ici."}
               </p>
-            </div>
+            </SpotlightCard>
           ) : (
-            <ul className="divide-y overflow-hidden rounded-2xl border bg-card shadow-xs">
-              {todos.map((t) => (
-                <li key={t.key}>
-                  <Link href={t.href} className="group flex items-start gap-3.5 px-4 py-3.5 hover:bg-accent/50">
-                    <span
-                      className={cn(
-                        "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
-                        t.prime ? "border border-laiton-border bg-laiton-soft text-laiton" : "bg-subtle text-foreground",
-                      )}
-                    >
-                      <t.icon className="h-[18px] w-[18px]" />
-                    </span>
+            <SpotlightCard className="v3-card--static">
+              <RevealGroup as="ul" className="divide-y">
+                {todos.map((t) => (
+                  <RevealItem as="li" key={t.key} className="relative">
+                    {t.prime && <span aria-hidden className="absolute inset-y-3 left-0 w-[3px] rounded-r-full bg-gradient-to-b from-laiton to-laiton/30" />}
+                    <Link href={t.href} className="group flex items-start gap-3.5 px-4 py-4 transition-colors hover:bg-accent/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring">
+                      <span className={cn("v3-icon mt-0.5 h-9 w-9 rounded-xl", t.prime && "v3-icon--gold")}>
+                        <t.icon className="h-[18px] w-[18px]" />
+                      </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-[14px] font-medium">{t.title}</span>
                       <span className="mt-0.5 block text-[12.5px] leading-snug text-muted-foreground">{t.hint}</span>
                     </span>
-                    <ArrowRight className="mt-2 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
+                    <ArrowRight className="mt-2 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground" aria-hidden />
                   </Link>
-                </li>
+                </RevealItem>
               ))}
-            </ul>
+              </RevealGroup>
+            </SpotlightCard>
           )}
 
           {/* ── Chiffres RÉELS ───────────────────────────────────────── */}
-        </section>
+        </Reveal>
 
         {/* ── Colonne : démarrage + raccourcis ─────────────────────────── */}
-        <aside className="space-y-4">
+        <Reveal delay={0.16} className="space-y-4">
           {doneCount < steps.length && (
-            <section aria-label="Bien démarrer" className="rounded-2xl border bg-card p-4 shadow-xs">
+            <SpotlightCard as="article" className="v3-card--static p-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-[14px] font-semibold">Bien démarrer</h2>
                 <span className="text-[12px] tabular-nums text-muted-foreground">{doneCount}/{steps.length}</span>
               </div>
-              <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-subtle" aria-hidden>
-                <div className="h-full rounded-full bg-leman transition-[width]" style={{ width: `${(doneCount / steps.length) * 100}%` }} />
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-subtle" aria-hidden>
+                <div
+                  className="h-full origin-left rounded-full bg-gradient-to-r from-leman to-laiton shadow-[0_0_12px_var(--leman)] transition-transform duration-700"
+                  style={{ transform: `scaleX(${doneCount / steps.length})` }}
+                />
               </div>
               <ul className="mt-3 space-y-0.5">
                 {steps.map((s) => (
@@ -202,7 +217,7 @@ export function MemberHome({
                     <Link
                       href={s.href}
                       className={cn(
-                        "flex items-center gap-2.5 rounded-lg px-2 py-2 text-[13.5px] hover:bg-accent/60",
+                        "flex min-h-11 items-center gap-2.5 rounded-lg px-2 py-2 text-[13.5px] transition-colors hover:bg-accent/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
                         s.done && "text-muted-foreground",
                       )}
                     >
@@ -218,43 +233,54 @@ export function MemberHome({
                   </li>
                 ))}
               </ul>
-            </section>
+            </SpotlightCard>
           )}
 
-          <section aria-label="Raccourcis" className="rounded-2xl border bg-card p-2 shadow-xs">
+          <SpotlightCard as="article" className="v3-card--static p-2">
+            <h2 className="sr-only">Raccourcis</h2>
             <Shortcut href="/tableau-de-bord" icon={BarChart3} label="Tableau de bord en direct" />
             <Shortcut href="/explorer" icon={Compass} label="Explorer les biens" />
             <Shortcut href="/mes-biens" icon={Building2} label="Mes biens et commissions" />
-            <Shortcut href="/apporteurs" icon={Coins} label="Recommander et gagner" />
-          </section>
-        </aside>
+            <Shortcut href="/apporteurs" icon={Coins} label="Recommander et gagner" prime />
+          </SpotlightCard>
+        </Reveal>
       </div>
     </div>
   );
 }
 
-function Stat({ href, label, value, sub, prime = false }: { href: string; label: string; value: string; sub?: string; prime?: boolean }) {
+function Stat({
+  href, icon: Icon, label, value, sub, prime = false,
+}: { href: string; icon: React.ComponentType<{ className?: string }>; label: string; value: string; sub?: string; prime?: boolean }) {
   return (
     <Link
       href={href}
       className={cn(
-        "rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur transition-colors hover:border-[rgb(227_184_92/0.45)]",
+        "group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.05] p-4 shadow-[inset_0_1px_0_rgb(255_255_255/0.06)] backdrop-blur transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[rgb(227_184_92/0.45)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c66b]",
         prime && "border-[#d9a441]/40 bg-[#d9a441]/10",
       )}
     >
-      <p className="text-[12px] text-white/55">{label}</p>
-      <p className={cn("mt-1 text-[26px] font-semibold tabular-nums tracking-[-0.02em] text-white", prime && "text-[#f7d488]")}>{value}</p>
+      <span aria-hidden className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[radial-gradient(closest-side,rgb(227_184_92/0.25),transparent)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <p className="flex items-center gap-1.5 text-[12px] text-white/55">
+        <Icon className={cn("h-3.5 w-3.5", prime ? "text-[#f2c66b]" : "text-white/40")} />
+        {label}
+      </p>
+      <p className={cn("mt-1.5 text-[28px] font-semibold tabular-nums tracking-[-0.03em] text-white", prime && "text-[#f7d488]")}>{value}</p>
       {sub && <p className="text-[11.5px] text-white/50">{sub}</p>}
     </Link>
   );
 }
 
-function Shortcut({ href, icon: Icon, label }: { href: string; icon: React.ComponentType<{ className?: string }>; label: string }) {
+function Shortcut({
+  href, icon: Icon, label, prime = false,
+}: { href: string; icon: React.ComponentType<{ className?: string }>; label: string; prime?: boolean }) {
   return (
-    <Link href={href} className="flex items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-[13.5px] hover:bg-accent/60">
-      <Icon className="h-4 w-4 text-muted-foreground" aria-hidden />
+    <Link href={href} className="group flex min-h-11 items-center gap-3 rounded-xl px-2.5 py-2 text-[13.5px] transition-colors hover:bg-accent/60 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring">
+      <span className={cn("v3-icon h-8 w-8 rounded-lg", prime && "v3-icon--gold")}>
+        <Icon className="h-4 w-4" />
+      </span>
       <span className="flex-1">{label}</span>
-      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
+      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
     </Link>
   );
 }

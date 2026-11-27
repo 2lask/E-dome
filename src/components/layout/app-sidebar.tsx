@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { Coins, Plus, Search } from "lucide-react";
 import { navFor, isNavActive, COMMAND_OPEN_EVENT, type NavEntry } from "@/lib/nav";
 import type { SessionUser } from "@/lib/session-user";
 import { Brand } from "@/components/layout/brand";
@@ -74,24 +74,35 @@ export function AppSidebar({
         {user ? (
           <AccountMenu user={user} />
         ) : (
-          <div className="rounded-xl border bg-card p-3">
-            <p className="text-[13px] font-medium leading-snug">Votre réseau vaut de l&apos;argent.</p>
-            <p className="mt-1 text-[12px] leading-snug text-muted-foreground">
-              Créez un compte pour publier gratuitement et toucher des commissions.
-            </p>
-            <div className="mt-3 grid gap-1.5">
-              <Link
-                href="/auth/inscription"
-                className="flex h-8.5 items-center justify-center rounded-lg bg-primary text-[13px] font-medium text-primary-foreground hover:bg-primary/88"
-              >
-                Créer un compte
-              </Link>
-              <Link
-                href="/auth/connexion"
-                className="flex h-8.5 items-center justify-center rounded-lg text-[13px] font-medium hover:bg-sidebar-accent"
-              >
-                Se connecter
-              </Link>
+          <div className="v3-beam v3-beam--cine rounded-2xl">
+            <div className="v3-beam__inner cine relative rounded-2xl p-3.5">
+              <div aria-hidden className="v3-orb v3-orb--gold -right-10 -top-12 h-28 w-28" />
+              <div aria-hidden className="v3-orb v3-orb--leman -bottom-14 -left-10 h-28 w-28" />
+              <div className="relative">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#e3b85c]/35 bg-[#d9a441]/15 text-[#f2c66b] shadow-[0_0_24px_-6px_rgb(217_164_65/0.8)]">
+                  <Coins className="h-4 w-4" aria-hidden />
+                </span>
+                <p className="mt-3 text-[14px] font-semibold leading-snug tracking-[-0.01em] text-white">
+                  Votre réseau <span className="cine-gold">vaut de l&apos;argent.</span>
+                </p>
+                <p className="mt-1 text-[12px] leading-snug text-white/60">
+                  Créez un compte pour publier gratuitement et toucher des commissions.
+                </p>
+                <div className="mt-3 grid gap-1">
+                  <Link
+                    href="/auth/inscription"
+                    className="cine-btn-gold v3-sheen flex h-11 items-center justify-center rounded-lg text-[13px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c66b]"
+                  >
+                    Créer un compte
+                  </Link>
+                  <Link
+                    href="/auth/connexion"
+                    className="flex h-11 items-center justify-center rounded-lg text-[13px] font-medium text-white/80 transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#f2c66b]"
+                  >
+                    Se connecter
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         )}

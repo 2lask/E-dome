@@ -62,7 +62,7 @@ export function DealPanel({
   if (!deal) return null;
   if (!deal.ready) {
     return (
-      <p className="rounded-xl bg-subtle px-4 py-3 text-[12.5px] text-muted-foreground">
+      <p className="rounded-2xl border bg-subtle/70 px-4 py-3 text-[12.5px] text-muted-foreground">
         Offres et étapes jusqu&apos;à l&apos;acte : disponibles après la mise à jour de la base (migration 010).
       </p>
     );
@@ -82,7 +82,7 @@ export function DealPanel({
     }, "Offre enregistrée.");
 
   return (
-    <section aria-label="Offres et étapes jusqu'à l'acte" className="space-y-4 rounded-xl border bg-card p-4">
+    <section aria-label="Offres et étapes jusqu'à l'acte" className="space-y-4 rounded-2xl border bg-card p-4 shadow-xs sm:p-5">
       {/* ── Offres ── */}
       <div>
         <div className="flex items-center justify-between gap-2">
@@ -93,7 +93,7 @@ export function DealPanel({
         </div>
 
         {adding && (
-          <div className="mt-3 space-y-3 rounded-lg border bg-background p-3">
+          <div className="mt-3 space-y-3 rounded-xl border bg-background p-3.5">
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-1 block text-[12.5px] font-medium">Montant proposé</span>
@@ -195,7 +195,7 @@ export function DealPanel({
             Acte signé : confirmer la vente{accepted ? ` à ${chf(accepted)}` : ""}
           </Button>
         )}
-        <details className="mt-3 rounded-lg border bg-background px-3 py-2">
+        <details className="mt-3 rounded-xl border bg-background px-3.5 py-2.5">
           <summary className="cursor-pointer text-[13px] font-medium">Documents à réunir pour le notaire</summary>
           <ul className="mt-2 space-y-1 pb-1 text-[12.5px] text-muted-foreground">
             {SELLER_DOCUMENTS.map((d) => <li key={d} className="flex gap-2"><span aria-hidden>·</span>{d}</li>)}
@@ -228,7 +228,7 @@ function OfferRow({
   const open = !closed && (o.status === "en-attente" || o.status === "contre-offre");
   const tone = o.status === "acceptee" ? "border-leman/40 bg-leman-soft/50" : o.status === "refusee" || o.status === "retiree" ? "opacity-60" : "";
   return (
-    <li className={cn("rounded-lg border p-3", tone)}>
+    <li className={cn("rounded-xl border p-3.5", tone)}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="text-[16px] font-semibold tabular-nums">{chf(o.amountChf)}</p>
         <span className={cn("rounded-md px-2 py-0.5 text-[11.5px] font-medium",

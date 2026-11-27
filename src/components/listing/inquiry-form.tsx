@@ -63,7 +63,7 @@ export function InquiryForm({
   if (sent) {
     return (
       <div className="py-4 text-center">
-        <CheckCircle2 className="mx-auto h-9 w-9 text-leman" aria-hidden />
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-leman-soft ring-8 ring-leman-soft/40"><CheckCircle2 className="h-7 w-7 text-leman" aria-hidden /></span>
         <p className="mt-3 text-[15px] font-semibold">Demande envoyée</p>
         <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
           Le propriétaire la reçoit directement et vous répondra
@@ -80,7 +80,7 @@ export function InquiryForm({
 
   return (
     <form onSubmit={submit} className="space-y-3">
-      <div role="radiogroup" aria-label="Type de demande" className="grid grid-cols-2 rounded-lg border bg-subtle p-0.5">
+      <div role="radiogroup" aria-label="Type de demande" className="grid grid-cols-2 rounded-xl border bg-subtle p-1">
         {([
           { v: "contact", label: "Contacter", icon: MessageSquareText },
           { v: "visite", label: "Visiter", icon: CalendarDays },
@@ -92,8 +92,8 @@ export function InquiryForm({
             aria-checked={kind === v}
             onClick={() => setKind(v)}
             className={cn(
-              "inline-flex h-8.5 items-center justify-center gap-1.5 rounded-md text-[13px]",
-              kind === v ? "bg-card font-medium shadow-xs" : "text-muted-foreground hover:text-foreground",
+              "inline-flex h-10 items-center justify-center gap-1.5 rounded-lg text-[13.5px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leman",
+              kind === v ? "bg-card font-semibold text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
             )}
           >
             <Icon className="h-3.5 w-3.5" aria-hidden />
@@ -102,10 +102,10 @@ export function InquiryForm({
         ))}
       </div>
 
-      <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Votre nom" aria-label="Votre nom" autoComplete="name" required />
+      <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Votre nom" aria-label="Votre nom" autoComplete="name" required className="h-11" />
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-        <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="E-mail" aria-label="Votre e-mail" autoComplete="email" />
-        <Input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" placeholder="Téléphone" aria-label="Votre téléphone" autoComplete="tel" />
+        <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="E-mail" aria-label="Votre e-mail" autoComplete="email" className="h-11" />
+        <Input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" placeholder="Téléphone" aria-label="Votre téléphone" autoComplete="tel" className="h-11" />
       </div>
 
       {kind === "visite" && (
@@ -122,7 +122,7 @@ export function InquiryForm({
         maxLength={2000}
         aria-label="Votre message"
         placeholder={kind === "visite" ? "Vos disponibilités, vos questions…" : "Votre projet, vos questions…"}
-        className="w-full rounded-lg border border-input bg-card px-3 py-2 text-[13.5px] shadow-xs outline-none placeholder:text-muted-foreground hover:border-foreground/25 focus:border-leman"
+        className="w-full resize-none rounded-lg border border-input bg-card px-3 py-2.5 text-[13.5px] shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-muted-foreground hover:border-foreground/25 focus:border-leman focus-visible:ring-3 focus-visible:ring-leman/15"
       />
 
       {/* Pot de miel : invisible pour un humain, rempli par les robots. */}
@@ -151,7 +151,7 @@ export function InquiryForm({
 
       {error && <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-[12.5px] text-[var(--danger-text)]">{error}</p>}
 
-      <Button type="submit" variant="accent" className="w-full" disabled={isPending}>
+      <Button type="submit" variant="accent" className="h-11 w-full text-[14px] font-semibold" disabled={isPending}>
         {isPending ? "Envoi…" : kind === "visite" ? "Demander une visite" : "Envoyer au propriétaire"}
       </Button>
       <p className="text-center text-[11.5px] leading-snug text-muted-foreground">

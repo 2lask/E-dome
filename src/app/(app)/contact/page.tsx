@@ -1,268 +1,82 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, BookOpen, Mail, ShieldCheck } from "lucide-react";
+import { PageHero } from "@/components/marketing/blocks";
+import { ContactForm } from "@/components/marketing/contact-form";
+import { CopyEmail } from "@/components/marketing/copy-email";
+import { Reveal } from "@/components/marketing/reveal";
 
-import React, { useState } from "react";
+export const metadata: Metadata = {
+  title: "Contact",
+  description: "Une question, une suggestion ou un problème ? Écrivez à l'équipe E-Dome.",
+};
 
-/* ─── Page ───────────────────────────────────────────────────────────────── */
+/* ── /contact ────────────────────────────────────────────────────────────────
+   Server Component ; seul le formulaire est interactif. Retirés : le
+   téléphone, l'adresse postale, les horaires du support et les liens vers des
+   réseaux sociaux, qui n'existaient pas (la société n'est pas encore
+   constituée, voir la politique de confidentialité), ainsi que le faux envoi
+   et la promesse d'un e-mail de confirmation. */
+
+const SUPPORT_EMAIL = "support@edome.world";
+
+const QUICK = [
+  { q: "Est-ce gratuit ?", href: "/aide#demarrer" },
+  { q: "Comment publier un bien ?", href: "/aide#publier-et-vendre" },
+  { q: "Quand la commission est-elle due ?", href: "/aide#la-commission-et-les-apporteurs" },
+  { q: "Comment supprimer mon compte ?", href: "/aide#confidentialite" },
+];
 
 export default function ContactPage() {
-  const [form, setForm] = useState({
-    sujet: "",
-    nom: "",
-    email: "",
-    message: "",
-  });
-  const [submitted, setSubmitted] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const validate = () => {
-    const errs: Record<string, string> = {};
-    if (!form.sujet) errs.sujet = "Veuillez selectionner un sujet.";
-    if (!form.nom.trim()) errs.nom = "Le nom est requis.";
-    if (!form.email.trim()) errs.email = "L'email est requis.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "L'email n'est pas valide.";
-    if (!form.message.trim()) errs.message = "Le message est requis.";
-    else if (form.message.trim().length < 10) errs.message = "Le message doit contenir au moins 10 caracteres.";
-    return errs;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const errs = validate();
-    setErrors(errs);
-    if (Object.keys(errs).length > 0) return;
-
-    setSending(true);
-    // Simulate email sending delay
-    setTimeout(() => {
-      setSending(false);
-      setSubmitted(true);
-    }, 1500);
-  };
-
-  const handleChange = (field: string, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    // Clear error on change
-    if (errors[field]) {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next[field];
-        return next;
-      });
-    }
-  };
-
-  const handleReset = () => {
-    setSubmitted(false);
-    setForm({ sujet: "", nom: "", email: "", message: "" });
-    setErrors({});
-  };
-
-  if (submitted) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
-        <div className="text-center py-16 space-y-4 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
-          {/* Animated checkmark */}
-          <div className="relative mx-auto w-20 h-20">
-            <div
-              className="w-20 h-20 rounded-full flex items-center justify-center"
-              style={{
-                background: "var(--primary)",
-                animation: "scaleIn 0.5s ease-out",
-              }}
-            >
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 13l4 4L19 7" style={{ strokeDasharray: 24, strokeDashoffset: 0, animation: "drawCheck 0.6s ease-out 0.3s both" }} />
-              </svg>
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-[var(--foreground)]">Message envoyé !</h2>
-          <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-            Votre message a été envoyé. Nous vous répondrons sous 24-48h.
-          </p>
-          <p className="text-sm text-[var(--text-muted)] max-w-sm mx-auto">
-            Un email de confirmation a été envoyé à <span className="text-[var(--foreground)] font-medium">{form.email || "votre adresse"}</span>.
-          </p>
-          <button
-            onClick={handleReset}
-            className="mt-4 px-6 py-2.5 rounded-lg bg-[var(--primary)] text-white font-medium hover:opacity-90 transition"
-          >
-            Envoyer un autre message
-          </button>
-          <style>{`
-            @keyframes scaleIn {
-              0% { transform: scale(0); opacity: 0; }
-              50% { transform: scale(1.15); }
-              100% { transform: scale(1); opacity: 1; }
-            }
-            @keyframes drawCheck {
-              0% { stroke-dashoffset: 24; }
-              100% { stroke-dashoffset: 0; }
-            }
-          `}</style>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl page-heading text-[var(--foreground)]">Contactez-nous</h1>
-        <p className="text-[var(--text-secondary)]">Une question, une suggestion ou un probleme ? Nous sommes la pour vous aider.</p>
-      </div>
+    <div className="mx-auto max-w-6xl">
+      <PageHero
+        eyebrow="Contact"
+        title={<>Contactez-nous. <span className="cine-gold">Nous sommes là pour vous aider.</span></>}
+        lead="Une question, une suggestion ou un problème ? Écrivez-nous : nous vous répondons par e-mail."
+      />
 
-      <div className="grid lg:grid-cols-5 gap-8">
-        {/* Form */}
-        <div className="lg:col-span-3">
-          <form onSubmit={handleSubmit} className="p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-5">
-            <div className="space-y-1">
-              <label className="text-sm text-[var(--text-secondary)]">Sujet</label>
-              <select
-                value={form.sujet}
-                onChange={(e) => handleChange("sujet", e.target.value)}
-                required
-                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] outline-none focus:border-[var(--primary)] transition ${
-                  errors.sujet ? "border-red-400" : "border-[var(--input-border)]"
-                }`}
-              >
-                <option value="">Sélectionnez un sujet</option>
-                <option value="general">Question generale</option>
-                <option value="technique">Probleme technique</option>
-                <option value="compte">Mon compte</option>
-                <option value="paiement">Paiement et facturation</option>
-                <option value="signalement">Signaler un abus</option>
-                <option value="partenariat">Proposition de partenariat</option>
-                <option value="presse">Presse et media</option>
-                <option value="autre">Autre</option>
-              </select>
-              {errors.sujet && <p className="text-xs text-red-400 mt-1">{errors.sujet}</p>}
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm text-[var(--text-secondary)]">Nom complet</label>
-              <input
-                type="text"
-                value={form.nom}
-                onChange={(e) => handleChange("nom", e.target.value)}
-                required
-                placeholder="Votre nom..."
-                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition ${
-                  errors.nom ? "border-red-400" : "border-[var(--input-border)]"
-                }`}
-              />
-              {errors.nom && <p className="text-xs text-red-400 mt-1">{errors.nom}</p>}
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm text-[var(--text-secondary)]">Adresse email</label>
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                required
-                placeholder="votre@email.com"
-                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition ${
-                  errors.email ? "border-red-400" : "border-[var(--input-border)]"
-                }`}
-              />
-              {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm text-[var(--text-secondary)]">Message</label>
-              <textarea
-                value={form.message}
-                onChange={(e) => handleChange("message", e.target.value)}
-                required
-                placeholder="Décrivez votre demande..."
-                rows={5}
-                className={`w-full px-4 py-2.5 rounded-lg bg-[var(--input-bg)] border text-[var(--foreground)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] transition resize-none ${
-                  errors.message ? "border-red-400" : "border-[var(--input-border)]"
-                }`}
-              />
-              {errors.message && <p className="text-xs text-red-400 mt-1">{errors.message}</p>}
-            </div>
-            <button
-              type="submit"
-              disabled={sending}
-              className="w-full px-6 py-3 rounded-lg bg-[var(--primary)] text-white font-medium hover:opacity-90 transition disabled:opacity-60 flex items-center justify-center gap-2"
-            >
-              {sending ? (
-                <>
-                  <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="31.4" strokeDashoffset="10" strokeLinecap="round" />
-                  </svg>
-                  Envoi en cours...
-                </>
-              ) : (
-                "Envoyer le message"
-              )}
-            </button>
-          </form>
-        </div>
+      <div className="mt-8 grid gap-6 lg:mt-12 lg:grid-cols-[1.55fr_1fr] lg:gap-8">
+        <Reveal>
+          <ContactForm email={SUPPORT_EMAIL} />
+        </Reveal>
 
-        {/* Info sidebar */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Contact Info */}
-          <div className="p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">Informations de contact</h2>
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <p className="text-sm text-[var(--text-muted)]">Email</p>
-                <p className="text-[var(--foreground)]">support@edome.world</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-[var(--text-muted)]">Telephone</p>
-                <p className="text-[var(--foreground)]">+41 32 000 00 00</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm text-[var(--text-muted)]">Adresse</p>
-                <p className="text-[var(--foreground)]">E-Dome Sarl<br />Rue de la Gare 12<br />2000 Neuchatel, Suisse</p>
-              </div>
+        <div className="space-y-4">
+          <Reveal delay={0.06}>
+            <div className="rounded-3xl border bg-card p-5 sm:p-6">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-leman-soft text-leman"><Mail className="h-5 w-5" aria-hidden /></span>
+              <h2 className="mt-4 text-[16px] font-semibold">Par e-mail</h2>
+              <p className="mt-1 text-[13.5px] text-muted-foreground">Directement, sans passer par le formulaire.</p>
+              <div className="mt-4"><CopyEmail email={SUPPORT_EMAIL} /></div>
             </div>
-          </div>
+          </Reveal>
 
-          {/* Hours */}
-          <div className="p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">Horaires du support</h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-[var(--text-secondary)]">Lundi - Vendredi</span>
-                <span className="text-[var(--foreground)] font-medium">9h00 - 18h00</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--text-secondary)]">Samedi</span>
-                <span className="text-[var(--foreground)] font-medium">10h00 - 14h00</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--text-secondary)]">Dimanche</span>
-                <span className="text-[var(--text-muted)]">Ferme</span>
-              </div>
+          <Reveal delay={0.12}>
+            <div className="rounded-3xl border border-laiton-border bg-gradient-to-br from-laiton-soft via-laiton-soft/30 to-card p-5 sm:p-6">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-laiton-border bg-card/60 text-laiton"><BookOpen className="h-5 w-5" aria-hidden /></span>
+              <h2 className="mt-4 text-[16px] font-semibold">Avant d&apos;écrire</h2>
+              <p className="mt-1 text-[13.5px] text-muted-foreground">La réponse est peut-être déjà dans l&apos;aide.</p>
+              <ul className="mt-3 divide-y divide-laiton-border/60">
+                {QUICK.map((it) => (
+                  <li key={it.q}>
+                    <Link href={it.href} className="group flex min-h-[44px] items-center justify-between gap-3 py-2 text-[14px] font-medium">
+                      {it.q}
+                      <ArrowRight className="h-4 w-4 shrink-0 text-laiton transition-transform group-hover:translate-x-0.5" aria-hidden />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="text-xs text-[var(--text-muted)]">Fuseau horaire : CET (Zurich)</p>
-          </div>
+          </Reveal>
 
-          {/* Social Links */}
-          <div className="p-6 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] space-y-4">
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">Suivez-nous</h2>
-            <div className="flex flex-wrap gap-3">
-              {[
-                { name: "LinkedIn", url: "https://linkedin.com/company/edome" },
-                { name: "Instagram", url: "https://instagram.com/edome.world" },
-                { name: "Facebook", url: "https://facebook.com/edome.world" },
-                { name: "X (Twitter)", url: "https://x.com/edome_world" },
-                { name: "YouTube", url: "https://youtube.com/@edome" },
-              ].map((social) => (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-[var(--hover-bg)] text-[var(--text-secondary)] text-sm hover:text-[var(--primary)] transition"
-                >
-                  {social.name}
-                </a>
-              ))}
+          <Reveal delay={0.18}>
+            <div className="flex items-start gap-3 rounded-3xl border border-dashed p-5 text-[13px] leading-relaxed text-muted-foreground">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-leman" aria-hidden />
+              <p>
+                Pour exercer vos droits sur vos données, voyez la <Link href="/confidentialite" className="font-medium text-leman underline underline-offset-2">politique de confidentialité</Link>.
+              </p>
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </div>

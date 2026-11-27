@@ -715,3 +715,160 @@ kbd {
   .cine-draw { animation: none; stroke-dashoffset: 0; }
   .cine-card, .cine-btn-gold, .cine-btn-light { transition: none; }
 }
+
+/* ── Design v3 ──────────────────────────────────────────────────────────────
+   Couche « haut de gamme » de l'accueil : profondeur, lumière, bordures
+   lumineuses. Règles : n'animer que transform et opacity ; tout s'arrête
+   avec prefers-reduced-motion ; les classes `v3-*` suivent les jetons
+   (thème clair ET sombre), sauf mention « panneau sombre ». */
+
+/* Fondu d'une section toujours sombre (.cine) vers le fond de page. */
+.v3-fade-to-page {
+  position: absolute; inset-inline: 0; bottom: 0; height: 9rem; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--background));
+}
+
+/* Libellé de section : petite capsule, point lumineux. */
+.v3-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border-radius: 9999px; padding: 0.3rem 0.8rem;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--laiton);
+  background: var(--laiton-soft);
+  border: 1px solid var(--laiton-border);
+}
+.v3-eyebrow::before {
+  content: ""; width: 6px; height: 6px; border-radius: 9999px; background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+.v3-eyebrow--leman { color: var(--leman); background: var(--leman-soft); border-color: color-mix(in oklab, var(--leman) 35%, transparent); }
+.v3-eyebrow--cine { color: #f2c66b; background: rgb(217 164 65 / 0.12); border-color: rgb(227 184 92 / 0.32); }
+
+/* Titre en dégradé statique (lisible dans les deux thèmes). */
+.v3-heading {
+  background: linear-gradient(180deg, var(--foreground) 35%, color-mix(in oklab, var(--foreground) 62%, var(--background)));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* Bordure lumineuse en rotation (transform seulement).
+   Structure : <div class="v3-beam rounded-…"><div class="v3-beam__inner">…</div></div> */
+.v3-beam { position: relative; isolation: isolate; overflow: hidden; padding: 1px; }
+.v3-beam::before {
+  content: ""; position: absolute; z-index: -1; left: -50%; top: 50%;
+  width: 200%; aspect-ratio: 1; margin-top: -100%;
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgb(242 198 107 / 0.95) 320deg, rgb(95 211 196 / 0.85) 348deg, transparent 360deg);
+  animation: v3-spin 8s linear infinite;
+}
+.v3-beam::after {
+  content: ""; position: absolute; inset: 0; z-index: -2; border-radius: inherit;
+  background: color-mix(in oklab, var(--foreground) 12%, transparent);
+}
+.v3-beam__inner { position: relative; border-radius: inherit; height: 100%; overflow: hidden; background: var(--card); }
+/* Variante sur panneau sombre : fond opaque (le faisceau ne doit pas transparaître). */
+.v3-beam--cine::after { background: rgb(255 255 255 / 0.1); }
+.v3-beam--cine > .v3-beam__inner { background: linear-gradient(180deg, #1a1712, #100e0b); border-color: transparent; }
+@keyframes v3-spin { to { transform: rotate(360deg); } }
+
+/* Carte à halo qui suit le pointeur + liseré lumineux (jetons, deux thèmes).
+   Les variables --mx/--my sont posées par <SpotlightCard>. */
+.v3-card {
+  position: relative; overflow: hidden; isolation: isolate;
+  border-radius: 1.25rem; background: var(--card); border: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.05), var(--shadow-sm);
+  transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), border-color 0.4s;
+}
+.v3-card::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+  transition: opacity 0.4s;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), color-mix(in oklab, var(--v3-tint, var(--leman)) 15%, transparent), transparent 60%);
+}
+.v3-card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none; opacity: 0;
+  transition: opacity 0.4s;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), var(--v3-tint, var(--leman)), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.v3-card:hover, .v3-card:focus-visible { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.v3-card:hover::before, .v3-card:hover::after, .v3-card:focus-visible::before, .v3-card:focus-visible::after { opacity: 1; }
+.v3-card--gold { --v3-tint: var(--laiton); }
+.v3-card--static:hover { transform: none; }
+.v3-beam > .v3-card { border-color: transparent; box-shadow: none; }
+.v3-beam > .v3-card:hover, .v3-beam > .v3-card:focus-visible { transform: none; box-shadow: none; }
+
+/* Reflet de lumière qui traverse un bouton au survol. */
+.v3-sheen { position: relative; overflow: hidden; isolation: isolate; }
+.v3-sheen::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.5) 50%, transparent 65%);
+  transform: translateX(-120%);
+}
+.v3-sheen:hover::after, .v3-sheen:focus-visible::after { transform: translateX(120%); transition: transform 0.9s var(--ease-out); }
+
+/* Halos flottants décoratifs. */
+.v3-orb { position: absolute; border-radius: 9999px; filter: blur(70px); pointer-events: none; animation: v3-float 14s ease-in-out infinite alternate; }
+.v3-orb--gold { background: rgb(217 164 65 / 0.26); }
+.v3-orb--leman { background: rgb(45 170 156 / 0.22); animation-duration: 18s; animation-direction: alternate-reverse; }
+@keyframes v3-float {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(6%, -8%, 0) scale(1.12); }
+}
+
+/* Faisceau de lumière tombant du haut (panneau sombre). */
+.v3-spot {
+  position: absolute; left: 50%; top: -14rem; width: 64rem; height: 34rem; margin-left: -32rem; pointer-events: none;
+  background: radial-gradient(closest-side, rgb(255 236 200 / 0.13), transparent);
+  animation: v3-breathe 9s ease-in-out infinite alternate;
+}
+@keyframes v3-breathe { from { opacity: 0.55; transform: scale(0.95); } to { opacity: 1; transform: scale(1.05); } }
+
+/* Grille de points masquée (fond de section, deux thèmes). */
+.v3-dots {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 16%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(60% 70% at 50% 40%, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(60% 70% at 50% 40%, #000 20%, transparent 75%);
+}
+
+/* Pastille d'icône lumineuse. */
+.v3-icon {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  border-radius: 0.9rem; color: var(--leman);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--leman) 22%, transparent), color-mix(in oklab, var(--leman) 6%, transparent));
+  border: 1px solid color-mix(in oklab, var(--leman) 35%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--leman) 6%, transparent), 0 8px 24px -8px color-mix(in oklab, var(--leman) 60%, transparent);
+}
+.v3-icon--gold {
+  color: var(--laiton);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--laiton) 24%, transparent), color-mix(in oklab, var(--laiton) 6%, transparent));
+  border-color: var(--laiton-border);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--laiton) 7%, transparent), 0 8px 24px -8px color-mix(in oklab, var(--laiton) 65%, transparent);
+}
+
+/* Lumière qui parcourt un trait (étapes). Parent : position relative. */
+.v3-trace { position: absolute; overflow: hidden; pointer-events: none; }
+.v3-trace::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 30%;
+  background: linear-gradient(90deg, transparent, var(--laiton), transparent);
+  animation: v3-trace 4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes v3-trace { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+
+/* Grain très léger (panneaux sombres). Parent : position relative. */
+.v3-grain::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Barres SVG qui montent à l'apparition (transform: scaleY). */
+.v3-bar { transform-origin: bottom; transform-box: fill-box; }
+
+@media (prefers-reduced-motion: reduce) {
+  .v3-beam::before, .v3-orb, .v3-spot, .v3-trace::after { animation: none; }
+  .v3-trace::after { opacity: 0; }
+  .v3-card, .v3-card::before, .v3-card::after { transition: none; }
+  .v3-card:hover, .v3-card:focus-visible { transform: none; }
+  .v3-sheen::after { display: none; }
+}

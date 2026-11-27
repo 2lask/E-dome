@@ -373,26 +373,36 @@ export function PublishForm({
 
   return (
     <div className="mx-auto max-w-6xl">
-      <button type="button" onClick={() => router.back()} className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground">
+      <button type="button" onClick={() => router.back()} className="inline-flex min-h-11 items-center gap-1.5 rounded-lg text-[13px] text-muted-foreground transition-colors hover:text-foreground">
         <ArrowLeft className="h-4 w-4" aria-hidden /> Retour
       </button>
-      <header className="cine relative mt-3 overflow-hidden rounded-3xl border border-white/10 px-5 py-7 md:px-8">
+      <header className="cine relative mt-1 overflow-hidden rounded-3xl border border-white/10 px-5 pb-6 pt-7 md:px-8 md:pb-7 md:pt-9">
         <div aria-hidden className="cine-aurora" />
         <div aria-hidden className="cine-grid" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#e3b85c]/60 to-transparent" />
         <div className="relative">
-          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-[#e3b85c]">{editing ? "Modifier" : "Publier"} · {doneCount}/5 étapes</p>
-          <h1 className="mt-2 text-[28px] font-semibold leading-[1.08] tracking-[-0.03em] text-white sm:text-[36px]">
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-3 py-1 text-[11.5px] font-medium uppercase tracking-[0.16em] text-[#e3b85c]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#e3b85c]" aria-hidden />
+            {editing ? "Modifier" : "Publier"} · {doneCount}/5 étapes
+          </p>
+          <h1 className="mt-4 text-[30px] font-semibold leading-[1.05] tracking-[-0.035em] text-white sm:text-[40px]">
             {editing ? "Modifier l'annonce" : <>Votre bien en ligne <span className="cine-gold">en cinq minutes.</span></>}
           </h1>
-          <p className="mt-2 text-[14.5px] text-white/65">
+          <p className="mt-2.5 max-w-xl text-[14.5px] leading-relaxed text-white/65">
             {editing ? "Les changements sont visibles dès l'enregistrement." : "Gratuit, aucun pourcentage sur votre prix. L'aperçu se met à jour pendant que vous écrivez."}
           </p>
-          <ol className="mt-5 flex flex-wrap gap-2" aria-label="Étapes">
+          {/* Progression réelle : la part des étapes complétées. */}
+          <div className="mt-6 h-1 overflow-hidden rounded-full bg-white/10" aria-hidden>
+            <div className="h-full origin-left rounded-full bg-gradient-to-r from-[#d9a441] to-[#f6d796] transition-transform duration-500 ease-out" style={{ transform: `scaleX(${doneCount / 5})` }} />
+          </div>
+          <ol className="mt-4 flex flex-wrap gap-2" aria-label="Étapes">
             {SECTION_TITLES.map((t, i) => (
               <li key={t}>
-                <a href={`#sec-${i + 1}`} className={cn("inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[12.5px] transition-colors",
-                  sectionsDone[i] ? "border-[rgb(227_184_92/0.5)] bg-[rgb(227_184_92/0.14)] text-[#f0d79a]" : "border-white/15 bg-white/5 text-white/70 hover:text-white")}>
-                  {sectionsDone[i] ? <Check className="h-3.5 w-3.5" aria-hidden /> : <span className="font-mono text-[11px]">{i + 1}</span>}
+                <a href={`#sec-${i + 1}`} className={cn("inline-flex h-11 items-center gap-2 rounded-full border pl-1.5 pr-3.5 text-[12.5px] transition-colors sm:h-9 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e3b85c]",
+                  sectionsDone[i] ? "border-[rgb(227_184_92/0.5)] bg-[rgb(227_184_92/0.14)] text-[#f0d79a]" : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white")}>
+                  <span className={cn("flex h-6 w-6 items-center justify-center rounded-full", sectionsDone[i] ? "bg-[rgb(227_184_92/0.25)]" : "bg-white/10")}>
+                    {sectionsDone[i] ? <Check className="h-3.5 w-3.5" aria-hidden /> : <span className="font-mono text-[11px]">{i + 1}</span>}
+                  </span>
                   {t}
                   <span className="sr-only">{sectionsDone[i] ? " (complété)" : " (à compléter)"}</span>
                 </a>
@@ -625,8 +635,8 @@ export function PublishForm({
             </p>
           )}
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <Button size="lg" onClick={submit} disabled={uploading || isPending} className="sm:min-w-[220px]">
+          <div className="flex flex-col gap-3 rounded-3xl border bg-card p-4 shadow-xs sm:flex-row sm:items-center sm:p-5">
+            <Button size="lg" onClick={submit} disabled={uploading || isPending} className="h-12 rounded-xl text-[15px] font-semibold sm:min-w-[240px]">
               {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
               {editing ? "Enregistrer les modifications" : "Publier le bien"}
             </Button>
@@ -644,19 +654,22 @@ export function PublishForm({
 
         {/* ── Aperçu en direct + qualité ─────────────────────────────────── */}
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-          <div className="rounded-2xl border bg-card p-4 shadow-xs">
-            <p className="eyebrow mb-3">Aperçu dans l&apos;Explorer</p>
+          <div className="relative overflow-hidden rounded-3xl border bg-card p-4 shadow-xs">
+            <div aria-hidden className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-leman/50 to-transparent" />
+            <p className="eyebrow mb-3 flex items-center gap-2"><span className="live-dot h-1.5 w-1.5 rounded-full bg-leman" aria-hidden />Aperçu dans l&apos;Explorer</p>
             <div className="pointer-events-none">
               <ListingCard p={preview} />
             </div>
           </div>
-          <div className="rounded-2xl border bg-card p-4 shadow-xs">
+          <div className="rounded-3xl border bg-card p-4 shadow-xs sm:p-5">
             <div className="flex items-center justify-between">
               <p className="text-[14px] font-semibold">Qualité de l&apos;annonce</p>
               <span className="text-[12.5px] tabular-nums text-muted-foreground">{qualityScore}/{quality.length}</span>
             </div>
-            <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-subtle" aria-hidden>
-              <div className="h-full rounded-full bg-leman transition-[width]" style={{ width: `${(qualityScore / quality.length) * 100}%` }} />
+            <div className="mt-3 flex gap-1" aria-hidden>
+              {quality.map((q) => (
+                <span key={q.label} className={cn("h-1.5 flex-1 rounded-full transition-colors duration-300", q.ok ? "bg-leman" : "bg-subtle")} />
+              ))}
             </div>
             <ul className="mt-3 space-y-1.5">
               {quality.map((q) => (
@@ -678,16 +691,19 @@ export function PublishForm({
 
 function Section({ n, title, aside, prime = false, done = false, children }: { n: number; title: string; aside?: string; prime?: boolean; done?: boolean; children: React.ReactNode }) {
   return (
-    <section id={`sec-${n}`} className="scroll-mt-24 rounded-2xl border bg-card p-5 shadow-xs sm:p-6" aria-labelledby={`sec-${n}-t`}>
-      <div className="mb-4 flex items-center gap-3">
-        <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-[12.5px] font-semibold transition-colors",
-          prime ? "border border-laiton-border bg-laiton-soft text-laiton" : done ? "bg-leman text-white dark:text-[#0d1513]" : "bg-subtle")}>
+    <section id={`sec-${n}`} className={cn("relative scroll-mt-24 overflow-hidden rounded-3xl border bg-card p-5 shadow-xs sm:p-7", prime && "border-laiton-border")} aria-labelledby={`sec-${n}-t`}>
+      {(prime || done) && (
+        <div aria-hidden className={cn("pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent to-transparent", prime ? "via-laiton/70" : "via-leman/50")} />
+      )}
+      <div className="mb-5 flex items-center gap-3">
+        <span className={cn("flex h-8 w-8 items-center justify-center rounded-xl text-[12.5px] font-semibold transition-colors",
+          prime ? "border border-laiton-border bg-laiton-soft text-laiton" : done ? "bg-leman text-white dark:text-[#0d1513]" : "border bg-subtle")}>
           {prime ? <Coins className="h-3.5 w-3.5" aria-hidden /> : done ? <Check className="h-3.5 w-3.5" aria-label="Complété" /> : n}
         </span>
-        <h2 id={`sec-${n}-t`} className="flex-1 text-[16px] font-semibold tracking-[-0.01em]">{title}</h2>
+        <h2 id={`sec-${n}-t`} className="flex-1 text-[17px] font-semibold tracking-[-0.015em]">{title}</h2>
         {aside && <span className="text-[12.5px] text-muted-foreground">{aside}</span>}
       </div>
-      <div className="space-y-4">{children}</div>
+      <div className="space-y-5">{children}</div>
     </section>
   );
 }

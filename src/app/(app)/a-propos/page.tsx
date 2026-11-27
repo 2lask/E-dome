@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Tag, Coins, Compass, ShieldCheck, Clock, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CineBand, CtaBand, PageHero, SectionHeading } from "@/components/marketing/blocks";
+import { Reveal } from "@/components/marketing/reveal";
+import { SpotlightCard } from "@/components/marketing/spotlight-card";
 import { formatNumber } from "@/lib/format";
 import { apporteurNetChf } from "@/lib/my-property";
 
@@ -40,81 +42,116 @@ const SOON = [
 export default function AProposPage() {
   const example = 800;
   return (
-    <div className="mx-auto max-w-4xl">
-      <p className="eyebrow">Comment ça marche</p>
-      <h1 className="page-heading mt-3 text-[36px] sm:text-[44px]">Le réseau immobilier où votre réseau vous rapporte</h1>
-      <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-foreground/80">
-        Les portails vous font payer pour être vu. Les agences prennent un pourcentage. E-Dome fait autrement : publier est
-        gratuit, et ceux qui connaissent le bon acheteur sont récompensés pour l&apos;avoir présenté.
-      </p>
+    <div className="mx-auto max-w-5xl">
+      <PageHero
+        eyebrow="Comment ça marche"
+        title={<>Le réseau immobilier <span className="cine-gold">où votre réseau vous rapporte</span></>}
+        lead={<p className="max-w-2xl">
+          Les portails vous font payer pour être vu. Les agences prennent un pourcentage. E-Dome fait autrement : publier est
+          gratuit, et ceux qui connaissent le bon acheteur sont récompensés pour l&apos;avoir présenté.
+        </p>}
+      />
 
-      <section className="mt-10 grid gap-3 md:grid-cols-3">
-        {ROLES.map((r) => (
-          <div key={r.t} className="rounded-2xl border bg-card p-5 shadow-xs">
-            <r.icon className="h-5 w-5 text-leman" aria-hidden />
-            <h2 className="mt-3 text-[15.5px] font-semibold">{r.t}</h2>
-            <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted-foreground">{r.d}</p>
-          </div>
-        ))}
+      <section aria-labelledby="roles" className="mt-20 md:mt-24">
+        <Reveal>
+          <SectionHeading center id="roles" eyebrow="Trois rôles" title={<>Une seule boucle, <span className="text-muted-foreground">trois façons d&apos;y entrer.</span></>} />
+        </Reveal>
+        <div className="relative mt-12 grid gap-4 md:grid-cols-3">
+          {ROLES.map((r, i) => (
+            <Reveal key={r.t} delay={i * 0.08}>
+              <SpotlightCard gold={i === 1} className="h-full p-6">
+                <span className={`relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl border ${i === 1 ? "border-laiton-border bg-laiton-soft text-laiton" : "bg-background text-leman"}`}>
+                  <r.icon className="h-6 w-6" aria-hidden />
+                </span>
+                <h3 className="mt-5 text-[18px] font-semibold tracking-[-0.015em]">{r.t}</h3>
+                <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{r.d}</p>
+              </SpotlightCard>
+            </Reveal>
+          ))}
+        </div>
       </section>
 
-      <section className="mt-12">
-        <h2 className="text-[22px] font-semibold tracking-[-0.02em]">Qui paie quoi</h2>
-        <dl className="mt-4 divide-y rounded-2xl border bg-card">
-          <div className="grid gap-1 p-5 sm:grid-cols-[220px_1fr]">
-            <dt className="text-[14px] font-semibold">Vendre ou louer</dt>
-            <dd className="text-[14px] text-muted-foreground"><strong className="text-foreground">0 CHF à E-Dome</strong> sur la transaction. Publier et recevoir des demandes est gratuit.</dd>
-          </div>
-          <div className="grid gap-1 p-5 sm:grid-cols-[220px_1fr]">
-            <dt className="text-[14px] font-semibold">La commission d&apos;apport (facultative)</dt>
-            <dd className="text-[14px] text-muted-foreground">
-              Fixée par le vendeur : un montant fixe, ou de 0,1 % à 3 % du prix de vente. Due quand la vente est conclue grâce à l&apos;apporteur (ou, pour un montant fixe, dès l&apos;acceptation du contact si le vendeur l&apos;a choisi). Sur une commission de {formatNumber(example)} CHF,
-              l&apos;apporteur reçoit <strong className="text-foreground">{formatNumber(apporteurNetChf(example))} CHF</strong> ; E-Dome retient 12 % (3 CHF au minimum).
-            </dd>
-          </div>
-          <div className="grid gap-1 p-5 sm:grid-cols-[220px_1fr]">
-            <dt className="text-[14px] font-semibold">Recommander</dt>
-            <dd className="text-[14px] text-muted-foreground">Gratuit. Rien n&apos;est jamais ajouté au prix payé par l&apos;acheteur.</dd>
-          </div>
+      <section aria-labelledby="qui-paie" className="mt-20 md:mt-24">
+        <Reveal>
+          <SectionHeading id="qui-paie" eyebrow="Transparence" title="Qui paie quoi" />
+        </Reveal>
+        <dl className="mt-8 grid gap-4 md:grid-cols-3">
+          <Reveal>
+            <div className="flex h-full flex-col rounded-3xl border bg-card p-6">
+              <dt className="text-[14px] font-semibold">Vendre ou louer</dt>
+              <dd aria-hidden className="mt-4 text-[48px] font-semibold leading-none tracking-[-0.04em]">0 <span className="text-[0.45em] text-muted-foreground">CHF</span></dd>
+              <dd className="mt-4 text-[14px] leading-relaxed text-muted-foreground"><strong className="text-foreground">0 CHF à E-Dome</strong> sur la transaction. Publier et recevoir des demandes est gratuit.</dd>
+            </div>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <div className="flex h-full flex-col rounded-3xl border border-laiton-border bg-gradient-to-br from-laiton-soft via-laiton-soft/30 to-card p-6">
+              <dt className="text-[14px] font-semibold">La commission d&apos;apport (facultative)</dt>
+              <dd aria-hidden className="mt-4 text-[48px] font-semibold leading-none tracking-[-0.04em] text-laiton">12 <span className="text-[0.45em]">% pour E-Dome</span></dd>
+              <dd className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
+                Fixée par le vendeur : un montant fixe, ou de 0,1 % à 3 % du prix de vente. Due quand la vente est conclue grâce à l&apos;apporteur (ou, pour un montant fixe, dès l&apos;acceptation du contact si le vendeur l&apos;a choisi). Sur une commission de {formatNumber(example)} CHF,
+                l&apos;apporteur reçoit <strong className="text-foreground">{formatNumber(apporteurNetChf(example))} CHF</strong> ; E-Dome retient 12 % (3 CHF au minimum).
+              </dd>
+            </div>
+          </Reveal>
+          <Reveal delay={0.16}>
+            <div className="flex h-full flex-col rounded-3xl border bg-card p-6">
+              <dt className="text-[14px] font-semibold">Recommander</dt>
+              <dd aria-hidden className="mt-4 text-[48px] font-semibold leading-none tracking-[-0.04em]">Gratuit</dd>
+              <dd className="mt-4 text-[14px] leading-relaxed text-muted-foreground">Gratuit. Rien n&apos;est jamais ajouté au prix payé par l&apos;acheteur.</dd>
+            </div>
+          </Reveal>
         </dl>
       </section>
 
-      <section className="mt-12">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5 text-leman" aria-hidden />
-          <h2 className="text-[22px] font-semibold tracking-[-0.02em]">Quatre règles, tenues par le produit</h2>
-        </div>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {RULES.map((r) => (
-            <li key={r.t} className="rounded-2xl border bg-card p-5">
-              <p className="text-[14.5px] font-semibold">{r.t}</p>
-              <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">{r.d}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <Reveal className="mt-20 md:mt-24">
+        <CineBand labelledBy="regles">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#5fd3c4]/30 bg-[#2daa9c]/15 text-[#8fe3d8]"><ShieldCheck className="h-5 w-5" aria-hidden /></span>
+            <h2 id="regles" className="text-[24px] font-semibold leading-tight tracking-[-0.03em] sm:text-[32px]">Quatre règles, tenues par le produit</h2>
+          </div>
+          <ul className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-2">
+            {RULES.map((r, i) => (
+              <li key={r.t} className="flex gap-4 bg-[#0e0d0a] p-5 sm:p-6">
+                <span className="font-mono text-[28px] font-semibold leading-none tracking-[-0.04em] text-[#e3b85c]/80">{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <p className="text-[15.5px] font-semibold">{r.t}</p>
+                  <p className="mt-1 text-[14px] leading-relaxed text-white/60">{r.d}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </CineBand>
+      </Reveal>
 
-      <section className="mt-12 rounded-2xl border border-dashed bg-card p-6">
-        <div className="flex items-center gap-2">
-          <Clock className="h-5 w-5 text-muted-foreground" aria-hidden />
-          <h2 className="text-[18px] font-semibold tracking-[-0.015em]">Ce qui n&apos;est pas encore en place</h2>
-        </div>
-        <p className="mt-1 text-[13.5px] text-muted-foreground">E-Dome vient d&apos;ouvrir. Plutôt que de faire semblant, voici ce qui arrive :</p>
-        <ul className="mt-4 space-y-2.5">
+      <section aria-labelledby="bientot" className="mt-20 md:mt-24">
+        <Reveal>
+          <div className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-muted-foreground" aria-hidden />
+            <h2 id="bientot" className="text-[24px] font-semibold tracking-[-0.025em] sm:text-[28px]">Ce qui n&apos;est pas encore en place</h2>
+          </div>
+          <p className="mt-2 text-[14.5px] text-muted-foreground">E-Dome vient d&apos;ouvrir. Plutôt que de faire semblant, voici ce qui arrive :</p>
+        </Reveal>
+        <ol className="relative mt-8 space-y-3 pl-8">
+          <span aria-hidden className="absolute bottom-4 left-[11px] top-4 border-l border-dashed border-foreground/25" />
           {SOON.map((s) => (
-            <li key={s} className="flex items-start gap-2.5 text-[14px] leading-relaxed">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground/60" aria-hidden />
-              {s}
+            <li key={s} className="relative rounded-2xl border border-dashed bg-card/60 p-4 text-[14.5px] leading-relaxed">
+              <span aria-hidden className="absolute -left-[27px] top-5 flex h-4 w-4 items-center justify-center rounded-full border border-foreground/30 bg-background">
+                <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+              </span>
+              <span className="mb-1.5 inline-block rounded-full bg-subtle px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">À venir</span>
+              <span className="block">{s}</span>
             </li>
           ))}
-        </ul>
+        </ol>
       </section>
 
-      <section className="mt-10 flex flex-wrap gap-2.5">
-        <Button asChild><Link href="/publier">Publier un bien</Link></Button>
-        <Button asChild variant="outline"><Link href="/apporteurs">Devenir apporteur <ArrowRight className="h-4 w-4" aria-hidden /></Link></Button>
-        <Button asChild variant="ghost"><Link href="/aide">Une question ?</Link></Button>
-      </section>
+      <Reveal className="mt-20 md:mt-24">
+        <CtaBand title={<>Publiez, recommandez <span className="cine-gold">ou posez-nous la question.</span></>}>
+          <Link href="/publier" className="cine-btn-light inline-flex h-12 items-center rounded-xl px-6 text-[15px] font-semibold">Publier un bien</Link>
+          <Link href="/apporteurs" className="cine-btn-gold inline-flex h-12 items-center gap-2 rounded-xl px-6 text-[15px] font-semibold">Devenir apporteur <ArrowRight className="h-4 w-4" aria-hidden /></Link>
+          <Link href="/aide" className="inline-flex h-12 items-center rounded-xl border border-white/20 px-6 text-[15px] font-semibold text-white/90 hover:bg-white/5">Une question ?</Link>
+        </CtaBand>
+      </Reveal>
     </div>
   );
 }

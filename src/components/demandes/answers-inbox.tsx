@@ -23,7 +23,7 @@ export function AnswersInbox({ answers }: { answers: SearchAnswer[] }) {
     <section aria-label="Propositions sur vos recherches" className="mb-8">
       <div className="mb-3 flex items-center gap-2">
         <Radar className="h-4 w-4 text-laiton" aria-hidden />
-        <h2 className="text-[15px] font-semibold">Propositions sur vos recherches</h2>
+        <h2 className="text-[16px] font-semibold tracking-[-0.01em]">Propositions sur vos recherches</h2>
         {pending.length > 0 && <span className="chip-prime rounded-full px-2 py-0.5 text-[11.5px] font-medium tabular-nums">{pending.length}</span>}
       </div>
       <ul className="grid gap-3 lg:grid-cols-2">
@@ -47,7 +47,8 @@ function AnswerCard({ a }: { a: SearchAnswer }) {
     });
 
   return (
-    <article className="flex h-full flex-col rounded-2xl border bg-card p-4 shadow-xs">
+    <article className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-laiton-border bg-card p-5 shadow-xs">
+      <div aria-hidden className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-laiton/70 to-transparent" />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[13px] text-muted-foreground"><span className="font-medium text-foreground">{a.authorName}</span> vous propose</p>
@@ -55,14 +56,14 @@ function AnswerCard({ a }: { a: SearchAnswer }) {
         </div>
         <span className="chip-prime shrink-0 rounded-lg px-2 py-1 text-[12.5px] font-semibold tabular-nums">{formatNumber(a.rewardChf)} CHF</span>
       </div>
-      <blockquote className="mt-3 whitespace-pre-line rounded-xl bg-subtle px-3 py-2.5 text-[13.5px] leading-snug">{a.pitch}</blockquote>
+      <blockquote className="mt-4 whitespace-pre-line rounded-2xl border-l-2 border-laiton bg-subtle px-3.5 py-3 text-[13.5px] leading-snug">{a.pitch}</blockquote>
       {a.propertyId && (
         <Link href={`/explorer/${a.propertyId}`} className="mt-2 inline-flex items-center gap-1 text-[13px] font-medium text-leman hover:underline">
           Voir l&apos;annonce proposée <ExternalLink className="h-3.5 w-3.5" aria-hidden />
         </Link>
       )}
       {a.status === "acceptee" ? (
-        <div className="mt-3 rounded-xl border border-leman/25 bg-leman-soft/50 p-3 text-[13px]">
+        <div className="mt-3 rounded-2xl border border-leman/25 bg-leman-soft/50 p-3.5 text-[13px]">
           <p className="font-medium">Acceptée · récompense due</p>
           {a.contact ? (
             <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
@@ -79,7 +80,7 @@ function AnswerCard({ a }: { a: SearchAnswer }) {
           <p className="mt-2 text-[12px] text-muted-foreground">
             Récompense fixe, due seulement si vous acceptez. Les coordonnées éventuelles apparaissent après acceptation. {relativeFr(a.createdAt)}.
           </p>
-          <div className="mt-auto flex flex-wrap gap-2 pt-4">
+          <div className="mt-auto flex flex-wrap gap-2 pt-4 [&_button]:h-11 [&_button]:rounded-xl sm:[&_button]:h-9 sm:[&_button]:rounded-lg">
             {confirming ? (
               <>
                 <Button variant="prime" size="sm" disabled={isPending} onClick={() => decide("acceptee")}><Check className="h-4 w-4" aria-hidden /> Confirmer · je dois {formatNumber(a.rewardChf)} CHF</Button>

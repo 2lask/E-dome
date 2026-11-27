@@ -26,15 +26,18 @@ const SOURCE_LABEL: Record<string, string> = {
 function CopyLine({ label, value }: { label: string; value: string }) {
   const [done, setDone] = useState(false);
   return (
-    <div className="flex items-center justify-between gap-2 rounded-lg bg-subtle/70 px-3 py-2 text-[13px]">
-      <span><span className="text-muted-foreground">{label} </span><span className="font-mono">{value}</span></span>
-      <button type="button" aria-label={`Copier ${label}`} className="text-muted-foreground hover:text-foreground"
+    <div className="flex items-center justify-between gap-2 rounded-xl border bg-subtle/60 py-1 pl-3.5 pr-1 text-[13px]">
+      <span className="min-w-0 break-all"><span className="text-muted-foreground">{label} </span><span className="font-mono">{value}</span></span>
+      <button type="button" aria-label={`Copier ${label}`} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
         onClick={() => { void navigator.clipboard.writeText(value.replace(/\s/g, "")); setDone(true); setTimeout(() => setDone(false), 1500); }}>
         {done ? <Check className="h-4 w-4 text-leman" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
       </button>
     </div>
   );
 }
+
+const STEPS = ["Dû", "Payé", "Confirmé"];
+const STEP_INDEX: Record<Settlement["status"], number> = { due: 0, declared: 1, confirmed: 2, disputed: 1 };
 
 export function SettlementCard({ s }: { s: Settlement }) {
   const router = useRouter();
@@ -64,30 +67,54 @@ export function SettlementCard({ s }: { s: Settlement }) {
     });
 
   return (
-    <li className={cn("rounded-2xl border bg-card p-5", todo && "border-laiton-border")}>
+    <li className={cn("relative overflow-hidden rounded-3xl border bg-card p-5 sm:p-6", todo && "border-laiton-border")}>
+      {todo && <div aria-hidden className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-laiton/70 to-transparent" />}
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[14px] font-semibold">
+        <div className="flex min-w-0 items-start gap-3">
+          <span aria-hidden className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-[14px] font-semibold",
+            s.role === "payee" ? "border-laiton-border bg-laiton-soft text-laiton" : "bg-subtle text-foreground")}>
+            {s.counterpartName.trim().charAt(0).toUpperCase() || "?"}
+          </span>
+          <div className="min-w-0">
+          <p className="text-[14.5px] font-semibold">
             {s.role === "payer" ? `À ${s.counterpartName}` : `De ${s.counterpartName}`}
             <span className="ml-2 font-normal text-muted-foreground">· {SOURCE_LABEL[s.sourceKind] ?? "commission due"} le {frDay(s.createdAt)}</span>
           </p>
           {s.label && <p className="mt-0.5 line-clamp-1 text-[13px] text-muted-foreground">{s.label}</p>}
+          </div>
         </div>
         <div className="text-right">
-          <p className="text-[20px] font-semibold tabular-nums text-laiton">{formatNumber(s.netChf)} CHF</p>
+          <p className="text-[24px] font-semibold tabular-nums tracking-[-0.02em] text-laiton">{formatNumber(s.netChf)} CHF</p>
           <p className="text-[11.5px] text-muted-foreground">sur {formatNumber(s.grossChf)} CHF · part E-Dome {formatNumber(s.feeChf)} CHF</p>
         </div>
       </div>
 
+      {/* Où en est le règlement : dû → payé → confirmé (déduit du statut réel). */}
+      {s.status !== "disputed" && (
+        <ol className="mt-4 grid grid-cols-3 gap-2" aria-label="Avancement du règlement">
+          {STEPS.map((label, i) => {
+            const reached = i <= STEP_INDEX[s.status];
+            return (
+              <li key={label} className="min-w-0">
+                <span className={cn("block h-1 rounded-full", reached ? (s.status === "confirmed" ? "bg-leman" : "bg-laiton") : "bg-subtle")} />
+                <span className={cn("mt-1.5 block truncate text-[11.5px]", reached ? "font-medium text-foreground" : "text-muted-foreground")}>
+                  {label}<span className="sr-only">{reached ? " (fait)" : " (à venir)"}</span>
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <span className={cn("rounded-md px-2 py-0.5 text-[12px] font-medium", todo ? "bg-laiton-soft text-laiton" : s.status === "confirmed" ? "bg-leman-soft text-leman" : "bg-subtle")}>{status}</span>
+        <span className={cn("rounded-full px-2.5 py-0.5 text-[12px] font-medium", todo ? "border border-laiton-border bg-laiton-soft text-laiton" : s.status === "confirmed" ? "bg-leman-soft text-leman" : "bg-subtle")}>{status}</span>
         {s.method && s.status !== "due" && <span className="text-[12px] text-muted-foreground">par {METHOD_LABEL[s.method]}{s.declaredAt ? ` le ${frDay(s.declaredAt)}` : ""}</span>}
       </div>
 
       {s.role === "payer" && s.status === "due" && (
         <div className="mt-4 space-y-3">
           {details === undefined ? (
-            <Button size="sm" variant="outline" onClick={showDetails} disabled={isPending}>Voir où verser</Button>
+            <Button size="sm" variant="outline" className="h-11 rounded-xl sm:h-9 sm:rounded-lg" onClick={showDetails} disabled={isPending}>Voir où verser</Button>
           ) : details === null ? (
             <p className="rounded-lg bg-subtle px-3 py-2 text-[13px]">{s.counterpartName} n&apos;a pas encore indiqué ses coordonnées de versement. Demandez-les-lui, ou revenez plus tard.</p>
           ) : (
@@ -98,7 +125,7 @@ export function SettlementCard({ s }: { s: Settlement }) {
             </div>
           )}
           {details !== undefined && s.feeChf > 0 && (
-            <div className="space-y-2 rounded-xl border border-dashed p-3">
+            <div className="space-y-2 rounded-2xl border border-dashed p-3.5">
               <p className="text-[13px]"><span className="font-semibold">Part E-Dome : {formatNumber(s.feeChf)} CHF</span> <span className="text-muted-foreground">(12 % de la commission de {formatNumber(s.grossChf)} CHF, déjà comprise dans le montant promis)</span></p>
               {edome ? (
                 <>
@@ -112,10 +139,10 @@ export function SettlementCard({ s }: { s: Settlement }) {
           )}
           <div className="flex flex-wrap items-center gap-2">
             <select value={method} onChange={(e) => setMethod(e.target.value as PayMethod)} aria-label="Moyen de paiement"
-              className="h-9 rounded-lg border border-input bg-card px-2 text-[13px]">
+              className="h-11 rounded-xl border border-input bg-card px-3 text-[13px] sm:h-9 sm:rounded-lg">
               {(Object.keys(METHOD_LABEL) as PayMethod[]).map((m) => <option key={m} value={m}>{METHOD_LABEL[m]}</option>)}
             </select>
-            <Button size="sm" variant="prime" disabled={isPending} onClick={() => run(() => declarePaid(s.id, method))}>
+            <Button size="sm" variant="prime" className="h-11 rounded-xl sm:h-9 sm:rounded-lg" disabled={isPending} onClick={() => run(() => declarePaid(s.id, method))}>
               {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}J&apos;ai payé {formatNumber(s.netChf)} CHF
             </Button>
           </div>
@@ -123,7 +150,7 @@ export function SettlementCard({ s }: { s: Settlement }) {
       )}
 
       {s.role === "payee" && s.status === "declared" && (
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2 [&_button]:h-11 [&_button]:rounded-xl sm:[&_button]:h-9 sm:[&_button]:rounded-lg">
           <Button size="sm" variant="accent" disabled={isPending} onClick={() => run(() => answerPayment(s.id, "confirmed"))}>J&apos;ai bien reçu le paiement</Button>
           <Button size="sm" variant="outline" disabled={isPending} onClick={() => run(() => answerPayment(s.id, "disputed"))}>Je n&apos;ai rien reçu</Button>
         </div>

@@ -6,8 +6,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Inbox, ArrowLeft, Mail, Phone, CalendarDays, Coins, Check, X, Plus, MessageCircle,
-  MessageSquareText, CircleDot, StickyNote, Building2, UserCheck, Database, FileCheck,
+  MessageSquareText, CircleDot, StickyNote, Building2, UserCheck, Database, FileCheck, ArrowRight,
 } from "lucide-react";
+import { MemberHero } from "@/components/demandes/member-hero";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import {
@@ -37,6 +38,8 @@ import { cn } from "@/lib/utils";
    Aucun chiffre inventé : tout vient de la base. */
 
 const chf = (n: number) => `${formatNumber(n)} CHF`;
+const initialsOf = (name: string) =>
+  name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("") || "?";
 
 type Filter = "ouvertes" | "toutes" | "closes";
 
@@ -76,15 +79,28 @@ export function DemandesInbox({
 
   return (
     <div className="mx-auto max-w-6xl">
-      <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="page-heading text-[28px]">Demandes</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Tout ce qui arrive sur vos biens : contacts, demandes de visite, mises en relation.
-          </p>
-        </div>
-        <BrowserAlertsButton />
-      </header>
+      <MemberHero
+        className="mb-6"
+        eyebrow="Vendeur"
+        icon={Inbox}
+        title="Demandes"
+        description="Tout ce qui arrive sur vos biens : contacts, demandes de visite, mises en relation."
+        actions={
+          /* Bouton partagé (layout/) : on l'habille pour le fond sombre sans le modifier. */
+          <div className="[&_button]:h-11 [&_button]:border-white/15 [&_button]:bg-white/[0.06] [&_button]:px-4 [&_button]:text-white/85 [&_button:hover]:bg-white/10 [&_button:hover]:text-white">
+            <BrowserAlertsButton />
+          </div>
+        }
+        stats={
+          demandes.length + pending.length === 0
+            ? undefined
+            : [
+                { label: "Ouvertes", value: String(counts.ouvertes) },
+                { label: "À décider", value: String(pending.length), prime: pending.length > 0 },
+                { label: "Closes", value: String(counts.closes) },
+              ]
+        }
+      />
 
       {!ready && <MigrationNotice />}
 
@@ -95,8 +111,9 @@ export function DemandesInbox({
       {demandes.length === 0 && ready ? (
         <EmptyInbox hasPending={pending.length > 0 || answers.length > 0} />
       ) : demandes.length > 0 ? (
-        <section aria-label="Boîte des demandes" className="overflow-hidden rounded-2xl border bg-card shadow-xs">
-          <div className="flex items-center gap-1 border-b px-3 py-2">
+        <section aria-label="Boîte des demandes" className="overflow-hidden rounded-3xl border bg-card shadow-xs">
+          <div className="flex items-center gap-3 border-b px-3 py-2.5 sm:px-4">
+            <div className="flex items-center gap-1 rounded-xl border bg-subtle/60 p-1">
             {(["ouvertes", "toutes", "closes"] as const).map((f) => (
               <button
                 key={f}
@@ -104,19 +121,20 @@ export function DemandesInbox({
                 onClick={() => { setFilter(f); setSelectedId(null); }}
                 aria-pressed={filter === f}
                 className={cn(
-                  "inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[13px]",
-                  filter === f ? "bg-accent font-medium text-foreground" : "text-muted-foreground hover:text-foreground",
+                  "inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-[13px] transition-colors",
+                  filter === f ? "bg-card font-medium text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {f === "ouvertes" ? "Ouvertes" : f === "toutes" ? "Toutes" : "Closes"}
-                <span className="tabular-nums text-[11.5px] text-muted-foreground">{counts[f]}</span>
+                <span className={cn("rounded-md px-1.5 tabular-nums text-[11px]", filter === f ? "bg-subtle text-foreground" : "text-muted-foreground")}>{counts[f]}</span>
               </button>
             ))}
+            </div>
           </div>
 
-          <div className="md:grid md:min-h-[520px] md:grid-cols-[340px_1fr]">
+          <div className="md:grid md:min-h-[560px] md:grid-cols-[360px_1fr]">
             {/* Liste — sur mobile, masquée quand une demande est ouverte. */}
-            <ul className={cn("divide-y md:border-r", selected && "hidden md:block")}>
+            <ul className={cn("divide-y md:border-r md:bg-subtle/20", selected && "hidden md:block")}>
               {visible.length === 0 ? (
                 <li className="px-4 py-10 text-center text-sm text-muted-foreground">Rien ici.</li>
               ) : (
@@ -159,7 +177,7 @@ function PendingSection({ pending }: { pending: PendingIntroduction[] }) {
   return (
     <section aria-label="Mises en relation à décider" className="mb-8">
       <div className="mb-3 flex items-center gap-2">
-        <h2 className="text-[15px] font-semibold">À décider</h2>
+        <h2 className="text-[16px] font-semibold tracking-[-0.01em]">À décider</h2>
         <span className="chip-prime rounded-full px-2 py-0.5 text-[11.5px] font-medium tabular-nums">{pending.length}</span>
       </div>
       <ul className="grid gap-3 lg:grid-cols-2">
@@ -193,10 +211,11 @@ function PendingCard({ p }: { p: PendingIntroduction }) {
     });
 
   return (
-    <article className="flex h-full flex-col rounded-2xl border bg-card p-4 shadow-xs">
+    <article className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-laiton-border bg-card p-5 shadow-xs">
+      <div aria-hidden className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-laiton/70 to-transparent" />
       <div className="flex items-start gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={p.property.cover} alt="" className="h-12 w-16 shrink-0 rounded-lg object-cover" />
+        <img src={p.property.cover} alt="" className="h-14 w-[72px] shrink-0 rounded-xl object-cover" />
         <div className="min-w-0 flex-1">
           <p className="text-[13px] text-muted-foreground">
             <span className="font-medium text-foreground">{p.apporteurName}</span> vous propose un contact
@@ -210,7 +229,7 @@ function PendingCard({ p }: { p: PendingIntroduction }) {
         </span>
       </div>
 
-      <blockquote className="mt-3 rounded-xl bg-subtle px-3 py-2.5 text-[13.5px] leading-snug">
+      <blockquote className="mt-4 rounded-2xl border-l-2 border-laiton bg-subtle px-3.5 py-3 text-[13.5px] leading-snug">
         {p.contactLabel}
       </blockquote>
       <p className="mt-2 text-[12px] leading-snug text-muted-foreground">
@@ -218,7 +237,7 @@ function PendingCard({ p }: { p: PendingIntroduction }) {
         (figées à la présentation du contact). {relativeFr(p.createdAt)}.
       </p>
 
-      <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
+      <div className="mt-auto flex flex-wrap items-center gap-2 pt-4 [&_button]:h-11 [&_button]:rounded-xl sm:[&_button]:h-9 sm:[&_button]:rounded-lg">
         {confirming ? (
           <>
             <Button variant="prime" size="sm" disabled={isPending} onClick={() => decide("acceptee")}>
@@ -261,14 +280,16 @@ function DemandeRow({ d, active, onClick }: { d: Demande; active: boolean; onCli
       onClick={onClick}
       aria-current={active ? "true" : undefined}
       className={cn(
-        "flex w-full gap-3 px-4 py-3 text-left",
-        active ? "bg-accent" : "hover:bg-accent/60",
+        "relative flex w-full gap-3 px-4 py-3.5 text-left transition-colors",
+        active ? "bg-card" : "hover:bg-accent/50",
       )}
     >
+      {active && <span aria-hidden className="absolute inset-y-2 left-0 w-[3px] rounded-r-full bg-leman" />}
       <span
         className={cn(
-          "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-background",
+          "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-background",
           d.kind === "apport" && "border-laiton-border bg-laiton-soft text-laiton",
+          d.kind === "visite" && "border-leman/30 bg-leman-soft text-leman",
         )}
       >
         <KindIcon kind={d.kind} className="h-4 w-4" />
@@ -347,12 +368,19 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
         </button>
       </div>
 
-      <div className="space-y-5 p-5">
+      <div className="space-y-6 p-5 sm:p-6">
         {/* Qui */}
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="eyebrow">{KIND_LABEL[d.kind]}</p>
-            <h2 className="mt-1 text-[19px] font-semibold tracking-[-0.015em]">{d.sender.name}</h2>
+            <div className="flex items-center gap-3">
+              <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-leman/25 to-leman/5 text-[15px] font-semibold text-leman ring-1 ring-leman/25">
+                {initialsOf(d.sender.name)}
+              </span>
+              <div className="min-w-0">
+                <p className="eyebrow">{KIND_LABEL[d.kind]}</p>
+                <h2 className="mt-0.5 truncate text-[21px] font-semibold tracking-[-0.02em]">{d.sender.name}</h2>
+              </div>
+            </div>
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
               {d.sender.email && (
                 <a href={`mailto:${d.sender.email}?subject=${encodeURIComponent(d.property.title)}`} className="inline-flex items-center gap-1.5 text-leman hover:underline">
@@ -365,7 +393,7 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
                 </a>
               )}
             </div>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-2 [&_a]:h-11 [&_a]:rounded-xl sm:[&_a]:h-9 sm:[&_a]:rounded-lg">
               {d.sender.phone && (
                 <Button asChild size="sm" variant="outline">
                   <a href={`tel:${d.sender.phone.replace(/\s/g, "")}`} onClick={contacted}><Phone className="h-4 w-4" aria-hidden /> Appeler</a>
@@ -389,10 +417,10 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
           </div>
           <Link
             href={`/explorer/${d.property.id}`}
-            className="flex max-w-full items-center gap-2.5 rounded-xl border bg-background p-1.5 pr-3 hover:border-foreground/20"
+            className="flex max-w-full items-center gap-2.5 rounded-2xl border bg-background p-1.5 pr-3 transition-colors hover:border-foreground/20"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={d.property.cover} alt="" className="h-9 w-12 shrink-0 rounded-lg object-cover" />
+            <img src={d.property.cover} alt="" className="h-11 w-14 shrink-0 rounded-xl object-cover" />
             <span className="min-w-0">
               <span className="block max-w-[220px] truncate text-[13px] font-medium">{d.property.title}</span>
               <span className="block text-[11.5px] text-muted-foreground">{d.property.city}</span>
@@ -402,9 +430,11 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
 
         {/* Lead attribué à un apporteur (lien tracé ou mise en relation) */}
         {d.attribution && terms && (
-          <div className="flex items-start gap-2.5 rounded-xl border border-laiton-border bg-laiton-soft/60 px-3.5 py-3 text-[13px]">
-            <Coins className="mt-0.5 h-4 w-4 shrink-0 text-laiton" aria-hidden />
-            <p>
+          <div className="relative flex items-start gap-3 overflow-hidden rounded-2xl border border-laiton-border bg-gradient-to-r from-laiton-soft to-laiton-soft/30 px-4 py-3.5 text-[13px]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-laiton-soft ring-1 ring-laiton-border">
+              <Coins className="h-4 w-4 text-laiton" aria-hidden />
+            </span>
+            <p className="pt-1">
               Lead apporté par <strong>{d.attribution.apporteurName}</strong>. Commission promise :{" "}
               <strong className="tabular-nums">{commissionLabel(terms)}</strong>, {dueLabel(terms)}.
               {d.status === "conclue" && d.salePrice ? <> Vendu {chf(d.salePrice)} — commission {chf(commissionChf(terms, d.salePrice) ?? 0)}.</> : null}
@@ -414,9 +444,11 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
 
         {/* Apport */}
         {d.introduction && !d.attribution && (
-          <div className="flex items-start gap-2.5 rounded-xl border border-laiton-border bg-laiton-soft/60 px-3.5 py-3 text-[13px]">
-            <Coins className="mt-0.5 h-4 w-4 shrink-0 text-laiton" aria-hidden />
-            <p>
+          <div className="relative flex items-start gap-3 overflow-hidden rounded-2xl border border-laiton-border bg-gradient-to-r from-laiton-soft to-laiton-soft/30 px-4 py-3.5 text-[13px]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-laiton-soft ring-1 ring-laiton-border">
+              <Coins className="h-4 w-4 text-laiton" aria-hidden />
+            </span>
+            <p className="pt-1">
               Apporté par <strong>{d.introduction.apporteurName}</strong>. Prime de{" "}
               <strong className="tabular-nums">{chf(d.introduction.amountChf)}</strong> due (acceptée) —
               l&apos;apporteur en touche {chf(apporteurNetChf(d.introduction.amountChf))} net.
@@ -439,7 +471,7 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
               Visite souhaitée le {new Date(d.preferredDate).toLocaleDateString("fr-CH", { weekday: "long", day: "numeric", month: "long" })}
             </p>
           )}
-          <p className="whitespace-pre-line rounded-xl bg-subtle px-4 py-3 text-[14px] leading-relaxed">
+          <p className="whitespace-pre-line rounded-2xl rounded-tl-md border bg-subtle/70 px-4 py-3.5 text-[14px] leading-relaxed">
             {d.message || <span className="text-muted-foreground">Pas de message.</span>}
           </p>
         </div>
@@ -461,12 +493,13 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
                   else move(s.value);
                 }}
                 className={cn(
-                  "h-8 rounded-full border px-3 text-[12.5px]",
+                  "inline-flex h-11 items-center gap-1.5 rounded-full border px-3.5 text-[12.5px] transition-colors sm:h-9",
                   d.status === s.value
-                    ? "border-leman bg-leman-soft font-medium text-leman"
+                    ? "border-leman bg-leman-soft font-semibold text-leman shadow-[0_0_0_3px_color-mix(in_oklab,var(--leman)_12%,transparent)]"
                     : "bg-card text-muted-foreground hover:border-foreground/25 hover:text-foreground",
                 )}
               >
+                {d.status === s.value && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-leman" />}
                 {s.short}
               </button>
             ))}
@@ -474,7 +507,7 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
         </div>
 
         {closing && d.status !== "conclue" && (
-          <div className="space-y-3 rounded-xl border border-leman/30 bg-leman-soft/40 p-4">
+          <div className="space-y-3 rounded-2xl border border-leman/30 bg-leman-soft/40 p-4 sm:p-5">
             <p className="text-[14px] font-semibold">Conclure : {d.attribution ? "la commission est calculée sur le prix final" : "bravo !"}</p>
             <label className="block">
               <span className="mb-1.5 block text-[13px] font-medium">Prix final (vente ou loyer signé)</span>
@@ -520,9 +553,9 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
               onChange={(e) => setNote(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && note.trim()) saveNote(); }}
               placeholder="Rappeler jeudi, budget confirmé…"
-              className="h-9 flex-1 rounded-lg border border-input bg-card px-3 text-[13px] outline-none focus:border-leman"
+              className="h-11 min-w-0 flex-1 rounded-xl border border-input bg-card px-3.5 text-[13.5px] outline-none transition-[border-color,box-shadow] focus:border-leman focus:ring-3 focus:ring-leman/15 sm:h-10"
             />
-            <Button variant="outline" size="sm" disabled={!note.trim() || isPending} onClick={saveNote}>
+            <Button variant="outline" size="sm" className="h-11 rounded-xl sm:h-10" disabled={!note.trim() || isPending} onClick={saveNote}>
               <Plus className="h-4 w-4" aria-hidden /> Ajouter
             </Button>
           </div>
@@ -537,7 +570,7 @@ function DemandeDetail({ d, onBack }: { d: Demande; onBack: () => void }) {
             <ol className="relative space-y-3 border-l pl-4">
               {events.map((e) => (
                 <li key={e.id} className="relative text-[12.5px]">
-                  <span className="absolute -left-[21px] top-0.5 flex h-2.5 w-2.5 rounded-full border-2 border-card bg-muted-foreground/50" />
+                  <span className="absolute -left-[22.5px] top-0.5 flex h-3 w-3 rounded-full border-2 border-card bg-leman/70 ring-2 ring-leman/15" />
                   <EventLine e={e} />
                   <span className="block text-[11.5px] text-muted-foreground">
                     {new Date(e.createdAt).toLocaleString("fr-CH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
@@ -582,22 +615,55 @@ function EventLine({ e }: { e: DemandeEvent }) {
 function EmptyInbox({ hasPending }: { hasPending: boolean }) {
   if (hasPending) return null;
   return (
-    <section className="rounded-2xl border border-dashed bg-card px-6 py-14 text-center">
-      <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-subtle">
-        <Inbox className="h-5 w-5 text-muted-foreground" aria-hidden />
-      </span>
-      <h2 className="mt-4 text-[16px] font-semibold">Aucune demande pour l&apos;instant</h2>
-      <p className="mx-auto mt-1.5 max-w-md text-[13.5px] leading-relaxed text-muted-foreground">
-        Les demandes arrivent ici quand quelqu&apos;un écrit ou demande une visite sur l&apos;un de vos biens. Ajoutez
-        une prime : les apporteurs vous amèneront des contacts qualifiés.
-      </p>
-      <div className="mt-5 flex flex-wrap justify-center gap-2">
-        <Button asChild>
-          <Link href="/publier"><Plus className="h-4 w-4" aria-hidden /> Publier un bien</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/mes-biens"><Building2 className="h-4 w-4" aria-hidden /> Mes biens et primes</Link>
-        </Button>
+    <section className="relative overflow-hidden rounded-3xl border bg-card">
+      <div aria-hidden className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-leman/50 to-transparent" />
+      <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-2 lg:items-center">
+        <div>
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl border bg-subtle">
+            <Inbox className="h-6 w-6 text-muted-foreground" aria-hidden />
+          </span>
+          <h2 className="mt-5 text-[22px] font-semibold tracking-[-0.02em]">Aucune demande pour l&apos;instant</h2>
+          <p className="mt-2 max-w-md text-[14px] leading-relaxed text-muted-foreground">
+            Les demandes arrivent ici quand quelqu&apos;un écrit ou demande une visite sur l&apos;un de vos biens. Proposez
+            une commission d&apos;apport : les apporteurs vous amèneront des contacts.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Button asChild className="h-11 rounded-xl px-5">
+              <Link href="/publier"><Plus className="h-4 w-4" aria-hidden /> Publier un bien</Link>
+            </Button>
+            <Button asChild variant="outline" className="h-11 rounded-xl px-5">
+              <Link href="/mes-biens"><Building2 className="h-4 w-4" aria-hidden /> Mes biens et primes</Link>
+            </Button>
+          </div>
+        </div>
+
+        {/* Le parcours d'une demande, avec les vraies étapes de la boîte. */}
+        <div className="rounded-2xl border bg-background/60 p-5">
+          <p className="eyebrow">Le parcours d&apos;une demande</p>
+          <ol className="mt-4 space-y-2.5">
+            {STATUS_FLOW.filter((s) => s.value !== "fermee").map((s, i, all) => (
+              <li key={s.value} className="relative flex items-center gap-3">
+                {i < all.length - 1 && <span aria-hidden className="absolute left-[15.5px] top-8 h-[calc(100%-22px)] w-px bg-border" />}
+                <span
+                  className={cn(
+                    "relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[11.5px] font-semibold tabular-nums",
+                    s.value === "conclue" ? "border-laiton-border bg-laiton-soft text-laiton" : "bg-card text-muted-foreground",
+                  )}
+                >
+                  {s.value === "conclue" ? <Check className="h-3.5 w-3.5" aria-hidden /> : i + 1}
+                </span>
+                <span className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-xl border bg-card px-3 py-2">
+                  <span className="text-[13.5px] font-medium">{s.label}</span>
+                  {s.value === "conclue" && (
+                    <span className="inline-flex items-center gap-1 text-[11.5px] text-laiton">
+                      Commission calculée <ArrowRight className="h-3 w-3" aria-hidden />
+                    </span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   );

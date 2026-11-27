@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Coins, Link2, Handshake, ShieldCheck, Activity } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, Coins, Link2, Handshake, ShieldCheck, Activity, Check, Plus, Sparkles } from "lucide-react";
+import { CtaBand, SectionHeading } from "@/components/marketing/blocks";
+import { Reveal } from "@/components/marketing/reveal";
+import { SpotlightCard } from "@/components/marketing/spotlight-card";
+import styles from "@/components/marketing/marketing.module.css";
 import { apporteurNetChf, type PrimedProperty } from "@/lib/my-property";
 import { commissionLabel, netForApporteur } from "@/lib/commission";
 import { formatNumber } from "@/lib/format";
@@ -75,93 +78,169 @@ export function GagnerPublic({ offers }: { offers: PrimedProperty[] }) {
         </div>
       </section>
 
-    <div className="mx-auto mt-14 max-w-5xl">
-      <section aria-label="Comment ça marche" className="grid gap-3 md:grid-cols-3">
-        {[
-          { icon: Coins, t: "Choisissez un bien", d: "Chaque bien affiche sa commission et ce que vous touchez, net, avant toute démarche." },
-          { icon: Link2, t: "Partagez votre lien", d: "Un lien personnel par bien. WhatsApp, SMS, e-mail : chaque visite et chaque contact sont suivis en direct." },
-          { icon: Handshake, t: "Vente conclue, vous êtes payé", d: "La commission est calculée sur le prix final et réglée par le vendeur. Tout est horodaté." },
-        ].map((s, i) => (
-          <div key={s.t} className="rounded-2xl border bg-card p-5 shadow-xs">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-laiton-border bg-laiton-soft text-laiton">
-                <s.icon className="h-[18px] w-[18px]" aria-hidden />
-              </span>
-              <span className="font-mono text-[12px] text-muted-foreground">0{i + 1}</span>
-            </div>
-            <h2 className="mt-4 text-[15.5px] font-semibold">{s.t}</h2>
-            <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">{s.d}</p>
-          </div>
-        ))}
+    <div className="mx-auto mt-16 max-w-5xl md:mt-24">
+      <section aria-labelledby="comment" >
+        <Reveal>
+          <SectionHeading center id="comment" eyebrow="Comment ça marche" title={<>Trois gestes, <span className="text-muted-foreground">la commission au bout.</span></>} />
+        </Reveal>
+        <ol className="relative mt-12 grid gap-4 md:grid-cols-3 md:gap-6">
+          <li aria-hidden className="pointer-events-none absolute left-[16.6%] right-[16.6%] top-[22px] hidden h-3 overflow-hidden md:block">
+            <span className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-laiton/30 via-laiton/70 to-laiton/30" />
+            <span className={styles.beamX} style={{ ["--beam-run" as string]: "640px" }} />
+          </li>
+          {[
+            { icon: Coins, t: "Choisissez un bien", d: "Chaque bien affiche sa commission et ce que vous touchez, net, avant toute démarche." },
+            { icon: Link2, t: "Partagez votre lien", d: "Un lien personnel par bien. WhatsApp, SMS, e-mail : chaque visite et chaque contact sont suivis en direct." },
+            { icon: Handshake, t: "Vente conclue, vous êtes payé", d: "La commission est calculée sur le prix final et réglée par le vendeur. Tout est horodaté." },
+          ].map((s, i) => (
+            <li key={s.t} className="relative">
+              <Reveal delay={i * 0.1} className="flex h-full flex-col items-start md:items-center md:text-center">
+                <span className="relative z-10 flex h-11 w-11 items-center justify-center">
+                  <span aria-hidden className={`absolute inset-0 rounded-full bg-laiton/25 ${styles.ping}`} style={{ animationDelay: `${i * 0.5}s` }} />
+                  <span className="relative flex h-11 w-11 items-center justify-center rounded-full border border-laiton-border bg-background font-mono text-[12.5px] font-semibold text-laiton shadow-[0_0_0_6px_var(--background)]">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </span>
+                <SpotlightCard className="mt-5 w-full flex-1 p-6 text-left">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-laiton-border bg-laiton-soft text-laiton">
+                    <s.icon className="h-5 w-5" aria-hidden />
+                  </span>
+                  <h3 className="mt-4 text-[17px] font-semibold tracking-[-0.015em]">{s.t}</h3>
+                  <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">{s.d}</p>
+                </SpotlightCard>
+              </Reveal>
+            </li>
+          ))}
+        </ol>
       </section>
 
       {/* Les vrais biens à commission */}
-      <section id="biens" className="mt-12 scroll-mt-20">
-        <h2 className="text-[22px] font-semibold tracking-[-0.02em]">Biens à commission</h2>
+      <section id="biens" aria-labelledby="biens-t" className="mt-20 scroll-mt-20 md:mt-24">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <SectionHeading id="biens-t" eyebrow="En ce moment" title="Biens à commission" />
+            {offers.length > 0 && (
+              <span className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-[13px] text-muted-foreground">
+                <span className="live-dot h-1.5 w-1.5 rounded-full bg-leman" aria-hidden />
+                <strong className="tabular-nums text-foreground">{offers.length}</strong> bien{offers.length > 1 ? "s" : ""}
+              </span>
+            )}
+          </div>
+        </Reveal>
         {offers.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed bg-card px-6 py-10 text-center">
-            <p className="text-[15px] font-medium">Les premiers biens à commission arrivent</p>
-            <p className="mx-auto mt-1 max-w-md text-[13.5px] text-muted-foreground">
+          <div className="mt-6 rounded-3xl border border-dashed bg-card px-6 py-12 text-center">
+            <Sparkles className="mx-auto h-6 w-6 text-laiton" aria-hidden />
+            <p className="mt-3 text-[16px] font-semibold">Les premiers biens à commission arrivent</p>
+            <p className="mx-auto mt-1 max-w-md text-[14px] text-muted-foreground">
               E-Dome vient d&apos;ouvrir. Créez votre compte : vous verrez les biens à commission dès leur publication.
             </p>
           </div>
         ) : (
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {offers.slice(0, 8).map((o) => (
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+            {offers.slice(0, 8).map((o, i) => (
               <li key={o.primeId}>
-                <Link href={`/explorer/${o.propertyId}`} className="flex items-center gap-4 rounded-2xl border bg-card p-3.5 shadow-xs transition-colors hover:border-foreground/20">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={o.cover} alt="" className="h-16 w-20 shrink-0 rounded-lg object-cover" loading="lazy" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-semibold">{o.title}</span>
-                    <span className="block text-[12.5px] text-muted-foreground">
-                      {o.city} · {o.transactionType === "vente" ? "Vente" : "Location"} · {commissionLabel(o.terms)}
+                <Reveal delay={Math.min(i, 4) * 0.06}>
+                  <Link href={`/explorer/${o.propertyId}`} className="group flex items-center gap-4 rounded-3xl border bg-card p-3 transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-laiton-border motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                    <span className="relative h-20 w-24 shrink-0 overflow-hidden rounded-2xl sm:h-24 sm:w-32">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={o.cover} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none" loading="lazy" />
                     </span>
-                  </span>
-                  <span className="text-right">
-                    <span className="block text-[17px] font-semibold tabular-nums text-laiton">
-                      {o.terms.kind === "pourcentage" ? "≈ " : ""}{formatNumber(Math.round(netForApporteur(o.amountChf)))} CHF
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[15px] font-semibold">{o.title}</span>
+                      <span className="mt-0.5 block text-[12.5px] text-muted-foreground">
+                        {o.city} · {o.transactionType === "vente" ? "Vente" : "Location"} · {commissionLabel(o.terms)}
+                      </span>
+                      <span className="mt-2 inline-flex items-baseline gap-1.5 rounded-lg border border-laiton-border bg-laiton-soft px-2 py-1">
+                        <span className="text-[15px] font-semibold tabular-nums text-laiton">
+                          {o.terms.kind === "pourcentage" ? "≈ " : ""}{formatNumber(Math.round(netForApporteur(o.amountChf)))} CHF
+                        </span>
+                        <span className="text-[11.5px] text-muted-foreground">net pour vous</span>
+                      </span>
                     </span>
-                    <span className="block text-[11.5px] text-muted-foreground">net pour vous</span>
-                  </span>
-                </Link>
+                    <ArrowRight className="mr-2 hidden h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-laiton sm:block" aria-hidden />
+                  </Link>
+                </Reveal>
               </li>
             ))}
           </ul>
         )}
       </section>
 
-      <section className="mt-12 grid gap-3 md:grid-cols-3">
-        {[
-          { icon: Activity, t: "Suivi en temps réel", d: "Clics, contacts et ventes de vos liens s'affichent à l'instant dans votre tableau de bord." },
-          { icon: ShieldCheck, t: "Un cadre légal clair", d: "Courtage d'indication (art. 412 ss CO) : conditions acceptées en ligne par le vendeur et horodatées." },
-          { icon: Coins, t: "Votre argent, en direct", d: "Le vendeur vous paie directement. E-Dome suit le règlement, sans jamais détenir les fonds." },
-        ].map((c) => (
-          <div key={c.t} className="rounded-2xl border bg-card p-5">
-            <c.icon className="h-5 w-5 text-leman" aria-hidden />
-            <p className="mt-3 text-[15px] font-semibold">{c.t}</p>
-            <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">{c.d}</p>
-          </div>
-        ))}
-      </section>
-
-      <section className="mt-12">
-        <h2 className="text-[22px] font-semibold tracking-[-0.02em]">Questions fréquentes</h2>
-        <dl className="mt-4 divide-y rounded-2xl border bg-card">
-          {FAQ.map((f) => (
-            <div key={f.q} className="p-5">
-              <dt className="text-[14.5px] font-semibold">{f.q}</dt>
-              <dd className="mt-1.5 text-[13.5px] leading-relaxed text-muted-foreground">{f.a}</dd>
+      <section aria-label="Garanties" className="mt-20 grid gap-4 md:mt-24 md:grid-cols-6">
+        <Reveal className="md:col-span-3">
+          <SpotlightCard className="h-full p-6 sm:p-7">
+            <div className="flex items-center justify-between">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-leman-soft text-leman"><Activity className="h-5 w-5" aria-hidden /></span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-subtle px-2.5 py-1 text-[11.5px] text-muted-foreground"><span className="live-dot h-1.5 w-1.5 rounded-full bg-leman" aria-hidden />En direct</span>
             </div>
-          ))}
-        </dl>
+            <p className="mt-4 text-[17px] font-semibold">Suivi en temps réel</p>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">Clics, contacts et ventes de vos liens s&apos;affichent à l&apos;instant dans votre tableau de bord.</p>
+            <svg viewBox="0 0 300 64" className="mt-5 h-16 w-full" aria-hidden>
+              {[14, 22, 18, 30, 26, 38, 32, 46, 40, 54, 48, 60].map((h, i) => (
+                <rect key={i} x={i * 25 + 2} y={64 - h} width="17" height={h} rx="4" className={i === 11 ? "fill-laiton" : "fill-leman/40"} />
+              ))}
+            </svg>
+            <p className="mt-1 text-right text-[11px] text-muted-foreground">illustration</p>
+          </SpotlightCard>
+        </Reveal>
+        <Reveal className="md:col-span-3" delay={0.08}>
+          <SpotlightCard className="h-full p-6 sm:p-7">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-leman-soft text-leman"><ShieldCheck className="h-5 w-5" aria-hidden /></span>
+            <p className="mt-4 text-[17px] font-semibold">Un cadre légal clair</p>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">Courtage d&apos;indication (art. 412 ss CO) : conditions acceptées en ligne par le vendeur et horodatées.</p>
+            <div aria-hidden className="mt-5 space-y-2">
+              {["Conditions acceptées", "Contact horodaté", "Commission figée"].map((t) => (
+                <div key={t} className="flex items-center gap-2.5 rounded-xl border bg-background px-3 py-2 text-[13px]">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-leman-soft text-leman"><Check className="h-3 w-3" strokeWidth={3} /></span>{t}
+                </div>
+              ))}
+            </div>
+          </SpotlightCard>
+        </Reveal>
+        <Reveal className="md:col-span-6" delay={0.12}>
+          <SpotlightCard gold className="p-6 sm:p-7">
+            <div className="grid items-center gap-5 sm:grid-cols-[auto_1fr]">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-laiton-border bg-card/60 text-laiton"><Coins className="h-6 w-6" aria-hidden /></span>
+              <div>
+                <p className="text-[17px] font-semibold">Votre argent, en direct</p>
+                <p className="mt-1 text-[14px] leading-relaxed text-muted-foreground">Le vendeur vous paie directement. E-Dome suit le règlement, sans jamais détenir les fonds.</p>
+              </div>
+            </div>
+          </SpotlightCard>
+        </Reveal>
       </section>
 
-      <section className="mt-10 flex flex-col items-start gap-4 rounded-2xl bg-ink p-6 text-paper sm:flex-row sm:items-center md:p-8 dark:bg-card dark:text-foreground">
-        <ShieldCheck className="h-6 w-6 text-[#e3b85c]" aria-hidden />
-        <p className="flex-1 text-[15px] font-medium">Votre réseau vaut de l&apos;argent. Créer un compte est gratuit.</p>
-        <Button asChild variant="prime"><Link href={SIGNUP}>Devenir apporteur</Link></Button>
+      <section aria-labelledby="faq" className="mt-20 grid gap-8 md:mt-24 lg:grid-cols-[1fr_1.6fr] lg:gap-12">
+        <div>
+          <div className="lg:sticky lg:top-8">
+            <SectionHeading id="faq" eyebrow="FAQ" title="Questions fréquentes" lead="Ce qu'il faut savoir avant de partager votre premier lien." />
+            <Link href="/aide" className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-[14px] font-semibold text-leman hover:underline">
+              Toute l&apos;aide <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
+        </div>
+        <div className="space-y-2.5">
+          {FAQ.map((f, i) => (
+            <details key={f.q} open={i === 0} className="group rounded-2xl border bg-card transition-colors open:border-laiton-border open:bg-gradient-to-br open:from-laiton-soft/60 open:to-card hover:border-foreground/20">
+              <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 rounded-2xl px-5 py-4 text-[15px] font-medium [&::-webkit-details-marker]:hidden">
+                {f.q}
+                <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-background text-muted-foreground transition-transform duration-300 group-open:rotate-45 group-open:border-laiton-border group-open:text-laiton motion-reduce:transition-none">
+                  <Plus className="h-4 w-4" />
+                </span>
+              </summary>
+              <p className="px-5 pb-5 text-[14.5px] leading-relaxed text-muted-foreground">{f.a}</p>
+            </details>
+          ))}
+        </div>
       </section>
+
+      <Reveal className="mt-20 md:mt-24">
+        <CtaBand title={<>Votre réseau vaut de l&apos;argent. <span className="cine-gold">Créer un compte est gratuit.</span></>}>
+          <Link href={SIGNUP} className="cine-btn-gold inline-flex h-12 items-center gap-2 rounded-xl px-6 text-[15px] font-semibold">
+            Devenir apporteur <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+        </CtaBand>
+      </Reveal>
     </div>
     </>
   );
@@ -188,7 +267,7 @@ function Simulator({ className = "", stacked = false }: { className?: string; st
           <div role="tablist" aria-label="Type de transaction" className="mt-5 inline-flex rounded-xl border bg-background p-1">
             {(["vente", "location"] as const).map((m) => (
               <button key={m} role="tab" aria-selected={mode === m} onClick={() => setMode(m)}
-                className={`rounded-lg px-4 py-1.5 text-[13.5px] font-medium transition-colors ${mode === m ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}>
+                className={`min-h-[40px] rounded-lg px-5 text-[13.5px] font-medium transition-colors ${mode === m ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}>
                 {m === "vente" ? "Vente" : "Location"}
               </button>
             ))}
@@ -212,6 +291,10 @@ function Simulator({ className = "", stacked = false }: { className?: string; st
           <p className="relative text-[44px] font-semibold leading-none tracking-[-0.03em] tabular-nums text-laiton" aria-live="polite">
             {formatNumber(Math.round(net))} CHF
           </p>
+          <div aria-hidden className="relative mt-1 flex h-2 overflow-hidden rounded-full bg-background/60">
+            <span className="h-full bg-gradient-to-r from-laiton/70 to-laiton transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${gross > 0 ? Math.max(0, Math.min(100, (net / gross) * 100)) : 0}%` }} />
+            <span className="h-full flex-1 bg-leman/70" />
+          </div>
           <dl className="relative mt-2 space-y-1 text-[13px] text-muted-foreground">
             <div className="flex justify-between"><dt>Commission payée par le vendeur</dt><dd className="tabular-nums">{formatNumber(Math.round(gross))} CHF</dd></div>
             <div className="flex justify-between"><dt>Part E-Dome (12 %)</dt><dd className="tabular-nums">− {formatNumber(Math.round(fee))} CHF</dd></div>
@@ -226,14 +309,21 @@ function Simulator({ className = "", stacked = false }: { className?: string; st
 function Range({ label, value, min, max, step, v, on }: {
   label: string; value: string; min: number; max: number; step: number; v: number; on: (n: number) => void;
 }) {
+  const pct = ((v - min) / (max - min)) * 100;
   return (
     <label className="block">
       <span className="flex items-baseline justify-between gap-3">
         <span className="text-[13.5px] text-muted-foreground">{label}</span>
-        <span className="text-[16px] font-semibold tabular-nums">{value}</span>
+        <span className="text-[17px] font-semibold tabular-nums">{value}</span>
       </span>
       <input type="range" min={min} max={max} step={step} value={v} onChange={(e) => on(Number(e.target.value))}
-        className="mt-2.5 w-full accent-[var(--laiton)]" />
+        style={{ ["--p" as string]: `${pct}%` }}
+        className="mt-1 h-11 w-full cursor-pointer appearance-none bg-transparent
+          [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,#e3b85c_var(--p),rgb(255_255_255/0.14)_var(--p))]
+          [&::-webkit-slider-thumb]:-mt-2 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-[#1a1307] [&::-webkit-slider-thumb]:bg-[#f7d488] [&::-webkit-slider-thumb]:shadow-[0_0_0_4px_rgb(227_184_92/0.25),0_4px_14px_rgb(217_164_65/0.6)]
+          [&::-moz-range-track]:h-2 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-[rgb(255_255_255/0.14)]
+          [&::-moz-range-progress]:h-2 [&::-moz-range-progress]:rounded-full [&::-moz-range-progress]:bg-[#e3b85c]
+          [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-[#1a1307] [&::-moz-range-thumb]:bg-[#f7d488]" />
     </label>
   );
 }

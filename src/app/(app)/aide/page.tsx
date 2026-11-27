@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ArrowRight, MessageCircle, Plus } from "lucide-react";
+import { CtaBand, PageHero } from "@/components/marketing/blocks";
+import { TocNav } from "@/components/marketing/toc-nav";
 import { formatNumber } from "@/lib/format";
 import { apporteurNetChf } from "@/lib/my-property";
 
@@ -114,38 +116,75 @@ const SECTIONS: { title: string; items: { q: string; a: React.ReactNode }[] }[] 
 ];
 
 export default function AidePage() {
+  const toc = SECTIONS.map((s) => ({ id: slug(s.title), label: s.title }));
+  const total = SECTIONS.reduce((n, s) => n + s.items.length, 0);
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="page-heading text-[32px]">Aide</h1>
-      <p className="mt-1.5 text-[14.5px] text-muted-foreground">
-        Les réponses aux questions les plus fréquentes. Pour le reste, <Link href="/contact" className="text-leman hover:underline">écrivez-nous</Link>.
-      </p>
+    <div className="mx-auto max-w-6xl">
+      <PageHero
+        eyebrow="Centre d'aide"
+        title={<>Aide</>}
+        lead={<>Les réponses aux questions les plus fréquentes. Pour le reste, <Link href="/contact" className="font-medium text-[#f7d488] underline-offset-4 hover:underline">écrivez-nous</Link>.</>}
+        aside={
+          <div className="cine-glass ml-auto max-w-xs rounded-3xl p-5">
+            <p className="text-[12px] uppercase tracking-[0.16em] text-white/50">Dans cette page</p>
+            <p className="mt-2 text-[44px] font-semibold leading-none tracking-[-0.04em] tabular-nums">{total}</p>
+            <p className="mt-1 text-[13.5px] text-white/60">réponses, en {SECTIONS.length} thèmes</p>
+          </div>
+        }
+      />
 
-      <nav aria-label="Sections de l'aide" className="mt-6 flex flex-wrap gap-2">
+      <nav aria-label="Sections de l'aide" className="mt-8 flex flex-wrap gap-2 lg:hidden">
         {SECTIONS.map((s) => (
-          <a key={s.title} href={`#${slug(s.title)}`} className="rounded-full border bg-card px-3 py-1.5 text-[13px] hover:border-foreground/25">
+          <a key={s.title} href={`#${slug(s.title)}`} className="inline-flex min-h-[44px] items-center rounded-full border bg-card px-4 text-[13.5px] hover:border-laiton-border">
             {s.title}
           </a>
         ))}
       </nav>
 
-      <div className="mt-8 space-y-10">
-        {SECTIONS.map((s) => (
-          <section key={s.title} id={slug(s.title)} className="scroll-mt-20">
-            <h2 className="text-[18px] font-semibold tracking-[-0.015em]">{s.title}</h2>
-            <div className="mt-3 divide-y overflow-hidden rounded-2xl border bg-card">
-              {s.items.map((it) => (
-                <details key={it.q} className="group">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-[14.5px] font-medium hover:bg-accent/40 [&::-webkit-details-marker]:hidden">
-                    {it.q}
-                    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
-                  </summary>
-                  <div className="px-5 pb-4 text-[14px] leading-relaxed text-muted-foreground">{it.a}</div>
-                </details>
-              ))}
+      <div className="mt-8 grid gap-10 lg:mt-14 lg:grid-cols-[230px_1fr] lg:gap-14">
+        <aside className="hidden lg:block">
+          <div className="sticky top-8 space-y-6">
+            <TocNav items={toc} label="Sommaire de l'aide" title="Sommaire" numbered />
+            <div className="relative overflow-hidden rounded-2xl border border-laiton-border bg-gradient-to-br from-laiton-soft to-card p-4">
+              <MessageCircle className="h-5 w-5 text-laiton" aria-hidden />
+              <p className="mt-2 text-[14px] font-semibold">Pas de réponse ici ?</p>
+              <Link href="/contact" className="mt-1 inline-flex min-h-[44px] items-center gap-1.5 text-[13.5px] font-medium text-laiton hover:underline">
+                Écrivez-nous <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+              </Link>
             </div>
-          </section>
-        ))}
+          </div>
+        </aside>
+
+        <div className="min-w-0 space-y-14">
+          {SECTIONS.map((s, si) => (
+            <section key={s.title} id={slug(s.title)} aria-labelledby={`${slug(s.title)}-t`} className="scroll-mt-20">
+              <div className="flex items-baseline gap-3">
+                <span className="font-mono text-[12px] font-semibold text-laiton">{String(si + 1).padStart(2, "0")}</span>
+                <h2 id={`${slug(s.title)}-t`} className="text-[24px] font-semibold tracking-[-0.025em]">{s.title}</h2>
+                <span aria-hidden className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+              </div>
+              <div className="mt-5 space-y-2.5">
+                {s.items.map((it) => (
+                  <details key={it.q} className="group rounded-2xl border bg-card transition-colors open:border-laiton-border open:bg-gradient-to-br open:from-laiton-soft/60 open:to-card hover:border-foreground/20">
+                    <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 rounded-2xl px-5 py-4 text-[15px] font-medium [&::-webkit-details-marker]:hidden">
+                      {it.q}
+                      <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-background text-muted-foreground transition-transform duration-300 group-open:rotate-45 group-open:border-laiton-border group-open:text-laiton motion-reduce:transition-none">
+                        <Plus className="h-4 w-4" />
+                      </span>
+                    </summary>
+                    <div className="px-5 pb-5 text-[14.5px] leading-relaxed text-muted-foreground">{it.a}</div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          ))}
+
+          <CtaBand title="Une question sans réponse ?" text="Décrivez-la depuis la page Contact : nous vous répondons par e-mail.">
+            <Link href="/contact" className="cine-btn-gold inline-flex h-12 items-center gap-2 rounded-xl px-6 text-[15px] font-semibold">
+              Nous écrire <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </CtaBand>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
-"use client";
-
+import type { Metadata } from "next";
 import React from "react";
+import { LegalDocument, LegalSection } from "@/components/legal/legal-document";
+
+export const metadata: Metadata = { title: "Politique de confidentialité" };
 
 /* ─── Rendu du gras ──────────────────────────────────────────────────────────
 
@@ -21,7 +23,7 @@ function RichText({ text }: { text: string }) {
         /* Les indices impairs sont les captures, donc le contenu à mettre en
            gras ; les pairs sont le texte qui les entoure. */
         i % 2 === 1 ? (
-          <strong key={i} className="font-semibold text-[var(--foreground)]">
+          <strong key={i} className="font-semibold text-foreground">
             {part}
           </strong>
         ) : (
@@ -129,48 +131,21 @@ Vos droits : vous pouvez demander à consulter, corriger, exporter ou supprimer 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 
 export default function ConfidentialitePage() {
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-10 animate-fade-in">
-      {/* Demo disclaimer */}
-      <div className="p-4 rounded-xl border border-[var(--primary)]/40 bg-[var(--primary)]/5 text-xs text-[var(--text-secondary)] leading-relaxed">
-        <span className="mr-1">&#9888;&#65039;</span>
-        Ce document est fourni à titre indicatif dans le cadre de la maquette de démonstration E-Dome. Il ne constitue pas un document légal contraignant.
-      </div>
-
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl page-heading text-[var(--foreground)]">Politique de Confidentialite</h1>
-        <p className="text-[var(--text-secondary)]">Dernière mise à jour : 1er janvier 2026</p>
-      </div>
-
-      {/* Table of contents */}
-      <nav className="p-6 rounded-xl bg-[var(--card)] border border-[var(--card-border)] space-y-2">
-        <h2 className="font-semibold text-[var(--foreground)] mb-3">Table des matières</h2>
-        {SECTIONS.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => scrollTo(s.id)}
-            className="block text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition text-left"
-          >
-            {s.title}
-          </button>
-        ))}
-      </nav>
-
-      {/* Sections */}
-      <div className="space-y-8">
-        {SECTIONS.map((s) => (
-          <section key={s.id} id={s.id} className="scroll-mt-24 space-y-3">
-            <h2 className="text-xl font-semibold text-[var(--foreground)]">{s.title}</h2>
-            <div className="text-[var(--text-secondary)] leading-relaxed whitespace-pre-line">
-              <RichText text={s.content} />
-            </div>
-          </section>
-        ))}
-      </div>
-    </div>
+    <LegalDocument
+      title="Politique de Confidentialite"
+      updated="Dernière mise à jour : 1er janvier 2026"
+      disclaimer="Ce document est fourni à titre indicatif dans le cadre de la maquette de démonstration E-Dome. Il ne constitue pas un document légal contraignant."
+      tocTitle="Table des matières"
+      toc={SECTIONS.map((s) => ({ id: s.id, label: s.title }))}
+    >
+      {SECTIONS.map((s) => (
+        <LegalSection key={s.id} id={s.id} title={s.title}>
+          <div className="whitespace-pre-line">
+            <RichText text={s.content} />
+          </div>
+        </LegalSection>
+      ))}
+    </LegalDocument>
   );
 }

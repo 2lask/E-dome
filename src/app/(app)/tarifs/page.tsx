@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, Coins, Home, Link2 } from "lucide-react";
+import { ArrowRight, Building2, Coins, Home, Link2, Scale } from "lucide-react";
+import { CineBand, CtaBand } from "@/components/marketing/blocks";
+import { CommissionFlow } from "@/components/marketing/commission-flow";
+import { PriceCard } from "@/components/marketing/price-card";
+import { Reveal } from "@/components/marketing/reveal";
+import { SpotlightCard } from "@/components/marketing/spotlight-card";
 import { apporteurNetChf } from "@/lib/my-property";
 import { formatNumber } from "@/lib/format";
 
@@ -39,90 +44,84 @@ export default function TarifsPage() {
         </div>
       </header>
 
-      <section aria-label="Qui paie quoi" className="mt-8 grid gap-4 md:grid-cols-3">
-        <Card icon={Home} title="Vous vendez ou louez" price="0 CHF"
-          items={["Publication illimitée, photos et vidéo", "Demandes, offres et suivi jusqu'à l'acte", "Tableau de bord en temps réel", "Commission d'apport facultative, fixée par vous"]} />
-        <Card icon={Link2} title="Vous recommandez" price="0 CHF" gold
-          items={["Un lien personnel par bien", "Suivi de vos clics, leads et ventes", "88 % de la commission pour vous", "Paiement direct du vendeur (TWINT, virement)"]} />
-        <Card icon={Coins} title="E-Dome" price="12 %"
-          sub="de la commission d'apport, 3 CHF au minimum"
-          items={["Seulement si une commission est due", "Compris dans la commission, jamais ajouté au prix", "Rien sur une vente sans apporteur", "E-Dome ne détient jamais les fonds"]} />
+      <section aria-label="Qui paie quoi" className="mt-12 grid items-stretch gap-4 md:mt-16 md:grid-cols-3">
+        <Reveal>
+          <PriceCard icon={<Home className="h-5 w-5" aria-hidden />} title="Vous vendez ou louez" price="0 CHF"
+            items={["Publication illimitée, photos et vidéo", "Demandes, offres et suivi jusqu'à l'acte", "Tableau de bord en temps réel", "Commission d'apport facultative, fixée par vous"]} />
+        </Reveal>
+        <Reveal delay={0.08}>
+          <PriceCard featured tag="88 % pour vous" icon={<Link2 className="h-5 w-5" aria-hidden />} title="Vous recommandez" price="0 CHF"
+            items={["Un lien personnel par bien", "Suivi de vos clics, leads et ventes", "88 % de la commission pour vous", "Paiement direct du vendeur (TWINT, virement)"]} />
+        </Reveal>
+        <Reveal delay={0.16}>
+          <PriceCard icon={<Coins className="h-5 w-5" aria-hidden />} title="E-Dome" price="12 %"
+            sub="de la commission d'apport, 3 CHF au minimum"
+            items={["Seulement si une commission est due", "Compris dans la commission, jamais ajouté au prix", "Rien sur une vente sans apporteur", "E-Dome ne détient jamais les fonds"]} />
+        </Reveal>
       </section>
 
-      <section aria-labelledby="exemple" className="mt-8 grid items-center gap-6 rounded-3xl border bg-card p-6 md:grid-cols-[1fr_auto] md:p-8">
-        <div>
-          <h2 id="exemple" className="text-[20px] font-semibold tracking-[-0.02em]">Un exemple, du début à la fin</h2>
-          <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-muted-foreground">
-            Vous vendez à {formatNumber(EX_PRICE)} CHF et proposez 1 % aux apporteurs. Une amie de Sarah achète après avoir
-            ouvert son lien. À l&apos;acte, la commission est calculée sur le prix final et le règlement est créé
-            automatiquement.
-          </p>
-          <p className="mt-3 text-[12px] text-muted-foreground">Exemple de calcul. Sans apporteur, vous ne payez rien à E-Dome.</p>
-        </div>
-        <dl className="min-w-[260px] rounded-2xl border bg-background p-4 font-mono text-[13px]">
-          <Row k="Commission (1 %)" v={EX_GROSS} />
-          <Row k="dont Sarah, net" v={EX_NET} tone="gold" />
-          <Row k="dont E-Dome (12 %)" v={EX_FEE} />
-          <div className="my-2 h-px bg-border" />
-          <Row k="Vous gardez" v={EX_PRICE - EX_GROSS} strong />
-        </dl>
+      <Reveal className="mt-16 md:mt-24">
+        <CineBand labelledBy="exemple">
+          <div className="grid gap-10">
+            <div className="grid gap-4 lg:grid-cols-2 lg:items-end lg:gap-12">
+              <div>
+              <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[12px] text-white/75">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#e3b85c]" aria-hidden /> Exemple de calcul
+              </p>
+              <h2 id="exemple" className="mt-4 text-[28px] font-semibold leading-[1.1] tracking-[-0.03em] sm:text-[38px]">Un exemple, du début à la fin</h2>
+              </div>
+              <div>
+              <p className="text-[14.5px] leading-relaxed text-white/65">
+                Vous vendez à {formatNumber(EX_PRICE)} CHF et proposez 1 % aux apporteurs. Une amie de Sarah achète après avoir
+                ouvert son lien. À l&apos;acte, la commission est calculée sur le prix final et le règlement est créé
+                automatiquement.
+              </p>
+              <p className="mt-3 text-[12.5px] text-white/45">Exemple de calcul. Sans apporteur, vous ne payez rien à E-Dome.</p>
+              </div>
+            </div>
+            <div>
+              <CommissionFlow price={EX_PRICE} rateLabel="1 %" gross={EX_GROSS} net={EX_NET} fee={EX_FEE} apporteur="Sarah" />
+              <dl className="mt-6 flex flex-wrap items-baseline justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-4">
+                <dt className="text-[13.5px] text-white/60">Vous gardez</dt>
+                <dd className="text-[26px] font-semibold tabular-nums tracking-[-0.02em] text-white">{formatNumber(Math.round(EX_PRICE - EX_GROSS))} CHF</dd>
+              </dl>
+            </div>
+          </div>
+        </CineBand>
+      </Reveal>
+
+      <section className="mt-16 grid gap-4 md:mt-20 md:grid-cols-2">
+        <Reveal>
+          <SpotlightCard className="h-full p-6 sm:p-7">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-leman-soft text-leman"><Building2 className="h-5 w-5" aria-hidden /></span>
+            <p className="mt-4 text-[16px] font-semibold">Pour les professionnels</p>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">
+              Des formules pour agences et indépendants sont en préparation. Aucun prix n&apos;est annoncé avant qu&apos;elles
+              soient prêtes ; écrivez-nous pour être prévenu.
+            </p>
+            <Link href="/contact" className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-[14px] font-semibold text-leman hover:underline">
+              Nous écrire <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </SpotlightCard>
+        </Reveal>
+        <Reveal delay={0.08}>
+          <SpotlightCard className="h-full p-6 sm:p-7">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-leman-soft text-leman"><Scale className="h-5 w-5" aria-hidden /></span>
+            <p className="mt-4 text-[16px] font-semibold">Le cadre</p>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">
+              La commission d&apos;apport est un courtage d&apos;indication (art. 412 ss CO), acceptée en ligne par le vendeur et
+              horodatée. Détails dans les <Link href="/conditions" className="font-medium text-leman underline-offset-2 hover:underline">conditions</Link>.
+            </p>
+          </SpotlightCard>
+        </Reveal>
       </section>
 
-      <section className="mt-8 grid gap-3 md:grid-cols-2">
-        <div className="rounded-2xl border bg-card p-5">
-          <p className="text-[15px] font-semibold">Pour les professionnels</p>
-          <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">
-            Des formules pour agences et indépendants sont en préparation. Aucun prix n&apos;est annoncé avant qu&apos;elles
-            soient prêtes ; écrivez-nous pour être prévenu.
-          </p>
-          <Link href="/contact" className="mt-3 inline-flex items-center gap-1 text-[13.5px] font-medium text-leman hover:underline">
-            Nous écrire <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-          </Link>
-        </div>
-        <div className="rounded-2xl border bg-card p-5">
-          <p className="text-[15px] font-semibold">Le cadre</p>
-          <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">
-            La commission d&apos;apport est un courtage d&apos;indication (art. 412 ss CO), acceptée en ligne par le vendeur et
-            horodatée. Détails dans les <Link href="/conditions" className="text-leman hover:underline">conditions</Link>.
-          </p>
-        </div>
-      </section>
-
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link href="/auth/inscription?redirect=/publier" className="cine-btn-light inline-flex h-11 items-center rounded-xl border px-5 text-[14px] font-semibold">Publier mon bien</Link>
-        <Link href="/apporteurs" className="cine-btn-gold inline-flex h-11 items-center gap-2 rounded-xl px-5 text-[14px] font-semibold">Devenir apporteur <ArrowRight className="h-4 w-4" aria-hidden /></Link>
-      </div>
-    </div>
-  );
-}
-
-function Card({ icon: Icon, title, price, sub, items, gold = false }: {
-  icon: React.ComponentType<{ className?: string }>; title: string; price: string; sub?: string; items: string[]; gold?: boolean;
-}) {
-  return (
-    <div className={gold
-      ? "rounded-3xl border border-laiton-border bg-gradient-to-br from-laiton-soft via-laiton-soft/40 to-card p-6"
-      : "rounded-3xl border bg-card p-6"}>
-      <span className={gold ? "flex h-10 w-10 items-center justify-center rounded-xl bg-card/60 text-laiton" : "flex h-10 w-10 items-center justify-center rounded-xl bg-leman-soft text-leman"}>
-        <Icon className="h-5 w-5" aria-hidden />
-      </span>
-      <p className="mt-4 text-[15px] font-semibold">{title}</p>
-      <p className={`mt-1 text-[40px] font-semibold leading-none tracking-[-0.03em] tabular-nums ${gold ? "text-laiton" : ""}`}>{price}</p>
-      {sub && <p className="mt-1 text-[12.5px] text-muted-foreground">{sub}</p>}
-      <ul className="mt-4 space-y-2 text-[13.5px]">
-        {items.map((t) => (
-          <li key={t} className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-leman" aria-hidden />{t}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function Row({ k, v, tone, strong = false }: { k: string; v: number; tone?: "gold"; strong?: boolean }) {
-  return (
-    <div className={`flex justify-between gap-6 py-0.5 ${strong ? "font-semibold" : ""}`}>
-      <dt className="text-muted-foreground">{k}</dt>
-      <dd className={`tabular-nums ${tone === "gold" ? "text-laiton" : ""}`}>{formatNumber(Math.round(v))} CHF</dd>
+      <Reveal className="mt-16 md:mt-20">
+        <CtaBand title={<>Rien à payer pour commencer. <span className="cine-gold">Choisissez votre rôle.</span></>}>
+          <Link href="/auth/inscription?redirect=/publier" className="cine-btn-light inline-flex h-12 items-center rounded-xl px-6 text-[15px] font-semibold">Publier mon bien</Link>
+          <Link href="/apporteurs" className="cine-btn-gold inline-flex h-12 items-center gap-2 rounded-xl px-6 text-[15px] font-semibold">Devenir apporteur <ArrowRight className="h-4 w-4" aria-hidden /></Link>
+        </CtaBand>
+      </Reveal>
     </div>
   );
 }
