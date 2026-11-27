@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Share2, PlayCircle, Inbox, Handshake } from "lucide-react";
+import { Eye, Share2, PlayCircle, Inbox, Handshake, Radio } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { LiveBadge } from "./glow-card";
 
@@ -77,30 +77,50 @@ export function LiveActivity({ titles, linkIds }: { titles: Record<string, strin
   }, [router, linkIds.length]);
 
   return (
-    <div>
-      <div className="mb-3 flex items-center justify-between">
-        <p className="text-[14px] font-semibold">Activité en direct</p>
+    <div className="flex h-full flex-col">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="min-w-0 text-[15px] font-semibold tracking-[-0.01em]">Activité en direct</h2>
         <LiveBadge on={connected} />
       </div>
       {items.length === 0 ? (
-        <p className="text-[13px] leading-relaxed text-muted-foreground">
-          Les visites, partages et leads s&apos;affichent ici à l&apos;instant où ils arrivent. Partagez une annonce pour voir le premier.
-        </p>
+        <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed px-4 py-8 text-center">
+          <div aria-hidden className="v3-dots" />
+          {/* Radar décoratif : ondes qui s'éloignent (transform + opacity). */}
+          <span aria-hidden className="relative flex h-16 w-16 items-center justify-center">
+            <span className="absolute inset-0 rounded-full border border-leman/40 motion-safe:animate-ping [animation-duration:2.4s]" />
+            <span className="absolute inset-2 rounded-full border border-leman/25" />
+            <span className="absolute inset-4 rounded-full bg-leman-soft" />
+            <Radio className="relative h-5 w-5 text-leman" />
+          </span>
+          <p className="relative mt-4 text-[13.5px] font-medium">À l&apos;écoute</p>
+          <p className="relative mt-1 max-w-[30ch] text-[12.5px] leading-relaxed text-muted-foreground">
+            Les visites, partages et leads s&apos;affichent ici à l&apos;instant où ils arrivent. Partagez une annonce pour voir le premier.
+          </p>
+        </div>
       ) : (
-        <ul className="space-y-1.5" aria-live="polite">
+        <div className="relative">
+        <span aria-hidden className="absolute bottom-3 left-[22px] top-3 w-px bg-gradient-to-b from-border via-border to-transparent" />
+        <ul className="relative space-y-1" aria-live="polite">
           {items.map((it) => {
             const Icon = ICON[it.kind] ?? Eye;
+            const gold = it.kind === "lead" || it.kind === "vente";
             return (
-              <li key={it.id} className="live-in flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] hover:bg-subtle">
-                <span className={it.kind === "lead" || it.kind === "vente" ? "flex h-7 w-7 items-center justify-center rounded-full bg-laiton-soft text-laiton" : "flex h-7 w-7 items-center justify-center rounded-full bg-leman-soft text-leman"}>
+              <li key={it.id} className="live-in relative flex items-center gap-3 rounded-xl px-2 py-2 text-[13px] transition-colors hover:bg-subtle">
+                <span className={gold
+                  ? "relative z-10 flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-laiton-soft text-laiton ring-4 ring-card"
+                  : "relative z-10 flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-leman-soft text-leman ring-4 ring-card"}>
                   <Icon className="h-3.5 w-3.5" aria-hidden />
                 </span>
-                <span className="min-w-0 flex-1"><span className="font-medium">{LABEL[it.kind] ?? it.kind}</span> <span className="text-muted-foreground">· {it.title}</span></span>
-                <span className="text-[11.5px] text-muted-foreground">à l&apos;instant</span>
+                <span className="min-w-0 flex-1">
+                  <span className={gold ? "block font-semibold text-laiton" : "block font-medium"}>{LABEL[it.kind] ?? it.kind}</span>
+                  <span className="block truncate text-[12px] text-muted-foreground">{it.title}</span>
+                </span>
+                <span className="shrink-0 text-[11px] text-muted-foreground">à l&apos;instant</span>
               </li>
             );
           })}
         </ul>
+        </div>
       )}
     </div>
   );

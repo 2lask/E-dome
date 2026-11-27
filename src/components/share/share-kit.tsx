@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import {
-  AtSign, Check, Copy, Download, Mail, MessageCircle, MessageSquare, Printer, QrCode, Send, Share2,
+  AtSign, Check, Copy, Download, Link2, Mail, MessageCircle, MessageSquare, Printer, QrCode, Send, Share2,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { track } from "@/components/listing/track";
@@ -99,7 +99,7 @@ export function ShareKit({ open, onOpenChange, propertyId, url, title, city, pri
   };
 
   const channels: { key: string; label: string; icon: React.ComponentType<{ className?: string }>; cls?: string; run: () => void }[] = [
-    { key: "wa", label: "WhatsApp", icon: MessageCircle, cls: "bg-[#1f8f4e] text-white hover:bg-[#197a42] border-transparent", run: () => openUrl(`https://wa.me/?text=${encodeURIComponent(textFor("whatsapp"))}`) },
+    { key: "wa", label: "WhatsApp", icon: MessageCircle, cls: "bg-[#1f8f4e] text-white hover:bg-[#197a42] border-transparent shadow-[0_8px_24px_-10px_#1f8f4e]", run: () => openUrl(`https://wa.me/?text=${encodeURIComponent(textFor("whatsapp"))}`) },
     { key: "mail", label: "E-mail", icon: Mail, run: () => { const e = emailParts(); track(propertyId, "partage"); window.location.assign(`mailto:?subject=${encodeURIComponent(e.subject)}&body=${encodeURIComponent(e.body)}`); } },
     { key: "sms", label: "SMS", icon: MessageSquare, run: () => { track(propertyId, "partage"); window.location.assign(`sms:?&body=${encodeURIComponent(textFor("sms"))}`); } },
     { key: "tg", label: "Telegram", icon: Send, run: () => openUrl(`https://t.me/share/url?url=${encodeURIComponent(base("telegram"))}&text=${encodeURIComponent(`${title} à ${city}`)}`) },
@@ -163,27 +163,44 @@ ${priceLabel ? `<p class="price">${esc(priceLabel)}</p>` : ""}
 
   const n = matrix ? matrix.length + 8 : 0;
 
+  const close = "[&>button:last-child]:right-3 [&>button:last-child]:top-3 [&>button:last-child]:flex [&>button:last-child]:h-10 [&>button:last-child]:w-10 [&>button:last-child]:items-center [&>button:last-child]:justify-center [&>button:last-child]:rounded-full [&>button:last-child]:bg-white/10 [&>button:last-child]:text-white [&>button:last-child]:opacity-100 [&>button:last-child]:backdrop-blur md:[&>button:last-child]:bg-subtle md:[&>button:last-child]:text-foreground";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="block max-h-[92vh] w-[calc(100vw-24px)] max-w-3xl overflow-y-auto overflow-x-hidden rounded-3xl p-0">
-        <div className="grid md:grid-cols-[280px_minmax(0,1fr)]">
-          {/* ── QR ── */}
-          <div className="cine relative overflow-hidden rounded-t-3xl p-6 md:rounded-l-3xl md:rounded-tr-none">
+      <DialogContent className={cn("block max-h-[92vh] w-[calc(100vw-24px)] max-w-[860px] overflow-y-auto overflow-x-hidden rounded-[1.75rem] border-white/10 p-0 shadow-[0_40px_120px_-30px_rgb(0_0_0/0.75)]", close)}>
+        <div className="grid md:grid-cols-[300px_minmax(0,1fr)]">
+          {/* ── QR : panneau toujours sombre ── */}
+          <div className="cine v3-grain relative overflow-hidden p-6 sm:p-7">
             <div aria-hidden className="cine-aurora" />
+            <div aria-hidden className="cine-grid opacity-60" />
+            <div aria-hidden className="v3-orb v3-orb--gold -bottom-16 -left-16 h-56 w-56" />
             <div className="relative">
-              <p className="text-[11.5px] font-medium uppercase tracking-[0.18em] text-[#e3b85c]">Kit de partage</p>
-              <DialogTitle className="mt-2 text-[18px] font-semibold leading-snug text-white">{title}</DialogTitle>
+              <p className="v3-eyebrow v3-eyebrow--cine">Kit de partage</p>
+              <DialogTitle className="mt-3 pr-10 text-[19px] font-semibold leading-snug tracking-[-0.015em] text-white md:pr-0">{title}</DialogTitle>
               <DialogDescription className="mt-1 text-[13px] text-white/60">{city}{priceLabel ? ` · ${priceLabel}` : ""}</DialogDescription>
-              {gainLine && <p className="mt-3 inline-flex rounded-lg border border-[rgb(227_184_92/0.4)] bg-[rgb(227_184_92/0.12)] px-2.5 py-1 text-[12.5px] font-medium text-[#f0d79a]">{gainLine}</p>}
-              <div className="mx-auto mt-5 w-full max-w-[220px] rounded-2xl bg-white p-3 shadow-[0_20px_60px_-20px_rgb(227_184_92/0.5)]">
-                {matrix ? (
-                  <svg viewBox={`0 0 ${n} ${n}`} className="block h-auto w-full" shapeRendering="crispEdges" role="img" aria-label="QR code de votre lien">
-                    <rect width={n} height={n} fill="#fff" />
-                    <path d={qrPath(matrix)} fill="#12110e" />
-                  </svg>
-                ) : <p className="p-6 text-center text-[12px] text-[#555]">Lien trop long pour un QR code.</p>}
+              {gainLine && (
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[rgb(227_184_92/0.45)] bg-[rgb(227_184_92/0.14)] px-3 py-1 text-[12.5px] font-semibold text-[#f6dc9f]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#f2c66b] shadow-[0_0_8px_#f2c66b]" aria-hidden />{gainLine}
+                </p>
+              )}
+              <div className="relative mx-auto mt-6 w-full max-w-[208px]">
+                {/* Coins de visée laiton autour du QR (décor). */}
+                <span aria-hidden className="pointer-events-none absolute -inset-3">
+                  <span className="absolute left-0 top-0 h-5 w-5 rounded-tl-lg border-l-2 border-t-2 border-[#e3b85c]/80" />
+                  <span className="absolute right-0 top-0 h-5 w-5 rounded-tr-lg border-r-2 border-t-2 border-[#e3b85c]/80" />
+                  <span className="absolute bottom-0 left-0 h-5 w-5 rounded-bl-lg border-b-2 border-l-2 border-[#e3b85c]/80" />
+                  <span className="absolute bottom-0 right-0 h-5 w-5 rounded-br-lg border-b-2 border-r-2 border-[#e3b85c]/80" />
+                </span>
+                <div className="rounded-2xl bg-white p-3 shadow-[0_24px_70px_-18px_rgb(227_184_92/0.6),0_0_0_1px_rgb(255_255_255/0.6)]">
+                  {matrix ? (
+                    <svg viewBox={`0 0 ${n} ${n}`} className="block h-auto w-full" shapeRendering="crispEdges" role="img" aria-label="QR code de votre lien">
+                      <rect width={n} height={n} fill="#fff" />
+                      <path d={qrPath(matrix)} fill="#12110e" />
+                    </svg>
+                  ) : <p className="p-6 text-center text-[12px] text-[#555]">Lien trop long pour un QR code.</p>}
+                </div>
               </div>
-              <p className="mt-3 text-center text-[12px] text-white/55">Chaque scan est compté comme une visite « QR code » sur votre lien.</p>
+              <p className="mt-5 text-center text-[12px] leading-relaxed text-white/60">Chaque scan est compté comme une visite « QR code » sur votre lien.</p>
               <div className="mt-4 grid grid-cols-3 gap-2">
                 <KitBtn onClick={downloadPng} icon={Download} label="PNG" />
                 <KitBtn onClick={downloadSvg} icon={QrCode} label="SVG" />
@@ -193,49 +210,55 @@ ${priceLabel ? `<p class="price">${esc(priceLabel)}</p>` : ""}
           </div>
 
           {/* ── Messages et canaux ── */}
-          <div className="min-w-0 p-6">
-            <div role="tablist" aria-label="Modèle de message" className="flex w-fit rounded-xl border bg-subtle p-1">
+          <div className="min-w-0 p-5 sm:p-7">
+            <StepLabel n={1}>Choisissez un message</StepLabel>
+            <div role="tablist" aria-label="Modèle de message" className="mt-3 flex w-fit rounded-xl border bg-subtle p-1">
               {([["court", "Court"], ["detail", "Détaillé"], ["email", "E-mail"]] as const).map(([k, l]) => (
                 <button key={k} role="tab" aria-selected={tpl === k} onClick={() => setTpl(k)}
-                  className={cn("h-8 rounded-lg px-3 text-[13px] transition-colors", tpl === k ? "bg-card font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground")}>{l}</button>
+                  className={cn("h-9 rounded-lg px-3.5 text-[13px] transition-colors", tpl === k ? "bg-card font-semibold shadow-sm" : "text-muted-foreground hover:text-foreground")}>{l}</button>
               ))}
             </div>
-            <label className="mt-3 block">
+            <label className="relative mt-3 block">
               <span className="sr-only">Message</span>
               <textarea value={shown} onChange={(e) => setEdits((m) => ({ ...m, [tpl]: e.target.value }))} rows={tpl === "court" ? 4 : 8}
-                className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-[13.5px] leading-relaxed outline-none focus:border-leman" />
+                className="w-full resize-y rounded-2xl border border-input bg-background px-4 py-3 text-[13.5px] leading-relaxed shadow-[inset_0_1px_2px_rgb(0_0_0/0.06)] outline-none transition-colors focus:border-leman" />
             </label>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <button type="button" onClick={() => void copyText("msg", textFor("direct"))}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-[13px] font-medium transition-colors hover:border-foreground/25">
-                {copied === "msg" ? <Check className="h-4 w-4 text-leman" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
+                className={cn("inline-flex h-11 items-center gap-1.5 rounded-xl border px-3.5 text-[13px] font-medium transition-colors",
+                  copied === "msg" ? "border-leman/40 bg-leman-soft text-leman" : "hover:border-foreground/25")}>
+                {copied === "msg" ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
                 {copied === "msg" ? "Message copié" : "Copier le message"}
               </button>
               {edits[tpl] !== undefined && (
-                <button type="button" onClick={() => setEdits((m) => { const n2 = { ...m }; delete n2[tpl]; return n2; })} className="text-[12.5px] text-muted-foreground hover:text-foreground">
+                <button type="button" onClick={() => setEdits((m) => { const n2 = { ...m }; delete n2[tpl]; return n2; })} className="inline-flex h-11 items-center rounded-xl px-2 text-[12.5px] text-muted-foreground hover:text-foreground">
                   Rétablir le modèle
                 </button>
               )}
             </div>
 
-            <p className="mt-5 text-[13px] font-semibold">Envoyer par</p>
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <StepLabel n={2} className="mt-6">Envoyez-le</StepLabel>
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
               {channels.map((c) => (
                 <button key={c.key} type="button" onClick={c.run}
-                  className={cn("inline-flex h-10 items-center justify-center gap-2 rounded-xl border text-[13px] font-medium transition-[transform,background-color,border-color] active:scale-[0.97] hover:border-foreground/25", c.cls)}>
+                  className={cn("group inline-flex h-11 items-center justify-center gap-2 rounded-xl border bg-card text-[13px] font-medium shadow-[inset_0_1px_0_rgb(255_255_255/0.04)] transition-[transform,background-color,border-color] hover:-translate-y-px hover:border-foreground/25 active:scale-[0.97]", c.cls)}>
                   <c.icon className="h-4 w-4" aria-hidden />{c.label}
                 </button>
               ))}
             </div>
 
-            <div className="mt-5 flex items-center gap-2 rounded-xl border bg-subtle p-1.5 pl-3">
+            <StepLabel n={3} className="mt-6">Ou copiez votre lien</StepLabel>
+            <div className="mt-3 flex items-center gap-1.5 rounded-2xl border bg-subtle p-1.5 pl-3.5">
+              <Link2 className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
               <span className="min-w-0 flex-1 truncate font-mono text-[12px] text-muted-foreground">{url}</span>
-              <button type="button" onClick={() => void copyText("link", url)} className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-card px-3 text-[12.5px] font-medium shadow-xs">
-                {copied === "link" ? <Check className="h-3.5 w-3.5 text-leman" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
+              <button type="button" onClick={() => void copyText("link", url)}
+                className={cn("inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl px-3 text-[12.5px] font-semibold shadow-xs transition-colors",
+                  copied === "link" ? "bg-leman-soft text-leman" : "bg-card")}>
+                {copied === "link" ? <Check className="h-3.5 w-3.5" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
                 {copied === "link" ? "Copié" : "Copier le lien"}
               </button>
-              <button type="button" onClick={() => void nativeShare()} aria-label="Partager avec une autre application" className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-card shadow-xs">
-                <Share2 className="h-3.5 w-3.5" aria-hidden />
+              <button type="button" onClick={() => void nativeShare()} aria-label="Partager avec une autre application" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-card shadow-xs">
+                <Share2 className="h-4 w-4" aria-hidden />
               </button>
             </div>
           </div>
@@ -245,10 +268,19 @@ ${priceLabel ? `<p class="price">${esc(priceLabel)}</p>` : ""}
   );
 }
 
+function StepLabel({ n, children, className }: { n: number; children: React.ReactNode; className?: string }) {
+  return (
+    <p className={cn("flex items-center gap-2.5 text-[13.5px] font-semibold", className)}>
+      <span className="flex h-6 w-6 items-center justify-center rounded-full border border-laiton-border bg-laiton-soft text-[11.5px] font-bold tabular-nums text-laiton" aria-hidden>{n}</span>
+      {children}
+    </p>
+  );
+}
+
 function KitBtn({ onClick, icon: Icon, label }: { onClick: () => void; icon: React.ComponentType<{ className?: string }>; label: string }) {
   return (
     <button type="button" onClick={onClick}
-      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-white/15 bg-white/5 text-[12.5px] font-medium text-white/85 transition-colors hover:bg-white/10">
+      className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.06] text-[12.5px] font-medium text-white/90 transition-colors hover:bg-white/12 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e3b85c]">
       <Icon className="h-3.5 w-3.5" aria-hidden />{label}
     </button>
   );
