@@ -1,16 +1,30 @@
-/* ─── Couche outils (Tools) de l'IA immobilière ───────────────────────────
-   Chaque outil expose une fonction métier sur les DONNÉES RÉELLES du SaaS
-   (src/lib/mock-data.ts aujourd'hui, Supabase demain) et/ou le moteur de
-   calcul pur (src/lib/ai/calc.ts). Le LLM n'invente jamais : il appelle ces
-   outils et raisonne sur leurs résultats. Les définitions suivent le schéma
-   d'outil de l'API Claude (name / description / input_schema JSON Schema).
+import "server-only";
 
-   Ajouter une capacité métier = ajouter un outil ici (pas de logique dans le
-   prompt). Isolé de tout SDK : la route mappe ces définitions vers l'API. */
+/* ─── Outils du Copilote, sur les DONNÉES RÉELLES d'E-Dome ──────────────────
+   Chaque outil lit la base Supabase (sous la session de la personne, donc avec
+   ses droits RLS) ou appelle un calcul pur déjà utilisé par l'interface. Le
+   modèle n'invente rien : il appelle ces outils et raisonne sur leurs
+   résultats.
 
-import { properties as ALL_PROPERTIES, getPropertyById } from "@/lib/mock-data";
-import type { Property } from "@/lib/types";
-import { computeYield, computeCashflow, estimateByComparables, pricePerM2 } from "./calc";
+   Ce qui a été retiré (phase 0 de la vision « Bureau ») : les anciens outils
+   lisaient `mock-data` (biens fictifs, rendements codés en dur) et
+   présentaient des « ventes comparables » qui n'existent pas. E-Dome ne
+   connaît pas les prix de vente conclus du marché : l'outil de marché
+   renvoie donc des PRIX DEMANDÉS sur E-Dome, présentés comme tels, et refuse
+   de conclure sous trois annonces.
+
+   Données personnelles : rien ne sort sur les acheteurs ni sur les apporteurs
+   (noms, coordonnées) ; seulement des chiffres agrégés et les annonces
+   publiques. Ajouter une capacité = ajouter un outil ici. */
+
+import { getPublicProperty, listPublicProperties } from "@/lib/supabase/property-actions";
+import { listPrimedProperties } from "@/lib/supabase/introduction-actions";
+import { getDashboard } from "@/lib/supabase/dashboard-actions";
+import type { MyProperty, PrimedProperty } from "@/lib/my-property";
+import { affordability } from "@/lib/affordability";
+import { commissionLabel, dueLabel, netForApporteur } from "@/lib/commission";
+import { PERIODS, type Period } from "@/lib/dashboard-stats";
+import { computeCashflow, computeYield, pricePerM2 } from "./calc";
 
 export interface ToolDefinition {
   name: string;
@@ -25,15 +39,23 @@ export interface ToolDefinition {
 
 export interface AiTool {
   definition: ToolDefinition;
-  run: (input: Record<string, unknown>) => unknown;
+  run: (input: Record<string, unknown>) => Promise<unknown> | unknown;
 }
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// ─── Aides ──────────────────────────────────────────────────────────────────
 
 const num = (v: unknown, fallback = 0): number => (typeof v === "number" && isFinite(v) ? v : fallback);
-const str = (v: unknown): string | undefined => (typeof v === "string" && v.trim() ? v.trim() : undefined);
+const str = (v: unknown): string | undefined => (typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : undefined);
+const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const median = (xs: number[]) => {
+  const s = [...xs].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
+};
 
-function summarize(p: Property) {
+const TX = ["vente", "location-lt", "location-ct"] as const;
+
+function summarize(p: MyProperty, prime?: PrimedProperty) {
   return {
     id: p.id,
     titre: p.title,
@@ -41,29 +63,21 @@ function summarize(p: Property) {
     transaction: p.transactionType,
     prix: p.price,
     devise: p.currency,
-    ville: p.location.city,
-    pays: p.location.country,
+    unitePrix: p.transactionType === "vente" ? "prix de vente" : p.transactionType === "location-lt" ? "loyer mensuel" : "prix par nuit",
+    ville: p.city,
     chambres: p.bedrooms,
-    sallesDeBain: p.bathrooms,
-    surface: p.area,
-    prixM2: p.analytics?.prixM2 ?? pricePerM2(p.price, p.area),
-    note: p.rating,
-    rendementBrut: p.analytics?.rendementBrut,
-    rendementNet: p.analytics?.rendementNet,
-    dpe: p.analytics?.dpe,
+    sallesDeau: p.bathrooms,
+    surfaceM2: p.area || null,
+    prixAuM2: p.transactionType === "vente" && p.area > 0 ? pricePerM2(p.price, p.area) : null,
+    commission: prime ? { conditions: commissionLabel(prime.terms), echeance: dueLabel(prime.terms, prime.transactionType) } : null,
+    publieLe: p.createdAt.slice(0, 10),
     url: `/explorer/${p.id}`,
   };
 }
 
-function comparablesFor(city: string, type: string | undefined, excludeId?: string): Property[] {
-  return ALL_PROPERTIES.filter(
-    (p) =>
-      p.transactionType === "vente" &&
-      p.location.city.toLowerCase() === city.toLowerCase() &&
-      (!type || p.type === type) &&
-      p.id !== excludeId &&
-      p.area > 0,
-  );
+async function primesByProperty(): Promise<Map<string, PrimedProperty>> {
+  const list = await listPrimedProperties();
+  return new Map(list.map((p) => [p.propertyId, p]));
 }
 
 // ─── Outils ─────────────────────────────────────────────────────────────────
@@ -73,39 +87,42 @@ export const TOOLS: AiTool[] = [
     definition: {
       name: "search_properties",
       description:
-        "Recherche des biens réels du catalogue E-Dome selon des critères. À utiliser dès que l'utilisateur cherche des biens (ville, type, budget, chambres, achat/location). Renvoie une liste compacte de biens réels avec leur id.",
+        "Cherche parmi les annonces réelles publiées sur E-Dome (ventes et locations en Suisse). À utiliser dès que l'utilisateur cherche des biens. Renvoie une liste compacte avec l'id, le prix, la surface et la commission d'apport éventuelle.",
       input_schema: {
         type: "object",
         additionalProperties: false,
         properties: {
-          city: { type: "string", description: "Ville (ex: Lausanne, Marrakech)" },
-          country: { type: "string", description: "Pays (ex: Suisse, Maroc)" },
-          type: { type: "string", description: "Type de bien (appartement, villa, studio, penthouse, chalet, riad, maison, terrain)" },
-          transactionType: { type: "string", enum: ["vente", "location-ct", "location-lt"], description: "Type de transaction" },
-          maxPrice: { type: "number", description: "Prix maximum" },
+          city: { type: "string", description: "Localité (ex : Neuchâtel, Lausanne)" },
+          type: { type: "string", description: "Type de bien (appartement, maison, villa, attique, studio, chalet, terrain…)" },
+          transactionType: { type: "string", enum: [...TX], description: "vente, location-lt (longue durée) ou location-ct (courte durée)" },
+          maxPrice: { type: "number", description: "Prix ou loyer maximum en CHF" },
           minBedrooms: { type: "number", description: "Nombre minimum de chambres" },
-          limit: { type: "number", description: "Nombre max de résultats (défaut 8)" },
+          withCommission: { type: "boolean", description: "Seulement les biens avec une commission d'apport" },
+          limit: { type: "number", description: "Nombre maximum de résultats (défaut 8, max 20)" },
         },
       },
     },
-    run: (input) => {
+    run: async (input) => {
+      const [all, primes] = await Promise.all([listPublicProperties(200), primesByProperty()]);
       const city = str(input.city);
-      const country = str(input.country);
       const type = str(input.type);
-      const transactionType = str(input.transactionType);
+      const tx = str(input.transactionType);
       const maxPrice = input.maxPrice != null ? num(input.maxPrice) : undefined;
       const minBedrooms = input.minBedrooms != null ? num(input.minBedrooms) : undefined;
-      const limit = input.limit != null ? Math.max(1, Math.min(20, num(input.limit, 8))) : 8;
-
-      let results = [...ALL_PROPERTIES];
-      if (city) results = results.filter((p) => p.location.city.toLowerCase().includes(city.toLowerCase()));
-      if (country) results = results.filter((p) => p.location.country.toLowerCase().includes(country.toLowerCase()));
-      if (type) results = results.filter((p) => p.type === type);
-      if (transactionType) results = results.filter((p) => p.transactionType === transactionType);
-      if (maxPrice != null) results = results.filter((p) => p.price <= maxPrice);
-      if (minBedrooms != null) results = results.filter((p) => p.bedrooms >= minBedrooms);
-
-      return { count: results.length, results: results.slice(0, limit).map(summarize) };
+      const limit = Math.max(1, Math.min(20, num(input.limit, 8)));
+      let r = all;
+      if (city) r = r.filter((p) => norm(p.city).includes(norm(city)));
+      if (type) r = r.filter((p) => norm(p.type) === norm(type));
+      if (tx) r = r.filter((p) => p.transactionType === tx);
+      if (maxPrice != null) r = r.filter((p) => p.price <= maxPrice);
+      if (minBedrooms != null) r = r.filter((p) => p.bedrooms >= minBedrooms);
+      if (input.withCommission === true) r = r.filter((p) => primes.has(p.id));
+      return {
+        source: "Annonces publiées sur E-Dome",
+        totalEnLigne: all.length,
+        nombre: r.length,
+        resultats: r.slice(0, limit).map((p) => summarize(p, primes.get(p.id))),
+      };
     },
   },
 
@@ -113,94 +130,163 @@ export const TOOLS: AiTool[] = [
     definition: {
       name: "get_property",
       description:
-        "Renvoie la fiche détaillée réelle d'un bien par son id (rendement, prix/m², DPE, ROI, occupation, hôte…). À utiliser avant d'analyser ou de commenter un bien précis.",
+        "Renvoie la fiche réelle d'une annonce E-Dome par son id (uuid) : description, équipements, chiffres déclarés par le propriétaire, commission d'apport. À appeler avant de commenter un bien précis.",
       input_schema: {
         type: "object",
         additionalProperties: false,
-        properties: { id: { type: "string", description: "id du bien (ex: prop1, prop11)" } },
+        properties: { id: { type: "string", description: "id de l'annonce (uuid, visible dans l'adresse /explorer/<id>)" } },
         required: ["id"],
       },
     },
-    run: (input) => {
+    run: async (input) => {
       const id = str(input.id);
-      const p = id ? getPropertyById(id) : undefined;
-      if (!p) return { error: "Bien introuvable", id: id ?? null };
+      if (!id || !/^[0-9a-f-]{36}$/i.test(id)) return { erreur: "Identifiant d'annonce invalide", id: id ?? null };
+      const [p, primes] = await Promise.all([getPublicProperty(id), primesByProperty()]);
+      if (!p) return { erreur: "Annonce introuvable ou retirée", id };
       return {
-        ...summarize(p),
-        description: p.description,
+        ...summarize(p, primes.get(p.id)),
+        description: p.description.slice(0, 3000),
         equipements: p.amenities,
-        hote: `${p.host.firstName} ${p.host.lastName}`,
-        analytics: p.analytics ?? null,
+        nombrePhotos: p.images.length,
+        videoDeVisite: p.videos.length > 0,
+        chiffresDeclares: p.analytics ?? null,
+        avertissement: "Informations déclarées par le propriétaire, non vérifiées par E-Dome.",
       };
     },
   },
 
   {
     definition: {
-      name: "search_comparable_sales",
+      name: "market_asking_prices",
       description:
-        "Renvoie les ventes comparables réelles (même ville, même type) et le prix/m² médian. Base d'une estimation. Utiliser avant estimate_property pour justifier une valeur.",
+        "Statistiques des PRIX DEMANDÉS sur les annonces E-Dome d'une localité (prix au m² médian, minimum, maximum, nombre d'annonces). Ce ne sont PAS des prix de vente conclus : toujours le dire. Sous trois annonces, l'outil refuse de conclure.",
       input_schema: {
         type: "object",
         additionalProperties: false,
         properties: {
-          city: { type: "string", description: "Ville" },
+          city: { type: "string", description: "Localité" },
           type: { type: "string", description: "Type de bien (optionnel)" },
-          excludeId: { type: "string", description: "id d'un bien à exclure des comparables" },
+          transactionType: { type: "string", enum: [...TX], description: "Défaut : vente" },
+          excludeId: { type: "string", description: "id d'une annonce à exclure (le bien analysé)" },
         },
         required: ["city"],
       },
     },
-    run: (input) => {
+    run: async (input) => {
       const city = str(input.city);
-      if (!city) return { error: "Ville requise" };
-      const comps = comparablesFor(city, str(input.type), str(input.excludeId));
-      const pm2 = comps.map((p) => p.analytics?.prixM2 ?? pricePerM2(p.price, p.area)).filter((n) => n > 0);
+      if (!city) return { erreur: "Localité requise" };
+      const tx = str(input.transactionType) ?? "vente";
+      const type = str(input.type);
+      const all = await listPublicProperties(200);
+      const comps = all.filter((p) =>
+        norm(p.city).includes(norm(city)) && p.transactionType === tx && p.area > 0 && p.price > 0 &&
+        (!type || norm(p.type) === norm(type)) && p.id !== str(input.excludeId));
+      const perM2 = comps.map((p) => Math.round(p.price / p.area));
+      const base = { localite: city, transaction: tx, nature: "Prix demandés sur E-Dome (pas des ventes conclues)", nombreAnnonces: comps.length };
+      if (comps.length < 3) {
+        return { ...base, suffisant: false, message: "Moins de trois annonces comparables sur E-Dome : aucune conclusion de prix possible. Orienter vers une estimation par un professionnel ou les statistiques officielles." };
+      }
       return {
-        ville: city,
-        nombreComparables: comps.length,
-        prixM2: pm2.sort((a, b) => a - b),
-        comparables: comps.map(summarize),
+        ...base,
+        suffisant: true,
+        prixAuM2Median: median(perM2),
+        prixAuM2Min: Math.min(...perM2),
+        prixAuM2Max: Math.max(...perM2),
+        annonces: comps.slice(0, 10).map((p) => ({ id: p.id, titre: p.title, prix: p.price, surfaceM2: p.area })),
       };
     },
   },
 
   {
     definition: {
-      name: "estimate_property",
+      name: "check_affordability",
       description:
-        "Estime la valeur d'un bien par comparables (prix/m² médian des ventes réelles de la même ville/type appliqué à la surface). Renvoie une fourchette. Toujours expliquer la méthode et les comparables utilisés.",
+        "Calcule si un achat est finançable selon la règle usuelle des banques suisses : 20 % de fonds propres, charges théoriques (intérêt 5 %, amortissement 1 %, entretien 1 %) au plus un tiers du revenu brut. Indicatif, pas une offre de crédit.",
       input_schema: {
         type: "object",
         additionalProperties: false,
         properties: {
-          city: { type: "string", description: "Ville du bien" },
-          type: { type: "string", description: "Type de bien (optionnel mais recommandé)" },
-          area: { type: "number", description: "Surface en m²" },
-          excludeId: { type: "string", description: "id du bien estimé (exclu des comparables)" },
+          price: { type: "number", description: "Prix d'achat en CHF" },
+          equity: { type: "number", description: "Fonds propres disponibles en CHF" },
+          grossIncome: { type: "number", description: "Revenu brut annuel du ménage en CHF (0 si inconnu)" },
         },
-        required: ["city", "area"],
+        required: ["price", "equity"],
       },
     },
-    run: (input) => {
-      const city = str(input.city);
-      const area = num(input.area);
-      if (!city || area <= 0) return { error: "Ville et surface (>0) requises" };
-      const comps = comparablesFor(city, str(input.type), str(input.excludeId));
-      const pm2 = comps.map((p) => p.analytics?.prixM2 ?? pricePerM2(p.price, p.area)).filter((n) => n > 0);
-      if (pm2.length === 0) return { error: "Aucun comparable disponible pour cette ville/type", ville: city };
-      const est = estimateByComparables(area, pm2);
+    run: (input) => ({
+      ...affordability(num(input.price), num(input.equity), num(input.grossIncome)),
+      hypotheses: "Taux théorique 5 %, amortissement 1 %, entretien 1 % du prix ; charges ≤ 1/3 du revenu brut ; fonds propres ≥ 20 %.",
+      avertissement: "Règle usuelle ; chaque banque calcule à sa façon. Pas un conseil ni une offre de crédit.",
+    }),
+  },
+
+  {
+    definition: {
+      name: "commission_breakdown",
+      description:
+        "Pour une annonce avec commission d'apport : montant brut (fixe, ou estimé au prix demandé si pourcentage), part nette de l'apporteur (88 %) et part E-Dome (12 %, minimum 3 CHF), et moment où elle est due.",
+      input_schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: { id: { type: "string", description: "id de l'annonce" } },
+        required: ["id"],
+      },
+    },
+    run: async (input) => {
+      const id = str(input.id);
+      if (!id) return { erreur: "id requis" };
+      const prime = (await primesByProperty()).get(id);
+      if (!prime) return { id, commission: null, message: "Cette annonce ne propose pas de commission d'apport." };
+      const gross = Math.round(prime.amountChf);
+      const net = Math.round(netForApporteur(prime.amountChf));
       return {
-        methode: "Prix/m² médian des ventes comparables × surface",
-        ville: city,
-        surface: area,
-        nombreComparables: comps.length,
-        prixM2Median: est.medianPricePerM2,
-        estimation: est.estimate,
-        fourchetteBasse: est.low,
-        fourchetteHaute: est.high,
-        devise: "CHF",
-        comparablesUtilises: comps.map((p) => ({ id: p.id, titre: p.title, prix: p.price, surface: p.area })),
+        id,
+        conditions: commissionLabel(prime.terms),
+        echeance: dueLabel(prime.terms, prime.transactionType),
+        brutChf: gross,
+        apporteurNetChf: net,
+        partEdomeChf: gross - net,
+        estimation: prime.terms.kind === "pourcentage",
+        note: prime.terms.kind === "pourcentage" ? "Estimation au prix demandé ; calculée sur le prix final à la vente." : "Montant fixe.",
+      };
+    },
+  },
+
+  {
+    definition: {
+      name: "my_activity",
+      description:
+        "Chiffres réels de l'utilisateur connecté sur une période (7, 30 ou 90 jours) : pour ses annonces (vues, visiteurs, leads, conversion, ventes, provenance des visites, performance par annonce) et pour ses liens d'apporteur (clics, leads, ventes, commissions nettes). Aucune donnée personnelle de tiers.",
+      input_schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: { period: { type: "number", enum: [...PERIODS], description: "Période en jours (défaut 30)" } },
+      },
+    },
+    run: async (input) => {
+      const p = num(input.period, 30);
+      const period = ((PERIODS as readonly number[]).includes(p) ? p : 30) as Period;
+      const d = await getDashboard(period);
+      if (!d) return { erreur: "Connexion requise pour lire vos chiffres." };
+      const s = d.seller;
+      const a = d.apporteur;
+      return {
+        periodeJours: period,
+        suiviComplet: d.ready,
+        vendeur: s ? {
+          vues: s.views, visiteurs: s.visitors, leads: s.leads, conversionPct: s.conversion,
+          visites: s.visits, offres: s.offers, ventes: s.sales, chiffreAffairesChf: s.revenue,
+          commissionsDuesChf: s.commissions, partDesVuesViaApporteursPct: s.viaApporteurs,
+          provenance: s.sources?.map((x) => ({ canal: x.label, vues: x.value, pct: x.pct })) ?? null,
+          parAnnonce: s.topListings.map((l) => ({ id: l.id, titre: l.title, vues: l.views, leads: l.leads, conversionPct: l.conversion })),
+          nombreApporteursActifs: s.topApporteurs.length,
+        } : null,
+        apporteur: a ? {
+          clics: a.clicks, personnes: a.visitors, leads: a.leads, ventes: a.sales,
+          commissionsGagneesNetChf: Math.round(a.commissionsEarned), enCoursEstimeNetChf: Math.round(a.commissionsPending),
+          provenance: a.sources?.map((x) => ({ canal: x.label, clics: x.value, pct: x.pct })) ?? null,
+          parLien: a.links.map((l) => ({ id: l.propertyId, titre: l.title, clics: l.clicks, leads: l.leads, ventes: l.sales, gagneNetChf: Math.round(l.earned) })),
+        } : null,
       };
     },
   },
@@ -209,16 +295,16 @@ export const TOOLS: AiTool[] = [
     definition: {
       name: "calculate_yield",
       description:
-        "Calcule le rendement locatif brut et net à partir d'un prix et d'un loyer mensuel. Hypothèses par défaut : charges 20% du loyer, vacance 5%. Renvoie les hypothèses utilisées — à expliciter.",
+        "Calcule le rendement locatif brut et net à partir d'un prix et d'un loyer mensuel. Hypothèses par défaut : charges 20 % du loyer, vacance 5 %. Expliciter les hypothèses.",
       input_schema: {
         type: "object",
         additionalProperties: false,
         properties: {
           price: { type: "number", description: "Prix d'achat" },
           monthlyRent: { type: "number", description: "Loyer mensuel hors charges" },
-          chargesRate: { type: "number", description: "Charges non récupérables en fraction du loyer (0.20 = 20%)" },
-          vacancyRate: { type: "number", description: "Taux de vacance en fraction (0.05 = 5%)" },
-          propertyTaxYearly: { type: "number", description: "Taxe/impôt annuel" },
+          chargesRate: { type: "number", description: "Charges non récupérables en fraction du loyer (0.20 = 20 %)" },
+          vacancyRate: { type: "number", description: "Taux de vacance en fraction (0.05 = 5 %)" },
+          propertyTaxYearly: { type: "number", description: "Impôts et taxes annuels" },
         },
         required: ["price", "monthlyRent"],
       },
@@ -237,7 +323,7 @@ export const TOOLS: AiTool[] = [
     definition: {
       name: "calculate_cashflow",
       description:
-        "Calcule le cash-flow mensuel/annuel et le cash-on-cash d'un investissement locatif financé (apport + prêt). Combine rendement net et mensualité de prêt.",
+        "Calcule le cash-flow mensuel et annuel et le rendement des fonds propres d'un investissement locatif financé (apport + prêt).",
       input_schema: {
         type: "object",
         additionalProperties: false,
@@ -245,11 +331,11 @@ export const TOOLS: AiTool[] = [
           price: { type: "number", description: "Prix d'achat" },
           monthlyRent: { type: "number", description: "Loyer mensuel hors charges" },
           downPayment: { type: "number", description: "Apport" },
-          loanRatePct: { type: "number", description: "Taux annuel du prêt en % (ex: 2.5)" },
+          loanRatePct: { type: "number", description: "Taux annuel du prêt en % (ex : 2.5)" },
           loanYears: { type: "number", description: "Durée du prêt en années" },
           chargesRate: { type: "number", description: "Charges (fraction du loyer, défaut 0.20)" },
           vacancyRate: { type: "number", description: "Vacance (fraction, défaut 0.05)" },
-          propertyTaxYearly: { type: "number", description: "Taxe/impôt annuel" },
+          propertyTaxYearly: { type: "number", description: "Impôts et taxes annuels" },
         },
         required: ["price", "monthlyRent", "downPayment", "loanRatePct", "loanYears"],
       },
@@ -266,51 +352,6 @@ export const TOOLS: AiTool[] = [
         propertyTaxYearly: input.propertyTaxYearly != null ? num(input.propertyTaxYearly) : undefined,
       }),
   },
-
-  {
-    definition: {
-      name: "analyse_investment",
-      description:
-        "Analyse complète d'un bien réel du catalogue comme investissement : reprend ses analytics (rendement, ROI, occupation) et, si un loyer mensuel estimé est fourni, calcule rendement net et cash-flow. Renvoie des indicateurs bruts à interpréter, pas un conseil.",
-      input_schema: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          id: { type: "string", description: "id du bien à analyser" },
-          monthlyRent: { type: "number", description: "Loyer mensuel estimé (optionnel, pour le rendement net/cash-flow)" },
-          downPayment: { type: "number", description: "Apport (optionnel, pour le cash-flow)" },
-          loanRatePct: { type: "number", description: "Taux du prêt en % (optionnel)" },
-          loanYears: { type: "number", description: "Durée du prêt en années (optionnel)" },
-        },
-        required: ["id"],
-      },
-    },
-    run: (input) => {
-      const id = str(input.id);
-      const p = id ? getPropertyById(id) : undefined;
-      if (!p) return { error: "Bien introuvable", id: id ?? null };
-
-      const out: Record<string, unknown> = {
-        bien: summarize(p),
-        analyticsCommuniquees: p.analytics ?? null,
-        avertissement: "Données communiquées par le vendeur — à vérifier. Ceci n'est pas un conseil financier.",
-      };
-      const monthlyRent = input.monthlyRent != null ? num(input.monthlyRent) : undefined;
-      if (monthlyRent && monthlyRent > 0) {
-        out.rendementCalcule = computeYield({ price: p.price, monthlyRent });
-        if (input.downPayment != null && input.loanRatePct != null && input.loanYears != null) {
-          out.cashflow = computeCashflow({
-            price: p.price,
-            monthlyRent,
-            downPayment: num(input.downPayment),
-            loanRatePct: num(input.loanRatePct),
-            loanYears: num(input.loanYears),
-          });
-        }
-      }
-      return out;
-    },
-  },
 ];
 
 const TOOL_MAP = new Map(TOOLS.map((t) => [t.definition.name, t]));
@@ -319,12 +360,12 @@ export function getToolDefinitions(): ToolDefinition[] {
   return TOOLS.map((t) => t.definition);
 }
 
-export function runTool(name: string, input: Record<string, unknown>): unknown {
+export async function runTool(name: string, input: Record<string, unknown>): Promise<unknown> {
   const tool = TOOL_MAP.get(name);
-  if (!tool) return { error: `Outil inconnu: ${name}` };
+  if (!tool) return { erreur: `Outil inconnu : ${name}` };
   try {
-    return tool.run(input ?? {});
+    return await tool.run(input ?? {});
   } catch (e) {
-    return { error: "Erreur d'exécution de l'outil", detail: e instanceof Error ? e.message : String(e) };
+    return { erreur: "Erreur d'exécution de l'outil", detail: e instanceof Error ? e.message.slice(0, 200) : String(e) };
   }
 }

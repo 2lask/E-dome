@@ -12,7 +12,7 @@ appliquées **côté serveur**.
 
 1. **LLM (provider)** — `src/lib/ai/provider.ts`. Client Claude *server-only*
    (`@anthropic-ai/sdk`), boucle d'appel d'outils (tool use), gestion `refusal`.
-   Modèle par défaut `claude-opus-5`, surchargé par `AI_MODEL`.
+   Modèle par défaut `claude-opus-5-5`, surchargé par `AI_MODEL` ; repli côté serveur (`fallbacks: "default"`) et cache du préfixe stable.
 2. **RAG (retrieval)** — *à venir (Phase 2)*. Base doc (SaaS, fiscalité, guides)
    → recherche in-repo, puis pgvector Supabase (Phase 3).
 3. **Outils (tools)** — `src/lib/ai/tools.ts`. Chaque capacité métier = un outil
@@ -26,7 +26,7 @@ appliquées **côté serveur**.
 | Fichier | Rôle |
 |---|---|
 | `src/lib/ai/calc.ts` | Moteur de calcul immobilier pur (rendement, cash-flow, mensualité, ROI, prix/m², estimation par comparables). Réutilisable par l'UI. |
-| `src/lib/ai/tools.ts` | Outils : `search_properties`, `get_property`, `search_comparable_sales`, `estimate_property`, `calculate_yield`, `calculate_cashflow`, `analyse_investment`. |
+| `src/lib/ai/tools.ts` | Outils sur la base réelle (Supabase, sous la session) : `search_properties`, `get_property`, `market_asking_prices` (prix DEMANDÉS sur E-Dome, refus sous trois annonces), `check_affordability`, `commission_breakdown`, `my_activity`, `calculate_yield`, `calculate_cashflow`. Les anciens outils sur données fictives (comparables de ventes inventés) sont retirés. |
 | `src/lib/ai/prompt.ts` | System prompt « Expert E-Dome » + injection de contexte de session. |
 | `src/lib/ai/entitlements.ts` | Formules (free/pro/business/enterprise) + quotas, store d'usage. |
 | `src/lib/ai/provider.ts` | Client LLM + orchestration tool-use. |
@@ -57,7 +57,7 @@ derrière `PLANS` via une correspondance `price_id → plan`.
 
 ```
 ANTHROPIC_API_KEY=sk-ant-...   # server-only ; sans elle, l'assistant renvoie un message de repli
-AI_MODEL=claude-opus-5         # optionnel (claude-sonnet-5 / claude-haiku-4-5 pour réduire le coût)
+AI_MODEL=claude-opus-5-5       # optionnel (claude-sonnet-5-5 / claude-haiku-5-5 pour réduire le coût)
 ```
 
 ## Garde-fous
@@ -68,7 +68,8 @@ AI_MODEL=claude-opus-5         # optionnel (claude-sonnet-5 / claude-haiku-4-5 p
 
 ## Feuille de route
 
-- **Phase 1 (fait)** : module IA + calc + outils + prompt + route + quotas (mock) + assistant global + accroche fiche bien.
+- **Phase 1 (fait)** : module IA + calc + outils + prompt + route + quotas + assistant global + accroche fiche bien.
+- **Phase 0 de la vision « Bureau » (fait, 27.11.2026)** : outils branchés sur Supabase, aucune donnée fictive, aucune donnée personnelle de tiers transmise au modèle. Clé ANTHROPIC_API_KEY présente en production seulement (pas en préview ni en local).
 - **Phase 2** : RAG (fiscalité/guides/doc SaaS), génération de rapports, plus d'accroches contextuelles.
 - **Phase 3** : bascule Supabase (auth réelle, conversations, quotas persistés, pgvector).
 - **Phase 4** : Stripe (formules, essais, upgrades).

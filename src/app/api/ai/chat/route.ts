@@ -112,7 +112,7 @@ export async function POST(req: Request) {
       } else if (e.status === 403) {
         message = "⛔ Accès refusé par Anthropic (clé sans permission, ou crédits/facturation à activer).";
       } else if (e.status === 404) {
-        message = "Le modèle configuré est indisponible pour ce compte. Essayez AI_MODEL=claude-haiku-4-5 sur Vercel.";
+        message = "Le modèle configuré est indisponible pour ce compte. Essayez AI_MODEL=claude-sonnet-5-5 sur Vercel.";
       } else if (e.status === 429) {
         message = "⏳ Trop de requêtes vers Anthropic. Patientez quelques secondes et réessayez.";
       } else {
